@@ -1,0 +1,4 @@
+Implementation for classes that relate to the definition of the Backsight environment.
+The interfaces are in the Backsight.Environment folder (part of the main Backsight project).
+
+Most files are partial classes that augment the functionality of BacksightDataSet.
