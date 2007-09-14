@@ -1,0 +1,222 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2D80BA27-714A-4851-903F-DF512063C237}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Backsight</RootNamespace>
+    <AssemblyName>Backsight</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\Backsight.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BasicGeom.cs" />
+    <Compile Include="DesignTimeController.cs" />
+    <Compile Include="DesignTimeMapModel.cs" />
+    <Compile Include="Dimension.cs" />
+    <Compile Include="Environment\EnvironmentContainer.cs" />
+    <Compile Include="Environment\IEditControl.cs" />
+    <Compile Include="Environment\IEditEntity.cs" />
+    <Compile Include="Environment\IEditIdGroup.cs" />
+    <Compile Include="Environment\IEditLayer.cs" />
+    <Compile Include="Environment\IEditTheme.cs" />
+    <Compile Include="Environment\IEntity.cs" />
+    <Compile Include="Environment\IEnvironmentContainer.cs" />
+    <Compile Include="Environment\IEnvironmentFactory.cs" />
+    <Compile Include="Environment\IEnvironmentItem.cs" />
+    <Compile Include="Environment\IIdGroup.cs" />
+    <Compile Include="Environment\ILayer.cs" />
+    <Compile Include="Environment\ItemType.cs" />
+    <Compile Include="Environment\ITheme.cs" />
+    <Compile Include="Forms\AdhocPropertyList.cs" />
+    <Compile Include="Forms\DrawInfo.cs" />
+    <Compile Include="Forms\DrawStyle.cs" />
+    <Compile Include="Forms\HighlightStyle.cs" />
+    <Compile Include="Forms\ISpatialDisplayTool.cs" />
+    <Compile Include="Forms\IUserAction.cs" />
+    <Compile Include="Forms\DisplayToolId.cs" />
+    <Compile Include="Forms\MagnifyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MagnifyForm.Designer.cs">
+      <DependentUpon>MagnifyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MagnifyMapControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\MagnifyMapControl.Designer.cs">
+      <DependentUpon>MagnifyMapControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MagnifyTool.cs" />
+    <Compile Include="Forms\MapControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\MapControl.designer.cs">
+      <DependentUpon>MapControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MapControlAction.cs" />
+    <Compile Include="Forms\SpatialDisplayTool.cs" />
+    <Compile Include="Forms\MapResources.cs" />
+    <Compile Include="Forms\NewCenterTool.cs" />
+    <Compile Include="Forms\PanTool.cs" />
+    <Compile Include="Forms\ScaleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScaleForm.designer.cs">
+      <DependentUpon>ScaleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UserAction.cs" />
+    <Compile Include="Forms\UserActionList.cs" />
+    <Compile Include="Forms\UserActionSupport.cs" />
+    <Compile Include="Forms\ZoomRectangleTool.cs" />
+    <Compile Include="Geometry\CircleGeometry.cs" />
+    <Compile Include="Geometry\CircularArcGeometry.cs" />
+    <Compile Include="ICircleGeometry.cs" />
+    <Compile Include="ICircularArcGeometry.cs" />
+    <Compile Include="ILineGeometry.cs" />
+    <Compile Include="ILineSegmentGeometry.cs" />
+    <Compile Include="IMultiSegmentGeometry.cs" />
+    <Compile Include="Geometry\LineSegmentGeometry.cs" />
+    <Compile Include="Geometry\LineStringGeometry.cs" />
+    <Compile Include="Geometry\PointGeometry.cs" />
+    <Compile Include="GlobalUserSetting.cs" />
+    <Compile Include="IPoint.cs" />
+    <Compile Include="ISpatialSystem.cs" />
+    <Compile Include="Length.cs" />
+    <Compile Include="IEditPosition3D.cs" />
+    <Compile Include="IExpandablePropertyItem.cs" />
+    <Compile Include="MathConstants.cs" />
+    <Compile Include="MicronValue.cs" />
+    <Compile Include="Quadrant.cs" />
+    <Compile Include="QuadVertex.cs" />
+    <Compile Include="RadianValue.cs" />
+    <Compile Include="Turn.cs" />
+    <Compile Include="Window.cs" />
+    <Compile Include="Position.cs" />
+    <Compile Include="IAngle.cs" />
+    <Compile Include="IClockwiseCircularArcGeometry.cs" />
+    <Compile Include="IDrawStyle.cs" />
+    <Compile Include="IEditSpatialIndex.cs" />
+    <Compile Include="IEditSpatialSelection.cs" />
+    <Compile Include="ILength.cs" />
+    <Compile Include="IPosition3D.cs" />
+    <Compile Include="Index\DrawQuery.cs" />
+    <Compile Include="Index\FindClosestQuery.cs" />
+    <Compile Include="Index\Point\IndexNode.cs" />
+    <Compile Include="Index\Point\PointIndexStatistics.cs" />
+    <Compile Include="Index\Point\Node.cs" />
+    <Compile Include="Index\Point\PointIndex.cs" />
+    <Compile Include="Index\Point\DataNode.cs" />
+    <Compile Include="Index\Rectangle\IndexStatistics.cs" />
+    <Compile Include="Index\Rectangle\Item.cs" />
+    <Compile Include="Index\Rectangle\Node.cs" />
+    <Compile Include="Index\Rectangle\RectangleIndex.cs" />
+    <Compile Include="Index\RangeValue.cs" />
+    <Compile Include="Index\SpatialIndex.cs" />
+    <Compile Include="Index\Extent.cs" />
+    <Compile Include="IPointGeometry.cs" />
+    <Compile Include="ISpatialIndex.cs" />
+    <Compile Include="IString.cs" />
+    <Compile Include="IWindow.cs" />
+    <Compile Include="IEditWindow.cs" />
+    <Compile Include="IPosition.cs" />
+    <Compile Include="IEditPosition.cs" />
+    <Compile Include="ISpatialController.cs" />
+    <Compile Include="ISpatialData.cs" />
+    <Compile Include="ISpatialDisplay.cs" />
+    <Compile Include="ISpatialModel.cs" />
+    <Compile Include="IEditSpatialModel.cs" />
+    <Compile Include="ISpatialObject.cs" />
+    <Compile Include="ISpatialSelection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\MagnifyForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MagnifyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MapControl.resx">
+      <DependentUpon>MapControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScaleForm.resx">
+      <DependentUpon>ScaleForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="SimpleMapModel.cs" />
+    <Compile Include="SpatialController.cs" />
+    <Compile Include="SpatialSelection.cs" />
+    <Compile Include="SpatialType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewCenterCursor.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CarCursor.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MagnifyingGlass.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MovingCarCursor.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\HollowSquareCursor.cur" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

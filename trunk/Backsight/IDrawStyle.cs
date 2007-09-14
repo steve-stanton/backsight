@@ -1,0 +1,90 @@
+/// <remarks>
+/// Copyright 2007 - Steve Stanton. This file is part of Backsight
+///
+/// Backsight is free software; you can redistribute it and/or modify it under the terms
+/// of the GNU Lesser General Public License as published by the Free Software Foundation;
+/// either version 3 of the License, or (at your option) any later version.
+///
+/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+/// See the GNU Lesser General Public License for more details.
+///
+/// You should have received a copy of the GNU Lesser General Public License
+/// along with this program. If not, see <http://www.gnu.org/licenses/>.
+/// </remarks>
+
+using System;
+using System.Drawing;
+
+using Backsight.Geometry;
+
+namespace Backsight
+{
+	/// <written by="Steve Stanton" on="02-OCT-2006" />
+    /// <summary>
+    /// Methods for drawing geometry with a specific style.
+    /// </summary>
+    public interface IDrawStyle
+    {
+        /// <summary>
+        /// Draws a line
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="line">The positions defining the line (expected to be at
+        /// least two positions)</param>
+        void Render(ISpatialDisplay display, IPosition[] line);
+
+        /// <summary>
+        /// Draws a point
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="point">The position of the center of the point</param>
+        void Render(ISpatialDisplay display, IPosition point);
+
+        /// <summary>
+        /// Draws a circular arc
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="arc">The circular arc</param>
+        void Render(ISpatialDisplay display, IClockwiseCircularArcGeometry arc);
+
+        /// <summary>
+        /// Draws a text string (annotation)
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="text">The item of text</param>
+        void Render(ISpatialDisplay display, IString text);
+
+        /// <summary>
+        /// Draws a circle
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="center">The position of the center of the circle</param>
+        /// <param name="radius">The radius of the circle</param>
+        void Render(ISpatialDisplay display, IPosition center, ILength radius);
+
+        /// <summary>
+        /// Fills a polygon, possibly including holes.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="outlines">The outlines of one or more closed shapes. The first
+        /// array corresponds to the outline of the enclosing polygon, while the
+        /// remaining arrays correspond to islands.</param>
+        void Render(ISpatialDisplay display, IPosition[][] outlines);
+
+        /// <summary>
+        /// The default height for point features (on the ground)
+        /// </summary>
+        ILength PointHeight { get; set; }
+
+        /// <summary>
+        /// The color used to fill things
+        /// </summary>
+        Color FillColor { get; set; }
+
+        /// <summary>
+        /// The color used to draw lines
+        /// </summary>
+        Color LineColor { get; set; }
+    }
+}
