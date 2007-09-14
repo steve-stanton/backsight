@@ -99,7 +99,7 @@ namespace Backsight.Data
             {
                 if (connectionCreated)
                 {
-                    s_Connection.Value.Close();
+                    s_Connection.Value.Dispose();
                     s_Connection = null;
                 }
             }
