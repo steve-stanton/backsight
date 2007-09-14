@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ntx", "Ntx\Ntx.csproj", "{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight", "Backsight\Backsight.csproj", "{2D80BA27-714A-4851-903F-DF512063C237}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Data", "Backsight.Data\Backsight.Data.csproj", "{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D80BA27-714A-4851-903F-DF512063C237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D80BA27-714A-4851-903F-DF512063C237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D80BA27-714A-4851-903F-DF512063C237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D80BA27-714A-4851-903F-DF512063C237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
