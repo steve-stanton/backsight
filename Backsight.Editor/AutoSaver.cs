@@ -178,7 +178,7 @@ namespace Backsight.Editor
             foreach (string f in files)
             {
                 // Get the file extension (which includes a leading dot) and strip off the
-                // ".4S" part. The remainder should be the sequence number for the backup.
+                // ".BS" part. The remainder should be the sequence number for the backup.
                 string ext = Path.GetExtension(f);
                 uint num;
                 if(UInt32.TryParse(ext.Substring(3), out num))

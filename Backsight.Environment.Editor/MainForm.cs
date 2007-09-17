@@ -52,7 +52,8 @@ namespace Backsight.Environment.Editor
 
         void OnIdle(object sender, EventArgs args)
         {
-            string name = (m_Data as EnvironmentFile).Path;
+            //string name = (m_Data as EnvironmentFile).Path;
+            string name = m_Data.Name;
 
             if (String.IsNullOrEmpty(name))
             {
@@ -71,11 +72,15 @@ namespace Backsight.Environment.Editor
             m_CurrentType = ItemType.Entity;
 
             string lastConn = Edit.Settings.Default.LastConnection;
-            if (!String.IsNullOrEmpty(lastConn) && File.Exists(lastConn))
-            {
-                Open(lastConn);
-                RefreshList();
-            }
+            if (String.IsNullOrEmpty(lastConn))
+                return;
+
+            if (File.Exists(lastConn))
+                OpenFile(lastConn);
+            else
+                OpenDatabase(lastConn);
+
+            RefreshList();
         }
 
         private void fileNewMenuItem_Click(object sender, EventArgs e)
@@ -116,13 +121,13 @@ namespace Backsight.Environment.Editor
             return true;
         }
 
-        private void fileOpenMenuItem_Click(object sender, EventArgs e)
+        private void fileOpenFileMenuItem_Click(object sender, EventArgs e)
         {
             if (!CheckSave())
                 return;
 
             OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Backsight environment files (*.4x)|*.4x|All files (*.*)|*.*";
+            dial.Filter = "Backsight environment files (*.bse)|*.bse|All files (*.*)|*.*";
 
             string lastConn = Edit.Settings.Default.LastConnection;
             if (!String.IsNullOrEmpty(lastConn))
@@ -133,18 +138,47 @@ namespace Backsight.Environment.Editor
             }
 
             if (dial.ShowDialog() == DialogResult.OK)
-                Open(dial.FileName);
+                OpenFile(dial.FileName);
 
             dial.Dispose();
         }
 
-        void Open(string fileName)
+        private void fileOpenDatabaseMenuItem_Click(object sender, EventArgs e)
+        {
+            ConnectionForm dial = new ConnectionForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                Database db = dial.Database;
+                TableFactory tf = new TableFactory(db);
+                OpenDatabase(tf.ConnectionString);
+                RefreshList();
+            }
+            dial.Dispose();
+        }
+
+        void OpenFile(string fileName)
         {
             try
             {
                 m_Data = new EnvironmentFile(fileName);
                 EnvironmentContainer.Current = m_Data;
                 Edit.Settings.Default.LastConnection = fileName;
+                Edit.Settings.Default.Save();
+            }
+
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        void OpenDatabase(string connectionString)
+        {
+            try
+            {
+                m_Data = new EnvironmentDatabase(connectionString);
+                EnvironmentContainer.Current = m_Data;
+                Edit.Settings.Default.LastConnection = connectionString;
                 Edit.Settings.Default.Save();
             }
 
@@ -167,19 +201,24 @@ namespace Backsight.Environment.Editor
                 return SaveData();
         }
 
-        private void fileSaveAsMenuItem_Click(object sender, EventArgs e)
+        private void fileSaveAsFileMenuItem_Click(object sender, EventArgs e)
         {
             SaveAs();
+        }
+
+        private void fileSaveAsDatabaseMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         bool SaveAs()
         {
             SaveFileDialog dial = new SaveFileDialog();
-            dial.Filter = "Backsight environment files (*.4x)|*.4x|All files (*.*)|*.*";
-            dial.DefaultExt = ".4x";
+            dial.Filter = "Backsight environment files (*.bse)|*.bse|All files (*.*)|*.*";
+            dial.DefaultExt = ".bse";
 
             string lastConn = Edit.Settings.Default.LastConnection;
-            if (!String.IsNullOrEmpty(lastConn))
+            if (!String.IsNullOrEmpty(lastConn) && File.Exists(lastConn))
             {
                 string lastDir = Path.GetDirectoryName(lastConn);
                 if (Directory.Exists(lastDir))
@@ -188,23 +227,23 @@ namespace Backsight.Environment.Editor
 
             bool result = false;
             if (dial.ShowDialog() == DialogResult.OK)
-                result = SaveAs(dial.FileName);
+                result = SaveAsFile(dial.FileName);
 
             dial.Dispose();
             return result;
         }
 
-        bool SaveAs(string fileName)
+        bool SaveAsFile(string fileName)
         {
             try
             {
-                if (!(m_Data is EnvironmentFile))
+                // EnvironmentData is the base class for both EnvironmentFile & EnvironmentDatabase
+                if (!(m_Data is EnvironmentData))
                     throw new NotSupportedException("Unexpected environment container");
-                
-                (m_Data as EnvironmentFile).Path = fileName;
-                m_Data.Write();
-                Edit.Settings.Default.LastConnection = fileName;
-                Edit.Settings.Default.Save();
+
+                EnvironmentFile ef = new EnvironmentFile(fileName, (EnvironmentData)m_Data);
+                ef.Write();
+                OpenFile(fileName);
                 return true;
             }
 

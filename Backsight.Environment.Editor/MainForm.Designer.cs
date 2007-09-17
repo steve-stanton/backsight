@@ -47,8 +47,12 @@ namespace Backsight.Environment.Editor
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.fileNewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileOpenFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileOpenDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSaveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileSaveAsFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileSaveAsDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.fileDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -107,54 +111,86 @@ namespace Backsight.Environment.Editor
             // 
             this.fileNewMenuItem.Name = "fileNewMenuItem";
             this.fileNewMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.fileNewMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileNewMenuItem.Size = new System.Drawing.Size(188, 22);
             this.fileNewMenuItem.Text = "&New";
             this.fileNewMenuItem.Click += new System.EventHandler(this.fileNewMenuItem_Click);
             // 
             // fileOpenMenuItem
             // 
+            this.fileOpenMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileOpenFileMenuItem,
+            this.fileOpenDatabaseMenuItem});
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
             this.fileOpenMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileOpenMenuItem.Size = new System.Drawing.Size(188, 22);
             this.fileOpenMenuItem.Text = "&Open";
-            this.fileOpenMenuItem.Click += new System.EventHandler(this.fileOpenMenuItem_Click);
+            // 
+            // fileOpenFileMenuItem
+            // 
+            this.fileOpenFileMenuItem.Name = "fileOpenFileMenuItem";
+            this.fileOpenFileMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.fileOpenFileMenuItem.Text = "&File...";
+            this.fileOpenFileMenuItem.Click += new System.EventHandler(this.fileOpenFileMenuItem_Click);
+            // 
+            // fileOpenDatabaseMenuItem
+            // 
+            this.fileOpenDatabaseMenuItem.Name = "fileOpenDatabaseMenuItem";
+            this.fileOpenDatabaseMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.fileOpenDatabaseMenuItem.Text = "&Database...";
+            this.fileOpenDatabaseMenuItem.Click += new System.EventHandler(this.fileOpenDatabaseMenuItem_Click);
             // 
             // fileSaveMenuItem
             // 
             this.fileSaveMenuItem.Name = "fileSaveMenuItem";
             this.fileSaveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.fileSaveMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileSaveMenuItem.Size = new System.Drawing.Size(188, 22);
             this.fileSaveMenuItem.Text = "&Save";
             this.fileSaveMenuItem.Click += new System.EventHandler(this.fileSaveMenuItem_Click);
             // 
             // fileSaveAsMenuItem
             // 
+            this.fileSaveAsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileSaveAsFileMenuItem,
+            this.fileSaveAsDatabaseMenuItem});
             this.fileSaveAsMenuItem.Name = "fileSaveAsMenuItem";
-            this.fileSaveAsMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileSaveAsMenuItem.Size = new System.Drawing.Size(188, 22);
             this.fileSaveAsMenuItem.Text = "Save &As...";
-            this.fileSaveAsMenuItem.Click += new System.EventHandler(this.fileSaveAsMenuItem_Click);
+            // 
+            // fileSaveAsFileMenuItem
+            // 
+            this.fileSaveAsFileMenuItem.Name = "fileSaveAsFileMenuItem";
+            this.fileSaveAsFileMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.fileSaveAsFileMenuItem.Text = "&File...";
+            this.fileSaveAsFileMenuItem.Click += new System.EventHandler(this.fileSaveAsFileMenuItem_Click);
+            // 
+            // fileSaveAsDatabaseMenuItem
+            // 
+            this.fileSaveAsDatabaseMenuItem.Name = "fileSaveAsDatabaseMenuItem";
+            this.fileSaveAsDatabaseMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.fileSaveAsDatabaseMenuItem.Text = "&Database...";
+            this.fileSaveAsDatabaseMenuItem.Click += new System.EventHandler(this.fileSaveAsDatabaseMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(161, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
             // 
             // fileDatabaseMenuItem
             // 
             this.fileDatabaseMenuItem.Name = "fileDatabaseMenuItem";
-            this.fileDatabaseMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.fileDatabaseMenuItem.Text = "&Database...";
+            this.fileDatabaseMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.fileDatabaseMenuItem.Text = "Open &Database...";
             this.fileDatabaseMenuItem.Click += new System.EventHandler(this.fileDatabaseMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
             // 
             // fileExitMenuItem
             // 
             this.fileExitMenuItem.Name = "fileExitMenuItem";
-            this.fileExitMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileExitMenuItem.Size = new System.Drawing.Size(188, 22);
             this.fileExitMenuItem.Text = "E&xit";
             this.fileExitMenuItem.Click += new System.EventHandler(this.fileExitMenuItem_Click);
             // 
@@ -363,6 +399,10 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripMenuItem viewThemesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem fileDatabaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileOpenFileMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileOpenDatabaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileSaveAsFileMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileSaveAsDatabaseMenuItem;
     }
 }
 

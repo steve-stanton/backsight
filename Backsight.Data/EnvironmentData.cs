@@ -42,6 +42,15 @@ namespace Backsight.Data
             m_Data = new EnvData();
         }
 
+        /// <summary>
+        /// Creates a new <c>EnvironmentData</c> that refers to the supplied data.
+        /// </summary>
+        /// <param name="data">The data to use</param>
+        protected EnvironmentData(EnvironmentData data)
+        {
+            m_Data = data.m_Data;
+        }
+
         #endregion
 
         protected void Initialize()
@@ -59,7 +68,11 @@ namespace Backsight.Data
 
         private int LastId
         {
-            get { return m_Data.SysId[0].LastId; }
+            get
+            {
+                EnvData.SysIdDataTable tab = m_Data.SysId;
+                return (tab.Rows.Count==0 ? 0 : tab[0].LastId);
+            }
         }
 
         public IEditEntity CreateEntity()
