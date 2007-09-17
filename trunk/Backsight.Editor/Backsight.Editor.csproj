@@ -1,0 +1,481 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3948DFAE-3A14-4582-A25E-3AC2784FB931}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Backsight.Editor</RootNamespace>
+    <AssemblyName>Backsight.Editor</AssemblyName>
+    <ApplicationIcon>Resources\Editor.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AngleDirection.cs" />
+    <Compile Include="ArcGeometry.cs" />
+    <Compile Include="AutoSaver.cs" />
+    <Compile Include="BasicList.cs" />
+    <Compile Include="BearingDirection.cs" />
+    <Compile Include="Boundary.cs" />
+    <Compile Include="BoundaryFace.cs" />
+    <Compile Include="BoundarySection.cs" />
+    <Compile Include="CadastralEditController.cs" />
+    <Compile Include="CadastralIndex.cs" />
+    <Compile Include="CadastralMapModel.cs" />
+    <Compile Include="ArcFeature.cs" />
+    <Compile Include="CleanupQuery.cs" />
+    <Compile Include="CommandUI.cs" />
+    <Compile Include="Comparison.cs" />
+    <Compile Include="ConnectionFinder.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="CoordinateSystem.cs" />
+    <Compile Include="DataHandle.cs" />
+    <Compile Include="DataStub.cs" />
+    <Compile Include="DeflectionDirection.cs" />
+    <Compile Include="DeletionUI.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="DirectionFlags.cs" />
+    <Compile Include="DottedStyle.cs" />
+    <Compile Include="DirectionType.cs" />
+    <Compile Include="DisplayId.cs" />
+    <Compile Include="Distance.cs" />
+    <Compile Include="DistanceUnit.cs" />
+    <Compile Include="DistanceUnitType.cs" />
+    <Compile Include="EditorResources.cs" />
+    <Compile Include="EntityFacade.cs" />
+    <Compile Include="EnvironmentItemFacade.cs" />
+    <Compile Include="ExTranslation.cs" />
+    <Compile Include="Feature.cs" />
+    <Compile Include="FeatureFlag.cs" />
+    <Compile Include="FeatureId.cs" />
+    <Compile Include="FileImportSource.cs" />
+    <Compile Include="FindCirclesQuery.cs" />
+    <Compile Include="FindIslandContainerQuery.cs" />
+    <Compile Include="FindPointContainerQuery.cs" />
+    <Compile Include="Forms\ContainerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ContainerForm.Designer.cs">
+      <DependentUpon>ContainerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EntityTranslationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityTranslationForm.Designer.cs">
+      <DependentUpon>EntityTranslationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetCircleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetCircleForm.Designer.cs">
+      <DependentUpon>GetCircleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetEntityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetEntityForm.Designer.cs">
+      <DependentUpon>GetEntityForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetLayerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetLayerForm.Designer.cs">
+      <DependentUpon>GetLayerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetOffsetForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetOffsetForm.Designer.cs">
+      <DependentUpon>GetOffsetForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IActionContainer.cs" />
+    <Compile Include="Forms\IControlContainer.cs" />
+    <Compile Include="Forms\IdAllocationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IdAllocationForm.Designer.cs">
+      <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LineSubdivisionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\LineSubdivisionControl.Designer.cs">
+      <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NtxImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NtxImportForm.Designer.cs">
+      <DependentUpon>NtxImportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ParallelControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\ParallelControl.Designer.cs">
+      <DependentUpon>ParallelControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TerminalControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\TerminalControl.Designer.cs">
+      <DependentUpon>TerminalControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ICoordinateSystem.cs" />
+    <Compile Include="IFeatureDependent.cs" />
+    <Compile Include="IInternalIdFactory.cs" />
+    <Compile Include="InternalIdValue.cs" />
+    <Compile Include="IntersectionHelper.cs" />
+    <Compile Include="IPossibleList.cs" />
+    <Compile Include="ISection.cs" />
+    <Compile Include="ISectionBase.cs" />
+    <Compile Include="Island.cs" />
+    <Compile Include="ITerminal.cs" />
+    <Compile Include="ITranslate.cs" />
+    <Compile Include="LineGeometry.cs" />
+    <Compile Include="LineSubdivisionUI.cs" />
+    <Compile Include="Operations\DeletionOperation.cs" />
+    <Compile Include="Operations\MoveTextOperation.cs" />
+    <Compile Include="RingFlag.cs" />
+    <Compile Include="Ring.cs" />
+    <Compile Include="RingMetrics.cs" />
+    <Compile Include="SectionGeometry.cs" />
+    <Compile Include="SegmentGeometry.cs" />
+    <Compile Include="MapEntity.cs" />
+    <Compile Include="MeasuredLineFeature.cs" />
+    <Compile Include="Circle.cs" />
+    <Compile Include="NewLineUI.cs" />
+    <Compile Include="OperationFlag.cs" />
+    <Compile Include="Operations\LineSubdivisionOperation.cs" />
+    <Compile Include="Operations\LineSubdivisionFace.cs" />
+    <Compile Include="Operations\NewLineOperation.cs" />
+    <Compile Include="Operations\ParallelOperation.cs" />
+    <Compile Include="Orientation.cs" />
+    <Compile Include="ParallelUI.cs" />
+    <Compile Include="RadialUI.cs" />
+    <Compile Include="Geom.cs" />
+    <Compile Include="HorizontalRay.cs" />
+    <Compile Include="IdDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IdDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="IdEntity.cs" />
+    <Compile Include="IdGroup.cs" />
+    <Compile Include="IdGroupFacade.cs" />
+    <Compile Include="IdHandle.cs" />
+    <Compile Include="IdHelper.cs" />
+    <Compile Include="IdManager.cs" />
+    <Compile Include="IdRange.cs" />
+    <Compile Include="IEditingAction.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewPointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewPointForm.designer.cs">
+      <DependentUpon>NewPointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditingAction.cs" />
+    <Compile Include="Forms\PreferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PreferencesForm.Designer.cs">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UpdateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdateForm.Designer.cs">
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IIdDatabase.cs" />
+    <Compile Include="IntersectionData.cs" />
+    <Compile Include="IntersectionResult.cs" />
+    <Compile Include="IntersectionType.cs" />
+    <Compile Include="IntersectionFinder.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="LayerFacade.cs" />
+    <Compile Include="LayerList.cs" />
+    <Compile Include="LayerRange.cs" />
+    <Compile Include="LineAnnotationOptions.cs" />
+    <Compile Include="LineAnnotationStyle.cs" />
+    <Compile Include="LineFeature.cs" />
+    <Compile Include="MiscText.cs" />
+    <Compile Include="ModelFileName.cs" />
+    <Compile Include="NewPointUI.cs" />
+    <Compile Include="NtxImport.cs" />
+    <Compile Include="EditingActionId.cs" />
+    <Compile Include="Observation.cs" />
+    <Compile Include="Offset.cs" />
+    <Compile Include="OffsetDistance.cs" />
+    <Compile Include="OffsetPoint.cs" />
+    <Compile Include="Operations\Import.cs" />
+    <Compile Include="Operations\NewPointOperation.cs" />
+    <Compile Include="Operation.cs" />
+    <Compile Include="Operations\RadialOperation.cs" />
+    <Compile Include="MultiSegmentGeometry.cs" />
+    <Compile Include="ParallelDirection.cs" />
+    <Compile Include="Person.cs" />
+    <Compile Include="PointFeature.cs" />
+    <Compile Include="Polygon.cs" />
+    <Compile Include="PolygonBuilder.cs" />
+    <Compile Include="PolygonFace.cs" />
+    <Compile Include="PolygonLink.cs" />
+    <Compile Include="PolygonSub.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\ContainerForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ContainerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityTranslationForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EntityTranslationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetCircleForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetCircleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetEntityForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetEntityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetLayerForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetLayerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetOffsetForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetOffsetForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IdAllocationForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LineSubdivisionControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewPointForm.resx">
+      <DependentUpon>NewPointForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NtxImportForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NtxImportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ParallelControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ParallelControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PreferencesForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TerminalControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TerminalControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RadialControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RadialControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Forms\RadialControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\RadialControl.Designer.cs">
+      <DependentUpon>RadialControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RollforwardException.cs" />
+    <Compile Include="Row.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="Side.cs" />
+    <Compile Include="SimpleCommandUI.cs" />
+    <Compile Include="TaggedObject.cs" />
+    <Compile Include="TextFeature.cs" />
+    <Compile Include="TextGeometry.cs" />
+    <Compile Include="ThemeFacade.cs" />
+    <Compile Include="Translation.cs" />
+    <Compile Include="TranslationFile.cs" />
+    <Compile Include="UpdateUI.cs" />
+    <Compile Include="Wildcard.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZoomRectangle.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ConnectionPath.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DrawScale.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EnlargePoints.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ExtendLine.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FileNew.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FileOpen.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FilePrint.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FileSave.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InverseCalculator.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewCenter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewCircularArc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewLabel.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewLine.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Overview.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RedCar.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ReducePoints.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Scissors.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SetLabelRotation.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sideshot.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SubdivideLine.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SubdividePolygon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Undo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZoomIn.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="EditingSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="EditingSchema.xsx">
+      <DependentUpon>EditingSchema.xsd</DependentUpon>
+    </None>
+    <None Include="IdDataSet.xsc">
+      <DependentUpon>IdDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="IdDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>IdDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="IdDataSet.xss">
+      <DependentUpon>IdDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Resources\ZoomOut.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
+      <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
+      <Name>Backsight.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
+      <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
+      <Name>Backsight.SqlServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Backsight\Backsight.csproj">
+      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
+      <Name>Backsight</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ntx\Ntx.csproj">
+      <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
+      <Name>Ntx</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Editor.ico" />
+    <Content Include="Resources\PenCursor.cur" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

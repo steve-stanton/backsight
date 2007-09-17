@@ -1,0 +1,184 @@
+/// <remarks>
+/// Copyright 2007 - Steve Stanton. This file is part of Backsight
+///
+/// Backsight is free software; you can redistribute it and/or modify it under the terms
+/// of the GNU Lesser General Public License as published by the Free Software Foundation;
+/// either version 3 of the License, or (at your option) any later version.
+///
+/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+/// See the GNU Lesser General Public License for more details.
+///
+/// You should have received a copy of the GNU Lesser General Public License
+/// along with this program. If not, see <http://www.gnu.org/licenses/>.
+/// </remarks>
+
+using System;
+using System.Collections.Generic;
+
+using Backsight.Geometry;
+
+namespace Backsight.Editor
+{
+	/// <written by="Steve Stanton" on="03-AUG-2007" />
+    /// <summary>
+    /// Base class for any sort of line geometry.
+    /// </summary>
+    [Serializable]
+    abstract class LineGeometry
+    {
+        #region Class data
+
+        /// <summary>
+        /// The start of the connection.
+        /// </summary>
+        readonly ITerminal m_Start;
+
+        /// <summary>
+        /// The end of the connection.
+        /// </summary>
+        readonly ITerminal m_End;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>LineGeometry</c> using the supplied terminals.
+        /// </summary>
+        /// <param name="start">The start of the line.</param>
+        /// <param name="end">The end of the line.</param>
+        protected LineGeometry(ITerminal start, ITerminal end)
+        {
+            if (start==null || end==null)
+                throw new ArgumentNullException("Null terminal for line geometry");
+
+            m_Start = start;
+            m_End = end;
+        }
+
+        #endregion
+
+        public IPointGeometry Start
+        {
+            get { return m_Start; }
+        }
+
+        public IPointGeometry End
+        {
+            get { return m_End; }
+        }
+
+        abstract public ILength Length { get; }
+        abstract public IWindow Extent { get; }
+        abstract public ILength Distance(IPosition point);
+
+        abstract internal uint IntersectSegment(IntersectionResult results, ILineSegmentGeometry seg);
+        abstract internal uint IntersectMultiSegment(IntersectionResult results, IMultiSegmentGeometry line);
+        abstract internal uint IntersectArc(IntersectionResult results, ICircularArcGeometry arc);
+        abstract internal uint IntersectCircle(IntersectionResult results, ICircleGeometry circle);
+
+        /// <summary>
+        /// Gets the position that is a specific distance from the start of this line.
+        /// </summary>
+        /// <param name="dist">The distance from the start of the line.</param>
+        /// <param name="result">The position found</param>
+        /// <returns>True if the distance is somewhere ON the line. False if the distance
+        /// was less than zero, or more than the line length (in that case, the position
+        /// found corresponds to the corresponding terminal point).</returns>
+        abstract internal bool GetPosition(ILength dist, out IPosition pos);
+
+        /// <summary>
+        /// Calculates the distance from the start of this line to a specific position (on the map projection)
+        /// </summary>
+        /// <param name="asFarAs">Position on the line that you want the length to. Specify
+        /// null for the length of the whole line.</param>
+        /// <returns>The length. Less than zero if a position was specified and it is
+        /// not on the line.</returns>
+        abstract internal ILength GetLength(IPosition asFarAs);
+
+        /// <summary>
+        /// Gets the orientation point for a line. This is utilized to form
+        /// network topology at the ends of a topological line.
+        /// </summary>
+        /// <param name="fromStart">True if the orientation from the start of the line is
+        /// required. False to get the end orientation.</param>
+        /// <param name="crvDist">Orientation distance for circular arcs (irrelevant if
+        /// the line isn't a circular arc). Default=0.0</param>
+        /// <returns>The orientation point.</returns>
+        abstract internal IPosition GetOrient(bool fromStart, double crvDist);
+
+        /// <summary>
+        /// Draws this object on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
+
+        /// <summary>
+        /// Modifies any referenced features by cross-referencing them to the line
+        /// that contains this geometry.
+        /// </summary>
+        /// <param name="container">The line that refers to this geometry.</param>
+        //abstract internal void AddReferences(LineFeature container);
+
+        /// <summary>
+        /// The geometry that acts as the base for this one. This implementation just
+        /// returns <c>this</c>, cast to an instance of <see cref="ISectionBase"/>. The
+        /// derived <see cref="SectionGeometry"/> class provides an override.
+        /// </summary>
+        internal virtual ISectionBase SectionBase
+        {
+            get { return (ISectionBase)this; }
+        }
+
+        /// <summary>
+        /// Gets geometric info for this geometry. For use during the formation
+        /// of <c>Polygon</c> objects.
+        /// </summary>
+        /// <param name="window">The window of the geometry</param>
+        /// <param name="area">The area (in square meters) between the geometry and the Y-axis.</param>
+        /// <param name="length">The length of the geometry (in meters on the (projected) ground).</param>
+        abstract internal void GetGeometry(out IWindow win, out double area, out double length);
+
+        /// <summary>
+        /// Gets the most easterly position for this line. If more than one position has the
+        /// same easting, one of them will be picked arbitrarily.
+        /// </summary>
+        /// <returns>The most easterly position</returns>
+        abstract internal IPosition GetEastPoint();
+
+        /// <summary>
+        /// Determines which side of a line a horizontal line segment lies on.
+        /// Used in point in polygon.
+        /// </summary>
+        /// <param name="hr">The horizontal line segment</param>
+        /// <returns>Code indicating the position of the horizontal segment with respect to this line.
+        /// Side.Left if the horizontal segment is to the left of this line; Side.Right if to the
+        /// right of this line; Side.Unknown if the side cannot be determined (this line is
+        /// horizontal).
+        /// </returns>
+        abstract internal Side GetSide(HorizontalRay hr);
+
+        /// <summary>
+        /// Cuts back a horizontal line segment to the closest intersection with this line.
+        /// Used in point in polygon.
+        /// </summary>
+        /// <param name="s">Start of horizontal segment.</param>
+        /// <param name="e">End of segment (will be modified if segment intersects this line)</param>
+        /// <param name="status">Return code indicating whether an error has arisen (returned
+        /// as 0 if no error).</param>
+        /// <returns>True if the horizontal line was cut back.</returns>
+        abstract internal bool GetCloser(IPointGeometry s, ref PointGeometry e, out uint status);
+
+        /// <summary>
+        /// Loads a list of positions with data for this line.
+        /// </summary>
+        /// <param name="positions">The list to append to</param>
+        /// <param name="reverse">Should the data be appended in reverse order?</param>
+        /// <param name="wantFirst">Should the first position be appended? (last if <paramref name="reverse"/> is true)</param>
+        /// <param name="arcTol">Tolerance for approximating circular arcs (used only if the
+        /// geometry is an instance of <see cref="ArcGeometry"/>)</param>
+        abstract internal void AppendPositions(List<IPosition> positions, bool reverse, bool wantFirst, ILength arcTol);
+    }
+}
