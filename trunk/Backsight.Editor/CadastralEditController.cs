@@ -820,6 +820,8 @@ namespace Backsight.Editor
             {
                 // Restoring the last draw here can cause flickering of the command-specific
                 // stuff, so make it the responsibility of the command to call erase stuff.
+                // (the main thing to ensure is that the call to RestoreLastDraw is made
+                // only when the user has really made some sort of change).
                 // m_Command.ActiveDisplay.RestoreLastDraw();
 
                 m_Command.Paint(null);

@@ -62,6 +62,18 @@ namespace Backsight.Data
             Read();
         }
 
+        /// <summary>
+        /// Creates a new <c>EnvironmentFile</c> with the specified name and the supplied data.
+        /// This constructor is used when copying information out of a database.
+        /// </summary>
+        /// <param name="path">The full path for the file (not null)</param>
+        /// <param name="edb">The data to use (might be data coming from a database)</param>
+        public EnvironmentFile(string path, EnvironmentData edb)
+            : base(edb)
+        {
+            this.Path = path;
+        }
+
         #endregion
 
         /// <summary>
@@ -79,7 +91,7 @@ namespace Backsight.Data
 
                 m_Path = value;
 
-                string name = System.IO.Path.GetFileNameWithoutExtension(value);
+                string name = System.IO.Path.GetFileName(value);
                 if (!String.IsNullOrEmpty(name))
                     this.Name = name;
             }

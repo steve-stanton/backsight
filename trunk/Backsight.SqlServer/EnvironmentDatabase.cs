@@ -38,6 +38,9 @@ namespace Backsight.SqlServer
         {
             AdapterFactory.ConnectionString = connectionString;
             Read();
+
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(connectionString);
+            this.Name = String.Format(@"{0}\{1}", csb.DataSource, csb.InitialCatalog);
         }
 
         #endregion

@@ -63,7 +63,7 @@ namespace Backsight.Editor.Forms
             if (String.IsNullOrEmpty(cs))
             {
                 MessageBox.Show("No connection string");
-                return;
+                Close();
             }
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
@@ -475,7 +475,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void FileOpen(IUserAction action)
         {
             OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Backsight files (*.4s)|*.4s|All files (*)|*";
+            dial.Filter = "Backsight files (*.bs)|*.bs|All files (*)|*";
 
             if (dial.ShowDialog() == DialogResult.OK)
                 m_Controller.Open(dial.FileName);
@@ -483,8 +483,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsFileSaveEnabled()
         {
-            string name = CadastralMapModel.Current.Name;
-            return !String.IsNullOrEmpty(name);
+            CadastralMapModel mm = CadastralMapModel.Current;
+            return (mm!=null && !String.IsNullOrEmpty(mm.Name));
         }
 
         private void FileSave(IUserAction action)
