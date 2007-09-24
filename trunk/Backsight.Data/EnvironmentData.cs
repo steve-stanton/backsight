@@ -15,6 +15,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics;
 
 using EnvData=Backsight.Data.BacksightDataSet;
 using Backsight.Environment;
@@ -53,18 +54,41 @@ namespace Backsight.Data
 
         #endregion
 
+        /*
         protected void Initialize()
         {
             m_Data.Clear();
             m_Data.AddInitialRows();
         }
+        */
 
         public EnvData Data
         {
             get { return m_Data; }
         }
 
-        abstract public int ReserveId();
+        public virtual int ReserveId()
+        {
+            EnvData.SysIdDataTable t = m_Data.SysId;
+            Debug.Assert(t.Rows.Count==1);
+            t[0].LastId++;
+            return t[0].LastId;
+        }
+
+        public virtual bool ReleaseId(int id)
+        {
+            if (id<=0)
+                throw new ArgumentOutOfRangeException();
+
+            EnvData.SysIdDataTable t = m_Data.SysId;
+            Debug.Assert(t.Rows.Count==1);
+
+            if (t[0].LastId!=id)
+                return false;
+
+            t[0].LastId--;
+            return true;
+        }
 
         private int LastId
         {

@@ -36,78 +36,19 @@ namespace Backsight.Data
         {
             try
             {
-                SetAllRowsAdded();
-
                 AdapterFactory.ConnectionString = connectionString;
                 Transaction.Execute(delegate
                 {
-                    FontTableAdapter font = AdapterFactory.Create<FontTableAdapter>();
-                    IdGroupTableAdapter idGroup = AdapterFactory.Create<IdGroupTableAdapter>();
-                    EntityTableAdapter entity = AdapterFactory.Create<EntityTableAdapter>();
-                    ThemeTableAdapter theme = AdapterFactory.Create<ThemeTableAdapter>();
-                    LayerTableAdapter layer = AdapterFactory.Create<LayerTableAdapter>();
-
-                    // Ensure we've added blank rows first (needed to maintain foreign
-                    // key constraints)
-
-                    //SaveEmptyRows();
-                    /*
-
-                    INSERT INTO [dbo].[Archive] ([ArchiveId], [ArchiveTime], [MapId], [Version], [VersionTime], [JobId], [UserId], [PrevArchiveId])
-                    VALUES (0, GETDATE(), 0, 0, GETDATE(), 0, 0, 0)
-                    GO
-
-                    INSERT INTO [dbo].[Edition] ([EditionId], [Name], [Status])
-                    VALUES (0, ' ', 'empty')
-                    GO
-
-                    INSERT INTO [dbo].[Entity] (EntityId, Name, IsPoint, IsLine, IsLineTopological, IsPolygon, IsText, FontId, LayerId, GroupId)
-                    VALUES (0, ' ', 'n', 'n', 'n', 'n', 'n', 0, 0, 0 )
-                    GO
-
-                    INSERT INTO [dbo].[Font] ([FontId], [TypeFace], [PointSize], [IsBold], [IsItalic], [IsUnderline], [FontFile])
-                    VALUES (0, ' ', 0.0, 'n', 'n', 'n', ' ')
-                    GO
-
-                    INSERT INTO [dbo].[IdGroup] (GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat)
-                    VALUES (0, ' ', 1, 1, 1, 'n', '')
-                    GO
-
-                    INSERT INTO [dbo].[Job] ([JobId], [Name], [IsActive])
-                    VALUES (0, ' ', 'n')
-                    GO
-
-                    INSERT INTO [dbo].[Layer] ([LayerId], [Name], [ThemeId], [ThemeSequence], [DefaultPointId], [DefaultLineId], [DefaultPolygonId], [DefaultTextId])
-                    VALUES (0, ' ', 0, 0, 0, 0, 0, 0)
-                    GO
-
-                    INSERT INTO [dbo].[Map] ([MapId], [Name], [Version], [VersionTime], [JobId], [UserId], [ArchiveId], [Status], [IsActive])
-                    VALUES (0, ' ', 0, GETDATE(), 0, 0, 0, ' ', 'n')
-                    GO
-
-                    INSERT INTO [dbo].[MapUser] ([UserId], [Name], [IsActive], [CanCheckout])
-                    VALUES (0, ' ', 'n', 'n')
-                    GO
-
-                    INSERT INTO [dbo].[Theme] (ThemeId, Name)
-                    VALUES (0, ' ')
-                    GO
-
-                    INSERT INTO [dbo].[SysId] (LastId) VALUES (0)
-                    GO
-
-                     */
-                    font.Update(this.Font);
-                    idGroup.Update(this.IdGroup);
-                    entity.Update(this.Entity);
-                    theme.Update(this.Theme);
-                    layer.Update(this.Layer);
+                    AdapterFactory.Create<FontTableAdapter>().Update(this.Font);
+                    AdapterFactory.Create<IdGroupTableAdapter>().Update(this.IdGroup);
+                    AdapterFactory.Create<EntityTableAdapter>().Update(this.Entity);
+                    AdapterFactory.Create<ThemeTableAdapter>().Update(this.Theme);
+                    AdapterFactory.Create<LayerTableAdapter>().Update(this.Layer);
                 });
             }
 
             finally
             {
-                //this.EnforceConstraints = true;
                 AcceptChanges();
             }
         }
@@ -136,6 +77,7 @@ namespace Backsight.Data
             }
         }
 
+        /*
         void SetAllRowsAdded()
         {
             foreach (DataTable dt in this.Tables)
@@ -146,16 +88,7 @@ namespace Backsight.Data
                 }
             }
         }
-
-        public string ConnectionString
-        {
-            get { return Backsight.Data.Properties.Settings.Default.BacksightConnectionString; }
-            set
-            {
-                Backsight.Data.Properties.Settings.Default.BacksightConnectionString = value;
-                Backsight.Data.Properties.Settings.Default.Save();
-            }
-        }
+        */
 
         /// <summary>
         /// Has a row been added to a table?
@@ -172,8 +105,7 @@ namespace Backsight.Data
         /// </summary>
         public void AddInitialRows()
         {
-            // Insert initial values for accommodating foreign key constraints (the order
-            // of calls is significant in terms of these constraints)
+            // Insert initial values for accommodating foreign key constraints
             Font.AddEmptyRow();
             IdGroup.AddEmptyRow();
             Entity.AddEmptyRow();

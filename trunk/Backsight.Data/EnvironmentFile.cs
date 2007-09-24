@@ -48,7 +48,7 @@ namespace Backsight.Data
         public EnvironmentFile() : base()
         {
             this.Path = String.Empty;
-            base.Initialize();
+            //base.Initialize();
         }
 
         /// <summary>
@@ -113,30 +113,7 @@ namespace Backsight.Data
                 throw new InvalidOperationException("Output path hasn't been defined");
 
             this.Data.WriteXml(m_Path);
-            this.Data.AcceptChanges();
-        }
-
-        public override int ReserveId()
-        {
-            EnvData.SysIdDataTable t = this.Data.SysId;
-            Debug.Assert(t.Rows.Count==1);
-            t[0].LastId++;
-            return t[0].LastId;
-        }
-
-        public bool ReleaseId(int id)
-        {
-            if (id<=0)
-                throw new ArgumentOutOfRangeException();
-
-            EnvData.SysIdDataTable t = this.Data.SysId;
-            Debug.Assert(t.Rows.Count==1);
-
-            if (t[0].LastId!=id)
-                return false;
-
-            t[0].LastId--;
-            return true;
+            //this.Data.AcceptChanges();
         }
     }
 }
