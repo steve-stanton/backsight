@@ -106,6 +106,7 @@
     <Compile Include="ICircularArcGeometry.cs" />
     <Compile Include="ILineGeometry.cs" />
     <Compile Include="ILineSegmentGeometry.cs" />
+    <Compile Include="ILog.cs" />
     <Compile Include="IMultiSegmentGeometry.cs" />
     <Compile Include="Geometry\LineSegmentGeometry.cs" />
     <Compile Include="Geometry\LineStringGeometry.cs" />
