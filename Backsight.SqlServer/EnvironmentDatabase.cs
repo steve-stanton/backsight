@@ -25,7 +25,10 @@ namespace Backsight.SqlServer
     {
         #region Class data
 
-        // none
+        /// <summary>
+        /// The connection string for this database.
+        /// </summary>
+        readonly string m_ConnectionString;
 
         #endregion
 
@@ -36,11 +39,14 @@ namespace Backsight.SqlServer
         /// </summary>
         public EnvironmentDatabase(string connectionString) : base()
         {
-            AdapterFactory.ConnectionString = connectionString;
-            Read();
+            if (String.IsNullOrEmpty(connectionString))
+                throw new ArgumentNullException("No database connection string");
 
+            m_ConnectionString = connectionString;
+            AdapterFactory.ConnectionString = m_ConnectionString;
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(connectionString);
             this.Name = String.Format(@"{0}\{1}", csb.DataSource, csb.InitialCatalog);
+            Read();
         }
 
         #endregion
@@ -54,19 +60,40 @@ namespace Backsight.SqlServer
 
         public void Write()
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public bool ReleaseId(int id)
-        {
-            throw new Exception("The method or operation is not implemented.");
+            this.Data.Save(m_ConnectionString);
         }
 
         #endregion
 
-        public override int ReserveId()
+        /// <summary>
+        /// Replaces the content of this database with the content of some other container.
+        /// </summary>
+        /// <param name="ed">The environment data to copy into this database</param>
+        public void Replace(EnvironmentData ed)
         {
-            throw new Exception("The method or operation is not implemented.");
+            AdapterFactory.ConnectionString = m_ConnectionString;
+            TableFactory tf = new TableFactory();
+
+            try
+            {
+                // Disable all foreign key constraints
+                tf.EnableForeignKeys(false);
+
+                Transaction.Execute(delegate()
+                {
+                    // Get rid of everything in this database.
+                    tf.RemoveAll();
+
+                    // Add the entire content of the specified container
+                    tf.Import(ed.Data);
+                });
+            }
+
+            finally
+            {
+                // Restore all foreign key constraints
+                tf.EnableForeignKeys(true);
+            }
         }
     }
 }
