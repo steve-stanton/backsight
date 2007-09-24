@@ -45,16 +45,11 @@ namespace Backsight.Environment.Editor
         {
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileNewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileOpenFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileOpenDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileSaveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileSaveAsFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileSaveAsDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.fileDatabaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,109 +83,68 @@ namespace Backsight.Environment.Editor
             this.helpMenu});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(691, 24);
+            this.menuStrip.Size = new System.Drawing.Size(675, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
             // fileMenu
             // 
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileNewMenuItem,
             this.fileOpenMenuItem,
             this.fileSaveMenuItem,
-            this.fileSaveAsMenuItem,
             this.toolStripSeparator2,
-            this.fileDatabaseMenuItem,
+            this.fileExportMenuItem,
+            this.fileImportMenuItem,
             this.toolStripSeparator1,
             this.fileExitMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(40, 20);
             this.fileMenu.Text = "&File";
             // 
-            // fileNewMenuItem
-            // 
-            this.fileNewMenuItem.Name = "fileNewMenuItem";
-            this.fileNewMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.fileNewMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.fileNewMenuItem.Text = "&New";
-            this.fileNewMenuItem.Click += new System.EventHandler(this.fileNewMenuItem_Click);
-            // 
             // fileOpenMenuItem
             // 
-            this.fileOpenMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileOpenFileMenuItem,
-            this.fileOpenDatabaseMenuItem});
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
             this.fileOpenMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.fileOpenMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileOpenMenuItem.Text = "&Open";
-            // 
-            // fileOpenFileMenuItem
-            // 
-            this.fileOpenFileMenuItem.Name = "fileOpenFileMenuItem";
-            this.fileOpenFileMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.fileOpenFileMenuItem.Text = "&File...";
-            this.fileOpenFileMenuItem.Click += new System.EventHandler(this.fileOpenFileMenuItem_Click);
-            // 
-            // fileOpenDatabaseMenuItem
-            // 
-            this.fileOpenDatabaseMenuItem.Name = "fileOpenDatabaseMenuItem";
-            this.fileOpenDatabaseMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.fileOpenDatabaseMenuItem.Text = "&Database...";
-            this.fileOpenDatabaseMenuItem.Click += new System.EventHandler(this.fileOpenDatabaseMenuItem_Click);
+            this.fileOpenMenuItem.Click += new System.EventHandler(this.fileOpenMenuItem_Click);
             // 
             // fileSaveMenuItem
             // 
             this.fileSaveMenuItem.Name = "fileSaveMenuItem";
             this.fileSaveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.fileSaveMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.fileSaveMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileSaveMenuItem.Text = "&Save";
             this.fileSaveMenuItem.Click += new System.EventHandler(this.fileSaveMenuItem_Click);
-            // 
-            // fileSaveAsMenuItem
-            // 
-            this.fileSaveAsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileSaveAsFileMenuItem,
-            this.fileSaveAsDatabaseMenuItem});
-            this.fileSaveAsMenuItem.Name = "fileSaveAsMenuItem";
-            this.fileSaveAsMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.fileSaveAsMenuItem.Text = "Save &As...";
-            // 
-            // fileSaveAsFileMenuItem
-            // 
-            this.fileSaveAsFileMenuItem.Name = "fileSaveAsFileMenuItem";
-            this.fileSaveAsFileMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.fileSaveAsFileMenuItem.Text = "&File...";
-            this.fileSaveAsFileMenuItem.Click += new System.EventHandler(this.fileSaveAsFileMenuItem_Click);
-            // 
-            // fileSaveAsDatabaseMenuItem
-            // 
-            this.fileSaveAsDatabaseMenuItem.Name = "fileSaveAsDatabaseMenuItem";
-            this.fileSaveAsDatabaseMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.fileSaveAsDatabaseMenuItem.Text = "&Database...";
-            this.fileSaveAsDatabaseMenuItem.Click += new System.EventHandler(this.fileSaveAsDatabaseMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(161, 6);
             // 
-            // fileDatabaseMenuItem
+            // fileExportMenuItem
             // 
-            this.fileDatabaseMenuItem.Name = "fileDatabaseMenuItem";
-            this.fileDatabaseMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.fileDatabaseMenuItem.Text = "Open &Database...";
-            this.fileDatabaseMenuItem.Click += new System.EventHandler(this.fileDatabaseMenuItem_Click);
+            this.fileExportMenuItem.Name = "fileExportMenuItem";
+            this.fileExportMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileExportMenuItem.Text = "Export...";
+            this.fileExportMenuItem.Click += new System.EventHandler(this.fileExportMenuItem_Click);
+            // 
+            // fileImportMenuItem
+            // 
+            this.fileImportMenuItem.Name = "fileImportMenuItem";
+            this.fileImportMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.fileImportMenuItem.Text = "Import...";
+            this.fileImportMenuItem.Click += new System.EventHandler(this.fileImportMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
             // 
             // fileExitMenuItem
             // 
             this.fileExitMenuItem.Name = "fileExitMenuItem";
-            this.fileExitMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.fileExitMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileExitMenuItem.Text = "E&xit";
             this.fileExitMenuItem.Click += new System.EventHandler(this.fileExitMenuItem_Click);
             // 
@@ -255,7 +209,7 @@ namespace Backsight.Environment.Editor
             this.listBox.ItemHeight = 16;
             this.listBox.Location = new System.Drawing.Point(0, 0);
             this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(558, 436);
+            this.listBox.Size = new System.Drawing.Size(542, 436);
             this.listBox.Sorted = true;
             this.listBox.TabIndex = 1;
             this.listBox.DoubleClick += new System.EventHandler(this.listBox_DoubleClick);
@@ -323,8 +277,8 @@ namespace Backsight.Environment.Editor
             this.splitContainer1.Panel2.Controls.Add(this.updateButton);
             this.splitContainer1.Panel2.Controls.Add(this.newButton);
             this.splitContainer1.Panel2.Controls.Add(this.deleteButton);
-            this.splitContainer1.Size = new System.Drawing.Size(691, 482);
-            this.splitContainer1.SplitterDistance = 558;
+            this.splitContainer1.Size = new System.Drawing.Size(675, 486);
+            this.splitContainer1.SplitterDistance = 542;
             this.splitContainer1.TabIndex = 10;
             // 
             // splitContainer2
@@ -342,15 +296,15 @@ namespace Backsight.Environment.Editor
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.countLabel);
-            this.splitContainer2.Size = new System.Drawing.Size(558, 482);
-            this.splitContainer2.SplitterDistance = 438;
+            this.splitContainer2.Size = new System.Drawing.Size(542, 486);
+            this.splitContainer2.SplitterDistance = 442;
             this.splitContainer2.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(691, 506);
+            this.ClientSize = new System.Drawing.Size(675, 510);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
@@ -358,7 +312,6 @@ namespace Backsight.Environment.Editor
             this.Text = "Environment Editor";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -392,17 +345,12 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.Button newButton;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.ToolStripMenuItem fileNewMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileSaveAsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewEntityTypesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewLayersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewThemesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem fileDatabaseMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileOpenFileMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileOpenDatabaseMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileSaveAsFileMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileSaveAsDatabaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileExportMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileImportMenuItem;
     }
 }
 
