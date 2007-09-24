@@ -24,36 +24,38 @@ using Microsoft.SqlServer.Management.Smo;
 using Backsight.Data;
 using Edit=Backsight.Environment.Editor.Properties;
 using Backsight.SqlServer;
-using Backsight.Data.BacksightDataSetTableAdapters;
 
 namespace Backsight.Environment.Editor
 {
+    /// <summary>
+    /// Main dialog for working with Backsight environment settings.
+    /// </summary>
     public partial class MainForm : Form
     {
         private const string NO_NAME = "(Untitled)";
+
+        #region Class data
 
         /// <summary>
         /// The type of info that's currently displayed 
         /// </summary>
         ItemType m_CurrentType = ItemType.None;
 
-        IEnvironmentContainer m_Data;
+        /// <summary>
+        /// The container that holds the environment settings.
+        /// </summary>
+        EnvironmentDatabase m_Data;
+
+        #endregion
 
         public MainForm()
         {
             InitializeComponent();
-            CreateNew();
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Application.Idle += OnIdle;
         }
 
         void OnIdle(object sender, EventArgs args)
         {
-            //string name = (m_Data as EnvironmentFile).Path;
-            string name = m_Data.Name;
+            string name = (m_Data==null ? String.Empty : m_Data.Name);
 
             if (String.IsNullOrEmpty(name))
             {
@@ -69,30 +71,44 @@ namespace Backsight.Environment.Editor
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            bool doClose = false;
             m_CurrentType = ItemType.Entity;
 
             string lastConn = Edit.Settings.Default.LastConnection;
             if (String.IsNullOrEmpty(lastConn))
-                return;
+            {
+                string msg = String.Empty;
+                msg += ("The Environment Editor doesn't have a record of the database" + System.Environment.NewLine);
+                msg += ("where information should be stored. Please pick an existing" + System.Environment.NewLine);
+                msg += ("database, or click Cancel to exit.");
 
-            if (File.Exists(lastConn))
-                OpenFile(lastConn);
+                if (MessageBox.Show(msg, "Database unknown", MessageBoxButtons.OKCancel)==DialogResult.Cancel)
+                    doClose = true;
+                else if (OpenDatabase()==null)
+                    doClose = true;
+            }
             else
-                OpenDatabase(lastConn);
+            {
+                if (OpenDatabase(lastConn) == null)
+                {
+                    string msg = String.Empty;
+                    msg += (String.Format("Unable to access database '{0}'", lastConn) + System.Environment.NewLine);
+                    msg += ("Please pick the database you want to access, or click Cancel to exit.");
 
-            RefreshList();
-        }
+                    if (MessageBox.Show(msg, "Cannot access database", MessageBoxButtons.OKCancel)==DialogResult.Cancel)
+                        doClose = true;
+                    else if (OpenDatabase()==null)
+                        doClose = true;
+                }
+            }
 
-        private void fileNewMenuItem_Click(object sender, EventArgs e)
-        {
-            if (CheckSave())
-                CreateNew();
-        }
-
-        void CreateNew()
-        {
-            m_Data = new EnvironmentFile();
-            EnvironmentContainer.Current = m_Data;
+            if (doClose)
+                Close();
+            else
+            {
+                Application.Idle += OnIdle;
+                RefreshList();
+            }
         }
 
         bool CheckSave()
@@ -115,64 +131,47 @@ namespace Backsight.Environment.Editor
             if (res==DialogResult.Cancel)
                 return false;
 
-            if (res==DialogResult.Yes && !Save())
+            if (res==DialogResult.Yes && !SaveData())
                     return false;
 
             return true;
         }
 
-        private void fileOpenFileMenuItem_Click(object sender, EventArgs e)
+        private void fileOpenMenuItem_Click(object sender, EventArgs e)
         {
-            if (!CheckSave())
-                return;
-
-            OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Backsight environment files (*.bse)|*.bse|All files (*.*)|*.*";
-
-            string lastConn = Edit.Settings.Default.LastConnection;
-            if (!String.IsNullOrEmpty(lastConn))
-            {
-                string lastDir = Path.GetDirectoryName(lastConn);
-                if (Directory.Exists(lastDir))
-                    dial.InitialDirectory = lastDir;
-            }
-
-            if (dial.ShowDialog() == DialogResult.OK)
-                OpenFile(dial.FileName);
-
-            dial.Dispose();
+            OpenDatabase();
+            RefreshList();
         }
 
-        private void fileOpenDatabaseMenuItem_Click(object sender, EventArgs e)
+        IEnvironmentContainer OpenDatabase()
         {
             ConnectionForm dial = new ConnectionForm();
             if (dial.ShowDialog() == DialogResult.OK)
             {
                 Database db = dial.Database;
+
+                // If the database doesn't contain a table for entity types (a core table),
+                // tell the user that Backsight system tables need to be created.
+
                 TableFactory tf = new TableFactory(db);
-                OpenDatabase(tf.ConnectionString);
-                RefreshList();
+
+                if (!tf.DoTablesExist())
+                {
+                    CreateTablesForm ctf = new CreateTablesForm(tf);
+                    bool isCreatedOk = (ctf.ShowDialog()==DialogResult.OK);
+                    ctf.Dispose();
+                    if (!isCreatedOk)
+                        return null;
+                }
+
+                return OpenDatabase(tf.ConnectionString);
             }
+
             dial.Dispose();
+            return null;
         }
 
-        void OpenFile(string fileName)
-        {
-            try
-            {
-                m_Data = new EnvironmentFile(fileName);
-                EnvironmentContainer.Current = m_Data;
-                Edit.Settings.Default.LastConnection = fileName;
-                Edit.Settings.Default.Save();
-            }
-
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-
-        void OpenDatabase(string connectionString)
+        IEnvironmentContainer OpenDatabase(string connectionString)
         {
             try
             {
@@ -180,79 +179,20 @@ namespace Backsight.Environment.Editor
                 EnvironmentContainer.Current = m_Data;
                 Edit.Settings.Default.LastConnection = connectionString;
                 Edit.Settings.Default.Save();
+                return m_Data;
             }
 
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
+
+            return null;
         }
 
         private void fileSaveMenuItem_Click(object sender, EventArgs e)
         {
-            Save();
-        }
-
-        bool Save()
-        {
-            if (String.IsNullOrEmpty(m_Data.Name))
-                return SaveAs();
-            else
-                return SaveData();
-        }
-
-        private void fileSaveAsFileMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveAs();
-        }
-
-        private void fileSaveAsDatabaseMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        bool SaveAs()
-        {
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Filter = "Backsight environment files (*.bse)|*.bse|All files (*.*)|*.*";
-            dial.DefaultExt = ".bse";
-
-            string lastConn = Edit.Settings.Default.LastConnection;
-            if (!String.IsNullOrEmpty(lastConn) && File.Exists(lastConn))
-            {
-                string lastDir = Path.GetDirectoryName(lastConn);
-                if (Directory.Exists(lastDir))
-                    dial.InitialDirectory = lastDir;
-            }
-
-            bool result = false;
-            if (dial.ShowDialog() == DialogResult.OK)
-                result = SaveAsFile(dial.FileName);
-
-            dial.Dispose();
-            return result;
-        }
-
-        bool SaveAsFile(string fileName)
-        {
-            try
-            {
-                // EnvironmentData is the base class for both EnvironmentFile & EnvironmentDatabase
-                if (!(m_Data is EnvironmentData))
-                    throw new NotSupportedException("Unexpected environment container");
-
-                EnvironmentFile ef = new EnvironmentFile(fileName, (EnvironmentData)m_Data);
-                ef.Write();
-                OpenFile(fileName);
-                return true;
-            }
-
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-
-            return false;
+            SaveData();
         }
 
         bool SaveData()
@@ -269,6 +209,70 @@ namespace Backsight.Environment.Editor
             }
 
             return false;
+        }
+
+        private void fileExportMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dial = new SaveFileDialog();
+            dial.Filter = "Backsight environment files (*.xml)|*.xml|All files (*.*)|*.*";
+            dial.DefaultExt = ".xml";
+
+            if (dial.ShowDialog() == DialogResult.OK)
+                WriteExportFile(dial.FileName);
+
+            dial.Dispose();
+        }
+
+        void WriteExportFile(string fileName)
+        {
+            // A by-product of the following is that the database name gets re-assigned
+            // to the supplied filename, so we'll need to fix it up. Should really handle
+            // names a bit better.
+            string dbName = m_Data.Name;
+
+            try
+            {
+                EnvironmentFile ef = new EnvironmentFile(fileName, m_Data);
+                ef.Write();
+            }
+
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            finally
+            {
+                m_Data.Name = dbName;
+                MessageBox.Show("Done");
+            }
+        }
+
+        private void fileImportMenuItem_Click(object sender, EventArgs e)
+        {
+            // Confirm that everything currently in the database will be blown away
+            string msg = String.Empty;
+            msg += ("Importing will replace the content of current database." + System.Environment.NewLine);
+            msg += ("Are you sure that's what you want to do?");
+            if (MessageBox.Show(msg, "Confirm Import", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                return;
+
+            OpenFileDialog dial = new OpenFileDialog();
+            dial.Title = "Locate file containing the new environment";
+            dial.Filter = "Backsight environment files (*.xml)|*.xml|All files (*.*)|*.*";
+
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                // Load the file into its own dataset
+                EnvironmentFile ef = new EnvironmentFile(dial.FileName);
+
+                // Get rid of the content of the current database (including empty rows)
+                m_Data.Replace(ef);
+                RefreshList();
+                MessageBox.Show("Done");
+            }
+
+            dial.Dispose();
         }
 
         private void fileExitMenuItem_Click(object sender, EventArgs e)
@@ -464,30 +468,6 @@ namespace Backsight.Environment.Editor
             // foreign key constraints)
             if (items.Length>0 && listBox.Items[0].ToString().Length==0)
                 listBox.Items.RemoveAt(0);
-        }
-
-        private void fileDatabaseMenuItem_Click(object sender, EventArgs e)
-        {
-            ConnectionForm dial = new ConnectionForm();
-            if (dial.ShowDialog() == DialogResult.OK)
-            {
-                Database db = dial.Database;
-                TableFactory tf = new TableFactory(db);
-                tf.CreateTables(OnTableCreate);
-                IEnvironmentContainer ec = EnvironmentContainer.Current;
-                if (ec is EnvironmentData)
-                {
-                    BacksightDataSet ds = (ec as EnvironmentData).Data;
-                    ds.Save(tf.ConnectionString);
-                }
-                tf.CreateForeignKeyConstraints();
-            }
-            dial.Dispose();
-        }
-
-        void OnTableCreate(string tableName)
-        {
-
         }
     }
 }
