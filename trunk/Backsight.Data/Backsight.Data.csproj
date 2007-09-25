@@ -40,6 +40,11 @@
   <ItemGroup>
     <Compile Include="AdapterFactory.cs" />
     <Compile Include="ArchiveDataTable.cs" />
+    <Compile Include="BacksightDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BacksightDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="CheckoutDataTable.cs" />
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="DomainDataTable.cs" />
@@ -72,11 +77,6 @@
     <Compile Include="TemplateDataTable.cs" />
     <Compile Include="ThemeDataTable.cs" />
     <Compile Include="ThemeRow.cs" />
-    <Compile Include="BacksightDataSet.Designer.cs">
-      <DependentUpon>BacksightDataSet.xsd</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -86,6 +86,7 @@
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="BacksightDataSet.xsc">
       <DependentUpon>BacksightDataSet.xsd</DependentUpon>
     </None>
