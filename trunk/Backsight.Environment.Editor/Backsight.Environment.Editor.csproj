@@ -162,6 +162,7 @@
     <None Include="Resources\Plus.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resources\Minus.bmp" />
   </ItemGroup>
   <ItemGroup>

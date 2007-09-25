@@ -22,7 +22,6 @@ using System.Windows.Forms;
 using Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
-using Edit=Backsight.Environment.Editor.Properties;
 using Backsight.SqlServer;
 
 namespace Backsight.Environment.Editor
@@ -74,8 +73,19 @@ namespace Backsight.Environment.Editor
             bool doClose = false;
             m_CurrentType = ItemType.Entity;
 
-            string lastConn = Edit.Settings.Default.LastConnection;
+            // If a database connection isn't defined, see if a database called 'Backsight' exists
+            // on the local server. If not, ask the user to locate a database.
+
+            string lastConn = GlobalUserSetting.LastConnection;
+            bool lookedForDefault = false;
+
             if (String.IsNullOrEmpty(lastConn))
+            {
+                lastConn = TableFactory.GetDefaultConnection();
+                lookedForDefault = true;
+            }
+
+            if (String.IsNullOrEmpty(lastConn) && lookedForDefault)
             {
                 string msg = String.Empty;
                 msg += ("The Environment Editor doesn't have a record of the database" + System.Environment.NewLine);
@@ -106,6 +116,7 @@ namespace Backsight.Environment.Editor
                 Close();
             else
             {
+                GlobalUserSetting.LastConnection = lastConn;
                 Application.Idle += OnIdle;
                 RefreshList();
             }
@@ -177,8 +188,7 @@ namespace Backsight.Environment.Editor
             {
                 m_Data = new EnvironmentDatabase(connectionString);
                 EnvironmentContainer.Current = m_Data;
-                Edit.Settings.Default.LastConnection = connectionString;
-                Edit.Settings.Default.Save();
+                GlobalUserSetting.LastConnection = connectionString;
                 return m_Data;
             }
 
