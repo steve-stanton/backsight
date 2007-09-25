@@ -25,6 +25,7 @@ using Smo=Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
 using Backsight.Environment;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace Backsight.SqlServer
 {
@@ -472,6 +473,46 @@ namespace Backsight.SqlServer
                 names.Add(t.Name);
 
             return names.ToArray();
+        }
+
+        /// <summary>
+        /// Attempts to returns a default connection string for an environment database
+        /// (by looking for a database called 'Backsight' on the local server).
+        /// </summary>
+        /// <returns>Connection string to the default database (blank if no default found)</returns>
+        public static string GetDefaultConnection()
+        {
+            // First check localhost\sqlexpress. If the Backsight database isn't there, search
+            // servers on the local system (since searching the network can be time-consuming)
+
+            string ds = String.Empty;
+            Smo.Server s = new Smo.Server(@"localhost\sqlexpress");
+            if (s.Databases.Contains("Backsight"))
+                ds = @"localhost\sqlexpress";
+
+            if (String.IsNullOrEmpty(ds))
+            {
+                DataTable dt = SmoApplication.EnumAvailableSqlServers(true);
+
+                for (int i=0; i<dt.Rows.Count && String.IsNullOrEmpty(ds); i++)
+                {
+                    DataRow r = dt.Rows[i];
+                    string name = r["Name"].ToString();
+                    s = new Smo.Server(name);
+                    if (s.Databases.Contains("Backsight"))
+                        ds = name;
+                }
+            }
+
+            if (String.IsNullOrEmpty(ds))
+                return String.Empty;
+
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder();
+            csb.DataSource = ds;
+            csb.IntegratedSecurity = true;
+            csb.ConnectTimeout = 5;
+            csb.InitialCatalog = "Backsight";
+            return csb.ConnectionString;
         }
     }
 }
