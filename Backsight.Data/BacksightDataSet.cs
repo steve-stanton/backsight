@@ -44,6 +44,7 @@ namespace Backsight.Data
                     AdapterFactory.Create<EntityTableAdapter>().Update(this.Entity);
                     AdapterFactory.Create<ThemeTableAdapter>().Update(this.Theme);
                     AdapterFactory.Create<LayerTableAdapter>().Update(this.Layer);
+                    AdapterFactory.Create<SysIdTableAdapter>().Update(this.SysId);
                 });
             }
 
@@ -62,33 +63,23 @@ namespace Backsight.Data
                 EntityTableAdapter entity = new EntityTableAdapter();
                 ThemeTableAdapter theme = new ThemeTableAdapter();
                 LayerTableAdapter layer = new LayerTableAdapter();
+                SysIdTableAdapter sysid = new SysIdTableAdapter();
 
                 font.Connection =
                 idGroup.Connection =
                 entity.Connection =
                 theme.Connection =
-                layer.Connection = ic.Value;
+                layer.Connection =
+                sysid.Connection = ic.Value;
 
                 font.Fill(this.Font);
                 idGroup.Fill(this.IdGroup);
                 entity.Fill(this.Entity);
                 theme.Fill(this.Theme);
                 layer.Fill(this.Layer);
+                sysid.Fill(this.SysId);
             }
         }
-
-        /*
-        void SetAllRowsAdded()
-        {
-            foreach (DataTable dt in this.Tables)
-            {
-                foreach (DataRow row in dt.Rows)
-                {
-                    row.SetAdded();
-                }
-            }
-        }
-        */
 
         /// <summary>
         /// Has a row been added to a table?

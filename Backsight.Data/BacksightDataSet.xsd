@@ -2,15 +2,15 @@
 <xs:schema id="BacksightDataSet" targetNamespace="http://tempuri.org/BacksightDataSet.xsd" xmlns:mstns="http://tempuri.org/BacksightDataSet.xsd" xmlns="http://tempuri.org/BacksightDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
   <xs:annotation>
     <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
-      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="NotPublic" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
         <Connections>
-          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="BacksightConnectionString" IsAppSettingsProperty="True" Modifier="Assembly" Name="BacksightConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.Backsight.Data.Properties.Settings.GlobalReference.Default.BacksightConnectionString" Provider="System.Data.SqlClient">
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="BacksightConnectionString1" ConnectionStringObject="" IsAppSettingsProperty="True" Modifier="Assembly" Name="BacksightConnectionString1 (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.Backsight.Data.Properties.Settings.GlobalReference.Default.BacksightConnectionString1" Provider="System.Data.SqlClient">
           </Connection>
         </Connections>
         <Tables>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="ArchiveTableAdapter" GeneratorDataComponentClassName="ArchiveTableAdapter" Name="Archive" UserDataComponentName="ArchiveTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Archive" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Archive" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Archive] WHERE (([ArchiveId] = @Original_ArchiveId) AND ([ArchiveTime] = @Original_ArchiveTime) AND ([MapId] = @Original_MapId) AND ([Version] = @Original_Version) AND ([VersionTime] = @Original_VersionTime) AND ([JobId] = @Original_JobId) AND ([UserId] = @Original_UserId) AND ([PrevArchiveId] = @Original_PrevArchiveId))</CommandText>
@@ -122,7 +122,7 @@ SELECT ArchiveId, ArchiveTime, MapId, Version, VersionTime, JobId, UserId, PrevA
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="CheckoutTableAdapter" GeneratorDataComponentClassName="CheckoutTableAdapter" Name="Checkout" UserDataComponentName="CheckoutTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Checkout" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Checkout" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Checkout] WHERE (([MapId] = @Original_MapId) AND ([UserId] = @Original_UserId) AND ([JobId] = @Original_JobId) AND ([CheckoutTime] = @Original_CheckoutTime) AND ((@IsNull_CheckinTime = 1 AND [CheckinTime] IS NULL) OR ([CheckinTime] = @Original_CheckinTime)) AND ((@IsNull_AcceptTime = 1 AND [AcceptTime] IS NULL) OR ([AcceptTime] = @Original_AcceptTime)))</CommandText>
@@ -224,7 +224,7 @@ SELECT MapId, UserId, JobId, CheckoutTime, CheckinTime, AcceptTime FROM Checkout
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="DomainTableAdapter" GeneratorDataComponentClassName="DomainTableAdapter" Name="Domain" UserDataComponentName="DomainTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Domain" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Domain" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Domain] WHERE (([DomainId] = @Original_DomainId) AND ([DomainName] = @Original_DomainName) AND ([MinValue] = @Original_MinValue) AND ([MaxValue] = @Original_MaxValue) AND ([Increment] = @Original_Increment))</CommandText>
@@ -309,7 +309,7 @@ SELECT DomainId, DomainName, MinValue, MaxValue, Increment FROM Domain WHERE (Do
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="DomainListTableAdapter" GeneratorDataComponentClassName="DomainListTableAdapter" Name="DomainList" UserDataComponentName="DomainListTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.DomainList" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.DomainList" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[DomainList] WHERE (([DomainId] = @Original_DomainId) AND ([ShortValue] = @Original_ShortValue) AND ([LongValue] = @Original_LongValue))</CommandText>
@@ -376,7 +376,7 @@ SELECT DomainId, ShortValue, LongValue FROM DomainList WHERE (DomainId = @Domain
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="EditionTableAdapter" GeneratorDataComponentClassName="EditionTableAdapter" Name="Edition" UserDataComponentName="EditionTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Edition" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Edition" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Edition] WHERE (([EditionId] = @Original_EditionId) AND ([Name] = @Original_Name) AND ([Status] = @Original_Status))</CommandText>
@@ -443,7 +443,7 @@ SELECT EditionId, Name, Status FROM Edition WHERE (EditionId = @EditionId)</Comm
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="EntityTableAdapter" GeneratorDataComponentClassName="EntityTableAdapter" Name="Entity" UserDataComponentName="EntityTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Entity" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Entity" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Entity] WHERE (([EntityId] = @Original_EntityId) AND ([Name] = @Original_Name) AND ([IsPoint] = @Original_IsPoint) AND ([IsLine] = @Original_IsLine) AND ([IsLineTopological] = @Original_IsLineTopological) AND ([IsPolygon] = @Original_IsPolygon) AND ([IsText] = @Original_IsText) AND ([FontId] = @Original_FontId) AND ([LayerId] = @Original_LayerId) AND ([GroupId] = @Original_GroupId))</CommandText>
@@ -573,7 +573,7 @@ SELECT EntityId, Name, IsPoint, IsLine, IsLineTopological, IsPolygon, IsText, Fo
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="EntitySchemaTableAdapter" GeneratorDataComponentClassName="EntitySchemaTableAdapter" Name="EntitySchema" UserDataComponentName="EntitySchemaTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.EntitySchema" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.EntitySchema" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[EntitySchema] WHERE (([EntityId] = @Original_EntityId) AND ([SchemaId] = @Original_SchemaId))</CommandText>
@@ -631,7 +631,7 @@ SELECT EntityId, SchemaId FROM EntitySchema WHERE (EntityId = @EntityId) AND (Sc
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="FieldTableAdapter" GeneratorDataComponentClassName="FieldTableAdapter" Name="Field" UserDataComponentName="FieldTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Field" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Field" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Field] WHERE (([FieldId] = @Original_FieldId) AND ([FieldName] = @Original_FieldName) AND ([ColumnName] = @Original_ColumnName) AND ([DataType] = @Original_DataType) AND ([Width] = @Original_Width) AND ([DomainId] = @Original_DomainId) AND ([DefaultValue] = @Original_DefaultValue) AND ([IsRequired] = @Original_IsRequired))</CommandText>
@@ -743,7 +743,7 @@ SELECT FieldId, FieldName, ColumnName, DataType, Width, DomainId, DefaultValue, 
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="FontTableAdapter" GeneratorDataComponentClassName="FontTableAdapter" Name="Font" UserDataComponentName="FontTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Font" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Font" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Font] WHERE (([FontId] = @Original_FontId) AND ([TypeFace] = @Original_TypeFace) AND ([PointSize] = @Original_PointSize) AND ([IsBold] = @Original_IsBold) AND ([IsItalic] = @Original_IsItalic) AND ([IsUnderline] = @Original_IsUnderline) AND ([FontFile] = @Original_FontFile))</CommandText>
@@ -846,7 +846,7 @@ SELECT FontId, TypeFace, PointSize, IsBold, IsItalic, IsUnderline, FontFile FROM
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="IdAllocationTableAdapter" GeneratorDataComponentClassName="IdAllocationTableAdapter" Name="IdAllocation" UserDataComponentName="IdAllocationTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.IdAllocation" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.IdAllocation" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[IdAllocation] WHERE (([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([FileName] = @Original_FileName) AND ([GroupId] = @Original_GroupId) AND ([UserName] = @Original_UserName) AND ([TimeAllocated] = @Original_TimeAllocated) AND ([NumUsed] = @Original_NumUsed))</CommandText>
@@ -949,7 +949,7 @@ SELECT LowestId, HighestId, FileName, GroupId, UserName, TimeAllocated, NumUsed 
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="IdFreeTableAdapter" GeneratorDataComponentClassName="IdFreeTableAdapter" Name="IdFree" UserDataComponentName="IdFreeTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.IdFree" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.IdFree" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[IdFree] WHERE (([GroupId] = @Original_GroupId) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId))</CommandText>
@@ -1016,7 +1016,7 @@ SELECT GroupId, LowestId, HighestId FROM IdFree WHERE (GroupId = @GroupId) AND (
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="IdGroupTableAdapter" GeneratorDataComponentClassName="IdGroupTableAdapter" Name="IdGroup" UserDataComponentName="IdGroupTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.IdGroup" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.IdGroup" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[IdGroup] WHERE (([GroupId] = @Original_GroupId) AND ([Name] = @Original_Name) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([PacketSize] = @Original_PacketSize) AND ([CheckDigit] = @Original_CheckDigit) AND ([KeyFormat] = @Original_KeyFormat))</CommandText>
@@ -1033,7 +1033,7 @@ SELECT GroupId, LowestId, HighestId FROM IdFree WHERE (GroupId = @GroupId) AND (
                       </Parameter>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@Original_CheckDigit" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="CheckDigit" SourceColumnNullMapping="False" SourceVersion="Original">
                       </Parameter>
-                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@Original_KeyFormat" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Original">
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiString" Direction="Input" ParameterName="@Original_KeyFormat" Precision="0" ProviderType="VarChar" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Original">
                       </Parameter>
                     </Parameters>
                   </DbCommand>
@@ -1055,7 +1055,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
                       </Parameter>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@CheckDigit" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="CheckDigit" SourceColumnNullMapping="False" SourceVersion="Current">
                       </Parameter>
-                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@KeyFormat" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Current">
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiString" Direction="Input" ParameterName="@KeyFormat" Precision="0" ProviderType="VarChar" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Current">
                       </Parameter>
                     </Parameters>
                   </DbCommand>
@@ -1084,7 +1084,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
                       </Parameter>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@CheckDigit" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="CheckDigit" SourceColumnNullMapping="False" SourceVersion="Current">
                       </Parameter>
-                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@KeyFormat" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Current">
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiString" Direction="Input" ParameterName="@KeyFormat" Precision="0" ProviderType="VarChar" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Current">
                       </Parameter>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@Original_GroupId" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="GroupId" SourceColumnNullMapping="False" SourceVersion="Original">
                       </Parameter>
@@ -1098,7 +1098,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
                       </Parameter>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@Original_CheckDigit" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="CheckDigit" SourceColumnNullMapping="False" SourceVersion="Original">
                       </Parameter>
-                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiStringFixedLength" Direction="Input" ParameterName="@Original_KeyFormat" Precision="0" ProviderType="Char" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Original">
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="AnsiString" Direction="Input" ParameterName="@Original_KeyFormat" Precision="0" ProviderType="VarChar" Scale="0" Size="0" SourceColumn="KeyFormat" SourceColumnNullMapping="False" SourceVersion="Original">
                       </Parameter>
                     </Parameters>
                   </DbCommand>
@@ -1119,7 +1119,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="JobTableAdapter" GeneratorDataComponentClassName="JobTableAdapter" Name="Job" UserDataComponentName="JobTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Job" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Job" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Job] WHERE (([JobId] = @Original_JobId) AND ([Name] = @Original_Name) AND ([IsActive] = @Original_IsActive))</CommandText>
@@ -1186,7 +1186,7 @@ SELECT JobId, Name, IsActive FROM Job WHERE (JobId = @JobId)</CommandText>
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="LayerTableAdapter" GeneratorDataComponentClassName="LayerTableAdapter" Name="Layer" UserDataComponentName="LayerTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Layer" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Layer" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Layer] WHERE (([LayerId] = @Original_LayerId) AND ([Name] = @Original_Name) AND ([ThemeId] = @Original_ThemeId) AND ([ThemeSequence] = @Original_ThemeSequence) AND ([DefaultPointId] = @Original_DefaultPointId) AND ([DefaultLineId] = @Original_DefaultLineId) AND ([DefaultPolygonId] = @Original_DefaultPolygonId) AND ([DefaultTextId] = @Original_DefaultTextId))</CommandText>
@@ -1298,7 +1298,7 @@ SELECT LayerId, Name, ThemeId, ThemeSequence, DefaultPointId, DefaultLineId, Def
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="MapTableAdapter" GeneratorDataComponentClassName="MapTableAdapter" Name="Map" UserDataComponentName="MapTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Map" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Map" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Map] WHERE (([MapId] = @Original_MapId) AND ([Name] = @Original_Name) AND ([Version] = @Original_Version) AND ([VersionTime] = @Original_VersionTime) AND ([JobId] = @Original_JobId) AND ([UserId] = @Original_UserId) AND ([ArchiveId] = @Original_ArchiveId) AND ([Status] = @Original_Status) AND ([IsActive] = @Original_IsActive))</CommandText>
@@ -1419,7 +1419,7 @@ SELECT MapId, Name, Version, VersionTime, JobId, UserId, ArchiveId, Status, IsAc
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="MapUserTableAdapter" GeneratorDataComponentClassName="MapUserTableAdapter" Name="MapUser" UserDataComponentName="MapUserTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.MapUser" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.MapUser" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[MapUser] WHERE (([UserId] = @Original_UserId) AND ([Name] = @Original_Name) AND ([IsActive] = @Original_IsActive) AND ([CanCheckout] = @Original_CanCheckout))</CommandText>
@@ -1495,7 +1495,7 @@ SELECT UserId, Name, IsActive, CanCheckout FROM MapUser WHERE (UserId = @UserId)
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="PropertyTableAdapter" GeneratorDataComponentClassName="PropertyTableAdapter" Name="Property" UserDataComponentName="PropertyTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Property" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Property" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Property] WHERE (([Name] = @Original_Name) AND ([Value] = @Original_Value) AND ([Description] = @Original_Description))</CommandText>
@@ -1562,7 +1562,7 @@ SELECT Name, Value, Description FROM Property WHERE (Name = @Name)</CommandText>
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="SchemaTableAdapter" GeneratorDataComponentClassName="SchemaTableAdapter" Name="Schema" UserDataComponentName="SchemaTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.[Schema]" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.[Schema]" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Schema] WHERE (([SchemaId] = @Original_SchemaId) AND ([Name] = @Original_Name) AND ([TableName] = @Original_TableName))</CommandText>
@@ -1629,7 +1629,7 @@ SELECT SchemaId, Name, TableName FROM [Schema] WHERE (SchemaId = @SchemaId)</Com
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="SchemaFieldTableAdapter" GeneratorDataComponentClassName="SchemaFieldTableAdapter" Name="SchemaField" UserDataComponentName="SchemaFieldTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.SchemaField" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.SchemaField" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[SchemaField] WHERE (([SchemaId] = @Original_SchemaId) AND ([FieldSequence] = @Original_FieldSequence) AND ([FieldId] = @Original_FieldId))</CommandText>
@@ -1696,7 +1696,7 @@ SELECT SchemaId, FieldSequence, FieldId FROM SchemaField WHERE (FieldSequence = 
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="SchemaTemplateTableAdapter" GeneratorDataComponentClassName="SchemaTemplateTableAdapter" Name="SchemaTemplate" UserDataComponentName="SchemaTemplateTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.SchemaTemplate" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.SchemaTemplate" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[SchemaTemplate] WHERE (([SchemaId] = @Original_SchemaId) AND ([TemplateId] = @Original_TemplateId))</CommandText>
@@ -1754,10 +1754,20 @@ SELECT SchemaId, TemplateId FROM SchemaTemplate WHERE (SchemaId = @SchemaId) AND
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="SysIdTableAdapter" GeneratorDataComponentClassName="SysIdTableAdapter" Name="SysId" UserDataComponentName="SysIdTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.SysId" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.SysId" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+                <DeleteCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="False">
+                    <CommandText>DELETE FROM [dbo].[SysId] WHERE (([LastId] = @Original_LastId))</CommandText>
+                    <Parameters>
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@Original_LastId" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="LastId" SourceColumnNullMapping="False" SourceVersion="Original">
+                      </Parameter>
+                    </Parameters>
+                  </DbCommand>
+                </DeleteCommand>
                 <InsertCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
-                    <CommandText>INSERT INTO [dbo].[SysId] ([LastId]) VALUES (@LastId)</CommandText>
+                    <CommandText>INSERT INTO [dbo].[SysId] ([LastId]) VALUES (@LastId);
+SELECT LastId FROM SysId WHERE (LastId = @LastId)</CommandText>
                     <Parameters>
                       <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@LastId" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="LastId" SourceColumnNullMapping="False" SourceVersion="Current">
                       </Parameter>
@@ -1771,6 +1781,18 @@ SELECT SchemaId, TemplateId FROM SchemaTemplate WHERE (SchemaId = @SchemaId) AND
                     </Parameters>
                   </DbCommand>
                 </SelectCommand>
+                <UpdateCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="False">
+                    <CommandText>UPDATE [dbo].[SysId] SET [LastId] = @LastId WHERE (([LastId] = @Original_LastId));
+SELECT LastId FROM SysId WHERE (LastId = @LastId)</CommandText>
+                    <Parameters>
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@LastId" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="LastId" SourceColumnNullMapping="False" SourceVersion="Current">
+                      </Parameter>
+                      <Parameter AllowDbNull="False" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@Original_LastId" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="LastId" SourceColumnNullMapping="False" SourceVersion="Original">
+                      </Parameter>
+                    </Parameters>
+                  </DbCommand>
+                </UpdateCommand>
               </DbSource>
             </MainSource>
             <Mappings>
@@ -1781,7 +1803,7 @@ SELECT SchemaId, TemplateId FROM SchemaTemplate WHERE (SchemaId = @SchemaId) AND
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="TemplateTableAdapter" GeneratorDataComponentClassName="TemplateTableAdapter" Name="Template" UserDataComponentName="TemplateTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Template" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Template" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Template] WHERE (([TemplateId] = @Original_TemplateId) AND ([Name] = @Original_Name) AND ([TemplateFormat] = @Original_TemplateFormat))</CommandText>
@@ -1848,7 +1870,7 @@ SELECT TemplateId, Name, TemplateFormat FROM Template WHERE (TemplateId = @Templ
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="ThemeTableAdapter" GeneratorDataComponentClassName="ThemeTableAdapter" Name="Theme" UserDataComponentName="ThemeTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="BacksightConnectionString (Settings)" DbObjectName="Backsight.dbo.Theme" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="BacksightConnectionString1 (Settings)" DbObjectName="Backsight.dbo.Theme" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="True" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="True" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="False">
                     <CommandText>DELETE FROM [dbo].[Theme] WHERE (([ThemeId] = @Original_ThemeId) AND ([Name] = @Original_Name))</CommandText>
@@ -1913,7 +1935,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
   <xs:element name="BacksightDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="BacksightDataSet" msprop:Generator_DataSetName="BacksightDataSet">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="Archive" msprop:Generator_UserTableName="Archive" msprop:Generator_RowDeletedName="ArchiveRowDeleted" msprop:Generator_RowChangedName="ArchiveRowChanged" msprop:Generator_RowClassName="ArchiveRow" msprop:Generator_RowChangingName="ArchiveRowChanging" msprop:Generator_RowEvArgName="ArchiveRowChangeEvent" msprop:Generator_RowEvHandlerName="ArchiveRowChangeEventHandler" msprop:Generator_TableClassName="ArchiveDataTable" msprop:Generator_TableVarName="tableArchive" msprop:Generator_RowDeletingName="ArchiveRowDeleting" msprop:Generator_TablePropName="Archive">
+        <xs:element name="Archive" msprop:Generator_UserTableName="Archive" msprop:Generator_RowDeletedName="ArchiveRowDeleted" msprop:Generator_TableClassName="ArchiveDataTable" msprop:Generator_RowChangedName="ArchiveRowChanged" msprop:Generator_RowClassName="ArchiveRow" msprop:Generator_RowChangingName="ArchiveRowChanging" msprop:Generator_RowEvArgName="ArchiveRowChangeEvent" msprop:Generator_RowEvHandlerName="ArchiveRowChangeEventHandler" msprop:Generator_TablePropName="Archive" msprop:Generator_TableVarName="tableArchive" msprop:Generator_RowDeletingName="ArchiveRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="ArchiveId" msprop:Generator_UserColumnName="ArchiveId" msprop:Generator_ColumnPropNameInRow="ArchiveId" msprop:Generator_ColumnVarNameInTable="columnArchiveId" msprop:Generator_ColumnPropNameInTable="ArchiveIdColumn" type="xs:int" />
@@ -1927,7 +1949,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Checkout" msprop:Generator_UserTableName="Checkout" msprop:Generator_RowDeletedName="CheckoutRowDeleted" msprop:Generator_RowChangedName="CheckoutRowChanged" msprop:Generator_RowClassName="CheckoutRow" msprop:Generator_RowChangingName="CheckoutRowChanging" msprop:Generator_RowEvArgName="CheckoutRowChangeEvent" msprop:Generator_RowEvHandlerName="CheckoutRowChangeEventHandler" msprop:Generator_TableClassName="CheckoutDataTable" msprop:Generator_TableVarName="tableCheckout" msprop:Generator_RowDeletingName="CheckoutRowDeleting" msprop:Generator_TablePropName="Checkout">
+        <xs:element name="Checkout" msprop:Generator_UserTableName="Checkout" msprop:Generator_RowDeletedName="CheckoutRowDeleted" msprop:Generator_TableClassName="CheckoutDataTable" msprop:Generator_RowChangedName="CheckoutRowChanged" msprop:Generator_RowClassName="CheckoutRow" msprop:Generator_RowChangingName="CheckoutRowChanging" msprop:Generator_RowEvArgName="CheckoutRowChangeEvent" msprop:Generator_RowEvHandlerName="CheckoutRowChangeEventHandler" msprop:Generator_TablePropName="Checkout" msprop:Generator_TableVarName="tableCheckout" msprop:Generator_RowDeletingName="CheckoutRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="MapId" msprop:Generator_UserColumnName="MapId" msprop:Generator_ColumnPropNameInRow="MapId" msprop:Generator_ColumnVarNameInTable="columnMapId" msprop:Generator_ColumnPropNameInTable="MapIdColumn" type="xs:int" />
@@ -1939,7 +1961,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Domain" msprop:Generator_UserTableName="Domain" msprop:Generator_RowDeletedName="DomainRowDeleted" msprop:Generator_RowChangedName="DomainRowChanged" msprop:Generator_RowClassName="DomainRow" msprop:Generator_RowChangingName="DomainRowChanging" msprop:Generator_RowEvArgName="DomainRowChangeEvent" msprop:Generator_RowEvHandlerName="DomainRowChangeEventHandler" msprop:Generator_TableClassName="DomainDataTable" msprop:Generator_TableVarName="tableDomain" msprop:Generator_RowDeletingName="DomainRowDeleting" msprop:Generator_TablePropName="Domain">
+        <xs:element name="Domain" msprop:Generator_UserTableName="Domain" msprop:Generator_RowDeletedName="DomainRowDeleted" msprop:Generator_TableClassName="DomainDataTable" msprop:Generator_RowChangedName="DomainRowChanged" msprop:Generator_RowClassName="DomainRow" msprop:Generator_RowChangingName="DomainRowChanging" msprop:Generator_RowEvArgName="DomainRowChangeEvent" msprop:Generator_RowEvHandlerName="DomainRowChangeEventHandler" msprop:Generator_TablePropName="Domain" msprop:Generator_TableVarName="tableDomain" msprop:Generator_RowDeletingName="DomainRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="DomainId" msprop:Generator_UserColumnName="DomainId" msprop:Generator_ColumnPropNameInRow="DomainId" msprop:Generator_ColumnVarNameInTable="columnDomainId" msprop:Generator_ColumnPropNameInTable="DomainIdColumn" type="xs:int" />
@@ -1974,7 +1996,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="DomainList" msprop:Generator_UserTableName="DomainList" msprop:Generator_RowDeletedName="DomainListRowDeleted" msprop:Generator_RowChangedName="DomainListRowChanged" msprop:Generator_RowClassName="DomainListRow" msprop:Generator_RowChangingName="DomainListRowChanging" msprop:Generator_RowEvArgName="DomainListRowChangeEvent" msprop:Generator_RowEvHandlerName="DomainListRowChangeEventHandler" msprop:Generator_TableClassName="DomainListDataTable" msprop:Generator_TableVarName="tableDomainList" msprop:Generator_RowDeletingName="DomainListRowDeleting" msprop:Generator_TablePropName="DomainList">
+        <xs:element name="DomainList" msprop:Generator_UserTableName="DomainList" msprop:Generator_RowDeletedName="DomainListRowDeleted" msprop:Generator_TableClassName="DomainListDataTable" msprop:Generator_RowChangedName="DomainListRowChanged" msprop:Generator_RowClassName="DomainListRow" msprop:Generator_RowChangingName="DomainListRowChanging" msprop:Generator_RowEvArgName="DomainListRowChangeEvent" msprop:Generator_RowEvHandlerName="DomainListRowChangeEventHandler" msprop:Generator_TablePropName="DomainList" msprop:Generator_TableVarName="tableDomainList" msprop:Generator_RowDeletingName="DomainListRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="DomainId" msprop:Generator_UserColumnName="DomainId" msprop:Generator_ColumnPropNameInRow="DomainId" msprop:Generator_ColumnVarNameInTable="columnDomainId" msprop:Generator_ColumnPropNameInTable="DomainIdColumn" type="xs:int" />
@@ -1995,7 +2017,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Edition" msprop:Generator_UserTableName="Edition" msprop:Generator_RowDeletedName="EditionRowDeleted" msprop:Generator_RowChangedName="EditionRowChanged" msprop:Generator_RowClassName="EditionRow" msprop:Generator_RowChangingName="EditionRowChanging" msprop:Generator_RowEvArgName="EditionRowChangeEvent" msprop:Generator_RowEvHandlerName="EditionRowChangeEventHandler" msprop:Generator_TableClassName="EditionDataTable" msprop:Generator_TableVarName="tableEdition" msprop:Generator_RowDeletingName="EditionRowDeleting" msprop:Generator_TablePropName="Edition">
+        <xs:element name="Edition" msprop:Generator_UserTableName="Edition" msprop:Generator_RowDeletedName="EditionRowDeleted" msprop:Generator_TableClassName="EditionDataTable" msprop:Generator_RowChangedName="EditionRowChanged" msprop:Generator_RowClassName="EditionRow" msprop:Generator_RowChangingName="EditionRowChanging" msprop:Generator_RowEvArgName="EditionRowChangeEvent" msprop:Generator_RowEvHandlerName="EditionRowChangeEventHandler" msprop:Generator_TablePropName="Edition" msprop:Generator_TableVarName="tableEdition" msprop:Generator_RowDeletingName="EditionRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="EditionId" msprop:Generator_UserColumnName="EditionId" msprop:Generator_ColumnPropNameInRow="EditionId" msprop:Generator_ColumnVarNameInTable="columnEditionId" msprop:Generator_ColumnPropNameInTable="EditionIdColumn" type="xs:int" />
@@ -2016,7 +2038,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Entity" msprop:Generator_UserTableName="Entity" msprop:Generator_RowDeletedName="EntityRowDeleted" msprop:Generator_RowChangedName="EntityRowChanged" msprop:Generator_RowClassName="EntityRow" msprop:Generator_RowChangingName="EntityRowChanging" msprop:Generator_RowEvArgName="EntityRowChangeEvent" msprop:Generator_RowEvHandlerName="EntityRowChangeEventHandler" msprop:Generator_TableClassName="EntityDataTable" msprop:Generator_TableVarName="tableEntity" msprop:Generator_RowDeletingName="EntityRowDeleting" msprop:Generator_TablePropName="Entity">
+        <xs:element name="Entity" msprop:Generator_UserTableName="Entity" msprop:Generator_RowDeletedName="EntityRowDeleted" msprop:Generator_TableClassName="EntityDataTable" msprop:Generator_RowChangedName="EntityRowChanged" msprop:Generator_RowClassName="EntityRow" msprop:Generator_RowChangingName="EntityRowChanging" msprop:Generator_RowEvArgName="EntityRowChangeEvent" msprop:Generator_RowEvHandlerName="EntityRowChangeEventHandler" msprop:Generator_TablePropName="Entity" msprop:Generator_TableVarName="tableEntity" msprop:Generator_RowDeletingName="EntityRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="EntityId" msprop:Generator_UserColumnName="EntityId" msprop:Generator_ColumnPropNameInRow="EntityId" msprop:Generator_ColumnVarNameInTable="columnEntityId" msprop:Generator_ColumnPropNameInTable="EntityIdColumn" type="xs:int" />
@@ -2068,7 +2090,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="EntitySchema" msprop:Generator_UserTableName="EntitySchema" msprop:Generator_RowDeletedName="EntitySchemaRowDeleted" msprop:Generator_RowChangedName="EntitySchemaRowChanged" msprop:Generator_RowClassName="EntitySchemaRow" msprop:Generator_RowChangingName="EntitySchemaRowChanging" msprop:Generator_RowEvArgName="EntitySchemaRowChangeEvent" msprop:Generator_RowEvHandlerName="EntitySchemaRowChangeEventHandler" msprop:Generator_TableClassName="EntitySchemaDataTable" msprop:Generator_TableVarName="tableEntitySchema" msprop:Generator_RowDeletingName="EntitySchemaRowDeleting" msprop:Generator_TablePropName="EntitySchema">
+        <xs:element name="EntitySchema" msprop:Generator_UserTableName="EntitySchema" msprop:Generator_RowDeletedName="EntitySchemaRowDeleted" msprop:Generator_TableClassName="EntitySchemaDataTable" msprop:Generator_RowChangedName="EntitySchemaRowChanged" msprop:Generator_RowClassName="EntitySchemaRow" msprop:Generator_RowChangingName="EntitySchemaRowChanging" msprop:Generator_RowEvArgName="EntitySchemaRowChangeEvent" msprop:Generator_RowEvHandlerName="EntitySchemaRowChangeEventHandler" msprop:Generator_TablePropName="EntitySchema" msprop:Generator_TableVarName="tableEntitySchema" msprop:Generator_RowDeletingName="EntitySchemaRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="EntityId" msprop:Generator_UserColumnName="EntityId" msprop:Generator_ColumnPropNameInRow="EntityId" msprop:Generator_ColumnVarNameInTable="columnEntityId" msprop:Generator_ColumnPropNameInTable="EntityIdColumn" type="xs:int" />
@@ -2076,7 +2098,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Field" msprop:Generator_UserTableName="Field" msprop:Generator_RowDeletedName="FieldRowDeleted" msprop:Generator_RowChangedName="FieldRowChanged" msprop:Generator_RowClassName="FieldRow" msprop:Generator_RowChangingName="FieldRowChanging" msprop:Generator_RowEvArgName="FieldRowChangeEvent" msprop:Generator_RowEvHandlerName="FieldRowChangeEventHandler" msprop:Generator_TableClassName="FieldDataTable" msprop:Generator_TableVarName="tableField" msprop:Generator_RowDeletingName="FieldRowDeleting" msprop:Generator_TablePropName="Field">
+        <xs:element name="Field" msprop:Generator_UserTableName="Field" msprop:Generator_RowDeletedName="FieldRowDeleted" msprop:Generator_TableClassName="FieldDataTable" msprop:Generator_RowChangedName="FieldRowChanged" msprop:Generator_RowClassName="FieldRow" msprop:Generator_RowChangingName="FieldRowChanging" msprop:Generator_RowEvArgName="FieldRowChangeEvent" msprop:Generator_RowEvHandlerName="FieldRowChangeEventHandler" msprop:Generator_TablePropName="Field" msprop:Generator_TableVarName="tableField" msprop:Generator_RowDeletingName="FieldRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="FieldId" msprop:Generator_UserColumnName="FieldId" msprop:Generator_ColumnPropNameInRow="FieldId" msprop:Generator_ColumnVarNameInTable="columnFieldId" msprop:Generator_ColumnPropNameInTable="FieldIdColumn" type="xs:int" />
@@ -2120,7 +2142,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Font" msprop:Generator_UserTableName="Font" msprop:Generator_RowDeletedName="FontRowDeleted" msprop:Generator_RowChangedName="FontRowChanged" msprop:Generator_RowClassName="FontRow" msprop:Generator_RowChangingName="FontRowChanging" msprop:Generator_RowEvArgName="FontRowChangeEvent" msprop:Generator_RowEvHandlerName="FontRowChangeEventHandler" msprop:Generator_TableClassName="FontDataTable" msprop:Generator_TableVarName="tableFont" msprop:Generator_RowDeletingName="FontRowDeleting" msprop:Generator_TablePropName="Font">
+        <xs:element name="Font" msprop:Generator_UserTableName="Font" msprop:Generator_RowDeletedName="FontRowDeleted" msprop:Generator_TableClassName="FontDataTable" msprop:Generator_RowChangedName="FontRowChanged" msprop:Generator_RowClassName="FontRow" msprop:Generator_RowChangingName="FontRowChanging" msprop:Generator_RowEvArgName="FontRowChangeEvent" msprop:Generator_RowEvHandlerName="FontRowChangeEventHandler" msprop:Generator_TablePropName="Font" msprop:Generator_TableVarName="tableFont" msprop:Generator_RowDeletingName="FontRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="FontId" msprop:Generator_UserColumnName="FontId" msprop:Generator_ColumnPropNameInRow="FontId" msprop:Generator_ColumnVarNameInTable="columnFontId" msprop:Generator_ColumnPropNameInTable="FontIdColumn" type="xs:int" />
@@ -2163,7 +2185,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="IdAllocation" msprop:Generator_UserTableName="IdAllocation" msprop:Generator_RowDeletedName="IdAllocationRowDeleted" msprop:Generator_RowChangedName="IdAllocationRowChanged" msprop:Generator_RowClassName="IdAllocationRow" msprop:Generator_RowChangingName="IdAllocationRowChanging" msprop:Generator_RowEvArgName="IdAllocationRowChangeEvent" msprop:Generator_RowEvHandlerName="IdAllocationRowChangeEventHandler" msprop:Generator_TableClassName="IdAllocationDataTable" msprop:Generator_TableVarName="tableIdAllocation" msprop:Generator_RowDeletingName="IdAllocationRowDeleting" msprop:Generator_TablePropName="IdAllocation">
+        <xs:element name="IdAllocation" msprop:Generator_UserTableName="IdAllocation" msprop:Generator_RowDeletedName="IdAllocationRowDeleted" msprop:Generator_TableClassName="IdAllocationDataTable" msprop:Generator_RowChangedName="IdAllocationRowChanged" msprop:Generator_RowClassName="IdAllocationRow" msprop:Generator_RowChangingName="IdAllocationRowChanging" msprop:Generator_RowEvArgName="IdAllocationRowChangeEvent" msprop:Generator_RowEvHandlerName="IdAllocationRowChangeEventHandler" msprop:Generator_TablePropName="IdAllocation" msprop:Generator_TableVarName="tableIdAllocation" msprop:Generator_RowDeletingName="IdAllocationRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="LowestId" msprop:Generator_UserColumnName="LowestId" msprop:Generator_ColumnPropNameInRow="LowestId" msprop:Generator_ColumnVarNameInTable="columnLowestId" msprop:Generator_ColumnPropNameInTable="LowestIdColumn" type="xs:int" />
@@ -2188,7 +2210,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="IdFree" msprop:Generator_UserTableName="IdFree" msprop:Generator_RowDeletedName="IdFreeRowDeleted" msprop:Generator_RowChangedName="IdFreeRowChanged" msprop:Generator_RowClassName="IdFreeRow" msprop:Generator_RowChangingName="IdFreeRowChanging" msprop:Generator_RowEvArgName="IdFreeRowChangeEvent" msprop:Generator_RowEvHandlerName="IdFreeRowChangeEventHandler" msprop:Generator_TableClassName="IdFreeDataTable" msprop:Generator_TableVarName="tableIdFree" msprop:Generator_RowDeletingName="IdFreeRowDeleting" msprop:Generator_TablePropName="IdFree">
+        <xs:element name="IdFree" msprop:Generator_UserTableName="IdFree" msprop:Generator_RowDeletedName="IdFreeRowDeleted" msprop:Generator_TableClassName="IdFreeDataTable" msprop:Generator_RowChangedName="IdFreeRowChanged" msprop:Generator_RowClassName="IdFreeRow" msprop:Generator_RowChangingName="IdFreeRowChanging" msprop:Generator_RowEvArgName="IdFreeRowChangeEvent" msprop:Generator_RowEvHandlerName="IdFreeRowChangeEventHandler" msprop:Generator_TablePropName="IdFree" msprop:Generator_TableVarName="tableIdFree" msprop:Generator_RowDeletingName="IdFreeRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="GroupId" msprop:Generator_UserColumnName="GroupId" msprop:Generator_ColumnPropNameInRow="GroupId" msprop:Generator_ColumnVarNameInTable="columnGroupId" msprop:Generator_ColumnPropNameInTable="GroupIdColumn" type="xs:int" />
@@ -2197,7 +2219,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="IdGroup" msprop:Generator_UserTableName="IdGroup" msprop:Generator_RowDeletedName="IdGroupRowDeleted" msprop:Generator_RowChangedName="IdGroupRowChanged" msprop:Generator_RowClassName="IdGroupRow" msprop:Generator_RowChangingName="IdGroupRowChanging" msprop:Generator_RowEvArgName="IdGroupRowChangeEvent" msprop:Generator_RowEvHandlerName="IdGroupRowChangeEventHandler" msprop:Generator_TableClassName="IdGroupDataTable" msprop:Generator_TableVarName="tableIdGroup" msprop:Generator_RowDeletingName="IdGroupRowDeleting" msprop:Generator_TablePropName="IdGroup">
+        <xs:element name="IdGroup" msprop:Generator_UserTableName="IdGroup" msprop:Generator_RowDeletedName="IdGroupRowDeleted" msprop:Generator_TableClassName="IdGroupDataTable" msprop:Generator_RowChangedName="IdGroupRowChanged" msprop:Generator_RowClassName="IdGroupRow" msprop:Generator_RowChangingName="IdGroupRowChanging" msprop:Generator_RowEvArgName="IdGroupRowChangeEvent" msprop:Generator_RowEvHandlerName="IdGroupRowChangeEventHandler" msprop:Generator_TablePropName="IdGroup" msprop:Generator_TableVarName="tableIdGroup" msprop:Generator_RowDeletingName="IdGroupRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="GroupId" msprop:Generator_UserColumnName="GroupId" msprop:Generator_ColumnPropNameInRow="GroupId" msprop:Generator_ColumnVarNameInTable="columnGroupId" msprop:Generator_ColumnPropNameInTable="GroupIdColumn" type="xs:int" />
@@ -2228,7 +2250,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Job" msprop:Generator_UserTableName="Job" msprop:Generator_RowDeletedName="JobRowDeleted" msprop:Generator_RowChangedName="JobRowChanged" msprop:Generator_RowClassName="JobRow" msprop:Generator_RowChangingName="JobRowChanging" msprop:Generator_RowEvArgName="JobRowChangeEvent" msprop:Generator_RowEvHandlerName="JobRowChangeEventHandler" msprop:Generator_TableClassName="JobDataTable" msprop:Generator_TableVarName="tableJob" msprop:Generator_RowDeletingName="JobRowDeleting" msprop:Generator_TablePropName="Job">
+        <xs:element name="Job" msprop:Generator_UserTableName="Job" msprop:Generator_RowDeletedName="JobRowDeleted" msprop:Generator_TableClassName="JobDataTable" msprop:Generator_RowChangedName="JobRowChanged" msprop:Generator_RowClassName="JobRow" msprop:Generator_RowChangingName="JobRowChanging" msprop:Generator_RowEvArgName="JobRowChangeEvent" msprop:Generator_RowEvHandlerName="JobRowChangeEventHandler" msprop:Generator_TablePropName="Job" msprop:Generator_TableVarName="tableJob" msprop:Generator_RowDeletingName="JobRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="JobId" msprop:Generator_UserColumnName="JobId" msprop:Generator_ColumnPropNameInRow="JobId" msprop:Generator_ColumnVarNameInTable="columnJobId" msprop:Generator_ColumnPropNameInTable="JobIdColumn" type="xs:int" />
@@ -2249,7 +2271,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Layer" msprop:Generator_UserTableName="Layer" msprop:Generator_RowDeletedName="LayerRowDeleted" msprop:Generator_RowChangedName="LayerRowChanged" msprop:Generator_RowClassName="LayerRow" msprop:Generator_RowChangingName="LayerRowChanging" msprop:Generator_RowEvArgName="LayerRowChangeEvent" msprop:Generator_RowEvHandlerName="LayerRowChangeEventHandler" msprop:Generator_TableClassName="LayerDataTable" msprop:Generator_TableVarName="tableLayer" msprop:Generator_RowDeletingName="LayerRowDeleting" msprop:Generator_TablePropName="Layer">
+        <xs:element name="Layer" msprop:Generator_UserTableName="Layer" msprop:Generator_RowDeletedName="LayerRowDeleted" msprop:Generator_TableClassName="LayerDataTable" msprop:Generator_RowChangedName="LayerRowChanged" msprop:Generator_RowClassName="LayerRow" msprop:Generator_RowChangingName="LayerRowChanging" msprop:Generator_RowEvArgName="LayerRowChangeEvent" msprop:Generator_RowEvHandlerName="LayerRowChangeEventHandler" msprop:Generator_TablePropName="Layer" msprop:Generator_TableVarName="tableLayer" msprop:Generator_RowDeletingName="LayerRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="LayerId" msprop:Generator_UserColumnName="LayerId" msprop:Generator_ColumnPropNameInRow="LayerId" msprop:Generator_ColumnVarNameInTable="columnLayerId" msprop:Generator_ColumnPropNameInTable="LayerIdColumn" type="xs:int" />
@@ -2269,7 +2291,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Map" msprop:Generator_UserTableName="Map" msprop:Generator_RowDeletedName="MapRowDeleted" msprop:Generator_RowChangedName="MapRowChanged" msprop:Generator_RowClassName="MapRow" msprop:Generator_RowChangingName="MapRowChanging" msprop:Generator_RowEvArgName="MapRowChangeEvent" msprop:Generator_RowEvHandlerName="MapRowChangeEventHandler" msprop:Generator_TableClassName="MapDataTable" msprop:Generator_TableVarName="tableMap" msprop:Generator_RowDeletingName="MapRowDeleting" msprop:Generator_TablePropName="Map">
+        <xs:element name="Map" msprop:Generator_UserTableName="Map" msprop:Generator_RowDeletedName="MapRowDeleted" msprop:Generator_TableClassName="MapDataTable" msprop:Generator_RowChangedName="MapRowChanged" msprop:Generator_RowClassName="MapRow" msprop:Generator_RowChangingName="MapRowChanging" msprop:Generator_RowEvArgName="MapRowChangeEvent" msprop:Generator_RowEvHandlerName="MapRowChangeEventHandler" msprop:Generator_TablePropName="Map" msprop:Generator_TableVarName="tableMap" msprop:Generator_RowDeletingName="MapRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="MapId" msprop:Generator_UserColumnName="MapId" msprop:Generator_ColumnPropNameInRow="MapId" msprop:Generator_ColumnVarNameInTable="columnMapId" msprop:Generator_ColumnPropNameInTable="MapIdColumn" type="xs:int" />
@@ -2302,7 +2324,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="MapUser" msprop:Generator_UserTableName="MapUser" msprop:Generator_RowDeletedName="MapUserRowDeleted" msprop:Generator_RowChangedName="MapUserRowChanged" msprop:Generator_RowClassName="MapUserRow" msprop:Generator_RowChangingName="MapUserRowChanging" msprop:Generator_RowEvArgName="MapUserRowChangeEvent" msprop:Generator_RowEvHandlerName="MapUserRowChangeEventHandler" msprop:Generator_TableClassName="MapUserDataTable" msprop:Generator_TableVarName="tableMapUser" msprop:Generator_RowDeletingName="MapUserRowDeleting" msprop:Generator_TablePropName="MapUser">
+        <xs:element name="MapUser" msprop:Generator_UserTableName="MapUser" msprop:Generator_RowDeletedName="MapUserRowDeleted" msprop:Generator_TableClassName="MapUserDataTable" msprop:Generator_RowChangedName="MapUserRowChanged" msprop:Generator_RowClassName="MapUserRow" msprop:Generator_RowChangingName="MapUserRowChanging" msprop:Generator_RowEvArgName="MapUserRowChangeEvent" msprop:Generator_RowEvHandlerName="MapUserRowChangeEventHandler" msprop:Generator_TablePropName="MapUser" msprop:Generator_TableVarName="tableMapUser" msprop:Generator_RowDeletingName="MapUserRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="UserId" msprop:Generator_UserColumnName="UserId" msprop:Generator_ColumnPropNameInRow="UserId" msprop:Generator_ColumnVarNameInTable="columnUserId" msprop:Generator_ColumnPropNameInTable="UserIdColumn" type="xs:int" />
@@ -2330,7 +2352,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Property" msprop:Generator_UserTableName="Property" msprop:Generator_RowDeletedName="PropertyRowDeleted" msprop:Generator_RowChangedName="PropertyRowChanged" msprop:Generator_RowClassName="PropertyRow" msprop:Generator_RowChangingName="PropertyRowChanging" msprop:Generator_RowEvArgName="PropertyRowChangeEvent" msprop:Generator_RowEvHandlerName="PropertyRowChangeEventHandler" msprop:Generator_TableClassName="PropertyDataTable" msprop:Generator_TableVarName="tableProperty" msprop:Generator_RowDeletingName="PropertyRowDeleting" msprop:Generator_TablePropName="Property">
+        <xs:element name="Property" msprop:Generator_UserTableName="Property" msprop:Generator_RowDeletedName="PropertyRowDeleted" msprop:Generator_TableClassName="PropertyDataTable" msprop:Generator_RowChangedName="PropertyRowChanged" msprop:Generator_RowClassName="PropertyRow" msprop:Generator_RowChangingName="PropertyRowChanging" msprop:Generator_RowEvArgName="PropertyRowChangeEvent" msprop:Generator_RowEvHandlerName="PropertyRowChangeEventHandler" msprop:Generator_TablePropName="Property" msprop:Generator_TableVarName="tableProperty" msprop:Generator_RowDeletingName="PropertyRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Name" msprop:Generator_UserColumnName="Name" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInTable="NameColumn">
@@ -2357,7 +2379,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Schema" msprop:Generator_UserTableName="Schema" msprop:Generator_RowDeletedName="SchemaRowDeleted" msprop:Generator_RowChangedName="SchemaRowChanged" msprop:Generator_RowClassName="SchemaRow" msprop:Generator_RowChangingName="SchemaRowChanging" msprop:Generator_RowEvArgName="SchemaRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaRowChangeEventHandler" msprop:Generator_TableClassName="SchemaDataTable" msprop:Generator_TableVarName="tableSchema" msprop:Generator_RowDeletingName="SchemaRowDeleting" msprop:Generator_TablePropName="Schema">
+        <xs:element name="Schema" msprop:Generator_UserTableName="Schema" msprop:Generator_RowDeletedName="SchemaRowDeleted" msprop:Generator_TableClassName="SchemaDataTable" msprop:Generator_RowChangedName="SchemaRowChanged" msprop:Generator_RowClassName="SchemaRow" msprop:Generator_RowChangingName="SchemaRowChanging" msprop:Generator_RowEvArgName="SchemaRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaRowChangeEventHandler" msprop:Generator_TablePropName="Schema" msprop:Generator_TableVarName="tableSchema" msprop:Generator_RowDeletingName="SchemaRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="SchemaId" msprop:Generator_UserColumnName="SchemaId" msprop:Generator_ColumnPropNameInRow="SchemaId" msprop:Generator_ColumnVarNameInTable="columnSchemaId" msprop:Generator_ColumnPropNameInTable="SchemaIdColumn" type="xs:int" />
@@ -2378,7 +2400,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="SchemaField" msprop:Generator_UserTableName="SchemaField" msprop:Generator_RowDeletedName="SchemaFieldRowDeleted" msprop:Generator_RowChangedName="SchemaFieldRowChanged" msprop:Generator_RowClassName="SchemaFieldRow" msprop:Generator_RowChangingName="SchemaFieldRowChanging" msprop:Generator_RowEvArgName="SchemaFieldRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaFieldRowChangeEventHandler" msprop:Generator_TableClassName="SchemaFieldDataTable" msprop:Generator_TableVarName="tableSchemaField" msprop:Generator_RowDeletingName="SchemaFieldRowDeleting" msprop:Generator_TablePropName="SchemaField">
+        <xs:element name="SchemaField" msprop:Generator_UserTableName="SchemaField" msprop:Generator_RowDeletedName="SchemaFieldRowDeleted" msprop:Generator_TableClassName="SchemaFieldDataTable" msprop:Generator_RowChangedName="SchemaFieldRowChanged" msprop:Generator_RowClassName="SchemaFieldRow" msprop:Generator_RowChangingName="SchemaFieldRowChanging" msprop:Generator_RowEvArgName="SchemaFieldRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaFieldRowChangeEventHandler" msprop:Generator_TablePropName="SchemaField" msprop:Generator_TableVarName="tableSchemaField" msprop:Generator_RowDeletingName="SchemaFieldRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="SchemaId" msprop:Generator_UserColumnName="SchemaId" msprop:Generator_ColumnPropNameInRow="SchemaId" msprop:Generator_ColumnVarNameInTable="columnSchemaId" msprop:Generator_ColumnPropNameInTable="SchemaIdColumn" type="xs:int" />
@@ -2387,7 +2409,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="SchemaTemplate" msprop:Generator_UserTableName="SchemaTemplate" msprop:Generator_RowDeletedName="SchemaTemplateRowDeleted" msprop:Generator_RowChangedName="SchemaTemplateRowChanged" msprop:Generator_RowClassName="SchemaTemplateRow" msprop:Generator_RowChangingName="SchemaTemplateRowChanging" msprop:Generator_RowEvArgName="SchemaTemplateRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaTemplateRowChangeEventHandler" msprop:Generator_TableClassName="SchemaTemplateDataTable" msprop:Generator_TableVarName="tableSchemaTemplate" msprop:Generator_RowDeletingName="SchemaTemplateRowDeleting" msprop:Generator_TablePropName="SchemaTemplate">
+        <xs:element name="SchemaTemplate" msprop:Generator_UserTableName="SchemaTemplate" msprop:Generator_RowDeletedName="SchemaTemplateRowDeleted" msprop:Generator_TableClassName="SchemaTemplateDataTable" msprop:Generator_RowChangedName="SchemaTemplateRowChanged" msprop:Generator_RowClassName="SchemaTemplateRow" msprop:Generator_RowChangingName="SchemaTemplateRowChanging" msprop:Generator_RowEvArgName="SchemaTemplateRowChangeEvent" msprop:Generator_RowEvHandlerName="SchemaTemplateRowChangeEventHandler" msprop:Generator_TablePropName="SchemaTemplate" msprop:Generator_TableVarName="tableSchemaTemplate" msprop:Generator_RowDeletingName="SchemaTemplateRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="SchemaId" msprop:Generator_UserColumnName="SchemaId" msprop:Generator_ColumnPropNameInRow="SchemaId" msprop:Generator_ColumnVarNameInTable="columnSchemaId" msprop:Generator_ColumnPropNameInTable="SchemaIdColumn" type="xs:int" />
@@ -2395,14 +2417,14 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="SysId" msprop:Generator_UserTableName="SysId" msprop:Generator_RowDeletedName="SysIdRowDeleted" msprop:Generator_RowChangedName="SysIdRowChanged" msprop:Generator_RowClassName="SysIdRow" msprop:Generator_RowChangingName="SysIdRowChanging" msprop:Generator_RowEvArgName="SysIdRowChangeEvent" msprop:Generator_RowEvHandlerName="SysIdRowChangeEventHandler" msprop:Generator_TableClassName="SysIdDataTable" msprop:Generator_TableVarName="tableSysId" msprop:Generator_RowDeletingName="SysIdRowDeleting" msprop:Generator_TablePropName="SysId">
+        <xs:element name="SysId" msprop:Generator_UserTableName="SysId" msprop:Generator_RowDeletedName="SysIdRowDeleted" msprop:Generator_TableClassName="SysIdDataTable" msprop:Generator_RowChangedName="SysIdRowChanged" msprop:Generator_RowClassName="SysIdRow" msprop:Generator_RowChangingName="SysIdRowChanging" msprop:Generator_RowEvArgName="SysIdRowChangeEvent" msprop:Generator_RowEvHandlerName="SysIdRowChangeEventHandler" msprop:Generator_TablePropName="SysId" msprop:Generator_TableVarName="tableSysId" msprop:Generator_RowDeletingName="SysIdRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="LastId" msprop:Generator_UserColumnName="LastId" msprop:Generator_ColumnPropNameInRow="LastId" msprop:Generator_ColumnVarNameInTable="columnLastId" msprop:Generator_ColumnPropNameInTable="LastIdColumn" type="xs:int" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Template" msprop:Generator_UserTableName="Template" msprop:Generator_RowDeletedName="TemplateRowDeleted" msprop:Generator_RowChangedName="TemplateRowChanged" msprop:Generator_RowClassName="TemplateRow" msprop:Generator_RowChangingName="TemplateRowChanging" msprop:Generator_RowEvArgName="TemplateRowChangeEvent" msprop:Generator_RowEvHandlerName="TemplateRowChangeEventHandler" msprop:Generator_TableClassName="TemplateDataTable" msprop:Generator_TableVarName="tableTemplate" msprop:Generator_RowDeletingName="TemplateRowDeleting" msprop:Generator_TablePropName="Template">
+        <xs:element name="Template" msprop:Generator_UserTableName="Template" msprop:Generator_RowDeletedName="TemplateRowDeleted" msprop:Generator_TableClassName="TemplateDataTable" msprop:Generator_RowChangedName="TemplateRowChanged" msprop:Generator_RowClassName="TemplateRow" msprop:Generator_RowChangingName="TemplateRowChanging" msprop:Generator_RowEvArgName="TemplateRowChangeEvent" msprop:Generator_RowEvHandlerName="TemplateRowChangeEventHandler" msprop:Generator_TablePropName="Template" msprop:Generator_TableVarName="tableTemplate" msprop:Generator_RowDeletingName="TemplateRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="TemplateId" msprop:Generator_UserColumnName="TemplateId" msprop:Generator_ColumnPropNameInRow="TemplateId" msprop:Generator_ColumnVarNameInTable="columnTemplateId" msprop:Generator_ColumnPropNameInTable="TemplateIdColumn" type="xs:int" />
@@ -2423,7 +2445,7 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Theme" msprop:Generator_UserTableName="Theme" msprop:Generator_RowDeletedName="ThemeRowDeleted" msprop:Generator_RowChangedName="ThemeRowChanged" msprop:Generator_RowClassName="ThemeRow" msprop:Generator_RowChangingName="ThemeRowChanging" msprop:Generator_RowEvArgName="ThemeRowChangeEvent" msprop:Generator_RowEvHandlerName="ThemeRowChangeEventHandler" msprop:Generator_TableClassName="ThemeDataTable" msprop:Generator_TableVarName="tableTheme" msprop:Generator_RowDeletingName="ThemeRowDeleting" msprop:Generator_TablePropName="Theme">
+        <xs:element name="Theme" msprop:Generator_UserTableName="Theme" msprop:Generator_RowDeletedName="ThemeRowDeleted" msprop:Generator_TableClassName="ThemeDataTable" msprop:Generator_RowChangedName="ThemeRowChanged" msprop:Generator_RowClassName="ThemeRow" msprop:Generator_RowChangingName="ThemeRowChanging" msprop:Generator_RowEvArgName="ThemeRowChangeEvent" msprop:Generator_RowEvHandlerName="ThemeRowChangeEventHandler" msprop:Generator_TablePropName="Theme" msprop:Generator_TableVarName="tableTheme" msprop:Generator_RowDeletingName="ThemeRowDeleting">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="ThemeId" msprop:Generator_UserColumnName="ThemeId" msprop:Generator_ColumnPropNameInRow="ThemeId" msprop:Generator_ColumnVarNameInTable="columnThemeId" msprop:Generator_ColumnPropNameInTable="ThemeIdColumn" type="xs:int" />
@@ -2523,6 +2545,10 @@ SELECT ThemeId, Name FROM Theme WHERE (ThemeId = @ThemeId)</CommandText>
       <xs:selector xpath=".//mstns:SchemaTemplate" />
       <xs:field xpath="mstns:SchemaId" />
       <xs:field xpath="mstns:TemplateId" />
+    </xs:unique>
+    <xs:unique name="SysId_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:SysId" />
+      <xs:field xpath="mstns:LastId" />
     </xs:unique>
     <xs:unique name="Template_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:Template" />

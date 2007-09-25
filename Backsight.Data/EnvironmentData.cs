@@ -90,7 +90,7 @@ namespace Backsight.Data
             return true;
         }
 
-        private int LastId
+        public int LastId
         {
             get
             {
