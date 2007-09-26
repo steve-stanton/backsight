@@ -87,6 +87,9 @@ namespace Backsight.SqlServer
                     // Add the entire content of the specified container
                     tf.Import(ed.Data);
                 });
+
+                Data.Clear();
+                Data.Load();
             }
 
             finally
