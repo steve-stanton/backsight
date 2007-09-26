@@ -241,7 +241,7 @@ namespace Backsight.Editor
         /// <param name="index">The spatial index to add to</param>
         internal virtual void AddToIndex(IEditSpatialIndex index)
         {
-            if (!IsDeleted)
+            if (!IsInactive)
                 index.Add(this);
         }
 
@@ -419,29 +419,29 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Is this feature inactive? A feature is considered to be inactive if
-        /// it has been superseded by something else (or marked as deleted)
+        /// it has been superseded by something else (or its creating operation is being undone)
         /// </summary>
         internal bool IsInactive
         {
-            get { return (IsFlagSet(FeatureFlag.Inactive) || IsFlagSet(FeatureFlag.Deleted)); }
+            get { return (IsFlagSet(FeatureFlag.Inactive) || IsFlagSet(FeatureFlag.Undoing)); }
             set { SetFlag(FeatureFlag.Inactive, value); }
         }
 
         /// <summary>
-        /// Has this feature been marked as deleted (see the <see cref="SetDeleted"/> and
+        /// Is the operation that created this feature being undone (see the <see cref="Undo"/> and
         /// <see cref="Restore"/> methods).
         /// </summary>
-        internal bool IsDeleted
+        internal bool IsUndoing
         {
-            get { return IsFlagSet(FeatureFlag.Deleted); }
-            set { SetFlag(FeatureFlag.Deleted, value); }
+            get { return IsFlagSet(FeatureFlag.Undoing); }
+            set { SetFlag(FeatureFlag.Undoing, value); }
         }
 
         /// <summary>
-        /// Marks this feature as "deleted". This gets called during rollback.
-        /// Certain derived classes override (e.g. see <c>LineFeature</c>).
+        /// Marks this feature for removal. This gets called when the operation that created
+        /// it is getting undone. Certain derived classes override (e.g. see <c>LineFeature</c>).
         /// </summary>
-        internal virtual void SetDeleted()
+        internal virtual void Undo()
         {
             // Mark feature as deleted. In addition to setting the
             // FFL_DELETED bit, this nulls out the pointer to the
@@ -456,7 +456,7 @@ namespace Backsight.Editor
             // For any other op, it shouldn't really matter whether a
             // feature marked for deletion has no creator.
 
-            SetFlag(FeatureFlag.Deleted, true);
+            SetFlag(FeatureFlag.Undoing, true);
 
             // Try without nulling the creator (the comment above may be
             // irrelevant in the Backsight implementation).
@@ -554,7 +554,7 @@ namespace Backsight.Editor
         internal virtual bool Restore()
         {
             // Return if this feature doesn't currently have the "deleted" state
-            if (!IsDeleted)
+            if (!IsUndoing)
                 return false;
 
             // If this feature referred to an ID, restore it.
@@ -569,7 +569,7 @@ namespace Backsight.Editor
             index.Add(this);
 
             // Remember that the feature is now active
-            IsDeleted = false;
+            IsUndoing = false;
 
             return true;
         }
@@ -585,7 +585,7 @@ namespace Backsight.Editor
         internal virtual void Clean()
         {
             // Return if this feature hasn't been marked for deletion
-            if (!IsDeleted)
+            if (!IsUndoing)
                 return;
 
             // Return if there is no feature ID.

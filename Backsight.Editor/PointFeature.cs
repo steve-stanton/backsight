@@ -200,7 +200,7 @@ namespace Backsight.Editor
 
         public Boundary[] IncidentBoundaries(LayerList layers)
         {
-            List<Boundary> result = new List<Boundary>(4);
+            List<Boundary> result = new List<Boundary>(4); // 4 is frequently the number in the result
 
             foreach (IFeatureDependent fd in Dependents)
             {
@@ -210,12 +210,14 @@ namespace Backsight.Editor
 
                 if (fd is LineFeature)
                     (fd as LineFeature).AddIncidentBoundaries(result, layers, this);
+                    /*
                 else if (fd is Boundary)
                 {
                     Boundary b = (fd as Boundary);
                     if (b.IsOverlap(layers))
                         result.Add(b);
                 }
+                     */
             }
 
             return result.ToArray();

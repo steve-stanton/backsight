@@ -109,7 +109,7 @@ namespace Backsight.Editor.Operations
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
         /// <returns>True if operation was rolled back ok</returns>
-        internal override bool Rollback()
+        internal override bool Undo()
         {
             base.OnRollback();
 
@@ -173,7 +173,7 @@ namespace Backsight.Editor.Operations
                         if (fd is LineFeature)
                         {
                             LineFeature line = (fd as LineFeature);
-                            if (!line.IsDeleted && !all.Contains(line))
+                            if (!line.IsUndoing && !all.Contains(line))
                                 all.Add(line);
                         }
                     }
@@ -186,7 +186,7 @@ namespace Backsight.Editor.Operations
 
             // Mark the features as deleted
             foreach (Feature f in m_Deletions)
-                f.IsDeleted = true;
+                f.IsUndoing = true;
 
             // Clean the map
             MapModel.CleanEdit();

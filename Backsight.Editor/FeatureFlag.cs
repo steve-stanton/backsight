@@ -24,12 +24,14 @@ namespace Backsight.Editor
     enum FeatureFlag : ushort
     {
         /// <summary>
-        /// Feature has been deleted
+        /// Feature is being rolled back (user is undoing the operation that
+        /// created a feature)
         /// </summary>
-        Deleted=0x0001,
+        Undoing=0x0001,
 
         /// <summary>
-        /// Feature has been superseded
+        /// Feature has been superseded. This flag gets set if a feature should no longer
+        /// appear on the current editing layer.
         /// </summary>
         Inactive=0x0002,
 

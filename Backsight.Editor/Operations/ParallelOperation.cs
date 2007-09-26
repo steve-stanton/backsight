@@ -227,7 +227,7 @@ namespace Backsight.Editor.Operations
             SetMoved(m_Term2b);
         }
 
-        internal override bool Rollback()
+        internal override bool Undo()
         {
             base.OnRollback();
 

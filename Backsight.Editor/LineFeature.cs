@@ -314,9 +314,9 @@ namespace Backsight.Editor
         /// Marks this line as "deleted". When you do this, any system-defined split
         /// sections will be marked as well. This gets called during rollback.
         /// </summary>
-        internal override void SetDeleted()
+        internal override void Undo()
         {
-            if (IsDeleted)
+            if (IsUndoing)
                 return;
             /*
 	// If the line primitive is used by any subsequent operation,
@@ -333,7 +333,7 @@ namespace Backsight.Editor
 	}
 
 	// Remember whether this arc is the result of a split (the info
-	// will be nulled out when we call CeFeature::SetDeleted).
+	// will be nulled out when we call CeFeature::Undo).
 	const LOGICAL isSplit = IsSplit();
 
 	// Mark the base class (sets FFL_DELETED and nulls creating op).
@@ -352,7 +352,7 @@ namespace Backsight.Editor
 	m_pLine->UndoEndOverlaps(*this);
 
              */
-            base.SetDeleted();
+            base.Undo();
         }
 
         /// <summary>
@@ -523,7 +523,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             DefineFeature(result);
 
             if (result.IsTopological)
-                result.m_Topology = new Boundary(this);
+                result.m_Topology = new Boundary(result);
 
             return result;
         }

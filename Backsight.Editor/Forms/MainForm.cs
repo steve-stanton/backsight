@@ -62,7 +62,7 @@ namespace Backsight.Editor.Forms
             string cs = GlobalUserSetting.LastConnection;
             if (String.IsNullOrEmpty(cs))
             {
-                MessageBox.Show("No connection string");
+                MessageBox.Show("Cannot obtain connection to environment database.");
                 Close();
             }
 
@@ -507,7 +507,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         internal string AskForFileName()
         {
             SaveFileDialog dial = new SaveFileDialog();
-            dial.DefaultExt = "4s";
+            dial.DefaultExt = "bs";
             if (dial.ShowDialog() == DialogResult.OK)
                 return dial.FileName;
 
