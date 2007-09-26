@@ -171,7 +171,7 @@ namespace Backsight.Editor
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
         /// <returns>True if operation was rolled back ok</returns>
-        abstract internal bool Rollback();
+        abstract internal bool Undo();
 
         /// <summary>
         /// Rollback any "extra things" known to this operation. Should be called at
@@ -215,7 +215,7 @@ namespace Backsight.Editor
         protected void Rollback(Feature f)
         {
             if (f!=null && f.Creator==this)
-                f.SetDeleted();
+                f.Undo();
         }
 
         /// <summary>

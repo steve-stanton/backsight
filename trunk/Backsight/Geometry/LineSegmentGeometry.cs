@@ -129,27 +129,6 @@ namespace Backsight.Geometry
             double d = BasicGeom.Distance(g.Start, g.End);
             return new Length(d);
         }
-        /*
-        public ILength GetLength(IPosition asFarAs)
-        {
-            return LineSegmentGeometry.GetLength(this, asFarAs); 
-        }
-
-        public static ILength GetLength(ILineSegmentGeometry g, IPosition asFarAs)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public bool GetPosition(ILength dist, out IPosition pos)
-        {
-            return LineSegmentGeometry.GetPosition(this, dist, out pos);
-        }
-
-        public static bool GetPosition(ILineSegmentGeometry g, ILength dist, out IPosition pos)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-         */
 
         /// <summary>
         /// Gets the position that is a specific distance from the start of a line segment.

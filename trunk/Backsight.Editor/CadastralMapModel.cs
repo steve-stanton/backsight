@@ -17,12 +17,13 @@ using System;
 using System.Collections.Generic;
 using Sys=System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
 using Backsight.Environment;
-using System.Diagnostics;
+using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
 {
@@ -51,6 +52,8 @@ namespace Backsight.Editor
             CadastralMapModel cmm = LoadFile(s);
             cmm.m_ModelFileName = new ModelFileName(s);
             cmm.OnOpen();
+            Settings.Default.LastMap = s;
+            Settings.Default.Save();
             return cmm;
         }
 

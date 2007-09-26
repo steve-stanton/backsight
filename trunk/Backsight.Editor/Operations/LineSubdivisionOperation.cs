@@ -289,7 +289,7 @@ namespace Backsight.Editor.Operations
             m_Line.AddReference(this);
         }
 
-        internal override bool Rollback()
+        internal override bool Undo()
         {
             throw new Exception("The method or operation is not implemented.");
         }

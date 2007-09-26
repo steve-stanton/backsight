@@ -93,7 +93,7 @@ namespace Backsight.Editor.Operations
             return null; // nothing to do
         }
 
-        internal override bool Rollback()
+        internal override bool Undo()
         {
             base.OnRollback();
             Rollback(m_NewPoint);

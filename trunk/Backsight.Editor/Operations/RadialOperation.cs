@@ -285,66 +285,6 @@ LOGICAL CeRadial::Execute	( const CeDirection& dir
         }
 
 /*
-//	@mfunc	Rollback this operation.
-LOGICAL CeRadial::Rollback ( void ) {
-	
-	// Rollback any sub-operations.
-	CeOperation::OnRollback();
-
-	// Delete observations.
-
-	m_pDirection->OnRollback(this);
-	delete m_pDirection;
-	m_pDirection = 0;
-
-	m_pLength->OnRollback(this);
-	delete m_pLength;
-	m_pLength = 0;
-
-	// Erase the sideshot point and mark it as deleted.
-
-	if ( m_pTo ) {
-		m_pTo->Erase();
-		m_pTo->SetDeleted();
-	}
-
-	// If we created a line, erase it and and mark it as deleted.
-
-	if ( m_pArc ) {
-		m_pArc->Erase();
-		m_pArc->SetDeleted();
-	}
-
-	return TRUE;
-
-} // end of Rollback
- */
-
-/*
-//	@mfunc	Rollforward this operation.
-//	@rdesc	TRUE on success.
-LOGICAL CeRadial::Rollforward ( void ) {
-
-	// Return if this operation has not been marked as changed.
-	if ( !this->IsChanged() ) return CeOperation::OnRollforward();
-
-	// Re-calculate the position of the sideshot point.
-	CeVertex to;
-	if ( !CuiRadial::Calculate(m_pDirection,m_pLength,to) ) {
-		ShowMessage("Cannot re-calculate position of sideshot point.");
-		return FALSE;
-	}
-
-	// Move the sideshot point.
-	m_pTo->Move(to);
-
-	// Rollforward the base class.
-	return CeOperation::OnRollforward();
-
-} // end of Rollforward
-*/
-
-/*
 //	@mfunc	Check whether this operation makes reference to
 //			a specific feature.
 //	@parm	The feature to check for.
@@ -425,7 +365,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
             m_Length.AddReferences(this);
         }
 
-        internal override bool Rollback()
+        internal override bool Undo()
         {
             base.OnRollback();
 
