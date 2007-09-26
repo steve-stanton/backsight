@@ -414,54 +414,6 @@ namespace Backsight.Editor
         /// <param name="index">The spatial index to add to</param>
         internal void AddToIndex(IEditSpatialIndex index)
         {
-            /*
-            if (m_Left==null && m_Right==null)
-                return;
-
-            using (StreamWriter sw = File.AppendText(@"C:\Temp\Debug.txt"))
-            {
-                bool left=false;
-                bool right =false;
-
-                if (m_Left!=null)
-                    left = m_Left.AddToIndex(index);
-
-                if (m_Right!=null)
-                    right = m_Right.AddToIndex(index);
-
-                string L = m_Left.ToString();
-                if (left)
-                    L += "+x";
-
-                string R = m_Right.ToString();
-                if (right)
-                    R += "+x";
-
-                sw.WriteLine(String.Format("{0} L={1} R={2}", m_Line.ToString(), L, R));
-            }
-             */
-
-            if (m_Line.ToString()=="0.7741")
-            {
-                //System.Windows.Forms.MessageBox.Show("at 0.7741");
-                int junk=0;
-
-                // Cycle left polygon to confirm all component boundaries refer to the
-                // same instance!
-
-                /*
-                foreach (Boundary b in m_Left.Edge)
-                {
-                    if (object.ReferenceEquals(m_Left, b.m_Left))
-                        System.Windows.Forms.MessageBox.Show(b.m_Line.ToString()+" L is 700");
-                    else if (object.ReferenceEquals(m_Left, b.m_Right))
-                        System.Windows.Forms.MessageBox.Show(b.m_Line.ToString()+" R is 700");
-                    else
-                        System.Windows.Forms.MessageBox.Show(b.m_Line.ToString()+" doesn't refer to 700");
-                }
-                     */
-            }
-
             if (m_Left!=null)
                 m_Left.AddToIndex(index);
 
