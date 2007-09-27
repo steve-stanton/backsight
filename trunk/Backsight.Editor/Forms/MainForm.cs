@@ -1317,13 +1317,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsLineSubdividePolygonEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void LineSubdividePolygon(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new PolygonSubdivisionUI(action);
+            m_Controller.StartCommand(cmd);
         }
+
         #endregion
 
         #region Text menu

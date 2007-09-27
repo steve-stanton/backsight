@@ -580,5 +580,10 @@ namespace Backsight.Editor
             IPointGeometry[] approx = CircularArcGeometry.GetApproximation(this, arcTol);
             MultiSegmentGeometry.AppendPositions(approx, positions, reverse, wantFirst);
         }
+
+        internal override uint Intersect(IntersectionResult results)
+        {
+            return results.IntersectArc(this);
+        }
     }
 }

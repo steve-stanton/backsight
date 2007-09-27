@@ -29,7 +29,6 @@ namespace Backsight.Editor
         /// starts and also ends at the terminal, it should appear in the
         /// returned array just once.
         /// </summary>
-        /// <param name="layers">The layers the boundaries must overlap</param>
-        Boundary[] IncidentBoundaries(LayerList layers);
+        Boundary[] IncidentBoundaries();
     }
 }

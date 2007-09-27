@@ -198,7 +198,7 @@ namespace Backsight.Editor
             get { return m_Geom.Northing; }
         }
 
-        public Boundary[] IncidentBoundaries(LayerList layers)
+        public Boundary[] IncidentBoundaries()
         {
             List<Boundary> result = new List<Boundary>(4); // 4 is frequently the number in the result
 
@@ -209,15 +209,7 @@ namespace Backsight.Editor
                 // at the end of another line).
 
                 if (fd is LineFeature)
-                    (fd as LineFeature).AddIncidentBoundaries(result, layers, this);
-                    /*
-                else if (fd is Boundary)
-                {
-                    Boundary b = (fd as Boundary);
-                    if (b.IsOverlap(layers))
-                        result.Add(b);
-                }
-                     */
+                    (fd as LineFeature).AddIncidentBoundaries(result, this);
             }
 
             return result.ToArray();

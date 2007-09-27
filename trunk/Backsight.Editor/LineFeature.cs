@@ -119,7 +119,7 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The (extended) geometry for this line
+        /// The geometry for this line
         /// </summary>
         internal LineGeometry LineGeometry
         {
@@ -412,9 +412,8 @@ namespace Backsight.Editor
         /// terminate at the specified point.
         /// </summary>
         /// <param name="result">The list to append to</param>
-        /// <param name="layers">The layers the boundaries must overlap</param>
         /// <param name="t">The point the boundaries must terminate at</param>
-        internal void AddIncidentBoundaries(List<Boundary> result, LayerList layers, ITerminal t)
+        internal void AddIncidentBoundaries(List<Boundary> result, ITerminal t)
         {
             if (m_Topology!=null)
             {

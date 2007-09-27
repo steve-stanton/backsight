@@ -78,8 +78,11 @@
     <Compile Include="FeatureId.cs" />
     <Compile Include="FileImportSource.cs" />
     <Compile Include="FindCirclesQuery.cs" />
+    <Compile Include="FindIntersectionsQuery.cs" />
     <Compile Include="FindIslandContainerQuery.cs" />
     <Compile Include="FindPointContainerQuery.cs" />
+    <Compile Include="FindPointQuery.cs" />
+    <Compile Include="FindPointsOnLineQuery.cs" />
     <Compile Include="Forms\ContainerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -163,6 +166,7 @@
     <Compile Include="LineSubdivisionUI.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
     <Compile Include="Operations\MoveTextOperation.cs" />
+    <Compile Include="PolygonSubdivisionUI.cs" />
     <Compile Include="RingFlag.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="RingMetrics.cs" />
@@ -227,7 +231,6 @@
     <Compile Include="IntersectionFinder.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="LayerFacade.cs" />
-    <Compile Include="LayerList.cs" />
     <Compile Include="LayerRange.cs" />
     <Compile Include="LineAnnotationOptions.cs" />
     <Compile Include="LineAnnotationStyle.cs" />
@@ -469,6 +472,7 @@
   <ItemGroup>
     <Content Include="Resources\Editor.ico" />
     <Content Include="Resources\PenCursor.cur" />
+    <Content Include="Resources\PolygonSubdivisionCursor.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

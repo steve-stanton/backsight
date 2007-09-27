@@ -19,12 +19,10 @@ using System.Diagnostics;
 namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="26-FEB-1998" />
-    /// 
     /// <revision author="Steve Stanton" date="03-DEC-2002">
     /// Major revision to accomodate polygons in which the boundary may contain
     /// points on secondary faces.
     /// </revision>
-    /// 
     /// <summary>
     /// Information that can be used to automatically subdivide a polygon.
     /// </summary>
@@ -184,7 +182,7 @@ namespace Backsight.Editor
 
 	        for (uint i=0; i<m_Links.Length; i++)
             {
-		        uint nx = this.SetIntersectCount(i);
+		        uint nx = this.SetIntersectionCount(i);
 		        maxnx = Math.Max(maxnx,nx);
 	        }
 
@@ -265,7 +263,7 @@ namespace Backsight.Editor
 		        for (uint i=0; i<m_Links.Length; i++ )
                 {
 			        if (m_Links[i].NumIntersect > 0)
-				        maxnx = Math.Max(maxnx,this.SetIntersectCount(i));
+				        maxnx = Math.Max(maxnx,this.SetIntersectionCount(i));
 		        }
 
                 // Make sure we don't go into an infinite loop.
@@ -284,6 +282,31 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Sets the number of intersections for one of the polygon link points.
+        /// </summary>
+        /// <param name="index">The array index of the link point to process.</param>
+        /// <returns>The number of intersections assigned.</returns>
+        uint SetIntersectionCount(uint index)
+        {
+            // No intersections so far
+            uint nx=0;
+
+            //	Point to the thing we want to set the count for.
+            PolygonLink link = m_Links[index];
+
+            // Go through all link points searching for intersections.
+            for (uint i=0; i<m_Links.Length; i++)
+            {
+                if (link.IsIntersected(m_Links[i]))
+                    nx++;
+            }
+
+            // Set the intersect count.
+            link.NumIntersect = nx;
+            return nx;
+        }
+
+        /// <summary>
         /// Tries to set the link for one of the link points.
         /// </summary>
         /// <param name="start">The array index of the link point to process.</param>
@@ -293,46 +316,46 @@ namespace Backsight.Editor
         bool SetLink(uint start, double angtol)
         {
             // Note our lucky contestant and it's side number.
-        	PolygonLink from = m_Links[start];
-	        uint fromside = from.Side;
+            PolygonLink from = m_Links[start];
+            uint fromside = from.Side;
 
             // Nothing to do if no side number (corner point).
-	        if (fromside==0)
+            if (fromside==0)
                 return false;
 
             // Skip if already linked.
-	        if (from.IsLinked)
+            if (from.IsLinked)
                 return false;
 
             // Are we doing a connection for a radial point? In that case, we are
             // allowed to connect to corner points. We do radial points FIRST.
-	        bool radial = from.IsRadial;
+            bool radial = from.IsRadial;
 
 
             // Are we doing a curve end point? We do curve end points LAST.
-	        bool curveend = from.IsCurveEnd;
+            bool curveend = from.IsCurveEnd;
 
             // Initialize info on best link so far.
-	        PolygonLink to = null;
-	        double bestangle = Constants.PIMUL2;
-	        double thisdiff = Constants.PIMUL2;
-	        double othrdiff = Constants.PIMUL2;
+            PolygonLink to = null;
+            double bestangle = Constants.PIMUL2;
+            double thisdiff = Constants.PIMUL2;
+            double othrdiff = Constants.PIMUL2;
 
-	        double MINDSQ = 4.0;		// Min distance (squared) between points.
+            double MINDSQ = 4.0;		// Min distance (squared) between points.
 
             // Loop through every link point, looking for a match.
-	        for (uint j=0; j<m_Links.Length; j++)
+            for (uint j=0; j<m_Links.Length; j++)
             {
                 // Skip if this is the main candidate.
-		        if (j==start)
+                if (j==start)
                     continue;
 
                 // Skip if no side number (corners), or it's the same side
                 // as the main candidate. We do permit an extension to a corner
                 // if we're doing a radial link.
-		        uint curside = m_Links[j].Side;
+                uint curside = m_Links[j].Side;
                 //	if ( curside==0 || curside==fromside ) continue;
-		        if (curside==0 && !radial)
+                if (curside==0 && !radial)
                     continue;
 
                 // Skip if already linked.
@@ -340,19 +363,19 @@ namespace Backsight.Editor
 
                 // Only consider curve end points if the main candidate is a
                 // curve end point too, or a radial.
-		        if (m_Links[j].IsCurveEnd && !(curveend || radial))
+                if (m_Links[j].IsCurveEnd && !(curveend || radial))
                     continue;
 
                 // Skip if the distance to the other point is smaller
                 // than 2 meters (squared) on the ground (the number's just a stab)
-		        if (from.DistanceSquared(m_Links[j]) < MINDSQ)
+                if (from.DistanceSquared(m_Links[j]) < MINDSQ)
                     continue;
 
                 // Get the angle formed between the candidate's reference
                 // bearing, and the position of the current link point. If
                 // it exceeds the angular tolerance, skip to next.
-		        double angle1 = from.GetAngle(m_Links[j]);
-		        if (angle1 > angtol)
+                double angle1 = from.GetAngle(m_Links[j]);
+                if (angle1 > angtol)
                     continue;
 
                 // Do the reverse test so long as the main candidate is
@@ -361,19 +384,19 @@ namespace Backsight.Editor
                 // a perpendicular to the straight edge, so it probably
                 // won't be within tolerance of the radial).
 
-		        double angle2;
+                double angle2;
 
-		        if (radial || m_Links[j].IsRadial)
-			        angle2 = angle1;
-		        else
-			        angle2 = m_Links[j].GetAngle(from);
+                if (radial || m_Links[j].IsRadial)
+                    angle2 = angle1;
+                else
+                    angle2 = m_Links[j].GetAngle(from);
 
-		        if (angle2 > angtol)
+                if (angle2 > angtol)
                     continue;
 
                 // Skip if the candidate was previously linked, and the angle
                 // we have now is worse.
-		        if (m_Links[j].IsLinked && angle2 > m_Links[j].LinkAngle)
+                if (m_Links[j].IsLinked && angle2 > m_Links[j].LinkAngle)
                     continue;
 
                 // If we are NOT doing a radial link, confirm that the proposed
@@ -395,55 +418,79 @@ namespace Backsight.Editor
                 // }
 
                 // Use the best angular deviation.
-		        double angle = Math.Min(angle1,angle2);
+                double angle = Math.Min(angle1, angle2);
 
                 // If the deviation is better than anything we already have,
                 // and the link is valid, remember the current link point
                 // as the best one so far.
 
-		        if ( angle<bestangle && from.IsLinkValid(m_Links[j],m_Polygon))
+                if (angle<bestangle && from.IsLinkValid(m_Links[j], m_Polygon))
                 {
-			        bestangle = angle;
-			        thisdiff = angle1;
-			        othrdiff = angle2;
-			        to = m_Links[j];
-		        }
+                    bestangle = angle;
+                    thisdiff = angle1;
+                    othrdiff = angle2;
+                    to = m_Links[j];
+                }
 
-	        } // next point
+            } // next point
 
             // Set the link if we got one.
-	        if (to!=null)
+            if (to!=null)
             {
-		        from.SetLink(to, thisdiff, othrdiff);
+                from.SetLink(to, thisdiff, othrdiff);
                 return true;
-        	}
+            }
 
-    		return false;
+            return false;
         }
 
         /// <summary>
-        /// Sets the number of intersections for one of the polygon link points.
+        /// Tries to get a link between two points.
+
         /// </summary>
-        /// <param name="index">The array index of the link point to process.</param>
-        /// <returns>The number of intersections assigned.</returns>
-        uint SetIntersectCount(uint index)
+        /// <remarks>
+        /// You can cycle through the links as soon as the constructor has been called, using
+        /// a loop like:
+        /// <code>
+        /// 
+        ///   PolygonSub sub = new PolygonSub(pol);
+        ///   PointFeature ps, pe;
+        ///   for (int i=0; sub.GetLink(i,out ps, out pe); i++);
+        /// 
+        /// </code>
+        /// </remarks>
+        /// <param name="index">The index number of the link you want.</param>
+        /// <param name="start">The point at the start of the link.</param>
+        /// <param name="end">The point at the end of the link.</param>
+        /// <returns>True if a link was returned</returns>
+        internal bool GetLink(int index, out PointFeature start, out PointFeature end)
         {
-            // No intersections so far
-            uint nx=0;
+            // Initialize return variables.
+            start = end = null;
 
-            //	Point to the thing we want to set the count for.
-            PolygonLink link = m_Links[index];
+            // Loop through each point, checking to see whether it has a link. If so,
+            // check if we have reached the desired index, and increment link count. This
+            // may not be particularly efficient, but there shouldn't be that many links.
 
-            // Go through all link points searching for intersections.
-            for (uint i=0; i<m_Links.Length; i++)
+            PointFeature s, e; // Start and end of link
+            int nLink = 0;     // No links so far
+
+            for (int i=0; i<m_Links.Length; i++)
             {
-                if (link.IsIntersected(m_Links[i]))
-                    nx++;
+		        if (m_Links[i].GetLink(out s, out e))
+                {
+			        if (nLink==index)
+                    {
+				        start = s;
+				        end = e;
+				        return true;
+			        }
+			        nLink++;
+		        }
             }
-
-            // Set the intersect count.
-            link.NumIntersect = nx;
-            return nx;
+        
+            // Specified index is greater than the number of links we actually have.
+            return false;
         }
     }
 }

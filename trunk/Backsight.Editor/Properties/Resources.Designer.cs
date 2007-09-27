@@ -172,6 +172,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static byte[] PolygonSubdivisionCursor {
+            get {
+                object obj = ResourceManager.GetObject("PolygonSubdivisionCursor", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap RedCar {
             get {
                 object obj = ResourceManager.GetObject("RedCar", resourceCulture);

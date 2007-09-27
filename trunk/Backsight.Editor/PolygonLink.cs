@@ -274,7 +274,7 @@ namespace Backsight.Editor
         /// <param name="to">The point where the link ends.</param>
         /// <returns>True if a link has been returned. False if no link (in that case,
         /// the 2 return parameters come back as nulls).</returns>
-        bool GetLink(out PointFeature from, out PointFeature to)
+        internal bool GetLink(out PointFeature from, out PointFeature to)
         {
 	        if ( m_Link!=null && !m_IsEnd )
             {

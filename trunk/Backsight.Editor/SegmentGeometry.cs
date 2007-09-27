@@ -287,5 +287,10 @@ namespace Backsight.Editor
                 positions.Add(End);
             }
         }
+
+        internal override uint Intersect(IntersectionResult results)
+        {
+            return results.IntersectSegment(this);
+        }
     }
 }

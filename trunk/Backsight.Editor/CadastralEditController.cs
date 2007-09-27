@@ -162,6 +162,9 @@ namespace Backsight.Editor
         {
             if (k.KeyCode == Keys.Delete && !IsCommandRunning && Selection.Count>0)
                 StartCommand(new DeletionUI(null)); // and finishes!
+
+            if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
+                m_Command.Escape();
         }
 
         internal void Create()
@@ -432,14 +435,14 @@ namespace Backsight.Editor
             if (!Object.ReferenceEquals(cmd, m_Command))
                 throw new InvalidOperationException();
 
+            // Make sure the normal cursor is on screen.
+            SetNormalCursor();
+
             cmd.ActiveDisplay.RestoreLastDraw();
 
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
                 m_IsAutoSelect = -m_IsAutoSelect;
-
-            // Make sure the normal cursor is on screen.
-            SetNormalCursor();
 
             m_AutoSaver.AbortEdit(m_Command);
 
@@ -467,10 +470,14 @@ namespace Backsight.Editor
 			    }
 		    }
              */
+            SetNormalCursor();
             RefreshAllDisplays(); // try it now
 
             m_AutoSaver.FinishEdit(m_Command);
-            OnFinishCommand();
+
+            // Re-enable auto-highlighting if it was on before.
+            if (m_IsAutoSelect<0)
+                m_IsAutoSelect = -m_IsAutoSelect;
 
             /*
             if ( pCmd->GetCommandId() == ID_FEATURE_UPDATE )
@@ -489,60 +496,6 @@ namespace Backsight.Editor
             // ...the above is a bit involved, so let's just refresh the whole draw
             // from the model.
             //RefreshAllDisplays();
-        }
-
-        /// <summary>
-        /// Finishes a command handler.
-        /// </summary>
-        private void OnFinishCommand()
-        {
-            /*
-	        // Do any command-specific cleanup.
-
-	        switch ( m_Op ) {
-
-	        case ID_LABEL_MOVE:	m_pLabel = 0; break;
-
-	        case ID_LINE_NEW:
-
-		        // If this window was capturing the mouse movements,
-		        // release now.
-		        if ( GetCapture()==this ) ReleaseCapture();
-
-		        // Make sure nothing is currently highlighted
-		        m_Sel.RemoveSel();
-
-		        // Ensure any intersection stuff has been erased.
-		        this->ShowX(0);
-
-		        // Undefine the start & end locations.
-		        m_pStart = 0;
-		        m_pEnd = 0;
-
-		        break;
-
-	        case ID_LINE_CURVE:
-
-		        if ( GetCapture()==this ) ReleaseCapture();
-		        DrawCircles(FALSE);
-		        m_Circles.Remove();
-		        m_pStart = 0;
-		        m_pEnd = 0;
-		        InvalidateRect(0,FALSE);
-
-	        default: break;
-	        }
-
-	        // Clear current command ID.
-	        m_Op = 0;
-             */
-
-            // Re-enable auto-highlighting if it was on before.
-            if (m_IsAutoSelect<0)
-                m_IsAutoSelect = -m_IsAutoSelect;
-
-            // Make sure the normal cursor is on screen.
-            SetNormalCursor();
         }
 
         /// <summary>

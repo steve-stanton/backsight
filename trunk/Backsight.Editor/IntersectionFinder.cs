@@ -21,10 +21,8 @@ namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="13-FEB-1998" was="CeXObject" />
     /// <summary>
-    /// Detects intersections of some <c>IIntersectable</c> with the map. The things that it
-    /// intersects are held in a series of <c>IntersectionResult</c> objects.
-    /// <see>IIntersectable</see>
-    /// <see>IntersectionResult</see>
+    /// Detects intersections of a line with the map. The things that it
+    /// intersects are held in a series of <see cref="IntersectionResult"/> objects.
     /// </summary>
     class IntersectionFinder
     {
@@ -33,13 +31,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The thing being intersected
         /// </summary>
-	    LineFeature m_Object;
-
-        /// <summary>
-        /// The layers that the intersection should be restricted to (null if no
-        /// restriction).
-        /// </summary>
-        LayerList m_Layers;
+	    LineGeometry m_Line;
 
         /// <summary>
         /// The things that are intersected
@@ -55,27 +47,19 @@ namespace Backsight.Editor
         /// </summary>
         IntersectionFinder()
         {
-            m_Object = null;
-            m_Layers = null;
+            m_Line = null;
             m_Intersects = new List<IntersectionResult>();
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="prim">The primitive being intersected.</param>
-        /// <param name="layers">The layers to intersect with (null means everything).</param>
+        /// <param name="line">The primitive being intersected.</param>
         /// <param name="wantEndEnd">Should end-to-end intersections (simple ones) be included
         /// in the results. Default=TRUE.</param>
-        internal IntersectionFinder(LineFeature prim, LayerList layers, bool wantEndEnd)
+        internal IntersectionFinder(LineGeometry line, bool wantEndEnd)
         {
-            m_Object = prim;
-
-            if (layers!=null)
-                m_Layers = new LayerList(layers);
-            else
-                m_Layers = null;
-
+            m_Line = line;
             Load(wantEndEnd);
         }
 
@@ -113,9 +97,9 @@ namespace Backsight.Editor
         /// <summary>
         /// The thing being intersected
         /// </summary>
-        internal LineFeature Geometry
+        internal LineGeometry Geometry
         {
-            get { return m_Object; }
+            get { return m_Line; }
         }
 
         /// <summary>
@@ -125,18 +109,9 @@ namespace Backsight.Editor
         /// in the results. Applies only when the primitive being intersected is a line.</param>
         void Load(bool wantEndEnd)
         {
-            // Initialize intersection results.
-            m_Intersects = new List<IntersectionResult>();
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            m_Intersects = new FindIntersectionsQuery(index, m_Line, wantEndEnd).Result;
 
-            // Get the window of the candidate object.
-            IEditWindow searchwin = new Window(m_Object.Extent);
-
-            // Add on a 2mm buffer (on the ground). This is intended to help cover the
-            // fact that some circular arcs may be out by that much.
-            ILength dim = new Length(0.002);
-            searchwin.Expand(dim);
-
-            throw new NotImplementedException();
         }
         /*
 
@@ -217,17 +192,12 @@ namespace Backsight.Editor
         {
             get
             {
-                // If this intersection was not for a line, no splits are ever needed.
-                LineFeature line = (m_Object as LineFeature);
-                if (line==null)
-                    return false;
-
                 // Go through each object we intersected with, looking for an intersection
                 // that does not occur at the ends of the line primitive.
 
                 foreach(IntersectionResult r in m_Intersects)
                 {
-                    if (r.IsSplitOn(line))
+                    if (r.IsSplitOn(m_Line))
                         return true;
                 }
 
@@ -241,23 +211,20 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="splitter">The line that is causing the split (the same as a call to <c>this.Line</c>).</param>
         /// <param name="retrims">List of intersected lines that will need to be retrimmed.</param>
+        /*
         void SplitX(LineFeature splitter, List<LineFeature> retrims)
         {
-            Debug.Assert(Object.ReferenceEquals(m_Object, splitter));
+            Debug.Assert(Object.ReferenceEquals(m_Line, splitter));
 
 	        // Return if no intersections.
 	        if (m_Intersects.Count==0)
-                return;
-
-	        // A set of applicable layers must be defined.
-	        if (m_Layers==null)
                 return;
 
 	        // Cut up the things that were intersected, making grazing
 	        // portions non-topological.
             foreach (IntersectionResult r in m_Intersects)
             {
-                r.SplitX(m_Layers, retrims);
+                r.SplitX(retrims);
 	        }
 
 	        // Combine the results and get the splitter to cut itself up.
@@ -265,5 +232,6 @@ namespace Backsight.Editor
 	        //splitter.Split(xres);
             throw new NotImplementedException();
         }
+         */
 	}
 }

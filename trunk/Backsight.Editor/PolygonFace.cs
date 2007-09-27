@@ -44,12 +44,12 @@ namespace Backsight.Editor
         /// The location at the start of the face. It'll be the start of the line if the
         /// polygon is to the right of the line. Otherwise it's the end of the line.
         /// </summary>
-        PointGeometry m_Begin;
+        ITerminal m_Begin;
 
         /// <summary>
         /// The location at the end of the face.
         /// </summary>
-        PointGeometry m_End;
+        ITerminal m_End;
 
         /// <summary>
         /// The extra points along this face (frequently null). If there are two or mor
@@ -92,15 +92,15 @@ namespace Backsight.Editor
             // Define any extra points
             m_Polygon = pol;
             m_Boundary = line;
-            SetExtraPoints();
-            return (uint)(1+m_ExtraPoints.Length);
+            int nExtra = SetExtraPoints();
+            return (uint)(1+nExtra);
         }
 
         /// <summary>
         /// The topological boundary that this face corresponds to (a prior call to
         /// <c>SetBoundary</c> is required for this to return a non-null value).
         /// </summary>
-        Boundary Line
+        Boundary Boundary
         {
             get { return m_Boundary; }
         }
@@ -118,7 +118,8 @@ namespace Backsight.Editor
         /// <c>m_Polygon</c> and <c>m_Line</c> must both be defined prior to call
         /// (via a call to <c>SetLine</c>).
         /// </summary>
-        void SetExtraPoints()
+        /// <returns>The number of extra points</returns>
+        int SetExtraPoints()
         {
             Debug.Assert(m_Polygon!=null);
             Debug.Assert(m_Boundary!=null);
@@ -131,28 +132,25 @@ namespace Backsight.Editor
             // Define the initial position
             if (reverse)
             {
-                m_Begin = new PointGeometry(m_Boundary.End);
-                m_End = new PointGeometry(m_Boundary.Start);
+                m_Begin = m_Boundary.End;
+                m_End = m_Boundary.Start;
             }
             else
             {
-                m_Begin = new PointGeometry(m_Boundary.Start);
-                m_End = new PointGeometry(m_Boundary.End);
+                m_Begin = m_Boundary.Start;
+                m_End = m_Boundary.End;
             }
 
             // Trash any old info kicking around (we shouldn't really have any)
             m_ExtraPoints = null;
 
             // Get any points along the boundary (excluding end points)
-            throw new NotImplementedException();
-            /*
-	        const CeTheme& theme = GetActiveTheme();
-	        CeObjectList xp;
-	        pLine->GetCoincidentPoints(xp,theme,FALSE);
-             */
-            List<PointFeature> xp = new List<PointFeature>();
+            LineGeometry line = m_Boundary.GetLineGeometry();
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            ILength tol = new Length(Constants.XYTOL);
+            List<PointFeature> xp = new FindPointsOnLineQuery(index, line, false, tol).Result;
             if (xp.Count==0)
-                return;
+                return 0;
 
             // If we've got more than one extra point, ensure they're sorted in
             // the same direction as the line.
@@ -166,7 +164,7 @@ namespace Backsight.Editor
 
                 foreach (PointFeature p in xp)
                 {
-                    double value = m_Boundary.GetLength(p).Meters;
+                    double value = line.GetLength(p).Meters;
                     if (reverse)
                         value = -value;
                     pts.Add(new TaggedObject<PointFeature, double>(p, value));
@@ -197,6 +195,8 @@ namespace Backsight.Editor
                 // Allocate array of distinct extra positions
                 m_ExtraPoints = extraPoints.ToArray();
             }
+
+            return (m_ExtraPoints==null ? 0 : m_ExtraPoints.Length);
         }
 
         /// <summary>
@@ -210,22 +210,12 @@ namespace Backsight.Editor
         {
             Debug.Assert(m_Polygon!=null);
             Debug.Assert(m_Boundary!=null);
-            Debug.Assert(prev.Line!=null);
+            Debug.Assert(prev.Boundary!=null);
             Debug.Assert(Object.ReferenceEquals(prev.Polygon, m_Polygon));
 
             // Try to obtain a point feature at the beginning of this face.
-            // We need a point with a theme that is consistent with
-            // that of the polygon (this could conceivably be different
-            // from that of the line).
-
-            throw new NotImplementedException();
-            //ILineGeometry thisLine = null;
-            PointFeature beginPoint = null;
-            /*
-            const CeLayerList layers(*m_pPolygon);
-	        const CeLine* const pThisLine = m_pArc->GetpLine();
-	        const CePoint* const pBeginPoint = m_pBegin->GetpPoint(pThisLine,&layers);
-             */
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            PointFeature beginPoint = new FindPointQuery(index, m_Begin).Result;
 
             // If the polygon to the left of the this face? (if so, curve-related
             // things may need to be reversed below)
@@ -243,8 +233,8 @@ namespace Backsight.Editor
             // that the line could either be a CircularArc, or a topological
             // section based on a circular arc.
 
-            ICircularArcGeometry prevArc = (prev as ICircularArcGeometry);
-            ICircularArcGeometry thisArc = (m_Boundary as ICircularArcGeometry);
+            ICircularArcGeometry prevArc = (prev.Boundary.GetLineGeometry() as ICircularArcGeometry);
+            ICircularArcGeometry thisArc = (m_Boundary.GetLineGeometry() as ICircularArcGeometry);
             bool isPrevCurve = (prevArc!=null);
             bool isThisCurve = (thisArc!=null);
             isCurveEnd = (isPrevCurve!=isThisCurve);
@@ -275,7 +265,7 @@ namespace Backsight.Editor
                 // treat this as a radial curve point -- treat it as a
                 // curve end instead.
 
-                IPosition centre;	    // The centre to actually use
+                IPosition centre = null;	    // The centre to actually use
 
                 if (!(prevcen==thiscen && Math.Abs(prevrad-thisrad)<Constants.TINY))
                 {
@@ -309,6 +299,7 @@ namespace Backsight.Editor
 
                 if (isRadial)
                 {
+                    Debug.Assert(centre!=null);
                     bearing = Geom.Bearing(centre, m_Begin).Radians;
                     angle = 0.0;
                     if (iscw  != isPolLeft)
@@ -349,13 +340,13 @@ namespace Backsight.Editor
 
                 // Note any curve info
                 double radius;
-                IPosition centre;
-                bool iscw;
+                IPosition centre = null;
+                bool iscw = false;
 
                 if (isRadial)
                 {
-                    Debug.Assert(m_Boundary is ICircularArcGeometry);
-                    ICircularArcGeometry arc = (m_Boundary as ICircularArcGeometry);
+                    Debug.Assert(m_Boundary.Line.LineGeometry is ICircularArcGeometry);
+                    ICircularArcGeometry arc = (m_Boundary.Line.LineGeometry as ICircularArcGeometry);
                     centre = arc.Circle.Center;
                     radius = arc.Circle.Radius.Meters;
                     iscw = arc.IsClockwise;
@@ -370,6 +361,7 @@ namespace Backsight.Editor
                     // Figure out the orientation bearing for the point
                     if (isRadial)
                     {
+                        Debug.Assert(centre!=null);
                         bearing = Geom.Bearing(centre, loc).Radians;
                         if (iscw  != isPolLeft)
                             bearing += Constants.PI;

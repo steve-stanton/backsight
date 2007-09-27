@@ -177,7 +177,7 @@ namespace Backsight.Editor.Forms
             this.distancesTextBox.Multiline = true;
             this.distancesTextBox.Name = "distancesTextBox";
             this.distancesTextBox.Size = new System.Drawing.Size(118, 192);
-            this.distancesTextBox.TabIndex = 19;
+            this.distancesTextBox.TabIndex = 0;
             this.distancesTextBox.WordWrap = false;
             this.distancesTextBox.TextChanged += new System.EventHandler(this.distancesTextBox_TextChanged);
             // 
