@@ -203,7 +203,7 @@ namespace Backsight.Editor
         /// if segment to the right.</returns>
         internal Side GetSide(Boundary ib, bool isStart, out Boundary ob)
         {
-            ConnectionFinder connect = new ConnectionFinder(null, ib, isStart, this);
+            ConnectionFinder connect = new ConnectionFinder(ib, isStart, this);
             ob = connect.Next;
             return (connect.IsStart ? Side.Right : Side.Left);
         }

@@ -213,5 +213,10 @@ namespace Backsight.Editor
         {
             Make().AppendPositions(positions, reverse, wantFirst, arcTol);
         }
+
+        internal override uint Intersect(IntersectionResult results)
+        {
+            return Make().Intersect(results);
+        }
     }
 }

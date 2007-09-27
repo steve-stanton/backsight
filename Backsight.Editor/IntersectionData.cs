@@ -336,7 +336,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="line1">The 1st line.</param>
         /// <param name="line2">The 2nd line.</param>
-        internal void SetContext(LineFeature line1, LineFeature line2)
+        internal void SetContext(LineGeometry line1, LineGeometry line2)
         {
 	        m_Context1 = 0;
 	        m_Context2 = 0;
@@ -362,7 +362,7 @@ namespace Backsight.Editor
         /// <param name="loc">The location of the intersection.</param>
         /// <param name="line">The line to compare with.</param>
         /// <returns>The context code.</returns>
-        static IntersectionType GetContext(IPointGeometry loc, LineFeature line)
+        static IntersectionType GetContext(IPointGeometry loc, LineGeometry line)
         {
             IntersectionType context = 0;
 
@@ -385,7 +385,7 @@ namespace Backsight.Editor
         /// <param name="loc2">The 2nd intersection.</param>
         /// <param name="line">The line the context code is for.</param>
         /// <returns>The context code.</returns>
-        static IntersectionType GetContext(IPointGeometry loc1, IPointGeometry loc2, LineFeature line)
+        static IntersectionType GetContext(IPointGeometry loc1, IPointGeometry loc2, LineGeometry line)
         {
             // Get the context of the start and end of the graze.
             IntersectionType context1 = GetContext(loc1, line);

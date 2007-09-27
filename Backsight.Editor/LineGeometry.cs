@@ -73,6 +73,7 @@ namespace Backsight.Editor
         abstract public IWindow Extent { get; }
         abstract public ILength Distance(IPosition point);
 
+        abstract internal uint Intersect(IntersectionResult results);
         abstract internal uint IntersectSegment(IntersectionResult results, ILineSegmentGeometry seg);
         abstract internal uint IntersectMultiSegment(IntersectionResult results, IMultiSegmentGeometry line);
         abstract internal uint IntersectArc(IntersectionResult results, ICircularArcGeometry arc);

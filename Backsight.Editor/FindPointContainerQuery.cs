@@ -17,8 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-//using Backsight.
-
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="28-AUG-2007" />

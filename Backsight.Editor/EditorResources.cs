@@ -33,5 +33,15 @@ namespace Backsight.Editor
                 return c;
             }
         }
+
+        internal static Cursor PolygonSubdivisionCursor
+        {
+            get
+            {
+                Cursor c = new Cursor(new MemoryStream(Resources.PolygonSubdivisionCursor));
+                c.Tag = "PolygonSubdivisionCursor"; // test
+                return c;
+            }
+        }
     }
 }

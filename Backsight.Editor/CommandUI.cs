@@ -559,5 +559,14 @@ namespace Backsight.Editor
                 return c.BackColor;
             }
         }
+
+        /// <summary>
+        /// Reacts to a situation where the user presses the ESC key. This implementation
+        /// does nothing. Derived classes may override.
+        /// </summary>
+        internal virtual void Escape()
+        {
+            // do nothing
+        }
     }
 }

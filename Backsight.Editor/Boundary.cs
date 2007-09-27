@@ -129,11 +129,13 @@ namespace Backsight.Editor
         /// <param name="layers">The layers of interest</param>
         /// <returns>True if this boundary falls on at least one of the layers in the
         /// supplied layer list.</returns>
+        /*
         internal bool IsOverlap(LayerList layers)
         {
             return true;
             //throw new NotImplementedException();
         }
+        */
 
         /// <summary>
         /// Ensures that the polygon topology for this line has been completely defined.
@@ -193,7 +195,7 @@ namespace Backsight.Editor
 
                 // Get the next boundary in the cycle.
                 ConnectionFinder connect = new ConnectionFinder();
-                if (!connect.Create(null, b, isLeft))
+                if (!connect.Create(b, isLeft))
                     throw new Exception("Cannot find connecting boundary");
 
 		        // If we connected to the start of another boundary, the polygon is

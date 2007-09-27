@@ -60,11 +60,10 @@ namespace Backsight.Editor
         /// 
         /// This constructor is normally used during polygon formation.
         /// </summary>
-        /// <param name="layers">The applicable layers.</param>
         /// <param name="b">The boundary entering the node.</param>
         /// <param name="isStart">True if it's the start of the boundary.</param>
-        internal ConnectionFinder(LayerList layers, Boundary b, bool isStart)
-            : this(layers, b, isStart, null)
+        internal ConnectionFinder(Boundary b, bool isStart)
+            : this(b, isStart, null)
         {
         }
 
@@ -83,12 +82,11 @@ namespace Backsight.Editor
         /// node, and the connection to be formed is actually the connection for
         /// the <c>HorizontalRay</c> object.
         /// </summary>
-        /// <param name="layers">The applicable layers.</param>
         /// <param name="from">The boundary entering the node.</param>
         /// <param name="isFromStart">True if it's the start of the boundary.</param>
         /// <param name="ray">Optional reference line (used when doing special point
         /// in polygon tests).</param>
-        internal ConnectionFinder(LayerList layers, Boundary from, bool isFromStart, HorizontalRay ray)
+        internal ConnectionFinder(Boundary from, bool isFromStart, HorizontalRay ray)
         {
             Debug.Assert(from!=null);
 
@@ -100,7 +98,7 @@ namespace Backsight.Editor
             ITerminal loc = (isFromStart ? from.Start : from.End);
 
             // Get the boundaries incident on the terminal.
-            Boundary[] ba = loc.IncidentBoundaries(layers);
+            Boundary[] ba = loc.IncidentBoundaries();
 
             // Get orientation info for each boundary (the list could conceivably
             // grow if boundaries start at the terminal, then loop round to also
@@ -378,12 +376,10 @@ namespace Backsight.Editor
         /// as one of the constructors. However, this function is intended for use
         /// when creating polygons.
         /// </summary>
-        /// <param name="layers">The topological layers to use when searching for the
-        /// connected boundary.</param>
         /// <param name="from">The boundary we're coming from.</param>
         /// <param name="isFromStart">Are we coming from the start of the boundary?</param>
         /// <returns>True if connection found.</returns>
-        internal bool Create(LayerList layers, Boundary from, bool isFromStart)
+        internal bool Create(Boundary from, bool isFromStart)
         {
             // Initialize with default values
             m_Next = null;
@@ -393,7 +389,7 @@ namespace Backsight.Editor
             ITerminal loc = (isFromStart ? from.Start : from.End);
 
             // Get the boundaries incident on the terminal (and which overlap the layers involved)
-            Boundary[] ba = loc.IncidentBoundaries(layers);
+            Boundary[] ba = loc.IncidentBoundaries();
 
             // Get orientation info for each boundary (the list could conceivably
             // grow if boundaries start at the terminal, then loop round to also
