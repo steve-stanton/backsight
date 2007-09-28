@@ -83,6 +83,11 @@ namespace Backsight
         Color FillColor { get; set; }
 
         /// <summary>
+        /// The fill for closed shapes
+        /// </summary>
+        IFill Fill { get; set; }
+
+        /// <summary>
         /// The color used to draw lines
         /// </summary>
         Color LineColor { get; set; }

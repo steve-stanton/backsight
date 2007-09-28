@@ -330,7 +330,7 @@ namespace Backsight.Editor
                 return false;
 
 	        //int index = 0;
-            throw new NotImplementedException();
+            throw new NotImplementedException("FeatureId.KillDupRows");
             /*
 	        // now make a temporary copy of the object list to hold the unique
 	        // Rows and the Rows which had associated CeRowText items

@@ -62,6 +62,7 @@
     <Compile Include="Forms\AdhocPropertyList.cs" />
     <Compile Include="Forms\DrawInfo.cs" />
     <Compile Include="Forms\DrawStyle.cs" />
+    <Compile Include="Forms\Fill.cs" />
     <Compile Include="Forms\HighlightStyle.cs" />
     <Compile Include="Forms\ISpatialDisplayTool.cs" />
     <Compile Include="Forms\IUserAction.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Geometry\CircularArcGeometry.cs" />
     <Compile Include="ICircleGeometry.cs" />
     <Compile Include="ICircularArcGeometry.cs" />
+    <Compile Include="IFill.cs" />
     <Compile Include="ILineGeometry.cs" />
     <Compile Include="ILineSegmentGeometry.cs" />
     <Compile Include="ILog.cs" />

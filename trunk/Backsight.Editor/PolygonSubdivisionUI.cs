@@ -14,10 +14,11 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Geometry;
-using System.Windows.Forms;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -68,6 +69,8 @@ namespace Backsight.Editor
             }
 
 
+            PolygonSubdivisionOperation op = null;
+
             try
             {
                 // Form the links. Return if we didn't find any links.
@@ -79,28 +82,19 @@ namespace Backsight.Editor
                     return;
                 }
 
-                MessageBox.Show("ok");
+                op = new PolygonSubdivisionOperation();
+                op.Execute(sub);
+                FinishCommand();
             }
 
             catch (Exception ex)
             {
+                Session.CurrentSession.Remove(op);
                 MessageBox.Show(ex.Message);
+                AbortCommand();
             }
-
-            /*
-
-	StartEdit((INT4)pPolygon);
-
-//	Do the subdivision
-	if ( !pPolygon->Subdivide() )
-		AfxMessageBox ( "Cannot locate any points to connect." );
-
-	FinishEdit((INT4)pPolygon);
-
-	return TRUE;
-             */
-            FinishCommand();
         }
+
         /// <summary>
         /// Reacts to a situation where the user presses the ESC key, by aborting this command.
         /// </summary>

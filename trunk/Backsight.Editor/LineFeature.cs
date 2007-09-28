@@ -20,6 +20,7 @@ using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Forms;
+using System.Drawing.Drawing2D;
 
 namespace Backsight.Editor
 {
@@ -69,6 +70,10 @@ namespace Backsight.Editor
             m_Geom = g;
             m_Topology = null;
             AddReferences();
+
+            // If the entity type denotes a topological boundary, initialize the topology.
+            if (e!=null && e.IsPolygonBoundaryValid)
+                SetTopology(true);
         }
 
         /// <summary>
@@ -168,10 +173,19 @@ namespace Backsight.Editor
             m_Geom.Render(display, style);
 
             // If we're highlighting, and points are displayed, render the end points too
+            // (if the line is not a polygon boundary, draw hatched ends).
             if ((style is HighlightStyle) && display.MapScale < MapModel.ShowPointScale)
             {
-                StartPoint.Draw(display, Color.DarkBlue);
-                EndPoint.Draw(display, Color.LightBlue);
+                if (IsTopological)
+                {
+                    StartPoint.Draw(display, Color.DarkBlue);
+                    EndPoint.Draw(display, Color.LightBlue);
+                }
+                else
+                {
+                    StartPoint.Draw(display, HatchStyle.BackwardDiagonal, Color.DarkBlue);
+                    EndPoint.Draw(display, HatchStyle.BackwardDiagonal, Color.LightBlue);
+                }
             }
         }
 
@@ -246,7 +260,7 @@ namespace Backsight.Editor
         /// <param name="isStart">Start of this line?</param>
         void MarkPolygons(bool isStart)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("LineFeature.MarkPolygons");
             /*
 	// Get the integer code required by GetNextArc.
 	INT1 endCode = 1;
@@ -541,11 +555,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal override void SetTopology(bool topol)
         {
             if (topol)
-            {
-                //m_Topology = new Boundary[1];
-                //m_Topology[0] = new Boundary(this);
                 m_Topology = new Boundary(this);
-            }
             else
                 m_Topology = null;
 

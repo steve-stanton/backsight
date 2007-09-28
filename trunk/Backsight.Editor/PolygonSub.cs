@@ -55,32 +55,32 @@ namespace Backsight.Editor
         /// <param name="polygon">The polygon being subdivided.</param>
         internal PolygonSub(Polygon polygon)
         {
-	        m_Polygon = polygon;
-	        m_Faces = null;
-	        m_Links = null;
+            m_Polygon = polygon;
+            m_Faces = null;
+            m_Links = null;
 
-	        // Get the boundaries defining the exterior edge of the polygon
+            // Get the boundaries defining the exterior edge of the polygon
             Boundary[] lines = polygon.Edge;
-            if(lines==null || lines.Length==0)
+            if (lines==null || lines.Length==0)
                 return;
 
-	        // Allocate an array for holding info on each polygon face,
-	        // and associate each one with the boundary that acts as the primary face.
+            // Allocate an array for holding info on each polygon face,
+            // and associate each one with the boundary that acts as the primary face.
             uint numLink = 0;
-	        m_Faces = new PolygonFace[lines.Length];
-            for(int i=0; i<lines.Length; i++)
+            m_Faces = new PolygonFace[lines.Length];
+            for (int i=0; i<lines.Length; i++)
             {
                 m_Faces[i] = new PolygonFace();
                 numLink += m_Faces[i].SetBoundary(m_Polygon, lines[i]);
-        	}
+            }
 
-	        // Create an array of link objects (one for each point)
-	        if (numLink==0)
+            // Create an array of link objects (one for each point)
+            if (numLink==0)
                 return;
-	
+
             m_Links = new PolygonLink[numLink];
 
-	        // Initialize the links for first face
+            // Initialize the links for first face
             int nDone = 0;
             PolygonLink[] links = m_Faces[0].CreateLinks(m_Faces[m_Faces.Length-1]);
             Array.Copy(links, m_Links, links.Length);
@@ -92,183 +92,183 @@ namespace Backsight.Editor
                 links = m_Faces[i].CreateLinks(m_Faces[i-1]);
                 for (int j=0; j<links.Length; j++)
                     m_Links[nDone+j] = links[j];
-                
+
                 nDone += links.Length;
             }
 
 
-	        Debug.Assert(nDone==m_Links.Length);
+            Debug.Assert(nDone==m_Links.Length);
 
-	        // Assign a side number to each link position
+            // Assign a side number to each link position
 
-	        uint nside=0;		// No side number assigned so far.
-	        uint ncorn=0;		// Number of corners
+            uint nside=0;		// No side number assigned so far.
+            uint ncorn=0;		// Number of corners
 
-	        for (int i=0; i<m_Links.Length; i++)
+            for (int i=0; i<m_Links.Length; i++)
             {
 
                 // Skip if we are dealing with a corner.
                 if (m_Links[i].IsCorner())
                 {
-	                ncorn++;
-	                continue;
+                    ncorn++;
+                    continue;
                 }
 
                 // Skip if the side number has already been assigned.
-		        if (m_Links[i].Side!=0)
+                if (m_Links[i].Side!=0)
                     continue;
 
                 // Assign next side number.
-		        nside++;
+                nside++;
 
                 // Continue till we reach a corner, assigning intermediate
                 // faces the same side number.
-		        for (int j=i; j<m_Links.Length; j++)
+                for (int j=i; j<m_Links.Length; j++)
                 {
-			        if (m_Links[j].IsCorner())
+                    if (m_Links[j].IsCorner())
                         break;
-			        m_Links[j].Side = nside;
-		        }
+                    m_Links[j].Side = nside;
+                }
 
                 // If we just assigned a side number to the very first face,
                 //  loop back from the end of the array.
-		        if (i==0)
+                if (i==0)
                 {
-			        for (int k=m_Links.Length-1; k>0; k--)
+                    for (int k=m_Links.Length-1; k>0; k--)
                     {
-				        if (m_Links[k].IsCorner())
+                        if (m_Links[k].IsCorner())
                             break;
-				        m_Links[k].Side = nside;
-			        }
-		        }
-	        }
+                        m_Links[k].Side = nside;
+                    }
+                }
+            }
 
             // Return if we only have one side (or less)
             // if ( nside<2 ) return;
 
             // Define the max angular difference (10 degrees, but in radians)
-	        double ANGTOL = (10.0 * Constants.DEGTORAD);
+            double ANGTOL = (10.0 * Constants.DEGTORAD);
 
             // Process all the radial faces first.
 
-	        for (uint i=0; i<m_Links.Length; i++)
+            for (uint i=0; i<m_Links.Length; i++)
             {
-		        if (m_Links[i].IsRadial)
-                    this.SetLink(i,ANGTOL);
-	        }
+                if (m_Links[i].IsRadial)
+                    this.SetLink(i, ANGTOL);
+            }
 
             // For each point that is not a corner or a curve end, cycle
             // through all the subsequent points, looking for a point to
             // connect to. Don't try to do curve end points just yet.
 
-	        for (uint i=0; i<m_Links.Length; i++)
+            for (uint i=0; i<m_Links.Length; i++)
             {
-		        if (!m_Links[i].IsRadial && !m_Links[i].IsCurveEnd)
-			        this.SetLink(i, ANGTOL);
-	        }
+                if (!m_Links[i].IsRadial && !m_Links[i].IsCurveEnd)
+                    this.SetLink(i, ANGTOL);
+            }
 
             // Process any points at the end of curves.
 
-	        for (uint i=0; i<m_Links.Length; i++)
+            for (uint i=0; i<m_Links.Length; i++)
             {
-		        if (m_Links[i].IsCurveEnd)
-                    this.SetLink(i,ANGTOL);
-	        }
+                if (m_Links[i].IsCurveEnd)
+                    this.SetLink(i, ANGTOL);
+            }
 
             // Eliminate self-intersections ...
 
             // Start by counting the number of intersections each link has.
-	        uint maxnx=0;
+            uint maxnx=0;
 
-	        for (uint i=0; i<m_Links.Length; i++)
+            for (uint i=0; i<m_Links.Length; i++)
             {
-		        uint nx = this.SetIntersectionCount(i);
-		        maxnx = Math.Max(maxnx,nx);
-	        }
+                uint nx = this.SetIntersectionCount(i);
+                maxnx = Math.Max(maxnx, nx);
+            }
 
-	        uint nloop=0;		// Number of loops (just in case of infinite loop).
+            uint nloop=0;		// Number of loops (just in case of infinite loop).
 
-	        while (maxnx > 0)
+            while (maxnx > 0)
             {
                 // Find a link with the max number of intersections.
-		        int rem=-1;
-		        for (int i=0; i<m_Links.Length; i++)
+                int rem=-1;
+                for (int i=0; i<m_Links.Length; i++)
                 {
-			        if ( m_Links[i].NumIntersect == maxnx)
+                    if (m_Links[i].NumIntersect == maxnx)
                     {
-				        rem = i;
-				        break;
-			        }
-		        }
+                        rem = i;
+                        break;
+                    }
+                }
 
                 // We SHOULD have found something.
-		        if (rem<0)
+                if (rem<0)
                     throw new Exception("PolygonSub: Unexpected intersection count");
 
                 // If the count was greater than one, just remove the link. Otherwise get the
                 // thing that was intersected. If one is a radial or a curve end, & the other isn't,
                 // drop the radial. Otherwise drop the one with the poorer link angle.
 
-		        if (maxnx > 1)
-			        m_Links[rem].SetLink(null);
-		        else
+                if (maxnx > 1)
+                    m_Links[rem].SetLink(null);
+                else
                 {
-			        PolygonLink pLink1 = m_Links[rem];
-			        PolygonLink pLink2 = null;
-			        for (int i=0; pLink2!=null && i<m_Links.Length; i++)
+                    PolygonLink pLink1 = m_Links[rem];
+                    PolygonLink pLink2 = null;
+                    for (int i=0; pLink2!=null && i<m_Links.Length; i++)
                     {
-				        if (pLink1.IsIntersected(m_Links[i]))
-					        pLink2 = m_Links[i];
-			        }
+                        if (pLink1.IsIntersected(m_Links[i]))
+                            pLink2 = m_Links[i];
+                    }
 
-			        if (pLink2==null)
+                    if (pLink2==null)
                         throw new Exception("PolygonSub: Intersection not found");
 
                     // Check if radial.
-			        bool rad1 = pLink1.IsRadial || pLink1.Link.IsRadial;
-			        bool rad2 = pLink2.IsRadial || pLink2.Link.IsRadial;
+                    bool rad1 = pLink1.IsRadial || pLink1.Link.IsRadial;
+                    bool rad2 = pLink2.IsRadial || pLink2.Link.IsRadial;
 
                     // Check if end of curves.
-			        bool end1 = pLink1.IsCurveEnd || pLink1.Link.IsCurveEnd;
-			        bool end2 = pLink2.IsCurveEnd || pLink2.Link.IsCurveEnd;
+                    bool end1 = pLink1.IsCurveEnd || pLink1.Link.IsCurveEnd;
+                    bool end2 = pLink2.IsCurveEnd || pLink2.Link.IsCurveEnd;
 
                     // We treat radials and end of curves the same.
-			        bool curve1 = (rad1 || end1);
-			        bool curve2 = (rad2 || end2);
+                    bool curve1 = (rad1 || end1);
+                    bool curve2 = (rad2 || end2);
 
                     // If one is a curve-related and the other isn't, drop
                     // the one that's curve-related.
-			        if (curve1 != curve2)
+                    if (curve1 != curve2)
                     {
-				        if ( curve1 )
-					        pLink1.SetLink(null);
-				        else
-					        pLink2.SetLink(null);
-			        }
-			        else
+                        if (curve1)
+                            pLink1.SetLink(null);
+                        else
+                            pLink2.SetLink(null);
+                    }
+                    else
                     {
                         // Neither is curve related, or both are. Drop the
                         // one with the poorer link angle.
 
-				        if (pLink1.LinkAngle > pLink2.LinkAngle)
-					        pLink1.SetLink(null);
-				        else
-					        pLink2.SetLink(null);
-			        }
-		        }
+                        if (pLink1.LinkAngle > pLink2.LinkAngle)
+                            pLink1.SetLink(null);
+                        else
+                            pLink2.SetLink(null);
+                    }
+                }
 
                 // Rework the intersect counts where necessary.
 
-		        maxnx = 0;
-		        for (uint i=0; i<m_Links.Length; i++ )
+                maxnx = 0;
+                for (uint i=0; i<m_Links.Length; i++)
                 {
-			        if (m_Links[i].NumIntersect > 0)
-				        maxnx = Math.Max(maxnx,this.SetIntersectionCount(i));
-		        }
+                    if (m_Links[i].NumIntersect > 0)
+                        maxnx = Math.Max(maxnx, this.SetIntersectionCount(i));
+                }
 
                 // Make sure we don't go into an infinite loop.
-		        nloop++;
-		        if (nloop > m_Links.Length)
+                nloop++;
+                if (nloop > m_Links.Length)
                     throw new Exception("PolygonSub: Breaking from infinite loop");
 
             } // end while
@@ -276,7 +276,10 @@ namespace Backsight.Editor
 
         #endregion
 
-        Polygon Polygon
+        /// <summary>
+        /// The polygon being subdivided.
+        /// </summary>
+        internal Polygon Polygon
         {
             get { return m_Polygon; }
         }
@@ -477,20 +480,34 @@ namespace Backsight.Editor
 
             for (int i=0; i<m_Links.Length; i++)
             {
-		        if (m_Links[i].GetLink(out s, out e))
+                if (m_Links[i].GetLink(out s, out e))
                 {
-			        if (nLink==index)
+                    if (nLink==index)
                     {
-				        start = s;
-				        end = e;
-				        return true;
-			        }
-			        nLink++;
-		        }
+                        start = s;
+                        end = e;
+                        return true;
+                    }
+                    nLink++;
+                }
             }
-        
+
             // Specified index is greater than the number of links we actually have.
             return false;
+        }
+
+        /// <summary>
+        /// The number of links that have been formed.
+        /// </summary>
+        internal int NumLink
+        {
+            get
+            {
+                PointFeature start, end;
+                int nLink=0;
+                for (; GetLink(nLink, out start, out end); nLink++);
+                return nLink;
+            }
         }
     }
 }

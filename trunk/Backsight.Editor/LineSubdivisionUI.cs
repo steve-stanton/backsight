@@ -190,7 +190,7 @@ namespace Backsight.Editor
 
             if (up!=null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException("LineSubdivisionUI.DialFinish");
                 /*
 		                // Get the original operation.
 		                CeArcSubdivision* pop = dynamic_cast<CeArcSubdivision*>(pup->GetOp());

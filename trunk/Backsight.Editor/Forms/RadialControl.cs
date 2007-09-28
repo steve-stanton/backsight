@@ -507,7 +507,7 @@ namespace Backsight.Editor.Forms
             if (m_From==null || m_Focus!=backsightTextBox)
                 return;
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("RadialControl.OnSelectLine");
             PointFeature point = null;
             /*
                 const CeLine* const pLine = pArc->GetpLine();

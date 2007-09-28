@@ -457,7 +457,7 @@ namespace Backsight.Editor
             IPosition from = this.StartPosition;
             IPosition to = Geom.Polar(from, this.Bearing.Radians, dist);
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("Direction.Intersect");
 
             /*
 //	Construct a corresponding line segment.
@@ -570,7 +570,7 @@ namespace Backsight.Editor
             IPosition fromPos = this.StartPosition;
             IPosition toPos = Geom.Polar(fromPos, this.Bearing.Radians, dist);
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("Direction.Intersect");
             /*
 	        // Construct a corresponding line segment.
 	        CeLocation start(vfrom);
@@ -587,7 +587,6 @@ namespace Backsight.Editor
         	// Determine which terminal point is the best.
 	        //double mindsq = Double.MaxValue;
 
-            throw new NotImplementedException();
             /*
             line.GetCloserPoint(line.GetpStart(),xres,mindsq,xsect,pClosest);
 	        line.GetCloserPoint(line.GetpEnd(),xres,mindsq,xsect,pClosest);

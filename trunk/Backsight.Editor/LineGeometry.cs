@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// Base class for any sort of line geometry.
     /// </summary>
     [Serializable]
-    abstract class LineGeometry
+    abstract class LineGeometry : ILineGeometry
     {
         #region Class data
 

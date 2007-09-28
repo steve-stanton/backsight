@@ -17,6 +17,8 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using Backsight.Environment;
 using Backsight.Forms;
@@ -116,12 +118,12 @@ namespace Backsight.Editor
 
         public void RemoveIndex(Row row)
         {
-            throw new NotImplementedException("The method or operation is not implemented.");
+            throw new NotImplementedException("Feature.RemoveIndex");
         }
 
         public void AddIndex(Row row)
         {
-            throw new NotImplementedException("The method or operation is not implemented.");
+            throw new NotImplementedException("Feature.AddIndex");
         }
 
         #region Implement IPossibleList<Feature>
@@ -540,21 +542,28 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="col">The colour to use for the draw</param>
-        public void Draw(ISpatialDisplay display, System.Drawing.Color col)
+        public void Draw(ISpatialDisplay display, Color col)
         {
             IDrawStyle style = CadastralEditController.Current.DrawStyle;
             style.LineColor = style.FillColor = col;
             Render(display, style);
         }
 
+        public void Draw(ISpatialDisplay display, HatchStyle hs, Color foreColor)
+        {
+            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            style.Fill = new Fill(hs, foreColor, display.MapPanel.BackColor);
+            Render(display, style);
+        }
+
         /// <summary>
         /// Restores (un-deletes) this feature.
         /// </summary>
-        /// <returns>True if feature restored. False if the feature wasn't marked as deleted.</returns>
+        /// <returns>True if feature restored. False if the feature wasn't marked as inactive.</returns>
         internal virtual bool Restore()
         {
-            // Return if this feature doesn't currently have the "deleted" state
-            if (!IsUndoing)
+            // Return if this feature doesn't currently have the "inactive" state
+            if (!IsInactive)
                 return false;
 
             // If this feature referred to an ID, restore it.
@@ -569,7 +578,7 @@ namespace Backsight.Editor
             index.Add(this);
 
             // Remember that the feature is now active
-            IsUndoing = false;
+            IsInactive = false;
 
             return true;
         }

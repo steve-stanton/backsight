@@ -341,7 +341,7 @@ namespace Backsight.Editor.Forms
 	        bool ok;
             if (Math.Abs(m_Elevation) > Double.Epsilon)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException("NewPointForm.Save");
                 /*
 		        Ce3DVertex vtx(m_Easting,m_Northing,m_Elevation);
 		        ok = pSave->Execute(&vtx,m_PointId);

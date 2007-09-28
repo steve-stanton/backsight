@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -417,18 +418,14 @@ namespace Backsight.Editor
 
             // Locate any intersections formed by the proposed link (considering
 	        // only the currently active theme).
-            /*
-	            CeSegment seg(start,end);
-	            CeLayerList layers(GetActiveTheme());
-	            CeXObject xsect(seg,&layers);
+            LineGeometry seg = new SegmentGeometry(m_Point, other.m_Point);
+            IntersectionFinder xsect = new IntersectionFinder(seg, true);
 
             // The proposed link is not valid if it intersects anything
             // along the length of the segment, or has any grazes.
 	        if (xsect.IsGrazing || xsect.IsSplitNeeded)
                 return false;
-            */
 
-            throw new NotImplementedException();
             return true;
         }
 
