@@ -243,5 +243,13 @@ namespace Backsight.Editor
             // Add the area of the island back to this polygon.
             SetArea(Area + i.Area);
         }
+
+        /// <summary>
+        /// The text label that acts as a persistent handle for the polygon (may be null).
+        /// </summary>
+        internal TextFeature Label
+        {
+            get { return m_Label; }
+        }
     }
 }

@@ -132,7 +132,7 @@ namespace Backsight.Editor
 
         public void OnMove(Feature f)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Operation.OnMove");
         }
 
         /// <summary>

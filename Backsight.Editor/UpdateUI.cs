@@ -334,7 +334,7 @@ namespace Backsight.Editor
 	        // If the info dialog has not already been displayed, display it now.
 	        if (m_Info==null)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException("UpdateUI.Run");
                 /*
 		        m_Info = new UpdateForm(this,m_View);
 		        m_Info.Create(IDD_UPDATE,&m_View);
@@ -422,7 +422,7 @@ namespace Backsight.Editor
         /// assigned to <c>m_Problem</c>)</returns>
         Operation Rollforward(Operation op)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("UpdateUI.Rollforward");
             /*
 	        // Propagate the change (breaking if an operation can no longer be calculated).
             CadastralMapModel map = CadastralMapModel.Current;
@@ -467,7 +467,7 @@ namespace Backsight.Editor
         /// </summary>
         void Undo()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("UpdateUI.Undo");
 
             /*
 	        CadastralMapModel.Current.Undo();

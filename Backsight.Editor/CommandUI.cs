@@ -205,7 +205,7 @@ namespace Backsight.Editor
         /// <returns>The position in screen units.</returns>
         internal Point LPToScreen(Point pt)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("LPToScreen");
             // I think this is misplaced
             /*
             // Convert into device (client) units.

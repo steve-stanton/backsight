@@ -97,7 +97,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The thing being intersected
         /// </summary>
-        internal LineGeometry Geometry
+        internal ILineGeometry Geometry
         {
             get { return m_Line; }
         }
@@ -166,7 +166,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Checks whether intersection results graze anything.
         /// </summary>
-        bool IsGrazing
+        internal bool IsGrazing
         {
             get
             {
@@ -188,7 +188,7 @@ namespace Backsight.Editor
         /// The result is true if a split is required. If this intersection object was for
         /// a point or a circle, the result will always be FALSE.
         /// </summary>
-        bool IsSplitNeeded
+        internal bool IsSplitNeeded
         {
             get
             {

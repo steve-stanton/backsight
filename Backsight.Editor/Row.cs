@@ -72,7 +72,7 @@ namespace Backsight.Editor
 
         internal Row Extract(ExTranslation xref, Feature xfeat)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Row.Extract");
         }
 
         #region IRow Members

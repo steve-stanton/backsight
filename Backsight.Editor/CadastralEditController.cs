@@ -26,6 +26,7 @@ using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.SqlServer;
 using Backsight.Geometry;
+using System.Drawing.Drawing2D;
 
 namespace Backsight.Editor
 {
@@ -289,6 +290,14 @@ namespace Backsight.Editor
         {
             IDrawStyle result = InitializeDrawStyle(base.DrawStyle);
             result.LineColor = result.FillColor = c;
+            return result;
+        }
+
+        internal IDrawStyle Style(HatchStyle hs, Color foreColor, Color backColor)
+        {
+            DrawStyle result = new DrawStyle();
+            result.Fill = new Fill(hs, foreColor, backColor);
+            InitializeDrawStyle(result);
             return result;
         }
 

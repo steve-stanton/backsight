@@ -14,14 +14,18 @@
 /// </remarks>
 
 using System;
+using System.Drawing;
 
-namespace Backsight.Editor
+namespace Backsight
 {
-    class Comparison
+    /// <written by="Steve Stanton" on="28-SEP-2007" />
+    /// <summary>
+    /// Something that represents fill colors & patterns. For
+    /// use with the <see cref="IDrawStyle"/> interface.
+    /// </summary>
+    public interface IFill
     {
-        internal void Write(string s)
-        {
-            throw new NotImplementedException("Comparison.Write");
-        }
+        Brush Brush { get; }
+        Color Color { get; set; }
     }
 }

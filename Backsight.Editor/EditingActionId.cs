@@ -46,7 +46,7 @@ namespace Backsight.Editor
         NewLine             =20,
         Path                =21,
         Split               =22,
-        AreaSubdivision     =23,
+        PolygonSubdivision  =23,
         SetLabelRotation    =24,
         GetBackground       =25,
         Truncate            =26,

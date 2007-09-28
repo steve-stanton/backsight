@@ -203,7 +203,7 @@ namespace Backsight.Editor
             // Get a list of the topological arcs that are attached to the
             // line primitive, and that have a theme that overlays the
             // required layers.
-            throw new NotImplementedException();
+            throw new NotImplementedException("IntersectionResult.SplitX");
             /*
 	        CeObjectList xarcs;
 	        UINT4 nxarc = pLine->GetArcs(xarcs,&layers);
@@ -323,7 +323,7 @@ namespace Backsight.Editor
         /// object (doing otherwise doesn't make any sense).</param>
         /// <returns>TRUE if any intersection does not coincide with the end points
         /// of the specified line.</returns>
-        internal bool IsSplitOn(LineGeometry line)
+        internal bool IsSplitOn(ILineGeometry line)
         {
             // Get the locations of the line end points.
             IPointGeometry start = line.Start;
@@ -508,7 +508,7 @@ namespace Backsight.Editor
         /// <param name="line">The line to compare with.</param>
         /// <returns>TRUE if any context settings were made. It will be FALSE if there
         /// are no intersections, or these results do not refer to a line.</returns>
-        internal bool SetContext(LineGeometry line)
+        internal bool SetContext(ILineGeometry line)
         {
             // Return if there are no intersections.
             if (m_Data==null || m_Data.Count==0)

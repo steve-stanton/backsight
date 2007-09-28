@@ -27,7 +27,7 @@ namespace Backsight.Editor.Forms
 
         internal void Display(Feature feat)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("UpdateForm.Display");
 
             /*
             this.Text = "Update";
@@ -49,13 +49,13 @@ namespace Backsight.Editor.Forms
 
         internal void OnAbortUpdate()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("UpdateForm");
             //ShowWindow(SW_RESTORE);
         }
 
         internal void OnFinishUpdate(Operation problem) 
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("UpdateForm");
             /*
 	        if (problem!=null)
             {

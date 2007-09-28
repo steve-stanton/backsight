@@ -30,7 +30,7 @@ namespace Backsight.Forms
         #region Class data
 
         private Pen m_Pen;
-        private SolidBrush m_Brush;
+        private IFill m_Fill;
         private GraphicsPath m_Path;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Backsight.Forms
         public DrawStyle(Color c)
         {
             m_Pen = new Pen(c);
-            m_Brush = new SolidBrush(c);
+            m_Fill = new Fill(c);
             m_Path = new GraphicsPath();
             m_PointHeight = new Length(1.0);
         }
@@ -70,13 +70,13 @@ namespace Backsight.Forms
 
         public Brush Brush
         {
-            get { return m_Brush; }
+            get { return m_Fill.Brush; }
         }
 
         public Color FillColor
         {
-            get { return m_Brush.Color; }
-            set { m_Brush.Color = value; }
+            get { return m_Fill.Color; }
+            set { m_Fill.Color = value; }
         }
 
         public Color LineColor
@@ -92,7 +92,7 @@ namespace Backsight.Forms
             {
                 PointF p = CreatePoint(display, position);
                 float d = size * 0.5F;
-                display.Graphics.FillRectangle(m_Brush, p.X-d, p.Y-d, size, size);
+                display.Graphics.FillRectangle(Brush, p.X-d, p.Y-d, size, size);
             }
         }
 
@@ -210,7 +210,7 @@ namespace Backsight.Forms
 
                 // I tried StringFormat.GenericDefault, but that seems to leave too much
                 // leading space.
-                display.Graphics.DrawString(s, f, m_Brush, 0, 0, StringFormat.GenericTypographic);
+                display.Graphics.DrawString(s, f, Brush, 0, 0, StringFormat.GenericTypographic);
                 display.Graphics.ResetTransform();
             }
         }
@@ -270,6 +270,12 @@ namespace Backsight.Forms
             {
                 m_Path.Reset();
             }
+        }
+
+        public IFill Fill
+        {
+            get { return m_Fill; }
+            set { m_Fill = value; }
         }
     }
 }

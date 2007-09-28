@@ -994,7 +994,7 @@ namespace Backsight.Editor
             else if (t == SpatialType.Line)
                 DefaultLineType = e;
             else
-                throw new NotImplementedException();
+                throw new NotImplementedException("SetDefaultEntity");
         }
 
         internal IEntity DefaultPointType

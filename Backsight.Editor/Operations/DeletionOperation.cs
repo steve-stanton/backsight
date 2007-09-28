@@ -186,7 +186,7 @@ namespace Backsight.Editor.Operations
 
             // Mark the features as deleted
             foreach (Feature f in m_Deletions)
-                f.IsUndoing = true;
+                f.IsInactive = true;
 
             // Clean the map
             MapModel.CleanEdit();
