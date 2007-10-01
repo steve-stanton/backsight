@@ -1504,18 +1504,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 IEntity e = dial.SelectedEntity;
                 CadastralMapModel.Current.SetDefaultEntity(t, e);
-                /*
-		StartEdit((INT4)&dial);
-
-//		Get the specified entity type.
-		CeEntity* pNew = dial.GetpEntity();
-
-//		Update the theme.
-		if ( !pTheme->SetDefaultEntity(geom,pNew) )
-			AfxMessageBox("CeView::SetDefaultEntity\nUnhandled case.");
-
-		FinishEdit((INT4)&dial);
-                 */
             }
             dial.Dispose();
         }

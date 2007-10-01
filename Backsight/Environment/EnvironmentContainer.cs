@@ -133,5 +133,16 @@ namespace Backsight.Environment
             ILayer[] layers = s_Container.Layers;
             return Array.Find<ILayer>(layers, delegate(ILayer a) { return a.Id==id; });
         }
+
+        /// <summary>
+        /// Locates an entity type based on it's unique ID
+        /// </summary>
+        /// <param name="id">The ID of the required entity type</param>
+        /// <returns>The corresponding entity type (null if not found)</returns>
+        public static IEntity FindEntityById(int id)
+        {
+            IEntity[] ents = s_Container.EntityTypes;
+            return Array.Find<IEntity>(ents, delegate(IEntity e) { return e.Id==id; });
+        }
     }
 }

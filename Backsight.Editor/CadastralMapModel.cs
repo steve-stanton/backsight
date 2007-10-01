@@ -220,12 +220,22 @@ namespace Backsight.Editor
         /// <summary>
         /// The default entity type for points (may be null)
         /// </summary>
-        EntityFacade m_DefaultPointType;
+        MapEntity m_DefaultPointType;
 
         /// <summary>
         /// The default entity type for lines (may be null)
         /// </summary>
-        EntityFacade m_DefaultLineType;
+        MapEntity m_DefaultLineType;
+
+        /// <summary>
+        /// The default entity type for polygon labels (may be null)
+        /// </summary>
+        MapEntity m_DefaultPolygonType;
+
+        /// <summary>
+        /// The default entity type for text (may be null)
+        /// </summary>
+        MapEntity m_DefaultTextType;
 
         #endregion
 
@@ -260,15 +270,13 @@ namespace Backsight.Editor
             m_DrawWindow = new Window();
             m_People = new List<Person>();
             m_Sessions = new List<Session>();
-            /*
-    m_pTheme = 0;
-    m_pFont = 0;
-             */
             m_Entities = new List<MapEntity>();
             m_Layers = new List<LayerFacade>();
             m_IdRanges = new List<IdRange>();
             m_DefaultPointType = null;
             m_DefaultLineType = null;
+            m_DefaultPolygonType = null;
+            m_DefaultTextType = null;
         }
 
         #endregion
@@ -610,8 +618,13 @@ namespace Backsight.Editor
             if ((entity is MapEntity) && (entity as MapEntity).MapModel==this)
                 return (entity as MapEntity);
 
-            MapEntity me = new MapEntity(this, entity);
-            m_Entities.Add(me);
+            MapEntity me = m_Entities.Find(delegate(MapEntity e) { return e.Id==entity.Id; });
+            if (me==null)
+            {
+                me = new MapEntity(this, entity);
+                m_Entities.Add(me);
+            }
+
             return me;
         }
 
@@ -993,6 +1006,10 @@ namespace Backsight.Editor
                 DefaultPointType = e;
             else if (t == SpatialType.Line)
                 DefaultLineType = e;
+            else if (t == SpatialType.Polygon)
+                DefaultPolygonType = e;
+            else if (t == SpatialType.Text)
+                DefaultTextType = e;
             else
                 throw new NotImplementedException("SetDefaultEntity");
         }
@@ -1007,6 +1024,18 @@ namespace Backsight.Editor
         {
             get { return m_DefaultLineType; }
             set { m_DefaultLineType = GetRegisteredEntityType(value); }
+        }
+
+        internal IEntity DefaultPolygonType
+        {
+            get { return m_DefaultPolygonType; }
+            set { m_DefaultPolygonType = GetRegisteredEntityType(value); }
+        }
+
+        internal IEntity DefaultTextType
+        {
+            get { return m_DefaultTextType; }
+            set { m_DefaultTextType = GetRegisteredEntityType(value); }
         }
 
         internal IWindow DrawExtent

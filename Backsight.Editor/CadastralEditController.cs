@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Forms;
@@ -26,7 +27,6 @@ using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.SqlServer;
 using Backsight.Geometry;
-using System.Drawing.Drawing2D;
 
 namespace Backsight.Editor
 {
@@ -178,6 +178,13 @@ namespace Backsight.Editor
 
                 // Ensure an editing layer is defined
                 SetActiveLayer();
+
+                // Pick up any default entity types for points, lines, text, polygons
+                ILayer layer = ActiveLayer;
+                cmm.SetDefaultEntity(SpatialType.Point, layer.DefaultPointType);
+                cmm.SetDefaultEntity(SpatialType.Line, layer.DefaultLineType);
+                cmm.SetDefaultEntity(SpatialType.Polygon, layer.DefaultPolygonType);
+                cmm.SetDefaultEntity(SpatialType.Text, layer.DefaultTextType);
 
                 // Add initial session
                 cmm.AddSession();
