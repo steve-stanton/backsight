@@ -74,16 +74,17 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new feature
         /// </summary>
-        /// <param name="ent">The entity type for the feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
         /// </param>
         protected Feature(IEntity e, Operation creator)
             : base(creator.MapModel)
         {
-            //Allow null entity type for the time being
-            //if (e==null || creator==null)
+            if (e==null)
+                throw new ArgumentNullException("Entity type must be defined");
+
             if (creator==null) 
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Creating operation must be defined");
 
             m_What = creator.MapModel.GetRegisteredEntityType(e);
             m_Creator = creator;

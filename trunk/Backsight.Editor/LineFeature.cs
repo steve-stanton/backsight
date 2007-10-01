@@ -183,8 +183,8 @@ namespace Backsight.Editor
                 }
                 else
                 {
-                    StartPoint.Draw(display, HatchStyle.BackwardDiagonal, Color.DarkBlue);
-                    EndPoint.Draw(display, HatchStyle.BackwardDiagonal, Color.LightBlue);
+                    StartPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.DarkBlue);
+                    EndPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.LightBlue);
                 }
             }
         }

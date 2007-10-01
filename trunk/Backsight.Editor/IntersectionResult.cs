@@ -48,7 +48,7 @@ namespace Backsight.Editor
         internal IntersectionResult(LineFeature line)
         {
             m_Line = line;
-            m_Data = null;
+            m_Data = new List<IntersectionData>();
         }
 
         /// <summary>
@@ -134,9 +134,6 @@ namespace Backsight.Editor
         /// <param name="xsect">The intersection info to append.</param>
         void Append(IntersectionData xsect)
         {
-            if (m_Data==null)
-                m_Data = new List<IntersectionData>();
-
             m_Data.Add(xsect);
         }
 
