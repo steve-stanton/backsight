@@ -134,8 +134,8 @@ namespace Backsight.Editor
         abstract internal void LButtonUp(IPosition p);
         abstract internal void LButtonDblClick(IPosition p);
         abstract internal bool RButtonDown(IPosition p);
-        abstract internal void DialAbort(System.Windows.Forms.Control wnd);
-        abstract internal bool DialFinish(System.Windows.Forms.Control wnd);
+        abstract internal void DialAbort(Control wnd);
+        abstract internal bool DialFinish(Control wnd);
 
         /// <summary>
         /// Reacts to the selection of a point feature.

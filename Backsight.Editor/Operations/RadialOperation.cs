@@ -74,6 +74,11 @@ namespace Backsight.Editor.Operations
 
         #endregion
 
+        bool CanCorrect
+        {
+            get { return true; }
+        }
+
         /// <summary>
         /// The point that the sideshot was observed from (the origin of
         /// the observed direction).
@@ -148,13 +153,8 @@ namespace Backsight.Editor.Operations
             else
                 m_Line = map.AddLine(dir.From, m_To, lineType, this);
 
-            // Add any feature references made by this operation.
-            AddReferences();
-
-            // Clean up the map.
-            Intersect();
-            map.CleanEdit();
-
+            // Peform standard completion steps
+            Complete();
             return true;
         }
 

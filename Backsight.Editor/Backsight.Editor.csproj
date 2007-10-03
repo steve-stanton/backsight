@@ -145,6 +145,12 @@
     <Compile Include="Forms\ParallelControl.Designer.cs">
       <DependentUpon>ParallelControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PointOnLineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\PointOnLineControl.Designer.cs">
+      <DependentUpon>PointOnLineControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TerminalControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -166,7 +172,9 @@
     <Compile Include="LineSubdivisionUI.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
     <Compile Include="Operations\MoveTextOperation.cs" />
+    <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
+    <Compile Include="PointOnLineUI.cs" />
     <Compile Include="PolygonSubdivisionUI.cs" />
     <Compile Include="RingFlag.cs" />
     <Compile Include="Ring.cs" />
@@ -307,6 +315,10 @@
     <EmbeddedResource Include="Forms\ParallelControl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ParallelControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PointOnLineControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PointOnLineControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>

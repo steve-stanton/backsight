@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
@@ -159,7 +160,7 @@ namespace Backsight.Editor
              */
         }
 
-        internal override void DialAbort(System.Windows.Forms.Control wnd)
+        internal override void DialAbort(Control wnd)
         {
             KillDialogs();
             AbortCommand();
@@ -179,7 +180,7 @@ namespace Backsight.Editor
             }
         }
 
-        internal override bool DialFinish(System.Windows.Forms.Control wnd)
+        internal override bool DialFinish(Control wnd)
         {
             if (m_Dialog==null && m_UpDial==null)
                 throw new Exception("LineSubdivisionUI.DialFinish - No dialog!");

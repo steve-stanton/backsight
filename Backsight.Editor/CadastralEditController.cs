@@ -455,6 +455,7 @@ namespace Backsight.Editor
             SetNormalCursor();
 
             cmd.ActiveDisplay.RestoreLastDraw();
+            RedrawSelection();
 
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)

@@ -281,5 +281,17 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Performs processing that should be performed at the end of each editing
+        /// operation. This involves calls to <see cref="AddReferences"/> and
+        /// <see cref="Intersect"/>, followed by <see cref="CadastralMapModel.CleanEdit"/>.
+        /// </summary>
+        protected void Complete()
+        {
+            AddReferences();
+            Intersect();
+            MapModel.CleanEdit();
+        }
     }
 }

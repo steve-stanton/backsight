@@ -205,8 +205,11 @@ namespace Backsight.Editor.Forms
             AddAction(new ToolStripItem[] { mnuLineSubdivideLine
                                           , ctxLineSubdivide
                                           , toolLineSubdivideLine }, IsLineSubdivideLineEnabled, LineSubdivideLine);
-            AddAction(new ToolStripItem[] { mnuLineSubdivideLineOneDistance
-                                          , ctxLineSubdivideOneDistance }, IsLineSubdivideLineOneDistanceEnabled, LineSubdivideLineOneDistance);
+            AddEdit(
+                EditingActionId.PointOnLine,
+                new ToolStripItem[] { mnuLineSubdivideLineOneDistance, ctxLineSubdivideOneDistance },
+                IsLineSubdivideLineOneDistanceEnabled,
+                LineSubdivideLineOneDistance);
             AddEdit(
                 EditingActionId.Parallel,
                 new ToolStripItem[] { mnuLineParallel, ctxLineParallel },
@@ -1217,6 +1220,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(action.Title);
         }
 
+        /// <summary>
+        /// Checks whether the Line - Subdivide command is enabled or not.
+        /// A specific line has to be selected, and there can be no other command currently running.
+        /// </summary>
+        /// <returns></returns>
         private bool IsLineSubdivideLineEnabled()
         {
             return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);
@@ -1236,14 +1244,28 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             m_Controller.StartCommand(cmd);
         }
 
+        /// <summary>
+        /// Checks whether the Line - Subdivide (One Distance) command is enabled or not.
+        /// A specific line has to be selected, and there can be no other command currently running.
+        /// </summary>
+        /// <returns></returns>
         private bool IsLineSubdivideLineOneDistanceEnabled()
         {
-            return false;
+            return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);
         }
 
         private void LineSubdivideLineOneDistance(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            LineFeature selLine = this.SelectedLine;
+            if (selLine==null)
+            {
+                MessageBox.Show("You must initially select the line you want to subdivide.");
+                return;
+            }
+
+            IControlContainer cc = CreateContainer(action);
+            CommandUI cmd = new PointOnLineUI(cc, action, selLine);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsLineParallelEnabled()

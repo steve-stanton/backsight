@@ -217,15 +217,13 @@ namespace Backsight
             // do nothing
         }
 
-        /// <summary>
-        /// Perform any processing whenever a display has just been re-painted.
-        /// This implementation does nothing, derived classes may override.
-        /// </summary>
-        /// <param name="sender">The display that has been painted</param>
-        /*
-        public virtual void OnPaint(ISpatialDisplay sender)
+        protected void RedrawSelection()
         {
+            if (m_Selection.Count>0)
+            {
+                foreach (ISpatialDisplay d in m_Displays)
+                    d.OnSelectionChanging(m_Selection, m_Selection);
+            }
         }
-         */
     }
 }
