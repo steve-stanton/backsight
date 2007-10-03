@@ -188,8 +188,7 @@ namespace Backsight.Editor.Operations
             foreach (Feature f in m_Deletions)
                 f.IsInactive = true;
 
-            // Clean the map
-            MapModel.CleanEdit();
+            Complete();
             return true;
         }
 

@@ -131,9 +131,8 @@ namespace Backsight.Editor.Operations
             CadastralMapModel map = CadastralMapModel.Current;
             m_NewLine = map.AddLine(start, end, map.DefaultLineType, this);
 
-            // Clean up the map.
-            Intersect();
-            map.CleanEdit();
+            // Peform standard completion steps
+            Complete();
             return true;
         }
 
@@ -172,9 +171,8 @@ namespace Backsight.Editor.Operations
             CadastralMapModel map = CadastralMapModel.Current;
             m_NewLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this, false);
 
-            // Clean up the map.
-            Intersect();
-            map.CleanEdit();
+            // Peform standard completion steps
+            Complete();
             return true;
         }
 

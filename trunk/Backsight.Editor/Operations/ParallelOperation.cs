@@ -463,12 +463,8 @@ namespace Backsight.Editor.Operations
                 m_ParLine = map.AddLine(ps, pe, ent, this);
             }
 
-            // Add any feature references made by this operation.
-            AddReferences();
-
-            // Clean up the map.
-            Intersect();
-            map.CleanEdit();
+            // Peform standard completion steps
+            Complete();
             return true;
         }
 

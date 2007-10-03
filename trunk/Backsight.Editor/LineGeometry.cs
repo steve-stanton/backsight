@@ -117,13 +117,6 @@ namespace Backsight.Editor
         abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
-        /// Modifies any referenced features by cross-referencing them to the line
-        /// that contains this geometry.
-        /// </summary>
-        /// <param name="container">The line that refers to this geometry.</param>
-        //abstract internal void AddReferences(LineFeature container);
-
-        /// <summary>
         /// The geometry that acts as the base for this one. This implementation just
         /// returns <c>this</c>, cast to an instance of <see cref="ISectionBase"/>. The
         /// derived <see cref="SectionGeometry"/> class provides an override.

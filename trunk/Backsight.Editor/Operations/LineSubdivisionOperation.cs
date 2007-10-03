@@ -187,12 +187,8 @@ namespace Backsight.Editor.Operations
             // De-activate the parent line
             m_Line.IsInactive = true;
 
-            // Add any feature references made by this operation.
-            AddReferences();
-
-            // Clean up the map.
-            Intersect();
-            MapModel.CleanEdit();
+            // Peform standard completion steps
+            Complete();
         }
 
         int NumFace

@@ -61,10 +61,8 @@ namespace Backsight.Editor.Operations
 
             m_NewPoint = newPoint;
 
-            // Handle any intersections the new point has with the map.
-            Intersect();
-            map.CleanEdit();
-
+            // Peform standard completion steps
+            Complete();
             return true;
         }
 

@@ -152,12 +152,8 @@ namespace Backsight.Editor.Operations
                 m_Lines[i] = map.AddLine(start, end, ent, this);
             }
 
-            // Add any feature references made by this operation.
-            AddReferences();
-
-            // Clean up the map.
-            Intersect();
-            MapModel.CleanEdit();
+            // Peform standard completion steps
+            Complete();
         }
     }
 }

@@ -295,7 +295,7 @@ namespace Backsight.Editor
         /// <param name="to">The approximate end position.</param>
         /// <param name="sys">The mapping system</param>
         /// <returns>The distance on the mapping plane.</returns>
-        double GetPlanarMetric(IPosition from, IPosition to, ICoordinateSystem sys)
+        internal double GetPlanarMetric(IPosition from, IPosition to, ICoordinateSystem sys)
         {
 	        if (!this.IsDefined)
                 return 0.0;

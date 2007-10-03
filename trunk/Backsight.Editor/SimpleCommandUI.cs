@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
@@ -111,11 +112,16 @@ namespace Backsight.Editor
             return false;
         }
 
-        internal override void DialAbort(System.Windows.Forms.Control wnd)
+        /// <summary>
+        /// Aborts this command by calling <see cref="CommandUI.AbortCommand"/>.
+        /// </summary>
+        /// <param name="wnd">The currently active control (not used)</param>
+        internal override void DialAbort(Control wnd)
         {
+            AbortCommand();
         }
 
-        internal override bool DialFinish(System.Windows.Forms.Control wnd)
+        internal override bool DialFinish(Control wnd)
         {
             return false;
         }
