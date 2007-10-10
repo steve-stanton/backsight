@@ -64,5 +64,30 @@ namespace Backsight
             object o = Registry.GetValue(s_UserRoot, settingName, String.Empty);
             return (o==null ? String.Empty : o.ToString());
         }
+
+        /// <summary>
+        /// Retrieves a global setting and converts to integer.
+        /// </summary>
+        /// <param name="settingName">The name of the setting</param>
+        /// <param name="defaultValue">The default value for the setting</param>
+        /// <returns>The parsed integer (equals <param name="defaultValue"/> if it's not
+        /// defined, or it couldn't be parsed)</returns>
+        public static int ReadInt(string settingName, int defaultValue)
+        {
+            string s = Read(settingName);
+            try { return Int32.Parse(s); }
+            catch { }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Saves a global setting that corresponds to an int value.
+        /// </summary>
+        /// <param name="settingName">The name of the setting</param>
+        /// <param name="val">The value to save</param>
+        public static void WriteInt(string settingName, int val)
+        {
+            Write(settingName, val.ToString());
+        }
     }
 }

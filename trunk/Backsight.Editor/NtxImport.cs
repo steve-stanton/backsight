@@ -365,7 +365,8 @@ namespace Backsight.Editor
             PointFeature result = (PointFeature)m_Index.QueryClosest(p, tol, SpatialType.Point);
             if (result==null)
             {
-                result = new PointFeature(p, null, creator);
+                IEntity e = creator.MapModel.DefaultPointType;
+                result = new PointFeature(p, e, creator);
                 m_Index.Add(result);
                 m_Result.Add(result);
             }

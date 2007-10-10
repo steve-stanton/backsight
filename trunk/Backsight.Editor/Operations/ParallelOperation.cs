@@ -561,8 +561,10 @@ namespace Backsight.Editor.Operations
 	            if ( !isold ) pPoint->SetNextId();
              */
 
-            IEntity e = map.ActiveLayer.DefaultPointType;
-            return map.AddPoint(loc, e, this);
+            IEntity e = map.DefaultPointType;
+            PointFeature p = map.AddPoint(loc, e, this);
+            p.SetNextId();
+            return p;
         }
 
         /// <summary>

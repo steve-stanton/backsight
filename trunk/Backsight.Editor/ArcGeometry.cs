@@ -585,5 +585,50 @@ namespace Backsight.Editor
         {
             return results.IntersectArc(this);
         }
+
+        /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+        {
+            // Get the distance from the centre of the circle to the search point.
+            IPointGeometry center = m_Circle.Center;
+            double dist = Geom.Distance(center, p);
+
+            // Return if the search point is beyond tolerance.
+            double radius = m_Circle.Radius.Meters;
+            double diff = Math.Abs(dist-radius);
+            if (diff > tol.Meters)
+                return null;
+
+            // If the vertex lies in the curve sector, the closest position
+            // is along the bearing from the centre through the search
+            // position. Otherwise the closest position is the end of
+            // the curve that's closest (given that it's within tolerance).
+
+            if (CircularArcGeometry.IsInSector(this, p, 0.0))
+            {
+                double bearing = Geom.Bearing(center, p).Radians;
+                return Geom.Polar(center, bearing, radius);
+            }
+
+            double d1 = Geom.DistanceSquared(p, BC);
+            double d2 = Geom.DistanceSquared(p, EC);
+
+            double t = tol.Meters;
+            if (Math.Min(d1, d2) < (t*t))
+            {
+                if (d1 < d2)
+                    return BC;
+                else
+                    return EC;
+            }
+
+            return null;
+        }
     }
 }

@@ -60,6 +60,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static byte[] AttachPointCursor {
+            get {
+                object obj = ResourceManager.GetObject("AttachPointCursor", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap ConnectionPath {
             get {
                 object obj = ResourceManager.GetObject("ConnectionPath", resourceCulture);

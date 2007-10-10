@@ -928,12 +928,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsPointAddOnLineEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void PointAddOnLine(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new AttachPointUI(action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsPointConnectionPathEnabled()
@@ -953,11 +954,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointSideshot(IUserAction action)
         {
-            /*
-		// Disable auto-highlight (re-enabled in OnFinishCommand).
-		if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;             		
-             */
-
             PointFeature selPoint = this.SelectedPoint;
             if (selPoint==null)
             {

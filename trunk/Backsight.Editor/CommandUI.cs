@@ -325,7 +325,7 @@ namespace Backsight.Editor
 
         internal CadastralEditController Controller
         {
-            get { return (CadastralEditController)SpatialController.Current; }
+            get { return CadastralEditController.Current; }
         }
 
         /// <summary>
@@ -564,9 +564,42 @@ namespace Backsight.Editor
         /// Reacts to a situation where the user presses the ESC key. This implementation
         /// does nothing. Derived classes may override.
         /// </summary>
+        /// <remarks>
+        /// Use of the escape key will generally be limited to commands that display some
+        /// sort of non-standard cursor, but which do not provide any user dialog. Commands
+        /// with dialogs are usually escaped by clicking on a Cancel button.
+        /// </remarks>
         internal virtual void Escape()
         {
             // do nothing
+        }
+
+        /// <summary>
+        /// Highlights the specified line on the command's active display.
+        /// </summary>
+        /// <param name="line">The line to highlight (ignored if null)</param>
+        protected void Highlight(LineFeature line)
+        {
+            if (line!=null)
+            {
+                IDrawStyle style = Controller.HighlightStyle;
+                ISpatialDisplay display = ActiveDisplay;
+                line.Render(display, style);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether points are currently drawn on the active display
+        /// </summary>
+        /// <returns>True if points are drawn. False if not drawn. The result
+        /// depends on the current display scale & the point drawing scale threshold
+        /// that's noted as part of the current map model.
+        /// </returns>
+        protected bool ArePointsDrawn()
+        {
+            ISpatialDisplay display = ActiveDisplay;
+            CadastralMapModel cmm = CadastralMapModel.Current;
+            return (display.MapScale < cmm.ShowPointScale);
         }
     }
 }

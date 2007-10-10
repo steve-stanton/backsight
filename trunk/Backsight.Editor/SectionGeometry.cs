@@ -218,5 +218,17 @@ namespace Backsight.Editor
         {
             return Make().Intersect(results);
         }
+
+        /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+        {
+            return Make().GetClosest(p, tol);
+        }
     }
 }

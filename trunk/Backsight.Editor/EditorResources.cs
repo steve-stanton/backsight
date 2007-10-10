@@ -43,5 +43,15 @@ namespace Backsight.Editor
                 return c;
             }
         }
+
+        internal static Cursor AttachPointCursor
+        {
+            get
+            {
+                Cursor c = new Cursor(new MemoryStream(Resources.AttachPointCursor));
+                c.Tag = "AttachPointCursor";
+                return c;
+            }
+        }
     }
 }

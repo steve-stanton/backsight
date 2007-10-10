@@ -188,6 +188,7 @@ namespace Backsight.Editor.Operations
         {
             get { return "Line subdivide (one distance)"; }
         }
+
         /// <summary>
         /// Finds the observed length of a line that was created by this operation.
         /// </summary>
