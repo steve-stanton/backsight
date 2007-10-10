@@ -292,5 +292,37 @@ namespace Backsight.Editor
         {
             return results.IntersectSegment(this);
         }
+
+        /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+        {
+            // Get the perpendicular point (or closest end)
+            IPointGeometry s = Start;
+            IPointGeometry e = End;
+            double xp, yp;
+            BasicGeom.GetPerpendicular(p.X, p.Y, s.X, s.Y, e.X, e.Y, out xp, out yp);
+
+            // Ignore if point is too far away
+            double t = tol.Meters;
+            double dx = p.X - xp;
+            if (dx > t)
+                return null;
+
+            double dy = p.Y - yp;
+            if (dy > t)
+                return null;
+
+            double dsq = (dx*dx + dy*dy);
+            if (dsq > t*t)
+                return null;
+
+            return new Position(xp, yp);
+        }
     }
 }

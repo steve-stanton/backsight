@@ -166,6 +166,15 @@ namespace Backsight.Editor
         abstract internal bool GetCloser(IPointGeometry s, ref PointGeometry e, out uint status);
 
         /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        abstract internal IPosition GetClosest(IPointGeometry p, ILength tol);
+
+        /// <summary>
         /// Loads a list of positions with data for this line.
         /// </summary>
         /// <param name="positions">The list to append to</param>

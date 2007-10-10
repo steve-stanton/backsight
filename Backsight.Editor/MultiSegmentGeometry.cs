@@ -804,5 +804,94 @@ namespace Backsight.Editor
         {
             return results.IntersectMultiSegment(this);
         }
+
+        /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+        {
+            return FindClosest(p, tol, true);
+        }
+
+        /// <summary>
+        /// Gets the point on this line that is closest to a specified position.
+        /// </summary>
+        /// <param name="p">The position to search from.</param>
+        /// <param name="tol">Maximum distance from line to the search position</param>
+        /// <param name="doLast">Specify true to consider the last segment. False to ignore the
+        /// last segment.</param>
+        /// <returns>The closest position (null if the line is further away than the specified
+        /// max distance)</returns>
+        IPosition FindClosest(IPointGeometry p, ILength tol, bool doLast)
+        {
+            IPointGeometry[] data = Data;
+
+            // Initial "best" distance squared cannot be greater than the square of the match tolerance.
+            double tm = tol.Meters;
+            double bestdsq = tm * tm;
+
+            // Best segment number so far (valid segment numbers start at 1).
+            int best = 0;
+
+            // Pull out the XY of the search vertex
+            double vx = p.X;
+            double vy = p.Y;
+
+            // Get start of the initial line segment
+            double x1 = data[0].X;
+            double y1 = data[0].Y;
+
+            // Only do the last segment when required.
+            int nv = data.Length;
+            if (!doLast)
+                nv--;
+
+            for (int i=1; i<nv; i++)
+            {
+                // Pick up the end of the segment & get the window of
+                // the segment, expanded by the match tolerance.
+                double x2 = data[i].X;
+                double y2 = data[i].Y;
+
+                double xmin = Math.Min(x1, x2) - tm;
+                double ymin = Math.Min(y1, y2) - tm;
+                double xmax = Math.Max(x1, x2) + tm;
+                double ymax = Math.Max(y1, y2) + tm;
+
+                // If the search vertex falls within the expanded window,
+                // and the distance (squared) to the perpendicular point
+                // is better than what we already got, remember the index
+                // number of this segment.
+
+                if (vx>xmin && vx<xmax && vy>ymin && vy<ymax)
+                {
+                    double dsq = Geom.DistanceSquared(vx, vy, x1, y1, x2, y2);
+                    if (dsq < bestdsq)
+                    {
+                        bestdsq = dsq;
+                        best = i;
+                    }
+                }
+
+                // End of segment is start of next one
+                x1 = x2;
+                y1 = y2;
+            }
+
+            // Return if we did not locate a suitable point
+            if (best==0)
+                return null;
+
+            // Get the position of the perpendicular point.
+            double xp, yp;
+            IPointGeometry s = data[best-1];
+            IPointGeometry e = data[best];
+            Geom.GetPerpendicular(vx, vy, s.X, s.Y, e.X, e.Y, out xp, out yp);
+            return new Position(xp, yp);
+        }
     }
 }

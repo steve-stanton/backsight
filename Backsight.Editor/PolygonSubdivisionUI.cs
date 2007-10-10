@@ -35,9 +35,9 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
         /// Creates a new <c>PolygonSubdivisionUI</c>
         /// </summary>
+        /// <param name="action">The action that initiated the command</param>
         internal PolygonSubdivisionUI(IUserAction action)
             : base(action)
         {
