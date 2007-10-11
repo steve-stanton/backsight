@@ -217,17 +217,22 @@ namespace Backsight.Editor.Forms
                 LineParallel);
             AddAction(new ToolStripItem[] { mnuLineUpdate
                                           , ctxLineUpdate }, IsLineUpdateEnabled, LineUpdate);
-            AddAction(new ToolStripItem[] { mnuLinePolygonBoundary
-                                          , ctxLinePolygonBoundary }, IsLinePolygonBoundaryEnabled, LinePolygonBoundary);
+            AddEdit(
+                EditingActionId.SetTopology,
+                new ToolStripItem[] { mnuLinePolygonBoundary, ctxLinePolygonBoundary },
+                IsLinePolygonBoundaryEnabled,
+                LinePolygonBoundary);
             AddAction(new ToolStripItem[] { mnuLineDelete
                                           , ctxLineDelete }, IsLineDeleteEnabled, LineDelete);
             AddAction(new ToolStripItem[] { mnuLineTrimDangles
                                           , ctxLineTrimDangle
                                           , ctxMultiTrim }, IsLineTrimDanglesEnabled, LineTrimDangles);
             AddAction(mnuLineDefaultEntity, IsLineDefaultEntityEnabled, LineDefaultEntity);
-            AddAction(new ToolStripItem[] { mnuLineSubdividePolygon
-                                          , ctxLineSubdividePolygon
-                                          , toolLineSubdividePolygon }, IsLineSubdividePolygonEnabled, LineSubdividePolygon);
+            AddEdit(
+                EditingActionId.PolygonSubdivision,
+                new ToolStripItem[] { mnuLineSubdividePolygon, ctxLineSubdividePolygon, toolLineSubdividePolygon },
+                IsLineSubdividePolygonEnabled,
+                LineSubdividePolygon);
             AddAction(ctxLineProperties, null, ShowProperties);
 
             // Text menu...
@@ -1295,12 +1300,22 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsLinePolygonBoundaryEnabled()
         {
-            return false;
+            LineFeature line = SelectedLine;
+            mnuLinePolygonBoundary.Checked = (line!=null && line.IsTopological);
+            return (line!=null && !m_Controller.IsCommandRunning);
         }
 
         private void LinePolygonBoundary(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            LineFeature line = SelectedLine;
+            if (line==null)
+            {
+                MessageBox.Show("You must select a specific line first.");
+                return;
+            }
+
+            CommandUI cmd = new SetTopologyUI(action, line);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsLineDeleteEnabled()

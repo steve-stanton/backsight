@@ -338,9 +338,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Checks if this feature is topological or not. Note that if the feature is a line
-        /// that has been automatically split at intersections, the line is regarded as NOT
-        /// being topological (only the descendant topological sections are).
+        /// Checks if this feature is topological or not.
         /// </summary>
         internal bool IsTopological
         {

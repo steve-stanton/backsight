@@ -56,7 +56,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>LineFeature</c>
         /// </summary>
-        /// <param name="e">The entity type for the feature.</param>
+        /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
@@ -72,7 +72,7 @@ namespace Backsight.Editor
             AddReferences();
 
             // If the entity type denotes a topological boundary, initialize the topology.
-            if (e!=null && e.IsPolygonBoundaryValid)
+            if (e.IsPolygonBoundaryValid)
                 SetTopology(true);
         }
 
@@ -227,11 +227,18 @@ namespace Backsight.Editor
         /// <summary>
         /// Marks polygons affected by the introduction of a new line (possibly via
         /// <c>LineFeature.Restore</c>).
-        /// 
+        /// <para/>
         /// If the new line falls completely inside an existing polygon, we do not mark
-        /// that polygon. What will happen is that this arc will end up being identified
+        /// that polygon. What will happen is that this line will end up being identified
         /// as an island of that polygon.
         /// </summary>
+        /// <remarks>This method is meant to cover situations where a new line falls
+        /// entirely within a polygon (connecting a pair of points on the perimeter of
+        /// the polygon). In that situation, no polygons would otherwise be marked for
+        /// deletion until a bit too late in the re-building process. If the new line
+        /// actually runs across a polygon boundary, the polygons affected will be
+        /// marked when the intersection(s) are detected.
+        /// </remarks>
         internal void MarkPolygons()
         {
             // Nothing to do if this is not a polygon boundary
@@ -260,45 +267,37 @@ namespace Backsight.Editor
         /// <param name="isStart">Start of this line?</param>
         void MarkPolygons(bool isStart)
         {
-            throw new NotImplementedException("LineFeature.MarkPolygons");
-            /*
-	// Get the integer code required by GetNextArc.
-	INT1 endCode = 1;
-	if ( isStart ) endCode = -1;
+            // Get a connecting boundary
+            Boundary b = (isStart ? GetStartBoundary() : GetEndBoundary());
+            ConnectionFinder cf = new ConnectionFinder(b, isStart);
+            Boundary next = cf.Next;
+            if (next==null)
+                throw new Exception("LineFeature.MarkPolygons - Cannot determine network cycle");
 
-	// Get the layers for this arc.
-	CeLayerList layers(*this);
+            // If we connected to the start of the connecting arc,
+            // mark it's polygons to the right. Otherwise the left.
+            if (cf.IsStart)
+                next.MarkRight();
+            else
+                next.MarkLeft();
+        }
 
-	// Repeat until we have found all layers (if all else fails,
-	// we should ultimately detect THIS arc).
-	while ( !layers.IsNull() ) {
+        /// <summary>
+        /// Returns the boundary (if any) at the start of this line
+        /// </summary>
+        /// <returns>The boundary at the start (may be null)</returns>
+        Boundary GetStartBoundary()
+        {
+            return (m_Topology==null ? null : m_Topology[0]);
+        }
 
-		// Get a connecting arc.
-		INT1 dir;
-		const CeArc* const pConnect = GetNextArc(layers,endCode,&dir);
-
-		// Break if we didn't find anything (something screwed up).
-		if ( !pConnect ) break;
-
-		// Return if we've somehow got back to this arc.
-		if ( pConnect == this ) break;
-
-		// If we connected to the start of the connecting arc,
-		// mark it's polygons to the right. Otherwise the left.
-		if ( dir<0 )
-			pConnect->MarkRight(layers);
-		else
-			pConnect->MarkLeft(layers);
-
-		// If the layers for the connecting arc are identical
-		// to those we were looking for, that's us done.
-		CeLayerList conlayers(*pConnect);
-		if ( layers == conlayers ) break;
-
-		// Subtract the layers we've covered.
-		layers.Subtract(conlayers);
-	}
-             */
+        /// <summary>
+        /// Returns the boundary (if any) at the end of this line
+        /// </summary>
+        /// <returns>The boundary at the end (may be null)</returns>
+        Boundary GetEndBoundary()
+        {
+            return (m_Topology==null ? null : m_Topology[m_Topology.Count-1]);
         }
 
         /// <summary>
@@ -661,17 +660,50 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal override void Clean()
         {
             if (IsInactive)
-            {
-                if (m_Topology!=null)
-                {
-                    foreach (Boundary b in m_Topology)
-                        b.OnDeleteLine();
-
-                    m_Topology = null;
-                }
-            }
+                SetPolDeleted();
 
             base.Clean();
+        }
+
+        /// <summary>
+        /// Marks adjacent polygons (if any) for deletion, and nulls out <see cref="m_Topology"/>
+        /// </summary>
+        void SetPolDeleted()
+        {
+            if (m_Topology!=null)
+            {
+                foreach (Boundary b in m_Topology)
+                    b.OnDeleteLine();
+
+                m_Topology = null;
+            }
+        }
+
+        /// <summary>
+        /// Toggles the topological status of this line. This should be called only
+        /// by <see cref="SetTopologyOperation.Execute"/>
+        /// </summary>
+        internal void SwitchTopology()
+        {
+            if (IsTopological)
+            {
+                // Mark adjacent polygons for a rebuild (and null m_Topology)
+                SetPolDeleted();
+
+                // Clear the flag bit
+                SetTopology(false);
+            }
+            else
+            {
+                // Create new m_Topology & set the flag bit
+                SetTopology(true);
+
+                // Mark polygons that are incident on the end points
+                MarkPolygons();
+
+                // Treat the line as "moved" to force re-intersection
+                IsMoved = true;
+            }
         }
     }
 }
