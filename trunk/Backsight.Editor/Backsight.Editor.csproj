@@ -182,6 +182,7 @@
     <Compile Include="Operations\MoveTextOperation.cs" />
     <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
+    <Compile Include="Operations\SetTopologyOperation.cs" />
     <Compile Include="PointOnLineUI.cs" />
     <Compile Include="PolygonSubdivisionUI.cs" />
     <Compile Include="RingFlag.cs" />
@@ -372,6 +373,7 @@
     <Compile Include="RollforwardException.cs" />
     <Compile Include="Row.cs" />
     <Compile Include="Session.cs" />
+    <Compile Include="SetTopologyUI.cs" />
     <Compile Include="Side.cs" />
     <Compile Include="SimpleCommandUI.cs" />
     <Compile Include="TaggedObject.cs" />

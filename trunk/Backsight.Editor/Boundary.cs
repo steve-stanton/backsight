@@ -478,9 +478,24 @@ namespace Backsight.Editor
         /// </summary>
         internal void OnDeleteLine()
         {
+            MarkLeft();
+            MarkRight();
+        }
+
+        /// <summary>
+        /// Marks the left polygon (if any) for deletion.
+        /// </summary>
+        internal void MarkLeft()
+        {
             if (m_Left!=null)
                 m_Left.IsDeleted = true;
+        }
 
+        /// <summary>
+        /// Marks the right polygon (if any) for deletion.
+        /// </summary>
+        internal void MarkRight()
+        {
             if (m_Right!=null)
                 m_Right.IsDeleted = true;
         }
