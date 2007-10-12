@@ -118,7 +118,10 @@ namespace Backsight.Editor.Operations
             get { return (m_Faces.Count>1); }
         }
 
-        internal override string Name
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
+        public override string Name
         {
             get { return "Line subdivision"; }
         }

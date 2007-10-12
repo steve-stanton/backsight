@@ -19,6 +19,7 @@ using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
+using System.Collections.ObjectModel;
 
 namespace Backsight.Editor
 {
@@ -53,7 +54,7 @@ namespace Backsight.Editor
         DateTime m_Start;
 
         /// <summary>
-        /// When was session ended? 
+        /// When was the last edit performed?
         /// </summary>
         DateTime m_End;
 
@@ -134,7 +135,7 @@ namespace Backsight.Editor
         public void End()
         {
             UpdateEndTime();
-            if (m_Operations.Count==0)
+            if (IsEmpty)
                 m_Operations = null;
 
             s_CurrentSession = null;
@@ -229,6 +230,101 @@ namespace Backsight.Editor
                 foreach (Operation op in m_Operations)
                     op.AddToIndex(index);
             }
+        }
+
+        /// <summary>
+        /// When was session started? 
+        /// </summary>
+        public DateTime StartTime
+        {
+            get { return m_Start; }
+        }
+
+        /// <summary>
+        /// When was the last edit performed?
+        /// </summary>
+        public DateTime EndTime
+        {
+            get { return m_End; }
+        }
+
+        /// <summary>
+        /// The user logged on for the session. 
+        /// </summary>
+        public Person User
+        {
+            get { return m_Who; }
+        }
+
+        /// <summary>
+        /// The number of edits performed during the session.
+        /// </summary>
+        public int OperationCount
+        {
+            get { return (m_Operations==null ? 0 : m_Operations.Count); }
+        }
+
+        /// <summary>
+        /// The map layer that was being edited throughout this session.
+        /// </summary>
+        public ILayer Layer
+        {
+            get { return m_Layer; }
+        }
+
+        /// <summary>
+        /// Rolls back the last operation in this session. The operation will be removed from
+        /// the session's operation list.
+        /// </summary>
+        /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
+        /// Otherwise the code number that specifies the operation type.</returns>
+        internal int Rollback()
+        {
+            // Return if there is nothing to rollback.
+            if (m_Operations==null || m_Operations.Count==0)
+                return 0;
+
+            // Get the tail operation
+            int index = m_Operations.Count-1;
+            Operation op = m_Operations[index];
+
+            // What sort of thing are we rolling back?
+            int type = (int)op.EditId;
+
+            // Rollback the operation & remove from list
+            if (!op.Undo())
+                return -1;
+
+            m_Operations.RemoveAt(index);
+            if (m_Operations.Count==0)
+                m_Operations = null;
+
+            return type;
+        }
+
+        /// <summary>
+        /// Returns the editing operations recorded as part of this session.
+        /// </summary>
+        /// <param name="reverse">Should the list be reversed (latest edit first)</param>
+        /// <returns>The edits associated with this session (never null, but may be
+        /// an empty array)</returns>
+        internal Operation[] GetOperations(bool reverse)
+        {
+            if (m_Operations==null)
+                return new Operation[0];
+
+            if (!reverse)
+                return m_Operations.ToArray();
+
+            Operation[] result = m_Operations.ToArray();
+            for (int i=0, j=result.Length-1; i<j; i++, j--)
+            {
+                Operation temp = result[i];
+                result[i] = result[j];
+                result[j] = temp;
+            }
+
+            return result;
         }
     }
 }

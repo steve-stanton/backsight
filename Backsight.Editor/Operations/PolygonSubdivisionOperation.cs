@@ -45,7 +45,10 @@ namespace Backsight.Editor.Operations
         #endregion
 
 
-        internal override string Name
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
+        public override string Name
         {
             get { return "Polygon subdivision"; }
         }

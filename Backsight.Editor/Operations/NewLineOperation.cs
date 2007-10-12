@@ -64,10 +64,11 @@ namespace Backsight.Editor.Operations
         //virtual CeArc*			GetpPredecessor	( const CeArc& arc ) const { return 0; }
         //virtual LOGICAL			HasReference	( const CeFeature* const pFeat ) const { return FALSE; }
 
+
         /// <summary>
-        /// The title of this operation.
+        /// A user-perceived title for this operation.
         /// </summary>
-        internal override string Name
+        public override string Name
         {
             get
             {

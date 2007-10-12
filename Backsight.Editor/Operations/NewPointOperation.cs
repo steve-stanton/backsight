@@ -76,7 +76,10 @@ namespace Backsight.Editor.Operations
             get { return EditingActionId.NewPoint; }
         }
 
-        internal override string Name
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
+        public override string Name
         {
             get { return "Add point"; }
         }

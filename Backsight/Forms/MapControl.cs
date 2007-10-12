@@ -237,6 +237,7 @@ namespace Backsight.Forms
                 m_Display.Render(g);
 
                 // Save the display without any highlighting
+                //m_Display.Render(m_SavedDisplay.Graphics);
                 CopyMapPanelToSavedDisplay();
 
                 // Any selection needs to be drawn too, but after the above

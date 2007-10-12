@@ -71,7 +71,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
-        internal override string Name
+        public override string Name
         {
             get { return "Attach point to line"; }
         }

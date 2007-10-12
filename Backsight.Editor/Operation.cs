@@ -34,7 +34,8 @@ namespace Backsight.Editor
         /// Operation sequence number. This is assigned when the operation is
         /// appended to the map's list of ops.
         /// </summary>
-        //uint m_Sequence;
+        [NonSerialized]
+        uint m_Sequence;
 
         /// <summary>
         /// Flag bits
@@ -52,6 +53,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException("Editing session is not defined");
 
             m_Session.Add(this);
+            m_Sequence = 0;
         }
 
         #endregion
@@ -64,7 +66,7 @@ namespace Backsight.Editor
         /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
-        abstract internal string Name { get; }
+        abstract public string Name { get; }
 
         /// <summary>
         /// Finds the observed length of a line that was created by this operation.
@@ -87,6 +89,22 @@ namespace Backsight.Editor
         /// <c>Operation.Features</c> property.
         /// </remarks>
         abstract internal Feature[] Features { get; }
+
+        /// <summary>
+        /// The number of features created by this edit.
+        /// </summary>
+        public int FeatureCount
+        {
+            get { return Features.Length; }
+        }
+
+        /// <summary>
+        /// Operation sequence number.
+        /// </summary>
+        public uint EditSequence
+        {
+            get { return m_Sequence; }
+        }
 
         /// <summary>
         /// Initializes this operation upon loading of the session that contains it.

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Sys=System.Diagnostics;
 using System.IO;
 using System.Diagnostics;
@@ -352,7 +353,11 @@ namespace Backsight.Editor
             get { return m_Annotation; }
         }
 
-        internal IList<Session> Sessions { get { return m_Sessions; } }
+        internal ReadOnlyCollection<Session> Sessions
+        {
+            get { return m_Sessions.AsReadOnly(); }
+        }
+
         internal IList<Person> People { get { return m_People; } }
 
         internal DistanceUnit DisplayUnit
@@ -1124,6 +1129,44 @@ namespace Backsight.Editor
         internal uint InternalIdCount
         {
             get { return m_NumInternalIds; }
+        }
+
+        /// <summary>
+        /// Rolls back the last operation known to this map. Does not save the map to disk.
+        /// </summary>
+        /// <param name="cursess">Specify true if the rollback should be restricted
+        /// to operations performed during the current session. False if rollback can span
+        /// sessions.</param>
+        /// <returns>The code identifying the op that was rolled back. Zero if nothing
+        /// was rolled back.</returns>
+        internal uint Rollback(bool cursess)
+        {
+            // Go through each session (starting at the last). As soon
+            // as we hit a session that can rollback something, we're done.
+            int status = 0;
+
+            if (cursess)
+            {
+                status = Session.CurrentSession.Rollback();
+            }
+            else
+            {
+                for (int i=m_Sessions.Count-1; i>=0 && status==0; i--)
+                {
+                    Session s = m_Sessions[i];
+                    status = s.Rollback();
+                }
+            }
+
+            // Return >0 only if we successfully rolled back; 0 if there was nothing to rollback,
+            // or some error occurred during rollback.
+            if (status>0)
+            {
+                CleanEdit();
+                return (uint)status;
+            }
+
+            return 0;
         }
     }
 }

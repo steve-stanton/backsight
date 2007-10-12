@@ -160,7 +160,10 @@ namespace Backsight.Editor.Operations
             return null; // nothing to do
         }
 
-        internal override string Name
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
+        public override string Name
         {
             get { return "Parallel"; }
         }
