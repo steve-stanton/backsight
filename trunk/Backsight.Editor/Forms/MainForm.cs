@@ -29,8 +29,18 @@ namespace Backsight.Editor.Forms
 {
     public partial class MainForm : Form, IControlContainer
     {
+        #region Class data
+
         private readonly UserActionList m_Actions;
         private readonly CadastralEditController m_Controller;
+
+        /// <summary>
+        /// Modeless dialog used to perform inverse calculations (null if dialog
+        /// is not currently displayed).
+        /// </summary>
+        InverseForm m_Inverse;
+
+        #endregion
 
         public MainForm()
         {
@@ -55,6 +65,7 @@ namespace Backsight.Editor.Forms
             // will get routed to methods in this class.
 
             m_Actions = new UserActionList();
+            m_Inverse = null;
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -165,10 +176,16 @@ namespace Backsight.Editor.Forms
             AddAction(mnuDataExportToAutoCad, IsDataExportToAutoCadEnabled, DataExportToAutoCad);
 
             // Point menu...
-            AddEdit(EditingActionId.NewPoint, new ToolStripItem[] { mnuPointNew
-                                                                  , ctxPointNew }, IsPointNewEnabled, PointNew);
-            AddAction(new ToolStripItem[] { mnuPointAddOnLine
-                                          , ctxPointAddOnLine }, IsPointAddOnLineEnabled, PointAddOnLine);
+            AddEdit(
+                EditingActionId.NewPoint,
+                new ToolStripItem[] { mnuPointNew, ctxPointNew },
+                IsPointNewEnabled,
+                PointNew);
+            AddEdit(
+                EditingActionId.AttachPoint,
+                new ToolStripItem[] { mnuPointAddOnLine, ctxPointAddOnLine },
+                IsPointAddOnLineEnabled,
+                PointAddOnLine);
             AddAction(new ToolStripItem[] { mnuPointConnectionPath, toolPointConnectionPath }, IsPointConnectionPathEnabled, PointConnectionPath);
             AddEdit(
                 EditingActionId.Radial,
@@ -298,6 +315,13 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // Shut down any inverse calculator
+            if (m_Inverse!=null)
+            {
+                m_Inverse.Dispose();
+                m_Inverse = null;
+            }
+
             CadastralMapModel map = CadastralMapModel.Current;
             if (map!=null && String.IsNullOrEmpty(map.Name) && !map.IsEmpty)
             {
@@ -664,12 +688,19 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsEditOperationHistoryEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void EditOperationHistory(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Turn off any highlighted features (if a feature is undone
+            // by rollback, that's bad).
+            m_Controller.ClearSelection();
+
+            // Display the info (modal)
+            HistoryForm dial = new HistoryForm();
+            dial.ShowDialog();
+            dial.Dispose();
         }
 
         private bool IsEditSetEditLayerEnabled()
@@ -1082,14 +1113,38 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             SetDefaultEntity(SpatialType.Point);
         }
 
+        /// <summary>
+        /// Determines whether the inverse calculator can be used
+        /// </summary>
+        /// <returns>True if points are drawn, and an inverse calculator is not already
+        /// in use. Note that an inverse calculator may be used even if an editing
+        /// command is in progress.</returns>
         private bool IsPointInverseCalculatorEnabled()
         {
-            return false;
+            return (m_Inverse==null && ArePointsDrawn);
         }
 
         private void PointInverseCalculator(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Display the choices (modal). Then display the selected dialog modeless.
+            InverseChoiceForm dial = new InverseChoiceForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                m_Inverse = dial.SelectedForm;
+                m_Inverse.FormClosing += new FormClosingEventHandler(InverseFormClosing);
+                m_Inverse.Show();
+            }
+        }
+
+        /// <summary>
+        /// FormClosing event handler that's called when inverse calculator dialog
+        /// is closed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void InverseFormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_Inverse = null;
         }
 
         private bool ArePointsDrawn
@@ -1247,9 +1302,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         /// <summary>
         /// Checks whether the Line - Subdivide (One Distance) command is enabled or not.
-        /// A specific line has to be selected, and there can be no other command currently running.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if a specific line is selected, and no other command is currently running.</returns>
         private bool IsLineSubdivideLineOneDistanceEnabled()
         {
             return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);

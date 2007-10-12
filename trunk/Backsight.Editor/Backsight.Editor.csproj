@@ -126,6 +126,12 @@
     <Compile Include="Forms\GetOffsetForm.Designer.cs">
       <DependentUpon>GetOffsetForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\HistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HistoryForm.Designer.cs">
+      <DependentUpon>HistoryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IActionContainer.cs" />
     <Compile Include="Forms\IControlContainer.cs" />
     <Compile Include="Forms\IdAllocationForm.cs">
@@ -133,6 +139,24 @@
     </Compile>
     <Compile Include="Forms\IdAllocationForm.Designer.cs">
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InverseChoiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseChoiceForm.Designer.cs">
+      <DependentUpon>InverseChoiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InverseDistanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseDistanceForm.Designer.cs">
+      <DependentUpon>InverseDistanceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InverseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseForm.Designer.cs">
+      <DependentUpon>InverseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\LineSubdivisionControl.cs">
       <SubType>UserControl</SubType>
@@ -158,6 +182,12 @@
     <Compile Include="Forms\PointOnLineControl.Designer.cs">
       <DependentUpon>PointOnLineControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SessionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SessionForm.Designer.cs">
+      <DependentUpon>SessionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TerminalControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -169,6 +199,7 @@
     <Compile Include="IInternalIdFactory.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectionHelper.cs" />
+    <Compile Include="InverseType.cs" />
     <Compile Include="IPossibleList.cs" />
     <Compile Include="ISection.cs" />
     <Compile Include="ISectionBase.cs" />
@@ -305,9 +336,21 @@
       <SubType>Designer</SubType>
       <DependentUpon>GetOffsetForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HistoryForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>HistoryForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\IdAllocationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseChoiceForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseChoiceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseDistanceForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseDistanceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineSubdivisionControl.resx">
       <SubType>Designer</SubType>
@@ -336,6 +379,10 @@
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SessionForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SessionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TerminalControl.resx">
       <SubType>Designer</SubType>

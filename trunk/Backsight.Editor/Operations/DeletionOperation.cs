@@ -53,7 +53,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The user-perceived title for this operation is "Deletion"
         /// </summary>
-        internal override string Name
+        public override string Name
         {
             get { return "Deletion"; }
         }
