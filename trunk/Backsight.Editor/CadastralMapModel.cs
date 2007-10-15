@@ -372,7 +372,7 @@ namespace Backsight.Editor
             set { m_EntryUnit = GetUnits(value.UnitType); }
         }
 
-        private DistanceUnit GetUnits(DistanceUnitType unitType)
+        internal DistanceUnit GetUnits(DistanceUnitType unitType)
         {
             switch (unitType)
             {
@@ -694,6 +694,9 @@ namespace Backsight.Editor
             // Define information relating to the environment
             AssignData(EnvironmentContainer.Current);
 
+            // Initialize operation sequencing
+            m_OpSequence = 0;
+
             // Notify all sessions
             foreach (Session s in m_Sessions)
             {
@@ -711,6 +714,18 @@ namespace Backsight.Editor
 
             // Generate a spatial index
             CreateIndex();
+        }
+
+        /// <summary>
+        /// Reserves the next operation sequence number. This should be obtained each time
+        /// a new editing operation is appended to this model. It also gets used when a map
+        /// model is opened (since the op sequence number is not persisted).
+        /// </summary>
+        /// <returns>The next available operation sequence number.</returns>
+        internal uint ReserveNextOpSequence()
+        {
+            m_OpSequence++;
+            return m_OpSequence;
         }
 
         /// <summary>

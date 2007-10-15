@@ -66,17 +66,17 @@ namespace Backsight.Editor.Forms
 
         private void distanceButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.Distance, new InverseDistanceForm()); // CdInvDist
+            SelectAndClose(InverseType.Distance, new InverseDistanceForm());
         }
 
         private void distanceBearingButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.DistanceBearing, null); // CdInvDistBear
+            SelectAndClose(InverseType.DistanceBearing, new InverseDistanceBearingForm());
         }
 
         private void distanceAngleButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.DistanceAngle, null); // CdInvDistAng
+            SelectAndClose(InverseType.DistanceAngle, new InverseDistanceAngleForm());
         }
 
         private void arcDistanceButton_Click(object sender, EventArgs e)

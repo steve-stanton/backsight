@@ -113,7 +113,7 @@ namespace Backsight.Editor.Forms
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(232, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(181, 148);
+            this.groupBox2.Size = new System.Drawing.Size(239, 148);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Distance";
@@ -128,6 +128,7 @@ namespace Backsight.Editor.Forms
             this.cRadioButton.TabStop = true;
             this.cRadioButton.Text = "&Chains";
             this.cRadioButton.UseVisualStyleBackColor = true;
+            this.cRadioButton.CheckedChanged += new System.EventHandler(this.cRadioButton_CheckedChanged);
             // 
             // fRadioButton
             // 
@@ -139,6 +140,7 @@ namespace Backsight.Editor.Forms
             this.fRadioButton.TabStop = true;
             this.fRadioButton.Text = "&Feet";
             this.fRadioButton.UseVisualStyleBackColor = true;
+            this.fRadioButton.CheckedChanged += new System.EventHandler(this.fRadioButton_CheckedChanged);
             // 
             // mRadioButton
             // 
@@ -150,19 +152,20 @@ namespace Backsight.Editor.Forms
             this.mRadioButton.TabStop = true;
             this.mRadioButton.Text = "&Meters";
             this.mRadioButton.UseVisualStyleBackColor = true;
+            this.mRadioButton.CheckedChanged += new System.EventHandler(this.mRadioButton_CheckedChanged);
             // 
             // distanceTextBox
             // 
             this.distanceTextBox.Location = new System.Drawing.Point(20, 35);
             this.distanceTextBox.Name = "distanceTextBox";
             this.distanceTextBox.ReadOnly = true;
-            this.distanceTextBox.Size = new System.Drawing.Size(124, 22);
+            this.distanceTextBox.Size = new System.Drawing.Size(198, 22);
             this.distanceTextBox.TabIndex = 1;
             // 
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(443, 126);
+            this.cancelButton.Location = new System.Drawing.Point(500, 126);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 2;
@@ -173,7 +176,7 @@ namespace Backsight.Editor.Forms
             // InverseDistanceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.ClientSize = new System.Drawing.Size(537, 173);
+            this.ClientSize = new System.Drawing.Size(599, 173);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

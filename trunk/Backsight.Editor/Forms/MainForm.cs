@@ -34,12 +34,6 @@ namespace Backsight.Editor.Forms
         private readonly UserActionList m_Actions;
         private readonly CadastralEditController m_Controller;
 
-        /// <summary>
-        /// Modeless dialog used to perform inverse calculations (null if dialog
-        /// is not currently displayed).
-        /// </summary>
-        InverseForm m_Inverse;
-
         #endregion
 
         public MainForm()
@@ -65,7 +59,6 @@ namespace Backsight.Editor.Forms
             // will get routed to methods in this class.
 
             m_Actions = new UserActionList();
-            m_Inverse = null;
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -315,13 +308,6 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Shut down any inverse calculator
-            if (m_Inverse!=null)
-            {
-                m_Inverse.Dispose();
-                m_Inverse = null;
-            }
-
             CadastralMapModel map = CadastralMapModel.Current;
             if (map!=null && String.IsNullOrEmpty(map.Name) && !map.IsEmpty)
             {
@@ -1121,7 +1107,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// command is in progress.</returns>
         private bool IsPointInverseCalculatorEnabled()
         {
-            return (m_Inverse==null && ArePointsDrawn);
+            return (!m_Controller.IsInverseCalculatorRunning && ArePointsDrawn);
         }
 
         private void PointInverseCalculator(IUserAction action)
@@ -1129,22 +1115,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Display the choices (modal). Then display the selected dialog modeless.
             InverseChoiceForm dial = new InverseChoiceForm();
             if (dial.ShowDialog() == DialogResult.OK)
-            {
-                m_Inverse = dial.SelectedForm;
-                m_Inverse.FormClosing += new FormClosingEventHandler(InverseFormClosing);
-                m_Inverse.Show();
-            }
-        }
+                m_Controller.StartInverseCalculator(dial.SelectedForm);
 
-        /// <summary>
-        /// FormClosing event handler that's called when inverse calculator dialog
-        /// is closed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void InverseFormClosing(object sender, FormClosingEventArgs e)
-        {
-            m_Inverse = null;
+            dial.Dispose();
         }
 
         private bool ArePointsDrawn
