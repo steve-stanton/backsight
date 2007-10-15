@@ -70,6 +70,12 @@ namespace Backsight.Editor
         /// </summary>
         private readonly AutoSaver m_AutoSaver;
 
+        /// <summary>
+        /// Modeless dialog used to perform inverse calculations (null if dialog
+        /// is not currently displayed).
+        /// </summary>
+        InverseForm m_Inverse;
+
         #endregion
 
         #region Constructors
@@ -84,6 +90,7 @@ namespace Backsight.Editor
             m_IsAutoSelect = 0;
             m_CurrentEdit = null;
             m_AutoSaver = new AutoSaver(this);
+            m_Inverse = null;
         }
 
         #endregion
@@ -100,6 +107,13 @@ namespace Backsight.Editor
 
         public override void Close()
         {
+            // Shut down any inverse calculator
+            if (m_Inverse!=null)
+            {
+                m_Inverse.Dispose();
+                m_Inverse = null;
+            }
+
             m_AutoSaver.OnClose();
             CadastralMapModel cmm = this.CadastralMapModel;
             if (cmm!=null)
@@ -694,25 +708,28 @@ namespace Backsight.Editor
                     m_Main.SetSelection(item);
 
                 // If a single item has been selected
-                if (item!=null && m_Command!=null)
+                if (item!=null)
                 {
-                    if (ArePointsDrawn)
+                    if (item is PointFeature)
                     {
-                        if (item is PointFeature)
+                        if (ArePointsDrawn)
                         {
                             PointFeature selPoint = (item as PointFeature);
-                            //if (m_pInverse)
-                            //    m_pInverse->OnSelectPoint(pSelPoint);
-                            //if (m_pCommand)
-                            m_Command.OnSelectPoint(selPoint);
-                            return;
+
+                            if (m_Inverse!=null)
+                                m_Inverse.OnSelectPoint(selPoint);
+
+                            if (m_Command!=null)
+                                m_Command.OnSelectPoint(selPoint);
                         }
                     }
-
-                    if (item is LineFeature)
+                    else if (item is LineFeature)
                     {
-                        LineFeature selLine = (item as LineFeature);
-                        m_Command.OnSelectLine(selLine);
+                        if (m_Command!=null)
+                        {
+                            LineFeature selLine = (item as LineFeature);
+                            m_Command.OnSelectLine(selLine);
+                        }
                     }
                 }
             }
@@ -756,6 +773,40 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Is an inverse calculator currently active?
+        /// </summary>
+        internal bool IsInverseCalculatorRunning
+        {
+            get { return (m_Inverse!=null); }
+        }
+
+        /// <summary>
+        /// Starts the specified inverse calculation dialog.
+        /// </summary>
+        /// <param name="invCalcForm">The dialog to start</param>
+        internal void StartInverseCalculator(InverseForm invCalcForm)
+        {
+            m_Inverse = invCalcForm;
+            m_Inverse.FormClosing += new FormClosingEventHandler(InverseFormClosing);
+            m_Inverse.Show();
+        }
+
+        /// <summary>
+        /// FormClosing event handler that's called when inverse calculator dialog
+        /// is closed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void InverseFormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_Inverse = null;
+
+            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            display.RestoreLastDraw();
+            display.PaintNow();
+        }
+
+        /// <summary>
         /// Perform any processing whenever a display has changed the drawn extent
         /// of a map. This saves the extent as part of the map model.
         /// </summary>
@@ -781,11 +832,19 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Experiment. If this works, can do away with annoying erase/draw handling
-        /// that commands would otherwise have to take care of.
+        /// Application idle handler gives editing commands the opportunity to re-paint
+        /// any command-specific stuff.
         /// </summary>
         internal void OnIdle()
         {
+            bool repaint = false;
+
+            if (m_Inverse!=null)
+            {
+                m_Inverse.Draw();
+                repaint = true;
+            }
+
             if (m_Command!=null && m_Command.PerformsPainting)
             {
                 // Restoring the last draw here can cause flickering of the command-specific
@@ -795,8 +854,11 @@ namespace Backsight.Editor
                 // m_Command.ActiveDisplay.RestoreLastDraw();
 
                 m_Command.Paint(null);
-                m_Command.ActiveDisplay.PaintNow();
+                repaint = true;
             }
+
+            if (repaint)
+                ActiveDisplay.PaintNow();
         }
     }
 }

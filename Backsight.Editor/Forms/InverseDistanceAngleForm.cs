@@ -15,34 +15,52 @@
 
 using System;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
-    partial class InverseDistanceForm : InverseForm
+    /// <summary>
+    /// Inverse distance and angle calculator
+    /// </summary>
+    partial class InverseDistanceAngleForm : InverseForm
     {
         #region Class data
 
         /// <summary>
-        /// The first point for the distance calculation.
+        /// The first point for the distance-angle calculation.
         /// </summary>
         PointFeature m_Point1;
 
         /// <summary>
-        /// The second point for the distance calculation.
+        /// The second point for the distance-angle calculation.
         /// </summary>
         PointFeature m_Point2;
 
+        /// <summary>
+        /// The third point for the distance-angle calculation.
+        /// </summary>
+        PointFeature m_Point3;
+
+        /// <summary>
+        /// True for clockwise angle
+        /// </summary>
+        bool m_Clockwise;
+
         #endregion
 
-        internal InverseDistanceForm()
+        #region Constructors
+
+        public InverseDistanceAngleForm()
         {
             InitializeComponent();
             color1Button.BackColor = InverseColors[0];
             color2Button.BackColor = InverseColors[1];
+            color3Button.BackColor = InverseColors[2];
 
-            m_Point1 = m_Point2 = null;
+            m_Point1 = m_Point2 = m_Point3 = null;
+            m_Clockwise = true;
         }
+
+        #endregion
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
@@ -86,26 +104,22 @@ namespace Backsight.Editor.Forms
             }
         }
 
-        internal virtual void ShowResult()
+        private void cwRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            // If we have two points, get the distance between them,
-            // format the result, and display it.
-            if (m_Point1!=null && m_Point2!=null)
+            if (cwRadioButton.Checked)
             {
-                // Get the distance on the mapping plane.
-                double metric = Geom.Distance(m_Point1, m_Point2);
-                distanceTextBox.Text = Format(metric, m_Point1, m_Point2);
+                m_Clockwise = true;
+                ShowResult();
             }
         }
 
-        protected PointFeature Point1
+        private void ccwRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            get { return m_Point1; }
-        }
-
-        protected PointFeature Point2
-        {
-            get { return m_Point2; }
+            if (ccwRadioButton.Checked)
+            {
+                m_Clockwise = false;
+                ShowResult();
+            }
         }
 
         internal override void Draw()
@@ -117,6 +131,41 @@ namespace Backsight.Editor.Forms
 
             if (m_Point2!=null)
                 m_Point2.Draw(display, InverseColors[1]);
+
+            if (m_Point3!=null)
+                m_Point3.Draw(display, InverseColors[2]);
+        }
+
+        void ShowResult()
+        {
+            // If we have the first two points, get the distance between
+            // them, format the result, and display it.
+            if (m_Point1!=null && m_Point2!=null)
+            {
+                double metric = Geom.Distance(m_Point1, m_Point2);
+                distance1TextBox.Text = Format(metric, m_Point1, m_Point2);
+            }
+
+            // Same for the second pair of points.
+            if (m_Point2!=null && m_Point3!=null)
+            {
+                double metric = Geom.Distance(m_Point2, m_Point3);
+                distance2TextBox.Text = Format(metric, m_Point2, m_Point3);
+            }
+
+            // If we have all 3 points, display the angle.
+            if (m_Point1!=null && m_Point2!=null && m_Point3!=null)
+            {
+                // Get the clockwise angle.
+                Turn reft = new Turn(m_Point2, m_Point1);
+                double ang = reft.GetAngle(m_Point3).Radians;
+
+                // Get the complement if we actually want it anti-clockwise.
+                if (!m_Clockwise)
+                    ang = Constants.PIMUL2 - ang;
+
+                angleTextBox.Text = RadianValue.AsString(ang);
+            }
         }
 
         internal override void OnSelectPoint(PointFeature point)
@@ -125,27 +174,30 @@ namespace Backsight.Editor.Forms
             if (point==null)
                 return;
 
-            // If both points are already defined, shift back the 2nd point
-            if (m_Point2!=null)
+            // If all 3 points are already defined, shift back the 2nd 
+            // and 3rd points
+            if (m_Point3!=null)
             {
                 m_Point1 = m_Point2;
-                m_Point2 = point;
+                m_Point2 = m_Point3;
             }
 
-            // If we already know the first point, the new point
-            // always goes into the 2nd slot.
-            if (m_Point1!=null)
+            // Stick the point into the appropriate slot (always the
+            // last slot if the first 2 were previously defined).
+            if (m_Point1==null)
+                m_Point1 = point;
+            else if (m_Point2==null)
                 m_Point2 = point;
             else
-                m_Point1 = point;
+                m_Point3 = point;
 
             // Make sure the edit boxes reflect what we now have
             point1TextBox.Text = GetPointText(m_Point1);
             point2TextBox.Text = GetPointText(m_Point2);
+            point3TextBox.Text = GetPointText(m_Point3);
 
-            // Display the distance if we've got 2 points.
+            // Display what results we can.
             ShowResult();
         }
     }
 }
-

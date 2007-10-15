@@ -146,6 +146,18 @@
     <Compile Include="Forms\InverseChoiceForm.Designer.cs">
       <DependentUpon>InverseChoiceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InverseDistanceAngleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseDistanceAngleForm.Designer.cs">
+      <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InverseDistanceBearingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseDistanceBearingForm.Designer.cs">
+      <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\InverseDistanceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -348,9 +360,21 @@
       <SubType>Designer</SubType>
       <DependentUpon>InverseChoiceForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseDistanceAngleForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseDistanceBearingForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\InverseDistanceForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InverseDistanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineSubdivisionControl.resx">
       <SubType>Designer</SubType>
