@@ -36,7 +36,7 @@ namespace Backsight.Editor
 
         new public static CadastralEditController Current
         {
-            get { return (CadastralEditController)SpatialController.Current; }
+            get { return (SpatialController.Current as CadastralEditController); }
         }
 
         #endregion

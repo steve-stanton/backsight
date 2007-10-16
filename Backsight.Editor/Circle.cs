@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Geometry;
 
@@ -153,6 +154,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The arcs attached to this circle.
+        /// </summary>
+        internal ArcFeature[] Arcs
+        {
+            get { return m_Arcs.ToArray(); }
+        }
+
+        /// <summary>
         /// Removes an arc from this circle. This might be called if the operation that
         /// created the arc is getting rolled back. Another possible scenario is where
         /// the arc is being moved to coincide with a different circle.
@@ -237,6 +246,18 @@ namespace Backsight.Editor
         internal IPosition GetEastPoint()
         {
             return new Position(m_Center.X + m_Radius.Meters, m_Center.Y);
+        }
+
+        /// <summary>
+        /// Inserts this circle into the supplied index.
+        /// </summary>
+        /// <param name="index">The spatial index to add to (should be an instance of
+        /// <see cref="CadastralIndex"/>)</param>
+        internal void AddToIndex(IEditSpatialIndex index)
+        {
+            CadastralIndex cx = (index as CadastralIndex);
+            Debug.Assert(cx!=null);
+            cx.AddCircle(this);
         }
     }
 }

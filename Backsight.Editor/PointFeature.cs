@@ -112,6 +112,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The circles centered at this point
+        /// </summary>
+        /// <returns>The circles with a center that coincides with this point</returns>
+        internal Circle[] GetCircles()
+        {
+            List<Circle> result = new List<Circle>();
+
+            foreach (IFeatureDependent d in Dependents)
+            {
+                if (d is Circle)
+                    result.Add((Circle)d);
+            }
+
+            return result.ToArray();
+        }
+
+        /// <summary>
         /// Moves the location of this point.
         /// </summary>
         /// <param name="to">The new position.</param>

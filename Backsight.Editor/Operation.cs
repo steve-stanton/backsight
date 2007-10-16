@@ -97,6 +97,63 @@ namespace Backsight.Editor
         abstract internal Feature[] Features { get; }
 
         /// <summary>
+        /// The circles associated with an array of features
+        /// </summary>
+        /// <param name="fa">The features of interest</param>
+        /// <returns>The circles (if any) that are associated with the supplied features</returns>
+        List<Circle> GetCreatedCircles(Feature[] fa)
+        {
+            if (fa.Length==0)
+                return new List<Circle>();
+
+            // The following will be overkill in most cases, but not for things like
+            // bulk data imports...
+
+            // The circles found so far will be noted in an index that's keyed by the
+            // internal ID of the point at the center of the circle.
+            Dictionary<string, List<Circle>> dic = new Dictionary<string, List<Circle>>();
+
+            List<Circle> result = new List<Circle>(100);
+
+            foreach (Feature f in fa)
+            {
+                if (f is ArcFeature)
+                {
+                    Circle c = (f as ArcFeature).Circle;
+
+                    if (c.Creator == f.Creator)
+                    {
+                        string centerPointId = c.CenterPoint.DataId;
+                        bool addToResult = false;
+                        List<Circle> circles;
+
+                        if (dic.TryGetValue(centerPointId, out circles))
+                        {
+                            if (circles.IndexOf(c)==0)
+                            {
+                                circles.Add(c);
+                                addToResult = true;
+                            }
+                        }
+                        else
+                        {
+                            circles = new List<Circle>(1);
+                            circles.Add(c);
+                            dic.Add(centerPointId, circles);
+                            addToResult = true;
+                        }
+
+                        if (addToResult)
+                            result.Add(c);
+                    }
+                }
+            }
+
+            result.TrimExcess();
+            return result;
+        }
+
+        /// <summary>
         /// The number of features created by this edit.
         /// </summary>
         public int FeatureCount
@@ -136,6 +193,10 @@ namespace Backsight.Editor
             Feature[] createdFeatures = this.Features;
             foreach (Feature f in createdFeatures)
                 f.AddToIndex(index);
+
+            List<Circle> createdCircles = GetCreatedCircles(createdFeatures);
+            foreach (Circle c in createdCircles)
+                c.AddToIndex(index);
         }
 
         /// <summary>
@@ -323,6 +384,16 @@ namespace Backsight.Editor
         /// </summary>
         protected void Complete()
         {
+            // Index any circles that got created (perhaps this should have been done earlier)
+            Feature[] feats = Features;
+            List<Circle> circles = GetCreatedCircles(feats);
+            if (circles.Count > 0)
+            {
+                CadastralIndex index = (CadastralIndex)MapModel.Index;
+                foreach (Circle c in circles)
+                    index.AddCircle(c);
+            }
+
             AddReferences();
             Intersect();
             MapModel.CleanEdit();
