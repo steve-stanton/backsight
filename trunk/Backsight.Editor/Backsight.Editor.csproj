@@ -140,6 +140,12 @@
     <Compile Include="Forms\IdAllocationForm.Designer.cs">
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InverseArcDistanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseArcDistanceForm.Designer.cs">
+      <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\InverseChoiceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -355,6 +361,10 @@
     <EmbeddedResource Include="Forms\IdAllocationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseArcDistanceForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InverseChoiceForm.resx">
       <SubType>Designer</SubType>

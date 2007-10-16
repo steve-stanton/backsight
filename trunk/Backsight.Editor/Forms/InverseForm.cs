@@ -86,9 +86,6 @@ namespace Backsight.Editor.Forms
 
         private void InverseForm_Shown(object sender, EventArgs e)
         {
-            if (DesignMode)
-                return;
-
             // Display at top left corner of the screen.
             //this->SetWindowPos( &wndTopMost, 0,0, 0,0, SWP_NOSIZE );
 
@@ -97,9 +94,12 @@ namespace Backsight.Editor.Forms
             // the current data entry units instead.
 
             CadastralMapModel map = CadastralMapModel.Current;
-            DistanceUnit display = map.DisplayUnit;
-            m_Unit = (display.UnitType == DistanceUnitType.AsEntered ? map.EntryUnit : display);
-            InitializeUnits(m_Unit);
+            if (map!=null)
+            {
+                DistanceUnit display = map.DisplayUnit;
+                m_Unit = (display.UnitType == DistanceUnitType.AsEntered ? map.EntryUnit : display);
+                InitializeUnits(m_Unit);
+            }
         }
 
         protected void SetMeters()
@@ -172,6 +172,15 @@ namespace Backsight.Editor.Forms
 
             string result = p.FormattedKey;
             return (result.Length > 0 ? result : p.DataId);
+        }
+
+        /// <summary>
+        /// Ensures that any special painting on the map display has been cleared.
+        /// </summary>
+        protected void ErasePainting()
+        {
+            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            display.RestoreLastDraw();
         }
     }
 }

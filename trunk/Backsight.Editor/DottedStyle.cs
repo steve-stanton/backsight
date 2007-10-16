@@ -23,16 +23,15 @@ namespace Backsight.Editor
 {
     class DottedStyle : DrawStyle
     {
-        internal DottedStyle() : base()
+        internal DottedStyle()
+            : this(Color.Magenta)
         {
-            base.Pen.Color = Color.Magenta;
-            //base.Pen.DashStyle = DashStyle.Dash; //DashStyle.Dot;
-            //base.Pen.DashStyle = DashStyle.Custom;
+        }
+
+        internal DottedStyle(Color col)
+            : base(col)
+        {
             base.Pen.DashPattern = new float[] { 5.0F, 5.0F };
-            /*
-            dc.SetBkColor(GetSysColor(COLOR_WINDOW)); // SystemColors.Window
-            dc.SetBkMode(TRANSPARENT);	// getting white between dots?
-             */
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Backsight.Editor.Forms
 
         private void arcDistanceButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.ArcDistance, null); // CdInvArcDist
+            SelectAndClose(InverseType.ArcDistance, new InverseArcDistanceForm());
         }
 
         private void arcDistanceBearingButton_Click(object sender, EventArgs e)
