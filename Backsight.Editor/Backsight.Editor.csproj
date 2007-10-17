@@ -77,6 +77,7 @@
     <Compile Include="Feature.cs" />
     <Compile Include="FeatureFlag.cs" />
     <Compile Include="FeatureId.cs" />
+    <Compile Include="FileCheckUI.cs" />
     <Compile Include="FileImportSource.cs" />
     <Compile Include="FindCirclesQuery.cs" />
     <Compile Include="FindIntersectionsQuery.cs" />
@@ -139,6 +140,12 @@
     </Compile>
     <Compile Include="Forms\IdAllocationForm.Designer.cs">
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InverseArcDistanceBearingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InverseArcDistanceBearingForm.Designer.cs">
+      <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\InverseArcDistanceForm.cs">
       <SubType>Form</SubType>
@@ -362,6 +369,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InverseArcDistanceBearingForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\InverseArcDistanceForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
@@ -463,6 +474,7 @@
     <Compile Include="ThemeFacade.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="TranslationFile.cs" />
+    <Compile Include="UndoUI.cs" />
     <Compile Include="UpdateUI.cs" />
     <Compile Include="Wildcard.cs" />
   </ItemGroup>

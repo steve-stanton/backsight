@@ -14,10 +14,10 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Operations;
-using System.Windows.Forms;
 
 namespace Backsight.Editor
 {
@@ -59,11 +59,12 @@ namespace Backsight.Editor
         internal override bool Run()
         {
             CadastralEditController c = Controller;
+            DeletionOperation dop = null;
 
             try
             {
                 SetCommandCursor();
-                DeletionOperation dop = new DeletionOperation();
+                dop = new DeletionOperation();
                 foreach (ISpatialObject so in c.Selection.Items)
                 {
                     if (so is Feature)
@@ -75,8 +76,10 @@ namespace Backsight.Editor
                 return true;
             }
 
-            catch
+            catch (Exception e)
             {
+                MessageBox.Show(e.Message);
+                Session.CurrentSession.Remove(dop);
                 c.AbortCommand(this);
                 return false;
             }

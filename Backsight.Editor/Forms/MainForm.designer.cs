@@ -123,7 +123,6 @@ namespace Backsight.Editor.Forms
             this.mnuPointConnectionPath = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuPointSideshot = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuPointUpdate = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuPointDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuPointBulkUpdate = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
@@ -140,7 +139,6 @@ namespace Backsight.Editor.Forms
             this.mnuLineParallel = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuLineUpdate = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuLinePolygonBoundary = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuLineDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuLineTrimDangles = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuLineDefaultEntity = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,7 +148,6 @@ namespace Backsight.Editor.Forms
             this.mnuTextAddMiscellaneousText = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTextAddPolygonLabels = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTextMove = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuTextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuTextDefaultRotationAngle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuIntersect = new System.Windows.Forms.ToolStripMenuItem();
@@ -888,7 +885,6 @@ namespace Backsight.Editor.Forms
             this.mnuPointConnectionPath,
             this.mnuPointSideshot,
             this.mnuPointUpdate,
-            this.mnuPointDelete,
             this.toolStripSeparator16,
             this.mnuPointBulkUpdate,
             this.toolStripSeparator17,
@@ -933,13 +929,6 @@ namespace Backsight.Editor.Forms
             this.mnuPointUpdate.Size = new System.Drawing.Size(250, 22);
             this.mnuPointUpdate.Text = "&Update...";
             this.mnuPointUpdate.ToolTipText = "Update the operation that created a point";
-            // 
-            // mnuPointDelete
-            // 
-            this.mnuPointDelete.Name = "mnuPointDelete";
-            this.mnuPointDelete.Size = new System.Drawing.Size(250, 22);
-            this.mnuPointDelete.Text = "&Delete";
-            this.mnuPointDelete.ToolTipText = "Delete defined point feature";
             // 
             // toolStripSeparator16
             // 
@@ -990,7 +979,6 @@ namespace Backsight.Editor.Forms
             this.mnuLineParallel,
             this.mnuLineUpdate,
             this.mnuLinePolygonBoundary,
-            this.mnuLineDelete,
             this.mnuLineTrimDangles,
             this.toolStripSeparator19,
             this.mnuLineDefaultEntity,
@@ -1063,13 +1051,6 @@ namespace Backsight.Editor.Forms
             this.mnuLinePolygonBoundary.Text = "Polygon &Boundary";
             this.mnuLinePolygonBoundary.ToolTipText = "Toggle Polygon Boundary status";
             // 
-            // mnuLineDelete
-            // 
-            this.mnuLineDelete.Name = "mnuLineDelete";
-            this.mnuLineDelete.Size = new System.Drawing.Size(272, 22);
-            this.mnuLineDelete.Text = "&Delete";
-            this.mnuLineDelete.ToolTipText = "Delete line feature";
-            // 
             // mnuLineTrimDangles
             // 
             this.mnuLineTrimDangles.Name = "mnuLineTrimDangles";
@@ -1107,7 +1088,6 @@ namespace Backsight.Editor.Forms
             this.mnuTextAddMiscellaneousText,
             this.mnuTextAddPolygonLabels,
             this.mnuTextMove,
-            this.mnuTextDelete,
             this.toolStripSeparator21,
             this.mnuTextDefaultRotationAngle});
             this.mnuText.Name = "mnuText";
@@ -1134,13 +1114,6 @@ namespace Backsight.Editor.Forms
             this.mnuTextMove.Size = new System.Drawing.Size(235, 22);
             this.mnuTextMove.Text = "&Move";
             this.mnuTextMove.ToolTipText = "Move the item of text";
-            // 
-            // mnuTextDelete
-            // 
-            this.mnuTextDelete.Name = "mnuTextDelete";
-            this.mnuTextDelete.Size = new System.Drawing.Size(235, 22);
-            this.mnuTextDelete.Text = "&Delete";
-            this.mnuTextDelete.ToolTipText = "Deleted selected text";
             // 
             // toolStripSeparator21
             // 
@@ -2516,7 +2489,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuPointConnectionPath;
         private System.Windows.Forms.ToolStripMenuItem mnuPointSideshot;
         private System.Windows.Forms.ToolStripMenuItem mnuPointUpdate;
-        private System.Windows.Forms.ToolStripMenuItem mnuPointDelete;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripMenuItem mnuPointBulkUpdate;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
@@ -2532,7 +2504,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuLineParallel;
         private System.Windows.Forms.ToolStripMenuItem mnuLineUpdate;
         private System.Windows.Forms.ToolStripMenuItem mnuLinePolygonBoundary;
-        private System.Windows.Forms.ToolStripMenuItem mnuLineDelete;
         private System.Windows.Forms.ToolStripMenuItem mnuLineTrimDangles;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;
         private System.Windows.Forms.ToolStripMenuItem mnuLineDefaultEntity;
@@ -2542,7 +2513,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuTextAddMiscellaneousText;
         private System.Windows.Forms.ToolStripMenuItem mnuTextAddPolygonLabels;
         private System.Windows.Forms.ToolStripMenuItem mnuTextMove;
-        private System.Windows.Forms.ToolStripMenuItem mnuTextDelete;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator21;
         private System.Windows.Forms.ToolStripMenuItem mnuTextDefaultRotationAngle;
         private System.Windows.Forms.ToolStripMenuItem mnuIntersect;

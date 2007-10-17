@@ -86,12 +86,12 @@ namespace Backsight.Editor.Forms
 
         private void arcDistanceBearingButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.ArcDistanceBearing, null);
+            SelectAndClose(InverseType.ArcDistanceBearing, new InverseArcDistanceBearingForm());
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            SelectAndClose(InverseType.None, null); // CdInvArcDistBear
+            SelectAndClose(InverseType.None, null);
         }
     }
 }

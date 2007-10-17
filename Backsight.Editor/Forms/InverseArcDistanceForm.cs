@@ -187,7 +187,6 @@ namespace Backsight.Editor.Forms
     	    }
         }
 
-        /*
         protected PointFeature Point1
         {
             get { return m_Point1; }
@@ -197,7 +196,11 @@ namespace Backsight.Editor.Forms
         {
             get { return m_Point2; }
         }
-         */
+
+        protected Circle FirstCommonCircle
+        {
+            get { return (m_CommCir==null ? null : m_CommCir[0]); }
+        }
 
         internal override void Draw()
         {
