@@ -548,12 +548,15 @@ namespace Backsight.Forms
         /// </summary>
         public void RestoreLastDraw()
         {
+            m_SavedDisplay.Render(m_Display.Graphics);
+            /*
             using (Graphics g = mapPanel.CreateGraphics())
             {
                 m_SavedDisplay.Render(g);
             }
 
             CopyMapPanelToBuffer(m_Display);
+             */
         }
 
         void PaintDisplay(Graphics g)

@@ -34,6 +34,13 @@ namespace Backsight.Editor.Forms
         private readonly UserActionList m_Actions;
         private readonly CadastralEditController m_Controller;
 
+        /// <summary>
+        /// File check command (null if not active).
+        /// </summary>
+        /// <remarks>Will probably be moved to CadastralEditController when it's implemented for real.
+        /// </remarks>
+        FileCheckUI m_Check;
+
         #endregion
 
         public MainForm()
@@ -187,8 +194,6 @@ namespace Backsight.Editor.Forms
                 PointSideshot);
             AddAction(new ToolStripItem[] { mnuPointUpdate
                                           , ctxPointUpdate }, IsPointUpdateEnabled, PointUpdate);
-            AddAction(new ToolStripItem[] { mnuPointDelete
-                                          , ctxPointDelete }, IsPointDeleteEnabled, PointDelete);
             AddAction(mnuPointBulkUpdate, IsPointBulkUpdateEnabled, PointBulkUpdate);
             AddAction(mnuPointDefaultEntity, IsPointDefaultEntityEnabled, PointDefaultEntity);
             AddAction(new ToolStripItem[] { mnuPointInverseCalculator
@@ -232,8 +237,6 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuLinePolygonBoundary, ctxLinePolygonBoundary },
                 IsLinePolygonBoundaryEnabled,
                 LinePolygonBoundary);
-            AddAction(new ToolStripItem[] { mnuLineDelete
-                                          , ctxLineDelete }, IsLineDeleteEnabled, LineDelete);
             AddAction(new ToolStripItem[] { mnuLineTrimDangles
                                           , ctxLineTrimDangle
                                           , ctxMultiTrim }, IsLineTrimDanglesEnabled, LineTrimDangles);
@@ -253,8 +256,6 @@ namespace Backsight.Editor.Forms
                                           , toolTextAddPolygonLabels }, IsTextAddPolygonLabelsEnabled, TextAddPolygonLabels);
             AddAction(new ToolStripItem[] { mnuTextMove
                                           , ctxTextMove }, IsTextMoveEnabled, TextMove);
-            AddAction(new ToolStripItem[] { mnuTextDelete
-                                          , ctxTextDelete }, IsTextDeleteEnabled, TextDelete);
             AddAction(new ToolStripItem[] { mnuTextDefaultRotationAngle
                                           , toolTextDefaultRotationAngle }, IsTextDefaultRotationAngleEnabled, TextDefaultRotationAngle);
             AddAction(ctxTextProperties, null, ShowProperties);
@@ -644,12 +645,27 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsEditUndoEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void EditUndo(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CadastralMapModel map = CadastralMapModel.Current;
+
+            // If a check is running, confirm that we can really rollback (you can only undo
+            // edits that you made since the check was started)
+            if (m_Check!=null)
+            {
+                uint lastop = map.LastOpSequence;
+                if (!m_Check.CanRollback(lastop))
+                {
+                    MessageBox.Show("Cannot undo prior to beginning of File-Check");
+                    return;
+                }
+            }
+
+            CommandUI cmd = new UndoUI(action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsEditRepeatEnabled()
@@ -1069,16 +1085,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(action.Title);
         }
 
-        private bool IsPointDeleteEnabled()
-        {
-            return m_Controller.IsItemSelected(SpatialType.Point);
-        }
-
-        private void PointDelete(IUserAction action)
-        {
-            DeleteSelection(action);
-        }
-
         private bool IsPointBulkUpdateEnabled()
         {
             return false;
@@ -1345,16 +1351,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             m_Controller.StartCommand(cmd);
         }
 
-        private bool IsLineDeleteEnabled()
-        {
-            return m_Controller.IsItemSelected(SpatialType.Line);
-        }
-
-        private void LineDelete(IUserAction action)
-        {
-            DeleteSelection(action);
-        }
-
         private bool IsLineTrimDanglesEnabled()
         {
             return false;
@@ -1418,16 +1414,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void TextMove(IUserAction action)
         {
             MessageBox.Show(action.Title);
-        }
-
-        private bool IsTextDeleteEnabled()
-        {
-            return m_Controller.IsItemSelected(SpatialType.Text);
-        }
-
-        private void TextDelete(IUserAction action)
-        {
-            DeleteSelection(action);
         }
 
         private bool IsTextDefaultRotationAngleEnabled()

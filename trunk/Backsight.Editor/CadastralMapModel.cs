@@ -33,9 +33,17 @@ namespace Backsight.Editor
     {
         #region Static Methods
 
+        /// <summary>
+        /// The current map model. When the application is running, this should be
+        /// not null. It will be null at design time.
+        /// </summary>
         internal static CadastralMapModel Current
         {
-            get { return (CadastralEditController.Current.MapModel as CadastralMapModel); }
+            get
+            {
+                CadastralEditController cec = CadastralEditController.Current;
+                return (cec==null ? null : (cec.MapModel as CadastralMapModel));
+            }
         }
 
         internal static CadastralMapModel Create()
@@ -726,6 +734,14 @@ namespace Backsight.Editor
         {
             m_OpSequence++;
             return m_OpSequence;
+        }
+
+        /// <summary>
+        /// The last operation sequence number returned by <see cref="ReserveNextOpSequence"/>
+        /// </summary>
+        internal uint LastOpSequence
+        {
+            get { return m_OpSequence; }
         }
 
         /// <summary>
