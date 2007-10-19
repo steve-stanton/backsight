@@ -56,7 +56,7 @@ namespace Backsight.Editor
         NewCircle           =30,
         LineIntersect       =31,
         DirLineIntersect    =32,
-        ArcExtend           =33,
+        LineExtend          =33,
         Radial              =34,
         SetTheme            =35,
         SetTopology         =36,

@@ -214,9 +214,11 @@ namespace Backsight.Editor.Forms
                                           , ctxPointAddCircularArc
                                           , toolLineAddCircularArc }, IsLineAddCircularArcEnabled, LineAddCircularArc);
             AddAction(mnuLineAddCircleConstructionLine, IsLineAddCircleConstructionLineEnabled, LineAddCircleConstructionLine);
-            AddAction(new ToolStripItem[] { mnuLineExtend
-                                          , ctxLineExtend
-                                          , toolLineExtend }, IsLineExtendEnabled, LineExtend);
+            AddEdit(
+                EditingActionId.LineExtend,
+                new ToolStripItem[] { mnuLineExtend, ctxLineExtend, toolLineExtend },
+                IsLineExtendEnabled,
+                LineExtend);
             AddAction(new ToolStripItem[] { mnuLineSubdivideLine
                                           , ctxLineSubdivide
                                           , toolLineSubdivideLine }, IsLineSubdivideLineEnabled, LineSubdivideLine);
@@ -1245,14 +1247,28 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(action.Title);
         }
 
+        /// <summary>
+        /// Checks whether the Line - Extend command is enabled or not.
+        /// A specific line has to be selected, and there can be no other command currently running.
+        /// </summary>
+        /// <returns></returns>
         private bool IsLineExtendEnabled()
         {
-            return false;
+            return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);
         }
 
         private void LineExtend(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            LineFeature selLine = this.SelectedLine;
+            if (selLine==null)
+            {
+                MessageBox.Show("You must initially select the line you want to extend.");
+                return;
+            }
+
+            IControlContainer cc = CreateContainer(action);
+            CommandUI cmd = new LineExtensionUI(cc, action, selLine);
+            m_Controller.StartCommand(cmd);
         }
 
         /// <summary>

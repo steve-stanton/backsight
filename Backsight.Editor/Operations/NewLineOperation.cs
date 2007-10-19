@@ -170,7 +170,7 @@ namespace Backsight.Editor.Operations
             // Add the new arc with default line entity type (this will
             // cross-reference the circle to the arc that gets created).
             CadastralMapModel map = CadastralMapModel.Current;
-            m_NewLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this, false);
+            m_NewLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this);
 
             // Peform standard completion steps
             Complete();

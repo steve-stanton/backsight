@@ -183,6 +183,12 @@
     <Compile Include="Forms\InverseForm.Designer.cs">
       <DependentUpon>InverseForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LineExtensionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\LineExtensionControl.Designer.cs">
+      <DependentUpon>LineExtensionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LineSubdivisionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -231,10 +237,12 @@
     <Compile Include="Island.cs" />
     <Compile Include="ITerminal.cs" />
     <Compile Include="ITranslate.cs" />
+    <Compile Include="LineExtensionUI.cs" />
     <Compile Include="LineGeometry.cs" />
     <Compile Include="LineSubdivisionUI.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
+    <Compile Include="Operations\LineExtensionOperation.cs" />
     <Compile Include="Operations\MoveTextOperation.cs" />
     <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
@@ -396,6 +404,10 @@
     <EmbeddedResource Include="Forms\InverseForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InverseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LineExtensionControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LineExtensionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineSubdivisionControl.resx">
       <SubType>Designer</SubType>
