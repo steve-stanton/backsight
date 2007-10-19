@@ -58,6 +58,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for a fresh edit.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="line">The line being subdivided.</param>
         internal PointOnLineUI(IControlContainer cc, IUserAction action, LineFeature line)
@@ -70,6 +71,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for command recall.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="op">The operation that's being recalled.</param>
         /// <param name="line">The line to subdivide.</param>
@@ -83,6 +85,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for doing an update.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="updcmd">The update command.</param>
         internal PointOnLineUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
@@ -156,6 +159,13 @@ namespace Backsight.Editor
                 m_Dialog.Draw();
         }
 
+        /// <summary>
+        /// Reacts to selection of the Cancel button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the dialog will be destroyed and the command
+        /// terminates. If it's some other window, it must be a sub-dialog created
+        /// by our guy, so let it handle the request.</param>
         internal override void DialAbort(Control wnd)
         {
             KillDialogs();
@@ -176,6 +186,14 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// Reacts to selection of the OK button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the command will be executed (and, on success,
+        /// the dialog will be destroyed). If it's some other window, it must
+        /// be a sub-dialog created by our guy, so let it handle the request.</param>
+        /// <returns></returns>
         internal override bool DialFinish(Control wnd)
         {
             if (m_Dialog==null)

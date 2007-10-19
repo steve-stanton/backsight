@@ -459,7 +459,7 @@ namespace Backsight.Editor.Operations
                     iscw = !iscw;
 
                 // Add the circular arc
-                m_ParLine = map.AddCircularArc(parCircle, ps, pe, iscw, ent, this, true);
+                m_ParLine = map.AddCircularArc(parCircle, ps, pe, iscw, ent, this);
             }
             else
             {

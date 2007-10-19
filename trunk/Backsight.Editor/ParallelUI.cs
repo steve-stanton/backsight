@@ -110,6 +110,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for a new parallel line.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="from">The reference line.</param>
         internal ParallelUI(IControlContainer cc, IUserAction action, LineFeature from)
@@ -125,6 +126,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for doing an update.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="updcmd">The update command.</param>
         internal ParallelUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
@@ -401,7 +403,7 @@ namespace Backsight.Editor
         /// this command knows about, the dialog will be destroyed and the command
         /// terminates. If it's some other window, it must be a sub-dialog created
         /// by our guy, so let it handle the request.</param>
-        internal override void DialAbort(System.Windows.Forms.Control wnd)
+        internal override void DialAbort(Control wnd)
         {
             // Ensure all dialogs have been toasted.
             KillDialogs();
@@ -444,7 +446,7 @@ namespace Backsight.Editor
         /// the dialog will be destroyed). If it's some other window, it must
         /// be a sub-dialog created by our guy, so let it handle the request.</param>
         /// <returns></returns>
-        internal override bool DialFinish(System.Windows.Forms.Control wnd)
+        internal override bool DialFinish(Control wnd)
         {
             // If it's the offset dialog that's just finished, grab info
             // from it, delete it, and go to the dialog for the first

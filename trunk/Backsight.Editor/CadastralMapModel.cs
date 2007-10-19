@@ -1126,10 +1126,9 @@ namespace Backsight.Editor
         /// <param name="lineEnt">The entity type for the new line. Null is valid, referring
         /// to circle construction lines.</param>
         /// <param name="creator">The editing operation creating the arc</param>
-        /// <param name="addPoints">Should terminal points be added? Default=TRUE.</param>
         /// <returns>The newly created line</returns>
         internal LineFeature AddCircularArc (Circle circle, PointFeature start, PointFeature end,
-            bool clockwise, IEntity lineEnt, Operation creator, bool addPoints)
+            bool clockwise, IEntity lineEnt, Operation creator)
         {
             ArcFeature result = new ArcFeature(lineEnt, creator, circle, start, end, clockwise);
             m_Window.Union(result.Extent);
