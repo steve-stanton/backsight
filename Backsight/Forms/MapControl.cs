@@ -237,8 +237,8 @@ namespace Backsight.Forms
                 m_Display.Render(g);
 
                 // Save the display without any highlighting
-                //m_Display.Render(m_SavedDisplay.Graphics);
-                CopyMapPanelToSavedDisplay();
+                m_Display.Render(m_SavedDisplay.Graphics);
+                //CopyMapPanelToSavedDisplay();
 
                 // Any selection needs to be drawn too, but after the above
                 ISpatialSelection ss = controller.Selection;
@@ -419,13 +419,6 @@ namespace Backsight.Forms
             base.Dispose();
         }
 
-        /*
-        void IDisposable.Dispose()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-        */
-
         void DropBufferedGraphics()
         {
             if (m_Display!=null)
@@ -469,11 +462,14 @@ namespace Backsight.Forms
             }
         }
 
+        /*
         void CopyMapPanelToSavedDisplay()
         {
             CopyMapPanelToBuffer(m_SavedDisplay);
         }
+        */
 
+        /*
         void CopyMapPanelToBuffer(BufferedGraphics bg)
         {
             Graphics g = bg.Graphics;
@@ -482,6 +478,7 @@ namespace Backsight.Forms
             Point upperLeftSrc = mapPanel.PointToScreen(upperLeftDst);
             g.CopyFromScreen(upperLeftSrc, upperLeftDst, mapPanel.Size);
         }
+        */
 
         void SetParentResizeHandlers()
         {
@@ -640,14 +637,15 @@ namespace Backsight.Forms
                 if (newSelection==null)
                 {
                     m_SavedDisplay.Render(g);
-                    CopyMapPanelToBuffer(m_Display); // is this needed?
+                    //CopyMapPanelToBuffer(m_Display); // is this needed?
                 }
                 else
                 {
                     if (oldSelection!=null)
                     {
                         m_SavedDisplay.Render(g);
-                        CopyMapPanelToBuffer(m_Display);
+                        m_SavedDisplay.Render(m_Display.Graphics);
+                        //CopyMapPanelToBuffer(m_Display);
                     }
 
                     // Highlight the new selection
