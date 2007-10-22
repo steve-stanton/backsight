@@ -873,6 +873,12 @@ namespace Backsight.Editor
             LineFeature f = new LineFeature(e, creator, from, to);
             m_Window.Union(f.Extent);
             m_Index.Add(f);
+
+            // If topology needs to be maintained, ensure polygons in the vicinity have
+            // been marked for rebuild
+            if (m_MaintainTopology)
+                f.MarkPolygons();
+
             return f;
         }
 
