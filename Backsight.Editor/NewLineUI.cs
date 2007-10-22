@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// <summary>
     /// User interface for defining a new line.
     /// </summary>
-    class NewLineUI : CommandUI
+    class NewLineUI : SimpleCommandUI
     {
         #region Class data
 
@@ -38,15 +38,15 @@ namespace Backsight.Editor
         PointFeature m_Start;
 
         /// <summary>
-        /// The last mouse position (null if no rubber-banded line is currently drawn).
+        /// The point the mouse is currently close to (may end up being either the start or
+        /// the end of the new line).
         /// </summary>
-        IPointGeometry m_End;
+        PointFeature m_CurrentPoint;
 
         /// <summary>
-        /// The current rubber-banded line (both at 0,0 if currently no rubber band).
+        /// The last mouse position
         /// </summary>
-        Point m_StartBand;
-        Point m_EndBand;
+        IPointGeometry m_End;
 
         #endregion
 
@@ -63,8 +63,7 @@ namespace Backsight.Editor
         {
             m_Start = start;
             m_End = null;
-
-            ZeroBand();
+            m_CurrentPoint = start;
         }
 
         #endregion
@@ -84,88 +83,46 @@ namespace Backsight.Editor
             ActiveDisplay.MapPanel.Cursor = EditorResources.PenCursor;
         }
 
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see "Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return true; }
+        }
+
         internal override void Paint(PointFeature point)
         {
-            // do nothing
+            ISpatialDisplay display = ActiveDisplay;
+            IDrawStyle style = Controller.DrawStyle;
+            style.FillColor = style.LineColor = Color.Magenta;
+
+            if (m_CurrentPoint!=null)
+                style.Render(display, m_CurrentPoint);
+
+            if (m_Start!=null && m_End!=null)
+                style.Render(display, new IPosition[] { m_Start, m_End }); 
         }
 
         internal override void MouseMove(IPosition p)
         {
-            // Attempt to select a point (if something gets selected or de-selected, this command's
-            // OnSelectPoint method will get called -- however, we don't want to do anything with
-            // any modified selection until the user does a left click).
-            Controller.Select(this.ActiveDisplay, p, SpatialType.Point);
+            CadastralMapModel map = CadastralMapModel.Current;
+            ILength size = new Length(map.PointHeight.Meters * 0.5);
+            m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
 
-            // Nothing to do if the initial point hasn't been specified
             if (m_Start==null)
                 return;
 
-            // If we previously drew a line (previous mouse move), get rid of it.
-            //EraseBand();
-            //if (m_End!=null && !m_Start.IsCoincident(m_End))
-            //    ShowX(null);
-
-			// Remember the current end point (if a point is currently highlighted, use
-            // that position instead).
-            IPointGeometry selPoint = SelectedPoint;
-            m_End = (selPoint==null ? PointGeometry.Create(p) : selPoint);
-
-			// Create new line and draw it.
-            //ILineSegmentGeometry segment = new LineSegmentGeometry(m_Start, m_End);
-
-			// Check for intersections.
-			//ShowX(segment);
-            ShowX(null);
-        }
-
-        PointFeature SelectedPoint
-        {
-            get
+            m_End = PointGeometry.Create(p);
+            if (m_End.IsCoincident(m_Start))
             {
-                ISpatialObject so = Controller.Selection.Item;
-                return (so as PointFeature);
+                m_End = null;
+                return;
             }
-        }
 
-        void ShowX(ILineSegmentGeometry line)
-        {
-            if (m_Start!=null && m_End!=null && !m_Start.IsCoincident(m_End))
-            {
-                Point ps = GetScreenPoint(m_Start);
-                Point pe = GetScreenPoint(m_End);
-
-                if (ps.X==m_StartBand.X && ps.Y==m_StartBand.Y &&
-                    pe.X==m_EndBand.X && pe.Y==m_EndBand.Y)
-                    return;
-
-                EraseBand();
-
-                m_StartBand = ps;
-                m_EndBand = pe;
-                ControlPaint.DrawReversibleLine(ps, pe, DisplayBackColor);
-            }
-        }
-
-        void EraseBand()
-        {
-            if (!IsZeroBand())
-            {
-                ControlPaint.DrawReversibleLine(m_StartBand, m_EndBand, DisplayBackColor);
-                ZeroBand();
-            }
-        }
-
-        bool IsZeroBand()
-        {
-            return (m_StartBand.X==0 && m_StartBand.Y==0 && m_EndBand.X==0 && m_EndBand.Y==0);
-        }
-
-        void ZeroBand()
-        {
-            m_StartBand.X = 0;
-            m_StartBand.Y = 0;
-            m_EndBand.X = 0;
-            m_EndBand.Y = 0;
+            ErasePainting();
         }
 
         /*
@@ -254,8 +211,7 @@ void CeView::ShowX ( const CeLine* const pLine ) {
         internal override void LButtonDown(IPosition p)
         {
             // Cancel the new line if there is no point selected.
-            PointFeature selPoint = SelectedPoint;
-            if (selPoint==null)
+            if (m_CurrentPoint==null)
             {
                 DialAbort(null);
                 return;
@@ -263,7 +219,7 @@ void CeView::ShowX ( const CeLine* const pLine ) {
 
             // If we don't have the first point yet, remember the start location.
             // Otherwise remember the end point & add the line.
-            AppendToLine(selPoint);
+            AppendToLine(m_CurrentPoint);
         }
 
         /// <summary>
@@ -281,10 +237,6 @@ void CeView::ShowX ( const CeLine* const pLine ) {
                 return true;
             }
 
-		    // Remember the end of the rubber banding (may be
-		    // different from the location of the end point).
-		    //CeLocation endband(*m_pEnd);
-
 		    // Get the location of the end point and confirm that it's
 		    // different from the start.
             if (p.IsCoincident(m_Start))
@@ -293,29 +245,8 @@ void CeView::ShowX ( const CeLine* const pLine ) {
 			    return false;
 		    }
 
-		    // Release mouse capture (if any message gets issued, it
-		    // may never be released ... not sure about this though).
-		    //SetNormalCursor();
-
 		    // Add the new line.
             AddNewLine(p);
-		    //m_pEnd = pEnd;
-		    //this->AddNewArc(*m_pStart,*m_pEnd);
-
-		    // Erase rubber-banding. We do this AFTER adding the arc,
-		    // because if we do it before, there is a brief moment when
-		    // the line is blank. This way, it looks like everything's
-		    // done at the moment you left click. The new arc will be
-		    // drawn SOON (when OnDraw is called again).
-        /*
-		    if ( m_pStart && *m_pStart!=endband ) {
-			    CClientDC dc(this);
-			    OnPrepareDC(&dc);
-			    dc.SetROP2(R2_NOTXORPEN);
-			    CeSegment oldseg(*m_pStart,endband);
-			    oldseg.Draw(this,&dc);
-		    }
-            */
 
             DialFinish(null);
 	        return true;
@@ -415,56 +346,15 @@ LOGICAL CeView::AppendToLine ( const CePoint& point ) {
                 Session.CurrentSession.Remove(op);
         }
 
-        internal override void LButtonUp(IPosition p)
-        {
-            // do nothing
-        }
-
-        internal override void LButtonDblClick(IPosition p)
-        {
-            // do nothing
-        }
-
-        internal override bool RButtonDown(IPosition p)
-        {
-            return false; // do nothing            
-        }
-
         internal override void DialAbort(Control wnd)
         {
-            EndCommand();
             AbortCommand();
         }
 
         internal override bool DialFinish(Control wnd)
         {
-            EndCommand();
             FinishCommand();
             return true;
-        }
-
-        void EndCommand()
-        {
-            // Make sure nothing is currently highlighted
-            Controller.ClearSelection();
-
-            // Ensure any intersection stuff has been erased.
-            ShowX(null);
-        }
-
-        internal override void OnSelectPoint(PointFeature point)
-        {
-            //throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void OnSelectLine(LineFeature line)
-        {
-            // do nothing
-        }
-
-        internal override bool Dispatch(int id)
-        {
-            return false; // do nothing
         }
     }
 }
