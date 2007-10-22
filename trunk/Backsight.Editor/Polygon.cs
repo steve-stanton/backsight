@@ -124,7 +124,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of islands this polygon refers to.
         /// </summary>
-        internal int IslandCount
+        public int IslandCount
         {
             get { return (m_Islands==null ? 0 : m_Islands.Count); }
         }
@@ -188,7 +188,9 @@ namespace Backsight.Editor
             List<IPosition[]> outlines = new List<IPosition[]>(1+IslandCount);
 
             // Grab the fill outline for this polygon.
-            outlines.Add(GetOutline(curvetol));
+            List<Boundary[]> edges = GetSimpleEdges();
+            foreach(Boundary[] ba in edges)
+                outlines.Add(GetOutline(curvetol, this, ba));
 
             // Now do any islands (but ignore any that don't overlap the display window)
             if (m_Islands!=null)
@@ -209,7 +211,7 @@ namespace Backsight.Editor
         /// for deletion, this frees any islands, and any enclosed label.
         /// Then <see cref="Ring.Clean"/> will be called.
         /// </summary>
-        internal virtual void Clean()
+        internal override void Clean()
         {
             // If this polygon has been marked for deletion, ensure islands don't point back
             if (IsDeleted)
@@ -247,9 +249,91 @@ namespace Backsight.Editor
         /// <summary>
         /// The text label that acts as a persistent handle for the polygon (may be null).
         /// </summary>
-        internal TextFeature Label
+        public TextFeature Label
         {
             get { return m_Label; }
+        }
+
+        /// <summary>
+        /// Returns one or more boundary arrays, excluding boundaries that act as bridges
+        /// from this polygon to areas that would otherwise be regarded as islands.
+        /// </summary>
+        /// <returns>One or more boundary arrays, where every boundary has a different
+        /// polygon on right and left.</returns>
+        List<Boundary[]> GetSimpleEdges()
+        {
+            Boundary[] edge = this.Edge;
+            List<Boundary> outerEdge = new List<Boundary>(edge.Length);
+            List<Boundary> innerEdge = null;
+            Boundary startInner = null;
+            List<Boundary[]> inners = null;
+
+            foreach (Boundary b in Edge)
+            {
+                // If we're current walking the outer edge (haven't hit a potential bridging line)...
+                if (innerEdge==null)
+                {
+                    // If we've now got a potential bridging line, just remember to
+                    // drop through to the else block on the next boundary. Otherwise
+                    // remember the boundary is part of the outer edge.
+                    if (b.Left==b.Right)
+                    {
+                        innerEdge = new List<Boundary>();
+                        startInner = b;
+                    }
+                    else
+                        outerEdge.Add(b);
+                }
+                else
+                {
+                    // We've been walking an interior edge. If we've now got back to the boundary
+                    // that marked the start of the interior edge
+                    if (b==startInner)
+                    {
+                        // The inner edge may be empty (e.g. we might be dealing with a
+                        // simple dangle into the interior of the polygon)
+                        if (innerEdge.Count>0)
+                        {
+                            if (inners==null)
+                                inners = new List<Boundary[]>(1);
+
+                            inners.Add(innerEdge.ToArray());
+                        }
+
+                        innerEdge = null;
+                        startInner = null;
+                    }
+                    else
+                    {
+                        // We're currently an interior edge. However, we only want those boundaries
+                        // that have a different polygon on both sides (ignore boundaries that radiate
+                        // out from the interior edge).
+                        if (b.Left!=b.Right)
+                            innerEdge.Add(b);
+                    }
+                }
+            }
+
+            // Form the result
+
+            List<Boundary[]> result = new List<Boundary[]>();
+            if (outerEdge.Count == edge.Length)
+            {
+                Debug.Assert(inners==null);
+                result.Add(edge);
+            }
+            else
+            {
+                result.Add(outerEdge.ToArray());
+
+                if (inners!=null)
+                {
+                    foreach (Boundary[] ba in inners)
+                        result.Add(ba);
+                }
+            }
+
+            return result;
         }
     }
 }
