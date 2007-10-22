@@ -107,6 +107,11 @@ namespace Backsight.Editor
             return m_TestId.ToString();
         }
 
+        public int TestId
+        {
+            get { return m_TestId; }
+        }
+
         /// <summary>
         /// The area of this ring, excluding any islands. This version is suitable only for
         /// rings that are instances of <c>Island</c> (the <c>Polygon</c> class overrides).
@@ -297,6 +302,19 @@ namespace Backsight.Editor
         /// <returns></returns>
         internal IPosition[] GetOutline(ILength curvetol)
         {
+            return GetOutline(curvetol, this, m_Edge);
+        }
+
+        /// <summary>
+        /// The perimeter of a polygon as a single array of positions.
+        /// </summary>
+        /// <param name="curvetol">Approximation tolerance for any circular arcs along
+        /// the edge of the ring.</param>
+        /// <param name="ring">The ring of interest that the <paramref name="edge"/> contains</param>
+        /// <param name="edge">The boundaries to consider</param>
+        /// <returns></returns>
+        internal static IPosition[] GetOutline(ILength curvetol, Ring ring, Boundary[] edge)
+        {
             List<IPosition> pts = new List<IPosition>(1000);
 
             // When doing the 1st arc, we need to utilize the very first position
@@ -304,15 +322,17 @@ namespace Backsight.Editor
 
             // Loop through each boundary in the ring to create a list of
             // positions defining the polygon...
-            foreach (Boundary b in m_Edge)
+            foreach (Boundary b in edge)
             {
-                // See which way the positions should be arranged.
-                bool reverse = (b.Right==this ? false : true);
+                // Skip boundary lines if they have the same ring on both sides. This is
+                // meant to exclude boundaries that radiate out from islands. Note that
+                // potential bridges towards the interior of polygons are expected to
+                // be weeded out prior to call.
+                if (b.Left==ring && b.Right==ring)
+                    continue;
 
-                // Can't skip bridges on islands. Otherwise one side of
-                // the bridge will arbitrarily connect to any point on
-                // the other side of the bridge, leading to unpredictable
-                // is this function is being used to fill the results.
+                // See which way the positions should be arranged.
+                bool reverse = (b.Right==ring ? false : true);
 
                 // Get the geometric primitive for the boundary
                 LineGeometry line = b.GetLineGeometry();
