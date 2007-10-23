@@ -192,6 +192,9 @@ namespace Backsight.Editor.Forms
             if (Math.Abs(pointSize - cmm.PointHeight.Meters) > 0.001)
                 cmm.PointHeight = new Length(pointSize);
 
+            // Should intersections be drawn?
+            cmm.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
+
             // Label threshold scale
 
             double labelScale;

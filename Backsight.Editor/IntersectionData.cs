@@ -422,5 +422,18 @@ namespace Backsight.Editor
 
             return IntersectionType.GrazeTotal;
         }
+
+        /// <summary>
+        /// Draws intersections on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+            style.Render(display, m_X1);
+
+            if (IsGraze)
+                style.Render(display, m_X2);
+        }
     }
 }

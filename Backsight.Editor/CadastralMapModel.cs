@@ -940,8 +940,7 @@ namespace Backsight.Editor
         /// <param name="moves">The moved features.</param>
         void Intersect(List<Feature> moves)
         {
-            /*
-        	// Return if nothing has moved
+            // Return if nothing has moved
             if (moves.Count==0)
                 return;
 
@@ -950,34 +949,37 @@ namespace Backsight.Editor
 
             foreach(Feature f in moves)
             {
+                f.IsMoved = false;
                 LineFeature line = (f as LineFeature);
                 if (line==null)
                     continue;
 
                 nMove++;
-                line.SetNotMoved();
-                line.Split(trims);
+                //line.Split(trims);
 
-		        // If the line needs to be trimmed, add it to our list.
-		        // We'll do it at the end.
+                // If the line needs to be trimmed, add it to our list.
+                // We'll do it at the end.
 
-		        // Note that IsTrimmed checks that both FFL_TRIM and
-		        // FFL_SYSTOPOL are set, which is kind of what you'd
-		        // expect after calling CeArc::Split (assuming that
-		        // the line intersects something). However, when intersects
-		        // are detected, they ignore stuff that is still marked as
-		        // moved. So we might not create any arc sections until
-		        // later on. By calling WasTrimmed() as well, we ensure
-		        // that the moved arc really does make it into the list
-		        // (WasTrimmed checks that FFL_TRIM is set and that
-		        // FFL_SYSTOPOL is clear). In the event that the line
-		        // no longer intersects anything, that will be trapped
-		        // when we call CeSplit::Trim below. Phew!
+                /*
+                    // Note that IsTrimmed checks that both FFL_TRIM and
+                    // FFL_SYSTOPOL are set, which is kind of what you'd
+                    // expect after calling CeArc::Split (assuming that
+                    // the line intersects something). However, when intersects
+                    // are detected, they ignore stuff that is still marked as
+                    // moved. So we might not create any arc sections until
+                    // later on. By calling WasTrimmed() as well, we ensure
+                    // that the moved arc really does make it into the list
+                    // (WasTrimmed checks that FFL_TRIM is set and that
+                    // FFL_SYSTOPOL is clear). In the event that the line
+                    // no longer intersects anything, that will be trapped
+                    // when we call CeSplit::Trim below. Phew!
 
-		        if (line.IsTrimmed || line.WasTrimmed)
-			        trims.Append(line);
+                    if (line.IsTrimmed || line.WasTrimmed)
+                        trims.Append(line);
+                 */
             }
 
+            /*
 	        // Clear out the list.
             moves.Clear();
 

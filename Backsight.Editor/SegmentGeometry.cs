@@ -37,7 +37,7 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>LineSegment</c> using the supplied points.
+        /// Creates a new <c>SegmentGeometry</c> using the supplied points.
         /// </summary>
         /// <param name="start">The point at the start of the line segment.</param>
         /// <param name="end">The point at the end of the line segment.</param>

@@ -21,6 +21,7 @@ using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -103,7 +104,29 @@ namespace Backsight.Editor
                 style.Render(display, m_CurrentPoint);
 
             if (m_Start!=null && m_End!=null)
-                style.Render(display, new IPosition[] { m_Start, m_End }); 
+            {
+                style.Render(display, new IPosition[] { m_Start, m_End });
+
+                CadastralMapModel map = CadastralMapModel.Current;
+                if (map.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
+                {
+                    ITerminal endTerm = new Terminal(m_End);
+                    LineGeometry line = new SegmentGeometry(m_Start, endTerm);
+                    IntersectionFinder xf = new IntersectionFinder(line, false);
+                    xf.Render(display, style);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Is the line that's being added going to form a polygon boundary?
+        /// </summary>
+        /// <returns></returns>
+        bool AddingTopology()
+        {
+            CadastralMapModel map = CadastralMapModel.Current;
+            IEntity ent = map.DefaultLineType;
+            return (ent==null ? false : ent.IsPolygonBoundaryValid);
         }
 
         internal override void MouseMove(IPosition p)
