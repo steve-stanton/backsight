@@ -262,22 +262,6 @@ namespace Backsight.Editor.Operations
             }
         }
 
-        internal override void Intersect()
-        {
-            if (m_Faces==null)
-                return;
-
-            foreach(LineSubdivisionFace face in m_Faces)
-            {
-                MeasuredLineFeature[] sections = face.Sections;
-                foreach(MeasuredLineFeature s in sections)
-                {
-                    LineFeature line = s.Line;
-                    line.IsMoved = true;
-                }
-            }
-        }
-
         internal override EditingActionId EditId
         {
             get { return EditingActionId.LineSubdivision; }

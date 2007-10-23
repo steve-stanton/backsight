@@ -77,14 +77,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Handles any intersections created by this operation.
-        /// </summary>
-        internal override void Intersect()
-        {
-            // See LineFeature.SwitchTopology (??)
-        }
-
-        /// <summary>
         /// The unique identifier for this edit.
         /// </summary>
         internal override EditingActionId EditId

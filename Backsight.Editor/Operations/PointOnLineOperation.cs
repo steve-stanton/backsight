@@ -225,15 +225,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Handles any intersections created by this operation.
-        /// </summary>
-        internal override void Intersect()
-        {
-            SetMoved(m_NewLine1);
-            SetMoved(m_NewLine2);
-        }
-
-        /// <summary>
         /// The unique identifier for this edit.
         /// </summary>
         internal override EditingActionId EditId

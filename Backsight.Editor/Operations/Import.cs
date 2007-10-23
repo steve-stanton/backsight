@@ -80,37 +80,6 @@ namespace Backsight.Editor.Operations
             get { return m_Data; }
         }
 
-        /// <summary>
-        /// Handles any intersections created by this operation.
-        /// </summary>
-        internal override void Intersect()
-        {
-            SetMoved();
-        }
-
-        /// <summary>
-        /// Marks all topological arcs as moved.
-        /// </summary>
-        /// <returns>The number of lines that were marked.</returns>
-        uint SetMoved()
-        {
-	        // Loop through the features that were created, marking
-	        // them as moved so that the map will intersect them.
-
-            uint nMarked = 0;
-
-            foreach(Feature f in m_Data)
-            {
-                if (f.IsTopological)
-                {
-                    f.IsMoved = true;
-                    nMarked++;
-                }
-            }
-
-        	return nMarked;
-        }
-
         internal override EditingActionId EditId
         {
             get { return EditingActionId.DataImport; }

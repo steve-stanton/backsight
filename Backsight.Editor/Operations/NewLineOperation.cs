@@ -178,15 +178,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Handles any intersections created by the new line.
-        /// </summary>
-        internal override void Intersect()
-        {
-            if (m_NewLine!=null)
-                m_NewLine.IsMoved = true;
-        }
-
-        /// <summary>
         /// Rollforward this operation.
         /// </summary>
         /// <returns>True on success.</returns>

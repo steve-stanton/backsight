@@ -71,16 +71,6 @@ namespace Backsight.Editor.Operations
             get { return m_Lines; }
         }
 
-        internal override void Intersect()
-        {
-            // This method did nothing in the old CEdit implementation. I think it
-            // should have marked each created line as moved (though I can see that
-            // that would be unecessary when the op is initially executed).
-
-            foreach (LineFeature line in m_Lines)
-                line.IsMoved = true;
-        }
-
         internal override EditingActionId EditId
         {
             get { return EditingActionId.PolygonSubdivision; }

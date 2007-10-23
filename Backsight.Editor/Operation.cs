@@ -231,11 +231,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Handles any intersections created by this operation.
-        /// </summary>
-        abstract internal void Intersect();
-
-        /// <summary>
         /// Convenience method that marks a line as "moved" (first checks whether
         /// the specified line is null). This is normally called by implementations
         /// of the <c>Intersect</c> method.
@@ -395,8 +390,24 @@ namespace Backsight.Editor
             }
 
             AddReferences();
-            Intersect();
+            PrepareForIntersect(feats);
             MapModel.CleanEdit();
+        }
+
+        /// <summary>
+        /// Prepares the supplied features for intersect detection that should be
+        /// performed by <see cref="CadastralMapModel.CleanEdit"/>. This modifies
+        /// line features by setting the <see cref="LineFeature.IsMoved"/> property.
+        /// </summary>
+        /// <param name="fa">The features that may contain lines that need to be prepared</param>
+        void PrepareForIntersect(Feature[] fa)
+        {
+            foreach (Feature f in fa)
+            {
+                LineFeature line = (f as LineFeature);
+                if (line!=null && line.IsTopological)
+                    line.IsMoved = true;
+            }
         }
     }
 }
