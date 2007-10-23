@@ -210,26 +210,6 @@ namespace Backsight.Editor.Operations
             }
         }
 
-        /// <summary>
-        /// Handle any intersections created by this operation.
-        /// </summary>
-        internal override void Intersect()
-        {
-	        // Let CleanEdit do the splitting (if terminal lines have
-	        // been split, there might otherwise be some confusion
-	        // intersecting them against the parent line (which is
-	        // currently in a mid-way state)).
-
-	        // Intersect the parallel line.
-            SetMoved(m_ParLine);
-
-	        // Intersect any sections we created.
-	        SetMoved(m_Term1a);
-	        SetMoved(m_Term1b);
-	        SetMoved(m_Term2a);
-            SetMoved(m_Term2b);
-        }
-
         internal override bool Undo()
         {
             base.OnRollback();

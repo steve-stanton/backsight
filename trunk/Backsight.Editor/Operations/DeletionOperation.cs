@@ -78,14 +78,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Handles any intersections created by this operation (does nothing).
-        /// </summary>
-        internal override void Intersect()
-        {
-            // do nothing
-        }
-
-        /// <summary>
         /// The unique identifier for this edit.
         /// </summary>
         internal override EditingActionId EditId

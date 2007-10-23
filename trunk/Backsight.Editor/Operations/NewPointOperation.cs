@@ -66,11 +66,6 @@ namespace Backsight.Editor.Operations
             return true;
         }
 
-        internal override void Intersect()
-        {
-            // Nothing to do
-        }
-
         internal override EditingActionId EditId
         {
             get { return EditingActionId.NewPoint; }

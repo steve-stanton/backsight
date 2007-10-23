@@ -277,16 +277,6 @@ LOGICAL CeRadial::Execute	( const CeDirection& dir
             }
         }
 
-        /// <summary>
-        /// Handles any intersections created by this operation.
-        /// </summary>
-        internal override void Intersect()
-        {
-            // Intersect the sideshot line (if we have one).
-            if (m_Line!=null)
-                m_Line.IsMoved = true;
-        }
-
 /*
 //	@mfunc	Check whether this operation makes reference to
 //			a specific feature.
