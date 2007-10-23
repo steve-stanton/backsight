@@ -481,6 +481,7 @@
     <Compile Include="Side.cs" />
     <Compile Include="SimpleCommandUI.cs" />
     <Compile Include="TaggedObject.cs" />
+    <Compile Include="Terminal.cs" />
     <Compile Include="TextFeature.cs" />
     <Compile Include="TextGeometry.cs" />
     <Compile Include="ThemeFacade.cs" />

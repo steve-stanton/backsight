@@ -98,7 +98,7 @@ namespace Backsight.Editor
 
         internal int IntersectCount
         {
-            get { return m_Data.Count; }
+            get { return (m_Data==null ? 0 : m_Data.Count); }
         }
 
         internal List<IntersectionData> Intersections
@@ -644,5 +644,15 @@ namespace Backsight.Editor
             return m_Line.LineGeometry.IntersectMultiSegment(this, line);
         }
 
+        /// <summary>
+        /// Draws intersections on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+            foreach (IntersectionData d in m_Data)
+                d.Render(display, style);
+        }
     }
 }

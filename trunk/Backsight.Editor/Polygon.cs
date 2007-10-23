@@ -262,6 +262,9 @@ namespace Backsight.Editor
         /// polygon on right and left.</returns>
         List<Boundary[]> GetSimpleEdges()
         {
+            // TODO: Need to revisit this -- it doesn't cover cases where there's more than
+            // one interior edge, connected by a series of bridges...
+
             Boundary[] edge = this.Edge;
             List<Boundary> outerEdge = new List<Boundary>(edge.Length);
             List<Boundary> innerEdge = null;

@@ -90,15 +90,6 @@ namespace Backsight.Editor
 
             // Search for intersections
             IntersectionResult other = new IntersectionResult(f);
-            
-            // Unfortunately, doing the following would mean that I have to promote
-            // IntersectionResult (+ associated parephanelia) to the main Backsight
-            // project. Even trying to conceal things with a few interfaces isn't
-            // very satisfactory. To get around it, look 
-
-            // Incidentally, the reason m_Line is an instance of ILineGeometry (as
-            // opposed to LineGeometry) is because I want to use this class for doing
-
             m_Line.Intersect(other);
 
             if (other.IntersectCount>0)
