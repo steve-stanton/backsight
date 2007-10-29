@@ -73,6 +73,7 @@
     <Compile Include="EditorResources.cs" />
     <Compile Include="EntityFacade.cs" />
     <Compile Include="EnvironmentItemFacade.cs" />
+    <Compile Include="ExtraLeg.cs" />
     <Compile Include="ExTranslation.cs" />
     <Compile Include="Feature.cs" />
     <Compile Include="FeatureFlag.cs" />
@@ -237,6 +238,8 @@
     <Compile Include="Island.cs" />
     <Compile Include="ITerminal.cs" />
     <Compile Include="ITranslate.cs" />
+    <Compile Include="Leg.cs" />
+    <Compile Include="LegItemFlag.cs" />
     <Compile Include="LineExtensionUI.cs" />
     <Compile Include="LineGeometry.cs" />
     <Compile Include="LineSubdivisionUI.cs" />
@@ -244,6 +247,7 @@
     <Compile Include="Operations\DeletionOperation.cs" />
     <Compile Include="Operations\LineExtensionOperation.cs" />
     <Compile Include="Operations\MoveTextOperation.cs" />
+    <Compile Include="Operations\PathOperation.cs" />
     <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
     <Compile Include="Operations\SetTopologyOperation.cs" />
