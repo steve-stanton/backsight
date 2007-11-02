@@ -32,7 +32,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry that the section is based on (not an instance of <c>SectionGeometry</c>).
         /// </summary>
-        ISectionBase m_Base;
+        readonly UnsectionedLineGeometry m_Base;
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry that acts as the base for this section.
         /// </summary>
-        internal override ISectionBase SectionBase
+        internal override UnsectionedLineGeometry SectionBase
         {
             get { return m_Base; }
         }
