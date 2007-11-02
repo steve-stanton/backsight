@@ -60,24 +60,9 @@ namespace Backsight.Editor
         internal IntersectionFinder(IIntersectable line, bool wantEndEnd)
         {
             m_Line = line;
-            Load(wantEndEnd);
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            m_Intersects = new FindIntersectionsQuery(index, m_Line.LineGeometry, wantEndEnd).Result;
         }
-
-        /// <summary>
-        /// Constructor for a feature
-        /// </summary>
-        /// <param name="f">The feature involved</param>
-        /// <param name="obj">The geometry that needs to be intersected.</param>
-        /// <param name="wantEndEnd">Should end-to-end intersections (simple ones) be included
-        /// in the results. Default=TRUE.</param>
-        /*
-        IntersectionFinder(IFeature f, IIntersectable obj, bool wantEndEnd)
-        {
-            m_Object = obj;
-            m_Layers = new LayerList(f);
-            Load(wantEndEnd);
-        }
-         */
 
         #endregion
 
@@ -102,58 +87,6 @@ namespace Backsight.Editor
             get { return m_Line; }
         }
 
-        /// <summary>
-        /// Loads all intersections with this object. This is called by each constructor.
-        /// </summary>
-        /// <param name="wantEndEnd">Should end-to-end intersections (simple ones) be included
-        /// in the results. Applies only when the primitive being intersected is a line.</param>
-        void Load(bool wantEndEnd)
-        {
-            ISpatialIndex index = CadastralMapModel.Current.Index;
-            m_Intersects = new FindIntersectionsQuery(index, m_Line.LineGeometry, wantEndEnd).Result;
-
-        }
-        /*
-
-//	Get a list of the tiles that the primitive passes through.
-	CeTileList tlist(*m_pObject);
-
-	// Get reference to the spatial index.
-	const CeSpace& space = CeMap::GetpMap()->GetSpace();
-
-	// Get the spatial index to return a list of all the candidates
-	// that fall within these tiles (this returns ONLY line primitives).
-	CeFixedArray<CeLine*> xlines;
-	UINT4 ncand = space.GetXCandidates(xlines,tlist,searchwin,m_pLayers,m_pObject);
-	if ( ncand==0 ) return;
-
-//	The list of lines refers to those that have a window
-//	that overlaps the window of the candidate object. Now do
-//	some more intensive calculation to get actual intersections.
-
-	for ( UINT4 i=0; i<ncand; i++ ) {
-		const CeLine* const pxLine = xlines[i];
-		if ( (CePrimitive*)pxLine==m_pObject ) continue;
-		CeXResult other(*pxLine);
-		m_pObject->Intersect(other);
-
-		// Skip if we didn't get anything.
-		UINT4 nx = other.GetCount();
-		if ( nx==0 ) continue;
-
-		// If we just intersected a line, determine the context
-		// of each intersection. If end-to-end simple intersections
-		// are not required, weed them out.
-		if ( pLine ) {
-			other.SetContext(*pLine);
-			if ( !wantEndEnd ) nx = other.CutEndEnd();
-		}
-
-		if ( nx ) this->Append(other);
-	}
-
-} // end of Load
-*/
         /// <summary>
         /// Appends intersection info to this object.
         /// </summary>
