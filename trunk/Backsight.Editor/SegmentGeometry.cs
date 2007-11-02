@@ -324,5 +324,86 @@ namespace Backsight.Editor
 
             return new Position(xp, yp);
         }
+
+        /// <summary>
+        /// Assigns sort values to the supplied intersections (each sort value
+        /// indicates the distance from the start of this line).
+        /// </summary>
+        /// <param name="data">The intersection data to update</param>
+        internal override void SetSortValues(List<IntersectionData> data)
+        {
+            // Get the XY for the start of this segment.
+            double xs = Start.X;
+            double ys = Start.Y;
+
+            // Get the deltas for the complete segment.
+            double segdx = End.X - xs;
+            double segdy = End.Y - ys;
+
+            // Note the length.
+            double len = Math.Sqrt(segdx*segdx + segdy*segdy);
+
+            // For each intersection, get the distance squared from the
+            // start of this segment.
+
+            double dist;		// Distance to intersection (squared)
+            double dist2;		// Distance to 2nd intersection (squared)
+
+            //double tol = Constants.XYTOL;
+            const double tol = 0.002;	// Use a big tolerance for now
+
+            foreach (IntersectionData xd in data)
+            {
+                // Get the first intersection
+                double xi = xd.P1.X;
+                double yi = xd.P1.Y;
+
+                // Get the distance squared to the start of segment
+                double dx = xi-xs;
+                double dy = yi-ys;
+
+                // If the intersection is real close to the start of the
+                // segment, use a distance of zero. Otherwise see if the
+                // intersection is real close to the end of the segment.
+
+                if (Math.Abs(dx)<tol && Math.Abs(dy)<tol)
+                    dist = 0.0;
+                else if (Math.Abs(dx-segdx)<tol && Math.Abs(dy-segdy)<tol)
+                    dist = (segdx*segdx + segdy*segdy);
+                else
+                    dist = (dx*dx + dy*dy);
+
+                // If we have a graze, process the 2nd intersection too.
+                // If it's closer than the distance we already have, use
+                // the second intersection as the sort value, and treat
+                // it subsequently as the first intersection.
+
+                if (xd.IsGraze)
+                {
+                    xi = xd.P2.X;
+                    yi = xd.P2.Y;
+
+                    dx = xi-xs;
+                    dy = yi-ys;
+
+                    if (Math.Abs(dx)<tol && Math.Abs(dy)<tol)
+                        dist2 = 0.0;
+                    else if (Math.Abs(dx-segdx)<tol && Math.Abs(dy-segdy)<tol)
+                        dist2 = (segdx*segdx + segdy*segdy);
+                    else
+                        dist2 = (dx*dx + dy*dy);
+
+                    if (dist2 < dist)
+                    {
+                        xd.Reverse();
+                        dist = dist2;
+                    }
+                }
+
+                // Set the sort value
+                double dset = Math.Sqrt(dist);
+                xd.SortValue = dset;
+            }
+        }
     }
 }

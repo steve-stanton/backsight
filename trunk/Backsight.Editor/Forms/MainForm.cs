@@ -449,7 +449,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 {
                     LineFeature line = (s.Item as LineFeature);
                     if (line != null)
-                        ctxLinePolygonBoundary.Checked = line.IsPolygonBoundary;
+                        ctxLinePolygonBoundary.Checked = line.HasTopology;
 
                     return lineContextMenu;
                 }

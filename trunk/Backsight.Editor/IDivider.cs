@@ -17,24 +17,36 @@ using System;
 
 namespace Backsight.Editor
 {
-	/// <written by="Steve Stanton" on="05-JUL-2007" />
+    /// <written by="Steve Stanton" on="30-OCT-2007" />
     /// <summary>
-    /// A position at one end of a polygon divider. Implemented by
-    /// the <see cref="PointFeature"/> and <see cref="Intersection"/> classes.
+    /// Something that divides a pair of polygon rings.
     /// </summary>
-    interface ITerminal : IPointGeometry
+    interface IDivider : IIntersectable
     {
         /// <summary>
-        /// The dividers that start or end at the terminal. If a divider
-        /// starts and also ends at the terminal, it should appear in the
-        /// returned array just once.
+        /// The line the divider is associated with (the divider may cover only a portion
+        /// of this line).
         /// </summary>
-        IDivider[] IncidentDividers();
+        LineFeature Line { get; }
 
         /// <summary>
-        /// Go through each divider that is incident on this terminal, marking adjacent
-        /// polygons for deletion.
+        /// The start position for the divider.
         /// </summary>
-        //void MarkPolygons();
+        ITerminal From { get; }
+
+        /// <summary>
+        /// The end position for the divider.
+        /// </summary>
+        ITerminal To { get; }
+
+        /// <summary>
+        /// The polygon ring on the left of the divider (may be null)
+        /// </summary>
+        Ring Left { get; set; }
+
+        /// <summary>
+        /// The polygon ring on the right of the divider (may be null)
+        /// </summary>
+        Ring Right { get; set; }
     }
 }

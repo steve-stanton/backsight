@@ -50,23 +50,23 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>RingMetrics</c> object for the supplied boundaries.
+        /// Creates a new <c>RingMetrics</c> object for the supplied faces.
         /// </summary>
-        /// <param name="edge">The boundaries defining a ring</param>
-        internal RingMetrics(List<BoundaryFace> edge)
+        /// <param name="edge">The faces defining a ring</param>
+        internal RingMetrics(List<Face> edge)
         {
             m_Area = 0.0;
             m_Perimeter = 0.0;
             m_Window = new Window();
 
-            foreach(BoundaryFace face in edge)
+            foreach(Face face in edge)
             {
-                Boundary b = face.Boundary;
+                IDivider d = face.Divider;
                 bool isLeft = face.IsLeft;
 
                 double area, length;
                 IWindow awin;
-                b.GetGeometry(out awin, out area, out length);
+                d.LineGeometry.GetGeometry(out awin, out area, out length);
                 m_Perimeter += length;
                 m_Window.Union(awin);
 

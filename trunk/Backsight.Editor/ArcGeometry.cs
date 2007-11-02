@@ -630,5 +630,99 @@ namespace Backsight.Editor
 
             return null;
         }
+
+        /// <summary>
+        /// Assigns sort values to the supplied intersections (each sort value
+        /// indicates the distance from the start of this line).
+        /// </summary>
+        /// <param name="data">The intersection data to update</param>
+        internal override void SetSortValues(List<IntersectionData> data)
+        {
+            // Get the position of the centre of the circle for this curve,
+            // along with the stored radius.
+            IPosition centre = m_Circle.Center;
+            double radius = m_Circle.Radius.Meters;
+
+            // Define reference directions to the start and end of curve,
+            // ordered clockwise.
+            Turn start = new Turn(centre, First);
+            Turn end = new Turn(centre, Second);
+
+            // If we are dealing with a counter-clockwise curve, note
+            // the total length of the curve. This is because the lengths
+            // we will be calculating below are reckoned in a clockwise
+            // direction.
+            double crvlen = 0.0;
+            if (!m_IsClockwise)
+                crvlen = this.Length.Meters;
+
+            // For each intersection, get the angle with respect to the start of the curve.
+
+            double angle;		// Angle of the intersection.
+            double angle2;		// Angle of 2nd intersection.
+
+            // Figure out an angular tolerance for comparing bearings to the curve ends.
+            //double angtol = Constants.XYTOL/radius;
+            double angtol = 0.002/radius;
+
+            foreach (IntersectionData xd in data)
+            {
+                // Get the angle to the first intersection (calculate with
+                // respect to the end of curve, to check for an intersection
+                // that is REAL close to the end).
+
+                IPosition xpos = xd.P1;
+                double xi = xpos.X;
+                double yi = xpos.Y;
+
+                if (end.GetAngle(xpos, angtol).Radians < Constants.TINY)
+                    angle = start.GetAngle(end).Radians;
+                else
+                    angle = start.GetAngle(xpos, angtol).Radians;
+
+                // If we have a graze, process the 2nd intersection too.
+                // If it's closer than the distance we already have, use
+                // the second intersection as the sort value, and treat
+                // it subsequently as the first intersection.
+
+                if (xd.IsGraze)
+                {
+                    xpos = xd.P2;
+                    xi = xpos.X;
+                    yi = xpos.Y;
+
+                    if (end.GetAngle(xpos, angtol).Radians < Constants.TINY)
+                        angle2 = start.GetAngle(end).Radians;
+                    else
+                        angle2 = start.GetAngle(xpos, angtol).Radians;
+
+                    if (m_IsClockwise)
+                    {
+                        if (angle2 < angle)
+                        {
+                            xd.Reverse();
+                            angle = angle2;
+                        }
+                    }
+                    else
+                    {
+                        if (angle < angle2)
+                        {
+                            xd.Reverse();
+                            angle = angle2;
+                        }
+                    }
+                }
+
+                // Set the sort value. For counterclockwise curves, remember
+                // that the length is from the wrong end.
+                double dset = angle*radius;
+                if (dset < Constants.TINY)
+                    dset = 0.0;
+                if (!m_IsClockwise)
+                    dset = crvlen-dset;
+                xd.SortValue = dset;
+            }
+        }
     }
 }

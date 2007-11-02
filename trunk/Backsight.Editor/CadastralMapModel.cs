@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Sys=System.Diagnostics;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -25,6 +24,7 @@ using Backsight.Editor.Operations;
 using Backsight.Index;
 using Backsight.Environment;
 using Backsight.Editor.Properties;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -894,9 +894,18 @@ namespace Backsight.Editor
             {
                 // If maintaining topology, ensure that all moved stuff has been intersected
                 // (and that any trimmed lines have been adjusted appropriately).
+                //System.Windows.Forms.MessageBox.Show("starting intersect");
+                //Stopwatch sw = Stopwatch.StartNew();
                 Intersect(cq.Moves);
+                //sw.Stop();
+                //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
 
+                //System.Windows.Forms.MessageBox.Show("building topology");
+                //sw.Reset();
+                //sw.Start();
                 BuildPolygons();
+                //sw.Stop();
+                //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
             }
         }
 
@@ -926,6 +935,7 @@ namespace Backsight.Editor
         /// </devnote>
         void BuildPolygons()
         {
+            Trace.Write("Building polygons");
             //System.Windows.Forms.MessageBox.Show("start build");
             //DateTime start = DateTime.Now;
             new PolygonBuilder(this).Build();
@@ -944,6 +954,7 @@ namespace Backsight.Editor
             if (moves.Count==0)
                 return;
 
+            Trace.Write("Intersecting "+moves.Count+" lines");
             List<LineFeature> trims = new List<LineFeature>();
             int nMove = 0;
 
@@ -1205,6 +1216,35 @@ namespace Backsight.Editor
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Should polygon topology be maintained during edits? (may get turned off
+        /// temporarily during bulk loads).
+        /// </summary>
+        internal bool IsMaintainingTopology
+        {
+            get { return m_MaintainTopology; }
+        }
+
+        /// <summary>
+        /// Obtains a terminal at the specified position.
+        /// </summary>
+        /// <param name="p">The position of interest</param>
+        /// <returns>The corresponding terminal (created if a terminal doesn't already exist
+        /// at the position of interest)</returns>
+        internal ITerminal GetTerminal(IPosition p)
+        {
+            // Check whether we have an existing point feature or intersection
+            PointGeometry pg = PointGeometry.Create(p);
+            ITerminal t = m_Index.FindTerminal(pg);
+            if (t!=null)
+                return t;
+
+            // Create an intersection and return that
+            Intersection x = new Intersection(pg);
+            m_Index.AddIntersection(x);
+            return x;
         }
     }
 }

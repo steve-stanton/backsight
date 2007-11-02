@@ -20,7 +20,7 @@ namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="26-FEB-1998" />
     /// <revision author="Steve Stanton" date="03-DEC-2002">
-    /// Major revision to accomodate polygons in which the boundary may contain
+    /// Major revision to accomodate polygons in which the divider may contain
     /// points on secondary faces.
     /// </revision>
     /// <summary>
@@ -60,18 +60,18 @@ namespace Backsight.Editor
             m_Links = null;
 
             // Get the boundaries defining the exterior edge of the polygon
-            Boundary[] lines = polygon.Edge;
+            IDivider[] lines = polygon.Edge;
             if (lines==null || lines.Length==0)
                 return;
 
             // Allocate an array for holding info on each polygon face,
-            // and associate each one with the boundary that acts as the primary face.
+            // and associate each one with the divider that acts as the primary face.
             uint numLink = 0;
             m_Faces = new PolygonFace[lines.Length];
             for (int i=0; i<lines.Length; i++)
             {
                 m_Faces[i] = new PolygonFace();
-                numLink += m_Faces[i].SetBoundary(m_Polygon, lines[i]);
+                numLink += m_Faces[i].SetDivider(m_Polygon, lines[i]);
             }
 
             // Create an array of link objects (one for each point)

@@ -197,7 +197,7 @@ namespace Backsight.Editor
 
         public override ILength Distance(IPosition point)
         {
-            return new Length(m_Geom.Distance(point));
+            return m_Geom.Distance(point);
         }
 
         public bool IsCoincident(IPointGeometry p)
@@ -215,18 +215,14 @@ namespace Backsight.Editor
             get { return m_Geom.Northing; }
         }
 
-        public Boundary[] IncidentBoundaries()
+        public IDivider[] IncidentDividers()
         {
-            List<Boundary> result = new List<Boundary>(4); // 4 is frequently the number in the result
+            List<IDivider> result = new List<IDivider>(4); // 4 is frequently the number in the result
 
             foreach (IFeatureDependent fd in Dependents)
             {
-                // It's conceivable that a Boundary object is directly associated
-                // with this point (a situation where a line intersects the point
-                // at the end of another line).
-
                 if (fd is LineFeature)
-                    (fd as LineFeature).AddIncidentBoundaries(result, this);
+                    (fd as LineFeature).AddIncidentDividers(result, this);
             }
 
             return result.ToArray();
@@ -254,6 +250,18 @@ namespace Backsight.Editor
         public override string ToString()
         {
             return String.Format("{0} {1}", DataId, m_Geom.ToString());
+        }
+
+        /// <summary>
+        /// Goes through each line that is incident on this point, and mark adjacent
+        /// polygons for deletion.
+        /// </summary>
+        public void MarkPolygons() // ITerminal
+        {
+            IDivider[] da = this.IncidentDividers();
+
+            foreach (IDivider d in da)
+                Topology.MarkPolygons(d);
         }
     }
 }

@@ -21,19 +21,19 @@ namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="24-JUL-1997" was="CeConnection" />
     /// <summary>
-    /// Information about the network topology for one end of a topological boundary.
+    /// Information about the network topology for one end of a polygon ring divider.
     /// </summary>
     class ConnectionFinder
     {
         #region Class data
 
         /// <summary>
-        /// The next anticlockwise boundary in nodal cycle
+        /// The next anticlockwise divider in nodal cycle
         /// </summary>
-        Boundary m_Next;
+        IDivider m_Next;
 
         /// <summary>
-        /// True if we are dealing with the start of the next boundary
+        /// True if we are dealing with the start of the next divider
         /// </summary>
         bool m_IsStart;
 
@@ -51,42 +51,42 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <c>ConnectionFinder</c> at a specific end of a boundary.
-        /// Defines the next boundary in the nodal cycle (reckoned anticlockwise),
-        /// along with a flag to indicate whether it is the start or end of the boundary.
+        /// Creates a new <c>ConnectionFinder</c> at a specific end of a divider.
+        /// Defines the next divider in the nodal cycle (reckoned anticlockwise),
+        /// along with a flag to indicate whether it is the start or end of the divider.
         /// 
-        /// If the parameters supplied refer to a dangling boundary, the result will
+        /// If the parameters supplied refer to a dangling divider, the result will
         /// be the SAME as the supplied info.
         /// 
         /// This constructor is normally used during polygon formation.
         /// </summary>
-        /// <param name="b">The boundary entering the node.</param>
-        /// <param name="isStart">True if it's the start of the boundary.</param>
-        internal ConnectionFinder(Boundary b, bool isStart)
-            : this(b, isStart, null)
+        /// <param name="d">The divider entering the node.</param>
+        /// <param name="isStart">True if it's the start of the divider.</param>
+        internal ConnectionFinder(IDivider d, bool isStart)
+            : this(d, isStart, null)
         {
         }
 
         /// <summary>
-        /// Creates a new <c>ConnectionFinder</c> at a specific end of a boundary.
-        /// Defines the next boundary in the nodal cycle (reckoned anticlockwise),
-        /// along with a flag to indicate whether it is the start or end of the boundary.
+        /// Creates a new <c>ConnectionFinder</c> at a specific end of a divider.
+        /// Defines the next divider in the nodal cycle (reckoned anticlockwise),
+        /// along with a flag to indicate whether it is the start or end of the divider.
         /// <para/>
-        /// If the parameters supplied refer to a dangling boundary, the result will
+        /// If the parameters supplied refer to a dangling divider, the result will
         /// be the SAME as the supplied info.
         /// <para/>
         /// This constructor is normally used during polygon formation. It is also used
         /// to resolve a special case in point in polygon tests, where the directed
         /// line (a <c>HorizontalRay</c> object) intersects at a node. In that case,
-        /// the supplied boundary refers to any one of the boundaries incident on the
+        /// the supplied divider refers to any one of the dividers incident on the
         /// node, and the connection to be formed is actually the connection for
         /// the <c>HorizontalRay</c> object.
         /// </summary>
-        /// <param name="from">The boundary entering the node.</param>
-        /// <param name="isFromStart">True if it's the start of the boundary.</param>
+        /// <param name="from">The divider entering the node.</param>
+        /// <param name="isFromStart">True if it's the start of the divider.</param>
         /// <param name="ray">Optional reference line (used when doing special point
         /// in polygon tests).</param>
-        internal ConnectionFinder(Boundary from, bool isFromStart, HorizontalRay ray)
+        internal ConnectionFinder(IDivider from, bool isFromStart, HorizontalRay ray)
         {
             Debug.Assert(from!=null);
 
@@ -95,15 +95,15 @@ namespace Backsight.Editor
             m_IsStart = false;
 
             // Get the location involved
-            ITerminal loc = (isFromStart ? from.Start : from.End);
+            ITerminal loc = (isFromStart ? from.From : from.To);
 
-            // Get the boundaries incident on the terminal.
-            Boundary[] ba = loc.IncidentBoundaries();
+            // Get the dividers incident on the terminal.
+            IDivider[] da = loc.IncidentDividers();
 
-            // Get orientation info for each boundary (the list could conceivably
-            // grow if boundaries start at the terminal, then loop round to also
+            // Get orientation info for each divider (the list could conceivably
+            // grow if dividers start at the terminal, then loop round to also
             // finish at the same terminal).
-            List<Orientation> orient = new List<Orientation>(ba.Length);
+            List<Orientation> orient = new List<Orientation>(da.Length);
 
             // If we are doing special stuff for point in polygon, add an extra orientation
             // object to refer to the HorizontalRay object.
@@ -113,20 +113,20 @@ namespace Backsight.Editor
                 orient.Add(o);
             }
 
-            foreach (Boundary b in ba)
+            foreach (IDivider d in da)
             {
                 // 03-APR-2003: Try ignoring boundaries that have zero-length
                 //if (!b.HasLength)
                 //    continue;
 
-                // Check if the start of the boundary is incident on the node.
+                // Check if the start of the divider is incident on the node.
                 // If so, append the orientation info to the list.
-                if (b.Start.IsCoincident(loc))
-                    orient.Add(new Orientation(b, true));
+                if (d.From.IsCoincident(loc))
+                    orient.Add(new Orientation(d, true));
 
-                // Likewise for the end of the boundary (it could start AND end at the node).
-                if (b.End.IsCoincident(loc))
-                    orient.Add(new Orientation(b, false));
+                // Likewise for the end of the divider (it could start AND end at the node).
+                if (d.To.IsCoincident(loc))
+                    orient.Add(new Orientation(d, false));
             }
 
             // We MUST have at least one orientation point (two if a horizontal ray is also included)
@@ -141,7 +141,7 @@ namespace Backsight.Editor
                 return;
             }
 
-            // Get a reference to the orientation info for the source boundary (if
+            // Get a reference to the orientation info for the source divider (if
             // we are doing point in polygon stuff, we stashed the reference
             // segment in the first slot).
 
@@ -152,7 +152,7 @@ namespace Backsight.Editor
             else
             {
                 source = orient.Find(delegate(Orientation o)
-                    { return (o.Boundary==from && o.IsStart==isFromStart); });
+                    { return (o.Divider==from && o.IsStart==isFromStart); });
                 Debug.Assert(source!=null);
             }
 
@@ -161,7 +161,7 @@ namespace Backsight.Editor
             if (orient.Count==2)
             {
                 Orientation o = (source==orient[0] ? orient[1] : orient[0]);
-                m_Next = o.Boundary;
+                m_Next = o.Divider;
                 m_IsStart = o.IsStart;
                 return;
             }
@@ -171,22 +171,22 @@ namespace Backsight.Editor
                 source.SetCurves(orient);
 
             // If there are any other boundaries in the source quadrant,
-            // try to find an anticlockwise boundary (with the highest
+            // try to find an anticlockwise divider (with the highest
             // orientation angle which is less than that of the source).
             Orientation next = FindPrevMax(source, orient);
 
             // If we got something, we're all done.
             if (next!=null)
             {
-                m_Next = next.Boundary;
+                m_Next = next.Divider;
                 m_IsStart = next.IsStart;
                 return;
             }
 
-            // Loop through the quadrants, looking for the next boundary. We
+            // Loop through the quadrants, looking for the next divider. We
             // scan the quadrants anticlockwise, including the source
             // quadrant we may have just processing (possibility that the
-            // next boundary is further on in the source quadrant).
+            // next divider is further on in the source quadrant).
 
             Quadrant search = NextQuadrant(source.Quadrant);
             for (int i=0; i<4; i++, search=NextQuadrant(search))
@@ -194,7 +194,7 @@ namespace Backsight.Editor
                 next = FindMax(search, source, orient);
                 if (next!=null)
                 {
-                    m_Next = next.Boundary;
+                    m_Next = next.Divider;
                     m_IsStart = next.IsStart;
                     return;
                 }
@@ -376,35 +376,35 @@ namespace Backsight.Editor
         /// as one of the constructors. However, this function is intended for use
         /// when creating polygons.
         /// </summary>
-        /// <param name="from">The boundary we're coming from.</param>
-        /// <param name="isFromStart">Are we coming from the start of the boundary?</param>
+        /// <param name="from">The divider we're coming from.</param>
+        /// <param name="isFromStart">Are we coming from the start of the divider?</param>
         /// <returns>True if connection found.</returns>
-        internal bool Create(Boundary from, bool isFromStart)
+        internal bool Create(IDivider from, bool isFromStart)
         {
             // Initialize with default values
             m_Next = null;
             m_IsStart = false;
 
             // Get the location involved
-            ITerminal loc = (isFromStart ? from.Start : from.End);
+            ITerminal loc = (isFromStart ? from.From : from.To);
 
-            // Get the boundaries incident on the terminal (and which overlap the layers involved)
-            Boundary[] ba = loc.IncidentBoundaries();
+            // Get the dividers incident on the terminal
+            IDivider[] ba = loc.IncidentDividers();
 
-            // Get orientation info for each boundary (the list could conceivably
+            // Get orientation info for each divider (the list could conceivably
             // grow if boundaries start at the terminal, then loop round to also
             // finish at the same terminal).
             List<Orientation> orient = new List<Orientation>(ba.Length);
 
-            foreach (Boundary b in ba)
+            foreach (IDivider b in ba)
             {
-                // Check if the start of the boundary is incident on the node.
+                // Check if the start of the divider is incident on the node.
                 // If so, append the orientation info to the list.
-                if (b.Start.IsCoincident(loc))
+                if (b.From.IsCoincident(loc))
                     orient.Add(new Orientation(b, true));
 
-                // Likewise for the end of the boundary (it could start AND end at the node).
-                if (b.End.IsCoincident(loc))
+                // Likewise for the end of the divider (it could start AND end at the node).
+                if (b.To.IsCoincident(loc))
                     orient.Add(new Orientation(b, false));
             }
 
@@ -420,9 +420,9 @@ namespace Backsight.Editor
                 return true;
             }
 
-            // Get a reference to the orientation info for the source boundary.
+            // Get a reference to the orientation info for the source divider.
             Orientation source = orient.Find(delegate(Orientation o)
-                { return (o.Boundary==from && o.IsStart==isFromStart); });
+                { return (o.Divider==from && o.IsStart==isFromStart); });
             Debug.Assert(source!=null);
 
             // If we have only two orientation points, the one we want
@@ -430,7 +430,7 @@ namespace Backsight.Editor
             if (orient.Count==2)
             {
                 Orientation o = (source==orient[0] ? orient[1] : orient[0]);
-                m_Next = o.Boundary;
+                m_Next = o.Divider;
                 m_IsStart = o.IsStart;
                 return true;
             }
@@ -440,7 +440,7 @@ namespace Backsight.Editor
                 source.SetCurves(orient);
 
             // If there are any other boundaries in the source quadrant,
-            // try to find an anticlockwise boundary (with the highest
+            // try to find an anticlockwise divider (with the highest
             // orientation angle which is less than that of the source).
             Orientation next = FindPrevMax(source, orient);
 
@@ -452,15 +452,15 @@ namespace Backsight.Editor
             // If we got something, we're all done.
             if (next!=null)
             {
-                m_Next = next.Boundary;
+                m_Next = next.Divider;
                 m_IsStart = next.IsStart;
                 return true;
             }
 
-            // Loop through the quadrants, looking for the next boundary. We
+            // Loop through the quadrants, looking for the next divider. We
             // scan the quadrants anticlockwise, including the source
             // quadrant we may have just processing (possibility that the
-            // next boundary is further on in the source quadrant).
+            // next divider is further on in the source quadrant).
 
             Quadrant search = NextQuadrant(source.Quadrant);
             for (int i=0; i<4; i++, search=NextQuadrant(search))
@@ -468,7 +468,7 @@ namespace Backsight.Editor
                 next = FindMax(search, source, orient);
                 if (next!=null)
                 {
-                    m_Next = next.Boundary;
+                    m_Next = next.Divider;
                     m_IsStart = next.IsStart;
                     return true;
                 }
@@ -486,7 +486,7 @@ namespace Backsight.Editor
         {
             foreach (Orientation o in orient)
             {
-                if (o.IsBoundaryArc)
+                if (o.IsDividerArc)
                     return true;
             }
 
@@ -498,7 +498,7 @@ namespace Backsight.Editor
             get { return m_IsStart; }
         }
 
-        internal Boundary Next
+        internal IDivider Next
         {
             get { return m_Next; }
         }

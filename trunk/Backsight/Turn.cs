@@ -58,7 +58,7 @@ namespace Backsight
 
         #endregion
 
-        IAngle GetAngle(Turn that)
+        public IAngle GetAngle(Turn that)
         {
             return this.GetAngle(that.Bearing, 0.0);
         }
@@ -85,7 +85,7 @@ namespace Backsight
         /// <param name="angtol">Angular tolerance. If you specify a non-zero value, and the position is
         ///	within tolerance of the reference bearing, you will get back a value of zero.</param>
         /// <returns>The clockwise angle, in radians.</returns>
-        IAngle GetAngle(IPosition pos, double angtol)
+        public IAngle GetAngle(IPosition pos, double angtol)
         {
             // Get the bearing of the specified position.
             IAngle bearing = BasicGeom.Bearing(m_Origin, pos);

@@ -52,6 +52,9 @@ namespace Backsight.Editor.Forms
             this.translationTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.loadProgressLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // closeButton
@@ -137,11 +140,29 @@ namespace Backsight.Editor.Forms
             this.label3.TabIndex = 9;
             this.label3.Text = "translation file";
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadProgressLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 123);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(587, 22);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 10;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // loadProgressLabel
+            // 
+            this.loadProgressLabel.Name = "loadProgressLabel";
+            this.loadProgressLabel.Size = new System.Drawing.Size(52, 17);
+            this.loadProgressLabel.Text = "Loading";
+            // 
             // NtxImportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(587, 145);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.browseFeatureTTbutton);
             this.Controls.Add(this.translationTextBox);
@@ -154,6 +175,8 @@ namespace Backsight.Editor.Forms
             this.Name = "NtxImportForm";
             this.Text = "Import NTX";
             this.Shown += new System.EventHandler(this.NtxImportForm_Shown);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,5 +193,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.TextBox translationTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel loadProgressLabel;
     }
 }

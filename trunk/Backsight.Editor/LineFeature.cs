@@ -36,13 +36,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The topology (if any) for this line. Null if this line is non-topological.
         /// </summary>
-        /// <remarks>
-        /// I tried using an array of Boundary (with an array length of 1), and noted that
-        /// the size of my test file (containing 6727 lines) grew by 12%. On calculating
-        /// the overhead, it seems that each array costs in the region of 50 bytes. This
-        /// seems like a lot of overhead, I wonder why.
-        /// </remarks>
-        IPossibleList<Boundary> m_Topology;
+        Topology m_Topology;
 
         /// <summary>
         /// The geometry for this line.
@@ -217,9 +211,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Is this line currently a polygon boundary?
+        /// Is this line currently a polygon boundary (with defined topology)
         /// </summary>
-        internal bool IsPolygonBoundary
+        internal bool HasTopology
         {
             get { return (m_Topology!=null); }
         }
@@ -267,37 +261,37 @@ namespace Backsight.Editor
         /// <param name="isStart">Start of this line?</param>
         void MarkPolygons(bool isStart)
         {
-            // Get a connecting boundary
-            Boundary b = (isStart ? GetStartBoundary() : GetEndBoundary());
-            ConnectionFinder cf = new ConnectionFinder(b, isStart);
-            Boundary next = cf.Next;
+            // Get a connecting divider
+            IDivider d = (isStart ? GetFirstDivider() : GetLastDivider());
+            ConnectionFinder cf = new ConnectionFinder(d, isStart);
+            IDivider next = cf.Next;
             if (next==null)
                 throw new Exception("LineFeature.MarkPolygons - Cannot determine network cycle");
 
-            // If we connected to the start of the connecting arc,
+            // If we connected to the start of the connecting divider,
             // mark it's polygons to the right. Otherwise the left.
             if (cf.IsStart)
-                next.MarkRight();
+                Topology.MarkRight(next);
             else
-                next.MarkLeft();
+                Topology.MarkLeft(next);
         }
 
         /// <summary>
-        /// Returns the boundary (if any) at the start of this line
+        /// Returns the divider (if any) at the start of this line
         /// </summary>
-        /// <returns>The boundary at the start (may be null)</returns>
-        Boundary GetStartBoundary()
+        /// <returns>The divider at the start (may be null)</returns>
+        IDivider GetFirstDivider()
         {
-            return (m_Topology==null ? null : m_Topology[0]);
+            return (m_Topology==null ? null : m_Topology.FirstDivider);
         }
 
         /// <summary>
-        /// Returns the boundary (if any) at the end of this line
+        /// Returns the divider (if any) at the end of this line
         /// </summary>
-        /// <returns>The boundary at the end (may be null)</returns>
-        Boundary GetEndBoundary()
+        /// <returns>The divider at the end (may be null)</returns>
+        IDivider GetLastDivider()
         {
-            return (m_Topology==null ? null : m_Topology[m_Topology.Count-1]);
+            return (m_Topology==null ? null : m_Topology.LastDivider);
         }
 
         /// <summary>
@@ -410,32 +404,16 @@ namespace Backsight.Editor
         }
         */
 
-        public void SetSortValues(List<IntersectionData> results)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public uint SelfIntersect(List<IntersectionData> results)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         /// <summary>
-        /// Appends polygon boundaries that are associated with this line, and which
+        /// Appends dividers that are associated with this line, and which
         /// terminate at the specified point.
         /// </summary>
         /// <param name="result">The list to append to</param>
-        /// <param name="t">The point the boundaries must terminate at</param>
-        internal void AddIncidentBoundaries(List<Boundary> result, ITerminal t)
+        /// <param name="t">The point the dividers must terminate at</param>
+        internal void AddIncidentDividers(List<IDivider> result, ITerminal t)
         {
             if (m_Topology!=null)
-            {
-                foreach (Boundary b in m_Topology)
-                {
-                    if (b.Start.IsCoincident(t) || b.End.IsCoincident(t))
-                        result.Add(b);
-                }
-            }
+                m_Topology.AddIncidentDividers(result, t);
         }
 
         public sealed override IWindow Extent
@@ -535,7 +513,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             DefineFeature(result);
 
             if (result.IsTopological)
-                result.m_Topology = new Boundary(result);
+                result.m_Topology = Topology.CreateTopology(result);
 
             return result;
         }
@@ -554,7 +532,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal override void SetTopology(bool topol)
         {
             if (topol)
-                m_Topology = new Boundary(this);
+                m_Topology = Topology.CreateTopology(this);
             else
                 m_Topology = null;
 
@@ -576,8 +554,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
             }
 
-            foreach(Boundary b in m_Topology)
-                b.BuildPolygons(bwin, index);
+            if (m_Topology!=null)
+                m_Topology.BuildPolygons(bwin, index);
         }
 
         /// <summary>
@@ -592,8 +570,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
 
             if (m_Topology!=null)
             {
-                foreach (Boundary b in m_Topology)
-                    b.OnLoad();
+                foreach (IDivider d in m_Topology)
+                    Topology.OnLoad(d);
             }
         }
 
@@ -611,23 +589,14 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             // Index any neighbouring polygons
             if (m_Topology!=null)
             {
-                foreach (Boundary b in m_Topology)
-                    b.AddToIndex(index);
+                foreach (IDivider d in m_Topology)
+                    Topology.AddToIndex(d, index);
             }
         }
 
         public string BoundaryString
         {
-            get
-            {
-                if (m_Topology==null)
-                    return String.Empty;
-
-                if (m_Topology.Count==1)
-                    return m_Topology[0].ToString();
-
-                return "(more than one boundary section)";
-            }
+            get { return (m_Topology==null ? String.Empty : m_Topology.ToString()); }
         }
 
         /// <summary>
@@ -639,13 +608,13 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (!base.Restore())
                 return false;
 
-            // If this was a polygon boundary, create an undefined boundary, mark
+            // If this was a polygon boundary, create an undefined divider, mark
             // affected polygons, and mark the line as "moved" (to force re-intersection
             // with the map).
 
             if (IsTopological)
             {
-                m_Topology = new Boundary(this);
+                m_Topology = Topology.CreateTopology(this);
                 MarkPolygons();
                 IsMoved = true;
             }
@@ -672,8 +641,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         {
             if (m_Topology!=null)
             {
-                foreach (Boundary b in m_Topology)
-                    b.OnDeleteLine();
+                foreach (IDivider d in m_Topology)
+                    Topology.MarkPolygons(d);
 
                 m_Topology = null;
             }
@@ -704,6 +673,75 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 // Treat the line as "moved" to force re-intersection
                 IsMoved = true;
             }
+        }
+
+        /// <summary>
+        /// Do any splits needed upon addition of a new line.
+        /// </summary>
+        /// <param name="retrims">Intersecting lines that were split on the invisible
+        /// portion of a trimmed line. The lines in this list will need to be re-trimmed.
+        /// </param>
+        /// <remarks>
+        /// 15-NOV-99: This function used to be called all over the place. It should now
+        /// be called ONLY by <see cref="CadastralMapModel.Intersect"/>. To indicate that
+        /// a line needs to be intersected, set the <see cref="IsMoved"/> property to
+        /// true.
+        /// </remarks>
+        internal void Split(List<LineFeature> retrims)
+        {
+            // Do nothing if not maintaining topology!
+            CadastralMapModel map = this.MapModel;
+            if (!map.IsMaintainingTopology)
+                return;
+
+            // No need to split lines that aren't topological.
+            if (!IsTopological)
+                return;
+
+            // Should NEVER something that already has more than one section
+            // (they should have been removed if the line was moved).
+            if (m_Topology is SectionTopologyList)
+                throw new Exception("LineFeature.Split - Line has already been split");
+
+            // Intersect this line with the map (ignoring end to end intersects).
+            IntersectionFinder xsect = new IntersectionFinder(m_Geom, false);
+
+            // Cut up any intersections.
+            xsect.SplitX(this, retrims);
+        }
+
+        /// <summary>
+        /// Cuts up this line at a set of intersections. This method is called only for
+        /// the line that actually causes the intersections.
+        /// </summary>
+        /// <param name="xres">The intersections</param>
+        internal void Split(IntersectionResult xres)
+        {
+            Debug.Assert(m_Topology!=null);
+            Debug.Assert(m_Topology is LineTopology);
+
+            // If there is a graze at the start of this line, ensure
+            // that all polygon incident on the start location have
+            // been marked for deletion. Same for the end.
+            if (xres.IsStartGrazing)
+                StartPoint.MarkPolygons();
+
+            if (xres.IsEndGrazing)
+                EndPoint.MarkPolygons();
+
+            // Modify the intersection results so that the exit point
+            // of each graze will be treated as a simple intersection.
+            // While at it, ensure there are no duplicates, and ensure
+            // we don't have any intersections at the end of the line.
+            if (xres.Simplify()==0)
+                return;
+
+            // Create divider sections. We should make at least ONE split.
+            Topology sections = m_Topology.CreateSections(xres);
+            if (sections==null)
+                throw new Exception("LineFeature.Split - Line split failed");
+
+            m_Topology = sections;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The object that is intersected.
         /// </summary>
-        LineFeature m_Line;
+        IIntersectable m_Line;
 
         /// <summary>
         /// Intersection data.
@@ -47,25 +47,23 @@ namespace Backsight.Editor
 
         internal IntersectionResult(LineFeature line)
         {
-            m_Line = line;
+            m_Line = line.LineGeometry;
             m_Data = new List<IntersectionData>();
         }
 
         /// <summary>
         /// Constructor used to combine a series of <c>IntersectResult</c> objects
         /// </summary>
-        /// <param name="xsect">An intersection object.</param>
-        /*
-        internal IntersectionResult(IntersectionFinder xsect)
+        /// <param name="line">The line that was intersected</param>
+        /// <param name="xsect">The result of intersecting the line with the map</param>
+        internal IntersectionResult(LineFeature line, IntersectionFinder xsect)
         {
-            // Get the object that was intersected.
-            m_Line = xsect.Geometry;
+            m_Line = line.LineGeometry;
             m_Data = null;
 
-            // How many things did it intersect?
+            // Get the total number of intersections that were found (there's one
+            // InteresectionResult for each intersected line)
             IList<IntersectionResult> results = xsect.Intersections;
-
-            // Get the total number of intersections that were found.
             int nData = 0;
             foreach (IntersectionResult r in results)
                 nData += r.m_Data.Count;
@@ -78,7 +76,7 @@ namespace Backsight.Editor
             m_Data = new List<IntersectionData>(nData);
             foreach (IntersectionResult r in results)
             {
-                List<IntersectionData> data = r.m_Data;
+                List<IntersectionData> data = r.Intersections;
                 foreach (IntersectionData d in data)
                     m_Data.Add(d);
             }
@@ -87,14 +85,15 @@ namespace Backsight.Editor
             foreach (IntersectionData d in m_Data)
                 d.ReverseContext();
         }
-         */
 
         #endregion
 
+        /*
         LineFeature IntersectedObject
         {
             get { return m_Line; }
         }
+        */
 
         internal int IntersectCount
         {
@@ -280,7 +279,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Checks whether any intersection is a graze at the start of a line.
         /// </summary>
-        bool IsStartGrazing
+        internal bool IsStartGrazing
         {
             get
             {
@@ -297,7 +296,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Checks whether any intersection is a graze at the end of a line.
         /// </summary>
-        bool IsEndGrazing
+        internal bool IsEndGrazing
         {
             get
             {
@@ -372,18 +371,17 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Ensures that intersections have been sorted in the same direction as
-        /// the line primitive to which these intersection results relate.
+        /// the line to which these intersection results relate.
         /// </summary>
         /// <param name="setsort">TRUE (the default) means sort values need to be defined.
         /// Specify FALSE only if you have supplied sort values when intersections were
         /// appended.</param>
-        void Sort(bool setsort)
+        internal void Sort(bool setsort)
         {
-            // Assign sort values to each intersection. If we need to do this
-            // and the object is not a line, we can't do it.
+            // Assign sort values to each intersection.
             if (setsort)
             {
-                m_Line.SetSortValues(m_Data);
+                m_Line.LineGeometry.SetSortValues(m_Data);
             }
 
             m_Data.Sort(delegate(IntersectionData a, IntersectionData b)
@@ -392,25 +390,19 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Perform self-intersection on the primitive that this object refers to.
-        /// 
+        /// <para/>
         /// NOTE: Only works for multi-segments. You will get an error message if you
         /// try to do it with anything else. Even sections based on multi-segments
         /// won't work.
         /// <todo>This is messy & should be changed</todo>
         /// </summary>
         /// <returns>The number of self-intersections that were detected.</returns>
+        /*
         uint SelfIntersect()
         {
-            /*
-            LineFeature line = (m_Object as LineFeature);
-            if (line==null)
-                throw new Exception("IntersectionResult.SelfIntersect: Not a multi-segment");
-
-            return line.SelfIntersect(m_Data);
-             */
-
-            return m_Line.SelfIntersect(m_Data);
+            return m_Line.LineGeometry.SelfIntersect(m_Data);
         }
+        */
 
         /// <summary>
         /// Checks if these intersection results refer to a specific position. The match
@@ -531,7 +523,7 @@ namespace Backsight.Editor
         /// eliminated.
         /// </summary>
         /// <returns>The number of intersection after simplification.</returns>
-        uint Simplify()
+        internal uint Simplify()
         {
             // Return if there are no intersections.
             if (m_Data==null || m_Data.Count==0)

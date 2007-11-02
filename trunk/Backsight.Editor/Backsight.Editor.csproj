@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -45,9 +45,6 @@
     <Compile Include="AutoSaver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="BearingDirection.cs" />
-    <Compile Include="Boundary.cs" />
-    <Compile Include="BoundaryFace.cs" />
-    <Compile Include="BoundarySection.cs" />
     <Compile Include="CadastralEditController.cs" />
     <Compile Include="CadastralIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
@@ -64,6 +61,10 @@
     <Compile Include="DeletionUI.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="DirectionFlags.cs" />
+    <Compile Include="Face.cs" />
+    <Compile Include="ForwardingTraceListener.cs" />
+    <Compile Include="IDivider.cs" />
+    <Compile Include="LineDivider.cs" />
     <Compile Include="DottedStyle.cs" />
     <Compile Include="DirectionType.cs" />
     <Compile Include="DisplayId.cs" />
@@ -229,7 +230,10 @@
     <Compile Include="ICoordinateSystem.cs" />
     <Compile Include="IFeatureDependent.cs" />
     <Compile Include="IInternalIdFactory.cs" />
+    <Compile Include="IIntersectable.cs" />
     <Compile Include="InternalIdValue.cs" />
+    <Compile Include="Intersection.cs" />
+    <Compile Include="IntersectionFlag.cs" />
     <Compile Include="IntersectionHelper.cs" />
     <Compile Include="InverseType.cs" />
     <Compile Include="IPossibleList.cs" />
@@ -242,7 +246,11 @@
     <Compile Include="LegItemFlag.cs" />
     <Compile Include="LineExtensionUI.cs" />
     <Compile Include="LineGeometry.cs" />
+    <Compile Include="LineOverlap.cs" />
     <Compile Include="LineSubdivisionUI.cs" />
+    <Compile Include="SectionDivider.cs" />
+    <Compile Include="SectionOverlap.cs" />
+    <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
     <Compile Include="Operations\LineExtensionOperation.cs" />
@@ -256,7 +264,9 @@
     <Compile Include="RingFlag.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="RingMetrics.cs" />
+    <Compile Include="SectionTopologyList.cs" />
     <Compile Include="SectionGeometry.cs" />
+    <Compile Include="SectionTopology.cs" />
     <Compile Include="SegmentGeometry.cs" />
     <Compile Include="MapEntity.cs" />
     <Compile Include="MeasuredLineFeature.cs" />
@@ -484,6 +494,7 @@
     <Compile Include="SetTopologyUI.cs" />
     <Compile Include="Side.cs" />
     <Compile Include="SimpleCommandUI.cs" />
+    <Compile Include="LineTopology.cs" />
     <Compile Include="TaggedObject.cs" />
     <Compile Include="Terminal.cs" />
     <Compile Include="TextFeature.cs" />

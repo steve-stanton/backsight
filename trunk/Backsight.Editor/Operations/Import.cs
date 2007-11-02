@@ -26,50 +26,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         private readonly Feature[] m_Data;
 
-        /*
-        public static Import New(string fileName)
-        {
-            IFeature[] features = LoadFeatures(fileName);
-            return RegisterNew(new Import(features, null));
-        }
-
-        private static IFeature[] LoadFeatures(string fileName)
-        {
-            // Assume shape file containing lines for now
-            ShapefileReader sfr = new ShapefileReader(fileName);
-
-            ShapefileHeader hdr = sfr.Header;
-            if (hdr.ShapeType != ShapeGeometryTypes.LineString)
-                throw new Exception("Unexpected shape type: "+hdr.ShapeType.ToString());
-
-            //Envelope ex = hdr.Bounds;
-            //m_Extent = new Window(ex.MinX, ex.MinY, ex.MaxX, ex.MaxY);
-            GeometryCollection all = sfr.ReadAll();
-            Geometry[] gs = all.Geometries;
-            List<IFeature> output = new List<IFeature>(gs.Length);
-
-            foreach (Geometry geom in gs)
-            {
-                IFeature f = LoadFeature(geom);
-                output.Add(f);
-            }
-
-            return output.ToArray();
-        }
-
-        private static IFeature LoadFeature(Geometry g)
-        {
-            Coordinate[] cos = g.Coordinates;
-            Position[] pts = new Position[cos.Length];
-            for (int i=0; i<cos.Length; i++)
-            {
-                Coordinate c = cos[i];
-                pts[i] = new Position(c.X, c.Y);
-            }
-
-            return new LineFeature(pts);
-        }
-        */
         public Import(FileImportSource source) : base()
         {
             m_Data = source.Load(this);

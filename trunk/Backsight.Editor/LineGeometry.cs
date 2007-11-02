@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// Base class for any sort of line geometry.
     /// </summary>
     [Serializable]
-    abstract class LineGeometry : ILineGeometry
+    abstract class LineGeometry : ILineGeometry, IIntersectable
     {
         #region Class data
 
@@ -183,5 +183,22 @@ namespace Backsight.Editor
         /// <param name="arcTol">Tolerance for approximating circular arcs (used only if the
         /// geometry is an instance of <see cref="ArcGeometry"/>)</param>
         abstract internal void AppendPositions(List<IPosition> positions, bool reverse, bool wantFirst, ILength arcTol);
+
+
+        /// <summary>
+        /// Implements <see cref="IIntersectable"/> by returning <c>this</c> as the
+        /// line geometry that's involved.
+        /// </summary>
+        LineGeometry IIntersectable.LineGeometry
+        {
+            get { return this; }
+        }
+
+        /// <summary>
+        /// Assigns sort values to the supplied intersections (each sort value
+        /// indicates the distance from the start of this line).
+        /// </summary>
+        /// <param name="data">The intersection data to update</param>
+        abstract internal void SetSortValues(List<IntersectionData> data);
     }
 }

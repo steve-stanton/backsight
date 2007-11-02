@@ -893,5 +893,169 @@ namespace Backsight.Editor
             Geom.GetPerpendicular(vx, vy, s.X, s.Y, e.X, e.Y, out xp, out yp);
             return new Position(xp, yp);
         }
+
+        /// <summary>
+        /// Assigns sort values to the supplied intersections (each sort value
+        /// indicates the distance from the start of this line).
+        /// </summary>
+        /// <param name="data">The intersection data to update</param>
+        internal override void SetSortValues(List<IntersectionData> dataList)
+        {
+            // Get an array of cumulative distances for each segment.
+            IPointGeometry[] data = this.Data;
+            double[] cumdist = GetCumDist(data);
+
+            foreach (IntersectionData xd in dataList)
+            {
+                // Get the first intersection
+                IPointGeometry pos = PointGeometry.Create(xd.P1);
+                double xi = pos.X;
+                double yi = pos.Y;
+
+                // Find the segment number
+                // @devnote -- we may need to use a different function at
+                // this point, because FindSegment currently assumes that
+                // the intersection must lie within the window of the segment.
+                int segnum = FindSegment(data, true, 0, pos);
+                if (segnum<0)
+                    throw new Exception("MultiSegmentGeometry.SetSortValues - intersection not on line");
+
+                // Get position of the start of segment
+                double xs = data[segnum].X;
+                double ys = data[segnum].Y;
+
+                // Get the distance squared to the start of segment
+                double dx = xi-xs;
+                double dy = yi-ys;
+                double dsq = (dx*dx + dy*dy);
+
+                // If we have a graze, process the 2nd intersection too
+                // (it MUST lie on the same segment, given that multisegments
+                // are intersected by processing each segment in turn).
+                // If it's closer than the distance we already have, use
+                // the second intersection as the sort value, and treat
+                // it subsequently as the first intersection.
+
+                if (xd.IsGraze)
+                {
+                    xi = xd.P2.X;
+                    yi = xd.P2.Y;
+
+                    dx = xi-xs;
+                    dy = yi-ys;
+
+                    double dsq2 = (dx*dx + dy*dy);
+
+                    if (dsq2 < dsq)
+                    {
+                        xd.Reverse();
+                        dsq = dsq2;
+                    }
+                }
+
+                // Set the sort value
+                double dset = cumdist[segnum] + Math.Sqrt(dsq);
+                xd.SortValue = dset;
+            }
+        }
+
+        /// <summary>
+        /// Creates an array with the cumulative distance to the start of each segment.
+        /// </summary>
+        /// <param name="data">The data defining a multi-segment</param>
+        /// <returns>The distances to each successive point. This has the same number of
+        /// elements as the supplied array. The first element will contain a value of 0.0</returns>
+        static double[] GetCumDist(IPointGeometry[] data)
+        {
+            double[] result = new double[data.Length];
+
+            result[0] = 0.0;
+
+            double xs = data[0].X;
+            double ys = data[0].Y;
+
+            for (int i=1; i<data.Length; i++)
+            {
+                double xe = data[i].X;
+                double ye = data[i].Y;
+                double dx = xe-xs;
+                double dy = ye-ys;
+                double seglen = Math.Sqrt(dx*dx + dy*dy);
+                result[i] = result[i-1] + seglen;
+                xs = xe;
+                ys = ye;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Intersects this multi-segment with itself. Only SIMPLE intersections will be
+        /// found. There are no special checks for multi-segments that graze themselves.
+        /// </summary>
+        /// <param name="xsect">The intersection results.</param>
+        /// <returns>The number of self-intersections found.</returns>
+        uint SelfIntersect(IntersectionResult xsect)
+        {
+            uint nx = 0;
+
+            // Get an array of cumulative distances for each segment.
+            IPointGeometry[] data = this.Data;
+            double[] cumdist = GetCumDist(data);
+
+            // Note start of initial segment (treat as the end of some imaginary line prior to the start).
+            double xs;
+            double ys;
+            double xe = data[0].X;
+            double ye = data[0].Y;
+
+            // How many line segments have we got?
+            int nseg = data.Length-1;
+
+            // Loop through each segment, intersecting it with all subsequent
+            // segments, except for the one that immediately follows.
+            for (int iseg=1; iseg<=(nseg-2); iseg++)
+            {
+                // The start of this segment is the end of the previous one.
+                xs = xe;
+                ys = ye;
+
+                // Get the position of the end of the test segment
+                xe = data[iseg].X;
+                ye = data[iseg].Y;
+
+                // Compare against subsequent segments (except the next one)
+                for (int jseg=iseg+2; jseg<=nseg; jseg++)
+                {
+                    IPointGeometry start = data[jseg-1];
+                    IPointGeometry end = data[jseg];
+                    double xi, yi;
+
+                    if (Geom.CalcIntersect(start.X, start.Y, end.X, end.Y, xs, ys, xe, ye, out xi, out yi, true)!=0)
+                    {
+                        // Define distance to the intersection on the i-segment
+                        double dx = xi-xs;
+                        double dy = yi-ys;
+                        double ilen = cumdist[iseg-1] + Math.Sqrt(dx*dx + dy*dy);
+
+                        // Likewise for the j-segment
+                        dx = xi - start.X;
+                        dy = yi - start.Y;
+                        double jlen = cumdist[jseg-1] + Math.Sqrt(dx*dx + dy*dy);
+
+                        // Append TWO intersections.
+                        xsect.Append(xi, yi, ilen);
+                        xsect.Append(xi, yi, jlen);
+                        nx += 2;
+                    }
+                }
+            }
+
+            // Sort the intersections (DON'T set new sort values).
+            xsect.Sort(false);
+
+            // Return the number of intersections
+            return nx;
+        }
     }
 }

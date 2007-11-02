@@ -17,24 +17,15 @@ using System;
 
 namespace Backsight.Editor
 {
-	/// <written by="Steve Stanton" on="05-JUL-2007" />
+    /// <written by="Steve Stanton" on="25-OCT-2007" />
     /// <summary>
-    /// A position at one end of a polygon divider. Implemented by
-    /// the <see cref="PointFeature"/> and <see cref="Intersection"/> classes.
+    /// Something that can be intersected.
     /// </summary>
-    interface ITerminal : IPointGeometry
+    interface IIntersectable
     {
         /// <summary>
-        /// The dividers that start or end at the terminal. If a divider
-        /// starts and also ends at the terminal, it should appear in the
-        /// returned array just once.
+        /// The geometry involved in the intersection calculation
         /// </summary>
-        IDivider[] IncidentDividers();
-
-        /// <summary>
-        /// Go through each divider that is incident on this terminal, marking adjacent
-        /// polygons for deletion.
-        /// </summary>
-        //void MarkPolygons();
+        LineGeometry LineGeometry { get; }
     }
 }

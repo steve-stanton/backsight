@@ -150,7 +150,7 @@ namespace Backsight.Editor
             get { return (m_X1!=null && m_X2!=null); }
         }
 
-        double SortValue
+        internal double SortValue
         {
             get { return m_SortValue; }
             set { m_SortValue = value; }
@@ -174,7 +174,7 @@ namespace Backsight.Editor
 
         #endregion
 
-        void Reverse()
+        internal void Reverse()
         {
             IPosition temp = m_X1;
             m_X1 = m_X2;
@@ -236,12 +236,12 @@ namespace Backsight.Editor
             get { return ((m_Context1 & IntersectionType.GrazeEnd) != 0); }
         }
 
-        bool IsInteriorGraze
+        internal bool IsInteriorGraze
         {
             get { return ((m_Context1 & IntersectionType.GrazeOther) != 0); }
         }
 
-        bool IsTotalGraze
+        internal bool IsTotalGraze
         {
             get { return ((m_Context1 & IntersectionType.GrazeTotal) != 0); }
         }

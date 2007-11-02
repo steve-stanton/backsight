@@ -123,9 +123,9 @@ namespace Backsight.Geometry
             return Position.IsCoincident(this, p, tol);
         }
 
-        public double Distance(IPosition point)
+        public ILength Distance(IPosition point)
         {
-            return BasicGeom.Distance(this, point);
+            return new Length(BasicGeom.Distance(this, point));
         }
 
         public IWindow Extent

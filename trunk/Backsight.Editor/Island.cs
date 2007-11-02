@@ -47,7 +47,7 @@ namespace Backsight.Editor
         /// <param name="rm">The metrics for this island</param>
         /// <param name="edge">The boundaries that define the exterior edge of the island,
         /// arranged in a (counter?)-clockwise cycle.</param>
-        internal Island(RingMetrics rm, List<BoundaryFace> edge)
+        internal Island(RingMetrics rm, List<Face> edge)
             : base(rm, edge)
         {
             Debug.Assert(rm.SignedArea <= 0.0);
@@ -108,9 +108,9 @@ namespace Backsight.Editor
         {
             IPosition mosteast = null;
 
-            foreach (Boundary b in this.Edge)
+            foreach (IDivider d in this.Edge)
             {
-                IPosition east = b.GetEastPoint();
+                IPosition east = d.LineGeometry.GetEastPoint();
                 if (mosteast==null || east.X > mosteast.X)
                     mosteast = east;
             }
@@ -154,9 +154,9 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            foreach (Boundary b in Edge)
+            foreach (IDivider d in Edge)
             {
-                LineGeometry g = b.GetLineGeometry();
+                LineGeometry g = d.LineGeometry;
                 g.Render(display, style);
             }
         }

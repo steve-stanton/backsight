@@ -196,15 +196,15 @@ namespace Backsight.Editor
         /// Gets the side code for a horizontal segment which is incident on a node,
         /// given any one the boundaries incident on the node.
         /// </summary>
-        /// <param name="ib">The boundary we know about (incident on node).</param>
+        /// <param name="id">The divider we know about (incident on node).</param>
         /// <param name="isStart">True if it's the start of <c>ib</c>.</param>
-        /// <param name="ob">The boundary the returned side refers to</param>
+        /// <param name="od">The divider the returned side refers to</param>
         /// <returns>Side.Left if the segment is to the left of <c>ob</c>, Side.Right
         /// if segment to the right.</returns>
-        internal Side GetSide(Boundary ib, bool isStart, out Boundary ob)
+        internal Side GetSide(IDivider id, bool isStart, out IDivider od)
         {
-            ConnectionFinder connect = new ConnectionFinder(ib, isStart, this);
-            ob = connect.Next;
+            ConnectionFinder connect = new ConnectionFinder(id, isStart, this);
+            od = connect.Next;
             return (connect.IsStart ? Side.Right : Side.Left);
         }
 

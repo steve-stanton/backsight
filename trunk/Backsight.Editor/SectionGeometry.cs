@@ -230,5 +230,15 @@ namespace Backsight.Editor
         {
             return Make().GetClosest(p, tol);
         }
+
+        /// <summary>
+        /// Assigns sort values to the supplied intersections (each sort value
+        /// indicates the distance from the start of this line).
+        /// </summary>
+        /// <param name="data">The intersection data to update</param>
+        internal override void SetSortValues(List<IntersectionData> data)
+        {
+            Make().SetSortValues(data);
+        }
     }
 }

@@ -22,7 +22,7 @@ using Backsight.Geometry;
 namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="03-DEC-2002" />
-    /// <summary>Information about points along a boundary that forms the perimeter of polygon,
+    /// <summary>Information about points along a divider that forms the perimeter of polygon,
     /// for use in the automatic subdivision of polygons. This accommodates the fact that
     /// any one line may contain a secondary face that contains additional points.
     /// </summary>
@@ -36,9 +36,9 @@ namespace Backsight.Editor
         Polygon m_Polygon;
 
         /// <summary>
-        /// The boundary that forms part of the polygon boundary.
+        /// The divider that forms part of the polygon boundary.
         /// </summary>
-        Boundary m_Boundary;
+        IDivider m_Divider;
 
         /// <summary>
         /// The location at the start of the face. It'll be the start of the line if the
@@ -67,7 +67,7 @@ namespace Backsight.Editor
         internal PolygonFace()
         {
             m_Polygon = null;
-            m_Boundary = null;
+            m_Divider = null;
             m_Begin = null;
             m_End = null;
             m_ExtraPoints = null;
@@ -76,14 +76,14 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// One-time definition of the topological boundary that this face corresponds to.
+        /// One-time definition of the topological divider that this face corresponds to.
         /// </summary>
         /// <param name="pol">The polygon this face is part of</param>
         /// <param name="line">The topological line that acts as the primary face for
         /// some portion of the polygon boundary</param>
         /// <returns>The number of points for this face (one for the start of the face,
         /// plus any intermediate points along the face).</returns>
-        internal uint SetBoundary(Polygon pol, Boundary line)
+        internal uint SetDivider(Polygon pol, IDivider line)
         {
             // Expect that this method should only ever get called once in the
             // lifetime of an instance
@@ -91,18 +91,18 @@ namespace Backsight.Editor
 
             // Define any extra points
             m_Polygon = pol;
-            m_Boundary = line;
+            m_Divider = line;
             int nExtra = SetExtraPoints();
             return (uint)(1+nExtra);
         }
 
         /// <summary>
-        /// The topological boundary that this face corresponds to (a prior call to
-        /// <c>SetBoundary</c> is required for this to return a non-null value).
+        /// The topological divider that this face corresponds to (a prior call to
+        /// <c>SetDivider</c> is required for this to return a non-null value).
         /// </summary>
-        Boundary Boundary
+        IDivider Divider
         {
-            get { return m_Boundary; }
+            get { return m_Divider; }
         }
 
         /// <summary>
@@ -122,30 +122,30 @@ namespace Backsight.Editor
         int SetExtraPoints()
         {
             Debug.Assert(m_Polygon!=null);
-            Debug.Assert(m_Boundary!=null);
+            Debug.Assert(m_Divider!=null);
 
             // Determine whether the order needs to be reversed
             // (the points should follow a clockwise cycle round
             // the polygon)
-            bool reverse = (m_Boundary.Left == m_Polygon);
+            bool reverse = (m_Divider.Left == m_Polygon);
 
             // Define the initial position
             if (reverse)
             {
-                m_Begin = m_Boundary.End;
-                m_End = m_Boundary.Start;
+                m_Begin = m_Divider.To;
+                m_End = m_Divider.From;
             }
             else
             {
-                m_Begin = m_Boundary.Start;
-                m_End = m_Boundary.End;
+                m_Begin = m_Divider.From;
+                m_End = m_Divider.To;
             }
 
             // Trash any old info kicking around (we shouldn't really have any)
             m_ExtraPoints = null;
 
-            // Get any points along the boundary (excluding end points)
-            LineGeometry line = m_Boundary.GetLineGeometry();
+            // Get any points along the divider (excluding end points)
+            LineGeometry line = m_Divider.LineGeometry;
             ISpatialIndex index = CadastralMapModel.Current.Index;
             ILength tol = new Length(Constants.XYTOL);
             List<PointFeature> xp = new FindPointsOnLineQuery(index, line, false, tol).Result;
@@ -158,7 +158,7 @@ namespace Backsight.Editor
                 m_ExtraPoints = xp.ToArray();
             else
             {
-                // Sort the points so they're arranged along the boundary
+                // Sort the points so they're arranged along the divider
                 List<TaggedObject<PointFeature, double>> pts =
                     new List<TaggedObject<PointFeature, double>>(xp.Count);
 
@@ -209,8 +209,8 @@ namespace Backsight.Editor
         internal PolygonLink[] CreateLinks(PolygonFace prev)
         {
             Debug.Assert(m_Polygon!=null);
-            Debug.Assert(m_Boundary!=null);
-            Debug.Assert(prev.Boundary!=null);
+            Debug.Assert(m_Divider!=null);
+            Debug.Assert(prev.Divider!=null);
             Debug.Assert(Object.ReferenceEquals(prev.Polygon, m_Polygon));
 
             // Try to obtain a point feature at the beginning of this face.
@@ -219,7 +219,7 @@ namespace Backsight.Editor
 
             // If the polygon to the left of the this face? (if so, curve-related
             // things may need to be reversed below)
-            bool isPolLeft = (m_Boundary.Left == m_Polygon);
+            bool isPolLeft = (m_Divider.Left == m_Polygon);
 
             // Default geometric info we need to define
             bool isCurveEnd = false;
@@ -233,8 +233,8 @@ namespace Backsight.Editor
             // that the line could either be a CircularArc, or a topological
             // section based on a circular arc.
 
-            ICircularArcGeometry prevArc = (prev.Boundary.GetLineGeometry() as ICircularArcGeometry);
-            ICircularArcGeometry thisArc = (m_Boundary.GetLineGeometry() as ICircularArcGeometry);
+            ICircularArcGeometry prevArc = (prev.Divider.LineGeometry as ICircularArcGeometry);
+            ICircularArcGeometry thisArc = (m_Divider.LineGeometry as ICircularArcGeometry);
             bool isPrevCurve = (prevArc!=null);
             bool isThisCurve = (thisArc!=null);
             isCurveEnd = (isPrevCurve!=isThisCurve);
@@ -345,8 +345,8 @@ namespace Backsight.Editor
 
                 if (isRadial)
                 {
-                    Debug.Assert(m_Boundary.Line.LineGeometry is ICircularArcGeometry);
-                    ICircularArcGeometry arc = (m_Boundary.Line.LineGeometry as ICircularArcGeometry);
+                    Debug.Assert(m_Divider.Line.LineGeometry is ICircularArcGeometry);
+                    ICircularArcGeometry arc = (m_Divider.Line.LineGeometry as ICircularArcGeometry);
                     centre = arc.Circle.Center;
                     radius = arc.Circle.Radius.Meters;
                     iscw = arc.IsClockwise;
