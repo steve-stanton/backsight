@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// The geometry for a circular arc.
     /// </summary>
     [Serializable]
-    class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, ISectionBase
+    class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry
     {
         #region Class data
 
@@ -277,9 +277,8 @@ namespace Backsight.Editor
         /// The line geometry that corresponds to a section of this line.
         /// </summary>
         /// <param name="s">The required section</param>
-        /// <returns>The corresponding geometry for the section (<b>not</b> an instance of
-        /// <see cref="SectionGeometry"/>)</returns>
-        public override UnsectionedLineGeometry Section(ISection s) // implements ISectionBase
+        /// <returns>The corresponding geometry for the section</returns>
+        internal override UnsectionedLineGeometry Section(ISection s)
         {
             return new ArcGeometry(m_Circle, s.From, s.To, m_IsClockwise);
         }

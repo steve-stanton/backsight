@@ -117,14 +117,9 @@ namespace Backsight.Editor
         abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
-        /// The geometry that acts as the base for this one. This implementation just
-        /// returns <c>this</c>, cast to an instance of <see cref="ISectionBase"/>. The
-        /// derived <see cref="SectionGeometry"/> class provides an override.
+        /// The geometry that acts as the base for this one.
         /// </summary>
-        internal virtual ISectionBase SectionBase
-        {
-            get { return (ISectionBase)this; }
-        }
+        abstract internal UnsectionedLineGeometry SectionBase { get; }
 
         /// <summary>
         /// Gets geometric info for this geometry. For use during the formation

@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// Geometry for a line that connects two points.
     /// </summary>
     [Serializable]
-    class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry, ISectionBase
+    class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
     {
         #region Class data
 
@@ -120,9 +120,8 @@ namespace Backsight.Editor
         /// The line geometry that corresponds to a section of this line.
         /// </summary>
         /// <param name="s">The required section</param>
-        /// <returns>The corresponding geometry for the section (<b>not</b> an instance of
-        /// <see cref="SectionGeometry"/>)</returns>
-        public override UnsectionedLineGeometry Section(ISection s) // implements ISectionBase
+        /// <returns>The corresponding geometry for the section</returns>
+        internal override UnsectionedLineGeometry Section(ISection s)
         {
             return new SegmentGeometry(s.From, s.To);
         }

@@ -21,7 +21,8 @@ namespace Backsight.Editor
     /// <summary>
     /// Line geometry that <b>cannot</b> act as the base for <see cref="SectionGeometry"/>
     /// </summary>
-    abstract class UnsectionedLineGeometry : LineGeometry, ISectionBase
+    [Serializable]
+    abstract class UnsectionedLineGeometry : LineGeometry
     {
         #region Class data
 
@@ -44,10 +45,18 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
+        /// The geometry that acts as the base for this one is <c>this</c>
+        /// </summary>
+        internal override UnsectionedLineGeometry SectionBase
+        {
+            get { return this; }
+        }
+
+        /// <summary>
         /// The line geometry that corresponds to a section of a line.
         /// </summary>
         /// <param name="s">The required section</param>
         /// <returns>The corresponding geometry for the section</returns>
-        abstract public UnsectionedLineGeometry Section(ISection s); // ISectionBase
+        abstract internal UnsectionedLineGeometry Section(ISection s);
     }
 }

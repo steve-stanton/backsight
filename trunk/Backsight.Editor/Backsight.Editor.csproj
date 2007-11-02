@@ -238,7 +238,6 @@
     <Compile Include="InverseType.cs" />
     <Compile Include="IPossibleList.cs" />
     <Compile Include="ISection.cs" />
-    <Compile Include="ISectionBase.cs" />
     <Compile Include="Island.cs" />
     <Compile Include="ITerminal.cs" />
     <Compile Include="ITranslate.cs" />
