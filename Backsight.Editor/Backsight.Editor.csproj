@@ -503,6 +503,7 @@
     <Compile Include="Translation.cs" />
     <Compile Include="TranslationFile.cs" />
     <Compile Include="UndoUI.cs" />
+    <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateUI.cs" />
     <Compile Include="Wildcard.cs" />
   </ItemGroup>

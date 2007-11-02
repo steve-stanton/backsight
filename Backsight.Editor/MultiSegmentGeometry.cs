@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// space required will actually be 2 bytes more than the unpacked data).
     /// </summary>
     [Serializable]
-    class MultiSegmentGeometry : LineGeometry, IMultiSegmentGeometry, ISectionBase
+    class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry, ISectionBase
     {
         #region Data
 
@@ -481,7 +481,7 @@ namespace Backsight.Editor
         /// <param name="s">The required section</param>
         /// <returns>The corresponding geometry for the section (<b>not</b> an instance of
         /// <see cref="SectionGeometry"/>)</returns>
-        public LineGeometry Section(ISection s) // implements ISectionBase
+        public override UnsectionedLineGeometry Section(ISection s) // implements ISectionBase
         {
             IPointGeometry[] data = this.Data;
 
