@@ -20,26 +20,24 @@ namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="24-JUL-1997" />
     /// <summary>
-    /// Provides information about the relative position of a polygon boundary
+    /// Provides information about the relative position of a polygon ring divider
     /// with respect to a topological node.
-    /// 
-    /// Utilized by the ConnectionFinder class to hold information used to determine
+    /// <para/>
+    /// Utilized by the <see cref="ConnectionFinder"/> class to hold information used to determine
     /// the cyclic order at a topological node. Nobody else in the world should be
     /// using this class.
-    /// 
-    /// Perhaps it should be a class inside ConnectionFinder.
     /// </summary>
     class Orientation
     {
         #region Class data
 
         /// <summary>
-        /// The boundary entering the node
+        /// The divider entering the node
         /// </summary>
-        Boundary m_Boundary; // was m_pArc
+        IDivider m_Divider; // was m_pArc
 
         /// <summary>
-        /// Are we talking about the start of boundary?
+        /// Are we talking about the start of divider?
         /// </summary>
         bool m_IsStart;
 
@@ -63,7 +61,7 @@ namespace Backsight.Editor
         /// </summary>
         internal Orientation()
         {
-            m_Boundary = null;
+            m_Divider = null;
             m_IsStart = false;
             m_DeltaI = 0.0;
             m_DeltaJ = 0.0;
@@ -71,17 +69,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates new <c>Orientation</c> for one end of a boundary
+        /// Creates new <c>Orientation</c> for one end of a divider
         /// </summary>
-        /// <param name="b">The boundary we are interested in.</param>
-        /// <param name="isStart">At start of the boundary?</param>
-        internal Orientation(Boundary b, bool isStart)
+        /// <param name="d">The divider we are interested in.</param>
+        /// <param name="isStart">At start of the divider?</param>
+        internal Orientation(IDivider d, bool isStart)
         {
-            m_Boundary = b;
+            m_Divider = d;
             m_IsStart = isStart;
 
-            // Get orientation point for the boundary
-            IPosition orient = b.GetOrient(isStart, 0.0);
+            // Get orientation point for the divider
+            IPosition orient = d.LineGeometry.GetOrient(isStart, 0.0);
 
             // Set the orientation info.
 	        SetOrient(orient);
@@ -94,9 +92,9 @@ namespace Backsight.Editor
         internal Orientation(HorizontalRay hr)
         {
             // Remember the stuff we were supplied (since we are not starting
-            // with a boundary, it has to be null).
+            // with a divider, it has to be null).
 
-            m_Boundary = null;
+            m_Divider = null;
             m_IsStart = false;
 
             // The horizontal segment is ALWAYS at the very start of the
@@ -114,9 +112,9 @@ namespace Backsight.Editor
 
         #endregion
 
-        internal Boundary Boundary
+        internal IDivider Divider
         {
-            get { return m_Boundary; }
+            get { return m_Divider; }
         }
 
         internal bool IsStart
@@ -137,12 +135,6 @@ namespace Backsight.Editor
         internal double LengthSquared
         {
             get { return (m_DeltaI*m_DeltaI + m_DeltaJ*m_DeltaJ); }
-        }
-
-        [Obsolete("Use IsBoundaryArc instead")]
-        internal bool IsCurve
-        {
-            get { return IsBoundaryArc; }
         }
 
         /// <summary>
@@ -207,7 +199,7 @@ namespace Backsight.Editor
 
             foreach(Orientation o in orient)
             {
-                if (!o.IsBoundaryArc)
+                if (!o.IsDividerArc)
                 {
                     double dsq = o.LengthSquared;
                     if (dsq < mindsq)
@@ -229,11 +221,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Does this orientation relate to a boundary that coincides with a circular arc?
+        /// Does this orientation relate to a divider that coincides with a circular arc?
         /// </summary>
-        internal bool IsBoundaryArc
+        internal bool IsDividerArc
         {
-            get { return (m_Boundary.Line is ICircularArcGeometry); }
+            get { return (m_Divider.Line is ArcFeature); }
         }
 
         /// <summary>
@@ -243,11 +235,11 @@ namespace Backsight.Editor
         void SetCurve(double orilen)
         {
             // Return if this orientation isn't for a curve.
-            if (!IsBoundaryArc)
+            if (!IsDividerArc)
                 return;
 
             // Get the orientation position.
-            IPosition oripos = m_Boundary.GetOrient(m_IsStart, orilen);
+            IPosition oripos = m_Divider.LineGeometry.GetOrient(m_IsStart, orilen);
 
             // And set the orientation info.
             SetOrient(oripos);
@@ -259,11 +251,11 @@ namespace Backsight.Editor
         /// <param name="orient">The orientation position.</param>
         void SetOrient(IPosition orient)
         {
-        	if (m_Boundary==null)
+        	if (m_Divider==null)
                 return;
 
-            // Get the position of the point that the boundary meets.
-            IPointGeometry loc = (m_IsStart ? m_Boundary.Start : m_Boundary.End);
+            // Get the position of the point that the divider meets.
+            IPointGeometry loc = (m_IsStart ? m_Divider.From : m_Divider.To);
 
 	        // Figure out the deltas of the orientation point with respect to the point.
 	        double dx = orient.X - loc.X;

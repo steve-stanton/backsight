@@ -40,6 +40,7 @@ namespace Backsight.Editor.Forms
 
         private void NtxImportForm_Shown(object sender, EventArgs e)
         {
+            statusStrip.Visible = false;
             string fileName = Settings.Default.FeatureCodeTranslation;
             if (File.Exists(fileName))
                 translationTextBox.Text = fileName;
@@ -94,10 +95,14 @@ namespace Backsight.Editor.Forms
                 m_Translator.Load(translationFile);
             }
 
+            ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
+
             try
             {
+                statusStrip.Visible = true;
                 loadButton.Enabled = false;
                 closeButton.Enabled = false;
+                Trace.Listeners.Add(trace);
                 LoadNtx(ntxFile);
             }
 
@@ -108,8 +113,16 @@ namespace Backsight.Editor.Forms
 
             finally
             {
+                Trace.Listeners.Remove(trace);
+                statusStrip.Visible = false;
                 closeButton.Enabled = true;
             }
+        }
+
+        void ShowLoadProgress(string msg)
+        {
+            loadProgressLabel.Text = msg;
+            statusStrip.Refresh();
         }
 
         void LoadNtx(string ntxFile)
@@ -128,6 +141,7 @@ namespace Backsight.Editor.Forms
 
             // Test building topology
             CadastralMapModel.Current.CleanEdit();
+            Trace.Write("Map model updates completed");
 
             // Re-assigning the current model has the desired effect of causing
             // an overview display...

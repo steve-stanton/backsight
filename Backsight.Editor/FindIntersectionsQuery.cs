@@ -89,6 +89,7 @@ namespace Backsight.Editor
                 return true;
 
             // Search for intersections
+            // ...at this stage, should it be intersecting with dividers?
             IntersectionResult other = new IntersectionResult(f);
             m_Line.Intersect(other);
 

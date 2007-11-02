@@ -63,6 +63,7 @@ namespace Backsight.Editor
         internal override Feature[] LoadFeatures(string fileName, Operation creator)
         {
             // First load all point features
+            Trace.Write("Loading points");
             List<PointFeature> points = LoadPoints(fileName, creator);
             m_Result.AddRange(points.ToArray());
 
@@ -71,10 +72,12 @@ namespace Backsight.Editor
                 m_Index.Add(p);
 
             // Load circular arcs
+            Trace.Write("Loading circular arcs");
             List<ArcFeature> arcs = LoadArcs(fileName, creator);
             m_Result.AddRange(arcs.ToArray());
 
             // Now load everything except points
+            Trace.Write("Loading data");
             Ntx.File file = new Ntx.File();
 
             try
@@ -97,6 +100,9 @@ namespace Backsight.Editor
                         m_Result.Add(f);
                 }
 
+                // Mark all features as moved, so they will be intersected against the map model
+                SetMoved(m_Result);
+
                 return m_Result.ToArray();
             }
 
@@ -104,6 +110,12 @@ namespace Backsight.Editor
             {
                 file.Close();
             }
+        }
+
+        void SetMoved(List<Feature> features)
+        {
+            foreach (Feature f in features)
+                f.IsMoved = true;
         }
 
         /// <summary>

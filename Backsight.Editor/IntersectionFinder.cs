@@ -31,7 +31,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The thing being intersected
         /// </summary>
-	    LineGeometry m_Line;
+	    IIntersectable m_Line;
 
         /// <summary>
         /// The things that are intersected
@@ -57,7 +57,7 @@ namespace Backsight.Editor
         /// <param name="line">The primitive being intersected.</param>
         /// <param name="wantEndEnd">Should end-to-end intersections (simple ones) be included
         /// in the results. Default=TRUE.</param>
-        internal IntersectionFinder(LineGeometry line, bool wantEndEnd)
+        internal IntersectionFinder(IIntersectable line, bool wantEndEnd)
         {
             m_Line = line;
             Load(wantEndEnd);
@@ -94,13 +94,15 @@ namespace Backsight.Editor
             get { return m_Intersects; }
         }
 
+        /*
         /// <summary>
         /// The thing being intersected
         /// </summary>
         internal ILineGeometry Geometry
         {
-            get { return m_Line; }
+            get { return m_Line.LineGeometry; }
         }
+        */
 
         /// <summary>
         /// Loads all intersections with this object. This is called by each constructor.
@@ -110,7 +112,7 @@ namespace Backsight.Editor
         void Load(bool wantEndEnd)
         {
             ISpatialIndex index = CadastralMapModel.Current.Index;
-            m_Intersects = new FindIntersectionsQuery(index, m_Line, wantEndEnd).Result;
+            m_Intersects = new FindIntersectionsQuery(index, m_Line.LineGeometry, wantEndEnd).Result;
 
         }
         /*
@@ -197,7 +199,7 @@ namespace Backsight.Editor
 
                 foreach(IntersectionResult r in m_Intersects)
                 {
-                    if (r.IsSplitOn(m_Line))
+                    if (r.IsSplitOn(m_Line.LineGeometry))
                         return true;
                 }
 
@@ -211,28 +213,23 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="splitter">The line that is causing the split (the same as a call to <c>this.Line</c>).</param>
         /// <param name="retrims">List of intersected lines that will need to be retrimmed.</param>
-        /*
-        void SplitX(LineFeature splitter, List<LineFeature> retrims)
+        internal void SplitX(LineFeature splitter, List<LineFeature> retrims)
         {
-            Debug.Assert(Object.ReferenceEquals(m_Line, splitter));
+            Debug.Assert(Object.ReferenceEquals(m_Line, splitter.LineGeometry));
 
-	        // Return if no intersections.
-	        if (m_Intersects.Count==0)
+            // Return if no intersections.
+            if (m_Intersects.Count==0)
                 return;
 
-	        // Cut up the things that were intersected, making grazing
+            // Cut up the things that were intersected, making grazing
 	        // portions non-topological.
             foreach (IntersectionResult r in m_Intersects)
-            {
                 r.SplitX(retrims);
-	        }
 
-	        // Combine the results and get the splitter to cut itself up.
-            IntersectionResult xres = new IntersectionResult(this);
-	        //splitter.Split(xres);
-            throw new NotImplementedException();
+            // Combine the results and get the splitter to cut itself up.
+            IntersectionResult xres = new IntersectionResult(splitter, this);
+            splitter.Split(xres);
         }
-         */
 
         /// <summary>
         /// Draws intersections on the specified display

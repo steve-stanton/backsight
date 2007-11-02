@@ -31,10 +31,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// Spatial index of all defined circles (instances of <see "Circle"/>). The
-        /// only spatial type that this index will contain is <see "SpatialType.Line"/>
+        /// Spatial index of all extra stuff that is required for the cadastral editor.
+        /// This consists of lines representing circles (instances of <see cref="Circle"/>), and
+        /// points representing line intersections (instances of <see cref="Intersection"/>).
         /// </summary>
-        readonly SpatialIndex m_Circles;
+        readonly SpatialIndex m_ExtraData;
 
         #endregion
 
@@ -45,7 +46,7 @@ namespace Backsight.Editor
         /// </summary>
         internal CadastralIndex()
         {
-            m_Circles = new SpatialIndex();
+            m_ExtraData = new SpatialIndex();
         }
 
         #endregion
@@ -57,7 +58,7 @@ namespace Backsight.Editor
         internal void AddCircle(Circle c)
         {
             Debug.Assert(c.SpatialType==SpatialType.Line);
-            m_Circles.Add(c);
+            m_ExtraData.Add(c);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Backsight.Editor
         /// <returns>The circle closest to the search position (null if nothing found)</returns>
         internal Circle QueryClosestCircle(IPosition p, ILength tol)
         {
-            ISpatialObject so = m_Circles.QueryClosest(p, tol, SpatialType.Line);
+            ISpatialObject so = m_ExtraData.QueryClosest(p, tol, SpatialType.Line);
             if (so==null)
                 return null;
 
@@ -95,7 +96,38 @@ namespace Backsight.Editor
         /// <param name="itemHandler">Delegate for processing each query hit</param>
         internal void FindCircles(IWindow extent, ProcessItem itemHandler)
         {
-            m_Circles.QueryWindow(extent, SpatialType.Line, itemHandler);
+            m_ExtraData.QueryWindow(extent, SpatialType.Line, itemHandler);
+        }
+
+        /// <summary>
+        /// Attempts to find a location that can act as a terminal for a polygon boundary.
+        /// This either refers to a user-perceived point feature, or an intersection
+        /// point (as added via a prior call to <see cref="AddIntersection"/>).
+        /// </summary>
+        /// <param name="p">The position of interest</param>
+        /// <remarks>The corresponding terminal (null if nothing found). This should either
+        /// be an instance of <see cref="PointFeature"/> or <see cref="Intersection"/>.</remarks>
+        internal ITerminal FindTerminal(IPointGeometry p)
+        {
+            // Search the base index for a real point feature
+            PointFeature pf = (base.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+            if (pf!=null)
+                return pf;
+
+            // Search for an intersection
+            return (m_ExtraData.QueryClosest(p, Length.Zero, SpatialType.Point) as Intersection);
+        }
+
+        /// <summary>
+        /// Includes an intersection in this index.
+        /// </summary>
+        /// <param name="x">The intersection to add to the index (and sets the 
+        /// <see cref="Intersection.Indexed"/> property to true)
+        /// </param>
+        internal void AddIntersection(Intersection x)
+        {
+            m_ExtraData.Add(x);
+            x.IsIndexed = true;
         }
     }
 }

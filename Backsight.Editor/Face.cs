@@ -19,17 +19,17 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="16-MAY-1999" />
     /// <summary>
-    ///	A polygon boundary that is associated with a facing direction. This is a transient
+    ///	A polygon ring divider that is associated with a facing direction. This is a transient
     ///	class that is utilized when a new polygon is being created.
     /// </summary>
-    class BoundaryFace : IEquatable<BoundaryFace>
+    class Face : IEquatable<Face>
     {
         #region Class data
 
         /// <summary>
-        /// What boundary?
+        /// What divider?
         /// </summary>
-        readonly Boundary m_Boundary;
+        readonly IDivider m_Divider;
 
         /// <summary>
         /// Is it facing left?
@@ -41,34 +41,26 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
-        /// Creates a new <c>BoundaryFace</c>
+        /// Creates a new <c>Face</c> for the specified divider.
         /// </summary>
-        internal BoundaryFace(Boundary b, bool isLeft)
+        internal Face(IDivider d, bool isLeft)
         {
-            m_Boundary = b;
+            m_Divider = d;
             m_IsLeft = isLeft;
         }
 
         #endregion
 
-        /*
-        public bool Equals(BoundaryFace that)
-        {
-            return (that.m_Boundary==this.m_Boundary && that.m_IsLeft==this.m_IsLeft);
-        }
-        */
-
         /// <summary>
-        /// The boundary involved.
+        /// The divider involved.
         /// </summary>
-        internal Boundary Boundary
+        internal IDivider Divider
         {
-            get { return m_Boundary; }
+            get { return m_Divider; }
         }
 
         /// <summary>
-        /// Is the polygon involved to the left of the boundary?
+        /// Is the polygon involved to the left of the divider?
         /// </summary>
         internal bool IsLeft
         {
@@ -109,11 +101,11 @@ namespace Backsight.Editor
          */
 
 
-        #region IEquatable<BoundaryFace> Members
+        #region IEquatable<Face> Members
 
-        public bool Equals(BoundaryFace that)
+        public bool Equals(Face that)
         {
-            return (Object.ReferenceEquals(this.m_Boundary, that.m_Boundary) && this.m_IsLeft==that.m_IsLeft);
+            return (Object.ReferenceEquals(this.m_Divider, that.m_Divider) && this.m_IsLeft==that.m_IsLeft);
         }
 
         #endregion

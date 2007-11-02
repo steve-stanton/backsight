@@ -16,50 +16,54 @@
 using System;
 using System.Collections.Generic;
 
-using Backsight.Geometry;
-
 namespace Backsight.Editor
 {
-    /// <written by="Steve Stanton" on="23-OCT-2007" />
+    /// <written by="Steve Stanton" on="29-OCT-2007" />
     /// <summary>
-    /// Dumb implementation of <see cref="ITerminal"/> that has no incident polygon dividers.
+    /// Topology for a line that seperates a pair of polygons.
     /// </summary>
-    /// <remarks>This class exists only because I need to detect intersections while a
-    /// new line is in the process of getting added. To do that using the <c>IntersectionFinder</c>
-    /// class, I need to pass in an instance of <c>LineGeometry</c>, and to create that, I need
-    /// two instances of <c>ITerminal</c>.</remarks>
-    class Terminal : PointGeometry, ITerminal
+    /// <seealso cref="SectionDivider"/>
+    [Serializable]
+    class LineDivider : LineTopology
     {
         #region Class data
 
-        // none
+        /// <summary>
+        /// The polygon ring to the left of this divider.
+        /// </summary>
+        Ring m_Left;
+
+        /// <summary>
+        /// The polygon ring to the right of this divider.
+        /// </summary>
+        Ring m_Right;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>Terminal</c> at the specified position (rounded off to
-        /// the nearest micron)
+        /// Creates a new <c>Divider</c> that relates to the specified line.
         /// </summary>
-        /// <param name="p">The position of the terminal</param>
-        internal Terminal(IPosition p)
-            : base(p)
+        /// <param name="line">The line the topology relates to.</param>
+        internal LineDivider(LineFeature line)
+            : base(line)
         {
+            m_Left = m_Right = null;
         }
 
         #endregion
 
-        #region ITerminal Members
-
-        /// <summary>
-        /// Returns null, indicating that no polygon dividers start or end at this terminal.
-        /// </summary>
-        public IDivider[] IncidentDividers()
+        public override Ring Left // IDivider
         {
-            return null;
+            get { return m_Left; }
+            set { m_Left = value; }
         }
 
-        #endregion
+        public override Ring Right // IDivider
+        {
+            get { return m_Right; }
+            set { m_Right = value; }
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="21-AUG-2007" />
     /// <summary>
-    /// A series of connected boundaries, forming the edge of a polygon.
+    /// A series of connected dividers, forming the edge of a polygon.
     /// </summary>
     [Serializable]
     abstract class Ring : RingMetrics, ISpatialObject
@@ -34,8 +34,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>Ring</c> that's either a <see cref="Polygon"/> or an <see cref="Island"/>.
         /// </summary>
-        /// <param name="edge">The boundaries that define the perimeter of the ring</param>
-        internal static Ring Create(List<BoundaryFace> edge)
+        /// <param name="edge">The faces that define the perimeter of the ring</param>
+        internal static Ring Create(List<Face> edge)
         {
             RingMetrics rm = new RingMetrics(edge);
 
@@ -50,9 +50,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The boundaries defining the edge of the ring.
+        /// The dividers defining the edge of the ring.
         /// </summary>
-        readonly Boundary[] m_Edge;
+        readonly IDivider[] m_Edge;
 
         /// <summary>
         /// Flag bits
@@ -71,32 +71,32 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor used by <c>Ring.Create</c>.
         /// </summary>
-        /// <param name="edge">The boundaries that define the perimeter of the ring</param>
-        protected Ring(RingMetrics metrics, List<BoundaryFace> edge)
+        /// <param name="edge">The dividers that define the perimeter of the ring</param>
+        protected Ring(RingMetrics metrics, List<Face> edge)
             : base(metrics)
         {
             s_TotalRing++;
             m_TestId = s_TotalRing;
 
-            m_Edge = new Boundary[edge.Count];
+            m_Edge = new IDivider[edge.Count];
             m_Flag = 0;
 
             for (int i=0; i<m_Edge.Length; i++)
             {
-                BoundaryFace face = edge[i];
-                Boundary b = face.Boundary;
+                Face face = edge[i];
+                IDivider d = face.Divider;
 
-                // Check for a boundary that's already marked as being totally built.
-                if (b.IsBuilt)
-                    throw new Exception("Polygon - Wrong build status for component boundary");
+                // Check for a divider that's already marked as being totally built.
+                if (Topology.IsBuilt(d))
+                    throw new Exception("Polygon - Wrong build status for component divider");
 
-                // Remember the boundary and update polygon geometry
-                m_Edge[i] = b;
+                // Remember the divider and update polygon geometry
+                m_Edge[i] = d;
 
                 if (face.IsLeft)
-                    b.Left = this;
+                    d.Left = this;
                 else
-                    b.Right = this;
+                    d.Right = this;
             }
         }
 
@@ -122,9 +122,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The boundaries defining the edge of the ring.
+        /// The dividers defining the edge of the ring.
         /// </summary>
-        internal Boundary[] Edge
+        internal IDivider[] Edge
         {
             get { return m_Edge; }
         }
@@ -151,12 +151,12 @@ namespace Backsight.Editor
         /// The shortest distance from the specified position to the perimeter of this ring.
         /// </summary>
         /// <param name="point">The position of interest</param>
-        /// <returns>The shortest distance to a component boundary</returns>
+        /// <returns>The shortest distance to a component divider</returns>
         public ILength Distance(IPosition point)
         {
             // I guess the sensible thing to do would be to find the shortest distance
-            // to the component boundaries. Not sure whether Polygon class would override
-            // to also consider island boundaries.
+            // to the component dividers. Not sure whether Polygon class would override
+            // to also consider island dividers.
 
             throw new Exception("The method or operation is not implemented.");
         }
@@ -228,18 +228,18 @@ namespace Backsight.Editor
             PointGeometry vs = new PointGeometry(p);
             PointGeometry ve = new PointGeometry(east);
 
-            Boundary closest = null;
+            IDivider closest = null;
 
-            // For each boundary we have in the list, locate the closest
+            // For each divider we have in the list, locate the closest
             // point of intersection with the search line.
-            foreach (Boundary b in m_Edge)
+            foreach (IDivider d in m_Edge)
             {
                 uint error;
-                if (b.GetCloser(vs, ref ve, out error))
-                    closest = b;
+                if (d.LineGeometry.GetCloser(vs, ref ve, out error))
+                    closest = d;
 
                 // Return if the vertex coincides with the closest point
-                // on the boundary (point exactly on the edge of this polygon).
+                // on the divider (point exactly on the edge of this polygon).
                 if (error!=0 || vs.IsCoincident(ve))
                     return false;
             }
@@ -248,24 +248,24 @@ namespace Backsight.Editor
             if (closest==null)
                 return false;
 
-            // Which side of the boundary does the directed line hit?
-            Boundary sideBoundary;
-            Side side = closest.GetSide(vs, ve, out sideBoundary);
+            // Which side of the divider does the directed line hit?
+            IDivider sideDivider;
+            Side side = Topology.GetSide(closest, vs, ve, out sideDivider);
 
-            // Check if we're hitting the boundary from the inside. If this
+            // Check if we're hitting the divider from the inside. If this
             // ring is an island, things are backwards.
             if (this is Island)
             {
-                if (side==Side.Right && sideBoundary.Left==this)
+                if (side==Side.Right && sideDivider.Left==this)
                     return true;
-                if (side==Side.Left && sideBoundary.Right==this)
+                if (side==Side.Left && sideDivider.Right==this)
                     return true;
             }
             else
             {
-                if (side==Side.Left && sideBoundary.Left==this)
+                if (side==Side.Left && sideDivider.Left==this)
                     return true;
-                if (side==Side.Right && sideBoundary.Right==this)
+                if (side==Side.Right && sideDivider.Right==this)
                     return true;
             }
 
@@ -311,31 +311,31 @@ namespace Backsight.Editor
         /// <param name="curvetol">Approximation tolerance for any circular arcs along
         /// the edge of the ring.</param>
         /// <param name="ring">The ring of interest that the <paramref name="edge"/> contains</param>
-        /// <param name="edge">The boundaries to consider</param>
+        /// <param name="edge">The dividers to consider</param>
         /// <returns></returns>
-        internal static IPosition[] GetOutline(ILength curvetol, Ring ring, Boundary[] edge)
+        internal static IPosition[] GetOutline(ILength curvetol, Ring ring, IDivider[] edge)
         {
             List<IPosition> pts = new List<IPosition>(1000);
 
             // When doing the 1st arc, we need to utilize the very first position
             bool isFirst = true;
 
-            // Loop through each boundary in the ring to create a list of
+            // Loop through each divider in the ring to create a list of
             // positions defining the polygon...
-            foreach (Boundary b in edge)
+            foreach (IDivider d in edge)
             {
-                // Skip boundary lines if they have the same ring on both sides. This is
-                // meant to exclude boundaries that radiate out from islands. Note that
+                // Skip divider lines if they have the same ring on both sides. This is
+                // meant to exclude dividers that radiate out from islands. Note that
                 // potential bridges towards the interior of polygons are expected to
                 // be weeded out prior to call.
-                if (b.Left==ring && b.Right==ring)
+                if (d.Left==ring && d.Right==ring)
                     continue;
 
                 // See which way the positions should be arranged.
-                bool reverse = (b.Right==ring ? false : true);
+                bool reverse = (d.Right==ring ? false : true);
 
-                // Get the geometric primitive for the boundary
-                LineGeometry line = b.GetLineGeometry();
+                // Get the geometric primitive for the divider
+                LineGeometry line = d.LineGeometry;
                 line.AppendPositions(pts, reverse, isFirst, curvetol);
                 isFirst = false;
             }
@@ -345,7 +345,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Ensures this ring is clean after some sort of edit. If this ring has been marked
-        /// for deletion, references from component boundaries will be nulled out.
+        /// for deletion, references from component dividers will be nulled out.
         /// <para/>
         /// Any override should first do it's stuff, then call this implementation.
         /// </summary>
@@ -355,14 +355,14 @@ namespace Backsight.Editor
             if (!IsDeleted)
                 return;
 
-            // Ensure component boundaries no longer refer to this ring.
-            foreach (Boundary b in m_Edge)
+            // Ensure component dividers no longer refer to this ring.
+            foreach (IDivider d in m_Edge)
             {
-                if (b.Left == this)
-                    b.Left = null;
+                if (d.Left == this)
+                    d.Left = null;
 
-                if (b.Right == this)
-                    b.Right = null;
+                if (d.Right == this)
+                    d.Right = null;
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on=20-JUL-1997" />
     /// <summary>
     /// Topological area. A polygon refers to two collections; a collection of
-    /// the <see cref="Boundary"/> objects that define the outer perimeter of the area,
+    /// the <see cref="IDivider"/> objects that define the outer perimeter of the area,
     /// and a collection of any islands that may exist within the area. Islands are also
     /// <c>Polygon</c> objects, but they always have an area less than or equal to zero.
     /// </summary>
@@ -51,7 +51,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="rm">The metrics for this polygon</param>
         /// <param name="edge">The boundaries that define the outer perimeter of the polygon</param>
-        internal Polygon(RingMetrics rm, List<BoundaryFace> edge)
+        internal Polygon(RingMetrics rm, List<Face> edge)
             : base(rm, edge)
         {
             Debug.Assert(rm.SignedArea > 0.0);
@@ -161,12 +161,14 @@ namespace Backsight.Editor
             // Refer the label to this polygon (even if this polygon doesn't end up pointing back)
             label.Container = this;
 
+            /*
             if (m_Label!=null && !Object.ReferenceEquals(m_Label, label))
             {
                 string msg = String.Format("Label {0} falls inside same polygon as label {1}",
                                                 label.ToString(), m_Label.ToString());
                 Trace.TraceWarning(msg);
             }
+            */
 
             // Associate this polygon with the supplied label, but only if this polygon
             // isn't already associated with a label.
@@ -188,9 +190,9 @@ namespace Backsight.Editor
             List<IPosition[]> outlines = new List<IPosition[]>(1+IslandCount);
 
             // Grab the fill outline for this polygon.
-            List<Boundary[]> edges = GetSimpleEdges();
-            foreach(Boundary[] ba in edges)
-                outlines.Add(GetOutline(curvetol, this, ba));
+            List<IDivider[]> edges = GetSimpleEdges();
+            foreach(IDivider[] da in edges)
+                outlines.Add(GetOutline(curvetol, this, da));
 
             // Now do any islands (but ignore any that don't overlap the display window)
             if (m_Islands!=null)
@@ -255,50 +257,50 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Returns one or more boundary arrays, excluding boundaries that act as bridges
+        /// Returns one or more divider arrays, excluding dividers that act as bridges
         /// from this polygon to areas that would otherwise be regarded as islands.
         /// </summary>
-        /// <returns>One or more boundary arrays, where every boundary has a different
+        /// <returns>One or more divider arrays, where every divider has a different
         /// polygon on right and left.</returns>
-        List<Boundary[]> GetSimpleEdges()
+        List<IDivider[]> GetSimpleEdges()
         {
             // TODO: Need to revisit this -- it doesn't cover cases where there's more than
             // one interior edge, connected by a series of bridges...
 
-            Boundary[] edge = this.Edge;
-            List<Boundary> outerEdge = new List<Boundary>(edge.Length);
-            List<Boundary> innerEdge = null;
-            Boundary startInner = null;
-            List<Boundary[]> inners = null;
+            IDivider[] edge = this.Edge;
+            List<IDivider> outerEdge = new List<IDivider>(edge.Length);
+            List<IDivider> innerEdge = null;
+            IDivider startInner = null;
+            List<IDivider[]> inners = null;
 
-            foreach (Boundary b in Edge)
+            foreach (IDivider d in Edge)
             {
                 // If we're current walking the outer edge (haven't hit a potential bridging line)...
                 if (innerEdge==null)
                 {
                     // If we've now got a potential bridging line, just remember to
-                    // drop through to the else block on the next boundary. Otherwise
-                    // remember the boundary is part of the outer edge.
-                    if (b.Left==b.Right)
+                    // drop through to the else block on the next divider. Otherwise
+                    // remember the divider is part of the outer edge.
+                    if (d.Left==d.Right)
                     {
-                        innerEdge = new List<Boundary>();
-                        startInner = b;
+                        innerEdge = new List<IDivider>();
+                        startInner = d;
                     }
                     else
-                        outerEdge.Add(b);
+                        outerEdge.Add(d);
                 }
                 else
                 {
-                    // We've been walking an interior edge. If we've now got back to the boundary
+                    // We've been walking an interior edge. If we've now got back to the divider
                     // that marked the start of the interior edge
-                    if (b==startInner)
+                    if (d==startInner)
                     {
                         // The inner edge may be empty (e.g. we might be dealing with a
                         // simple dangle into the interior of the polygon)
                         if (innerEdge.Count>0)
                         {
                             if (inners==null)
-                                inners = new List<Boundary[]>(1);
+                                inners = new List<IDivider[]>(1);
 
                             inners.Add(innerEdge.ToArray());
                         }
@@ -308,18 +310,18 @@ namespace Backsight.Editor
                     }
                     else
                     {
-                        // We're currently an interior edge. However, we only want those boundaries
+                        // We're currently an interior edge. However, we only want those dividers
                         // that have a different polygon on both sides (ignore boundaries that radiate
                         // out from the interior edge).
-                        if (b.Left!=b.Right)
-                            innerEdge.Add(b);
+                        if (d.Left!=d.Right)
+                            innerEdge.Add(d);
                     }
                 }
             }
 
             // Form the result
 
-            List<Boundary[]> result = new List<Boundary[]>();
+            List<IDivider[]> result = new List<IDivider[]>();
             if (outerEdge.Count == edge.Length)
             {
                 Debug.Assert(inners==null);
@@ -331,8 +333,8 @@ namespace Backsight.Editor
 
                 if (inners!=null)
                 {
-                    foreach (Boundary[] ba in inners)
-                        result.Add(ba);
+                    foreach (IDivider[] da in inners)
+                        result.Add(da);
                 }
             }
 
