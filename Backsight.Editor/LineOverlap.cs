@@ -72,5 +72,14 @@ namespace Backsight.Editor
             get { return null; }
             set { throw new InvalidOperationException(); }
         }
+
+        /// <summary>
+        /// Returns <c>true</c> (always), indicating that this divider represents
+        /// some sort of overlap.
+        /// </summary>
+        public override bool IsOverlap // IDivider
+        {
+            get { return true; }
+        }
     }
 }

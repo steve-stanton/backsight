@@ -94,15 +94,13 @@ namespace Backsight.Editor
             get { return m_Intersects; }
         }
 
-        /*
         /// <summary>
         /// The thing being intersected
         /// </summary>
-        internal ILineGeometry Geometry
+        internal IIntersectable Intersector
         {
-            get { return m_Line.LineGeometry; }
+            get { return m_Line; }
         }
-        */
 
         /// <summary>
         /// Loads all intersections with this object. This is called by each constructor.
@@ -208,8 +206,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Cuts up the topological arcs that are referred to by this intersection object.
-        /// This will only do something if a set of applicable layers is defined.
+        /// Cuts up the topological lines that are referred to by this intersection object.
         /// </summary>
         /// <param name="splitter">The line that is causing the split (the same as a call to <c>this.Line</c>).</param>
         /// <param name="retrims">List of intersected lines that will need to be retrimmed.</param>
@@ -224,11 +221,10 @@ namespace Backsight.Editor
             // Cut up the things that were intersected, making grazing
 	        // portions non-topological.
             foreach (IntersectionResult r in m_Intersects)
-                r.SplitX(retrims);
+                r.SplitWhereIntersected(retrims);
 
             // Combine the results and get the splitter to cut itself up.
-            IntersectionResult xres = new IntersectionResult(splitter, this);
-            splitter.Split(xres);
+            splitter.SplitAtIntersections(this);
         }
 
         /// <summary>

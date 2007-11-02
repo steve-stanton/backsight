@@ -45,7 +45,7 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        internal IntersectionResult(LineFeature line)
+        internal IntersectionResult(IIntersectable line)
         {
             m_Line = line.LineGeometry;
             m_Data = new List<IntersectionData>();
@@ -180,9 +180,9 @@ namespace Backsight.Editor
             Append(p.X, p.Y, q.X, q.Y);
         }
 
-        internal void SplitX(List<LineFeature> retrims)
+        internal void SplitWhereIntersected(List<LineFeature> retrims)
         {
-            SplitX(retrims, true);
+            SplitWhereIntersected(retrims, true);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Backsight.Editor
         /// <param name="needsort">Does data need to be sorted along the line (default=TRUE).
         /// Specify FALSE only if the intersection results were obtained via self-intersection
         /// of a multisegment</param>
-        internal void SplitX(List<LineFeature> retrims, bool needsort)
+        internal void SplitWhereIntersected(List<LineFeature> retrims, bool needsort)
         {
             // Get a list of the topological arcs that are attached to the
             // line primitive, and that have a theme that overlays the

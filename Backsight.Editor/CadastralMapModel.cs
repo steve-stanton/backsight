@@ -936,12 +936,7 @@ namespace Backsight.Editor
         void BuildPolygons()
         {
             Trace.Write("Building polygons");
-            //System.Windows.Forms.MessageBox.Show("start build");
-            //DateTime start = DateTime.Now;
             new PolygonBuilder(this).Build();
-            //DateTime end = DateTime.Now;
-            //TimeSpan ts = end-start;
-            //System.Windows.Forms.MessageBox.Show("done in "+ts.Milliseconds+" millisecs");
         }
 
         /// <summary>
@@ -966,7 +961,7 @@ namespace Backsight.Editor
                     continue;
 
                 nMove++;
-                //line.Split(trims);
+                line.Split(trims);
 
                 // If the line needs to be trimmed, add it to our list.
                 // We'll do it at the end.

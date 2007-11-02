@@ -115,5 +115,15 @@ namespace Backsight.Editor
             return String.Format("L={0} R={1}", (Left==null ? "n/a" : Left.ToString())
                                               , (Right==null ? "n/a" : Right.ToString()));
         }
+
+        /// <summary>
+        /// Implements <see cref="IDivider"/> method by returning <c>false</c>,
+        /// indicating that this topology is not involved in any sort of overlap.
+        /// The <see cref="LineOverlap"/> class overrides.
+        /// </summary>
+        public virtual bool IsOverlap
+        {
+            get { return false; }
+        }
     }
 }

@@ -48,5 +48,13 @@ namespace Backsight.Editor
         /// The polygon ring on the right of the divider (may be null)
         /// </summary>
         Ring Right { get; set; }
+
+        /// <summary>
+        /// Does this divider represent some sort of overlap? If so, the
+        /// divider is regarded only as a placeholder - the left and right polygon
+        /// rings will be null (always), and will lead to an exception on an attempt
+        /// to set them.
+        /// </summary>
+        bool IsOverlap { get; }
     }
 }
