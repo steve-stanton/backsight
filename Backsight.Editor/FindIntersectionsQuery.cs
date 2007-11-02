@@ -29,9 +29,15 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The line of interest.
+        /// The line (if any) that is being intersected. Null if raw geometry is
+        /// being intersected.
         /// </summary>
-        private readonly LineGeometry m_Line;
+        private readonly LineFeature m_Feature;
+
+        /// <summary>
+        /// The geometry to intersect
+        /// </summary>
+        private readonly LineGeometry m_Geom;
 
         /// <summary>
         /// Should lines that intersect end-to-end be included in the results?
@@ -48,29 +54,76 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>FindPointsOnLineQuery</c> (and executes it). The result of the query
+        /// Creates a new <c>FindIntersectionsQuery</c> (and executes it). The result of the query
         /// can then be obtained through the <c>Result</c> property.
+        /// <para/>
+        /// Use this constructor when intersecting something that has already been added to
+        /// the spatial index. This ensures that the line is not intersected with itself.
         /// </summary>
         /// <param name="index">The spatial index to search</param>
-        /// <param name="line">The line to intersect.</param>
+        /// <param name="line">The line feature to intersect.</param>
         /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
-        internal FindIntersectionsQuery(ISpatialIndex index, LineGeometry line, bool wantEndEnd)
+        internal FindIntersectionsQuery(ISpatialIndex index, LineFeature line, bool wantEndEnd)
         {
-            m_Line = line;
+            m_Feature = line;
+            m_Geom = GetUnsectionedLineGeometry(line.LineGeometry);
             m_WantEndEnd = wantEndEnd;
             m_Result = new List<IntersectionResult>(100);
 
+            FindIntersections(index);
+        }
+
+        /// <summary>
+        /// Creates a new <c>FindIntersectionsQuery</c> (and executes it). The result of the query
+        /// can then be obtained through the <c>Result</c> property.
+        /// <para/>
+        /// Use this constructor when intersecting with geometry that has been created ad-hoc.
+        /// Note that if you are looking to intersect a line feature (already part of
+        /// the spatial index), you should use the constructor that accepts the <c>LineFeature</c>.
+        /// </summary>
+        /// <param name="index">The spatial index to search</param>
+        /// <param name="geom">The geometry to intersect.</param>
+        /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
+        internal FindIntersectionsQuery(ISpatialIndex index, LineGeometry geom, bool wantEndEnd)
+        {
+            m_Feature = null;
+            m_Geom = GetUnsectionedLineGeometry(geom);
+            m_WantEndEnd = wantEndEnd;
+            m_Result = new List<IntersectionResult>(100);
+
+            FindIntersections(index);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Obtains line geometry that isn't an instance of <see cref="SectionGeometry"/>
+        /// </summary>
+        /// <param name="geom">The geometry that could be a section</param>
+        /// <returns>Concrete (unsectioned) geometry that corresponds to <paramref name="geom"/></returns>
+        private LineGeometry GetUnsectionedLineGeometry(LineGeometry geom)
+        {
+            if (geom is SectionGeometry)
+                return (geom as SectionGeometry).Make();
+            else
+                return geom;
+        }
+
+        /// <summary>
+        /// Detects intersections
+        /// </summary>
+        /// <param name="index">The spatial index to search</param>
+        private void FindIntersections(ISpatialIndex index)
+        {
             // Get the window of the candidate object and add on a 2mm buffer (on the ground). This is
             // intended to help cover the fact that some circular arcs may be inaccurate by that much.
-            Window searchwin = new Window(m_Line.Extent);
+            Window searchwin = new Window(m_Geom.Extent);
             ILength dim = new Length(0.002);
             searchwin.Expand(dim);
 
             index.QueryWindow(searchwin, SpatialType.Line, OnQueryHit);
             m_Result.TrimExcess();
         }
-
-        #endregion
 
         /// <summary>
         /// Delegate that's called whenever the index finds an object with an extent that
@@ -82,35 +135,31 @@ namespace Backsight.Editor
         {
             Debug.Assert(item is LineFeature);
 
-            // Ignore lines that don't have any topology
+            // Ignore if we're intersecting a line feature & the line we've found is that line
             LineFeature f = (LineFeature)item;
+            if (Object.ReferenceEquals(m_Feature, f))
+                return true;
+
+            // Ignore lines that don't have any topology
             Topology t = f.Topology;
-            if (t==null)
+            if (t == null)
                 return true;
 
             // Intersect each divider
             foreach (IDivider d in t)
             {
-                // Skip if we've got the geometry we're intersecting. This test works (should work)
-                // if you are intersecting a complete line against the map. It probably won't
-                // work if you're intersecting a section (since the geometry for the section
-                // will likely be instantiated afresh on each request) ... TODO: need to revisit
-                LineGeometry g = d.LineGeometry;
-                if (object.ReferenceEquals(m_Line, g))
-                    continue;
-
                 // Ignore divider overlaps
                 if (d.IsOverlap)
                     continue;
 
                 // Search for intersections
                 IntersectionResult other = new IntersectionResult(d);
-                m_Line.Intersect(other);
+                m_Geom.Intersect(other);
 
                 if (other.IntersectCount>0)
                 {
                     // Determine the context of each intersection.
-                    other.SetContext(m_Line);
+                    other.SetContext(m_Geom);
 
                     // If end-to-end simple intersections are not required, weed them out.
                     if (!m_WantEndEnd)

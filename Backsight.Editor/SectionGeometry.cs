@@ -91,7 +91,7 @@ namespace Backsight.Editor
         /// Creates concrete geometry that corresponds to this line section.
         /// </summary>
         /// <returns>Geometry corresponding to this section.</returns>
-        LineGeometry Make()
+        internal LineGeometry Make()
         {
             return m_Base.Section(this);
         }
