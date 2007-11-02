@@ -17,17 +17,37 @@ using System;
 
 namespace Backsight.Editor
 {
-    /// <written by="Steve Stanton" on="30-AUG-2007" />
+    /// <written by="Steve Stanton" on="02-NOV-2007" />
     /// <summary>
-    /// Something that can act as the base geometry for an instance of <see cref="SectionGeometry"/>
+    /// Line geometry that <b>cannot</b> act as the base for <see cref="SectionGeometry"/>
     /// </summary>
-    interface ISectionBase
+    abstract class UnsectionedLineGeometry : LineGeometry, ISectionBase
     {
+        #region Class data
+
+        // none
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>UnsectionedLineGeometry</c> using the supplied terminals.
+        /// </summary>
+        /// <param name="start">The start of the line.</param>
+        /// <param name="end">The end of the line.</param>
+        protected UnsectionedLineGeometry(ITerminal start, ITerminal end)
+            : base(start, end)
+        {
+        }
+
+        #endregion
+
         /// <summary>
         /// The line geometry that corresponds to a section of a line.
         /// </summary>
         /// <param name="s">The required section</param>
         /// <returns>The corresponding geometry for the section</returns>
-        UnsectionedLineGeometry Section(ISection s);
+        abstract public UnsectionedLineGeometry Section(ISection s); // ISectionBase
     }
 }
