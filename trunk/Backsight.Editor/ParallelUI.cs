@@ -250,7 +250,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Override indicates that this command performs painting. This means that the
-        /// controller will periodically call the <see "Paint"/> method (probably during
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
         /// idle time).
         /// </summary>
         internal override bool PerformsPainting

@@ -24,7 +24,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="13-JUL-1997" />
     /// <summary>
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
-    /// exist at both ends of every <see "LineFeature"/>.
+    /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
     [Serializable]
     class PointFeature : Feature, IPoint, ITerminal

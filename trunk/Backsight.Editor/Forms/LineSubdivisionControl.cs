@@ -190,7 +190,7 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Parses the distances list box. This defines <see "m_Distances"/>.
+        /// Parses the distances list box. This defines <see cref="m_Distances"/>.
         /// </summary>
         /// <returns>The total distance entered, in meters.</returns>
         /// <exception cref="Exception">If any parsing error occurred. In that case,
@@ -340,7 +340,7 @@ namespace Backsight.Editor.Forms
 
         /// <summary>
         /// Attempts to calculate the outcome of this dialog. This re-defines the
-        /// content of <see "m_Distances"/>. If any problem arises parsing distances,
+        /// content of <see cref="m_Distances"/>. If any problem arises parsing distances,
         /// it gets set to null.
         /// </summary>
         /// <returns>The calculated positions (null if something went wrong)</returns>

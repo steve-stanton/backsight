@@ -105,7 +105,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The number of internal IDs that have been generated throughout the lifetime of
-        /// this model (via calls to the <see "CreateNextInternalId"/> method).
+        /// this model (via calls to the <see cref="CreateNextInternalId"/> method).
         /// </summary>
         uint m_NumInternalIds;
 
