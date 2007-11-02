@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// A line feature.
     /// </summary>
     [Serializable]
-    class LineFeature : Feature, IFeatureDependent
+    class LineFeature : Feature, IFeatureDependent, IIntersectable
     {
         #region Class data
 
@@ -120,7 +120,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry for this line
         /// </summary>
-        internal LineGeometry LineGeometry
+        public LineGeometry LineGeometry // IIntersectable
         {
             get { return m_Geom; }
         }
@@ -707,18 +707,27 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             IntersectionFinder xsect = new IntersectionFinder(m_Geom, false);
 
             // Cut up any intersections.
-            xsect.SplitX(this, retrims);
+            //xsect.SplitX(this, retrims);
         }
 
         /// <summary>
         /// Cuts up this line at a set of intersections. This method is called only for
         /// the line that actually causes the intersections.
         /// </summary>
-        /// <param name="xres">The intersections</param>
-        internal void Split(IntersectionResult xres)
+        /// <param name="xf">The intersections for this line</param>
+        /// <exception cref="ArgumentException">If the supplied intersections do not
+        /// relate to this line.</exception>
+        internal void SplitAtIntersections(IntersectionFinder xf)
         {
             Debug.Assert(m_Topology!=null);
             Debug.Assert(m_Topology is LineTopology);
+
+            // Confirm the intersections relate to this line
+            if (!object.ReferenceEquals(this, xf.Intersector))
+                throw new ArgumentException("Attempt to split line using invalid intersection data");
+
+            // Combine the intersections
+            IntersectionResult xres = new IntersectionResult(this, xf);
 
             // If there is a graze at the start of this line, ensure
             // that all polygon incident on the start location have
@@ -742,6 +751,14 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 throw new Exception("LineFeature.Split - Line split failed");
 
             m_Topology = sections;
+        }
+
+        /// <summary>
+        /// The topology for this line (null if the line isn't currently topological).
+        /// </summary>
+        internal Topology Topology
+        {
+            get { return m_Topology; }
         }
     }
 }

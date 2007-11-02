@@ -21,7 +21,8 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="27-SEP-2007" />
     /// <summary>
-    /// Query spatial index to locate line intersections.
+    /// Query spatial index to locate line intersections. This class is used
+    /// to detect topological intersections, so it ignores plain (non-topological) lines.
     /// </summary>
     class FindIntersectionsQuery
     {
@@ -81,29 +82,43 @@ namespace Backsight.Editor
         {
             Debug.Assert(item is LineFeature);
 
+            // Ignore lines that don't have any topology
             LineFeature f = (LineFeature)item;
-            LineGeometry g = f.LineGeometry;
-
-            // Don't bother considering the line we're intersecting
-            if (object.ReferenceEquals(m_Line, g))
+            Topology t = f.Topology;
+            if (t==null)
                 return true;
 
-            // Search for intersections
-            // ...at this stage, should it be intersecting with dividers?
-            IntersectionResult other = new IntersectionResult(f);
-            m_Line.Intersect(other);
-
-            if (other.IntersectCount>0)
+            // Intersect each divider
+            foreach (IDivider d in t)
             {
-                // Determine the context of each intersection.
-                other.SetContext(m_Line);
+                // Skip if we've got the geometry we're intersecting. This test works (should work)
+                // if you are intersecting a complete line against the map. It probably won't
+                // work if you're intersecting a section (since the geometry for the section
+                // will likely be instantiated afresh on each request) ... TODO: need to revisit
+                LineGeometry g = d.LineGeometry;
+                if (object.ReferenceEquals(m_Line, g))
+                    continue;
 
-                // If end-to-end simple intersections are not required, weed them out.
-                if (!m_WantEndEnd)
-                    other.CutEndEnd();
+                // Ignore divider overlaps
+                if (d.IsOverlap)
+                    continue;
+
+                // Search for intersections
+                IntersectionResult other = new IntersectionResult(d);
+                m_Line.Intersect(other);
 
                 if (other.IntersectCount>0)
-                    m_Result.Add(other);
+                {
+                    // Determine the context of each intersection.
+                    other.SetContext(m_Line);
+
+                    // If end-to-end simple intersections are not required, weed them out.
+                    if (!m_WantEndEnd)
+                        other.CutEndEnd();
+
+                    if (other.IntersectCount>0)
+                        m_Result.Add(other);
+                }
             }
 
             return true;

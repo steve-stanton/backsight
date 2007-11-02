@@ -111,5 +111,14 @@ namespace Backsight.Editor
                 return m_Line.LineGeometry.SectionBase.Section(this);
             }
         }
+        /// <summary>
+        /// Implements <see cref="IDivider"/> method by returning <c>false</c>,
+        /// indicating that this topology is not involved in any sort of overlap.
+        /// The <see cref="SectionOverlap"/> class overrides.
+        /// </summary>
+        public virtual bool IsOverlap
+        {
+            get { return false; }
+        }
     }
 }
