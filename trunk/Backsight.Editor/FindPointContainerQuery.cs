@@ -120,29 +120,6 @@ namespace Backsight.Editor
 
             m_Result = p;
             return false;
-            /*
-	// If we did not got everything we need, maybe it's because we
-	// didn't check polygons containing islands, so do it now.
-
-	if ( !slayers.IsNull() && !ipols.IsEmpty() ) {
-
-		CeListIter iloop(&ipols);
-
-		for ( pPol = (CePolygon*)iloop.GetHead();
-			  pPol && !slayers.IsNull();
-			  pPol = (CePolygon*)iloop.GetNext() ) {
-
-			// If none of the polygon's islands enclose the vertex,
-			// append the polygon to the results.
-			if ( !pPol->IsIslandEnclosing(slayers,*this) ) {
-				encs.Append(pPol);
-				CeLayerList sub(*pPol);
-				slayers.Subtract(sub);
-			}
-		}
-	}
-
-             */
         }
 
         /// <summary>
