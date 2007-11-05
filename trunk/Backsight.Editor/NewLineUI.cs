@@ -110,7 +110,7 @@ namespace Backsight.Editor
                 CadastralMapModel map = CadastralMapModel.Current;
                 if (map.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
                 {
-                    ITerminal endTerm = new Terminal(m_End);
+                    ITerminal endTerm = new FloatingTerminal(m_End);
                     LineGeometry line = new SegmentGeometry(m_Start, endTerm);
                     IntersectionFinder xf = new IntersectionFinder(line, false);
                     xf.Render(display, style);

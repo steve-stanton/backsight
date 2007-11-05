@@ -22,13 +22,14 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="23-OCT-2007" />
     /// <summary>
-    /// Dumb implementation of <see cref="ITerminal"/> that has no incident polygon dividers.
+    /// Dumb implementation of <see cref="ITerminal"/> that has no incident polygon dividers
+    /// (i.e. it always floats in space).
     /// </summary>
     /// <remarks>This class exists only because I need to detect intersections while a
     /// new line is in the process of getting added. To do that using the <c>IntersectionFinder</c>
     /// class, I need to pass in an instance of <c>LineGeometry</c>, and to create that, I need
     /// two instances of <c>ITerminal</c>.</remarks>
-    class Terminal : PointGeometry, ITerminal
+    class FloatingTerminal : PointGeometry, ITerminal
     {
         #region Class data
 
@@ -39,11 +40,11 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>Terminal</c> at the specified position (rounded off to
+        /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
         /// the nearest micron)
         /// </summary>
         /// <param name="p">The position of the terminal</param>
-        internal Terminal(IPosition p)
+        internal FloatingTerminal(IPosition p)
             : base(p)
         {
         }
