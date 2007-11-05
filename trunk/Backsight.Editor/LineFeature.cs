@@ -704,10 +704,10 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 throw new Exception("LineFeature.Split - Line has already been split");
 
             // Intersect this line with the map (ignoring end to end intersects).
-            IntersectionFinder xsect = new IntersectionFinder(m_Geom, false);
+            IntersectionFinder xsect = new IntersectionFinder(this, false);
 
             // Cut up any intersections.
-            //xsect.SplitX(this, retrims);
+            xsect.SplitX(this, retrims);
         }
 
         /// <summary>
@@ -759,6 +759,10 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal Topology Topology
         {
             get { return m_Topology; }
+        }
+
+        public void Cut(SplitData s) // IIntersectable
+        {
         }
     }
 }

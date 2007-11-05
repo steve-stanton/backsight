@@ -88,12 +88,10 @@ namespace Backsight.Editor
 
         #endregion
 
-        /*
-        LineFeature IntersectedObject
+        internal IIntersectable IntersectedObject
         {
             get { return m_Line; }
         }
-        */
 
         internal int IntersectCount
         {
