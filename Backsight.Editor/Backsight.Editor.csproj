@@ -250,6 +250,7 @@
     <Compile Include="LineSubdivisionUI.cs" />
     <Compile Include="SectionDivider.cs" />
     <Compile Include="SectionOverlap.cs" />
+    <Compile Include="SplitData.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />

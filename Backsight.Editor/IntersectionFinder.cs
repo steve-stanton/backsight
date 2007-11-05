@@ -52,16 +52,30 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Constructor
+        /// Creates a new <c>IntersectionFinder</c> for the specified line feature.
+        /// Use this constructor when intersecting something that has already been added to
+        /// the map model. This ensures that the line is not intersected with itself.
         /// </summary>
-        /// <param name="line">The primitive being intersected.</param>
-        /// <param name="wantEndEnd">Should end-to-end intersections (simple ones) be included
-        /// in the results. Default=TRUE.</param>
-        internal IntersectionFinder(IIntersectable line, bool wantEndEnd)
+        /// <param name="line">The line feature to intersect.</param>
+        /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
+        internal IntersectionFinder(LineFeature line, bool wantEndEnd)
         {
             m_Line = line;
             ISpatialIndex index = CadastralMapModel.Current.Index;
-            m_Intersects = new FindIntersectionsQuery(index, m_Line.LineGeometry, wantEndEnd).Result;
+            m_Intersects = new FindIntersectionsQuery(index, line, wantEndEnd).Result;
+        }
+
+        /// <summary>
+        /// Creates a new <c>IntersectionFinder</c> for the specified geometry.
+        /// Use this constructor when intersecting geometry that has been created ad-hoc.
+        /// </summary>
+        /// <param name="geom">The geometry to intersect.</param>
+        /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
+        internal IntersectionFinder(LineGeometry geom, bool wantEndEnd)
+        {
+            m_Line = geom;
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            m_Intersects = new FindIntersectionsQuery(index, geom, wantEndEnd).Result;
         }
 
         #endregion
@@ -154,7 +168,11 @@ namespace Backsight.Editor
             // Cut up the things that were intersected, making grazing
 	        // portions non-topological.
             foreach (IntersectionResult r in m_Intersects)
-                r.SplitWhereIntersected(retrims);
+            {
+                SplitData sd = new SplitData(r);
+                //if (sd.RequiresRetrim)
+                //    retrims.Add(r.IntersectedObject);
+            }
 
             // Combine the results and get the splitter to cut itself up.
             splitter.SplitAtIntersections(this);
