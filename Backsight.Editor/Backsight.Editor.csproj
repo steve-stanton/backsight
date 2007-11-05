@@ -62,6 +62,7 @@
     <Compile Include="Direction.cs" />
     <Compile Include="DirectionFlags.cs" />
     <Compile Include="Face.cs" />
+    <Compile Include="FloatingTerminal.cs" />
     <Compile Include="ForwardingTraceListener.cs" />
     <Compile Include="IDivider.cs" />
     <Compile Include="LineDivider.cs" />
@@ -495,7 +496,6 @@
     <Compile Include="SimpleCommandUI.cs" />
     <Compile Include="LineTopology.cs" />
     <Compile Include="TaggedObject.cs" />
-    <Compile Include="Terminal.cs" />
     <Compile Include="TextFeature.cs" />
     <Compile Include="TextGeometry.cs" />
     <Compile Include="ThemeFacade.cs" />
