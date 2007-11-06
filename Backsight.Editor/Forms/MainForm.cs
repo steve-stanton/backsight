@@ -1540,7 +1540,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            //MessageBox.Show(action.Title);
+            TestForm test = new TestForm();
+            test.ShowDialog();
+            test.Dispose();
         }
 
         #endregion

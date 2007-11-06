@@ -614,8 +614,8 @@ namespace Backsight.Editor
             // If the reference line is a circular arc, get the curve info.
             if (line is ArcFeature)
             {
-                ICircularArcGeometry arc = (line.LineGeometry as ICircularArcGeometry);
-                ICircleGeometry circle = arc.Circle;
+                ArcFeature arc = (line as ArcFeature);
+                Circle circle = arc.Circle;
                 double radius = circle.Radius.Meters;
                 IPosition centre = circle.Center;
                 bool iscw = arc.IsClockwise;
@@ -683,11 +683,11 @@ namespace Backsight.Editor
             IPosition epos = refline.End;
 
             // If the reference line is a circular arc
-            if (refline is ICircularArcGeometry)
+            if (refline is ArcFeature)
             {
                 // Get the curve info
-                ICircularArcGeometry arc = (refline as ICircularArcGeometry);
-                ICircleGeometry circle = arc.Circle;
+                ArcFeature arc = (refline as ArcFeature);
+                Circle circle = arc.Circle;
                 double radius = circle.Radius.Meters;
                 IPosition centre = circle.Center;
                 bool iscw = arc.IsClockwise;
@@ -805,10 +805,10 @@ namespace Backsight.Editor
                 return null;
 
             // If the reference line is a circular arc, get the curve info.
-            if (line is ICircularArcGeometry)
+            if (line is ArcFeature)
             {
-                ICircularArcGeometry arc = (line as ICircularArcGeometry);
-                ICircleGeometry circle = arc.Circle;
+                ArcFeature arc = (line as ArcFeature);
+                Circle circle = arc.Circle;
                 double radius = circle.Radius.Meters;
                 IPointGeometry centre = circle.Center;
                 bool iscw = arc.IsClockwise;
@@ -891,10 +891,10 @@ namespace Backsight.Editor
                 return null;
 
         	// If the reference line is a circular arc, get the curve info.
-            if (refline is ICircularArcGeometry)
+            if (refline is ArcFeature)
             {
-                ICircularArcGeometry arc = (refline as ICircularArcGeometry);
-                ICircleGeometry circle = arc.Circle;
+                ArcFeature arc = (refline as ArcFeature);
+                Circle circle = arc.Circle;
                 double radius = circle.Radius.Meters;
                 IPointGeometry centre = circle.Center;
                 bool iscw = arc.IsClockwise;

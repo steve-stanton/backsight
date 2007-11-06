@@ -27,12 +27,5 @@ namespace Backsight.Editor
         /// The geometry involved in the intersection calculation
         /// </summary>
         LineGeometry LineGeometry { get; }
-
-        /// <summary>
-        /// Splits this intersectable at the locations noted in the supplied
-        /// intersection results.
-        /// </summary>
-        /// <param name="s">Information about the splits that need to be made.</param>
-        //void Cut(SplitData s);
     }
 }

@@ -450,12 +450,14 @@ namespace Backsight.Editor
 
                 if (x.IsGraze)
                 {
+                    throw new NotImplementedException("Topology.CreateSections");
+
                     // There are 4 sorts of graze to deal with:
                     // 1. The graze covers the complete line.
                     // 2. The graze is at the start of the line.
                     // 3. The graze is along some interior portion of the line.
                     // 4. The graze is at the end of the line.
-
+                    /*
                     // If it's a total graze, there should only be ONE intersection.
                     if (x.IsTotalGraze)
                     {
@@ -513,7 +515,7 @@ namespace Backsight.Editor
                     {
                         throw new Exception("Boundary.CreateSections - Unexpected graze");
                     }
-                     */
+                    */
                 }
                 else if (!x.IsEnd)
                 {
