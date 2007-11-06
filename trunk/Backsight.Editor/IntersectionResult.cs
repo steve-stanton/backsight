@@ -34,7 +34,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The object that is intersected.
         /// </summary>
-        IIntersectable m_Line;
+        readonly IIntersectable m_IntersectedObject;
+
+        /// <summary>
+        /// The concrete geometry obtained from the intersected object.
+        /// </summary>
+        readonly LineGeometry m_Geom;
 
         /// <summary>
         /// Intersection data.
@@ -45,20 +50,33 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        internal IntersectionResult(IIntersectable line)
+        /// <summary>
+        /// Creates a new <c>IntersectionResult</c> for the specified line. This
+        /// implementation is used when intersecting ad-hoc geometry, as well as
+        /// representing the results of intersecting a line feature with previously
+        /// existing topology.
+        /// </summary>
+        /// <param name="intersectedObject"></param>
+        internal IntersectionResult(IIntersectable intersectedObject)
         {
-            m_Line = line.LineGeometry;
+            m_IntersectedObject = intersectedObject;
+            m_Geom = intersectedObject.LineGeometry;
             m_Data = new List<IntersectionData>();
         }
 
         /// <summary>
-        /// Constructor used to combine a series of <c>IntersectResult</c> objects
+        /// Constructor used to combine a series of <c>IntersectResult</c> objects. This
+        /// implementation is used to obtain a results object for a new topological line
+        /// that has just been intersected against the map.
         /// </summary>
-        /// <param name="line">The line that was intersected</param>
+        /// <param name="intersectedObject">The topological line that was intersected</param>
         /// <param name="xsect">The result of intersecting the line with the map</param>
-        internal IntersectionResult(LineFeature line, IntersectionFinder xsect)
+        internal IntersectionResult(LineTopology intersectedObject, IntersectionFinder xsect)
         {
-            m_Line = line.LineGeometry;
+            Debug.Assert(xsect.Intersector == intersectedObject.Line);
+
+            m_IntersectedObject = intersectedObject;
+            m_Geom = intersectedObject.LineGeometry;
             m_Data = null;
 
             // Get the total number of intersections that were found (there's one
@@ -90,7 +108,7 @@ namespace Backsight.Editor
 
         internal IIntersectable IntersectedObject
         {
-            get { return m_Line; }
+            get { return m_IntersectedObject; }
         }
 
         internal int IntersectCount
@@ -108,14 +126,14 @@ namespace Backsight.Editor
         {
             ILength r = new Length(radius);
             ICircleGeometry circle = new CircleGeometry(center, r);
-            return m_Line.LineGeometry.IntersectCircle(this, circle);
+            return m_IntersectedObject.LineGeometry.IntersectCircle(this, circle);
         }
 
         // Segment
         internal uint Intersect(IPointGeometry start, IPointGeometry end)
         {
             ILineSegmentGeometry seg = new LineSegmentGeometry(start, end);
-            return m_Line.LineGeometry.IntersectSegment(this, seg);
+            return m_IntersectedObject.LineGeometry.IntersectSegment(this, seg);
         }
         /*
         // Multisegment
@@ -379,7 +397,7 @@ namespace Backsight.Editor
             // Assign sort values to each intersection.
             if (setsort)
             {
-                m_Line.LineGeometry.SetSortValues(m_Data);
+                m_IntersectedObject.LineGeometry.SetSortValues(m_Data);
             }
 
             m_Data.Sort(delegate(IntersectionData a, IntersectionData b)
@@ -505,7 +523,7 @@ namespace Backsight.Editor
             // lines, figure out the relationship to the supplied line.
             foreach (IntersectionData d in m_Data)
             {
-                d.SetContext(m_Line.LineGeometry, line);
+                d.SetContext(m_IntersectedObject.LineGeometry, line);
             }
 
             return true;
@@ -551,7 +569,7 @@ namespace Backsight.Editor
 	        this.Sort(true);
 
             // Ensure context is set properly.
-	        SetContext(m_Line.LineGeometry);
+	        SetContext(m_IntersectedObject.LineGeometry);
 
             // Null out any consecutive duplicates, as well as intersections
 	        // at the end of the line.
@@ -621,17 +639,17 @@ namespace Backsight.Editor
 
         internal uint IntersectSegment(ILineSegmentGeometry seg)
         {
-            return m_Line.LineGeometry.IntersectSegment(this, seg);
+            return m_IntersectedObject.LineGeometry.IntersectSegment(this, seg);
         }
 
         internal uint IntersectArc(ICircularArcGeometry arc)
         {
-            return m_Line.LineGeometry.IntersectArc(this, arc);
+            return m_IntersectedObject.LineGeometry.IntersectArc(this, arc);
         }
 
         internal uint IntersectMultiSegment(IMultiSegmentGeometry line)
         {
-            return m_Line.LineGeometry.IntersectMultiSegment(this, line);
+            return m_IntersectedObject.LineGeometry.IntersectMultiSegment(this, line);
         }
 
         /// <summary>

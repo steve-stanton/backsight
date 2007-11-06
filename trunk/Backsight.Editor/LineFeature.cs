@@ -727,7 +727,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 throw new ArgumentException("Attempt to split line using invalid intersection data");
 
             // Combine the intersections
-            IntersectionResult xres = new IntersectionResult(this, xf);
+            IntersectionResult xres = new IntersectionResult((LineTopology)m_Topology, xf);
 
             // If there is a graze at the start of this line, ensure
             // that all polygon incident on the start location have
@@ -759,10 +759,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal Topology Topology
         {
             get { return m_Topology; }
-        }
-
-        public void Cut(SplitData s) // IIntersectable
-        {
         }
     }
 }

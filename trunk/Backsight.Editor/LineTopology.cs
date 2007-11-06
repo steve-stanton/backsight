@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// </summary>
     /// <seealso cref="SectionTopology"/>
     [Serializable]
-    abstract class LineTopology : Topology, IIntersectable, IDivider
+    abstract class LineTopology : Topology, IDivider
     {
         #region Class data
 
@@ -124,6 +124,11 @@ namespace Backsight.Editor
         public virtual bool IsOverlap
         {
             get { return false; }
+        }
+
+        public void Cut(SplitData s) // IDivider
+        {
+            throw new NotImplementedException("LineTopology.Cut");
         }
     }
 }

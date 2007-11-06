@@ -151,7 +151,7 @@ namespace Backsight.Editor
             // Intersect each divider
             foreach (IDivider d in t)
             {
-                // Ignore divider overlaps
+                // Ignore divider overlaps (regarded as non-topological)
                 if (d.IsOverlap)
                     continue;
 
