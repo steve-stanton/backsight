@@ -37,7 +37,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry to intersect
         /// </summary>
-        private readonly LineGeometry m_Geom;
+        private readonly UnsectionedLineGeometry m_Geom;
 
         /// <summary>
         /// Should lines that intersect end-to-end be included in the results?
@@ -101,12 +101,15 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="geom">The geometry that could be a section</param>
         /// <returns>Concrete (unsectioned) geometry that corresponds to <paramref name="geom"/></returns>
-        private LineGeometry GetUnsectionedLineGeometry(LineGeometry geom)
+        private UnsectionedLineGeometry GetUnsectionedLineGeometry(LineGeometry geom)
         {
+            if (geom is UnsectionedLineGeometry)
+                return (geom as UnsectionedLineGeometry);
+
             if (geom is SectionGeometry)
                 return (geom as SectionGeometry).Make();
-            else
-                return geom;
+
+            throw new NotImplementedException("Unexpected line geometry: "+geom.GetType().Name);
         }
 
         /// <summary>
