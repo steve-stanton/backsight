@@ -450,9 +450,6 @@ namespace Backsight.Editor
 
                 if (x.IsGraze)
                 {
-                    throw new NotImplementedException();
-
-                    /*
                     // There are 4 sorts of graze to deal with:
                     // 1. The graze covers the complete line.
                     // 2. The graze is at the start of the line.
@@ -464,14 +461,14 @@ namespace Backsight.Editor
                     {
                         Debug.Assert(data.Count==1);
                         if (data.Count!=1)
-                            throw new Exception("Boundary.CreateSections - Multiple overlaps detected");
+                            throw new Exception("Topology.CreateSections - Multiple overlaps detected");
 
                         // Mark all polygons incident on the terminals.
                         Start.MarkPolygons();
                         End.MarkPolygons();
 
                         // If the graze is total make a non-topological section.
-                        bs = CreateOverlap(); // why bother?
+                        bs = new LineOverlap(m_Line);
                     }
                     else if (x.IsStartGraze)
                     {
