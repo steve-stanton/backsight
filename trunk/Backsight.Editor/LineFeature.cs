@@ -698,39 +698,39 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (!IsTopological)
                 return;
 
-            // Should NEVER something that already has more than one section
-            // (they should have been removed if the line was moved).
-            if (m_Topology is SectionTopologyList)
-                throw new Exception("LineFeature.Split - Line has already been split");
+            // This method should only be called for complete lines (with no pre-existing
+            // topological sections)
+            if (!(m_Topology is LineTopology))
+                throw new Exception("LineFeature.Split - Line is associated with the wrong type of topology");
+            LineTopology lineTop = (LineTopology)m_Topology;
 
             // Intersect this line with the map (ignoring end to end intersects).
-            IntersectionFinder xsect = new IntersectionFinder(this, false);
+            IntersectionFinder xf = new IntersectionFinder(this, false);
 
-            // Cut up any intersections.
-            xsect.SplitX(this, retrims);
-        }
+            // Return if no intersections.
+            IList<IntersectionResult> intersectedDividers = xf.Intersections;
+            if (intersectedDividers.Count==0)
+                return;
 
-        /// <summary>
-        /// Cuts up this line at a set of intersections. This method is called only for
-        /// the line that actually causes the intersections.
-        /// </summary>
-        /// <param name="xf">The intersections for this line</param>
-        /// <exception cref="ArgumentException">If the supplied intersections do not
-        /// relate to this line.</exception>
-        internal void SplitAtIntersections(IntersectionFinder xf)
-        {
-            Debug.Assert(m_Topology!=null);
-            Debug.Assert(m_Topology is LineTopology);
+            // Cut up the things that were intersected, making grazing portions non-topological.
+            // Each result object should be associated with an IDivider.
+            foreach (IntersectionResult r in intersectedDividers)
+            {
+                IIntersectable ir = r.IntersectedObject;
+                Debug.Assert(ir is IDivider);
+                IDivider div = (IDivider)ir;
+                SplitData sd = new SplitData(r);
+                div.Cut(sd);
 
-            // Confirm the intersections relate to this line
-            if (!object.ReferenceEquals(this, xf.Intersector))
-                throw new ArgumentException("Attempt to split line using invalid intersection data");
+                if (sd.RequiresRetrim)
+                    retrims.Add(div.Line);
+            }
 
-            // Combine the intersections
-            IntersectionResult xres = new IntersectionResult((LineTopology)m_Topology, xf);
+            // Combine the results and get the splitter to cut itself up.
+            IntersectionResult xres = new IntersectionResult(lineTop, xf);
 
             // If there is a graze at the start of this line, ensure
-            // that all polygon incident on the start location have
+            // that all polygons incident on the start location have
             // been marked for deletion. Same for the end.
             if (xres.IsStartGrazing)
                 StartPoint.MarkPolygons();
@@ -746,11 +746,11 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
 
             // Create divider sections. We should make at least ONE split.
-            Topology sections = m_Topology.CreateSections(xres);
-            if (sections==null)
-                throw new Exception("LineFeature.Split - Line split failed");
+            SplitData splitData = new SplitData(xres);
+            lineTop.Cut(splitData);
 
-            m_Topology = sections;
+            if (splitData.RequiresRetrim)
+                retrims.Add(this);
         }
 
         /// <summary>
@@ -759,6 +759,20 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal Topology Topology
         {
             get { return m_Topology; }
+        }
+
+        /// <summary>
+        /// Replaces the topology associated with this line. This gets called when the
+        /// topology is getting cut up at intersections.
+        /// </summary>
+        /// <param name="oldTop">The topology that's being replaced</param>
+        /// <param name="newTop">The new topology to assign</param>
+        internal void ReplaceTopology(Topology oldTop, Topology newTop)
+        {
+            if (Object.ReferenceEquals(oldTop, m_Topology))
+                m_Topology = newTop;
+            else
+                m_Topology.ReplaceTopology(oldTop, newTop);
         }
     }
 }

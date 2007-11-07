@@ -153,32 +153,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Cuts up the topological lines that are referred to by this intersection object.
-        /// </summary>
-        /// <param name="splitter">The line that is causing the split (the same as a call to <c>this.Line</c>).</param>
-        /// <param name="retrims">List of intersected lines that will need to be retrimmed.</param>
-        internal void SplitX(LineFeature splitter, List<LineFeature> retrims)
-        {
-            Debug.Assert(Object.ReferenceEquals(m_Line, splitter.LineGeometry));
-
-            // Return if no intersections.
-            if (m_Intersects.Count==0)
-                return;
-
-            // Cut up the things that were intersected, making grazing
-	        // portions non-topological.
-            foreach (IntersectionResult r in m_Intersects)
-            {
-                SplitData sd = new SplitData(r);
-                //if (sd.RequiresRetrim)
-                //    retrims.Add(r.IntersectedObject);
-            }
-
-            // Combine the results and get the splitter to cut itself up.
-            splitter.SplitAtIntersections(this);
-        }
-
-        /// <summary>
         /// Draws intersections on the specified display
         /// </summary>
         /// <param name="display">The display to draw to</param>

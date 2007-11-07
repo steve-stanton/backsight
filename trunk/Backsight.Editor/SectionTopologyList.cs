@@ -30,7 +30,9 @@ namespace Backsight.Editor
         /// <summary>
         /// The topological sections for a line, ordered along the line such that
         /// the tail terminal of each section is the same as the head terminal of
-        /// the next section.
+        /// the next section. In normal situations, each divider will be an instance of
+        /// <see cref="SectionDivider"/>. However, in situations where topological lines
+        /// overlap, a divider may actually be an instance of <see cref="SectionOverlap"/>
         /// <para/>
         /// Each section must refer to the same <c>LineFeature</c> as the instance
         /// of <c>SectionTopologyList</c> that contains it.
@@ -112,6 +114,24 @@ namespace Backsight.Editor
         public override string  ToString()
         {
             return "(more than one boundary section)";
+        }
+
+        /// <summary>
+        /// Replaces topology associated with this instance. This gets called when the
+        /// topology is getting cut up at intersections.
+        /// </summary>
+        /// <param name="oldDivider">The divider that's being replaced</param>
+        /// <param name="newDividers">The dividers to insert in place of <paramref name="oldDivider"/></param>
+        /// <exception cref="ArgumentException">If <paramref name="oldDivider"/> is not
+        /// part of this list</exception>
+        internal void ReplaceDivider(IDivider oldDivider, List<IDivider> newDividers)
+        {
+            int index = m_Sections.IndexOf(oldDivider);
+            if (index<0)
+                throw new ArgumentException("SectionTopologyList.ReplaceDivider - Cannot locate topological section");
+
+            m_Sections.RemoveAt(index);
+            m_Sections.InsertRange(index, newDividers);
         }
     }
 }
