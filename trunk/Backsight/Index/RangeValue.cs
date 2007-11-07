@@ -50,7 +50,6 @@ namespace Backsight.Index
         /// <param name="d">The positional dimension the range refers to</param>
         /// <param name="a">One end of the range (either the min or the max)</param>
         /// <param name="b">The other end of the range (either the min or the max)</param>
-        //internal Range(Dimension d, ulong a, ulong b)
         internal RangeValue(Dimension d, ulong a, ulong b)
         {
             m_Dimension = d;

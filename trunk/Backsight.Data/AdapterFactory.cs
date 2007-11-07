@@ -40,8 +40,7 @@ namespace Backsight.Data
         /// Creates a new adapter and associates it with a database connection (<see>GetSqlConnection</see>)
         /// </summary>
         /// <typeparam name="T">The type of adapter to create</typeparam>
-        /// <returns>The newly created adapter (or null if an exception was logged to
-        /// the trace file)</returns>
+        /// <returns>The newly created adapter</returns>
         public static T Create<T>() where T : new()
         {
             return Create<T>(GetConnection().Value);

@@ -263,5 +263,12 @@ namespace Backsight.Editor
             foreach (IDivider d in da)
                 Topology.MarkPolygons(d);
         }
+
+        public void AddDivider(SectionDivider d) // ITerminal
+        {
+            // Do nothing. The point refers to the line the divider associated with.
+            // This method does something only when dealing with terminals that are
+            // instances of Intersection.
+        }
     }
 }

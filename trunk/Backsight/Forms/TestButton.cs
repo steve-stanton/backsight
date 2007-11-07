@@ -22,9 +22,9 @@ namespace Backsight.Forms
                 base.OnPaint(pe);
             else
             {
-                if (m_GrayImage==null && BackgroundImage!=null)
+                if (m_GrayImage==null)
                 {
-                    //Bitmap bm = new Bitmap(Width, Height, PixelFormat.Format32bppArgb); //pe.Graphics);
+                    //Bitmap bm = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
                     //Bitmap bm = new Bitmap(Width, Height);
                     //DrawToBitmap(bm, new Rectangle(0, 0, bm.Width, bm.Height));
                     Bitmap bm = new Bitmap(BackgroundImage);

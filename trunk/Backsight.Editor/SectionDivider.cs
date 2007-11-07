@@ -52,6 +52,9 @@ namespace Backsight.Editor
             : base(line, from, to)
         {
             m_Left = m_Right = null;
+
+            from.AddDivider(this);
+            to.AddDivider(this);
         }
 
         #endregion

@@ -28,7 +28,13 @@ namespace Backsight.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // TestButton
+            // 
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ResumeLayout(false);
+
         }
 
         #endregion
