@@ -35,6 +35,6 @@ namespace Backsight.Editor
         /// Go through each divider that is incident on this terminal, marking adjacent
         /// polygons for deletion.
         /// </summary>
-        //void MarkPolygons();
+        void MarkPolygons();
     }
 }

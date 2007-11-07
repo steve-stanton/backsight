@@ -48,11 +48,17 @@ namespace Backsight.Editor
         {
             m_Intersections = xres;
             m_RequiresRetrim = false;
-
-            //xres.IntersectedObject.Cut(this);
         }
 
         #endregion
+
+        /// <summary>
+        /// The locations where intersections have been detected
+        /// </summary>
+        internal IntersectionResult Intersections
+        {
+            get { return m_Intersections; }
+        }
 
         /// <summary>
         /// Has a split occurred on the invisible portion of a trimmed line?

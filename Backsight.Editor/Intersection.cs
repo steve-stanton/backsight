@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// An intersection of two or more lines.
     /// </summary>
     [Serializable]
-    class Intersection : PointGeometry, ITerminal, ISpatialObject
+    class Intersection : PointGeometry, ITerminal, IPoint
     {
         #region Class data
 
@@ -132,6 +132,14 @@ namespace Backsight.Editor
         {
             get { return IsFlagSet(IntersectionFlag.Indexed); }
             set { SetFlag(IntersectionFlag.Indexed, value); }
+        }
+
+        /// <summary>
+        /// The geometry for this point is <c>this</c>
+        /// </summary>
+        public new IPointGeometry PointGeometry // IPoint
+        {
+            get { return this; }
         }
     }
 }

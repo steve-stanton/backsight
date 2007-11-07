@@ -19,7 +19,11 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="30-OCT-2007" />
     /// <summary>
-    /// Something that divides a pair of polygon rings.
+    /// An <c>IDivider</c> is a line (or a portion of a line) that divides in two senses:
+    /// 1. It divides a pair of polygon rings.
+    /// 2. It is capable of dividing itself at a series of intersections.
+    /// <para/>
+    /// Implemented by <see cref="LineTopology"/> and <see cref="SectionTopology"/>
     /// </summary>
     interface IDivider : IIntersectable
     {

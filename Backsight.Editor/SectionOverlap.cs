@@ -26,8 +26,10 @@ namespace Backsight.Editor
     /// lead to an exception).
     /// <para/>
     /// This class does not currently hold any information about the lines that are
-    /// overlapped. It is assumed that the necessary information can be readily obtained
-    /// by searching the map model for the overlaps.
+    /// overlapped (since we may be dealing with complicated overlap scenarios, it is
+    /// not immediately evident what sort of object model would be needed). If anything
+    /// needs the information, it is assumed that the necessary information can be readily
+    /// obtained by searching the map model for the overlaps.
     /// </summary>
     /// <seealso cref="LineOverlap"/>
     [Serializable]
@@ -44,8 +46,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>SectionOverlap</c> that relates to a section of the specified line.
         /// </summary>
-        /// <param name="line">The line the overlap topology is for (<b>not</b>
-        /// the line that is overlapped)</param>
+        /// <param name="line">The line the overlap topology is for (this is <b>not</b>
+        /// the line that is overlapped by this section)</param>
         /// <param name="from">The start position for the section.</param>
         /// <param name="to">The end position for the section.</param>
         internal SectionOverlap(LineFeature line, ITerminal from, ITerminal to)

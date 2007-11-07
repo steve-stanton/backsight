@@ -14,6 +14,8 @@
 /// </remarks>
 
 using System;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -121,9 +123,140 @@ namespace Backsight.Editor
             get { return false; }
         }
 
+        /// <summary>
+        /// Splits this divider at the locations noted in the supplied data
+        /// </summary>
+        /// <param name="s">Information about the splits that need to be made.</param>
         public void Cut(SplitData s) // IDivider
         {
-            throw new NotImplementedException("SectionTopology.Cut");
+            Debug.Assert(!(this is SectionOverlap)); // diff
+
+            // Return if nothing to do
+            IntersectionResult xres = s.Intersections;
+            Debug.Assert(xres.IntersectedObject == this);
+            List<IntersectionData> data = xres.Intersections;
+            if (data==null || data.Count==0)
+                return;
+
+            // Ensure that any polygons known to this boundary have been
+            // marked for deletion (need to do this in case the intersects
+            // we have are only at the line end points, in which case we
+            // wouldn't actually change anything).
+            Topology.MarkPolygons(this);
+
+            // We'll need the map for creating intersection points
+            CadastralMapModel map = CadastralMapModel.Current;
+
+            // Create list of resultant sections
+            List<IDivider> result = new List<IDivider>();
+            ITerminal from, to;
+            from = to = this.From;
+
+            for (int i=0; i<data.Count; i++, from=to)
+            {
+                // Get the intersection data.
+                IntersectionData x = data[i];
+
+                if (x.IsGraze)
+                {
+                    // There are 4 sorts of graze to deal with:
+                    // 1. The graze covers the complete line.
+                    // 2. The graze is at the start of the line.
+                    // 3. The graze is along some interior portion of the line.
+                    // 4. The graze is at the end of the line.
+
+                    // If it's a total graze, there should only be ONE intersection.
+                    if (x.IsTotalGraze)
+                    {
+                        Debug.Assert(data.Count==1);
+                        if (data.Count!=1)
+                            throw new Exception("SectionTopology.Cut - Multiple overlaps detected");
+
+                        // Mark all polygons incident on the terminals.
+                        From.MarkPolygons();
+                        To.MarkPolygons();
+
+                        // If the graze is total make a non-topological section.
+                        result.Add(new SectionOverlap(Line, From, To)); // diff
+                        to = this.To;
+                    }
+                    else if (x.IsStartGraze)
+                    {
+                        Debug.Assert(i==0);
+                        Debug.Assert(from == this.From);
+
+                        // Mark all polygons incident at the start terminal
+                        From.MarkPolygons();
+
+                        // Create an overlap at the start of this divider
+                        to = map.GetTerminal(x.P2);
+                        if (from != to)
+                            result.Add(new SectionOverlap(Line, from, to));
+                    }
+                    else if (x.IsInteriorGraze)
+                    {
+                        // Add a section from the current tail to the start of the graze
+                        // 05-APR-2003 (somehow got a simple x-sect followed by a graze, so ensure we don't add a null section)
+                        to = map.GetTerminal(x.P1);
+                        if (from != to)
+                            result.Add(new SectionDivider(Line, from, to));
+
+                        // Add the overlap
+                        from = to;
+                        to = map.GetTerminal(x.P2);
+                        if (from != to)
+                            result.Add(new SectionOverlap(Line, from, to));
+                    }
+                    else if (x.IsEndGraze)
+                    {
+                        // Mark all polygons incident on the end terminal
+                        To.MarkPolygons();
+
+                        // Add a topological section up to the start of the graze
+                        to = map.GetTerminal(x.P1);
+                        if (from != to)
+                            result.Add(new SectionDivider(Line, from, to));
+
+                        // Add overlap all the way to the end of this divider
+                        from = to;
+                        to = this.To;
+                        if (from != to)
+                            result.Add(new SectionOverlap(Line, from, to));
+
+                        // That should be the LAST cut.
+                        Debug.Assert((i+1)==data.Count);
+                    }
+                    else
+                    {
+                        throw new Exception("LineTopology.Cut - Unexpected graze");
+                    }
+                }
+                else if (!x.IsEnd)
+                {
+                    // If the intersection is not at either end of the
+                    // divider, make a split (both portions topological). Skip
+                    // if the sort value is the same as the previous one.
+
+                    to = map.GetTerminal(x.P1);
+                    if (from != to)
+                        result.Add(new SectionDivider(Line, from, to));
+                }
+            }
+
+            // Add the last section if we're not already at the end (we'll be at the end if
+            // an overlap ran to the end)
+            from = to;
+            to = this.To;
+            if (from != to)
+                result.Add(new SectionDivider(Line, from, to));
+
+            // Refer the associated line to the new sections
+            if (result.Count>0)
+            {
+                // diff...
+                SectionTopologyList container = (SectionTopologyList)this.Line.Topology;
+                container.ReplaceDivider(this, result);
+            }
         }
     }
 }
