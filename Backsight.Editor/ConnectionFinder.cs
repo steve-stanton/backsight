@@ -423,6 +423,10 @@ namespace Backsight.Editor
             // Get a reference to the orientation info for the source divider.
             Orientation source = orient.Find(delegate(Orientation o)
                 { return (o.Divider==from && o.IsStart==isFromStart); });
+            if (source == null)
+            {
+                int junk = 0;
+            }
             Debug.Assert(source!=null);
 
             // If we have only two orientation points, the one we want
