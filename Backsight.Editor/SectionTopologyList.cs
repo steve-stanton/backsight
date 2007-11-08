@@ -131,16 +131,17 @@ namespace Backsight.Editor
                 throw new ArgumentException("SectionTopologyList.ReplaceDivider - Cannot locate topological section");
 
             m_Sections.RemoveAt(index);
-            RemoveDivider(oldDivider.From, oldDivider);
-            RemoveDivider(oldDivider.To, oldDivider);
-
+            //RemoveDivider(oldDivider.From, oldDivider);
+            //RemoveDivider(oldDivider.To, oldDivider);
             m_Sections.InsertRange(index, newDividers);
         }
 
+        /*
         void RemoveDivider(ITerminal t, IDivider d)
         {
             if (t is Intersection)
                 (t as Intersection).Remove(d);
         }
+         */
     }
 }
