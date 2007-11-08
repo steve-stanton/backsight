@@ -410,13 +410,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="result">The list to append to</param>
         /// <param name="t">The point the dividers must terminate at</param>
-        /*
         internal void AddIncidentDividers(List<IDivider> result, ITerminal t)
         {
             if (m_Topology!=null)
                 m_Topology.AddIncidentDividers(result, t);
         }
-         */
 
         public sealed override IWindow Extent
         {

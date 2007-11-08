@@ -30,9 +30,10 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The dividers incident on this intersection
+        /// The lines passing through this intersection. In most cases, this
+        /// will probably involve just two lines.
         /// </summary>
-        readonly List<IDivider> m_IncidentDividers;
+        readonly List<LineFeature> m_Lines;
 
         /// <summary>
         /// Flag bits relating to the intersection
@@ -46,52 +47,53 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>Intersection</c> at the specified position.
         /// </summary>
+        /// <param name="p">The position of the intersection</param>
         internal Intersection(PointGeometry p)
             : base(p)
         {
-            m_IncidentDividers = new List<IDivider>();
+            m_Lines = new List<LineFeature>(2);
             m_Flag = 0;
         }
 
         #endregion
 
         /// <summary>
-        /// Adds the specified divider to this intersection
+        /// Associates this intersection with the specified line.
         /// </summary>
-        /// <param name="d">The divider that is incident on this intersection (not null)</param>
-        /// <exception cref="ArgumentNullException">If the specified divider is null</exception>
-        /// <exception cref="ArgumentException">If the divider does not start or end at the position of
-        /// this intersection</exception>
-        internal void Add(IDivider d)
+        /// <param name="line">The line that passes through this intersection (not null)</param>
+        /// <exception cref="ArgumentNullException">If the specified line is null</exception>
+        internal void Add(LineFeature line)
         {
-            if (d==null)
+            if (line == null)
                 throw new ArgumentNullException();
 
-            if (!(d.From.IsCoincident(this) || d.To.IsCoincident(this)))
-                throw new ArgumentException("Divider does not terminate at intersection");
-
-            m_IncidentDividers.Add(d);
+            if (!m_Lines.Contains(line))
+                m_Lines.Add(line);
         }
 
         /// <summary>
-        /// Removes the specified divider from this intersection
+        /// Removes the specified line from this intersection.
         /// </summary>
-        /// <param name="d">The divider to remove</param>
-        /// <returns>True if the divider was removed. False if it does not appear to be
-        /// incident on this intersection</returns>
-        internal bool Remove(IDivider d)
+        /// <param name="line">The line to remove</param>
+        /// <returns>True if the line was removed. False if it was not associated
+        /// with this intersection</returns>
+        internal bool Remove(LineFeature line)
         {
-            return m_IncidentDividers.Remove(d);
+            return m_Lines.Remove(line);
         }
 
         /// <summary>
-        /// The dividers that start or end at the terminal. If a divider
-        /// starts and also ends at the terminal, it should appear in the
-        /// returned array just once.
+        /// The dividers that start or end at this intersection. If a divider
+        /// starts and also ends here, it should appear in the returned array just once.
         /// </summary>
         public IDivider[] IncidentDividers() // ITerminal
         {
-            return m_IncidentDividers.ToArray();
+            List<IDivider> result = new List<IDivider>(m_Lines.Count*2);
+
+            foreach (LineFeature line in m_Lines)
+                line.AddIncidentDividers(result, this);
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -100,7 +102,7 @@ namespace Backsight.Editor
         /// </summary>
         public void MarkPolygons() // ITerminal
         {
-            foreach (IDivider d in m_IncidentDividers)
+            foreach (IDivider d in IncidentDividers())
                 Topology.MarkPolygons(d);
         }
 
@@ -157,9 +159,11 @@ namespace Backsight.Editor
         /// Associates this terminal with an additional divider
         /// </summary>
         /// <param name="d">The divider the terminal should be referred to</param>
+        /*
         public void AddDivider(SectionDivider d) // ITerminal
         {
             Add(d);
         }
+         */
     }
 }

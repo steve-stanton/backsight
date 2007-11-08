@@ -38,7 +38,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Perimeter length, in meters (excludes any dangles into the area)
         /// </summary>
-        readonly double m_Perimeter;
+        //readonly double m_Perimeter;
 
         /// <summary>
         /// The spatial extent of the ring.
@@ -56,7 +56,7 @@ namespace Backsight.Editor
         internal RingMetrics(List<Face> edge)
         {
             m_Area = 0.0;
-            m_Perimeter = 0.0;
+            //m_Perimeter = 0.0;
             m_Window = new Window();
 
             foreach(Face face in edge)
@@ -67,7 +67,7 @@ namespace Backsight.Editor
                 double area, length;
                 IWindow awin;
                 d.LineGeometry.GetGeometry(out awin, out area, out length);
-                m_Perimeter += length;
+                //m_Perimeter += length;
                 m_Window.Union(awin);
 
                 if (face.IsLeft)
@@ -84,7 +84,7 @@ namespace Backsight.Editor
         protected RingMetrics(RingMetrics copy)
         {
             m_Area = copy.m_Area;
-            m_Perimeter = copy.m_Perimeter;
+            //m_Perimeter = copy.m_Perimeter;
             m_Window = copy.m_Window;
         }
 

@@ -269,22 +269,22 @@ namespace Backsight.Editor
         abstract internal IDivider LastDivider { get; }
 
         /// <summary>
-        /// Appends dividers that terminate at the specified point.
+        /// Appends dividers that terminate at the specified point. Excludes
+        /// overlaps.
         /// </summary>
         /// <param name="result">The list to append to</param>
         /// <param name="t">The point the dividers must terminate at</param>
-        /*
         internal void AddIncidentDividers(List<IDivider> result, ITerminal t)
         {
-            // We could probably exit after appending two dividers, but let's leave it for now
+            // We could probably exit after appending two dividers, but let's
+            // not try to be too smart unless there's a performance issue.
 
             foreach (IDivider d in this)
             {
-                if (d.From.IsCoincident(t) || d.To.IsCoincident(t))
+                if ((d.From.IsCoincident(t) || d.To.IsCoincident(t)) && !d.IsOverlap)
                     result.Add(d);
             }
         }
-         */
 
         /// <summary>
         /// Ensures that the polygon topology for this line has been completely defined.
