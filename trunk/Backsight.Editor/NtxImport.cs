@@ -114,6 +114,9 @@ namespace Backsight.Editor
 
         void SetMoved(List<Feature> features)
         {
+            System.Windows.Forms.MessageBox.Show("NtxImport.SetMoved: Intersect skipped");
+            return;
+
             foreach (Feature f in features)
                 f.IsMoved = true;
         }

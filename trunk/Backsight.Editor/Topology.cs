@@ -273,6 +273,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="result">The list to append to</param>
         /// <param name="t">The point the dividers must terminate at</param>
+        /*
         internal void AddIncidentDividers(List<IDivider> result, ITerminal t)
         {
             // We could probably exit after appending two dividers, but let's leave it for now
@@ -283,6 +284,7 @@ namespace Backsight.Editor
                     result.Add(d);
             }
         }
+         */
 
         /// <summary>
         /// Ensures that the polygon topology for this line has been completely defined.

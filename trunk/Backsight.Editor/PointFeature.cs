@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -222,7 +223,21 @@ namespace Backsight.Editor
             foreach (IFeatureDependent fd in Dependents)
             {
                 if (fd is LineFeature)
-                    (fd as LineFeature).AddIncidentDividers(result, this);
+                {
+                    LineFeature line = (fd as LineFeature);
+                    Topology t = line.Topology;
+
+                    if (t!=null)
+                    {
+                        if (line.StartPoint.IsCoincident(this))
+                            result.Add(t.FirstDivider);
+                        else
+                        {
+                            Debug.Assert(line.EndPoint.IsCoincident(this));
+                            result.Add(t.LastDivider);
+                        }
+                    }
+                }
             }
 
             return result.ToArray();

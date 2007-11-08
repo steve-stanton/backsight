@@ -388,24 +388,48 @@ namespace Backsight.Editor
             // Get the location involved
             ITerminal loc = (isFromStart ? from.From : from.To);
 
+            if (loc is PointFeature && (loc as PointFeature).DataId=="0.1896")
+            {
+                int junk=0;
+            }
+
             // Get the dividers incident on the terminal
-            IDivider[] ba = loc.IncidentDividers();
+            IDivider[] divs = loc.IncidentDividers();
 
             // Get orientation info for each divider (the list could conceivably
             // grow if boundaries start at the terminal, then loop round to also
             // finish at the same terminal).
-            List<Orientation> orient = new List<Orientation>(ba.Length);
+            List<Orientation> orient = new List<Orientation>(divs.Length);
+            Orientation source = null;
 
-            foreach (IDivider b in ba)
+            foreach (IDivider d in divs)
             {
                 // Check if the start of the divider is incident on the node.
                 // If so, append the orientation info to the list.
-                if (b.From.IsCoincident(loc))
-                    orient.Add(new Orientation(b, true));
+                if (d.From.IsCoincident(loc))
+                {
+                    Orientation o = new Orientation(d, true);
+                    orient.Add(o);
+
+                    if (d==from && isFromStart)
+                    {
+                        Debug.Assert(source==null);
+                        source = o;
+                    }
+                }
 
                 // Likewise for the end of the divider (it could start AND end at the node).
-                if (b.To.IsCoincident(loc))
-                    orient.Add(new Orientation(b, false));
+                if (d.To.IsCoincident(loc))
+                {
+                    Orientation o = new Orientation(d, false);
+                    orient.Add(o);
+
+                    if (d==from && !isFromStart)
+                    {
+                        Debug.Assert(source==null);
+                        source = o;
+                    }
+                }
             }
 
             // We MUST have at least one orientation point.
@@ -421,12 +445,8 @@ namespace Backsight.Editor
             }
 
             // Get a reference to the orientation info for the source divider.
-            Orientation source = orient.Find(delegate(Orientation o)
-                { return (o.Divider==from && o.IsStart==isFromStart); });
-            if (source == null)
-            {
-                int junk = 0;
-            }
+            //Orientation source = orient.Find(delegate(Orientation o)
+            //    { return (o.Divider==from && o.IsStart==isFromStart); });
             Debug.Assert(source!=null);
 
             // If we have only two orientation points, the one we want

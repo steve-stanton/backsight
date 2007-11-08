@@ -74,6 +74,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Removes the specified divider from this intersection
+        /// </summary>
+        /// <param name="d">The divider to remove</param>
+        /// <returns>True if the divider was removed. False if it does not appear to be
+        /// incident on this intersection</returns>
+        internal bool Remove(IDivider d)
+        {
+            return m_IncidentDividers.Remove(d);
+        }
+
+        /// <summary>
         /// The dividers that start or end at the terminal. If a divider
         /// starts and also ends at the terminal, it should appear in the
         /// returned array just once.
