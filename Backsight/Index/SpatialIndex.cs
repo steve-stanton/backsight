@@ -125,6 +125,17 @@ namespace Backsight.Index
             }
         }
 
+        /// <summary>
+        /// Obtains the number of points in this index
+        /// </summary>
+        /// <returns>The number of points</returns>
+        public uint GetPointCount()
+        {
+            PointIndexStatistics statPoints = new PointIndexStatistics();
+            m_Points.CollectStats(statPoints);
+            return statPoints.PointCount;
+        }
+
         public void DumpStats()
         {            
             using (StreamWriter w = File.CreateText(@"C:\Temp\indexStats.txt"))

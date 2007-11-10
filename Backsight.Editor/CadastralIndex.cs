@@ -129,5 +129,15 @@ namespace Backsight.Editor
             m_ExtraData.Add(x);
             x.IsIndexed = true;
         }
+
+        /// <summary>
+        /// Counts the number of intersections in this index
+        /// </summary>
+        /// <returns>The number of intersection points</returns>
+        internal uint GetIntersectCount()
+        {
+            return m_ExtraData.GetPointCount();
+        }
+
     }
 }

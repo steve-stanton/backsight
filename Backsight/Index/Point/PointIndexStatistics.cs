@@ -82,9 +82,17 @@ namespace Backsight.Index.Point
             sw.WriteLine("MaxItemInIndexNode:    "+m_MaxItemInIndexNode);
             sw.WriteLine("Number of data nodes:  "+m_NumDataNode);
             sw.WriteLine("MaxItemInDataNode:     "+m_MaxItemInDataNode);
-            sw.WriteLine("Numbe or points:       "+m_NumItem);
+            sw.WriteLine("Number or points:      "+m_NumItem);
             sw.WriteLine("Avg points/data node:  "+ (double)m_NumItem / (double)m_NumDataNode);
             sw.WriteLine("Min size:              "+m_MinSize);
+        }
+
+        /// <summary>
+        /// The number of points in the index
+        /// </summary>
+        internal uint PointCount
+        {
+            get { return m_NumItem; }
         }
     }
 }

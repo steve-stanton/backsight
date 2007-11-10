@@ -69,8 +69,7 @@ namespace Backsight.Editor
             m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
             BuildIslands();
             BuildLabels();
-
-            (m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
+            //(m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
         }
 
         /// <summary>

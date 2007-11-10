@@ -758,7 +758,7 @@ namespace Backsight.Editor
                 s.AddToIndex(index);
 
             m_Index = index;
-            index.DumpStats();
+            //index.DumpStats();
             //index.Dump();
 
             /*
