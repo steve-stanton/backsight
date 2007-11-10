@@ -60,11 +60,5 @@ namespace Backsight.Editor
         /// to set them.
         /// </summary>
         bool IsOverlap { get; }
-
-        /// <summary>
-        /// Splits this divider at the locations noted in the supplied data
-        /// </summary>
-        /// <param name="s">Information about the splits that need to be made.</param>
-        void Cut(SplitData s);
     }
 }

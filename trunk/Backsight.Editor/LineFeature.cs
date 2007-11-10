@@ -554,6 +554,11 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
             }
 
+            if (DataId == "0.13664")
+            {
+                int junk = 0;
+            }
+
             if (m_Topology!=null)
                 m_Topology.BuildPolygons(bwin, index);
         }
@@ -715,16 +720,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             // Cut up the things that were intersected, making grazing portions non-topological.
             // Each result object should be associated with an IDivider.
             foreach (IntersectionResult r in intersectedDividers)
-            {
-                IIntersectable ir = r.IntersectedObject;
-                Debug.Assert(ir is IDivider);
-                IDivider div = (IDivider)ir;
-                SplitData sd = new SplitData(r);
-                div.Cut(sd);
-
-                if (sd.RequiresRetrim)
-                    retrims.Add(div.Line);
-            }
+                Cut(r, retrims);
 
             // Combine the results and get the splitter to cut itself up.
             IntersectionResult xres = new IntersectionResult(lineTop, xf);
@@ -746,11 +742,177 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
 
             // Create divider sections. We should make at least ONE split.
-            SplitData splitData = new SplitData(xres);
-            lineTop.Cut(splitData);
+            Cut(xres, retrims);
+        }
 
-            if (splitData.RequiresRetrim)
-                retrims.Add(this);
+        /// <summary>
+        /// Splits up a series of intersections
+        /// </summary>
+        /// <param name="xres">The places where intersections have been detected on
+        /// some polygon ring divider</param>
+        /// <param name="retrims">Lines that need to be re-trimmed (the line associated
+        /// with the divider will be appended if an intersection is made on an invisible
+        /// portion of the divider). Not currently used.</param>
+        static void Cut(IntersectionResult xres, List<LineFeature> retrims)
+        {
+            // Grab the divider that's been intersected
+            IIntersectable ir = xres.IntersectedObject;
+            Debug.Assert(ir is IDivider);
+            IDivider div = (IDivider)ir;
+
+            div.Line.Cut(div, xres, retrims);
+        }
+
+        /// <summary>
+        /// Cuts up a divider that covers this line (or a portion of this line)
+        /// </summary>
+        /// <param name="div">The divider covering the line (or a portion of this line)</param>
+        /// <param name="xres">The places where intersections have been detected on
+        /// the divider</param>
+        /// <param name="retrims">Lines that need to be re-trimmed (the line associated
+        /// with the divider will be appended if an intersection is made on an invisible
+        /// portion of the divider). Not currently used.</param>
+        void Cut(IDivider div, IntersectionResult xres, List<LineFeature> retrims)
+        {
+            Debug.Assert(div.Line == this);
+
+            // Should never need to cut anything that represents an overlap (they're
+            // supposed to be treated as non-topological)
+            Debug.Assert(!div.IsOverlap);
+
+            // Return if nothing to do
+            Debug.Assert(xres.IntersectedObject == div);
+            List<IntersectionData> data = xres.Intersections;
+            if (data == null || data.Count == 0)
+                return;
+
+            // Ensure that any polygons known to this boundary have been
+            // marked for deletion (need to do this in case the intersects
+            // we have are only at the line end points, in which case we
+            // wouldn't actually change anything).
+            Topology.MarkPolygons(div);
+
+            // We'll need the map for creating intersection points
+            CadastralMapModel map = CadastralMapModel.Current;
+
+            // Create list of resultant sections
+            List<IDivider> result = new List<IDivider>();
+            ITerminal from, to;
+            from = to = div.From;
+
+            for (int i = 0; i < data.Count; i++, from = to)
+            {
+                // Get the intersection data.
+                IntersectionData x = data[i];
+
+                if (x.IsGraze)
+                {
+                    // There are 4 sorts of graze to deal with:
+                    // 1. The graze covers the complete line.
+                    // 2. The graze is at the start of the line.
+                    // 3. The graze is along some interior portion of the line.
+                    // 4. The graze is at the end of the line.
+
+                    // If it's a total graze, there should only be ONE intersection.
+                    if (x.IsTotalGraze)
+                    {
+                        Debug.Assert(data.Count == 1);
+                        if (data.Count != 1)
+                            throw new Exception("LineFeature.Cut - Multiple overlaps detected");
+
+                        // Mark all polygons incident on the terminals.
+                        div.From.MarkPolygons();
+                        div.To.MarkPolygons();
+
+                        // Define overlap for the entire divider
+                        if (div is LineTopology)
+                            result.Add(new LineOverlap(div.Line));
+                        else
+                            result.Add(new SectionOverlap(this, div.From, div.To));
+
+                        to = div.To;
+                    }
+                    else if (x.IsStartGraze)
+                    {
+                        Debug.Assert(i == 0);
+                        Debug.Assert(from == div.From);
+
+                        // Mark all polygons incident at the start terminal
+                        div.From.MarkPolygons();
+
+                        // Create an overlap at the start of this divider
+                        to = map.GetTerminal(x.P2);
+                        if (from != to)
+                            result.Add(new SectionOverlap(this, from, to));
+                    }
+                    else if (x.IsInteriorGraze)
+                    {
+                        // Add a section from the current tail to the start of the graze
+                        // 05-APR-2003 (somehow got a simple x-sect followed by a graze, so ensure we don't add a null section)
+                        to = map.GetTerminal(x.P1);
+                        if (from != to)
+                            result.Add(new SectionDivider(this, from, to));
+
+                        // Add the overlap
+                        from = to;
+                        to = map.GetTerminal(x.P2);
+                        if (from != to)
+                            result.Add(new SectionOverlap(this, from, to));
+                    }
+                    else if (x.IsEndGraze)
+                    {
+                        // Mark all polygons incident on the end terminal
+                        div.To.MarkPolygons();
+
+                        // Add a topological section up to the start of the graze
+                        to = map.GetTerminal(x.P1);
+                        if (from != to)
+                            result.Add(new SectionDivider(this, from, to));
+
+                        // Add overlap all the way to the end of this divider
+                        from = to;
+                        to = div.To;
+                        if (from != to)
+                            result.Add(new SectionOverlap(this, from, to));
+
+                        // That should be the LAST cut.
+                        Debug.Assert((i + 1) == data.Count);
+                    }
+                    else
+                    {
+                        throw new Exception("LineFeature.Cut - Unexpected graze");
+                    }
+                }
+                else if (!x.IsEnd)
+                {
+                    // If the intersection is not at either end of the
+                    // divider, make a split (both portions topological). Skip
+                    // if the sort value is the same as the previous one.
+
+                    to = map.GetTerminal(x.P1);
+                    if (from != to)
+                        result.Add(new SectionDivider(this, from, to));
+                }
+            }
+
+            // Add the last section if we're not already at the end (we'll be at the end if
+            // an overlap ran to the end)
+            from = to;
+            to = div.To;
+            if (from != to)
+                result.Add(new SectionDivider(this, from, to));
+
+            // Refer the associated line to the new sections
+            if (result.Count > 0)
+            {
+                if (m_Topology is LineTopology)
+                    m_Topology = new SectionTopologyList(this, result);
+                else
+                {
+                    SectionTopologyList container = (SectionTopologyList)m_Topology;
+                    container.ReplaceDivider(div, result);
+                }
+            }
         }
 
         /// <summary>
@@ -759,20 +921,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal Topology Topology
         {
             get { return m_Topology; }
-        }
-
-        /// <summary>
-        /// Replaces the topology associated with this line. This gets called when the
-        /// topology is getting cut up at intersections.
-        /// </summary>
-        /// <param name="oldTop">The topology that's being replaced</param>
-        /// <param name="newTop">The new topology to assign</param>
-        internal void ReplaceTopology(Topology oldTop, Topology newTop)
-        {
-            if (Object.ReferenceEquals(oldTop, m_Topology))
-                m_Topology = newTop;
-            else
-                m_Topology.ReplaceTopology(oldTop, newTop);
         }
     }
 }

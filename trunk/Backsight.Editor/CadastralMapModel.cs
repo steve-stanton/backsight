@@ -985,6 +985,25 @@ namespace Backsight.Editor
                  */
             }
 
+            // If we moved anything, ensure that any newly marked polygons 
+            // have been cleaned, and the spatial index is up to date.
+            if (nMove > 0)
+            {
+                // If we hit any lines that need to be trimmed, do them now.
+                // Any trimmed portions will be marked inactive.
+                foreach (LineFeature trimLine in trims)
+                {
+                    /*
+                    Split split = trimLine.Split;
+                    if (split != null)
+                        split.Trim(null);
+                     */
+                }
+
+                // This is a little bit of overkill
+                CleanupQuery cq = new CleanupQuery(this);
+            }
+
             /*
 	        // Clear out the list.
             moves.Clear();
