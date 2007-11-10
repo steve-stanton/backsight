@@ -17,10 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using Backsight.Environment;
 using Backsight.Forms;
-using System.Drawing.Drawing2D;
 
 namespace Backsight.Editor
 {
@@ -634,7 +634,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         internal override void Clean()
         {
             if (IsInactive)
-                SetPolDeleted();
+                RemoveTopology();
 
             base.Clean();
         }
@@ -642,13 +642,11 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <summary>
         /// Marks adjacent polygons (if any) for deletion, and nulls out <see cref="m_Topology"/>
         /// </summary>
-        void SetPolDeleted()
+        void RemoveTopology()
         {
             if (m_Topology!=null)
             {
-                foreach (IDivider d in m_Topology)
-                    Topology.MarkPolygons(d);
-
+                m_Topology.Remove();
                 m_Topology = null;
             }
         }
@@ -662,7 +660,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (IsTopological)
             {
                 // Mark adjacent polygons for a rebuild (and null m_Topology)
-                SetPolDeleted();
+                RemoveTopology();
 
                 // Clear the flag bit
                 SetTopology(false);

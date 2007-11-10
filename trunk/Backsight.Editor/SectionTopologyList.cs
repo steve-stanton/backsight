@@ -131,17 +131,19 @@ namespace Backsight.Editor
                 throw new ArgumentException("SectionTopologyList.ReplaceDivider - Cannot locate topological section");
 
             m_Sections.RemoveAt(index);
-            //RemoveDivider(oldDivider.From, oldDivider);
-            //RemoveDivider(oldDivider.To, oldDivider);
             m_Sections.InsertRange(index, newDividers);
         }
 
-        /*
-        void RemoveDivider(ITerminal t, IDivider d)
+        /// <summary>
+        /// Performs any processing when this topology is about to be removed (because
+        /// it is now obsolete). This should mark adjacent polygons for deletion, and
+        /// remove line references from any intersections (intersections that end up
+        /// referring to nothing will be removed from the spatial index).
+        /// </summary>
+        internal override void Remove()
         {
-            if (t is Intersection)
-                (t as Intersection).Remove(d);
+            foreach (SectionTopology s in m_Sections)
+                s.Remove();
         }
-         */
     }
 }
