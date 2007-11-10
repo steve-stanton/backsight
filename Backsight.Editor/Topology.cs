@@ -557,19 +557,6 @@ namespace Backsight.Editor
             return null;
         }
 
-        /// <summary>
-        /// Replaces the topology associated with this instance. This gets called when the
-        /// topology is getting cut up at intersections. Only the <see cref="SectionTopologyList"/>
-        /// class should need to handle this. This implementation will throw an exception.
-        /// </summary>
-        /// <param name="oldTop">The topology that's being replaced</param>
-        /// <param name="newTop">The new topology to assign</param>
-        /// <exception cref="InvalidOperationException">Always thrown</exception>
-        internal virtual void ReplaceTopology(Topology oldTop, Topology newTop)
-        {
-            throw new InvalidOperationException("Topology.ReplaceTopology - Unhandled call");
-        }
-
         /*
 
 	// If the specified arc is not the parent arc, do an insert.
