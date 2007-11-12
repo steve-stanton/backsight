@@ -297,11 +297,14 @@ namespace Backsight.Editor
         {
             foreach (IDivider d in this)
             {
-                if (d.Left==null)
-                    d.Left = BuildSide(d, bwin, index, true);
+                if (!d.IsOverlap)
+                {
+                    if (d.Left==null)
+                        d.Left = BuildSide(d, bwin, index, true);
 
-                if (d.Right==null)
-                    d.Right = BuildSide(d, bwin, index, false);
+                    if (d.Right==null)
+                        d.Right = BuildSide(d, bwin, index, false);
+                }
             }
         }
 
@@ -414,12 +417,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Performs any processing when this topology is about to be removed (because
-        /// it is now obsolete). This should mark adjacent polygons for deletion, and
-        /// remove line references from any intersections (intersections that end up
-        /// referring to nothing will be removed from the spatial index).
+        /// Performs any processing when the line associated with this topology
+        /// is being de-activated.  This should mark adjacent polygons for deletion, and
+        /// remove line references from any intersections.
         /// </summary>
-        abstract internal void Remove();
+        abstract internal void OnLineDeactivation();
 
         /*
 
@@ -477,5 +479,15 @@ namespace Backsight.Editor
 
 } // end of Create
          */
+
+        /// <summary>
+        /// Merges divider sections that are incident on the specified intersection. This gets
+        /// called when one of the lines causing an intersection is being removed (deactivated).
+        /// </summary>
+        /// <param name="x">An intersection that is being removed</param>
+        internal virtual void MergeSections(Intersection x)
+        {
+            // This implementation does nothing. The SectionTopologyList class should override.
+        }
     }
 }

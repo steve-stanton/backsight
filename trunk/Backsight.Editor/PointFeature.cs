@@ -230,11 +230,17 @@ namespace Backsight.Editor
                     if (t!=null)
                     {
                         if (line.StartPoint.IsCoincident(this))
-                            result.Add(t.FirstDivider);
+                        {
+                            IDivider d = t.FirstDivider;
+                            if (!d.IsOverlap)
+                                result.Add(d);
+                        }
                         else
                         {
                             Debug.Assert(line.EndPoint.IsCoincident(this));
-                            result.Add(t.LastDivider);
+                            IDivider d = t.LastDivider;
+                            if (!d.IsOverlap)
+                                result.Add(d);
                         }
                     }
                 }

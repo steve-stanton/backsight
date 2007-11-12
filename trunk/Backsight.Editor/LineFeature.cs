@@ -554,11 +554,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
             }
 
-            if (DataId == "0.13664")
-            {
-                int junk = 0;
-            }
-
             if (m_Topology!=null)
                 m_Topology.BuildPolygons(bwin, index);
         }
@@ -646,7 +641,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         {
             if (m_Topology!=null)
             {
-                m_Topology.Remove();
+                m_Topology.OnLineDeactivation();
                 m_Topology = null;
             }
         }
@@ -706,6 +701,11 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (!(m_Topology is LineTopology))
                 throw new Exception("LineFeature.Split - Line is associated with the wrong type of topology");
             LineTopology lineTop = (LineTopology)m_Topology;
+
+            if (DataId=="0.4423")
+            {
+                int junk=0;
+            }
 
             // Intersect this line with the map (ignoring end to end intersects).
             IntersectionFinder xf = new IntersectionFinder(this, false);
@@ -884,8 +884,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 else if (!x.IsEnd)
                 {
                     // If the intersection is not at either end of the
-                    // divider, make a split (both portions topological). Skip
-                    // if the sort value is the same as the previous one.
+                    // divider, make a split (both portions topological).
 
                     to = map.GetTerminal(x.P1);
                     if (from != to)

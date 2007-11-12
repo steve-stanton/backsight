@@ -388,11 +388,6 @@ namespace Backsight.Editor
             // Get the location involved
             ITerminal loc = (isFromStart ? from.From : from.To);
 
-            if (loc is PointFeature && (loc as PointFeature).DataId=="0.1896")
-            {
-                int junk=0;
-            }
-
             // Get the dividers incident on the terminal
             IDivider[] divs = loc.IncidentDividers();
 
@@ -447,6 +442,10 @@ namespace Backsight.Editor
             // Get a reference to the orientation info for the source divider.
             //Orientation source = orient.Find(delegate(Orientation o)
             //    { return (o.Divider==from && o.IsStart==isFromStart); });
+            if (source == null)
+            {
+                int junk = 0;
+            }
             Debug.Assert(source!=null);
 
             // If we have only two orientation points, the one we want

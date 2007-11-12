@@ -58,9 +58,6 @@ namespace Backsight.Editor
 
             if (to is Intersection)
                 (to as Intersection).Add(line);
-
-            //from.AddDivider(this);
-            //to.AddDivider(this);
         }
 
         #endregion

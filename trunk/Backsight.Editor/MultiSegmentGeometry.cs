@@ -497,13 +497,18 @@ namespace Backsight.Editor
 
             // Copy over the relevant data
             int len = eIndex-sIndex+1;
-            IPointGeometry[] result = new IPointGeometry[len];
-            Array.Copy(data, sIndex, result, 0, len);
+            if (len > 2)
+            {
+                IPointGeometry[] result = new IPointGeometry[len];
+                Array.Copy(data, sIndex, result, 0, len);
 
-            // And ensure the result terminates at the section terminals.
-            result[0] = s.From;
-            result[len-1] = s.To;
-            return new MultiSegmentGeometry(s.From, s.To, result);
+                // And ensure the result terminates at the section terminals.
+                result[0] = s.From;
+                result[len-1] = s.To;
+                return new MultiSegmentGeometry(s.From, s.To, result);
+            }
+
+            return new SegmentGeometry(s.From, s.To);
         }
 
         /// <summary>
