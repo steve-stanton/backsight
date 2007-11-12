@@ -1007,10 +1007,12 @@ namespace Backsight.Editor
             IPointGeometry q = pq.Second;
 
             if (a.IsCoincident(p) || a.IsCoincident(q))
-                return ArcEndIntersect(results, pq.Circle, p, q, a, b);
+                //return ArcEndIntersect(results, pq.Circle, p, q, a, b);
+                return ArcEndIntersect(results, pq.Circle, p, q, a, b, true);
 
             if (b.IsCoincident(p) || b.IsCoincident(q))
-                return ArcEndIntersect(results, pq.Circle, p, q, b, a);
+                //return ArcEndIntersect(results, pq.Circle, p, q, b, a);
+                return ArcEndIntersect(results, pq.Circle, p, q, a, b, false);
 
             return ArcIntersect(results, pq.Circle, p, q, a, b);
         }
@@ -1253,8 +1255,11 @@ namespace Backsight.Editor
         /// <param name="circle">The circle the arcs coincide with</param>
         /// <param name="bc1">The BC of the 1st arc</param>
         /// <param name="ec1">The EC of the 1st arc</param>
-        /// <param name="bc2">The BC of the 2nd arc</param>
+        /// <param name="bc2">The BC of the 2nd arc -- the matching end</param>
         /// <param name="ec2">The EC of the 2nd arc</param>
+        /// <param name="isStartMatch">Specify <c>true</c> if <paramref name="bc2"/> matches an end
+        /// point of the 1st arc. Specify <c>false</c> if <paramref name="ec2"/> matches an end
+        /// point of the 1st arc.</param>
         /// <returns>The number of intersections (always 1).</returns>
         static uint ArcEndIntersect
             ( IntersectionResult xsect
@@ -1262,7 +1267,8 @@ namespace Backsight.Editor
             , IPointGeometry bc1
             , IPointGeometry ec1
             , IPointGeometry bc2
-            , IPointGeometry ec2 )
+            , IPointGeometry ec2
+            , bool isStartMatch)
         {
             bool bmatch = bc1.IsCoincident(bc2);
             bool ematch = ec1.IsCoincident(ec2);

@@ -156,14 +156,33 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Associates this terminal with an additional divider
+        /// 
         /// </summary>
-        /// <param name="d">The divider the terminal should be referred to</param>
-        /*
-        public void AddDivider(SectionDivider d) // ITerminal
+        /// <param name="line"></param>
+        internal void OnLineDeactivation(LineFeature line)
         {
-            Add(d);
+            // Remove the reference the intersection has to the line
+            Remove(line);
+
+            // If the intersection now refers only to one line, it's no longer
+            // an intersection, so remove it from the spatial index and merge
+            // the sections incident on the intersection.
+            if (m_Lines.Count<=1)
+            {
+                if (IsIndexed)
+                {
+                    CadastralMapModel map = line.MapModel;
+                    CadastralIndex index = (CadastralIndex)map.Index;
+                    index.RemoveIntersection(this);
+                }
+
+                if (m_Lines.Count>0)
+                {
+                    Topology t = m_Lines[0].Topology;
+                    if (t!=null)
+                        t.MergeSections(this);
+                }
+            }
         }
-         */
     }
 }

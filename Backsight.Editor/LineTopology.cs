@@ -129,12 +129,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Performs any processing when this topology is about to be removed (because
-        /// it is now obsolete). This should mark adjacent polygons for deletion, and
-        /// remove line references from any intersections (intersections that end up
-        /// referring to nothing will be removed from the spatial index).
+        /// Performs any processing when the line associated with this topology
+        /// is being de-activated.  This should mark adjacent polygons for deletion, and
+        /// remove line references from any intersections.
         /// </summary>
-        internal override void Remove()
+        internal override void OnLineDeactivation()
         {
             // Mark adjacent polygons for deletion
             Topology.MarkPolygons(this);

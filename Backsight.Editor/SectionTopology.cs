@@ -122,18 +122,5 @@ namespace Backsight.Editor
         {
             get { return false; }
         }
-
-        /// <summary>
-        /// Performs any processing when this topology is about to be removed (because
-        /// it is now obsolete). This should mark adjacent polygons for deletion, and
-        /// remove line references from any intersections (intersections that end up
-        /// referring to nothing will be removed from the spatial index).
-        /// </summary>
-        internal void Remove()
-        {
-            Topology.MarkPolygons(this);
-            CleanTerminal(m_From);
-            CleanTerminal(m_To);
-        }
     }
 }

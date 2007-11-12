@@ -23,6 +23,15 @@ namespace Backsight.Editor
     /// <summary>
     /// Query spatial index to locate line intersections. This class is used
     /// to detect topological intersections, so it ignores plain (non-topological) lines.
+    /// <para/>
+    /// Lines that are marked as "moved" (a flag used to force line re-intersect calculations)
+    /// are also ignored. Consider an edit that creates two lines that intersect each other.
+    /// When the edit is being concluded, the lines get intersected against the map, and that
+    /// software assumes that each new line starts out without any splits. To ensure this
+    /// assumption holds, the software first intersects the 1st line against the map, totally
+    /// ignoring the 2nd line that was also created. After making any splits on line 1, it's
+    /// IsMoved flag gets cleared. On processing the 2nd line, we'll detect the intersection
+    /// with line 1.
     /// </summary>
     class FindIntersectionsQuery
     {
@@ -146,6 +155,10 @@ namespace Backsight.Editor
             // Ignore lines that don't have any topology
             Topology t = f.Topology;
             if (t == null)
+                return true;
+
+            // Ignore lines that are marked as "moved"
+            if (f.IsMoved)
                 return true;
 
             // Intersect each divider

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -135,15 +136,78 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Performs any processing when this topology is about to be removed (because
-        /// it is now obsolete). This should mark adjacent polygons for deletion, and
-        /// remove line references from any intersections (intersections that end up
-        /// referring to nothing will be removed from the spatial index).
+        /// Performs any processing when the line associated with this topology
+        /// is being de-activated.  This should mark adjacent polygons for deletion, and
+        /// remove line references from any intersections.
         /// </summary>
-        internal override void Remove()
+        internal override void OnLineDeactivation()
         {
+            // By default, we don't cleanup the starting terminal of each section. Unless
+            // the preceding section was an overlap (since intersections aren't cross-referenced
+            // to overlaps).
+            bool doFrom = false;
+
             foreach (SectionTopology s in m_Sections)
-                s.Remove();
+            {
+                if (s.IsOverlap)
+                {
+                    doFrom = true;
+                }
+                else
+                {
+                    Topology.MarkPolygons(s);
+
+                    // The starting terminal only needs to be cleaned up if the preceding
+                    // section was an overlap.
+                    if (doFrom)
+                    {
+                        OnLineDeactivation(s.From);
+                        doFrom = false;
+                    }
+
+                    OnLineDeactivation(s.To);
+                }                
+            }
+        }
+
+        /// <summary>
+        /// Performs any cleanup of a terminal on deactivation of a line. This will only
+        /// do stuff for terminals that are line intersections.
+        /// </summary>
+        /// <param name="t">The terminal to process</param>
+        void OnLineDeactivation(ITerminal t)
+        {
+            if (t is Intersection)
+            {
+                Intersection x = (t as Intersection);
+                x.OnLineDeactivation(this.Line);
+            }
+        }
+
+        /// <summary>
+        /// Merges divider sections that are incident on the specified intersection. This gets
+        /// called when one of the lines causing an intersection is being removed (deactivated).
+        /// </summary>
+        /// <param name="x">An intersection that is being removed</param>
+        internal override void MergeSections(Intersection x)
+        {
+            for (int i=0; i<(m_Sections.Count-1); i++)
+            {
+                IDivider a = m_Sections[i];
+                if (a.To == x)
+                {
+                    IDivider b = m_Sections[i+1];
+
+                    // If either divider is an overlap, it would be BAD to merge
+                    if (a is SectionDivider && b is SectionDivider)
+                    {
+                        m_Sections.RemoveAt(i+1);
+                        m_Sections[i] = new SectionDivider(Line, a.From, b.To);
+                    }
+
+                    return;
+                }
+            }
         }
     }
 }

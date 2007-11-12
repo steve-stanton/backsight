@@ -122,12 +122,24 @@ namespace Backsight.Editor
         /// Includes an intersection in this index.
         /// </summary>
         /// <param name="x">The intersection to add to the index (and sets the 
-        /// <see cref="Intersection.Indexed"/> property to true)
+        /// <see cref="Intersection.IsIndexed"/> property to true)
         /// </param>
         internal void AddIntersection(Intersection x)
         {
             m_ExtraData.Add(x);
             x.IsIndexed = true;
+        }
+
+        /// <summary>
+        /// Removes an intersection from this index
+        /// </summary>
+        /// <param name="x">The intersection to remove (on successful removal, the
+        /// <see cref="Intersection.IsIndexed"/> property will be set false)
+        /// </param>
+        internal void RemoveIntersection(Intersection x)
+        {
+            if (m_ExtraData.Remove(x))
+                x.IsIndexed = false;
         }
 
         /// <summary>

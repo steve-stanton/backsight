@@ -30,7 +30,6 @@ namespace Backsight.Editor
         {
             this.testButton1 = new Backsight.Forms.TestButton();
             this.testButton2 = new Backsight.Forms.TestButton();
-            this.treeView = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
             // testButton1
@@ -55,24 +54,11 @@ namespace Backsight.Editor
             this.testButton2.UseVisualStyleBackColor = true;
             this.testButton2.Click += new System.EventHandler(this.testButton2_Click);
             // 
-            // treeView
-            // 
-            this.treeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
-            this.treeView.Location = new System.Drawing.Point(289, 78);
-            this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(286, 315);
-            this.treeView.TabIndex = 2;
-            this.treeView.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.treeView_DrawNode);
-            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
-            this.treeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeSelect);
-            this.treeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDown);
-            // 
             // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(638, 429);
-            this.Controls.Add(this.treeView);
             this.Controls.Add(this.testButton2);
             this.Controls.Add(this.testButton1);
             this.Name = "TestForm";
@@ -87,6 +73,5 @@ namespace Backsight.Editor
 
         private Backsight.Forms.TestButton testButton1;
         private Backsight.Forms.TestButton testButton2;
-        private System.Windows.Forms.TreeView treeView;
     }
 }
