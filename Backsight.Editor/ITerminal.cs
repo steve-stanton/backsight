@@ -32,12 +32,6 @@ namespace Backsight.Editor
         IDivider[] IncidentDividers();
 
         /// <summary>
-        /// Associates this terminal with an additional divider
-        /// </summary>
-        /// <param name="d">The divider the terminal should be referred to</param>
-        //void AddDivider(SectionDivider d);
-
-        /// <summary>
         /// Go through each divider that is incident on this terminal, marking adjacent
         /// polygons for deletion.
         /// </summary>

@@ -31,11 +31,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// A position associated with the selection (e.g. could be the point where
-        /// the user clicked on a map display). May be null if a single position does
-        /// not apply to the selection.
+        /// The topological section that coincides with this selection. This will be
+        /// defined only if the selection refers to a single topological line that has
+        /// been divided into a series of sections.
         /// </summary>
-        readonly IPosition m_SearchPosition;
+        readonly IDivider m_Section;
 
         #endregion
 
@@ -51,41 +51,41 @@ namespace Backsight.Editor
         public CadastralSelection(ISpatialObject so, IPosition searchPosition)
             : base(so)
         {
-            m_SearchPosition = searchPosition;
+            // If we're dealing with a single line that's been topologically sectioned,
+            // determine which divider we're closest to.
+
+            m_Section = null;
+
+            if (searchPosition != null)
+            {
+                LineFeature line = (so as LineFeature);
+                if (line != null && line.Topology is SectionTopologyList)
+                {
+                    SectionTopologyList sections = (line.Topology as SectionTopologyList);
+                    m_Section = sections.FindClosestSection(searchPosition);
+                }
+            }
         }
 
         #endregion
 
         /// <summary>
         /// Draws the content of this selection. This calls the version implemented by
-        /// the base class, and may then draw a thin yellow line on top of topological
-        /// lines that have been divided into sections.
+        /// the base class, and may then draw a thin yellow line on top (if the selection
+        /// refers to a single topological line that has been divided into sections).
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style to use</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            // Draw stuff the normal way
+            // Draw items the normal way
             base.Render(display, style);
 
-            // Just return if a specific search position isn't available
-            if (m_SearchPosition==null)
-                return;
-
-            // If we have any sectioned topological lines, highlight the section
-            // with a thin yellow overlay.
-            IDrawStyle thinYellow = new DrawStyle(Color.Yellow);
-
-            foreach (ISpatialObject so in Items)
+            // Highlight any topological section with a thin yellow overlay.
+            if (m_Section!=null)
             {
-                LineFeature line = (so as LineFeature);
-                if (line!=null && line.Topology is SectionTopologyList)
-                {
-                    SectionTopologyList sections = (line.Topology as SectionTopologyList);
-                    IDivider d = sections.FindClosestSection(m_SearchPosition);
-                    if (d!=null)
-                        d.LineGeometry.Render(display, thinYellow);
-                }
+                IDrawStyle thinYellow = new DrawStyle(Color.Yellow);
+                m_Section.LineGeometry.Render(display, thinYellow);
             }
         }
 
@@ -98,13 +98,13 @@ namespace Backsight.Editor
         /// necessarily in the same order)</returns>
         public override bool Equals(ISpatialSelection that)
         {
-            // If this is a single-item selection that refers to a line, and which has
-            // a specific reference position, all selections are considered to be different.
-            ISpatialObject so = Item;
-            if (m_SearchPosition!=null && so!=null && so.SpatialType==SpatialType.Line)
+            // The same spatial objects have to be involved
+            if (!base.Equals(that))
                 return false;
 
-            return base.Equals(that);
+            // If both selections refer to the same divider (or null), they're the same
+            CadastralSelection other = (that as CadastralSelection);
+            return (other!=null && this.m_Section == other.m_Section);
         }
     }
 }
