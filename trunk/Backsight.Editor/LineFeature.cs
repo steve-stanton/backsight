@@ -164,23 +164,39 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            m_Geom.Render(display, style);
 
-            // If we're highlighting, and points are displayed, render the end points too
-            // (if the line is not a polygon boundary, draw hatched ends).
-            if ((style is HighlightStyle) && display.MapScale < MapModel.ShowPointScale)
+            if (style is HighlightStyle)
             {
+                // If we're highlighting a non-topological line, always draw it in turquoise,
+                // regardless of the supplied style.
                 if (IsTopological)
-                {
-                    StartPoint.Draw(display, Color.DarkBlue);
-                    EndPoint.Draw(display, Color.LightBlue);
-                }
+                    m_Geom.Render(display, style);
                 else
                 {
-                    StartPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.DarkBlue);
-                    EndPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.LightBlue);
+                    Color oldCol = style.LineColor;
+                    style.LineColor = Color.Turquoise;
+                    m_Geom.Render(display, style);
+                    style.LineColor = oldCol;
+                }
+
+                // If we're highlighting, and points are displayed, render the end points too
+                // (if the line is not a polygon boundary, draw hatched ends).
+                if (display.MapScale < MapModel.ShowPointScale)
+                {
+                    if (IsTopological)
+                    {
+                        StartPoint.Draw(display, Color.DarkBlue);
+                        EndPoint.Draw(display, Color.LightBlue);
+                    }
+                    else
+                    {
+                        StartPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.DarkBlue);
+                        EndPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.LightBlue);
+                    }
                 }
             }
+            else
+                m_Geom.Render(display, style);
         }
 
         public override SpatialType SpatialType
