@@ -92,7 +92,10 @@ namespace Backsight.Forms
             {
                 PointF p = CreatePoint(display, position);
                 float d = size * 0.5F;
-                display.Graphics.FillRectangle(Brush, p.X-d, p.Y-d, size, size);
+                if (FillColor == Color.Transparent)
+                    display.Graphics.DrawRectangle(m_Pen, p.X-d, p.Y-d, size, size);
+                else
+                    display.Graphics.FillRectangle(Brush, p.X-d, p.Y-d, size, size);
             }
         }
 

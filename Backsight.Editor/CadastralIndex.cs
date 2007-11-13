@@ -16,6 +16,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Drawing;
 
 using Backsight.Index;
 
@@ -149,6 +150,17 @@ namespace Backsight.Editor
         internal uint GetIntersectCount()
         {
             return m_ExtraData.GetPointCount();
+        }
+
+        /// <summary>
+        /// Draws intersection points
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal void DrawIntersections(ISpatialDisplay display)
+        {
+            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            style.FillColor = Color.Transparent;
+            new DrawQuery(m_ExtraData, display, style, SpatialType.Point);
         }
 
     }
