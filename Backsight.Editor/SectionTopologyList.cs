@@ -209,5 +209,31 @@ namespace Backsight.Editor
                 }
             }
         }
+
+        /// <summary>
+        /// Locates the divider that is closest to the specified position.
+        /// </summary>
+        /// <param name="p">The position of interest</param>
+        /// <returns>The closest section (null if there are no sections in this list)</returns>
+        internal IDivider FindClosestSection(IPosition p)
+        {
+            if (m_Sections.Count==0)
+                return null;
+
+            IDivider result = m_Sections[0];
+            double minDist = result.LineGeometry.Distance(p).Meters;
+
+            for (int i=1; i<m_Sections.Count; i++)
+            {
+                double d = m_Sections[i].LineGeometry.Distance(p).Meters;
+                if (d < minDist)
+                {
+                    minDist = d;
+                    result = m_Sections[i];
+                }
+            }
+
+            return result;
+        }
     }
 }

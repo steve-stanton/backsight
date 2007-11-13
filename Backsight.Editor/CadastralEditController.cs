@@ -348,7 +348,7 @@ namespace Backsight.Editor
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
                 if (newItem!=null)
                 {
-                    this.Selection = new SpatialSelection(newItem);
+                    this.Selection = new CadastralSelection(newItem, p);
                     return;
                 }
             }
@@ -367,17 +367,21 @@ namespace Backsight.Editor
             {
                 // If we previously selected something, see if the search point
                 // lies within tolerance. If so, just return with what we've already got
-                if (oldItem!=null && oldItem.SpatialType==SpatialType.Line)
-                {
-                    ILength dist = oldItem.Distance(p);
-                    if (dist.Meters < tol.Meters)
-                        return;
-                }
+                // ...just make the query (the issue here has to do with special highlighting
+                // for topological sections -- if you point at another section of a line, the
+                // highlighting doesn't move).
+
+                // if (oldItem!=null && oldItem.SpatialType==SpatialType.Line)
+                // {
+                //     ILength dist = oldItem.Distance(p);
+                //     if (dist.Meters < tol.Meters)
+                //         return;
+                // }
 
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Line);
                 if (newItem!=null)
                 {
-                    this.Selection = new SpatialSelection(newItem);
+                    this.Selection = new CadastralSelection(newItem, p);
                     return;
                 }
             }
@@ -390,7 +394,7 @@ namespace Backsight.Editor
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
                 if (newItem!=null)
                 {
-                    this.Selection = new SpatialSelection(newItem);
+                    this.Selection = new CadastralSelection(newItem, p);
                     return;
                 }
             }
@@ -418,7 +422,7 @@ namespace Backsight.Editor
                 Polygon pol = new FindPointContainerQuery(index, pg).Result;
                 if (pol!=null)
                 {
-                    this.Selection = new SpatialSelection(pol);
+                    this.Selection = new CadastralSelection(pol, p);
                     return;
                 }
             }
@@ -674,7 +678,7 @@ namespace Backsight.Editor
 
             // Select the point if requested
             if (select)
-                this.Selection = new SpatialSelection(p);
+                this.Selection = new CadastralSelection(p, p);
         }
 
         /// <summary>

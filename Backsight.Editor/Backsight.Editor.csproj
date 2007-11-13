@@ -49,6 +49,7 @@
     <Compile Include="CadastralIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="CadastralSelection.cs" />
     <Compile Include="CleanupQuery.cs" />
     <Compile Include="CommandUI.cs" />
     <Compile Include="Comparison.cs" />

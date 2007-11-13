@@ -56,5 +56,12 @@ namespace Backsight
         /// <returns>True if this selection refers to a single item that corresponds
         /// to the specified spatial object</returns>
         bool Equals(ISpatialObject o);
+
+        /// <summary>
+        /// Draws the content of this selection
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style to use</param>
+        void Render(ISpatialDisplay display, IDrawStyle style);
     }
 }

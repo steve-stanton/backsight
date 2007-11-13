@@ -137,7 +137,7 @@ namespace Backsight
         /// <param name="that">The selection to compare with</param>
         /// <returns>True if the two selections refer to the same spatial objects (not
         /// necessarily in the same order)</returns>
-        public bool Equals(ISpatialSelection that)
+        public virtual bool Equals(ISpatialSelection that)
         {
             if (that==null)
                 return false;
@@ -172,6 +172,17 @@ namespace Backsight
                 return false;
 
             return Object.ReferenceEquals(so, m_Items[0]);
+        }
+
+        /// <summary>
+        /// Draws the content of this selection
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style to use</param>
+        public virtual void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+            foreach (ISpatialObject item in m_Items)
+                item.Render(display, style);
         }
     }
 }
