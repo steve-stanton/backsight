@@ -650,8 +650,9 @@ namespace Backsight.Forms
 
                     // Highlight the new selection
                     IDrawStyle style = SpatialController.Current.HighlightStyle;
-                    foreach(ISpatialObject item in newSelection.Items)
-                        item.Render(this, style);
+                    newSelection.Render(this, style);
+                    //foreach(ISpatialObject item in newSelection.Items)
+                    //    item.Render(this, style);
 
                     m_Display.Render(g);
                 }
