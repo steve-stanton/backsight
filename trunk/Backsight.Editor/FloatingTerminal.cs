@@ -69,14 +69,6 @@ namespace Backsight.Editor
         {
         }
 
-        /// <summary>
-        /// Associates this terminal with an additional divider
-        /// </summary>
-        /// <param name="d">The divider the terminal should be referred to</param>
-        public void AddDivider(SectionDivider d)
-        {
-        }
-
         #endregion
     }
 }
