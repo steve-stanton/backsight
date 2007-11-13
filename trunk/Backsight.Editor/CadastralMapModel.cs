@@ -516,6 +516,10 @@ namespace Backsight.Editor
 
             new DrawQuery(m_Index, display, style, types);
 
+            // Draw intersections if necessary
+            if (m_AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
+                (m_Index as CadastralIndex).DrawIntersections(display);
+
             //(m_Index as SpatialIndex).Draw(display); // for testing
         }
 

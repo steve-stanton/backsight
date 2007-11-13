@@ -113,6 +113,7 @@ namespace Backsight.Editor
                     ITerminal endTerm = new FloatingTerminal(m_End);
                     LineGeometry line = new SegmentGeometry(m_Start, endTerm);
                     IntersectionFinder xf = new IntersectionFinder(line, false);
+                    style.FillColor = Color.Transparent;
                     xf.Render(display, style);
                 }
             }
