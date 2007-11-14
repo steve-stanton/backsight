@@ -122,5 +122,14 @@ namespace Backsight.Editor
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Override returns a string for use in debugging.
+        /// </summary>
+        /// <returns>A sting indicating the internal ID of the line involved, plus the two terminals.</returns>
+        public override string ToString()
+        {
+            return String.Format("Section on line {0} from {1}-{2}", m_Line.DataId, m_From.ToString(), m_To.ToString());
+        }
     }
 }

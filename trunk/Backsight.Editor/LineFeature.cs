@@ -718,7 +718,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 throw new Exception("LineFeature.Split - Line is associated with the wrong type of topology");
             LineTopology lineTop = (LineTopology)m_Topology;
 
-            if (DataId=="0.4423")
+            if (DataId=="0.8513")
             {
                 int junk=0;
             }

@@ -490,17 +490,24 @@ namespace Backsight.Editor
                 throw new Exception("Bad line section (start)");
 
             int eIndex = FindSegment(data, true, sIndex, s.To);
-            if (sIndex<0)
+            if (eIndex<0)
                 throw new Exception("Bad line section (end)");
 
             Debug.Assert(eIndex>=sIndex);
 
+            // Take care of special case where the section ends at the very end of a
+            // line segment (in that case, we replace the end location rather than append)
+            IPointGeometry endSegment = data[eIndex+1];
+            bool appendEnd = (!endSegment.IsCoincident(s.To));
+
             // Copy over the relevant data
-            int len = eIndex-sIndex+1;
+            int nCopy = eIndex-sIndex+1;
+            int len = (appendEnd ? nCopy+1 : nCopy);
+
             if (len > 2)
             {
                 IPointGeometry[] result = new IPointGeometry[len];
-                Array.Copy(data, sIndex, result, 0, len);
+                Array.Copy(data, sIndex, result, 0, nCopy);
 
                 // And ensure the result terminates at the section terminals.
                 result[0] = s.From;

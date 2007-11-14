@@ -114,8 +114,10 @@ namespace Backsight.Editor
 
         public override string ToString()
         {
-            return String.Format("L={0} R={1}", (Left==null ? "n/a" : Left.ToString())
-                                              , (Right==null ? "n/a" : Right.ToString()));
+            return String.Format("Line={0} L={1} R={2}",
+                                    Line.DataId,
+                                    (Left==null ? "n/a" : Left.ToString()),
+                                    (Right==null ? "n/a" : Right.ToString()));
         }
 
         /// <summary>
