@@ -46,8 +46,9 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="so">The object to remember as part of this selection (if null, it
         /// will not be added to the selection)</param>
-        /// <param name="searchPosition">A position to associate with the selection (null
-        /// if a specific position isn't relevant)</param>
+        /// <param name="searchPosition">A position associated with the selection (null
+        /// if a specific position isn't relevant). This is used to determine whether a
+        /// topological section is relevant when a line is selected.</param>
         public CadastralSelection(ISpatialObject so, IPosition searchPosition)
             : base(so)
         {

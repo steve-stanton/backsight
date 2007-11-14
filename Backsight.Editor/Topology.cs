@@ -334,6 +334,11 @@ namespace Backsight.Editor
             // Cycle the polygon until we return to the first divider.
             for (; ; )
             {
+                if (d.Line.DataId=="0.7958")
+                {
+                    int junk=0;
+                }
+
                 // Define the next face
                 Face face = new Face(d, isLeft);
                 nface++;
@@ -410,7 +415,8 @@ namespace Backsight.Editor
                 for (int i=0; i<faces.Count; i++)
                 {
                     Face face = faces[i];
-                    string line = String.Format("[{0}] {1} {2}", i, face.Divider.Line.DataId, face.IsLeft.ToString());
+                    string side = (face.IsLeft ? "L" : "R");
+                    string line = String.Format("[{0}] {1} {2}", i, side, face.Divider.ToString());
                     sw.WriteLine(line);
                 }
             }
