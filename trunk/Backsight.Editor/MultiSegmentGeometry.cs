@@ -495,19 +495,16 @@ namespace Backsight.Editor
 
             Debug.Assert(eIndex>=sIndex);
 
-            // Take care of special case where the section ends at the very end of a
-            // line segment (in that case, we replace the end location rather than append)
-            IPointGeometry endSegment = data[eIndex+1];
-            bool appendEnd = (!endSegment.IsCoincident(s.To));
-
-            // Copy over the relevant data
-            int nCopy = eIndex-sIndex+1;
-            int len = (appendEnd ? nCopy+1 : nCopy);
+            // Copy over the relevant data. Note that if the to-point coincides with
+            // the very end of a segment, the eIndex we have refers to the start of
+            // the segment. We want everything up to the start of the eIndex segment,
+            // then we'll append the end of the section.
+            int len = eIndex - sIndex + 2;
 
             if (len > 2)
             {
                 IPointGeometry[] result = new IPointGeometry[len];
-                Array.Copy(data, sIndex, result, 0, nCopy);
+                Array.Copy(data, sIndex, result, 0, len-1);
 
                 // And ensure the result terminates at the section terminals.
                 result[0] = s.From;

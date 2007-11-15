@@ -565,9 +565,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(action.Title);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private bool IsFileCheckEnabled()
         {
-            return false;
+            return (HasMap && !m_Controller.IsChecking);
         }
 
         private void FileCheck(IUserAction action)
@@ -1063,19 +1067,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// </summary>
         public void Clear()
         {
-//            MessageBox.Show("clear");
             hSplitContainer.Panel2.Controls.Clear();
             hSplitContainer.Panel2Collapsed = true;
-            //Refresh();
         }
-
-        /*
-        internal void FinishTest(UserControl t)
-        {
-            hSplitContainer.Panel2.Controls.Remove(t);
-            hSplitContainer.Panel2Collapsed = true;
-        }
-        */
 
         private bool IsPointUpdateEnabled()
         {
@@ -1211,18 +1205,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void LineAddStraightLine(IUserAction action)
         {
-            /*
-            ContextMenuStrip ctx = mapControl.ContextMenuStrip;
-            if (ctx!=null)
-            {
-                if (ctx.Visible)
-                    MessageBox.Show("context menu visible");
-                else
-                    MessageBox.Show("context menu not visible");
-
-                //ctx.Hide();
-            }
-            */
             CommandUI cmd = new NewLineUI(this, action, SelectedPoint);
             m_Controller.StartCommand(cmd);
         }
