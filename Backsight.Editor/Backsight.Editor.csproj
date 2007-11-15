@@ -64,6 +64,12 @@
     <Compile Include="DirectionFlags.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FloatingTerminal.cs" />
+    <Compile Include="Forms\FileCheckForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FileCheckForm.Designer.cs">
+      <DependentUpon>FileCheckForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ForwardingTraceListener.cs" />
     <Compile Include="IDivider.cs" />
     <Compile Include="LineDivider.cs" />
@@ -374,6 +380,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>EntityTranslationForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileCheckForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FileCheckForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetCircleForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetCircleForm.cs</DependentUpon>
@@ -630,6 +640,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AttachPointCursor.cur" />
+    <Content Include="Resources\CheckBridgeIcon.ico" />
+    <Content Include="Resources\CheckDanglingIcon.ico" />
+    <Content Include="Resources\CheckFloatingIcon.ico" />
+    <Content Include="Resources\CheckMultiLabelIcon.ico" />
+    <Content Include="Resources\CheckNoAttributesIcon.ico" />
+    <Content Include="Resources\CheckNoLabelIcon.ico" />
+    <Content Include="Resources\CheckNoPolygonForLabelIcon.ico" />
+    <Content Include="Resources\CheckNotEnclosedIcon.ico" />
+    <Content Include="Resources\CheckOverlapIcon.ico" />
+    <Content Include="Resources\CheckSmallLineIcon.ico" />
+    <Content Include="Resources\CheckSmallPolygonIcon.ico" />
     <Content Include="Resources\Editor.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />

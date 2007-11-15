@@ -14,6 +14,9 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
+
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
@@ -45,5 +48,53 @@ namespace Backsight.Editor
             throw new NotImplementedException("FileCheckUI.CanRollback");
             //return (seq>m_OpSequence);
         }
+
+        /// <summary>
+        /// Runs the file check.
+        /// </summary>
+        /// <returns>True if file check was initiated.</returns>
+        internal bool Run()
+        {
+            // Get the user to specify what needs to be checked.
+            FileCheckForm dial = new FileCheckForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                //m_Options = dial.Options;
+            }
+
+            return false;
+        }
+        /*
+LOGICAL CuiFileCheck::Run ( void ) {
+
+	// Get the user to specify what needs to be checked.
+	CdFileCheck dial;
+	if ( dial.DoModal()!=IDOK ) return FALSE;
+
+	// Pick up the options.
+	m_Options = dial.GetOptions();
+	if ( m_Options==0 ) {
+		ShowMessage("You must pick something you want to check.");
+		return FALSE;
+	}
+
+	// Start the item dialog (modeless).
+	m_pStatus = new CdCheck(*this);
+	m_pStatus->Create(IDD_CHECK,GetpView());
+
+	// Make the initial check.
+	INT4 nCheck = CheckMap();
+
+	// Let the review dialog know.
+	m_pStatus->OnFinishCheck(nCheck,m_Results.GetCount());
+
+	// Paint any markers.
+	Paint();
+
+	// The check may have failed if an edit was in progress.
+	return (nCheck>=0);
+
+} // end of Run
+         */
     }
 }

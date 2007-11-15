@@ -76,6 +76,12 @@ namespace Backsight.Editor
         /// </summary>
         InverseForm m_Inverse;
 
+        /// <summary>
+        /// Modeless dialog used during file checks (null if a check is not
+        /// currently underway).
+        /// </summary>
+        FileCheckUI m_Check;
+
         #endregion
 
         #region Constructors
@@ -91,6 +97,7 @@ namespace Backsight.Editor
             m_CurrentEdit = null;
             m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
+            m_Check = null;
         }
 
         #endregion
@@ -686,7 +693,17 @@ namespace Backsight.Editor
         /// </summary>
         internal bool IsChecking
         {
-            get { return false; }
+            get { return (m_Check!=null); }
+        }
+
+        internal void StartCheck()
+        {
+            if (m_Check != null)
+                throw new InvalidOperationException("File check is already running");
+
+            m_Check = new FileCheckUI();
+            if (!m_Check.Run())
+                m_Check = null;
         }
 
         internal void ClearSelection()
