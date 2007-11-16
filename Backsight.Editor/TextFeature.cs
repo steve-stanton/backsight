@@ -223,6 +223,15 @@ namespace Backsight.Editor
             set { m_Container = value; }
         }
 
+        /// <summary>
+        /// Releases the association of this label with a polygon that is being removed.
+        /// </summary>
+        internal void OnPolygonDelete()
+        {
+            m_Container = null;
+            SetBuilt(false);
+        }
+
         public string ContainerId
         {
             get { return (m_Container==null ? String.Empty : m_Container.ToString()); }
@@ -238,7 +247,7 @@ namespace Backsight.Editor
             // If this label refers to a polygon that has been marked for deletion, null
             // out the reference (the polygon may not point back).
             if (m_Container!=null && m_Container.IsDeleted)
-                m_Container = null;
+                OnPolygonDelete();
 
             base.Clean();
         }

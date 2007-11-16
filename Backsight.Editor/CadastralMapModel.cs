@@ -914,18 +914,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Builds polygon topology for everything in the map. If the
-        /// model contains more than one topological layer, they will all be built
-        /// as separate layers.
-        /// <para>
-        /// There is no need to build network topology before calling this function,
-        /// because network topology is calculated on-the-fly. However, it is assumed
-        /// that the lines do in fact form a clean topological network. If any lines are
-        /// detected which are coincident at a node, this function will return without
-        /// trying to do any further processing.
-        /// </para><para>
-        /// Does NOT build labels. Make an explicit call to BuildLabels to do that.
-        /// </para>
+        /// Builds polygon topology for everything in the active layer of the map.
         /// </summary>
         /// <devnote>
         /// Should really return status to indicate whether an early return has been
