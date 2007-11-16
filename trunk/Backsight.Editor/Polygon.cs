@@ -225,7 +225,7 @@ namespace Backsight.Editor
                 }
 
                 if (m_Label!=null && m_Label.Container==this)
-                    m_Label.Container = null;
+                    m_Label.OnPolygonDelete();
             }
 
             base.Clean();
