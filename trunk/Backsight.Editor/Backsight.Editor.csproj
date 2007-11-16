@@ -50,6 +50,8 @@
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
     <Compile Include="CadastralSelection.cs" />
+    <Compile Include="CheckItem.cs" />
+    <Compile Include="CheckType.cs" />
     <Compile Include="CleanupQuery.cs" />
     <Compile Include="CommandUI.cs" />
     <Compile Include="Comparison.cs" />
@@ -72,6 +74,7 @@
     </Compile>
     <Compile Include="ForwardingTraceListener.cs" />
     <Compile Include="IDivider.cs" />
+    <Compile Include="DividerCheck.cs" />
     <Compile Include="LineDivider.cs" />
     <Compile Include="DottedStyle.cs" />
     <Compile Include="DirectionType.cs" />
