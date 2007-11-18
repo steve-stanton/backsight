@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Text;
 
 namespace Backsight.Editor
 {
@@ -113,7 +114,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="c">The letter to decode</param>
         /// <returns>The corresponding flag bit</returns>
-        static CheckType GetOption(char c)
+        static internal CheckType GetOption(char c)
         {
             if (c==CheckTypeSmallLine)
                 return CheckType.SmallLine;
@@ -149,6 +150,76 @@ namespace Backsight.Editor
                 return CheckType.MultiLabel;
 
             return 0;
+        }
+
+        /// <summary>
+        /// Gets a string that contains code letters for all defined checks. This
+        /// is used when storing check options as part of the system registry.
+        /// </summary>
+        /// <returns>A concatenation of all defined code letters (each letter
+        /// can be decoded using a call to <see cref="GetOption"/>)</returns>
+        static internal string GetAllCheckLetters()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(CheckTypeSmallLine);
+            sb.Append(CheckTypeDangle);
+            sb.Append(CheckTypeOverlap);
+            sb.Append(CheckTypeFloating);
+            sb.Append(CheckTypeBridge);
+            sb.Append(CheckTypeSmallPolygon);
+            sb.Append(CheckTypeNotEnclosed);
+            sb.Append(CheckTypeNoLabel);
+            sb.Append(CheckTypeNoPolygonForLabel);
+            sb.Append(CheckTypeNoAttributes);
+            sb.Append(CheckTypeMultiLabel);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts the supplied checks into a string of code letters
+        /// </summary>
+        /// <param name="checks">To check flags to convert</param>
+        /// <returns>The equivalent code letters</returns>
+        static internal string GetCheckLetters(CheckType checks)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if ((checks & CheckType.SmallLine) != 0)
+                sb.Append(CheckTypeSmallLine);
+
+            if ((checks & CheckType.Dangle) != 0)
+                sb.Append(CheckTypeDangle);
+
+            if ((checks & CheckType.Overlap) != 0)
+                sb.Append(CheckTypeOverlap);
+
+            if ((checks & CheckType.Floating) != 0)
+                sb.Append(CheckTypeFloating);
+
+            if ((checks & CheckType.Bridge) != 0)
+                sb.Append(CheckTypeBridge);
+
+            if ((checks & CheckType.SmallPolygon) != 0)
+                sb.Append(CheckTypeSmallPolygon);
+
+            if ((checks & CheckType.NotEnclosed) != 0)
+                sb.Append(CheckTypeNotEnclosed);
+
+            if ((checks & CheckType.NoLabel) != 0)
+                sb.Append(CheckTypeNoLabel);
+
+            if ((checks & CheckType.NoPolygonForLabel) != 0)
+                sb.Append(CheckTypeNoPolygonForLabel);
+
+            if ((checks & CheckType.NoAttributes) != 0)
+                sb.Append(CheckTypeNoAttributes);
+
+            if ((checks & CheckType.MultiLabel) != 0)
+                sb.Append(CheckTypeMultiLabel);
+
+            return sb.ToString();
         }
 
         #endregion
@@ -200,11 +271,40 @@ namespace Backsight.Editor
             set { m_Place = value; }
         }
 
-        abstract internal void Paint();
-        abstract internal void PaintOut(CheckType newTypes);
+        /// <summary>
+        /// Repaint icon(s) representing this check result.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        abstract internal void Paint(ISpatialDisplay display);
+
+        /// <summary>
+        /// Paints out those results that no longer apply.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="newTypes">The new results</param>
+        abstract internal void PaintOut(ISpatialDisplay display, CheckType newTypes);
+
+        /// <summary>
+        /// Rechecks this result.
+        /// </summary>
+        /// <returns>The result(s) that still apply.</returns>
         abstract internal CheckType ReCheck();
+
+        /// <summary>
+        /// A textual explanation about this check result.
+        /// </summary>
         abstract internal string Explanation { get; }
+
+        /// <summary>
+        /// Returns a display position for this check. This is the position to
+        /// use for auto-centering the draw. It is not necessarily the same as
+        /// the position of the problem icon.
+        /// </summary>
         abstract internal IPosition Position { get; }
+
+        /// <summary>
+        /// Selects the object that this check relates to.
+        /// </summary>
         abstract internal void Select();
     }
 }

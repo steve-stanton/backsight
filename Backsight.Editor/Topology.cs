@@ -191,25 +191,16 @@ namespace Backsight.Editor
                 cx.AddIntersection(x);
         }
 
-        internal static bool IsStartDangle(IDivider d)
-        {
-            return IsDangle(d.From, d);
-        }
-
-        internal static bool IsEndDangle(IDivider d)
-        {
-            return IsDangle(d.To, d);
-        }
-
         /// <summary>
         /// Does one end of a divider dangle?
         /// </summary>
-        /// <param name="loc">The location to check (either the start or end of the supplied divider)</param>
         /// <param name="d">The divider of interest</param>
+        /// <param name="loc">The end to check (either the start or end of the supplied divider)</param>
         /// <returns>True if end dangles</returns>
-        static bool IsDangle(ITerminal loc, IDivider d)
+        internal static bool IsDangle(IDivider d, ITerminal loc)
         {
             Debug.Assert(!d.IsOverlap);
+            Debug.Assert(d.From == loc || d.To == loc);
 
             // Get the adjacent polygons
             Ring pL = d.Left;
@@ -225,8 +216,9 @@ namespace Backsight.Editor
 
             // That should cover most cases. The only other case is a situation where the divider is
             // a bridging line that connects two islands. Get the end location to see if that's the case.
-            return loc.IsDangle();
-            //return false;
+            IDivider[] divs = loc.IncidentDividers();
+            Debug.Assert(Array.IndexOf(divs, d)>=0);
+            return (divs.Length==1);
         }
 
         #endregion

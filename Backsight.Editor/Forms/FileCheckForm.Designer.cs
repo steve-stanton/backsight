@@ -30,44 +30,44 @@ namespace Backsight.Editor.Forms
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FileCheckForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.smallLineCheckBox = new System.Windows.Forms.CheckBox();
-            this.danglingCheckBox = new System.Windows.Forms.CheckBox();
-            this.overlapCheckBox = new System.Windows.Forms.CheckBox();
-            this.floatingCheckBox = new System.Windows.Forms.CheckBox();
+            this.pictureBox5 = new System.Windows.Forms.PictureBox();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bridgeCheckBox = new System.Windows.Forms.CheckBox();
+            this.floatingCheckBox = new System.Windows.Forms.CheckBox();
+            this.overlapCheckBox = new System.Windows.Forms.CheckBox();
+            this.danglingCheckBox = new System.Windows.Forms.CheckBox();
+            this.smallLineCheckBox = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.pictureBox11 = new System.Windows.Forms.PictureBox();
+            this.pictureBox10 = new System.Windows.Forms.PictureBox();
+            this.pictureBox9 = new System.Windows.Forms.PictureBox();
+            this.pictureBox8 = new System.Windows.Forms.PictureBox();
+            this.pictureBox7 = new System.Windows.Forms.PictureBox();
+            this.pictureBox6 = new System.Windows.Forms.PictureBox();
+            this.multiLabelCheckBox = new System.Windows.Forms.CheckBox();
             this.noAttributesCheckBox = new System.Windows.Forms.CheckBox();
             this.noPolygonForLabelCheckBox = new System.Windows.Forms.CheckBox();
             this.noLabelCheckBox = new System.Windows.Forms.CheckBox();
             this.notEnclosedCheckBox = new System.Windows.Forms.CheckBox();
             this.smallPolygonCheckBox = new System.Windows.Forms.CheckBox();
-            this.multiLabelCheckBox = new System.Windows.Forms.CheckBox();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
-            this.pictureBox5 = new System.Windows.Forms.PictureBox();
-            this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.pictureBox7 = new System.Windows.Forms.PictureBox();
-            this.pictureBox8 = new System.Windows.Forms.PictureBox();
-            this.pictureBox9 = new System.Windows.Forms.PictureBox();
-            this.pictureBox10 = new System.Windows.Forms.PictureBox();
-            this.pictureBox11 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -89,6 +89,111 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lines";
+            // 
+            // pictureBox5
+            // 
+            this.pictureBox5.ErrorImage = null;
+            this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
+            this.pictureBox5.Location = new System.Drawing.Point(19, 179);
+            this.pictureBox5.Name = "pictureBox5";
+            this.pictureBox5.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox5.TabIndex = 9;
+            this.pictureBox5.TabStop = false;
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.ErrorImage = null;
+            this.pictureBox4.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox4.Image")));
+            this.pictureBox4.Location = new System.Drawing.Point(19, 141);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox4.TabIndex = 8;
+            this.pictureBox4.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.ErrorImage = null;
+            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
+            this.pictureBox3.Location = new System.Drawing.Point(19, 103);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox3.TabIndex = 7;
+            this.pictureBox3.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.ErrorImage = null;
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(19, 65);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox2.TabIndex = 6;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.ErrorImage = null;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(19, 27);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
+            // bridgeCheckBox
+            // 
+            this.bridgeCheckBox.AutoSize = true;
+            this.bridgeCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bridgeCheckBox.Location = new System.Drawing.Point(61, 185);
+            this.bridgeCheckBox.Name = "bridgeCheckBox";
+            this.bridgeCheckBox.Size = new System.Drawing.Size(198, 20);
+            this.bridgeCheckBox.TabIndex = 4;
+            this.bridgeCheckBox.Text = "Same polygon on &both sides";
+            this.bridgeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // floatingCheckBox
+            // 
+            this.floatingCheckBox.AutoSize = true;
+            this.floatingCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.floatingCheckBox.Location = new System.Drawing.Point(61, 147);
+            this.floatingCheckBox.Name = "floatingCheckBox";
+            this.floatingCheckBox.Size = new System.Drawing.Size(75, 20);
+            this.floatingCheckBox.TabIndex = 3;
+            this.floatingCheckBox.Text = "&Floating";
+            this.floatingCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // overlapCheckBox
+            // 
+            this.overlapCheckBox.AutoSize = true;
+            this.overlapCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.overlapCheckBox.Location = new System.Drawing.Point(61, 109);
+            this.overlapCheckBox.Name = "overlapCheckBox";
+            this.overlapCheckBox.Size = new System.Drawing.Size(101, 20);
+            this.overlapCheckBox.TabIndex = 2;
+            this.overlapCheckBox.Text = "&Overlapping";
+            this.overlapCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // danglingCheckBox
+            // 
+            this.danglingCheckBox.AutoSize = true;
+            this.danglingCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.danglingCheckBox.Location = new System.Drawing.Point(61, 71);
+            this.danglingCheckBox.Name = "danglingCheckBox";
+            this.danglingCheckBox.Size = new System.Drawing.Size(81, 20);
+            this.danglingCheckBox.TabIndex = 1;
+            this.danglingCheckBox.Text = "&Dangling";
+            this.danglingCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // smallLineCheckBox
+            // 
+            this.smallLineCheckBox.AutoSize = true;
+            this.smallLineCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.smallLineCheckBox.Location = new System.Drawing.Point(61, 33);
+            this.smallLineCheckBox.Name = "smallLineCheckBox";
+            this.smallLineCheckBox.Size = new System.Drawing.Size(106, 20);
+            this.smallLineCheckBox.TabIndex = 0;
+            this.smallLineCheckBox.Text = "Tiny &sections";
+            this.smallLineCheckBox.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -112,60 +217,75 @@ namespace Backsight.Editor.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Polygons and Labels";
             // 
-            // smallLineCheckBox
+            // pictureBox11
             // 
-            this.smallLineCheckBox.AutoSize = true;
-            this.smallLineCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.smallLineCheckBox.Location = new System.Drawing.Point(61, 33);
-            this.smallLineCheckBox.Name = "smallLineCheckBox";
-            this.smallLineCheckBox.Size = new System.Drawing.Size(106, 20);
-            this.smallLineCheckBox.TabIndex = 0;
-            this.smallLineCheckBox.Text = "Tiny &sections";
-            this.smallLineCheckBox.UseVisualStyleBackColor = true;
+            this.pictureBox11.ErrorImage = null;
+            this.pictureBox11.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox11.Image")));
+            this.pictureBox11.Location = new System.Drawing.Point(14, 65);
+            this.pictureBox11.Name = "pictureBox11";
+            this.pictureBox11.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox11.TabIndex = 16;
+            this.pictureBox11.TabStop = false;
             // 
-            // danglingCheckBox
+            // pictureBox10
             // 
-            this.danglingCheckBox.AutoSize = true;
-            this.danglingCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.danglingCheckBox.Location = new System.Drawing.Point(61, 71);
-            this.danglingCheckBox.Name = "danglingCheckBox";
-            this.danglingCheckBox.Size = new System.Drawing.Size(81, 20);
-            this.danglingCheckBox.TabIndex = 1;
-            this.danglingCheckBox.Text = "&Dangling";
-            this.danglingCheckBox.UseVisualStyleBackColor = true;
+            this.pictureBox10.ErrorImage = null;
+            this.pictureBox10.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox10.Image")));
+            this.pictureBox10.Location = new System.Drawing.Point(14, 105);
+            this.pictureBox10.Name = "pictureBox10";
+            this.pictureBox10.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox10.TabIndex = 15;
+            this.pictureBox10.TabStop = false;
             // 
-            // overlapCheckBox
+            // pictureBox9
             // 
-            this.overlapCheckBox.AutoSize = true;
-            this.overlapCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.overlapCheckBox.Location = new System.Drawing.Point(61, 109);
-            this.overlapCheckBox.Name = "overlapCheckBox";
-            this.overlapCheckBox.Size = new System.Drawing.Size(101, 20);
-            this.overlapCheckBox.TabIndex = 2;
-            this.overlapCheckBox.Text = "&Overlapping";
-            this.overlapCheckBox.UseVisualStyleBackColor = true;
+            this.pictureBox9.ErrorImage = null;
+            this.pictureBox9.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox9.Image")));
+            this.pictureBox9.Location = new System.Drawing.Point(14, 143);
+            this.pictureBox9.Name = "pictureBox9";
+            this.pictureBox9.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox9.TabIndex = 14;
+            this.pictureBox9.TabStop = false;
             // 
-            // floatingCheckBox
+            // pictureBox8
             // 
-            this.floatingCheckBox.AutoSize = true;
-            this.floatingCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.floatingCheckBox.Location = new System.Drawing.Point(61, 147);
-            this.floatingCheckBox.Name = "floatingCheckBox";
-            this.floatingCheckBox.Size = new System.Drawing.Size(75, 20);
-            this.floatingCheckBox.TabIndex = 3;
-            this.floatingCheckBox.Text = "&Floating";
-            this.floatingCheckBox.UseVisualStyleBackColor = true;
+            this.pictureBox8.ErrorImage = null;
+            this.pictureBox8.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox8.Image")));
+            this.pictureBox8.Location = new System.Drawing.Point(14, 181);
+            this.pictureBox8.Name = "pictureBox8";
+            this.pictureBox8.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox8.TabIndex = 13;
+            this.pictureBox8.TabStop = false;
             // 
-            // bridgeCheckBox
+            // pictureBox7
             // 
-            this.bridgeCheckBox.AutoSize = true;
-            this.bridgeCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bridgeCheckBox.Location = new System.Drawing.Point(61, 185);
-            this.bridgeCheckBox.Name = "bridgeCheckBox";
-            this.bridgeCheckBox.Size = new System.Drawing.Size(198, 20);
-            this.bridgeCheckBox.TabIndex = 4;
-            this.bridgeCheckBox.Text = "Same polygon on &both sides";
-            this.bridgeCheckBox.UseVisualStyleBackColor = true;
+            this.pictureBox7.ErrorImage = null;
+            this.pictureBox7.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox7.Image")));
+            this.pictureBox7.Location = new System.Drawing.Point(14, 219);
+            this.pictureBox7.Name = "pictureBox7";
+            this.pictureBox7.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox7.TabIndex = 12;
+            this.pictureBox7.TabStop = false;
+            // 
+            // pictureBox6
+            // 
+            this.pictureBox6.ErrorImage = null;
+            this.pictureBox6.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox6.Image")));
+            this.pictureBox6.Location = new System.Drawing.Point(14, 27);
+            this.pictureBox6.Name = "pictureBox6";
+            this.pictureBox6.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox6.TabIndex = 11;
+            this.pictureBox6.TabStop = false;
+            // 
+            // multiLabelCheckBox
+            // 
+            this.multiLabelCheckBox.AutoSize = true;
+            this.multiLabelCheckBox.Location = new System.Drawing.Point(61, 225);
+            this.multiLabelCheckBox.Name = "multiLabelCheckBox";
+            this.multiLabelCheckBox.Size = new System.Drawing.Size(145, 20);
+            this.multiLabelCheckBox.TabIndex = 10;
+            this.multiLabelCheckBox.Text = "&More than one label";
+            this.multiLabelCheckBox.UseVisualStyleBackColor = true;
             // 
             // noAttributesCheckBox
             // 
@@ -217,16 +337,6 @@ namespace Backsight.Editor.Forms
             this.smallPolygonCheckBox.Text = "&Tiny area";
             this.smallPolygonCheckBox.UseVisualStyleBackColor = true;
             // 
-            // multiLabelCheckBox
-            // 
-            this.multiLabelCheckBox.AutoSize = true;
-            this.multiLabelCheckBox.Location = new System.Drawing.Point(61, 225);
-            this.multiLabelCheckBox.Name = "multiLabelCheckBox";
-            this.multiLabelCheckBox.Size = new System.Drawing.Size(145, 20);
-            this.multiLabelCheckBox.TabIndex = 10;
-            this.multiLabelCheckBox.Text = "&More than one label";
-            this.multiLabelCheckBox.UseVisualStyleBackColor = true;
-            // 
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -236,6 +346,7 @@ namespace Backsight.Editor.Forms
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // okButton
             // 
@@ -246,116 +357,7 @@ namespace Backsight.Editor.Forms
             this.okButton.TabIndex = 3;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.ErrorImage = null;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(19, 27);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.ErrorImage = null;
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(19, 65);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox2.TabIndex = 6;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.ErrorImage = null;
-            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(19, 103);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox3.TabIndex = 7;
-            this.pictureBox3.TabStop = false;
-            // 
-            // pictureBox4
-            // 
-            this.pictureBox4.ErrorImage = null;
-            this.pictureBox4.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox4.Image")));
-            this.pictureBox4.Location = new System.Drawing.Point(19, 141);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox4.TabIndex = 8;
-            this.pictureBox4.TabStop = false;
-            // 
-            // pictureBox5
-            // 
-            this.pictureBox5.ErrorImage = null;
-            this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
-            this.pictureBox5.Location = new System.Drawing.Point(19, 179);
-            this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox5.TabIndex = 9;
-            this.pictureBox5.TabStop = false;
-            // 
-            // pictureBox6
-            // 
-            this.pictureBox6.ErrorImage = null;
-            this.pictureBox6.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox6.Image")));
-            this.pictureBox6.Location = new System.Drawing.Point(14, 27);
-            this.pictureBox6.Name = "pictureBox6";
-            this.pictureBox6.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox6.TabIndex = 11;
-            this.pictureBox6.TabStop = false;
-            // 
-            // pictureBox7
-            // 
-            this.pictureBox7.ErrorImage = null;
-            this.pictureBox7.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox7.Image")));
-            this.pictureBox7.Location = new System.Drawing.Point(14, 219);
-            this.pictureBox7.Name = "pictureBox7";
-            this.pictureBox7.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox7.TabIndex = 12;
-            this.pictureBox7.TabStop = false;
-            // 
-            // pictureBox8
-            // 
-            this.pictureBox8.ErrorImage = null;
-            this.pictureBox8.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox8.Image")));
-            this.pictureBox8.Location = new System.Drawing.Point(14, 181);
-            this.pictureBox8.Name = "pictureBox8";
-            this.pictureBox8.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox8.TabIndex = 13;
-            this.pictureBox8.TabStop = false;
-            // 
-            // pictureBox9
-            // 
-            this.pictureBox9.ErrorImage = null;
-            this.pictureBox9.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox9.Image")));
-            this.pictureBox9.Location = new System.Drawing.Point(14, 143);
-            this.pictureBox9.Name = "pictureBox9";
-            this.pictureBox9.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox9.TabIndex = 14;
-            this.pictureBox9.TabStop = false;
-            // 
-            // pictureBox10
-            // 
-            this.pictureBox10.ErrorImage = null;
-            this.pictureBox10.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox10.Image")));
-            this.pictureBox10.Location = new System.Drawing.Point(14, 105);
-            this.pictureBox10.Name = "pictureBox10";
-            this.pictureBox10.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox10.TabIndex = 15;
-            this.pictureBox10.TabStop = false;
-            // 
-            // pictureBox11
-            // 
-            this.pictureBox11.ErrorImage = null;
-            this.pictureBox11.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox11.Image")));
-            this.pictureBox11.Location = new System.Drawing.Point(14, 65);
-            this.pictureBox11.Name = "pictureBox11";
-            this.pictureBox11.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox11.TabIndex = 16;
-            this.pictureBox11.TabStop = false;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // FileCheckForm
             // 
@@ -368,21 +370,22 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.groupBox1);
             this.Name = "FileCheckForm";
             this.Text = "File Check";
+            this.Shown += new System.EventHandler(this.FileCheckForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
             this.ResumeLayout(false);
 
         }

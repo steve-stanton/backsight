@@ -59,7 +59,7 @@ namespace Backsight.Editor
             FileCheckForm dial = new FileCheckForm();
             if (dial.ShowDialog() == DialogResult.OK)
             {
-                //m_Options = dial.Options;
+                m_Options = dial.Options;
             }
 
             return false;
