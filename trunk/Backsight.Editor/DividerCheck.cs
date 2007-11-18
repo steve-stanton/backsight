@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Text;
 using System.Diagnostics;
 
 namespace Backsight.Editor
@@ -39,8 +40,8 @@ namespace Backsight.Editor
             if (d.Left != d.Right)
                 return CheckType.Null;
 
-            bool sDangle = Topology.IsStartDangle(d);
-            bool eDangle = Topology.IsEndDangle(d);
+            bool sDangle = Topology.IsDangle(d, d.From);
+            bool eDangle = Topology.IsDangle(d, d.To);
 
             if (sDangle && eDangle)
                 return CheckType.Floating;
@@ -58,7 +59,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The divider the check relates to (never null).
         /// </summary>
-        readonly IDivider m_Divider; // m_pArc
+        readonly IDivider m_Divider;
 
         #endregion
 
@@ -81,34 +82,251 @@ namespace Backsight.Editor
 
         #endregion
 
-        internal override void Paint()
+        /// <summary>
+        /// The divider the check relates to (never null).
+        /// </summary>
+        internal IDivider Divider
+        {
+            get { return m_Divider; }
+            //set { m_Divider = value; }
+        }
+
+        /// <summary>
+        /// Repaint icon(s) representing this check result.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal override void Paint(ISpatialDisplay display)
+        {
+            // Return if the line has been de-activated.
+            if (m_Divider.Line.IsInactive)
+                return;
+
+            // Draw half way along the divider.
+            PaintAt(display, this.Position);
+        }
+
+        /// <summary>
+        /// Repaints icon(s) representing this check result.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="gpos">The position for the draw</param>
+        void PaintAt(ISpatialDisplay display, IPosition gpos)
+        {
+            // Remember the reference position.
+            Place = gpos;
+
+            throw new NotImplementedException("DividerCheck.PaintAt");
+        }
+        /*
+	// And express in logical units.
+	CPoint pt;
+	gdc.GetLogPoint(gpos,pt);
+
+	// Get the Windows device context so we can draw directly.
+	CDC* pDC = gdc.GetDC();
+
+	// Shift a bit so the icon is a bit to the left of the
+	// mid-point (assumes MM_TEXT, and an icon size of 16
+	// pixels).
+	pt.x -= 8;
+	pt.y -= 8;
+
+	// Draw icon(s).
+
+	UINT4 types = GetTypes();
+
+	if ( (types & CHB_LSMALL) ) {
+		pDC->DrawIcon(pt.x,pt.y,icons[CHI_LSMALL]);
+		pt.x -= 20;
+	}
+
+	if ( (types & CHB_DANGLE) ) {
+		pDC->DrawIcon(pt.x,pt.y,icons[CHI_DANGLE]);
+		pt.x -= 20;
+	}
+
+	if ( (types & CHB_OVERLAP) ) {
+		pDC->DrawIcon(pt.x,pt.y,icons[CHI_OVERLAP]);
+		pt.x -= 20;
+	}
+
+	if ( (types & CHB_FLOAT) ) {
+		pDC->DrawIcon(pt.x,pt.y,icons[CHI_FLOAT]);
+		pt.x -= 20;
+	}
+
+	if ( (types & CHB_BRIDGE) ) {
+		pDC->DrawIcon(pt.x,pt.y,icons[CHI_BRIDGE]);
+		pt.x -= 20;
+	}
+
+} // end of PaintAt
+         */
+
+        /// <summary>
+        /// Paints out those results that no longer apply.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="newTypes">The new results</param>
+        internal override void PaintOut(ISpatialDisplay display, CheckType newTypes)
         {
             throw new Exception("The method or operation is not implemented.");
         }
+        /*
+        void CeArcCheck::PaintOut ( const UINT4 newTypes
+                                  , CeDC& gdc
+                                  , HICON* icons ) const {
 
-        internal override void PaintOut(CheckType newTypes)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
+            // Get the reference position last used for painting.
+            const CeVertex& gpos = GetPlace();
 
+            // And express in logical units.
+            CPoint pt;
+            gdc.GetLogPoint(gpos,pt);
+
+            // Get the Windows device context so we can draw directly.
+            CDC* pDC = gdc.GetDC();
+
+            // Shift a bit so the icon is a bit to the left of the
+            // mid-point (assumes MM_TEXT, and an icon size of 16
+            // pixels).
+            pt.x -= 8;
+            pt.y -= 8;
+
+            // The icons to paint out are those that we originally
+            // had, but which are not in the new results.
+            UINT4 oldTypes = GetTypes();
+
+            if ( (oldTypes & CHB_LSMALL) ) {
+                if ( (newTypes & CHB_LSMALL)==0 )
+                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
+                pt.x -= 20;
+            }
+
+            if ( (oldTypes & CHB_DANGLE) ) {
+                if ( (newTypes & CHB_DANGLE)==0 )
+                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
+                pt.x -= 20;
+            }
+
+            if ( (oldTypes & CHB_OVERLAP) ) {
+                if ( (newTypes & CHB_OVERLAP)==0 )
+                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
+                pt.x -= 20;
+            }
+
+            if ( (oldTypes & CHB_FLOAT) ) {
+                if ( (newTypes & CHB_FLOAT)==0 )
+                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
+                pt.x -= 20;
+            }
+
+            if ( (oldTypes & CHB_BRIDGE) ) {
+                if ( (newTypes & CHB_BRIDGE)==0 )
+                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
+                pt.x -= 20;
+            }
+
+        } // end of PaintOut
+         */
+
+        /// <summary>
+        /// Rechecks this result.
+        /// </summary>
+        /// <returns>The result(s) that still apply.</returns>
         internal override CheckType ReCheck()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // No errors if the line has been deleted.
+            if (m_Divider.Line.IsInactive)
+                return CheckType.Null;
+
+            // Clear the errors if the line is now non-topological.
+            if (!m_Divider.Line.IsTopological)
+                return CheckType.Null;
+
+            // Return if the result has been cleared.
+            if (Types == CheckType.Null)
+                return CheckType.Null;
+
+            // Check neighbouring polygons.
+            return CheckNeighbours(m_Divider);
         }
 
+        /// <summary>
+        /// A textual explanation about this check result.
+        /// </summary>
         internal override string Explanation
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                if (m_Divider.Line.IsInactive)
+                    return "(line deleted)";
+
+                CheckType types = Types;
+                StringBuilder sb = new StringBuilder();
+
+                if ((types & CheckType.SmallLine)!=0)
+                    sb.Append("Very small line section" + System.Environment.NewLine);
+
+                if ((types & CheckType.Dangle)!=0)
+                    sb.Append("Dangling at one end" + System.Environment.NewLine);
+
+                if ((types & CheckType.Overlap)!=0)
+                    sb.Append("Precise overlap" + System.Environment.NewLine);
+
+                if ((types & CheckType.Floating)!=0)
+                    sb.Append("Dangling at both ends" + System.Environment.NewLine);
+
+                if ((types & CheckType.Bridge) != 0)
+                {
+                    Polygon pol = (m_Divider.Left as Polygon);
+                    TextFeature label = (pol == null ? null : pol.Label);
+                    if (label == null)
+                        sb.Append("Same polygon on both sides");
+                    else
+                        sb.Append(String.Format("Same polygon ({0}) on both sides", label.FormattedKey));
+
+                    sb.Append(System.Environment.NewLine);
+                }
+
+                return sb.ToString();
+            }
         }
 
+        /// <summary>
+        /// Returns a display position for this check. This is the position to
+        /// use for auto-centering the draw. It is not necessarily the same as
+        /// the position of the problem icon.
+        /// </summary>
         internal override IPosition Position
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                // Return a position half way along the divider.
+                LineGeometry geom = m_Divider.LineGeometry;
+                double len = geom.Length.Meters;
+                IPosition pos;
+                geom.GetPosition(new Length(len*0.5), out pos);
+                return pos;
+            }
         }
 
+        /// <summary>
+        /// Selects the object that this check relates to.
+        /// </summary>
         internal override void Select()
         {
-            throw new Exception("The method or operation is not implemented.");
+            throw new NotImplementedException("DividerCheck.Select");
+            /*
+            ISpatialSelection sel = CadastralEditController.Current.Selection;
+            sel.ReplaceWith(m_Divider);
+
+            // If the line has the same polygon on both sides, select
+            // the polygon as well.
+
+            if ((Types & CheckType.Bridge)!=0 && m_Divider.Left!=null)
+                sel.AddOrRemove(m_Divider.Left);
+             */
         }
     }
 }
