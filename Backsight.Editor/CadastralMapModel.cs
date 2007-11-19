@@ -1253,5 +1253,16 @@ namespace Backsight.Editor
             m_Index.AddIntersection(x);
             return x;
         }
+
+        /// <summary>
+        /// Is an editing operation currently being saved? This implementation currently
+        /// returns false (always), because the notion of a commit-in-progress does not seem
+        /// relevant in the new implementation of the Cadastral Editor (though this may need
+        /// to be considered again).
+        /// </summary>
+        internal bool IsCommittingEdit
+        {
+            get { return false; }
+        }
     }
 }

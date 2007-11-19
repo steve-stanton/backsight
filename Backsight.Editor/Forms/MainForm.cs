@@ -576,7 +576,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileCheck(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CadastralEditController.Current.StartCheck();
         }
 
         private bool IsFileUpdateSchemaEnabled()
