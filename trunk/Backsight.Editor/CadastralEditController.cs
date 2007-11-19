@@ -696,14 +696,35 @@ namespace Backsight.Editor
             get { return (m_Check!=null); }
         }
 
-        internal void StartCheck()
+        /// <summary>
+        /// Starts a new file check. Prior to call, you should ensure that a check is not already
+        /// running (see the <see cref="IsChecking"/> property).
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If a file check is already underway</exception>
+        /// <returns>True if check started ok. False if the <see cref="FileCheckUI.Run"/> method
+        /// returned false.</returns>
+        internal bool StartCheck()
         {
             if (m_Check != null)
                 throw new InvalidOperationException("File check is already running");
 
             m_Check = new FileCheckUI();
-            if (!m_Check.Run())
-                m_Check = null;
+            if (m_Check.Run())
+                return true;
+
+            m_Check = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Performs any processing when a file check is being terminated. This nulls out the
+        /// reference the controller has to the check driver object, and ensures all map displays
+        /// have been refreshed (in case the check has left over any transient draw stuff).
+        /// </summary>
+        internal void OnFinishCheck()
+        {
+            m_Check = null;
+            RefreshAllDisplays();
         }
 
         internal void ClearSelection()

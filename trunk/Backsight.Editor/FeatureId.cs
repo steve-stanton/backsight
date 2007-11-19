@@ -108,6 +108,11 @@ namespace Backsight.Editor
             get { return m_Rows; }
         }
 
+        internal int RowCount
+        {
+            get { return (m_Rows==null ? 0 : m_Rows.Count); }
+        }
+
         IPossibleList<Feature> Features
         {
             get { return m_Features; }

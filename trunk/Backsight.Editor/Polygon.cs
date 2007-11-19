@@ -340,5 +340,15 @@ namespace Backsight.Editor
 
             return result;
         }
+
+        /// <summary>
+        /// The number of labels this polygon knows about. This implementation just returns 0 or 1,
+        /// depending on whether a label has been claimed. It does not currently handle situations
+        /// where multiple labels exist inside the polygon.
+        /// </summary>
+        internal int LabelCount
+        {
+            get { return (m_Label==null ? 0 : 1); }
+        }
     }
 }

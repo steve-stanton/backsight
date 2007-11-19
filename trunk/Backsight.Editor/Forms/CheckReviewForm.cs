@@ -110,96 +110,83 @@ private LOGICAL CdCheck::AtFinish ( void ) {
 }
         */
 
-        /*
+        int ShowCheck(int index, bool advanceOnFix)
+        {
+            // Get the check object.
+            CheckItem check = m_Cmd.GetResult(index);
+            if (check==null)
+                return -1;
 
-private INT4 CdCheck::ShowCheck ( const INT4 index
-						, const LOGICAL advanceOnFix ) {
+            // If auto-advance is allowed, and the check has been fixed, keep going until
+            // we find something that hasn't been fixed.
+            int nShow = index;
+            if (advanceOnFix)
+            {
+                while (check.Types==CheckType.Null)
+                {
+                    nShow++;
+                    if (nShow >= m_nTotal)
+                        return nShow;
 
-	// Get the check object.
-	CeCheck* pCheck = m_Cmd.GetResult(index);
-	if ( !pCheck ) return -1;
+                    check = m_Cmd.GetResult(nShow);
+                    if (check==null)
+                        return -1;
+                }
+            }
 
-	// If auto-advance is allowed, and the check has been
-	// fixed, keep going until we find something that hasn't
-	// been fixed.
-	INT4 nShow = index;
-	if ( advanceOnFix ) {
-		while ( pCheck->GetTypes()==0 ) {
-			nShow++;
-			if ( nShow >= m_nTotal ) return nShow;
-			pCheck = m_Cmd.GetResult(nShow);
-			if ( !pCheck ) return -1;
-		}
-	}
+            // If there is even more, ensure the OK button says "Next".
+            // Otherwise display "Finish" or "ReCheck" depending on
+            // whether any edits have been performed.
+            if ((nShow+1) == m_nTotal)
+            {
+                if (m_IsEdited)
+                    okButton.Text = "Re-Chec&k";
+                else
+                    okButton.Text = "&Finish";
+            }
+            else
+                okButton.Text = "&Next";
 
-	// If there is even more, ensure the IDOK button says "Next".
-	// Otherwise display "Finish" or "ReCheck" depending on
-	// whether any edits have been performed.
+            // Enable the "Back" button if we're now beyond the 1st item.
+            previousButton.Enabled = (nShow>0);
 
-	if ( (nShow+1) == m_nTotal ) {
-		if ( m_IsEdited )
-			GetDlgItem(IDOK)->SetWindowText("Re-Chec&k");
-		else
-			GetDlgItem(IDOK)->SetWindowText("&Finish");
-	}
-	else
-		GetDlgItem(IDOK)->SetWindowText("&Next");
+            // Display current sequence
+            statusGroupBox.Text = String.Format("{0} of {1}", nShow+1, m_nTotal);
 
-	// Enable the "Back" button if we're now beyond the 1st item.
-	GetDlgItem(IDC_PREVIOUS)->EnableWindow((nShow>0));
+            // Get the check to provide an explanation.
+            string msg = (check==null ? "sync lost" : check.Explanation);
 
-	// Display current sequence
-	CString msg;
-	msg.Format("%d of %d",nShow+1,m_nTotal);
-	GetDlgItem(IDC_STATUS)->SetWindowText(msg);
+            // Get a position for the check. If we can't get one, append a note to the explanation.
+            IPosition pos = check.Position;
+            if (pos==null)
+                msg += " (cannot re-locate the problem)";
 
-	// Get the check to provide an explanation.
-	if ( pCheck ) {
-		const CeTheme& curtheme = GetActiveTheme();
-		pCheck->Explain(msg,curtheme);
-	}
-	else
-		msg = "sync lost";
+            explanationLabel.Text = msg;
 
-	// Get a position for the check. If we can't get one,
-	// append a note to the explanation.
-	CeVertex pos;
-	if ( !pCheck->GetPosition(pos) )
-		msg += "(cannot re-locate the problem)";
+            // Return if we did not get a position for the check, ensuring that this
+            // focus is with THIS dialog.
+            if (pos==null)
+            {
+                this.Focus();
+                return nShow;
+            }
 
-	GetDlgItem(IDC_EXPLAIN)->SetWindowText(msg);
+            // Get the current draw window, and shrink it by 10% all the way round.
+            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            Window win = new Window(display.Extent);
+            win.Expand(-0.1);
 
-	// Return if we did not get a position for the check,
-	// ensuring that this focus is with THIS dialog.
-	if ( !pos.IsDefined() ) {
-		SetFocus();
-		return nShow;
-	}
+            // If necessary, re-center the draw on the position we've got.
+            if (!win.IsOverlap(pos))
+                display.Center = pos;
 
-	// Get the current draw window. If we're doing an overview,
-	// just live with that.
-	CeDraw* pDraw = GetpDraw();
-//	if ( pDraw->IsOverview() ) return;
+            // Select the object involved (this highlights the object
+            // and shifts the focus to the main map window).
+            check.Select();
 
-	// Get the draw window, and shrink it by 10% all the way round.
-	CeWindow win(pDraw->GetWindow());
-	win.Expand(-0.1);
-
-	// If necessary, re-centre the draw on the position we've got.
-	if ( !win.IsOverlap(pos) ) {
-		const FLOAT8 scale = pDraw->GetDrawScale();
-		pDraw->SetDraw(pos,scale);
-	}
-
-	// Select the object involved (this highlights the object
-	// and shifts the focus to the main map window).
-	pCheck->Select();
-
-	// Return the index of the check that was actually shown.
-	return nShow;
-}
-         */
-
+            // Return the index of the check that was actually shown.
+            return nShow;
+        }
 
         private void CheckReviewForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -215,7 +202,7 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
             }
         }
 
-        void ShowProgress (uint nDone)
+        internal void ShowProgress (int nDone)
         {
 	        // Only display status every 100 done.
 	        if ((nDone%100) == 0)
@@ -230,11 +217,11 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
 	        // The buttons should be invisible to start with.
 	        ShowButtons(false);
 
-            // Ensure focus is on the OK button.
+            // Ensure focus is on the OK(/First) button.
             okButton.Focus();
         }
 
-        void OnFinishCheck(uint nCheck, uint nProblem)
+        internal void OnFinishCheck(int nCheck, int nProblem)
         {
             // Display summary message.
             if (nProblem > 0)
@@ -263,7 +250,7 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
             previousButton.Enabled = false;
 
             // Reveal the buttons.
-            ShowButtons();
+            ShowButtons(true);
 
             // Ensure the focus us on the ok ("First") button.
             // ... doesn't seem to do it?
@@ -279,7 +266,7 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
             previousButton.Visible = okButton.Visible = show;
         }
 
-        void OnResetCheck()
+        internal void OnResetCheck()
         {
             this.Text = "File Check Review";
             m_nTotal = 0;
@@ -288,7 +275,7 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
             ShowButtons(false);
         }
 
-        void Paint()
+        void Paint(ISpatialDisplay display)
         {
             // If a specific check is active, paint it.
             // This currently only does stuff for CeSplitCheck objects.
@@ -298,7 +285,7 @@ private INT4 CdCheck::ShowCheck ( const INT4 index
 
             CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
             if (checkResult != null)
-                checkResult.Paint();
+                checkResult.Paint(display);
         }
 
         /// <summary>
