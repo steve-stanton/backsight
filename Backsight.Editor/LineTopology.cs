@@ -131,6 +131,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Implements <see cref="IDivider"/> method by returning <c>true</c>,
+        /// indicating that this topology is visible.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return true; }
+        }
+
+        /// <summary>
         /// Performs any processing when the line associated with this topology
         /// is being de-activated.  This should mark adjacent polygons for deletion, and
         /// remove line references from any intersections.

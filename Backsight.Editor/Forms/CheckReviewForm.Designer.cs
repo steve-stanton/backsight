@@ -61,6 +61,7 @@ namespace Backsight.Editor.Forms
             this.previousButton.TabIndex = 1;
             this.previousButton.Text = "&Back";
             this.previousButton.UseVisualStyleBackColor = true;
+            this.previousButton.Visible = false;
             this.previousButton.Click += new System.EventHandler(this.previousButton_Click);
             // 
             // okButton
@@ -71,10 +72,12 @@ namespace Backsight.Editor.Forms
             this.okButton.TabIndex = 2;
             this.okButton.Text = "&First";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Visible = false;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // CheckReviewForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(295, 155);
@@ -84,7 +87,7 @@ namespace Backsight.Editor.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "CheckReviewForm";
             this.Text = "File Check Review";
-            this.Shown += new System.EventHandler(this.CheckReviewForm_Shown);
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CheckReviewForm_FormClosing);
             this.statusGroupBox.ResumeLayout(false);
             this.statusGroupBox.PerformLayout();

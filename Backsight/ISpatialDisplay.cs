@@ -67,6 +67,13 @@ namespace Backsight
         float LengthToDisplay(double groundLength);
 
         /// <summary>
+        /// Converts a pixel count into a ground dimension
+        /// </summary>
+        /// <param name="displayLength">The display dimension, in pixels.</param>
+        /// <returns>The corresponding distance on the map projection.</returns>
+        double DisplayToLength(float displayLength);
+
+        /// <summary>
         /// Handles model replacement (e.g. when user opens a different map). The
         /// newly opened map should be obtained through <c>ISpatialController.MapModel</c>
         /// </summary>

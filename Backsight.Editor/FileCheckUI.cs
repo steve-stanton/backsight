@@ -16,10 +16,10 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Properties;
 using Backsight.Editor.Forms;
-using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -125,80 +125,65 @@ namespace Backsight.Editor
         {
             // Get the user to specify what needs to be checked.
             FileCheckForm dial = new FileCheckForm();
-            if (dial.ShowDialog() == DialogResult.OK)
+            if (dial.ShowDialog()!=DialogResult.OK)
             {
-                m_Options = dial.Options;
+                dial.Dispose();
+                return false;
             }
 
-            return false;
+            m_Options = dial.Options;
+            dial.Dispose();
+
+            // Confirm that at least one type of check has been specified
+            if (m_Options==CheckType.Null)
+            {
+                MessageBox.Show("You must pick something you want to check.");
+                return false;
+            }
+
+            // Start the item dialog (modeless).
+            m_Status = new CheckReviewForm(this);
+            m_Status.Show();
+
+            // Make the initial check.
+            int nCheck = CheckMap();
+
+            // Let the review dialog know.
+            m_Status.OnFinishCheck(nCheck, m_Results.Count);
+
+            // Paint any markers.
+            Paint(false);
+
+            // The check may have failed if an edit was in progress.
+            return (nCheck>=0);
         }
-        /*
-LOGICAL CuiFileCheck::Run ( void ) {
 
-	// Get the user to specify what needs to be checked.
-	CdFileCheck dial;
-	if ( dial.DoModal()!=IDOK ) return FALSE;
+        /// <summary>
+        /// Redraws any check icons.
+        /// </summary>
+        /// <param name="drawNulls">Should null check results be drawn. Default=FALSE.
+        /// A TRUE value is specified by <c>FileCheckUI.OnFinishOp</c> to try to provide
+        /// the user with a visual cue of the problems that an edit might have fixed.
+        /// However, the visual cue will go away on a subsequent OnDraw.</param>
+        /// <remarks>Need to review draw-related timing (since the CadastralEditController
+        /// now draws in idle time, I'm not sure if the above will be relevant)</remarks>
+        void Paint(bool drawNulls)
+        {
+            // Get the current centre and scale of the draw.
+            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            IDrawStyle style = CadastralEditController.Current.DrawStyle;
 
-	// Pick up the options.
-	m_Options = dial.GetOptions();
-	if ( m_Options==0 ) {
-		ShowMessage("You must pick something you want to check.");
-		return FALSE;
-	}
+            // Paint those results that have not been cleared.
+            foreach (CheckItem check in m_Results)
+            {
+                if (drawNulls || check.Types != CheckType.Null)
+                    check.Render(display, style);
+            }
 
-	// Start the item dialog (modeless).
-	m_pStatus = new CdCheck(*this);
-	m_pStatus->Create(IDD_CHECK,GetpView());
-
-	// Make the initial check.
-	INT4 nCheck = CheckMap();
-
-	// Let the review dialog know.
-	m_pStatus->OnFinishCheck(nCheck,m_Results.GetCount());
-
-	// Paint any markers.
-	Paint();
-
-	// The check may have failed if an edit was in progress.
-	return (nCheck>=0);
-
-} // end of Run
-         */
-
-        /*
-//	@mfunc	Redraw any check icons. This is called by
-//			<mf CeView::OnDraw>.
-//
-//	@parm	Should null check results be drawn. Default=FALSE.
-//			A TRUE value is specified by <mf CuiFileCheck::OnFinishOp>
-//			to try to provide the user with a visual cue of the
-//			problems that an edit might have fixed. However, the
-//			visual cue will go away on a subsequent OnDraw.
-void CuiFileCheck::Paint ( const LOGICAL drawNulls ) const {
-
-	// Get the current centre and scale of the draw.
-	CeDraw* pDraw = GetpDraw();
-	const CeWindow& win = pDraw->GetWindow();
-	CeVertex centre;
-	win.GetCentre(&centre);
-	const FLOAT8 scale = pDraw->GetDrawScale();
-	CeDC gdc(pDraw,centre,scale);
-
-	// Paint those results that have not been cleared.
-	const UINT4 nRes = m_Results.GetCount();
-	for ( UINT4 i=0; i<nRes; i++ ) {
-		CeCheck* pCheck = (CeCheck*)m_Results.GetPointer(i);
-		if ( drawNulls )
-			pCheck->Paint(gdc,m_Icons);
-		else if ( pCheck->GetTypes() )
-			pCheck->Paint(gdc,m_Icons);
-	}
-
-	// Tell the status window too.
-	if ( m_pStatus ) m_pStatus->Paint();
-
-} // end of Paint
-         */
+            // Tell the status window too.
+            if (m_Status!=null)
+                m_Status.Render(display, style);
+        }
 
         /// <summary>
         /// Checks the current map.
@@ -212,10 +197,8 @@ void CuiFileCheck::Paint ( const LOGICAL drawNulls ) const {
             // Reset current set of problems.
             KillResults();
 
-            int nCheck = 0;
-            CadastralMapModel map = CadastralMapModel.Current;
-
             // Return if the map has an active operation.
+            CadastralMapModel map = CadastralMapModel.Current;
             if (map.IsCommittingEdit)
             {
                 MessageBox.Show("Cannot make check because an edit appears to be in progress.");
@@ -289,68 +272,55 @@ void CuiFileCheck::Paint ( const LOGICAL drawNulls ) const {
                 m_Status.OnResetCheck();
         }
 
-        /*
-//	@mfunc	Do stuff when a user has just completed an edit.
-//
-//	@parm	The operation that has just been completed.
+        /// <summary>
+        /// Do stuff when a user has just completed an edit.
+        /// </summary>
+        internal void OnFinishOp()
+        {
+            // Recheck the previous results.
+            //const UINT4 nRes = m_Results.GetCount();
 
-void CuiFileCheck::OnFinishOp ( const CeOperation* const pop ) {
+            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            bool doPost = false;    // Need to post-process the list?
 
-	// Prepare a device context in case we need to paint
-	// out stuff.
-	CeDraw* pDraw = GetpDraw();
-	const CeWindow& win = pDraw->GetWindow();
-	CeVertex centre;
-	win.GetCentre(&centre);
-	const FLOAT8 scale = pDraw->GetDrawScale();
-	CeDC gdc(pDraw,centre,scale);
+            foreach (CheckItem check in m_Results)
+            {
+                // Note the current result. Skip if has been fixed.
+                CheckType oldTypes = check.Types;
+                if (oldTypes == CheckType.Null)
+                    continue;
 
+                // Get the current state of the check & restrict to those results that
+                // the user wants to see
+                CheckType newTypes = check.ReCheck();
+                newTypes &= m_Options;
 
-	// Recheck the previous results.
-	const UINT4 nRes = m_Results.GetCount();
+                // If a change has arisen, paint out those results that no longer apply,
+                // and update the result.
 
-	LOGICAL doPost = FALSE;		// Need to post-process the list?
+        		if (newTypes != oldTypes)
+                {
+			        check.PaintOut(display, newTypes);
+			        check.Types = newTypes;
 
-	for ( UINT4 i=0; i<nRes; i++ ) {
+        			// If we just fixed a polygon with no enclosing polygon, remember to post-process
+                    // the results once we're through the loop.
+                    doPost = ((oldTypes & CheckType.NotEnclosed)!=0 && (newTypes & CheckType.NotEnclosed)==0);
+		        }
+            }
 
-		// Note the current result. Skip if has been fixed.
-		CeCheck* pCheck = (CeCheck*)m_Results.GetPointer(i);
-		const UINT4 oldTypes = pCheck->GetTypes();
-		if ( oldTypes==0 ) continue;
+            // If we eliminated at least one "no polygon enclosing polygon"
+            // problem, do a post check to look for any single occurence of
+            // another problem with the same type. If we find one, mark it
+            // as fixed too (but don't remove it from the list, since that
+            // might screw up the review dialog).
+            if (doPost)
+                FileCheckQuery.PostCheck(m_Results, false);
 
-		// Get the current state of the check.
-		UINT4 newTypes = pCheck->ReCheck();
-
-		// Only those results that the user wanted to see.
-		newTypes &= m_Options;
-
-		// If a change has arisen, paint out those results
-		// that no longer apply, and update the result.
-		if ( newTypes != oldTypes ) {
-			pCheck->PaintOut(newTypes,gdc,m_Icons);
-			pCheck->SetTypes(newTypes);
-
-			// If we just fixed a CHB_NOPOLENCPOL problem,
-			// remember to post-process the results once
-			// we're through the loop.
-
-			if ( (oldTypes&CHB_NOPOLENCPOL) &&
-				!(newTypes&CHB_NOPOLENCPOL) ) doPost = TRUE;
-		}
-	}
-
-	// If we eliminated at least one "no polygon enclosing polygon"
-	// problem, do a post check to look for any single occurence of
-	// another problem with the same type. If we find one, mark it
-	// as fixed too (but don't remove it from the list, since that
-	// might screw up the review dialog).
-	if ( doPost ) PostCheck(FALSE);
-
-	// Tell the status dialog.
-	if ( m_pStatus ) m_pStatus->OnFinishOp(pop);
-
-} // end of OnFinishOp
-*/
+            // Tell the status dialog.
+            if (m_Status!=null)
+                m_Status.OnFinishOp();
+        }
 
         /// <summary>
         /// Re-checks the map. This is invoked by the <see cref="CheckReviewForm"/> sub-dialog

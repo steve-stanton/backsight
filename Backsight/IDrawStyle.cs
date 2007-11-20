@@ -16,7 +16,7 @@
 using System;
 using System.Drawing;
 
-using Backsight.Geometry;
+//using Backsight.Geometry;
 
 namespace Backsight
 {
@@ -40,6 +40,14 @@ namespace Backsight
         /// <param name="display">The display to draw to</param>
         /// <param name="point">The position of the center of the point</param>
         void Render(ISpatialDisplay display, IPosition point);
+
+        /// <summary>
+        /// Draws an icon
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position for the center of the icon</param>
+        /// <param name="icon">The icon to display</param>
+        void Render(ISpatialDisplay display, IPosition position, Icon icon);
 
         /// <summary>
         /// Draws a circular arc

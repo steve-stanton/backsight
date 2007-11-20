@@ -220,4 +220,22 @@
   <data name="CheckSmallLineIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CheckSmallLineIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CheckMultiLabelIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckMultiLabelIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CheckNoAttributesIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckNoAttributesIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CheckNoLabelIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckNoLabelIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CheckNoPolygonForLabelIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckNoPolygonForLabelIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CheckNotEnclosedIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckNotEnclosedIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CheckSmallPolygonIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CheckSmallPolygonIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

@@ -69,46 +69,42 @@ namespace Backsight.Editor.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            /*
-	// If the index of the next item is beyond the last one,
-	// that's us done.
-	m_nCurrent++;
-	if ( AtFinish() ) return;
+            // If the index of the next item is beyond the last one, that's us done.
+            m_nCurrent++;
+            if (AtFinish())
+                return;
 
-	// Get the next item to check.
-	INT4 nShow = ShowCheck(m_nCurrent,TRUE);
+            // Get the next item to check.
+            int nShow = ShowCheck(m_nCurrent, true);
 
-	// If we auto-advanced, repeat what we did above.
-	if ( nShow != m_nCurrent ) {
-		m_nCurrent = nShow;
-		AtFinish();
-	}
-             */
+            // If we auto-advanced, repeat what we did above.
+            if (nShow != m_nCurrent)
+            {
+                m_nCurrent = nShow;
+                AtFinish();
+            }
         }
 
-        /*
-private LOGICAL CdCheck::AtFinish ( void ) {
+        bool AtFinish()
+        {
+            // If the next item to show is beyond the last item
+	        if (m_nCurrent >= m_nTotal)
+            {
+		        // If anything was edited during the review, get the command to recheck.
+                // Otherwise get the command to wrap things up.
 
-	// If the next item to show is beyond the last item
-	if ( m_nCurrent >= m_nTotal ) {
+		        if (m_IsEdited)
+                    m_Cmd.ReCheck();
+		        else
+                {
+			        OnResetCheck();
+			        m_Cmd.Finish();
+			        return true;
+		        }
+	        }
 
-		// If anything was edited during the review, get
-		// the command to recheck. Otherwise get the command
-		// to wrap things up.
-
-		if ( m_IsEdited ) {
-			m_Cmd.ReCheck();
-		}
-		else {
-			OnResetCheck();
-			m_Cmd.Finish();
-			return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-        */
+	        return false;
+        }
 
         int ShowCheck(int index, bool advanceOnFix)
         {
@@ -204,21 +200,12 @@ private LOGICAL CdCheck::AtFinish ( void ) {
 
         internal void ShowProgress (int nDone)
         {
-	        // Only display status every 100 done.
-	        if ((nDone%100) == 0)
+	        // Only display status every 1000 done.
+	        if ((nDone%1000) == 0)
             {
                 explanationLabel.Text = String.Format("{0} features checked", nDone);
                 explanationLabel.Refresh();
             }
-        }
-
-        private void CheckReviewForm_Shown(object sender, EventArgs e)
-        {
-	        // The buttons should be invisible to start with.
-	        ShowButtons(false);
-
-            // Ensure focus is on the OK(/First) button.
-            okButton.Focus();
         }
 
         internal void OnFinishCheck(int nCheck, int nProblem)
@@ -245,25 +232,19 @@ private LOGICAL CdCheck::AtFinish ( void ) {
                 okButton.Text = "OK";
             }
 
+            // Reveal the buttons.
+            previousButton.Visible = okButton.Visible = true;
+
             // Disable the Back button (you have to click
             // on OK to initially proceed to the first problem).
             previousButton.Enabled = false;
 
-            // Reveal the buttons.
-            ShowButtons(true);
-
-            // Ensure the focus us on the ok ("First") button.
-            // ... doesn't seem to do it?
-            okButton.Focus();
-
             // Remember where we are.
             m_nTotal = nProblem;
             m_nCurrent = -1;
-        }
 
-        void ShowButtons(bool show)
-        {
-            previousButton.Visible = okButton.Visible = show;
+            // Move focus to this dialog (user is likely to hit return to move to first problem)
+            this.Focus();
         }
 
         internal void OnResetCheck()
@@ -272,10 +253,10 @@ private LOGICAL CdCheck::AtFinish ( void ) {
             m_nTotal = 0;
             m_nCurrent = -1;
             m_IsEdited = false;
-            ShowButtons(false);
+            previousButton.Visible = okButton.Visible = false;
         }
 
-        void Paint(ISpatialDisplay display)
+        internal void Render(ISpatialDisplay display, IDrawStyle style)
         {
             // If a specific check is active, paint it.
             // This currently only does stuff for CeSplitCheck objects.
@@ -285,14 +266,13 @@ private LOGICAL CdCheck::AtFinish ( void ) {
 
             CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
             if (checkResult != null)
-                checkResult.Paint(display);
+                checkResult.Render(display, style);
         }
 
         /// <summary>
         /// Do stuff when a user has just completed an edit.
         /// </summary>
-        /// <param name="op">The operation that has just been completed.</param>
-        void OnFinishOp(Operation op)
+        internal void OnFinishOp()
         {
             // Remember that an edit has occurred.
             if (!m_IsEdited)

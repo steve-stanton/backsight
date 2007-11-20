@@ -275,7 +275,8 @@ namespace Backsight.Editor
         /// Repaint icon(s) representing this check result.
         /// </summary>
         /// <param name="display">The display to draw to</param>
-        abstract internal void Paint(ISpatialDisplay display);
+        /// <param name="style">The style for the drawing</param>
+        abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
         /// Paints out those results that no longer apply.

@@ -83,7 +83,7 @@ namespace Backsight.Editor
 
         #endregion
 
-        internal override void Paint(ISpatialDisplay display)
+        internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             throw new Exception("The method or operation is not implemented.");
         }
