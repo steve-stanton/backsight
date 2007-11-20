@@ -517,6 +517,10 @@ namespace Backsight.Editor
 
             m_AutoSaver.FinishEdit(m_Command);
 
+            // Notify any check dialog
+            if (m_Check!=null)
+                m_Check.OnFinishOp();
+
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
                 m_IsAutoSelect = -m_IsAutoSelect;
@@ -735,6 +739,11 @@ namespace Backsight.Editor
         public void Select(Feature f)
         {
             this.Selection = new SpatialSelection(f);
+        }
+
+        public void SetSelection(ISpatialSelection ss)
+        {
+            Selection = ss;
         }
 
         public override ISpatialSelection Selection

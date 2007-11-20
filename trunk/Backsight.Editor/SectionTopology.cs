@@ -124,6 +124,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Implements <see cref="IDivider"/> method by returning <c>true</c>,
+        /// indicating that this topology is visible.
+        /// </summary>
+        public bool IsVisible
+        {
+            get { return true; }
+        }
+
+        /// <summary>
         /// Override returns a string for use in debugging.
         /// </summary>
         /// <returns>A sting indicating the internal ID of the line involved, plus the two terminals.</returns>

@@ -136,7 +136,7 @@ namespace Backsight.Geometry
         public static ILength GetLength(IMultiSegmentGeometry g, IPosition asFarAs, ILength tol)
         {
             IPosition[] line = g.Data;
-            double tsq = (tol.Meters * tol.Meters);
+            double tsq = (tol==null ? 0.0 : (tol.Meters * tol.Meters));
 
             double tx = (asFarAs==null ? 0.0 : asFarAs.X);
             double ty = (asFarAs==null ? 0.0 : asFarAs.Y);

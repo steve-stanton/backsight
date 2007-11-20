@@ -17,9 +17,9 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Backsight.Geometry;
-using System.Diagnostics;
 
 namespace Backsight.Forms
 {
@@ -73,18 +73,29 @@ namespace Backsight.Forms
             get { return m_Fill.Brush; }
         }
 
+        /// <summary>
+        /// The color used to fill things
+        /// </summary>
         public Color FillColor
         {
             get { return m_Fill.Color; }
             set { m_Fill.Color = value; }
         }
 
+        /// <summary>
+        /// The color used to draw lines
+        /// </summary>
         public Color LineColor
         {
             get { return m_Pen.Color; }
             set { m_Pen.Color = value; }
         }
 
+        /// <summary>
+        /// Draws a point
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="point">The position of the center of the point</param>
         public void Render(ISpatialDisplay display, IPosition position)
         {
             float size = display.LengthToDisplay(m_PointHeight.Meters);
@@ -97,6 +108,20 @@ namespace Backsight.Forms
                 else
                     display.Graphics.FillRectangle(Brush, p.X-d, p.Y-d, size, size);
             }
+        }
+
+        /// <summary>
+        /// Draws the supplied icon
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position for the center of the icon</param>
+        /// <param name="icon">The icon to display</param>
+        public void Render(ISpatialDisplay display, IPosition position, Icon icon)
+        {
+            PointF p = CreatePoint(display, position);
+            int x = (int)p.X - icon.Width/2;
+            int y = (int)p.Y + icon.Height/2;
+            display.Graphics.DrawIcon(icon, x, y);
         }
 
         PointF[] GetDisplayPoints(ISpatialDisplay display, IPosition[] line)
@@ -113,6 +138,12 @@ namespace Backsight.Forms
             return pts;
         }
 
+        /// <summary>
+        /// Draws a line
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="line">The positions defining the line (expected to be at
+        /// least two positions)</param>
         public void Render(ISpatialDisplay display, IPosition[] line)
         {
             if (line.Length==1)
@@ -171,6 +202,11 @@ namespace Backsight.Forms
              */
         }
 
+        /// <summary>
+        /// Draws a circular arc
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="arc">The circular arc</param>
         public void Render(ISpatialDisplay display, IClockwiseCircularArcGeometry arc)
         {
             ICircleGeometry circle = arc.Circle;
@@ -183,6 +219,11 @@ namespace Backsight.Forms
             display.Graphics.DrawArc(m_Pen, topLeftX, topLeftY, size, size, startAngle, sweepAngle);
         }
 
+        /// <summary>
+        /// Draws a text string (annotation)
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="text">The item of text</param>
         public void Render(ISpatialDisplay display, IString text)
         {
             // Draw the outline if it's too small
@@ -225,6 +266,9 @@ namespace Backsight.Forms
             return new PointF(x, y);
         }
 
+        /// <summary>
+        /// The default height for point features (on the ground)
+        /// </summary>
         public ILength PointHeight
         {
             get { return m_PointHeight; }
@@ -275,6 +319,9 @@ namespace Backsight.Forms
             }
         }
 
+        /// <summary>
+        /// The fill for closed shapes
+        /// </summary>
         public IFill Fill
         {
             get { return m_Fill; }

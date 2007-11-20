@@ -80,7 +80,7 @@ namespace Backsight.Editor
             index.QueryWindow(null, SpatialType.Polygon, CheckPolygon);
 
             // Do any post-processing.
-            PostCheck(true);
+            PostCheck(m_Result, true);
 
             m_Result.TrimExcess();
         }
@@ -116,32 +116,20 @@ namespace Backsight.Editor
             // Return if the line is non-topological
             if (!line.IsTopological)
                 return true;
-            /*
-        // If the arc has any system-generated sections ...
-        if ( isSysTopol ) {
 
-            // Does the line have any overlapping sections?
-            const CeSplit* const pSplit = arc.GetpSplit();
-            assert(pSplit);
-
-            // SS 10-MAR-2000 -- Null lines might cause this. This
-            // is really a bug elsewhere. SHOULD create an error
-            // of some sort, but there is currently no check for
-            // null lines.
-            if ( !pSplit ) return FALSE;
-
-            // Get the split to check its sections.
-            pSplit->CheckSections(m_Results,m_Options,theme);
-        }
-        else {
-
-            const UINT4 types = (m_Options & CeArcCheck::CheckNeighbours(arc,theme));
-            if ( types ) {
-                CeArcCheck* pCheck = new CeArcCheck(arc,types);
-                m_Results.Append(pCheck);
+            Topology t = line.Topology;
+            if (t!=null)
+            {
+                foreach (IDivider d in t)
+                {
+                    CheckType types = (m_Options & DividerCheck.Check(d));
+                    if (types != CheckType.Null)
+                    {
+                        DividerCheck check = new DividerCheck(d, types);
+                        m_Result.Add(check);
+                    }
+                }
             }
-        }
-             */
 
             return OnCheck();
         }
@@ -211,10 +199,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Does post-processing after checking a map.
+        /// Performs post-processing of the supplied list of check results
         /// </summary>
+        /// <param name="items"></param>
         /// <param name="canRemove">True to remove stuff. False just to mark it as fixed.</param>
-        void PostCheck(bool canRemove)
+        /// <remarks>This method is static because it is also used by <c>FileCheckUI</c>
+        /// to massage results whenever the user completes an edit</remarks>
+        internal static void PostCheck(List<CheckItem> items, bool canRemove)
         {
             // If we only have ONE instance of "no polygon encloses this
             // polygon", it refers to the outside polygon, which you could
@@ -222,7 +213,7 @@ namespace Backsight.Editor
             // get rid of it.
             CheckItem rem = null;
 
-            foreach (CheckItem check in m_Result)
+            foreach (CheckItem check in items)
             {
                 // If we've found a relevant problem, and we've already found the same
                 // type of problem previously, just break from loop (ensuring we won't
@@ -252,7 +243,7 @@ namespace Backsight.Editor
                 else
                 {
                     if (canRemove)
-                        m_Result.Remove(rem);
+                        items.Remove(rem);
                     else
                         rem.Types = CheckType.Null;
                 }

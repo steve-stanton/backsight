@@ -16,6 +16,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
 {
@@ -28,11 +29,41 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
+        /// Performs checks on the supplied divider.
+        /// </summary>
+        /// <param name="d">The divider to check.</param>
+        /// <returns>The problem(s) that were found.</returns>
+        internal static CheckType Check(IDivider d)
+        {
+            // Ignore invisible dividers (the result of trimming dangling lines)
+            if (!d.IsVisible)
+                return CheckType.Null;
+
+            CheckType types = CheckType.Null;
+
+            // Is the divider extremely small (smaller than 1mm on the mapping plane)?
+
+            double len = d.LineGeometry.Length.Meters;
+            if (len < 0.001)
+                types |= CheckType.SmallLine;
+
+            // Always flag overlaps. For all other dividers, check if
+	        // dangling, floating, or a bridge.
+
+            if (d.IsOverlap)
+                types |= CheckType.Overlap;
+            else
+                types |= CheckNeighbours(d);
+
+            return types;
+        }
+
+        /// <summary>
         /// Checks if a divider is a dangle, floating, or a bridge.
         /// </summary>
         /// <param name="d">The divider to check</param>
         /// <returns>Bit mask of the check(s) the divider failed.</returns>
-        internal static CheckType CheckNeighbours(IDivider d)
+        static CheckType CheckNeighbours(IDivider d)
         {
             Debug.Assert(!d.IsOverlap);
 
@@ -95,14 +126,15 @@ namespace Backsight.Editor
         /// Repaint icon(s) representing this check result.
         /// </summary>
         /// <param name="display">The display to draw to</param>
-        internal override void Paint(ISpatialDisplay display)
+        /// <param name="style">The style for the drawing</param>
+        internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             // Return if the line has been de-activated.
             if (m_Divider.Line.IsInactive)
                 return;
 
             // Draw half way along the divider.
-            PaintAt(display, this.Position);
+            PaintAt(display, style, this.Position);
         }
 
         /// <summary>
@@ -110,58 +142,51 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="gpos">The position for the draw</param>
-        void PaintAt(ISpatialDisplay display, IPosition gpos)
+        void PaintAt(ISpatialDisplay display, IDrawStyle style, IPosition gpos)
         {
             // Remember the reference position.
             Place = gpos;
 
-            throw new NotImplementedException("DividerCheck.PaintAt");
+            // Define position for first icon (a little to the left of the divider,
+            // assuming an icon size of 32 pixels)
+            double shift = display.DisplayToLength(16);
+            Position p = new Position(gpos.X-shift, gpos.Y);
+
+            // Define shift for any further icons
+            shift = display.DisplayToLength(36);
+
+            // Draw icon(s).
+            CheckType types = Types;
+            if ((types & CheckType.SmallLine)!=0)
+            {
+                style.Render(display, p, Resources.CheckSmallLineIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.Dangle)!=0)
+            {
+                style.Render(display, p, Resources.CheckDanglingIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.Overlap)!=0)
+            {
+                style.Render(display, p, Resources.CheckOverlapIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.Floating)!=0)
+            {
+                style.Render(display, p, Resources.CheckFloatingIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.Bridge)!=0)
+            {
+                style.Render(display, p, Resources.CheckBridgeIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
         }
-        /*
-	// And express in logical units.
-	CPoint pt;
-	gdc.GetLogPoint(gpos,pt);
-
-	// Get the Windows device context so we can draw directly.
-	CDC* pDC = gdc.GetDC();
-
-	// Shift a bit so the icon is a bit to the left of the
-	// mid-point (assumes MM_TEXT, and an icon size of 16
-	// pixels).
-	pt.x -= 8;
-	pt.y -= 8;
-
-	// Draw icon(s).
-
-	UINT4 types = GetTypes();
-
-	if ( (types & CHB_LSMALL) ) {
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_LSMALL]);
-		pt.x -= 20;
-	}
-
-	if ( (types & CHB_DANGLE) ) {
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_DANGLE]);
-		pt.x -= 20;
-	}
-
-	if ( (types & CHB_OVERLAP) ) {
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_OVERLAP]);
-		pt.x -= 20;
-	}
-
-	if ( (types & CHB_FLOAT) ) {
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_FLOAT]);
-		pt.x -= 20;
-	}
-
-	if ( (types & CHB_BRIDGE) ) {
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_BRIDGE]);
-		pt.x -= 20;
-	}
-
-} // end of PaintAt
-         */
 
         /// <summary>
         /// Paints out those results that no longer apply.
@@ -248,8 +273,8 @@ namespace Backsight.Editor
             if (Types == CheckType.Null)
                 return CheckType.Null;
 
-            // Check neighbouring polygons.
-            return CheckNeighbours(m_Divider);
+            // Check the divider
+            return Check(m_Divider);
         }
 
         /// <summary>
@@ -316,17 +341,15 @@ namespace Backsight.Editor
         /// </summary>
         internal override void Select()
         {
-            throw new NotImplementedException("DividerCheck.Select");
-            /*
-            ISpatialSelection sel = CadastralEditController.Current.Selection;
-            sel.ReplaceWith(m_Divider);
+            SpatialSelection ss = new SpatialSelection();
+            ss.Add(m_Divider.Line);
 
-            // If the line has the same polygon on both sides, select
+            // If the divider has the same polygon on both sides, select
             // the polygon as well.
-
             if ((Types & CheckType.Bridge)!=0 && m_Divider.Left!=null)
-                sel.AddOrRemove(m_Divider.Left);
-             */
+                ss.Add(m_Divider.Left);
+
+            CadastralEditController.Current.SetSelection(ss);
         }
     }
 }

@@ -776,9 +776,23 @@ namespace Backsight.Forms
             return (float)((m_MapPanelExtent.Max.Y - y) * m_GroundToDisplay);
         }
 
+        /// <summary>
+        /// Converts a length on the ground into display units.
+        /// </summary>
+        /// <param name="groundLength">The ground dimension, in meters.</param>
+        /// <returns>The corresponding distance in display units.</returns>
         public float LengthToDisplay(double groundLength)
         {
             return (float)(groundLength * m_GroundToDisplay);
+        }
+        /// <summary>
+        /// Converts a pixel count into a ground dimension
+        /// </summary>
+        /// <param name="displayLength">The display dimension, in pixels.</param>
+        /// <returns>The corresponding distance on the map projection, in meters</returns>
+        public double DisplayToLength(float displayLength)
+        {
+            return (double)displayLength / m_GroundToDisplay;
         }
 
         private Position DisplayToGround(System.Drawing.Point p)
