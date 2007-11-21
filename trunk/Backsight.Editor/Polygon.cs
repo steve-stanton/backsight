@@ -24,8 +24,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Topological area. A polygon refers to two collections; a collection of
     /// the <see cref="IDivider"/> objects that define the outer perimeter of the area,
-    /// and a collection of any islands that may exist within the area. Islands are also
-    /// <c>Polygon</c> objects, but they always have an area less than or equal to zero.
+    /// and a collection of any islands that may exist within the area.
     /// </summary>
     [Serializable]
     class Polygon : Ring
@@ -177,7 +176,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Draws this polygon with a pale yellow fill.
+        /// Draws this polygon with the supplied style (usually a hatched fill).
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
@@ -349,6 +348,150 @@ namespace Backsight.Editor
         internal int LabelCount
         {
             get { return (m_Label==null ? 0 : 1); }
+        }
+
+        /// <summary>
+        /// Determines a position for a label that should fall somewhere inside this polygon.
+        /// </summary>
+        /// <param name="width">The width of the label, in meters on the ground.</param>
+        /// <param name="height">The height of the label, in meters on the ground.</param>
+        /// <returns>The position for the label (null if a position could not be determined)</returns>
+        internal IPosition GetLabelPosition(double width, double height)
+        {
+            // Define the initial scan line in the middle of the Y-swath.
+            IWindow w = this.Extent;
+            double miny = w.Min.Y;
+            double maxy = w.Max.Y;
+            double midy = (miny + maxy) * 0.5;
+
+            // Define the limiting positions for each scan line.
+            double minx = w.Min.X;
+            double maxx = w.Max.X;
+
+            // Do up to 10 scan lines.
+            double delta = Math.Max(height, (maxy-miny)/10.0);
+
+            IPosition beststart = null; // The start of the longest span
+            IPosition bestend = null;   // The end of the longest span
+            double bestlen = 0.0;       // The length of the longest span
+            double weight;              // Weighting factor
+
+            // Find the best span going up the way. We apply a weighting
+            // factor so that lengths nearer the middle of the Y-range
+            // will tend to look better than lengths nearer the extremes.
+            // Otherwise in polygons that are almost square, the label
+            // can appear in an odd-looking position.
+
+            double cury;
+
+            for (cury=midy, weight=1.0; cury<maxy; cury+=delta, weight+=0.2)
+                GetLabelSpan(cury, minx, maxx, weight, ref beststart, ref bestend, ref bestlen);
+
+            // Go down the way too.
+            for (cury=midy-delta, weight=1.2; cury>miny; cury-=delta, weight+=0.2)
+                GetLabelSpan(cury, minx, maxx, weight, ref beststart, ref bestend, ref bestlen);
+
+            // Just return if a valid span couldn't be located
+            if (bestlen < Double.Epsilon)
+                return null;
+
+    		// Define default positon.
+		    IPosition posn = Position.CreateMidpoint(beststart, bestend);
+
+		    // The position we REALLY want is the top-left corner of the
+		    // label. If that position is also within this polygon, that's
+		    // the position we'll use. If not, we'll just go with the
+		    // default position.
+
+            IPosition refpos = new Position(posn.X - width*0.5, posn.Y + height*0.5);
+    		if (this.IsEnclosing(refpos))
+                posn = refpos;
+
+            return posn;
+        }
+
+        /// <summary>
+        /// Updates info on the longest horizontal span that crosses this polygon (used
+        /// by <see cref="GetLabelPosition"/>)
+        /// </summary>
+        /// <param name="y">The Y-value of the scan line.</param>
+        /// <param name="minx">The X-value for the western end of the scan line.</param>
+        /// <param name="maxx">The X-value for the eastern end of the scan line.</param>
+        /// <param name="weight">Weighting factor to use when comparing span lengths versus
+        /// the initial best length.</param>
+        /// <param name="beststart">The position of the start of the best span.</param>
+        /// <param name="bestend">The position of the end of the best span.</param>
+        /// <param name="bestlen">The weighted length of the best span. This is what defines
+        /// the meaning of "best".</param>
+        void GetLabelSpan(double y, double minx, double maxx, double weight,
+                            ref IPosition beststart, ref IPosition bestend, ref double bestlen)
+        {
+            // Define scan line.
+            ITerminal sloc = new FloatingTerminal(minx, y);
+            ITerminal eloc = new FloatingTerminal(maxx, y);
+            SegmentGeometry seg = new SegmentGeometry(sloc, eloc);
+
+            // Intersect with the map
+            IntersectionFinder xseg = new IntersectionFinder(seg, true);
+
+            // Arrange intersections along the scan line.
+            IntersectionResult xres = new IntersectionResult(xseg);
+            xres.Sort(true);
+
+            // Define start of the first span
+            IPosition start = sloc;
+            IPosition end = null;
+
+            // Go through each successive intersection, to locate spans
+            // that run through the interior of the polygon.
+            foreach (IntersectionData d in xres.Intersections)
+            {
+                // If the intersection is a graze
+                if (d.IsGraze)
+                {
+                    // Just define the end of the graze as the end point (there's
+                    // no point in trying to locate a label along the graze).
+                    end = d.P2;
+                }
+                else
+                {
+                    // Simple intersection...
+
+                    // Get the next intersection
+			        end = d.P1;
+
+			        // Get the midpoint of the span.
+			        IPosition mid = Position.CreateMidpoint(start, end);
+
+                    // If the midpoint really falls inside this polygon, see whether the span
+                    // length is bigger than what we already have (if anything).
+
+                    if (this.IsEnclosing(mid))
+                    {
+				        double len = (end.X - start.X)/weight;
+				        if (len>bestlen)
+                        {
+					        bestlen = len;
+					        beststart = start;
+					        bestend = end;
+				        }
+			        }
+                }
+
+                start = end;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the specified position falls inside this polygon (but not
+        /// inside any islands).
+        /// </summary>
+        /// <param name="p">The position to check</param>
+        /// <returns>True if position is inside this polygon. False if it lies outside
+        /// this polygon, or it's inside one of this polygon's islands.</returns>
+        internal bool IsEnclosing(IPosition p)
+        {
+            return (IsRingEnclosing(p) && !HasIslandEnclosing(p));
         }
     }
 }

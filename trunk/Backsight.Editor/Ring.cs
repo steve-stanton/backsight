@@ -365,5 +365,24 @@ namespace Backsight.Editor
                     d.Right = null;
             }
         }
+
+        /// <summary>
+        /// Gets the most easterly point for this ring. If more than one point has the
+        /// same easting, one of them will be picked arbitrarily.
+        /// </summary>
+        /// <returns>The east point of the area.</returns>
+        internal IPosition GetEastPoint()
+        {
+            IPosition mosteast = null;
+
+            foreach (IDivider d in m_Edge)
+            {
+                IPosition east = d.LineGeometry.GetEastPoint();
+                if (mosteast==null || east.X > mosteast.X)
+                    mosteast = east;
+            }
+
+            return mosteast;
+        }
     }
 }

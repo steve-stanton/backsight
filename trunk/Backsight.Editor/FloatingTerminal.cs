@@ -49,6 +49,17 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
+        /// the nearest micron)
+        /// </summary>
+        /// <param name="x">The easting of the terminal, in meters on the ground.</param>
+        /// <param name="y">The northing of the terminal, in meters on the ground.</param>
+        internal FloatingTerminal(double x, double y)
+            : base(x, y)
+        {
+        }
+
         #endregion
 
         #region ITerminal Members
