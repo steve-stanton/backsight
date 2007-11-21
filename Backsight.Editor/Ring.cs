@@ -384,5 +384,19 @@ namespace Backsight.Editor
 
             return mosteast;
         }
+
+        /// <summary>
+        /// Calculates the sum of the dividers that make up the edge of this ring.
+        /// </summary>
+        /// <returns></returns>
+        internal ILength GetEdgeLength()
+        {
+            double total = 0.0;
+
+            foreach (IDivider d in m_Edge)
+                total += d.LineGeometry.Length.Meters;
+
+            return new Length(total);
+        }
     }
 }

@@ -14,7 +14,10 @@
 /// </remarks>
 
 using System;
-//using System.Collections.Generic;
+using System.Text;
+
+using Backsight.Editor.Properties;
+
 
 namespace Backsight.Editor
 {
@@ -83,34 +86,205 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// Repaint icon(s) representing this check result.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
         internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Return if the label has been de-activated.
+            if (m_Label.IsInactive)
+                return;
+
+            // Remember the display position of the label (top left corner).
+            IPosition p = m_Label.Position;
+            Place = p;
+
+            // Figure out a position that is 36 pixels to the left (a bit bigger than an icon)
+            double shift = display.DisplayToLength(36);
+            p = new Position(p.X-shift, p.Y);
+
+            // Draw icon(s).
+            CheckType types = Types;
+            if ((types & CheckType.NoPolygonForLabel)!=0)
+            {
+                style.Render(display, p, Resources.CheckNoPolygonForLabelIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.NoAttributes)!=0)
+            {
+                style.Render(display, p, Resources.CheckNoAttributesIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if ((types & CheckType.MultiLabel)!=0)
+            {
+                style.Render(display, p, Resources.CheckMultiLabelIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
         }
 
+        /// <summary>
+        /// Paints out those results that no longer apply.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="newTypes">The new results</param>
         internal override void PaintOut(ISpatialDisplay display, CheckType newTypes)
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
+        /*
+//	@mfunc	Paint out those results that no longer apply.
+//
+//	@parm	The new results.
+//	@parm	The thing we're drawing to.
+//	@parm	Array of icon handles.
+//
+//////////////////////////////////////////////////////////////////////
+
+void CeLabelCheck::PaintOut ( const UINT4 newTypes
+							, CeDC& gdc
+							, HICON* icons ) const {
+
+	// Get the reference position last used to paint stuff,
+	// and express in logical units.
+	const CeVertex& gpos = GetPlace();
+	CPoint pt;
+	gdc.GetLogPoint(gpos,pt);
+
+	// Get the Windows device context so we can draw directly.
+	CDC* pDC = gdc.GetDC();
+
+	// Figure out a position that is 20 pixels to the left.
+	// (assumes MM_TEXT).
+	pt.x -= 20;
+
+	// Draw icon(s).
+
+	UINT4 oldTypes = GetTypes();
+
+	if ( (oldTypes & CHB_NOPOLENCLAB) ) {
+		if ( (newTypes & CHB_NOPOLENCLAB)==0 )
+			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
+		pt.x -= 20;
+	}
+
+	if ( (oldTypes & CHB_NOATTR) ) {
+		if ( (newTypes & CHB_NOATTR)==0 )
+			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
+		pt.x -= 20;
+	}
+
+	if ( (oldTypes & CHB_MULTILAB) ) {
+		if ( (newTypes & CHB_MULTILAB)==0 )
+			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
+		pt.x -= 20;
+	}
+         */
+
+        /// <summary>
+        /// Rechecks this result.
+        /// </summary>
+        /// <returns>The result(s) that still apply.</returns>
         internal override CheckType ReCheck()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // No errors if the label is now non-topological.
+            if (!m_Label.IsTopological)
+                return CheckType.Null;
+
+            // No errors if it's been deleted.
+            if (m_Label.IsInactive)
+                return CheckType.Null;
+
+            // Return if the result has been cleared.
+            if (Types == CheckType.Null)
+                return CheckType.Null;
+
+	        // Recheck
+	        return CheckLabel(m_Label);
         }
 
+        /// <summary>
+        /// A textual explanation about this check result.
+        /// </summary>
         internal override string Explanation
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                if (m_Label.IsInactive)
+                    return "(label deleted)";
+
+                string keystr = m_Label.FormattedKey;
+                CheckType types = Types;
+                StringBuilder sb = new StringBuilder();
+
+                if ((types & CheckType.NoPolygonForLabel)!=0)
+                    sb.Append(String.Format("Label '{0}' has no enclosing polygon", keystr) + System.Environment.NewLine);
+
+                if ((types & CheckType.NoAttributes)!=0)
+                    sb.Append(String.Format("Label '{0}' has no attributes", keystr) + System.Environment.NewLine);
+
+                if ((types & CheckType.MultiLabel)!=0)
+                {
+                    sb.Append("More than one label for polygon" + System.Environment.NewLine);
+
+                    // Get the key for the problem label.
+                    string othkey = String.Empty;
+
+                    // Get the enclosing polygon.
+                    Polygon enc = m_Label.Container;
+                    if (enc!=null)
+                    {
+                        TextFeature other = enc.Label;
+                        if (other!=null)
+                            othkey = other.FormattedKey;
+                    }
+
+                    sb.Append(String.Format("-> {0} vs {1}", keystr, othkey));
+                }
+
+                return sb.ToString();
+            }
         }
 
+        /// <summary>
+        /// Returns a display position for this check. This is the position to
+        /// use for auto-centering the draw. It is not necessarily the same as
+        /// the position of the problem icon.
+        /// </summary>
         internal override IPosition Position
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            // Return the display position of the label (top-left corner).
+            get { return m_Label.Position; }
         }
 
+        /// <summary>
+        /// Selects the object that this check relates to.
+        /// </summary>
         internal override void Select()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // If the label either has no attributes, or it is inside a polygon that has
+            // more than one label, select the enclosing polygon.
+            SpatialSelection ss = new SpatialSelection();
+
+            CheckType types = Types;
+            if ((types & CheckType.NoAttributes)!=0 || (types & CheckType.MultiLabel)!=0)
+            {
+                Polygon pol = m_Label.Container;
+                if (pol!=null)
+                    ss.Add(pol);
+            }
+
+            // Select the label too
+            ss.Add(m_Label);
+
+            CadastralEditController.Current.SetSelection(ss);
+
+            // Leave the focus with the view (to allow label deletion).
+            CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
         }
     }
 }

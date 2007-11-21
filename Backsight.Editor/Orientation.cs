@@ -34,7 +34,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The divider entering the node
         /// </summary>
-        IDivider m_Divider; // was m_pArc
+        IDivider m_Divider;
 
         /// <summary>
         /// Are we talking about the start of divider?
