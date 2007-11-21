@@ -151,8 +151,8 @@ namespace Backsight.Editor
             // Let the review dialog know.
             m_Status.OnFinishCheck(nCheck, m_Results.Count);
 
-            // Paint any markers.
-            Paint(false);
+            // Paint any markers... will be done by controller in idle time
+            // Paint(false);
 
             // The check may have failed if an edit was in progress.
             return (nCheck>=0);
@@ -167,11 +167,10 @@ namespace Backsight.Editor
         /// However, the visual cue will go away on a subsequent OnDraw.</param>
         /// <remarks>Need to review draw-related timing (since the CadastralEditController
         /// now draws in idle time, I'm not sure if the above will be relevant)</remarks>
-        void Paint(bool drawNulls)
+        internal void Render(ISpatialDisplay display, IDrawStyle style, bool drawNulls)
         {
-            // Get the current centre and scale of the draw.
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
-            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            if (m_Results==null)
+                return;
 
             // Paint those results that have not been cleared.
             foreach (CheckItem check in m_Results)

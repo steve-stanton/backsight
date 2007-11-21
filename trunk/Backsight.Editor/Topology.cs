@@ -364,11 +364,6 @@ namespace Backsight.Editor
             // Cycle the polygon until we return to the first divider.
             for (; ; )
             {
-                if (d.Line.DataId=="0.7958")
-                {
-                    int junk=0;
-                }
-
                 // Define the next face
                 Face face = new Face(d, isLeft);
                 nface++;

@@ -896,6 +896,12 @@ namespace Backsight.Editor
                 repaint = true;
             }
 
+            if (m_Check!=null)
+            {
+                m_Check.Render(ActiveDisplay, DrawStyle, false);
+                repaint = true;
+            }
+
             if (m_Command!=null && m_Command.PerformsPainting)
             {
                 // Restoring the last draw here can cause flickering of the command-specific

@@ -350,6 +350,7 @@ namespace Backsight.Editor
                 ss.Add(m_Divider.Left);
 
             CadastralEditController.Current.SetSelection(ss);
+            CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
         }
     }
 }

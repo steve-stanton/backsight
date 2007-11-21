@@ -251,5 +251,13 @@ namespace Backsight.Editor
 
             base.Clean();
         }
+
+        /// <summary>
+        /// The position of the top left corner of the text
+        /// </summary>
+        internal IPointGeometry Position
+        {
+            get { return m_Geom.Position; }
+        }
     }
 }

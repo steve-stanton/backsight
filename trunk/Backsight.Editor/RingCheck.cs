@@ -14,7 +14,9 @@
 /// </remarks>
 
 using System;
+
 using Backsight.Editor.Properties;
+using System.Text;
 
 namespace Backsight.Editor
 {
@@ -260,112 +262,64 @@ void CePolygonCheck::PaintOut ( const UINT4 newTypes
         /// <returns>The result(s) that still apply.</returns>
         internal override CheckType ReCheck()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Return if the result has been cleared.
+            CheckType types = Types;
+            if (types == CheckType.Null)
+                return CheckType.Null;
+
+            // Recheck the polygon involved
+            return CheckRing(m_Ring);
         }
-
-        /*
-//	@mfunc	Recheck this result.
-//
-//	@rdesc	The result(s) that still apply.
-//
-//////////////////////////////////////////////////////////////////////
-
-UINT4 CePolygonCheck::ReCheck ( void ) {
-
-	// Return if the result has been cleared.
-	UINT4 types = GetTypes();
-	if ( types==0 ) return 0;
-
-	// Get the polygon involved.
-	const CeTheme& theme = GetActiveTheme();
-	const CePolygon* const pPol = m_pFace->GetPolygon(theme);
-
-	// Recheck.
-	if ( pPol )
-		return CheckPolygon(*pPol,theme);
-	else
-		return 0;
-
-} // end of ReCheck
-         */
 
         /// <summary>
         /// A textual explanation about this check result.
         /// </summary>
         internal override string Explanation
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                CheckType types = Types;
+                StringBuilder sb = new StringBuilder();
+
+                if ((types & CheckType.SmallPolygon)!=0)
+                {
+                    // If the area is absolute zero, it could well be
+                    // a floating line or a network.
+
+                    if (m_Ring.Area < Double.Epsilon)
+                        sb.Append("Polygon has zero area");
+                    else
+                    {
+                        // Format a sliver length.
+                        double perim = m_Ring.GetEdgeLength().Meters;
+                        string lenstr = String.Format("{0:0.00}", perim*0.5);
+                        string msg;
+
+                        // If it looks like "0.00", just show the dimensions in millimeters.
+                        if (lenstr == "0.00")
+                        {
+                            IWindow w = m_Ring.Extent;
+                            msg = String.Format("Tiny area ({0:0.000} x {1:0.000} mm)", w.Width*1000.0, w.Height*1000.0);
+                        }
+                        else
+                            msg = String.Format("Tiny sliver area ({0} meters long)", lenstr);
+
+                        sb.Append(msg);
+                    }
+
+                    sb.Append(System.Environment.NewLine);
+                }
+
+                if ((types & CheckType.NotEnclosed)!=0)
+                    sb.Append("Polygon not enclosed by any polygon" + System.Environment.NewLine);
+
+                if ((types & CheckType.NoLabel)!=0)
+                    sb.Append("Polygon has no label" + System.Environment.NewLine);
+
+                return sb.ToString();
+            }
         }
 
-        /*
-//	@mfunc	Provide a textual explanation about this check result.
-//
-//	@parm	The string to define.
-//	@parm	The theme the check was done for.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePolygonCheck::Explain ( CString& str
-							 , const CeTheme& theme ) const {
-
-	// Start out with an empty string.
-	str.Empty();
-
-	// Get the problem type(s).
-	UINT4 types = GetTypes();
-
-	if ( (types & CHB_PSMALL) ) {
-		const CePolygon* const pPol = m_pFace->GetPolygon(theme);
-		if ( pPol ) {
-
-			// If the area is absolute zero, it could well be
-			// a floating line or a network.
-
-			const FLOAT8 area = fabs(pPol->GetArea(theme));
-
-			if ( area < TINY )
-				str += "Polygon has zero area";
-			else {
-
-				CString msg;
-				CString lenstr;
-
-				// Format a sliver length.
-				const FLOAT8 perim = pPol->GetPerimeter();
-				lenstr.Format("%.2lf",perim*0.5);
-
-				// If it looks like "0.00", just show the dimensions
-				// in millimetres.
-
-				if ( lenstr=="0.00" ) {
-
-					// Get the actual dimensions of the polygon.
-					FLOAT8 dx;
-					FLOAT8 dy;
-					pPol->GetDimensions(dx,dy);
-			
-					msg.Format("Tiny area (%.3lf x %.3lf mm)\n"
-						, dx*1000.0, dy*1000.0 );
-				}
-				else
-					msg.Format("Tiny sliver area (%s metres long)\n"
-						, lenstr );
-
-				str += msg;
-			}
-		}
-		else
-			str += "Tiny polygon (seems to have vanished)\n";
-	}
-
-	if ( (types & CHB_NOPOLENCPOL) )
-		str += "Polygon not enclosed by any polygon\n";
-
-	if ( (types & CHB_NOLABEL) )
-		str += "Polygon has no label\n";
-
-} // end of Explain
-         */
         /// <summary>
         /// Returns a display position for this check. This is the position to
         /// use for auto-centering the draw. It is not necessarily the same as
@@ -373,99 +327,41 @@ void CePolygonCheck::Explain ( CString& str
         /// </summary>
         internal override IPosition Position
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                // If the polygon is supposedly real small, just use the center of the polygon's window.
+                CheckType types = Types;
+                if ((types & CheckType.SmallPolygon)!=0)
+                    return m_Ring.Extent.Center;
+
+                // If the polygon is an island, use the east point (because that's roughly where the marker is).
+                if (m_Ring is Island)
+                    return m_Ring.GetEastPoint();
+
+                // Calculate the position for a label that has the same size as an icon. If that fails for
+                // any reason, use the east point of the polygon.
+                double size = CadastralEditController.Current.ActiveDisplay.DisplayToLength(32);
+                IPosition p = (m_Ring as Polygon).GetLabelPosition(size, size);
+                return (p==null ? m_Ring.GetEastPoint() : p);
+            }
         }
 
-        /*
-//	@mfunc	Return a display position for this check. This is
-//			the position to use for auto-centring the draw. It
-//			is not necessarily the same as the position of
-//			the problem icon.
-//
-//	@parm	The position to define.
-//
-//	@rdesc	TRUE if position was defined ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CdUtil.h"
-#include "CeDraw.h"
-
-LOGICAL CePolygonCheck::GetPosition ( CeVertex& pos ) const {
-
-	// Get the polygon involved.
-	const CeTheme& theme = GetActiveTheme();
-	const CePolygon* const pPol = m_pFace->GetPolygon(theme);
-	if ( !pPol ) return FALSE;
-
-	// If the polygon is supposedly real small, just use the
-	// centre of the polygon's window.
-	UINT4 types = GetTypes();
-	if ( (types & CHB_PSMALL) ) {
-		const CeWindow* const pWin = pPol->GetpWindow();
-		pWin->GetCentre(&pos);
-		return pos.IsDefined();
-	}
-
-	// If the polygon is an island, use the east point (because
-	// that's roughly where the marker is).
-	if ( pPol->IsIsland() ) {
-		pPol->GetEastPoint(&pos);
-		return pos.IsDefined();
-	}
-
-	// Calculate the position for a label that has the same
-	// size as an icon. If that fails for any reason, use the
-	// east point of the polygon.
-	CeDraw* pDraw = GetpDraw();
-	const FLOAT8 size = pDraw->LPToLength(UINT4(SM_CXICON));
-	if ( !pPol->GetLabelPosition(size,size,pos) )
-		pPol->GetEastPoint(&pos);
-
-	return pos.IsDefined();
-
-} // end of GetPosition
-         */
         /// <summary>
         /// Selects the object that this check relates to.
         /// </summary>
         internal override void Select()
         {
-            throw new Exception("The method or operation is not implemented.");
+            SpatialSelection ss = new SpatialSelection();
+            ss.Add(m_Ring);
+            CadastralEditController.Current.SetSelection(ss);
+
+            // CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
+
+            // @devnote Don't set the focus to the active display! When we do this in DividerCheck
+            // and TextCheck, it makes it easy to do stuff like editing the problem item (e.g. delete
+            // it with a keystroke). You can't do that with a polygon. If you switch the focus now,
+            // hitting RETURN to move on to the next problem has no effect, when there's a
+            // tendency to think that it will.
         }
-
-        /*
-//	@mfunc	Select the object that this check relates to.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CdUtil.h"
-#include "CeView.h"
-#include "CeSelection.h"
-
-void CePolygonCheck::Select ( void ) const {
-
-	// Find the relevant polygon.
-	const CeTheme& theme = GetActiveTheme();
-	const CePolygon* const pPol = m_pFace->GetPolygon(theme);
-	if ( !pPol ) return;
-
-	// And select it.
-	CeView* pView = GetpView();
-	CeSelection& sel = pView->GetSel();
-	sel.ReplaceWith(pPol);
-
-	// pView->SetFocus();
-
-	// @devnote Don't set the focus to the view! When we do
-	// this in CeArcCheck and CeLabelCheck, it makes it easy
-	// to do stuff like editing the problem item (e.g. delete
-	// it with a keystroke). You can't do that with a polygon.
-	// If you switch the focus now, hitting RETURN to move
-	// on to the next problem has no effect, when there's a
-	// tendency to think that it will.
-
-} // end of Select
-         */
     }
 }
