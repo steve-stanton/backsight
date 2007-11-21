@@ -100,25 +100,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Gets the most easterly point for this island. If more than one point has the
-        /// same easting, one of them will be picked arbitrarily.
-        /// </summary>
-        /// <returns>The east point of the area.</returns>
-        internal IPosition GetEastPoint()
-        {
-            IPosition mosteast = null;
-
-            foreach (IDivider d in this.Edge)
-            {
-                IPosition east = d.LineGeometry.GetEastPoint();
-                if (mosteast==null || east.X > mosteast.X)
-                    mosteast = east;
-            }
-
-            return mosteast;
-        }
-
-        /// <summary>
         /// The area of this island, in square meters on the mapping projection. The stored area
         /// of an island is less than zero. This override negates the value so you should get back
         /// an area greater than zero.

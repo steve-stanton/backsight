@@ -119,65 +119,50 @@ namespace Backsight.Editor
                 // And shift a bit more in case we draw more.
                 p = new Position(p.X-32, p.Y);
             }
+
+            if (m_Ring is Island)
+            {
+                // If the polygon is a phantom that has no enclosing polygon,
+                // display an icon at the east point (unless we previously
+                // found that the polygon was real small).
+
+                if (!isSmall && (types & CheckType.NotEnclosed)!=0)
+                {
+                    p = m_Ring.GetEastPoint();
+                    style.Render(display, p, Resources.CheckNotEnclosedIcon);
+                }
+            }
+            else
+            {
+                // The other two possibilities relate to regular (non-phantom) polygons.
+
+                // If the polygon has no label, get a suitable position (if the polygon is
+                // real small, just use the position we already have).
+
+                if ((types & CheckType.NoLabel)!=0)
+                {
+                    // If the position hasn't been defined (because the polygon is NOT small),
+                    // figure out a good spot. If that fails, fall back on the east point.
+
+                    if (!isSmall)
+                    {
+                        double size = display.DisplayToLength(32);
+                        IPosition pp = (m_Ring as Polygon).GetLabelPosition(size, size);
+                        p = (pp==null ? m_Ring.GetEastPoint() : pp);
+
+                        // The shift here is not ideal if the east point got used, However,
+                        // it simplifies the logic in PaintOut to use the same offset.
+                        double shift = display.DisplayToLength(16);
+                        p = new Position(p.X-shift, p.Y+shift);
+                    }
+
+                    style.Render(display, p, Resources.CheckNoLabelIcon);
+                }
+            }
+
+            // Remember the reference position we used.
+            Place = p;
         }
-
-        /*
-
-	if ( pPol->IsIsland() ) {
-
-		// If the polygon is a phantom that has no enclosing polygon,
-		// display an icon at the east point (unless we previously
-		// found that the polygon was real small).
-
-		if ( (types & CHB_NOPOLENCPOL) ) {
-
-			if ( !gpos.IsDefined() ) {
-				pPol->GetEastPoint(&gpos);
-				gdc.GetLogPoint(gpos,pt);
-			}
-
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_NOPOLENCPOL]);
-		}
-	}
-	else {
-
-		// The other two possibilities relate to regular
-		// (non-phantom) polygons.
-
-		// If the polygon has no label, get a suitable position.
-		// (if the polygon is real small, just use the position
-		// we already have).
-
-		if ( (types & CHB_NOLABEL) ) {
-
-			// If the position hasn't been defined (because the
-			// polygon is NOT small), figure out a good spot.
-			// If that fails, fall back on the east point.
-
-			if ( !gpos.IsDefined() ) {
-
-				const FLOAT8 size = gdc.GetLength((UINT4)16);
-				if ( !pPol->GetLabelPosition(size,size,gpos) )
-					pPol->GetEastPoint(&gpos);
-
-				// The shift here is not ideal if the east point
-				// got used, However, it simplifies the logic
-				// in PaintOut to use the same offset.
-
-				gdc.GetLogPoint(gpos,pt);
-				pt.x -= 8;
-				pt.y -= 8;
-			}
-
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_NOLABEL]);
-		}
-	}
-
-	// Remember the reference position we used.
-	SetPlace(gpos);
-
-} // end of Paint
-         */
 
         /*
 //	@mfunc	Do any check-specific paint of the object associated

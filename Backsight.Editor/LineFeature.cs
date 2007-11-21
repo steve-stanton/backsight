@@ -718,11 +718,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 throw new Exception("LineFeature.Split - Line is associated with the wrong type of topology");
             LineTopology lineTop = (LineTopology)m_Topology;
 
-            if (DataId=="0.8513")
-            {
-                int junk=0;
-            }
-
             // Intersect this line with the map (ignoring end to end intersects).
             IntersectionFinder xf = new IntersectionFinder(this, false);
 
@@ -737,7 +732,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 Cut(r, retrims);
 
             // Combine the results and get the splitter to cut itself up.
-            IntersectionResult xres = new IntersectionResult(lineTop, xf);
+            IntersectionResult xres = new IntersectionResult(xf);
 
             // If there is a graze at the start of this line, ensure
             // that all polygons incident on the start location have

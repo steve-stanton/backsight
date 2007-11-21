@@ -69,14 +69,11 @@ namespace Backsight.Editor
         /// implementation is used to obtain a results object for a new topological line
         /// that has just been intersected against the map.
         /// </summary>
-        /// <param name="intersectedObject">The topological line that was intersected</param>
-        /// <param name="xsect">The result of intersecting the line with the map</param>
-        internal IntersectionResult(LineTopology intersectedObject, IntersectionFinder xsect)
+        /// <param name="xsect">The result of intersecting a line with the map</param>
+        internal IntersectionResult(IntersectionFinder xsect)
         {
-            Debug.Assert(xsect.Intersector == intersectedObject.Line);
-
-            m_IntersectedObject = intersectedObject;
-            m_Geom = intersectedObject.LineGeometry;
+            m_IntersectedObject = xsect.Intersector;
+            m_Geom = m_IntersectedObject.LineGeometry;
             m_Data = null;
 
             // Get the total number of intersections that were found (there's one
@@ -194,85 +191,6 @@ namespace Backsight.Editor
         internal void Append(IPosition p, IPosition q)
         {
             Append(p.X, p.Y, q.X, q.Y);
-        }
-
-        internal void SplitWhereIntersected(List<LineFeature> retrims)
-        {
-            SplitWhereIntersected(retrims, true);
-        }
-
-        /// <summary>
-        /// Splits the features attached to the primitive that these
-        /// intersection results refer to. Only does something if the results refer
-        /// to a line primitive. Anything else will be quietly ignored.
-        /// </summary>
-        /// <param name="retrims">List of lines that will need to be retrimmed.</param>
-        /// <param name="needsort">Does data need to be sorted along the line (default=TRUE).
-        /// Specify FALSE only if the intersection results were obtained via self-intersection
-        /// of a multisegment</param>
-        internal void SplitWhereIntersected(List<LineFeature> retrims, bool needsort)
-        {
-            // Get a list of the topological arcs that are attached to the
-            // line primitive, and that have a theme that overlays the
-            // required layers.
-            throw new NotImplementedException("IntersectionResult.SplitX");
-            /*
-	        CeObjectList xarcs;
-	        UINT4 nxarc = pLine->GetArcs(xarcs,&layers);
-
-	        // Return if there are no suitable arcs (this should really have
-	        // been caught before now, but we'll let it pass).
-	        if ( nxarc==0 ) return;
-
-	        // Sort the intersections along the line we intersected.
-	        if ( needsort ) this->Sort();
-
-	        // Loop through each attached arc, cutting them up at the
-	        // intersections.
-
-	        CeListIter loop(&xarcs);
-	        CeArc* pArc;
-
-	        for ( pArc = (CeArc*)loop.GetHead();
-		          pArc;
-		          pArc = (CeArc*)loop.GetNext() ) {
-
-		        // Ignore arcs that are marked as moved. This may occur
-		        // in cases where a line has more than one arc attached
-		        // to it. In this case, one of the arcs has been processed
-		        // by CeMap::Intersect, thereby making the line primitive
-		        // visible to subsequent arcs. However, not all the arcs
-		        // may have been revealed just yet.
-		        if ( pArc->IsMoved() ) continue;
-
-		        // Get a split object for the arc.
-		        CeSplit* pSplit = dynamic_cast<CeSplit*>(pArc->GetpCreator());
-
-		        // If the arc is inactive, it means that it is the hidden
-		        // portion of a trimmed line. Add the parent line in to
-		        // the list of things that will need to be retrimmed. And
-		        // revert the arc section to a normal line.
-
-		        if ( pArc->IsInactive() ) {
-			        assert(pSplit);
-			        pArc->UnTrim();
-			        if ( pSplit ) retrims.AddReference(pSplit->GetpArc());
-		        }
-
-		        // If there is no split, get one.
-		        if ( !pSplit ) pSplit = pArc->GetpSplit(TRUE);
-
-		        // Make additional splits. If the split object ends up
-		        // referring to NOTHING (possible if the intersections
-		        // are only at the end points), get rid of it.
-		        if ( !pSplit->Create(*pArc,*this,&layers) ) {
-			        if ( pSplit->IsEmpty() ) {
-				        pArc->CutOp(*pSplit);
-				        delete pSplit;
-			        }
-		        }
-	        }
-             */
         }
 
         /// <summary>
