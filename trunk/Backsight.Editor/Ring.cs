@@ -148,6 +148,20 @@ namespace Backsight.Editor
         abstract public void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
+        /// Draws the edge of this ring.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal void RenderOutline(ISpatialDisplay display, IDrawStyle style)
+        {
+            foreach (IDivider d in m_Edge)
+            {
+                LineGeometry g = d.LineGeometry;
+                g.Render(display, style);
+            }
+        }
+
+        /// <summary>
         /// The shortest distance from the specified position to the perimeter of this ring.
         /// </summary>
         /// <param name="point">The position of interest</param>

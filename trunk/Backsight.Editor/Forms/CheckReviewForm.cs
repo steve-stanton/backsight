@@ -258,15 +258,15 @@ namespace Backsight.Editor.Forms
 
         internal void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            // If a specific check is active, paint it.
-            // This currently only does stuff for CeSplitCheck objects.
-
-            if (m_nCurrent < 0 || m_nCurrent >= m_nTotal)
-                return;
-
-            CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
-            if (checkResult != null)
-                checkResult.Render(display, style);
+            if (m_nCurrent >= 0 && m_nCurrent < m_nTotal)
+            {
+                CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
+                if (checkResult != null)
+                {
+                    checkResult.Render(display, style);
+                    checkResult.HighlightCheckedItem(display);
+                }
+            }
         }
 
         /// <summary>

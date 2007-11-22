@@ -25,6 +25,7 @@ namespace Backsight.Editor
     /// <para/>
     /// Implemented by <see cref="LineTopology"/> and <see cref="SectionTopology"/>
     /// </summary>
+    /// <seealso cref="DividerObject"/>
     interface IDivider : IIntersectable
     {
         /// <summary>

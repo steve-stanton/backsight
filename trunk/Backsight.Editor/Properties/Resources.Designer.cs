@@ -88,6 +88,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static System.Drawing.Icon CheckLineIgnoreIcon {
+            get {
+                object obj = ResourceManager.GetObject("CheckLineIgnoreIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon CheckMultiLabelIcon {
             get {
                 object obj = ResourceManager.GetObject("CheckMultiLabelIcon", resourceCulture);
@@ -126,6 +133,13 @@ namespace Backsight.Editor.Properties {
         internal static System.Drawing.Icon CheckOverlapIcon {
             get {
                 object obj = ResourceManager.GetObject("CheckOverlapIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon CheckPolygonIgnoreIcon {
+            get {
+                object obj = ResourceManager.GetObject("CheckPolygonIgnoreIcon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

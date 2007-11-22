@@ -17,6 +17,9 @@ using System;
 
 using Backsight.Editor.Properties;
 using System.Text;
+using Backsight.Forms;
+using System.Drawing;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -105,21 +108,23 @@ namespace Backsight.Editor
 
             // Is the polygon real small? If so, we'll use a display
             // position that's just to the left of the polygon's window.
-            IPosition p = new Position(win.Min.X, win.Max.Y); // NW corner
+            IPosition gpos = null;
+            Position p = null;
             CheckType types = Types;
             bool isSmall = ((types & CheckType.SmallPolygon)!=0);
 
             if (isSmall)
             {
                 // Get the north-west corner of the window.
-                double shift = display.DisplayToLength(32);
-                p = new Position(p.X-shift, p.Y);
+                gpos = new Position(win.Min.X, win.Max.Y); // NW corner
 
                 // Draw the icon
+                double shift = IconSize(display);
+                p = new Position(gpos.X-shift, gpos.Y);
                 style.Render(display, p, Resources.CheckSmallPolygonIcon);
 
                 // And shift a bit more in case we draw more.
-                p = new Position(p.X-32, p.Y);
+                p.X -= shift;
             }
 
             if (m_Ring is Island)
@@ -130,7 +135,12 @@ namespace Backsight.Editor
 
                 if (!isSmall && (types & CheckType.NotEnclosed)!=0)
                 {
-                    p = m_Ring.GetEastPoint();
+                    if (gpos==null)
+                    {
+                        gpos = m_Ring.GetEastPoint();
+                        p = new Position(gpos);
+                    }
+
                     style.Render(display, p, Resources.CheckNotEnclosedIcon);
                 }
             }
@@ -146,16 +156,18 @@ namespace Backsight.Editor
                     // If the position hasn't been defined (because the polygon is NOT small),
                     // figure out a good spot. If that fails, fall back on the east point.
 
-                    if (!isSmall)
+                    if (gpos==null)
                     {
-                        double size = display.DisplayToLength(32);
-                        IPosition pp = (m_Ring as Polygon).GetLabelPosition(size, size);
-                        p = (pp==null ? m_Ring.GetEastPoint() : pp);
+                        Debug.Assert(!isSmall);
+
+                        double size = IconSize(display);
+                        gpos = (m_Ring as Polygon).GetLabelPosition(size, size);
+                        if (gpos==null)
+                            gpos = m_Ring.GetEastPoint();
 
                         // The shift here is not ideal if the east point got used, However,
                         // it simplifies the logic in PaintOut to use the same offset.
-                        double shift = display.DisplayToLength(16);
-                        p = new Position(p.X-shift, p.Y+shift);
+                        p = new Position(gpos.X-size/2, gpos.Y+size/2);
                     }
 
                     style.Render(display, p, Resources.CheckNoLabelIcon);
@@ -163,98 +175,56 @@ namespace Backsight.Editor
             }
 
             // Remember the reference position we used.
-            Place = p;
+            Place = gpos;
         }
 
-        /*
-//	@mfunc	Do any check-specific paint of the object associated
-//			with this object.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePolygonCheck::Paint ( void ) const {
-
-	// Return if the polygon isn't real small.
-	if ( (GetTypes() & CHB_PSMALL)==0 ) return;
-
-	// Locate the polygon in question.
-	const CeTheme& theme = GetActiveTheme();
-	const CePolygon* const pPol = m_pFace->GetPolygon(theme);
-	if ( !pPol ) return;
-
-	// Draw its perimeter in yellow.
-	CeDraw* pDraw = GetpDraw();
-	CClientDC dc(pDraw);
-	CPen yellow(PS_SOLID,0,RGB(255,255,0));
-	dc.SelectObject(&yellow);
-	pPol->Draw(pDraw,&dc);
-
-} // end of Paint
-         */
+        /// <summary>
+        /// Draws the checked item in a way that highlights it during a check review.
+        /// For polygons that are small, this draws the perimeter in orange. This helps
+        /// to identify polygons that are actually unclosed lines or networks.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal override void HighlightCheckedItem(ISpatialDisplay display)
+        {
+            if ((Types & CheckType.SmallPolygon)!=0)
+            {
+                IDrawStyle style = new DrawStyle(Color.Orange);
+                m_Ring.RenderOutline(display, style);
+            }
+        }
 
         /// <summary>
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
         /// <param name="newTypes">The new results</param>
-        internal override void PaintOut(ISpatialDisplay display, CheckType newTypes)
+        internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
         {
-            throw new Exception("The method or operation is not implemented.");
+            IPosition p = this.Place;
+            double shift = IconSize(display);
+            CheckType oldTypes = Types;
+
+            if (IsPaintOut(CheckType.SmallPolygon, oldTypes, newTypes))
+            {
+                p = new Position(p.X-shift, p.Y);
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+
+                // And shift a bit more in case we draw more.
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.NotEnclosed, oldTypes, newTypes))
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+
+            if (IsPaintOut(CheckType.NoLabel, oldTypes, newTypes))
+            {
+                if ((oldTypes & CheckType.SmallPolygon)==0)
+                    p = new Position(p.X-shift/2, p.Y+shift/2);
+
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+            }
         }
-
-        /*
-//	@mfunc	Paint out those results that no longer apply.
-//
-//	@parm	The new results.
-//	@parm	The thing we're drawing to.
-//	@parm	Array of icon handles.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePolygonCheck::PaintOut ( const UINT4 newTypes
-							  , CeDC& gdc
-							  , HICON* icons ) const {
-
-	// Get the reference position last used to paint stuff,
-	// and express in logical units.
-	const CeVertex& gpos = GetPlace();
-	CPoint pt;
-	gdc.GetLogPoint(gpos,pt);
-
-	// Get the Windows device context so we can draw directly.
-	CDC* pDC = gdc.GetDC();
-
-	// Note the problems that were last painted.
-	UINT4 oldTypes = GetTypes();
-
-	if ( (oldTypes & CHB_PSMALL) ) {
-
-		// Draw the icon
-		pt.x -= 16;
-		if ( (newTypes & CHB_PSMALL)==0 )
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-
-		// And shift a bit more in case we draw more.
-		pt.x -= 16;
-	}
-
-	if ( (oldTypes & CHB_NOPOLENCPOL) &&
-		 (newTypes & CHB_NOPOLENCPOL)==0 )
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-
-	if ( (oldTypes & CHB_NOLABEL) &&
-		 (newTypes & CHB_NOLABEL)==0 ) {
-
-		if ( (oldTypes & CHB_PSMALL)==0 ) {
-			pt.x -= 8;
-			pt.y -= 8;
-		}
-
-		pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-	}
-
-} // end of PaintOut
-         */
 
         /// <summary>
         /// Rechecks this result.
@@ -340,7 +310,7 @@ void CePolygonCheck::PaintOut ( const UINT4 newTypes
 
                 // Calculate the position for a label that has the same size as an icon. If that fails for
                 // any reason, use the east point of the polygon.
-                double size = CadastralEditController.Current.ActiveDisplay.DisplayToLength(32);
+                double size = IconSize(CadastralEditController.Current.ActiveDisplay);
                 IPosition p = (m_Ring as Polygon).GetLabelPosition(size, size);
                 return (p==null ? m_Ring.GetEastPoint() : p);
             }

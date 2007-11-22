@@ -18,7 +18,6 @@ using System.Text;
 
 using Backsight.Editor.Properties;
 
-
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="18-NOV-1999" was="CeTextCheck" />
@@ -87,6 +86,16 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
+        /// Gets the spacing between icons representing check markers.
+        /// </summary>
+        /// <returns>The X-shift between successive check markers</returns>
+        double GetIconSpacing(ISpatialDisplay display)
+        {
+            double size = IconSize(display);
+            return (size * 1.1);
+        }
+
+        /// <summary>
         /// Repaint icon(s) representing this check result.
         /// </summary>
         /// <param name="display">The display to draw to</param>
@@ -101,8 +110,8 @@ namespace Backsight.Editor
             IPosition p = m_Label.Position;
             Place = p;
 
-            // Figure out a position that is 36 pixels to the left (a bit bigger than an icon)
-            double shift = display.DisplayToLength(36);
+            // Figure out a position that is a bit to the left (a bit bigger than an icon)
+            double shift = GetIconSpacing(display);
             p = new Position(p.X-shift, p.Y);
 
             // Draw icon(s).
@@ -130,60 +139,35 @@ namespace Backsight.Editor
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
         /// <param name="newTypes">The new results</param>
-        internal override void PaintOut(ISpatialDisplay display, CheckType newTypes)
+        internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Get the reference position last used to paint stuff
+            IPosition p = this.Place;
+
+            double shift = GetIconSpacing(display);
+            p = new Position(p.X-shift, p.Y);
+            CheckType oldTypes = Types;
+
+            if (IsPaintOut(CheckType.NoPolygonForLabel, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.NoAttributes, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.MultiLabel, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
         }
-
-        /*
-//	@mfunc	Paint out those results that no longer apply.
-//
-//	@parm	The new results.
-//	@parm	The thing we're drawing to.
-//	@parm	Array of icon handles.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeLabelCheck::PaintOut ( const UINT4 newTypes
-							, CeDC& gdc
-							, HICON* icons ) const {
-
-	// Get the reference position last used to paint stuff,
-	// and express in logical units.
-	const CeVertex& gpos = GetPlace();
-	CPoint pt;
-	gdc.GetLogPoint(gpos,pt);
-
-	// Get the Windows device context so we can draw directly.
-	CDC* pDC = gdc.GetDC();
-
-	// Figure out a position that is 20 pixels to the left.
-	// (assumes MM_TEXT).
-	pt.x -= 20;
-
-	// Draw icon(s).
-
-	UINT4 oldTypes = GetTypes();
-
-	if ( (oldTypes & CHB_NOPOLENCLAB) ) {
-		if ( (newTypes & CHB_NOPOLENCLAB)==0 )
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-		pt.x -= 20;
-	}
-
-	if ( (oldTypes & CHB_NOATTR) ) {
-		if ( (newTypes & CHB_NOATTR)==0 )
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-		pt.x -= 20;
-	}
-
-	if ( (oldTypes & CHB_MULTILAB) ) {
-		if ( (newTypes & CHB_MULTILAB)==0 )
-			pDC->DrawIcon(pt.x,pt.y,icons[CHI_PIGNORE]);
-		pt.x -= 20;
-	}
-         */
 
         /// <summary>
         /// Rechecks this result.

@@ -276,10 +276,8 @@ namespace Backsight.Editor
         /// </summary>
         internal void OnFinishOp()
         {
-            // Recheck the previous results.
-            //const UINT4 nRes = m_Results.GetCount();
-
             ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            IDrawStyle style = CadastralEditController.Current.DrawStyle;
             bool doPost = false;    // Need to post-process the list?
 
             foreach (CheckItem check in m_Results)
@@ -299,7 +297,7 @@ namespace Backsight.Editor
 
         		if (newTypes != oldTypes)
                 {
-			        check.PaintOut(display, newTypes);
+			        check.PaintOut(display, style, newTypes);
 			        check.Types = newTypes;
 
         			// If we just fixed a polygon with no enclosing polygon, remember to post-process

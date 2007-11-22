@@ -135,11 +135,7 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            foreach (IDivider d in Edge)
-            {
-                LineGeometry g = d.LineGeometry;
-                g.Render(display, style);
-            }
+            RenderOutline(display, style);
         }
 
         public override string ToString()
