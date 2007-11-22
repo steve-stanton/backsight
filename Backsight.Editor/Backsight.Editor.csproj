@@ -64,6 +64,7 @@
     <Compile Include="DeletionUI.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="DirectionFlags.cs" />
+    <Compile Include="DividerObject.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FileCheckQuery.cs" />
     <Compile Include="FloatingTerminal.cs" />
@@ -659,12 +660,14 @@
     <Content Include="Resources\CheckBridgeIcon.ico" />
     <Content Include="Resources\CheckDanglingIcon.ico" />
     <Content Include="Resources\CheckFloatingIcon.ico" />
+    <Content Include="Resources\CheckLineIgnoreIcon.ico" />
     <Content Include="Resources\CheckMultiLabelIcon.ico" />
     <Content Include="Resources\CheckNoAttributesIcon.ico" />
     <Content Include="Resources\CheckNoLabelIcon.ico" />
     <Content Include="Resources\CheckNoPolygonForLabelIcon.ico" />
     <Content Include="Resources\CheckNotEnclosedIcon.ico" />
     <Content Include="Resources\CheckOverlapIcon.ico" />
+    <Content Include="Resources\CheckPolygonIgnoreIcon.ico" />
     <Content Include="Resources\CheckSmallLineIcon.ico" />
     <Content Include="Resources\CheckSmallPolygonIcon.ico" />
     <Content Include="Resources\Editor.ico" />

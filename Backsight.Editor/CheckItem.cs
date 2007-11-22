@@ -279,11 +279,38 @@ namespace Backsight.Editor
         abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
+        /// Draws the checked item in a way that highlights it during a check review.
+        /// This implementation does nothing. The <see cref="RingCheck"/> class
+        /// overrides.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal virtual void HighlightCheckedItem(ISpatialDisplay display)
+        {
+        }
+
+        /// <summary>
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
         /// <param name="newTypes">The new results</param>
-        abstract internal void PaintOut(ISpatialDisplay display, CheckType newTypes);
+        abstract internal void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes);
+
+        /// <summary>
+        /// Determines whether a specific check needs to be painted out.
+        /// </summary>
+        /// <param name="flag">Flag bit indicating the check of interest</param>
+        /// <param name="oldTypes">Original check flags</param>
+        /// <param name="newTypes">Check flags after some sort of edit</param>
+        /// <returns>True if the <paramref name="flag"/> was set in <paramref name="oldTypes"/>, and is now
+        /// clear in <paramref name="newTypes"/></returns>
+        protected bool IsPaintOut(CheckType flag, CheckType oldTypes, CheckType newTypes)
+        {
+            if ((oldTypes & flag)==0)
+                return false;
+
+            return ((newTypes & flag)==0);
+        }
 
         /// <summary>
         /// Rechecks this result.
@@ -307,5 +334,15 @@ namespace Backsight.Editor
         /// Selects the object that this check relates to.
         /// </summary>
         abstract internal void Select();
+
+        /// <summary>
+        /// The size of icons used during check reviews, in meters on the ground.
+        /// </summary>
+        /// <param name="display">The display where the icons will be drawn</param>
+        /// <returns>The size (height and width) of icons used as check markers</returns>
+        protected double IconSize(ISpatialDisplay display)
+        {
+            return display.DisplayToLength(32.0F);
+        }
     }
 }

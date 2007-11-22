@@ -149,11 +149,11 @@ namespace Backsight.Editor
 
             // Define position for first icon (a little to the left of the divider,
             // assuming an icon size of 32 pixels)
-            double shift = display.DisplayToLength(16);
-            Position p = new Position(gpos.X-shift, gpos.Y);
+            double shift = IconSize(display);
+            Position p = new Position(gpos.X-shift/2, gpos.Y+shift/2);
 
             // Define shift for any further icons
-            shift = display.DisplayToLength(36);
+            shift *= 1.1;
 
             // Draw icon(s).
             CheckType types = Types;
@@ -192,68 +192,50 @@ namespace Backsight.Editor
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
         /// <param name="newTypes">The new results</param>
-        internal override void PaintOut(ISpatialDisplay display, CheckType newTypes)
+        internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
         {
-            throw new Exception("The method or operation is not implemented.");
+            IPosition p = this.Place;
+            double shift = IconSize(display);
+            CheckType oldTypes = Types;
+
+            // Shift a bit so the icon is a bit to the left of the reference position
+            p = new Position(p.X-shift/2, p.Y+shift/2);
+
+            // Any subsequent shifts will be a bit more
+            shift *= 1.1;
+
+            if (IsPaintOut(CheckType.SmallLine, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.Dangle, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.Overlap, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.Floating, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
+
+            if (IsPaintOut(CheckType.Bridge, oldTypes, newTypes))
+            {
+                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                p = new Position(p.X-shift, p.Y);
+            }
         }
-        /*
-        void CeArcCheck::PaintOut ( const UINT4 newTypes
-                                  , CeDC& gdc
-                                  , HICON* icons ) const {
-
-            // Get the reference position last used for painting.
-            const CeVertex& gpos = GetPlace();
-
-            // And express in logical units.
-            CPoint pt;
-            gdc.GetLogPoint(gpos,pt);
-
-            // Get the Windows device context so we can draw directly.
-            CDC* pDC = gdc.GetDC();
-
-            // Shift a bit so the icon is a bit to the left of the
-            // mid-point (assumes MM_TEXT, and an icon size of 16
-            // pixels).
-            pt.x -= 8;
-            pt.y -= 8;
-
-            // The icons to paint out are those that we originally
-            // had, but which are not in the new results.
-            UINT4 oldTypes = GetTypes();
-
-            if ( (oldTypes & CHB_LSMALL) ) {
-                if ( (newTypes & CHB_LSMALL)==0 )
-                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
-                pt.x -= 20;
-            }
-
-            if ( (oldTypes & CHB_DANGLE) ) {
-                if ( (newTypes & CHB_DANGLE)==0 )
-                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
-                pt.x -= 20;
-            }
-
-            if ( (oldTypes & CHB_OVERLAP) ) {
-                if ( (newTypes & CHB_OVERLAP)==0 )
-                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
-                pt.x -= 20;
-            }
-
-            if ( (oldTypes & CHB_FLOAT) ) {
-                if ( (newTypes & CHB_FLOAT)==0 )
-                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
-                pt.x -= 20;
-            }
-
-            if ( (oldTypes & CHB_BRIDGE) ) {
-                if ( (newTypes & CHB_BRIDGE)==0 )
-                    pDC->DrawIcon(pt.x,pt.y,icons[CHI_LIGNORE]);
-                pt.x -= 20;
-            }
-
-        } // end of PaintOut
-         */
 
         /// <summary>
         /// Rechecks this result.
