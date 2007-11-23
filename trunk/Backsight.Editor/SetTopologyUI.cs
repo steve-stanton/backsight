@@ -63,7 +63,7 @@ namespace Backsight.Editor
         /// <returns>True if command started (and completed) ok.</returns>
         internal override bool Run()
         {
-            CadastralEditController c = Controller;
+            EditingController c = Controller;
             SetTopologyOperation op = null;
 
             try

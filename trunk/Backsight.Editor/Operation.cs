@@ -384,7 +384,7 @@ namespace Backsight.Editor
             List<Circle> circles = GetCreatedCircles(feats);
             if (circles.Count > 0)
             {
-                CadastralIndex index = (CadastralIndex)MapModel.Index;
+                EditingIndex index = (EditingIndex)MapModel.Index;
                 foreach (Circle c in circles)
                     index.AddCircle(c);
             }

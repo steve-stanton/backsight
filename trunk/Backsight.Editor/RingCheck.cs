@@ -310,7 +310,7 @@ namespace Backsight.Editor
 
                 // Calculate the position for a label that has the same size as an icon. If that fails for
                 // any reason, use the east point of the polygon.
-                double size = IconSize(CadastralEditController.Current.ActiveDisplay);
+                double size = IconSize(EditingController.Current.ActiveDisplay);
                 IPosition p = (m_Ring as Polygon).GetLabelPosition(size, size);
                 return (p==null ? m_Ring.GetEastPoint() : p);
             }
@@ -323,9 +323,9 @@ namespace Backsight.Editor
         {
             SpatialSelection ss = new SpatialSelection();
             ss.Add(m_Ring);
-            CadastralEditController.Current.SetSelection(ss);
+            EditingController.Current.SetSelection(ss);
 
-            // CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
+            // EditingController.Current.ActiveDisplay.MapPanel.Focus();
 
             // @devnote Don't set the focus to the active display! When we do this in DividerCheck
             // and TextCheck, it makes it easy to do stuff like editing the problem item (e.g. delete

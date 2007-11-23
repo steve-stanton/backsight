@@ -168,7 +168,7 @@ namespace Backsight.Editor.Forms
             }
 
             // Get the current draw window, and shrink it by 10% all the way round.
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             Window win = new Window(display.Extent);
             win.Expand(-0.1);
 

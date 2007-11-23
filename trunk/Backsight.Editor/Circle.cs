@@ -252,10 +252,10 @@ namespace Backsight.Editor
         /// Inserts this circle into the supplied index.
         /// </summary>
         /// <param name="index">The spatial index to add to (should be an instance of
-        /// <see cref="CadastralIndex"/>)</param>
+        /// <see cref="EditingIndex"/>)</param>
         internal void AddToIndex(IEditSpatialIndex index)
         {
-            CadastralIndex cx = (index as CadastralIndex);
+            EditingIndex cx = (index as EditingIndex);
             Debug.Assert(cx!=null);
             cx.AddCircle(this);
         }

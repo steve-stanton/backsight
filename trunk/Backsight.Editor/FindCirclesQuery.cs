@@ -53,7 +53,7 @@ namespace Backsight.Editor
         /// <param name="index">The spatial index to search</param>
         /// <param name="p">The search position.</param>
         /// <param name="tol">The search tolerance (expected to be greater than zero).</param>
-        internal FindCirclesQuery(CadastralIndex index, IPosition p, ILength tol)
+        internal FindCirclesQuery(EditingIndex index, IPosition p, ILength tol)
         {
             m_Position = p;
             m_Tolerance = tol.Meters;

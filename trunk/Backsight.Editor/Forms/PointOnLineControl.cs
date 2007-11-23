@@ -195,14 +195,14 @@ namespace Backsight.Editor.Forms
             }
 
             // Ensure the line that's being subdivided is still highlighted
-            IDrawStyle style = CadastralEditController.Current.HighlightStyle;
+            IDrawStyle style = EditingController.Current.HighlightStyle;
             m_Line.Render(display, style);
 
             // Calculate the position of the split point.
             IPosition splitpos = PointOnLineUI.Calculate(m_Line, m_Length, m_IsFromEnd);
             if (splitpos!=null)
             {
-                style = CadastralEditController.Current.Style(Color.Magenta);
+                style = EditingController.Current.Style(Color.Magenta);
                 style.Render(display, splitpos);
             }
         }

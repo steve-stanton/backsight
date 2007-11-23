@@ -172,7 +172,7 @@ namespace Backsight.Editor
                 if (IsIndexed)
                 {
                     CadastralMapModel map = line.MapModel;
-                    CadastralIndex index = (CadastralIndex)map.Index;
+                    EditingIndex index = (EditingIndex)map.Index;
                     index.RemoveIntersection(this);
                 }
 

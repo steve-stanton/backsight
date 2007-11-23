@@ -106,7 +106,7 @@ namespace Backsight.Editor.Forms
             else
                 m_Terminal = cmd.ParallelOne;
 
-            CadastralEditController.Current.Style(Color.Yellow).Render(draw, m_Terminal);
+            EditingController.Current.Style(Color.Yellow).Render(draw, m_Terminal);
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -164,7 +164,7 @@ namespace Backsight.Editor.Forms
             }
 
             // Draw the terminal point in yellow.
-            CadastralEditController.Current.Style(Color.Yellow).Render(view, m_Terminal);
+            EditingController.Current.Style(Color.Yellow).Render(view, m_Terminal);
 
             // If we don't have a terminal line, alter the text that says
             // that it's highlighted! And make the "don't terminate" checkbox
@@ -257,11 +257,11 @@ namespace Backsight.Editor.Forms
                     MessageBox.Show("Selected line does not intersect the parallel");
 
                     // De-select the line the user picked
-                    CadastralEditController.Current.ClearSelection();
+                    EditingController.Current.ClearSelection();
 
                     // Re-highlight the arc if had originally (if any).
                     if (m_Line!=null)
-                        CadastralEditController.Current.Select(m_Line);
+                        EditingController.Current.Select(m_Line);
 
                     return;
                 }
@@ -313,7 +313,7 @@ namespace Backsight.Editor.Forms
 
             // And draw the terminal position on top of it.
             if (m_Terminal!=null)
-                CadastralEditController.Current.Style(Color.Yellow).Render(view, m_Terminal);
+                EditingController.Current.Style(Color.Yellow).Render(view, m_Terminal);
         }
 
         private void otherWayButton_Click(object sender, EventArgs e)

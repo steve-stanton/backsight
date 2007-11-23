@@ -446,7 +446,7 @@ namespace Backsight.Editor
 		        map.MaintainTopology = true;
 
 		        // Get the view's current draw window
-                ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+                ISpatialDisplay display = EditingController.Current.ActiveDisplay;
                 IWindow drawin = display.Extent;
 
 		        // If the problem isn't on screen, re-centre at the current scale

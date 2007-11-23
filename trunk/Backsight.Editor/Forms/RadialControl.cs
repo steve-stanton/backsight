@@ -174,7 +174,7 @@ namespace Backsight.Editor.Forms
             if (m_Dir!=null)
                 m_Dir.Render(view);
 
-            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            IDrawStyle style = EditingController.Current.DrawStyle;
             DrawIfDefined(m_To, view, style, Color.Magenta);
 
             if (m_To!=null && m_WantLine)
@@ -664,14 +664,14 @@ namespace Backsight.Editor.Forms
                 IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId, true);
 
                 // If we are auto-numbering, disable the ID combo.
-                CadastralEditController controller = m_Cmd.Controller;
+                EditingController controller = m_Cmd.Controller;
                 if (controller.IsAutoNumber)
                     pointIdComboBox.Enabled = false;
             }
 
             // Get the view to de-select the from point. Then redraw it in light blue.
             if (m_From!=null)
-                CadastralEditController.Current.ClearSelection();
+                EditingController.Current.ClearSelection();
 
             //Draw();
             backsightTextBox.Focus();

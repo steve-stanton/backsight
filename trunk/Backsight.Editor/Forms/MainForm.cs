@@ -32,12 +32,12 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         private readonly UserActionList m_Actions;
-        private readonly CadastralEditController m_Controller;
+        private readonly EditingController m_Controller;
 
         /// <summary>
         /// File check command (null if not active).
         /// </summary>
-        /// <remarks>Will probably be moved to CadastralEditController when it's implemented for real.
+        /// <remarks>Will probably be moved to EditingController when it's implemented for real.
         /// </remarks>
         FileCheckUI m_Check;
 
@@ -46,7 +46,7 @@ namespace Backsight.Editor.Forms
         public MainForm()
         {
             // Define the controller for the application
-            m_Controller = new CadastralEditController(this);
+            m_Controller = new EditingController(this);
 
             InitializeComponent();
 
@@ -373,7 +373,7 @@ namespace Backsight.Editor.Forms
             m_Controller.OnIdle();
         }
 
-        // Called by CadastralEditController
+        // Called by EditingController
         new internal void MouseMove(ISpatialDisplay sender, IPosition p, System.Windows.Forms.MouseButtons b)
         {
             if (positionLabel.Visible)
@@ -576,7 +576,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileCheck(IUserAction action)
         {
-            CadastralEditController.Current.StartCheck();
+            EditingController.Current.StartCheck();
         }
 
         private bool IsFileUpdateSchemaEnabled()
@@ -1523,7 +1523,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void HelpAbout(IUserAction action)
         {
             //MessageBox.Show(action.Title);
-            CadastralIndex index = (CadastralIndex)CadastralMapModel.Current.Index;
+            EditingIndex index = (EditingIndex)CadastralMapModel.Current.Index;
             uint nx = index.GetIntersectCount();
             MessageBox.Show("nx=" + nx);
             //TestForm test = new TestForm();

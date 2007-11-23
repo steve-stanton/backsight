@@ -204,7 +204,7 @@ namespace Backsight.Editor.Forms
 
         internal override void Draw()
         {
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
 
             // Redraw the arcs that are suitable for the next pointing operation.
 		    DrawCurves();
@@ -315,7 +315,7 @@ namespace Backsight.Editor.Forms
 
             // Highlight the arcs associated with each circle
 
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             IDrawStyle dottedBlack = new DottedStyle(Color.Black);
             IDrawStyle white = new DrawStyle(Color.White);
 
@@ -341,7 +341,7 @@ namespace Backsight.Editor.Forms
         /// <returns>The circles that were found (null if nothing found)</returns>
         Circle[] GetCircles (PointFeature point)
         {
-            CadastralIndex index = (CadastralIndex)CadastralMapModel.Current.Index;
+            EditingIndex index = (EditingIndex)CadastralMapModel.Current.Index;
             ILength tol = new Length(0.001);
             List<Circle> circles = index.QueryCircles(point, tol);
             return (circles.Count==0 ? null : circles.ToArray());

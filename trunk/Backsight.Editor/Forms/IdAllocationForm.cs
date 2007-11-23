@@ -67,7 +67,7 @@ namespace Backsight.Editor.Forms
             // sync with the database).
             if (m_IsChange)
             {
-                CadastralEditController c = CadastralEditController.Current;
+                EditingController c = EditingController.Current;
                 c.AutoSave();
             }
 

@@ -331,8 +331,8 @@ namespace Backsight.Editor
             if ((Types & CheckType.Bridge)!=0 && m_Divider.Left!=null)
                 ss.Add(m_Divider.Left);
 
-            CadastralEditController.Current.SetSelection(ss);
-            CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
+            EditingController.Current.SetSelection(ss);
+            EditingController.Current.ActiveDisplay.MapPanel.Focus();
         }
     }
 }

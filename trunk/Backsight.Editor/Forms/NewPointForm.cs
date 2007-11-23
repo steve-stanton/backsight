@@ -213,7 +213,7 @@ namespace Backsight.Editor.Forms
 
             // Check whether the position is on screen. If not, issue a warning
             // message, and let the user cancel if desired.
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             if (!display.Extent.IsOverlap(m_Position))
             {
                 if (MessageBox.Show("Specified position does not overlap current draw window. Continue?",
@@ -387,7 +387,7 @@ namespace Backsight.Editor.Forms
                 idComboBox.SelectedItem = idComboBox.Items[0];
 
                 // If we are auto-numbering, disable the ID combo.
-                CadastralEditController controller = m_Cmd.Controller;
+                EditingController controller = m_Cmd.Controller;
                 if (controller.IsAutoNumber)
                     idComboBox.Enabled = false;
             }

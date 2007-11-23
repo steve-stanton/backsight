@@ -53,7 +53,7 @@ namespace Backsight.Editor
         /// undo in the current editing session, or an exception arose.</returns>
         internal override bool Run()
         {
-            CadastralEditController c = Controller;
+            EditingController c = Controller;
 
             try
             {

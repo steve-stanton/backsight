@@ -174,7 +174,7 @@ namespace Backsight.Editor
             if (d.Right!=null)
                 d.Right.AddToIndex(index);
 
-            CadastralIndex cx = (CadastralIndex)index;
+            EditingIndex cx = (EditingIndex)index;
             AddToIndex(d.From, cx);
             AddToIndex(d.To, cx);
         }
@@ -184,7 +184,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="t">The terminal at the start or end of a divider</param>
         /// <param name="cx">The spatial index to add to</param>
-        static void AddToIndex(ITerminal t, CadastralIndex cx)
+        static void AddToIndex(ITerminal t, EditingIndex cx)
         {
             Intersection x = (t as Intersection);
             if (x!=null && !x.IsIndexed)
