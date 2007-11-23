@@ -15,6 +15,7 @@
 
 using System;
 using System.Text;
+using System.Drawing;
 
 using Backsight.Editor.Properties;
 
@@ -102,6 +103,9 @@ namespace Backsight.Editor
         /// <param name="style">The style for the drawing</param>
         internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
+            // Draw stuff that's now irrelevant
+            RenderPaintOuts(display, style);
+
             // Return if the label has been de-activated.
             if (m_Label.IsInactive)
                 return;
@@ -136,6 +140,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The overlay icon drawn on top of any painted out icons.
+        /// </summary>
+        internal override Icon PaintOutIcon
+        {
+            get { return Resources.CheckPolygonIgnoreIcon; }
+        }
+
+        /// <summary>
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
@@ -152,19 +164,19 @@ namespace Backsight.Editor
 
             if (IsPaintOut(CheckType.NoPolygonForLabel, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckNoPolygonForLabelIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.NoAttributes, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckNoAttributesIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.MultiLabel, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckMultiLabelIcon);
                 p = new Position(p.X-shift, p.Y);
             }
         }

@@ -16,6 +16,8 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.Drawing;
+
 using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
@@ -119,7 +121,6 @@ namespace Backsight.Editor
         internal IDivider Divider
         {
             get { return m_Divider; }
-            //set { m_Divider = value; }
         }
 
         /// <summary>
@@ -129,6 +130,9 @@ namespace Backsight.Editor
         /// <param name="style">The style for the drawing</param>
         internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
+            // Draw stuff that's now irrelevant
+            RenderPaintOuts(display, style);
+
             // Return if the line has been de-activated.
             if (m_Divider.Line.IsInactive)
                 return;
@@ -189,6 +193,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The overlay icon drawn on top of any painted out icons.
+        /// </summary>
+        internal override Icon PaintOutIcon
+        {
+            get { return Resources.CheckLineIgnoreIcon; }
+        }
+
+        /// <summary>
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
@@ -208,31 +220,31 @@ namespace Backsight.Editor
 
             if (IsPaintOut(CheckType.SmallLine, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                AddPaintOut(p, Resources.CheckSmallLineIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.Dangle, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                AddPaintOut(p, Resources.CheckDanglingIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.Overlap, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                AddPaintOut(p, Resources.CheckOverlapIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.Floating, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                AddPaintOut(p, Resources.CheckFloatingIcon);
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.Bridge, oldTypes, newTypes))
             {
-                style.Render(display, p, Resources.CheckLineIgnoreIcon);
+                AddPaintOut(p, Resources.CheckBridgeIcon);
                 p = new Position(p.X-shift, p.Y);
             }
         }

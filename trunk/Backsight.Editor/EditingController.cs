@@ -532,7 +532,9 @@ namespace Backsight.Editor
             // they actually are!
             RefreshAllDisplays();
 
-            // Notify any check dialog (re-check all potential problems)
+            // Notify any check dialog (re-check all potential problems).
+            // And repaint immediately to avoid flicker (icons wouldn't otherwise be repainted
+            // until the idle handler gets called)
             if (m_Check!=null)
                 m_Check.OnFinishOp();
 
@@ -895,7 +897,7 @@ namespace Backsight.Editor
 
             if (m_Check!=null)
             {
-                m_Check.Render(ActiveDisplay, DrawStyle, false);
+                m_Check.Render(ActiveDisplay, DrawStyle);
                 repaint = true;
             }
 
