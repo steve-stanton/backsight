@@ -30,10 +30,17 @@ using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
+    /// <summary>
+    /// The controller for the Cadastral Editor application. The controller is a singleton.
+    /// </summary>
     class EditingController : SpatialController
     {
         #region Statics
 
+        /// <summary>
+        /// The one and only controller (to be defined as soon as the Cadastral Editor
+        /// starts up).
+        /// </summary>
         new public static EditingController Current
         {
             get { return (SpatialController.Current as EditingController); }
@@ -43,6 +50,10 @@ namespace Backsight.Editor
 
         #region Class data
 
+        /// <summary>
+        /// The main screen (largely comprised of a control for displaying the current
+        /// map model).
+        /// </summary>
         private readonly MainForm m_Main;
 
         /// <summary>
@@ -513,13 +524,20 @@ namespace Backsight.Editor
 		    }
              */
             SetNormalCursor();
-            RefreshAllDisplays(); // try it now
 
-            m_AutoSaver.FinishEdit(m_Command);
+            // Refresh everything from the model. This may seem a bit of an effort, considering
+            // that many edits don't do much to the display (some don't do anything). However,
+            // it's fast and keeps things clean in more complex cases. Do it before saving the
+            // map model, since it gives the impression that things are more responsive than
+            // they actually are!
+            RefreshAllDisplays();
 
-            // Notify any check dialog
+            // Notify any check dialog (re-check all potential problems)
             if (m_Check!=null)
                 m_Check.OnFinishOp();
+
+            // Save the map model
+            m_AutoSaver.FinishEdit(m_Command);
 
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
@@ -535,13 +553,6 @@ namespace Backsight.Editor
 
             m_Command.Dispose();
             m_Command = null;
-
-            // Restore original graphics, ensure stuff created by the last editing
-            // op has been included in the display buffer. In the case of edits that
-            // delete things, we may need to redraw from the model...
-            // ...the above is a bit involved, so let's just refresh the whole draw
-            // from the model.
-            //RefreshAllDisplays();
         }
 
         /// <summary>
@@ -867,20 +878,6 @@ namespace Backsight.Editor
             CadastralMapModel cmm = this.CadastralMapModel;
             cmm.DrawExtent = sender.Extent;
         }
-
-        /// <summary>
-        /// Perform any processing whenever a display has just been re-painted.
-        /// This ensures that any active editing command paints on top of
-        /// the regular display.
-        /// </summary>
-        /// <param name="sender">The display that has been painted</param>
-        /*
-        public override void OnPaint(ISpatialDisplay sender)
-        {
-            if (m_Command!=null && m_Command.ActiveDisplay==sender)
-                m_Command.Paint(null);
-        }
-        */
 
         /// <summary>
         /// Application idle handler gives editing commands the opportunity to re-paint
