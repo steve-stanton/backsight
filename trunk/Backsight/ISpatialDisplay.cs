@@ -20,7 +20,7 @@ using System.Windows.Forms;
 namespace Backsight
 {
     /// <summary>
-    /// Something that draws maps
+    /// Something that draws maps (as implemented by the <see cref="MapControl"/> class).
     /// </summary>
     public interface ISpatialDisplay
     {
