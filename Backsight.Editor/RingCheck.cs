@@ -106,6 +106,9 @@ namespace Backsight.Editor
             if (!win.IsOverlap(display.Extent))
                 return;
 
+            // Draw stuff that's now irrelevant
+            RenderPaintOuts(display, style);
+
             // Is the polygon real small? If so, we'll use a display
             // position that's just to the left of the polygon's window.
             IPosition gpos = null;
@@ -194,6 +197,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The overlay icon drawn on top of any painted out icons.
+        /// </summary>
+        internal override Icon PaintOutIcon
+        {
+            get { return Resources.CheckPolygonIgnoreIcon; }
+        }
+
+        /// <summary>
         /// Paints out those results that no longer apply.
         /// </summary>
         /// <param name="display">The display to draw to</param>
@@ -208,21 +219,21 @@ namespace Backsight.Editor
             if (IsPaintOut(CheckType.SmallPolygon, oldTypes, newTypes))
             {
                 p = new Position(p.X-shift, p.Y);
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckSmallPolygonIcon);
 
                 // And shift a bit more in case we draw more.
                 p = new Position(p.X-shift, p.Y);
             }
 
             if (IsPaintOut(CheckType.NotEnclosed, oldTypes, newTypes))
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckNotEnclosedIcon);
 
             if (IsPaintOut(CheckType.NoLabel, oldTypes, newTypes))
             {
                 if ((oldTypes & CheckType.SmallPolygon)==0)
                     p = new Position(p.X-shift/2, p.Y+shift/2);
 
-                style.Render(display, p, Resources.CheckPolygonIgnoreIcon);
+                AddPaintOut(p, Resources.CheckNoLabelIcon);
             }
         }
 

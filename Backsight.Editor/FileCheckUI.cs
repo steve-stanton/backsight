@@ -142,23 +142,15 @@ namespace Backsight.Editor
         /// <summary>
         /// Redraws any check icons.
         /// </summary>
-        /// <param name="drawNulls">Should null check results be drawn. Default=FALSE.
-        /// A TRUE value is specified by <c>FileCheckUI.OnFinishOp</c> to try to provide
-        /// the user with a visual cue of the problems that an edit might have fixed.
-        /// However, the visual cue will go away on a subsequent OnDraw.</param>
-        /// <remarks>Need to review draw-related timing (since the EditingController
-        /// now draws in idle time, I'm not sure if the above will be relevant)</remarks>
-        internal void Render(ISpatialDisplay display, IDrawStyle style, bool drawNulls)
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
+        internal void Render(ISpatialDisplay display, IDrawStyle style)
         {
             if (m_Results==null)
                 return;
 
-            // Paint those results that have not been cleared.
             foreach (CheckItem check in m_Results)
-            {
-                if (drawNulls || check.Types != CheckType.Null)
-                    check.Render(display, style);
-            }
+                check.Render(display, style);
 
             // Tell the status window too.
             if (m_Status!=null)
@@ -298,6 +290,9 @@ namespace Backsight.Editor
             // Tell the status dialog.
             if (m_Status!=null)
                 m_Status.OnFinishOp();
+
+            // Ensure screen immediately reflects any changes
+            Render(display, style);
         }
 
         /// <summary>

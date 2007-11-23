@@ -20,7 +20,7 @@ namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" on="23-NOV-2007" />
     /// <summary>
-    /// An association between an icon and a map position.
+    /// An association between a map position and an icon
     /// </summary>
     class PositionedIcon
     {
@@ -65,6 +65,14 @@ namespace Backsight.Editor.Forms
         internal void Render(ISpatialDisplay display, IDrawStyle style)
         {
             style.Render(display, m_Position, m_Icon);
+        }
+
+        /// <summary>
+        /// The position of the center of the icon
+        /// </summary>
+        internal IPosition Position
+        {
+            get { return m_Position; }
         }
     }
 }

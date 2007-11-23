@@ -15,6 +15,10 @@
 
 using System;
 using System.Text;
+using System.Drawing;
+using System.Collections.Generic;
+
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
@@ -241,6 +245,12 @@ namespace Backsight.Editor
         /// </summary>
         IPosition m_Place;
 
+        /// <summary>
+        /// The positions of icons that should be "painted out" (grayed) because they
+        /// are no longer relevant.
+        /// </summary>
+        List<PositionedIcon> m_PaintOuts;
+
         #endregion
 
         #region Constructors
@@ -281,6 +291,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The style for the drawing</param>
+        /// <remarks>Implementations of this method should always call <see cref="RenderPaintOuts"/>
+        /// up front.</remarks>
         abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
         /// <summary>
@@ -294,12 +306,53 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Paints out those results that no longer apply.
+        /// Determines which results no longer apply. This will be called each time an editing operation
+        /// is completed (after a file check has been started). Implementations need to call the
+        /// <see cref="AddPaintOut"/> method for each check result that has become irrelevant.
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The style for the drawing</param>
         /// <param name="newTypes">The new results</param>
         abstract internal void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes);
+
+        /// <summary>
+        /// The overlay icon drawn on top of any painted out icons.
+        /// </summary>
+        abstract internal Icon PaintOutIcon { get; }
+
+        /// <summary>
+        /// Remembers an item that should be rendered with a grey overlay.
+        /// </summary>
+        /// <param name="p">The position of the check item that should be greyed out</param>
+        /// <param name="i">The icon involved</param>
+        protected void AddPaintOut(IPosition p, Icon i)
+        {
+            if (m_PaintOuts==null)
+                m_PaintOuts = new List<PositionedIcon>();
+
+            PositionedIcon pi = new PositionedIcon(p, i);
+            m_PaintOuts.Add(pi);
+        }
+
+        /// <summary>
+        /// Draws any icons representing check items that are now irrelevant. This should be
+        /// called at the start of implementations of the <see cref="Render"/> method.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
+        protected void RenderPaintOuts(ISpatialDisplay display, IDrawStyle style)
+        {
+            if (m_PaintOuts!=null)
+            {
+                Icon overlay = PaintOutIcon;
+
+                foreach (PositionedIcon pi in m_PaintOuts)
+                {
+                    pi.Render(display, style);
+                    style.Render(display, pi.Position, overlay);
+                }
+            }
+        }
 
         /// <summary>
         /// Determines whether a specific check needs to be painted out.

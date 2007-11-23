@@ -164,7 +164,10 @@ namespace Backsight.Editor
         /// <returns>True if operation removed</returns>
         internal bool Remove(Operation o)
         {
-            return m_Operations.Remove(o);
+            if (m_Operations!=null)
+                return m_Operations.Remove(o);
+            else
+                return false;
         }
 
         /// <summary>
@@ -183,22 +186,6 @@ namespace Backsight.Editor
                 m_Operations.RemoveAt(index);
 
             return (index>=0);
-        }
-
-        public void GetFeatures(IList<Feature> features, SpatialType types)
-        {
-            if (m_Operations==null)
-                return;
-
-            foreach (Operation op in m_Operations)
-            {
-                Feature[] created = op.Features;
-                foreach (Feature f in created)
-                {
-                    if ((f.SpatialType & types) != 0)
-                        features.Add(f);
-                }
-            }
         }
 
         /// <summary>
