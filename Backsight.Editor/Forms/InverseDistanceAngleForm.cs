@@ -124,7 +124,7 @@ namespace Backsight.Editor.Forms
 
         internal override void Draw()
         {
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
 
             if (m_Point1!=null)
                 m_Point1.Draw(display, InverseColors[0]);

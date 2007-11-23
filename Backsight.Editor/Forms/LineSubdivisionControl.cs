@@ -296,7 +296,7 @@ namespace Backsight.Editor.Forms
         {
             // Highlight the line we are subdividing
             ISpatialDisplay draw = m_Cmd.ActiveDisplay;
-            //IDrawStyle style = CadastralEditController.Current.HighlightStyle;
+            //IDrawStyle style = EditingController.Current.HighlightStyle;
             //m_Line.Render(draw, style);
 
             // Draw the points (except for the last one, which should
@@ -306,7 +306,7 @@ namespace Backsight.Editor.Forms
 
             if (pts!=null)
             {
-                IDrawStyle style = CadastralEditController.Current.Style(Color.Magenta);
+                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
 
                 for (int i=0; i<pts.Count-1; i++)
                     style.Render(draw, pts[i]);

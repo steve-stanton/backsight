@@ -179,7 +179,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         protected void ErasePainting()
         {
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             display.RestoreLastDraw();
         }
     }

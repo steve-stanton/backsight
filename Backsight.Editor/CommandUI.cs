@@ -87,7 +87,7 @@ namespace Backsight.Editor
         {
             m_Container = cc;
             m_CommandId = cmdId;
-            m_Draw = CadastralEditController.Current.ActiveDisplay;
+            m_Draw = EditingController.Current.ActiveDisplay;
             m_Update = update;
             m_UpdCmd = null;
             m_Recall = recall;
@@ -117,7 +117,7 @@ namespace Backsight.Editor
 
             if (update==null)
             {
-                m_Draw = CadastralEditController.Current.ActiveDisplay;
+                m_Draw = EditingController.Current.ActiveDisplay;
                 m_Recall = null;
             }
              */
@@ -323,9 +323,9 @@ namespace Backsight.Editor
              */
         }
 
-        internal CadastralEditController Controller
+        internal EditingController Controller
         {
-            get { return CadastralEditController.Current; }
+            get { return EditingController.Current; }
         }
 
         /// <summary>
@@ -499,7 +499,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Does this command perform any command-specific painting? If so, it's <c>Paint</c>
-        /// method will be called during idle time (see <c>CadastralEditController.OnIdle</c>).
+        /// method will be called during idle time (see <c>EditingController.OnIdle</c>).
         /// This implementation returns false. Derived classes may override.
         /// <para/>
         /// While it is expected that most deribed classes will return a true result, it is

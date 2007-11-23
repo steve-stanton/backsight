@@ -543,14 +543,14 @@ namespace Backsight.Editor
         /// <param name="col">The colour to use for the draw</param>
         public void Draw(ISpatialDisplay display, Color col)
         {
-            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            IDrawStyle style = EditingController.Current.DrawStyle;
             style.LineColor = style.FillColor = col;
             Render(display, style);
         }
 
         public void Draw(ISpatialDisplay display, HatchStyle hs, Color foreColor)
         {
-            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            IDrawStyle style = EditingController.Current.DrawStyle;
             style.Fill = new Fill(hs, foreColor, display.MapPanel.BackColor);
             Render(display, style);
         }

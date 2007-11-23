@@ -112,7 +112,7 @@ namespace Backsight.Editor.Forms
             // If we previously drew something, ensure the screen is back to normal
             if (m_Draw.Length>0)
             {
-                CadastralEditController.Current.RefreshAllDisplays();
+                EditingController.Current.RefreshAllDisplays();
                 m_Draw = new Feature[0];
             }
 
@@ -135,7 +135,7 @@ namespace Backsight.Editor.Forms
         private void SessionForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (m_Draw.Length>0)
-                CadastralEditController.Current.RefreshAllDisplays();
+                EditingController.Current.RefreshAllDisplays();
         }
     }
 }

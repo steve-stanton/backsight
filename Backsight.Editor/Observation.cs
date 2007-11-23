@@ -81,7 +81,7 @@ namespace Backsight.Editor
         {
             get
             {
-                Operation edit = CadastralEditController.Current.CurrentEdit;
+                Operation edit = EditingController.Current.CurrentEdit;
                 if (edit==null)
                     throw new ArgumentNullException("Observation has no operation.");
                 return edit;

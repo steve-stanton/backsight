@@ -328,7 +328,7 @@ namespace Backsight.Editor.Forms
 
             Debug.Assert(m_Line!=null);
             ISpatialDisplay draw = m_Cmd.ActiveDisplay;
-            IDrawStyle solidStyle = CadastralEditController.Current.Style(Color.Magenta);
+            IDrawStyle solidStyle = EditingController.Current.Style(Color.Magenta);
             IDrawStyle dottedStyle = new DottedStyle();
 
             if (m_Line is ArcFeature)

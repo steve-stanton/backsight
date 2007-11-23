@@ -25,9 +25,15 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="17-NOV-1999" was="CuiFileCheck" />
     /// <summary>
-    /// User interface for checking a file. Note that unlike other UI classes, this one does NOT
-    //	inherit from <c>CommandUI</c>.
+    /// User interface for checking a file. This initially presents the user with a dialog
+    /// for indicating the types of checks that need to be performed. After dismissing that
+    /// initial dialog, the file is checked and a smaller review dialog appears. The user can
+    /// then step through each potential problem to see what's going on. The user can also
+    /// make edits while the check review dialog is on screen (the user decides to fix
+    /// something). That being the case, the checking needs to take care of the fact that
+    /// things may have changed since the check was originally made.
     /// </summary>
+    /// <remarks>Unlike other UI classes, this one does NOT inherit from <c>CommandUI</c></remarks>
     class FileCheckUI : IDisposable
     {
         #region Class data
@@ -69,31 +75,6 @@ namespace Backsight.Editor
             m_Status = null;
             m_OpSequence = CadastralMapModel.Current.LastOpSequence;
             m_Options = CheckType.Null;
-
-            /*
-            // Load the icons used for highlighting each type of check.
-
-	m_Icons = new HICON[CHI_SIZE];
-	memset(m_Icons,0,CHI_SIZE*sizeof(HICON));
-
-	CWinApp* pApp = AfxGetApp();
-
-	m_Icons[CHI_LSMALL]			= pApp->LoadIcon(IDI_CL_SMALL);
-	m_Icons[CHI_DANGLE]			= pApp->LoadIcon(IDI_CL_DANGLE);
-	m_Icons[CHI_FLOAT]			= pApp->LoadIcon(IDI_CL_FLOAT);
-	m_Icons[CHI_OVERLAP]		= pApp->LoadIcon(IDI_CL_OVERLAP);
-	m_Icons[CHI_BRIDGE]			= pApp->LoadIcon(IDI_CL_BRIDGE);
-
-	m_Icons[CHI_PSMALL]			= pApp->LoadIcon(IDI_CP_SMALL);
-	m_Icons[CHI_NOPOLENCPOL]	= pApp->LoadIcon(IDI_CP_NOPOLENCPOL);
-	m_Icons[CHI_NOLABEL]		= pApp->LoadIcon(IDI_CP_NOLABEL);
-	m_Icons[CHI_NOPOLENCLAB]	= pApp->LoadIcon(IDI_CP_NOPOLENCLAB);
-	m_Icons[CHI_NOATTR]			= pApp->LoadIcon(IDI_CP_NOATTR);
-	m_Icons[CHI_MULTILAB]		= pApp->LoadIcon(IDI_CP_MULTILAB);
-
-	m_Icons[CHI_LIGNORE]		= pApp->LoadIcon(IDI_CL_IGNORE);
-	m_Icons[CHI_PIGNORE]		= pApp->LoadIcon(IDI_CP_IGNORE);
-             */
         }
 
         #endregion
@@ -165,7 +146,7 @@ namespace Backsight.Editor
         /// A TRUE value is specified by <c>FileCheckUI.OnFinishOp</c> to try to provide
         /// the user with a visual cue of the problems that an edit might have fixed.
         /// However, the visual cue will go away on a subsequent OnDraw.</param>
-        /// <remarks>Need to review draw-related timing (since the CadastralEditController
+        /// <remarks>Need to review draw-related timing (since the EditingController
         /// now draws in idle time, I'm not sure if the above will be relevant)</remarks>
         internal void Render(ISpatialDisplay display, IDrawStyle style, bool drawNulls)
         {
@@ -204,7 +185,7 @@ namespace Backsight.Editor
                 return -1;
             }
 
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             Control c = display.MapPanel;
 
             try
@@ -258,7 +239,7 @@ namespace Backsight.Editor
             }
 
             // Tell the controller that the check is finished.
-            CadastralEditController.Current.OnFinishCheck();
+            EditingController.Current.OnFinishCheck();
         }
 
         /// <summary>
@@ -276,8 +257,8 @@ namespace Backsight.Editor
         /// </summary>
         internal void OnFinishOp()
         {
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
-            IDrawStyle style = CadastralEditController.Current.DrawStyle;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+            IDrawStyle style = EditingController.Current.DrawStyle;
             bool doPost = false;    // Need to post-process the list?
 
             foreach (CheckItem check in m_Results)

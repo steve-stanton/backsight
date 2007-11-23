@@ -221,7 +221,7 @@ namespace Backsight.Editor
 
                 // Ensure the reference line has been selected/highlighted (this may end up
                 // calling OnSelectLine)
-                CadastralEditController.Current.Select(m_Line);
+                EditingController.Current.Select(m_Line);
 
                 // Calculate stuff & paint what we've got.
                 Calculate();
@@ -299,7 +299,7 @@ namespace Backsight.Editor
                 m_OffsetPoint.Draw(view, Color.Green);
 
             // Everything else should draw in usual command-style colour.
-            IDrawStyle style = CadastralEditController.Current.Style(Color.Magenta);
+            IDrawStyle style = EditingController.Current.Style(Color.Magenta);
             IDrawStyle dottedStyle = new DottedStyle();
 
             // If the reference line is a curve, get the curve info.
@@ -520,7 +520,7 @@ namespace Backsight.Editor
             // And ensure the view has nothing selected (sometimes the line
             // last selected had been unhighlighted, although it's end points
             // stay highlighted for some reason).
-            CadastralEditController.Current.ClearSelection();
+            EditingController.Current.ClearSelection();
 
             // If we are doing an update, alter the original operation.
             if (up!=null)

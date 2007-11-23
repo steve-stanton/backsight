@@ -136,7 +136,7 @@ namespace Backsight.Editor.Forms
 
             NtxImport ni = new NtxImport(ntxFile, this);
             Import i = new Import(ni);
-            CadastralEditController c = CadastralEditController.Current;
+            EditingController c = EditingController.Current;
             c.Add(i);
 
             // Test building topology

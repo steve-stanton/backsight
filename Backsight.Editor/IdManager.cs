@@ -29,7 +29,7 @@ namespace Backsight.Editor
 	/// <written by="Steve Stanton" on="16-DEC-1998" />
     /// <summary>
     /// Management of ID assignment. One of these objects forms part of the
-    /// <c>CadastralEditController</c> class. It is responsible for maintaining a
+    /// <c>EditingController</c> class. It is responsible for maintaining a
     /// connection to the external database that holds ID info. It acts as a
     ///	server for dishing out IDs.
     /// </summary>

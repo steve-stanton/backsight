@@ -232,7 +232,12 @@ namespace Backsight.Editor
         CheckType m_Types;
 
         /// <summary>
-        /// Position of the reference point that was last defined via a call to <c>Paint</c>
+        /// Position of the reference point that was last defined via a call to <see cref="Render"/>,
+        /// for subsequent use by <see cref="PaintOut"/>. For example, it's the position of the
+        /// top-left corner of text at the time it was drawn. It gets stored here to cover the
+        /// fact that the feature involved may get moved while the check dialog is still active
+        /// (in a situation like that we need the original position to paint out check markers
+        /// properly).
         /// </summary>
         IPosition m_Place;
 

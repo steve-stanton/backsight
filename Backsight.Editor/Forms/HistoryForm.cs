@@ -82,7 +82,7 @@ namespace Backsight.Editor.Forms
             {
                 m_IsEdited = true;
                 LoadSessionList();
-                CadastralEditController.Current.RefreshAllDisplays();
+                EditingController.Current.RefreshAllDisplays();
             }
             else
                 MessageBox.Show("Nothing to rollback.");

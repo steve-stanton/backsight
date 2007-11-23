@@ -77,7 +77,7 @@ namespace Backsight.Editor.Forms
         	// Erase the circle and redraw the curves (current theme).
             if (m_Select!=null)
             {
-                CadastralEditController.Current.ActiveDisplay.PaintNow();
+                EditingController.Current.ActiveDisplay.PaintNow();
                 m_Select = null;
 
                 /*
@@ -103,7 +103,7 @@ namespace Backsight.Editor.Forms
 	        }
 
 	        // Erase the circle and redraw the curves (current theme only).
-            CadastralEditController.Current.ActiveDisplay.PaintNow();
+            EditingController.Current.ActiveDisplay.PaintNow();
             /*
 	CeLayerList curlayer;
 	m_pSelect->Erase();
@@ -128,7 +128,7 @@ namespace Backsight.Editor.Forms
         private void listBox_SelectedValueChanged(object sender, EventArgs e)
         {
         	// If we previously had a selected circle, erase it.
-            ISpatialDisplay display = CadastralEditController.Current.ActiveDisplay;
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
             if (m_Select!=null)
                 display.PaintNow();
             /*

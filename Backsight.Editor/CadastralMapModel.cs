@@ -41,7 +41,7 @@ namespace Backsight.Editor
         {
             get
             {
-                CadastralEditController cec = CadastralEditController.Current;
+                EditingController cec = EditingController.Current;
                 return (cec==null ? null : (cec.MapModel as CadastralMapModel));
             }
         }
@@ -90,7 +90,7 @@ namespace Backsight.Editor
         /// Spatial index for the data in this model.
         /// </summary>
         [NonSerialized]
-        CadastralIndex m_Index;
+        EditingIndex m_Index;
 
         /// <summary>
         /// Current format ID for the entire cadastral editor class structure.
@@ -518,7 +518,7 @@ namespace Backsight.Editor
 
             // Draw intersections if necessary
             if (m_AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
-                (m_Index as CadastralIndex).DrawIntersections(display);
+                (m_Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
         }
@@ -756,7 +756,7 @@ namespace Backsight.Editor
             //System.Windows.Forms.MessageBox.Show("start");
             //DateTime start = DateTime.Now;
 
-            CadastralIndex index = new CadastralIndex();
+            EditingIndex index = new EditingIndex();
 
             foreach (Session s in m_Sessions)
                 s.AddToIndex(index);
@@ -807,7 +807,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Remembers that rollforward is about to begin.
         /// </summary>
-        /// <devnote>This should probably move to CadastralEditController</devnote>
+        /// <devnote>This should probably move to EditingController</devnote>
         internal void StartRollforward()
         {
             // @devnote There was a potential memory leak here.

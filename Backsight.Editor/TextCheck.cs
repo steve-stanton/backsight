@@ -265,10 +265,10 @@ namespace Backsight.Editor
             // Select the label too
             ss.Add(m_Label);
 
-            CadastralEditController.Current.SetSelection(ss);
+            EditingController.Current.SetSelection(ss);
 
             // Leave the focus with the view (to allow label deletion).
-            CadastralEditController.Current.ActiveDisplay.MapPanel.Focus();
+            EditingController.Current.ActiveDisplay.MapPanel.Focus();
         }
     }
 }

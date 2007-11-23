@@ -65,11 +65,11 @@ namespace Backsight.Editor
         /// <summary>
         /// The controller that is making use of this AutoSaver.
         /// </summary>
-        readonly CadastralEditController m_Controller;
+        readonly EditingController m_Controller;
 
         #endregion
 
-        internal AutoSaver(CadastralEditController c)
+        internal AutoSaver(EditingController c)
         {
             m_Controller = c;
             m_IsUpdate = false;
@@ -144,7 +144,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Extended handler for <c>CadastralEditController.Create</c>. This should be called as soon as
+        /// Extended handler for <c>EditingController.Create</c>. This should be called as soon as
         /// the new map has been created, but before ANYTHING else has been done to it.
         /// </summary>
         internal void OnNew()

@@ -58,7 +58,7 @@ namespace Backsight.Editor
         /// case, the controller would be told to abort the command).</returns>
         internal override bool Run()
         {
-            CadastralEditController c = Controller;
+            EditingController c = Controller;
             DeletionOperation dop = null;
 
             try

@@ -45,11 +45,11 @@
     <Compile Include="AutoSaver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="BearingDirection.cs" />
-    <Compile Include="CadastralEditController.cs" />
-    <Compile Include="CadastralIndex.cs" />
+    <Compile Include="EditingController.cs" />
+    <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
-    <Compile Include="CadastralSelection.cs" />
+    <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
     <Compile Include="CleanupQuery.cs" />
