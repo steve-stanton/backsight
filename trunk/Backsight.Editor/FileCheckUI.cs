@@ -58,11 +58,6 @@ namespace Backsight.Editor
         /// </summary>
         uint m_OpSequence;
 
-        /// <summary>
-        /// The icons used to highlight problems.
-        /// </summary>
-        //ImageList m_Icons;
-
         #endregion
 
         #region Constructors
@@ -93,6 +88,16 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// Is it possible to undo the last edit? This should be called (probably by the
+        /// <c>EditingController</c>) when a user attempts to undo something. This is
+        /// meant to ensure that the check results do not refer to something that has
+        /// been undone (if the user really wants to undo to a point prior to the check,
+        /// they must first dismiss the check review dialog).
+        /// </summary>
+        /// <param name="seq">The sequence number of the edit the user wants to undo.</param>
+        /// <returns>True if the edit was made after the file check was started. False
+        /// if the edit pre-dates the start of the check.</returns>
         internal bool CanRollback(uint seq)
         {
             return (seq>m_OpSequence);
