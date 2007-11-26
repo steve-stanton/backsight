@@ -49,6 +49,18 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="Forms\GetDistanceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\GetDistanceControl.Designer.cs">
+      <DependentUpon>GetDistanceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IntersectTwoDistancesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IntersectTwoDistancesForm.Designer.cs">
+      <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
@@ -406,6 +418,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>GetCircleForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetDistanceControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetDistanceControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetEntityForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetEntityForm.cs</DependentUpon>
@@ -425,6 +441,10 @@
     <EmbeddedResource Include="Forms\IdAllocationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IntersectTwoDistancesForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InverseArcDistanceBearingForm.resx">
       <SubType>Designer</SubType>
@@ -650,6 +670,10 @@
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
       <Name>Backsight</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gui.Wizard\Gui.Wizard.csproj">
+      <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
+      <Name>Gui.Wizard</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ntx\Ntx.csproj">
       <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
