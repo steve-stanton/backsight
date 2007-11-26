@@ -38,7 +38,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Observed distance (either m_Distance or m_OffsetPoint).
         /// </summary>
-        Observation m_Distance;
+        Observation m_ObservedDistance;
 
         /// <summary>
         /// Type of line (if any).
