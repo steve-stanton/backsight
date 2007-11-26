@@ -536,7 +536,10 @@ namespace Backsight.Editor
             // And repaint immediately to avoid flicker (icons wouldn't otherwise be repainted
             // until the idle handler gets called)
             if (m_Check!=null)
+            {
                 m_Check.OnFinishOp();
+                ActiveDisplay.PaintNow();
+            }
 
             // Save the map model
             m_AutoSaver.FinishEdit(m_Command);

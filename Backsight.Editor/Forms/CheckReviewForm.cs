@@ -176,9 +176,10 @@ namespace Backsight.Editor.Forms
             if (!win.IsOverlap(pos))
                 display.Center = pos;
 
-            // Select the object involved (this highlights the object
-            // and shifts the focus to the main map window).
-            check.Select();
+            // Select the object involved, so long as it hasn't been de-activated (selecting
+            // the object will highlight it and shift the focus to the main map window).
+            if (check.Types != CheckType.Null)
+                check.Select();
 
             // Return the index of the check that was actually shown.
             return nShow;
