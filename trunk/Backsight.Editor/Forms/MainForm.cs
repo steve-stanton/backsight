@@ -269,7 +269,11 @@ namespace Backsight.Editor.Forms
 
             // Intersect menu...
             AddAction(mnuIntersectTwoDirections, IsIntersectTwoDirectionsEnabled, IntersectTwoDirections);
-            AddAction(mnuIntersectTwoDistances, IsIntersectTwoDistancesEnabled, IntersectTwoDistances);
+            AddEdit(
+                EditingActionId.DistIntersect,
+                new ToolStripItem[] { mnuIntersectTwoDistances },
+                IsIntersectTwoDistancesEnabled,
+                IntersectTwoDistances);
             AddAction(mnuIntersectTwoLines, IsIntersectTwoLinesEnabled, IntersectTwoLines);
             AddAction(mnuIntersectDirectionAndDistance, IsIntersectDirectionAndDistanceEnabled, IntersectDirectionAndDistance);
             AddAction(mnuIntersectDirectionAndLine, IsIntersectDirectionAndLineEnabled, IntersectDirectionAndLine);
@@ -1463,7 +1467,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsIntersectTwoDistancesEnabled()
         {
-            return false;
+            return (HasMap && !m_Controller.IsCommandRunning);
         }
 
         private void IntersectTwoDistances(IUserAction action)
