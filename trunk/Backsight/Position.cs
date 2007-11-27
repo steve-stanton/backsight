@@ -46,6 +46,11 @@ namespace Backsight
 
         #region Constructors
 
+        /// <summary>
+        /// Create a new <c>Position</c> at the specified XY.
+        /// </summary>
+        /// <param name="x">The easting of the position</param>
+        /// <param name="y">The northing of the position</param>
         public Position(double x, double y)
         {
             m_X = x;

@@ -127,6 +127,7 @@
     <Compile Include="IExpandablePropertyItem.cs" />
     <Compile Include="MathConstants.cs" />
     <Compile Include="MicronValue.cs" />
+    <Compile Include="Position3D.cs" />
     <Compile Include="Quadrant.cs" />
     <Compile Include="QuadVertex.cs" />
     <Compile Include="RadianValue.cs" />
