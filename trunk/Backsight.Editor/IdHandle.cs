@@ -487,7 +487,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="keystr">The foreign key to assign.</param>
         /// <returns>The feature ID that has been created (null on error).</returns>
-        FeatureId CreateForeignId(string keystr)
+        internal FeatureId CreateForeignId(string keystr)
         {
             // If the feature was not supplied to the constructor, say it can't be done!
             if (m_Feature==null)
