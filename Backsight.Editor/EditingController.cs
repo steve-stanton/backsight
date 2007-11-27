@@ -730,7 +730,10 @@ namespace Backsight.Editor
 
             m_Check = new FileCheckUI();
             if (m_Check.Run())
+            {
+                TextFeature.AreReferencePointsDrawn = true;
                 return true;
+            }
 
             m_Check = null;
             return false;
@@ -744,6 +747,7 @@ namespace Backsight.Editor
         internal void OnFinishCheck()
         {
             m_Check = null;
+            TextFeature.AreReferencePointsDrawn = false;
             RefreshAllDisplays();
         }
 

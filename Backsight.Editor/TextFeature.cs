@@ -24,6 +24,27 @@ namespace Backsight.Editor
     [Serializable]
     class TextFeature : Feature
     {
+        #region Static
+
+        /// <summary>
+        /// Should polygon label reference points be rendered during draws?
+        /// </summary>
+        static bool s_DrawReferencePoints = false;
+
+        /// <summary>
+        /// Should polygon label reference points be rendered during draws? This is
+        /// currently turned on while the File-Check command is running, since it helps
+        /// the user to appreciate a situation where a polygon label falls slightly outside
+        /// a thin polygon.
+        /// </summary>
+        internal static bool AreReferencePointsDrawn
+        {
+            get { return s_DrawReferencePoints; }
+            set { s_DrawReferencePoints = value; }
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -145,6 +166,9 @@ namespace Backsight.Editor
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             m_Geom.Render(display, style);
+
+            if (s_DrawReferencePoints)
+                style.RenderPlus(display, m_Geom.Position);
         }
 
         public override IWindow Extent
