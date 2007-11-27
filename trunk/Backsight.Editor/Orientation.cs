@@ -32,14 +32,15 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The divider entering the node
+        /// The divider entering the node. Null if the orientation relates to an
+        /// instance of <see cref="HorizontalRay"/>.
         /// </summary>
-        IDivider m_Divider;
+        readonly IDivider m_Divider;
 
         /// <summary>
         /// Are we talking about the start of divider?
         /// </summary>
-        bool m_IsStart;
+        readonly bool m_IsStart;
 
         /// <summary>
         /// Relative position of orientation point
@@ -57,24 +58,16 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor
-        /// </summary>
-        internal Orientation()
-        {
-            m_Divider = null;
-            m_IsStart = false;
-            m_DeltaI = 0.0;
-            m_DeltaJ = 0.0;
-            m_Quadrant = Quadrant.All;
-        }
-
-        /// <summary>
         /// Creates new <c>Orientation</c> for one end of a divider
         /// </summary>
-        /// <param name="d">The divider we are interested in.</param>
+        /// <param name="d">The divider we are interested in (not null)</param>
         /// <param name="isStart">At start of the divider?</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="d"/> is null</exception>
         internal Orientation(IDivider d, bool isStart)
         {
+            if (d==null)
+                throw new ArgumentNullException("Divider cannot be null");
+
             m_Divider = d;
             m_IsStart = isStart;
 
@@ -225,7 +218,13 @@ namespace Backsight.Editor
         /// </summary>
         internal bool IsDividerArc
         {
-            get { return (m_Divider.Line is ArcFeature); }
+            get
+            {
+                if (m_Divider==null)
+                    return false;
+                else
+                    return (m_Divider.Line is ArcFeature);
+            }
         }
 
         /// <summary>
