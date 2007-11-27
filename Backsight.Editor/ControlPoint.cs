@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using Backsight.Environment;
 //using System.Collections.Generic;
 
 namespace Backsight.Editor
@@ -31,48 +32,41 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="s">String read from external control file.</param>
         /// <returns>The created point</returns>
+        /// <exception cref="ArgumentException">If the supplied string cannot be parsed as
+        /// a control point</exception>
         /// <remarks>Assumes Manitoba control file</remarks>
         internal ControlPoint CreateInstance(string s)
         {
-            return null;
-            /*
-//	Define initial values.
-	m_ControlId = 0;
-	m_Zone = 0;
-	m_Northing = 0.0;
-	m_Easting = 0.0;
-	m_Elevation = 0.0;
+            // The string must contain at least 77 characters.
+            if (s.Trim().Length < 77)
+                throw new ArgumentException("Control point string must contain at least 77 characters");
 
-//	The string must contain at least 77 characters.
-	UINT4 slen = StrLength(string);
-	if ( slen<77 ) return;
+            // Characters 7:13 (zero-based) must contain a numeric value.
+            string t = s.Substring(7, 7).Trim();
+            int xid;
+            if (!Int32.TryParse(t, out xid) || xid<0)
+                throw new ArgumentException("Control point string doesn't contain valid ID field");
 
-	CHARS* eptr;		// Pointer to char that stops the scan.
+            // Characters 35:38 contain the UTM zone number.
+            t = s.Substring(35, 4).Trim();
+            int zone;
+            if (!Int32.TryParse(t, out zone) || zone<=0 || zone>60)
+                throw new ArgumentException("Control point string doesn't contain valid UTM zone");
 
-//	Characters 7:13 (zero-based) must contain a numeric value.
-	INT4 xid = strtol(&string[7],&eptr,10);
-	if ( xid<=0 || (eptr<=&string[13] && !isspace(*eptr)) ) return;
+            // Characters 51:60 contain the easting.
+            t = s.Substring(51, 10).Trim();
+            double easting;
+            if (!Double.TryParse(t, out easting) || easting<Constants.TINY)
+                throw new ArgumentException("Control point string doesn't contain valid easting");
 
-//	Characters 35:38 contain the UTM zone number.
-	INT4 zone = strtol(&string[35],&eptr,10);
-	if ( zone<=0 || zone>60 || (eptr<=&string[38] && !isspace(*eptr)) ) return;
+            // Characters 66:76 contain the northing.
+            t = s.Substring(66, 11).Trim();
+            double northing;
+            if (!Double.TryParse(t, out northing) || northing < Constants.TINY)
+                throw new ArgumentException("Control point string doesn't contain valid northing");
 
-//	Characters 51:60 contain the easting.
-	FLOAT8 easting = strtod(&string[51],&eptr);
-	if ( easting<TINY || (eptr<=&string[60] && !isspace(*eptr)) ) return;
-
-//	Characters 66:76 contain the northing.
-	FLOAT8 northing = strtod(&string[66],&eptr);
-	if ( northing<TINY || (eptr<=&string[76] && !isspace(*eptr)) ) return;
-
-//	Everything looks ok, so define the object.
-
-	m_ControlId = UINT4(xid);
-	m_Zone = UINT1(zone);
-	m_Northing = northing;
-	m_Easting = easting;
-	m_Elevation = 0.0;		// no elevation data
-             */
+            // Everything looks ok, so define the object.
+            return new ControlPoint((uint)xid, easting, northing, 0.0, (byte)zone);
         }
 
         #endregion
@@ -85,7 +79,7 @@ namespace Backsight.Editor
         uint m_ControlId;
 
         /// <summary>
-        /// The zone number.
+        /// The zone number (in the range [1,60])
         /// </summary>
         byte m_Zone;
 
@@ -96,7 +90,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>ControlPoint</c>
         /// </summary>
-        internal ControlPoint(uint id, double x, double y, double z, byte zone)
+        /// <param name="id">The ID of the control point</param>
+        /// <param name="x">The easting of the position</param>
+        /// <param name="y">The northing of the position</param>
+        /// <param name="z">The elevation of the position</param>
+        /// <param name="zone">The zone number (in the range [1,60])</param>
+        private ControlPoint(uint id, double x, double y, double z, byte zone)
             : base(x,y,z)
         {
             m_ControlId = id;
@@ -142,42 +141,31 @@ namespace Backsight.Editor
             throw new NotImplementedException();
         }
 
-        /*
-//	@mfunc	Save this control point in the map.
-//
-//	@parm	The entity type for the control.
-//
-//	@rdesc	The point representing the control.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Saves this control point in the map.
+        /// </summary>
+        /// <param name="ent">The entity type for the control (not null)</param>
+        /// <param name="op">The editing operation creating the point (not null)</param>
+        /// <returns>The point representing the control (null if the position
+        /// of this control point is undefined)</returns>
+        internal PointFeature Save(IEntity ent, Operation op)
+        {
+            // Return if the control point is undefined
+            if (!this.IsDefined)
+                return null;
 
-#include "CeIdHandle.h"
+            // Add to the map
+            PointFeature p = CadastralMapModel.Current.AddPoint(this, ent, op);
 
-CePoint* CeControl::Save ( const CeEntity& ent ) const {
+            // Define the feature's ID.
+            IdHandle idh = new IdHandle(p);
+            string keystr = m_ControlId.ToString();
+    		idh.CreateForeignId(keystr);
 
-//	Return if the control point is undefined.
-	if ( !this->IsDefined() ) return 0;
+            // and is the FeatureId assigned??
 
-//	Get the position.
-	CeVertex pos(m_Easting,m_Northing);
-
-//	Add to the map.
-	CeMap* pMap = CeMap::GetpMap();
-	LOGICAL isold;
-	CePoint* pPoint = pMap->AddPoint(pos,&ent,isold);
-
-//	Define the feature's ID.
-	if ( pPoint ) {
-		CeIdHandle idh(pPoint);
-		CHARS keystr[16];
-		sprintf(keystr,"%d",m_ControlId);
-		idh.CreateForeignId(keystr);
-	}
-
-	return pPoint;
-
-} // end of Save
-*/
+            return p;
+        }
 
         /// <summary>
         /// Draws this control point on the specified display.
