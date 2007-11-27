@@ -35,11 +35,25 @@ namespace Backsight
         void Render(ISpatialDisplay display, IPosition[] line);
 
         /// <summary>
-        /// Draws a point
+        /// Draws a point as a filled square.
         /// </summary>
         /// <param name="display">The display to draw to</param>
-        /// <param name="point">The position of the center of the point</param>
-        void Render(ISpatialDisplay display, IPosition point);
+        /// <param name="position">The position of the center of the point</param>
+        void Render(ISpatialDisplay display, IPosition position);
+
+        /// <summary>
+        /// Draws a point as a plus sign.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position of the center of the point</param>
+        void RenderPlus(ISpatialDisplay display, IPosition position);
+
+        /// <summary>
+        /// Draws a point as a triangle.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position of the center of the point</param>
+        void RenderTriangle(ISpatialDisplay display, IPosition position);
 
         /// <summary>
         /// Draws an icon

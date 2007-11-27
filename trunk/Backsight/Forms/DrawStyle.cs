@@ -95,7 +95,7 @@ namespace Backsight.Forms
         /// Draws a point
         /// </summary>
         /// <param name="display">The display to draw to</param>
-        /// <param name="point">The position of the center of the point</param>
+        /// <param name="position">The position of the center of the point</param>
         public void Render(ISpatialDisplay display, IPosition position)
         {
             float size = display.LengthToDisplay(m_PointHeight.Meters);
@@ -107,6 +107,41 @@ namespace Backsight.Forms
                     display.Graphics.DrawRectangle(m_Pen, p.X-d, p.Y-d, size, size);
                 else
                     display.Graphics.FillRectangle(Brush, p.X-d, p.Y-d, size, size);
+            }
+        }
+
+        /// <summary>
+        /// Draws a point as a plus sign.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position of the center of the point</param>
+        public void RenderPlus(ISpatialDisplay display, IPosition position)
+        {
+            float size = display.LengthToDisplay(m_PointHeight.Meters);
+            if (size>1.0F)
+            {
+                PointF p = CreatePoint(display, position);
+                float d = size * 0.5F;
+                display.Graphics.DrawLine(m_Pen, p.X-d, p.Y, p.X+d, p.Y);
+                display.Graphics.DrawLine(m_Pen, p.X, p.Y-d, p.X, p.Y+d);
+            }
+        }
+
+        /// <summary>
+        /// Draws a point as a triangle.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="position">The position of the center of the point</param>
+        public void RenderTriangle(ISpatialDisplay display, IPosition position)
+        {
+            float size = display.LengthToDisplay(m_PointHeight.Meters);
+            if (size>1.0F)
+            {
+                PointF p = CreatePoint(display, position);
+                float d = size * 0.5F;
+                display.Graphics.DrawLine(m_Pen, p.X-d, p.Y+d, p.X+d, p.Y+d);
+                display.Graphics.DrawLine(m_Pen, p.X+d, p.Y+d, p.X, p.Y-d);
+                display.Graphics.DrawLine(m_Pen, p.X, p.Y-d, p.X-d, p.Y+d);
             }
         }
 
