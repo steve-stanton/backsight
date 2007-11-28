@@ -70,6 +70,8 @@
       <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
+    <Compile Include="GetControlUI.cs" />
+    <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />

@@ -882,14 +882,23 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         #region Data menu
 
+        /// <summary>
+        /// Checks whether the Data - GetControl command is enabled or not.
+        /// </summary>
+        /// <returns>True if a map is available, and no other editing command is running</returns>
         private bool IsDataGetControlEnabled()
         {
-            return false;
+            return (HasMap && !m_Controller.IsCommandRunning);
         }
 
+        /// <summary>
+        /// Handles the Data - GetControl edit.
+        /// </summary>
+        /// <param name="action">The user action that initiated this method</param>
         private void DataGetControl(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new GetControlUI(action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsDataImportMapEnabled()

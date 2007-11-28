@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
@@ -89,7 +90,7 @@ namespace Backsight.Editor
         {
 	        // Don't run more than once.
 	        if (m_Dialog!=null)
-                throw new InvalidOperationException("NewPointUI::Run - Command is already running.");
+                throw new InvalidOperationException("NewPointUI.Run - Command is already running.");
 
         	UpdateUI pup = this.Update;
 
@@ -120,7 +121,7 @@ namespace Backsight.Editor
 
             	default:
                 {
-                        throw new Exception("NewPointUI::Run - Unexpected command id.");
+                        throw new Exception("NewPointUI.Run - Unexpected command id.");
                 }
             }
 
@@ -187,7 +188,7 @@ namespace Backsight.Editor
         /// Reacts to selection of the Cancel button in the dialog.
         /// </summary>
         /// <param name="wnd">The dialog window.</param>
-        internal override void DialAbort(System.Windows.Forms.Control wnd)
+        internal override void DialAbort(Control wnd)
         {
 	        // Get the base class to finish up.
 	        AbortCommand();
@@ -198,10 +199,10 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="wnd">The dialog window.</param>
         /// <returns></returns>
-        internal override bool DialFinish(System.Windows.Forms.Control wnd)
+        internal override bool DialFinish(Control wnd)
         {
 	        if (m_Dialog==null)
-                throw new Exception("CuiNewPoint::DialFinish -- No dialog!");
+                throw new Exception("NewPointUI.DialFinish -- No dialog!");
 
             // Hide the dialog so it doesn't become part of any saved display
             m_Dialog.Visible = false;

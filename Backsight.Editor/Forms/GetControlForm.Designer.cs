@@ -29,14 +29,14 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.label1 = new System.Windows.Forms.Label();
-            this.controlFileTextBox = new System.Windows.Forms.TextBox();
             this.browseButton = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.controlTextBox = new System.Windows.Forms.TextBox();
-            this.getDataButton = new System.Windows.Forms.Button();
-            this.addToMapButton = new System.Windows.Forms.Button();
+            this.controlFileTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.addToMapButton = new System.Windows.Forms.Button();
+            this.getDataButton = new System.Windows.Forms.Button();
+            this.controlTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -67,6 +67,26 @@ namespace Backsight.Editor.Forms
             this.splitContainer1.SplitterDistance = 77;
             this.splitContainer1.TabIndex = 0;
             // 
+            // browseButton
+            // 
+            this.browseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.browseButton.Location = new System.Drawing.Point(384, 26);
+            this.browseButton.Name = "browseButton";
+            this.browseButton.Size = new System.Drawing.Size(96, 23);
+            this.browseButton.TabIndex = 2;
+            this.browseButton.TabStop = false;
+            this.browseButton.Text = "&Browse...";
+            this.browseButton.UseVisualStyleBackColor = true;
+            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
+            // 
+            // controlFileTextBox
+            // 
+            this.controlFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.controlFileTextBox.Location = new System.Drawing.Point(88, 27);
+            this.controlFileTextBox.Name = "controlFileTextBox";
+            this.controlFileTextBox.Size = new System.Drawing.Size(274, 22);
+            this.controlFileTextBox.TabIndex = 0;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -76,67 +96,6 @@ namespace Backsight.Editor.Forms
             this.label1.Size = new System.Drawing.Size(70, 16);
             this.label1.TabIndex = 0;
             this.label1.Text = "Control file";
-            // 
-            // controlFileTextBox
-            // 
-            this.controlFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.controlFileTextBox.Location = new System.Drawing.Point(88, 27);
-            this.controlFileTextBox.Name = "controlFileTextBox";
-            this.controlFileTextBox.Size = new System.Drawing.Size(274, 22);
-            this.controlFileTextBox.TabIndex = 1;
-            // 
-            // browseButton
-            // 
-            this.browseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.browseButton.Location = new System.Drawing.Point(384, 26);
-            this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(96, 23);
-            this.browseButton.TabIndex = 2;
-            this.browseButton.Text = "&Browse...";
-            this.browseButton.UseVisualStyleBackColor = true;
-            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(12, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(272, 16);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Specify the IDs of the control points you want.";
-            // 
-            // controlTextBox
-            // 
-            this.controlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.controlTextBox.Location = new System.Drawing.Point(15, 35);
-            this.controlTextBox.Multiline = true;
-            this.controlTextBox.Name = "controlTextBox";
-            this.controlTextBox.Size = new System.Drawing.Size(347, 231);
-            this.controlTextBox.TabIndex = 2;
-            // 
-            // getDataButton
-            // 
-            this.getDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.getDataButton.Location = new System.Drawing.Point(384, 35);
-            this.getDataButton.Name = "getDataButton";
-            this.getDataButton.Size = new System.Drawing.Size(96, 23);
-            this.getDataButton.TabIndex = 3;
-            this.getDataButton.Text = "&Get Data";
-            this.getDataButton.UseVisualStyleBackColor = true;
-            this.getDataButton.Click += new System.EventHandler(this.getDataButton_Click);
-            // 
-            // addToMapButton
-            // 
-            this.addToMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.addToMapButton.Location = new System.Drawing.Point(384, 64);
-            this.addToMapButton.Name = "addToMapButton";
-            this.addToMapButton.Size = new System.Drawing.Size(96, 23);
-            this.addToMapButton.TabIndex = 4;
-            this.addToMapButton.Text = "&Add to Map";
-            this.addToMapButton.UseVisualStyleBackColor = true;
-            this.addToMapButton.Click += new System.EventHandler(this.addToMapButton_Click);
             // 
             // cancelButton
             // 
@@ -150,6 +109,50 @@ namespace Backsight.Editor.Forms
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // addToMapButton
+            // 
+            this.addToMapButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.addToMapButton.Location = new System.Drawing.Point(384, 64);
+            this.addToMapButton.Name = "addToMapButton";
+            this.addToMapButton.Size = new System.Drawing.Size(96, 23);
+            this.addToMapButton.TabIndex = 4;
+            this.addToMapButton.TabStop = false;
+            this.addToMapButton.Text = "&Add to Map";
+            this.addToMapButton.UseVisualStyleBackColor = true;
+            this.addToMapButton.Click += new System.EventHandler(this.addToMapButton_Click);
+            // 
+            // getDataButton
+            // 
+            this.getDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.getDataButton.Location = new System.Drawing.Point(384, 35);
+            this.getDataButton.Name = "getDataButton";
+            this.getDataButton.Size = new System.Drawing.Size(96, 23);
+            this.getDataButton.TabIndex = 3;
+            this.getDataButton.TabStop = false;
+            this.getDataButton.Text = "&Get Data";
+            this.getDataButton.UseVisualStyleBackColor = true;
+            this.getDataButton.Click += new System.EventHandler(this.getDataButton_Click);
+            // 
+            // controlTextBox
+            // 
+            this.controlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.controlTextBox.Location = new System.Drawing.Point(15, 35);
+            this.controlTextBox.Multiline = true;
+            this.controlTextBox.Name = "controlTextBox";
+            this.controlTextBox.Size = new System.Drawing.Size(347, 231);
+            this.controlTextBox.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(12, 13);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(272, 16);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Specify the IDs of the control points you want.";
+            // 
             // GetControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -158,6 +161,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.splitContainer1);
             this.Name = "GetControlForm";
             this.Text = "Load Control Points";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.GetControlForm_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
