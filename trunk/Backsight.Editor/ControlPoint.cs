@@ -14,8 +14,8 @@
 /// </remarks>
 
 using System;
+
 using Backsight.Environment;
-//using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -137,8 +137,7 @@ namespace Backsight.Editor
         /// <returns>True if this control point is in the range.</returns>
         internal bool IsInRange(ControlRange range)
         {
-            //return range.IsEnclosing(m_ControlId);
-            throw new NotImplementedException();
+            return range.IsEnclosing(m_ControlId);
         }
 
         /// <summary>
