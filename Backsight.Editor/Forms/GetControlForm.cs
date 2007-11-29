@@ -20,6 +20,7 @@ using System.IO;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
+using System.Text;
 
 namespace Backsight.Editor.Forms
 {
@@ -138,7 +139,7 @@ namespace Backsight.Editor.Forms
 
                 // Update the number of characters processed (in case we later need to
                 // select problem text)
-                nc += line.Length;
+                nc += (line.Length + System.Environment.NewLine.Length);
             }
 
             // If no control has been specified, see if we can do things
@@ -190,90 +191,77 @@ namespace Backsight.Editor.Forms
         /// <param name="win"></param>
         void ShowRanges(IWindow win)
         {
+            // Erase whatever's currently in the list
+            controlTextBox.Text = String.Empty;
+
+            // Return if there are no ranges.
+            if (m_Ranges == null || m_Ranges.Count == 0)
+                return;
+
+            // We need to ensure that the map has a defined extent. If not,
+            // set it to match the extent of the control data we have
+            // loaded, and tell the draw to initialize draw parameters.
+            if (m_NewMap)
+            {
+                // not sure if this is still needed...
+                //CadastralMapModel.Current.Extent = win;
+                ISpatialDisplay display = m_Cmd.ActiveDisplay;
+                display.DrawWindow(win);
+
+                // Tell the user the draw scale that has been defined.
+                double scale = display.MapScale;
+                string scalemsg = String.Format("Draw scale has been set to 1:{0}", (uint)scale);
+                MessageBox.Show(scalemsg);
+            }
+
+            // Only show the first 100 ranges (any more, and the string
+            // might get too long to display).
+            StringBuilder sb = new StringBuilder(1000);
+            for (int i=0; i < Math.Min(100, m_Ranges.Count); i++)
+            {
+                ControlRange r = m_Ranges[i];
+
+                // Get the range
+                uint minkey = r.Min;
+                uint maxkey = r.Max;
+
+                // Form status string
+                string status;
+                int nfound = r.NumDefined;
+                int ncontr = r.NumControl;
+
+                if (nfound == ncontr)
+                {
+                    if (nfound == 1)
+                        status = "found";
+                    else
+                        status = "all found";
+                }
+                else
+                {
+                    status = String.Format("found {0} out of {1}", nfound, ncontr);
+                }
+
+                string output;
+                if (minkey == maxkey)
+                    output = String.Format("{0} ({1})", minkey, status);
+                else
+                    output = String.Format("{0}-{1} ({2})", minkey, maxkey, status);
+
+                sb.Append(output);
+                sb.Append(System.Environment.NewLine);
+            }
+
+            controlTextBox.Text = sb.ToString();
+
+            // Message if all the ranges could not be shown.
+            if (m_Ranges.Count > 100)
+            {
+                string msg = String.Format("Only the first 100 ranges (of {0}) have been listed.",
+                                                m_Ranges.Count);
+                MessageBox.Show(msg);
+            }
         }
-        /*
-void CdGetControl::ShowRanges ( const CeWindow& win ) {
-
-//	Get pointer to the list of control points. Then erase
-//	whatever's in the list.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_CONTROL);
-	ClearEdit(pEdit);
-
-//	Return if there are no ranges.
-	if ( m_NumRange==0 ) return;
-
-//	We need to ensure that the map has a defined extent. If not,
-//	set it to match the extent of the control data we have
-//	loaded, and tell the draw to initialize draw parameters.
-
-	if ( m_NewMap ) {
-		CeMap::GetpMap()->SetExtent(win);
-		CeDraw* pDraw = GetpDraw();
-		pDraw->Setup();
-
-		// Tell the view to remember the extent.
-		GetpView()->AddExtent();
-
-//		Tell the user the draw scale that has been defined.
-		FLOAT8 scale = pDraw->GetDrawScale();
-		CHARS scalemsg[80];
-		sprintf ( scalemsg, "Draw scale has been set to 1:%d",
-					UINT4(scale) );
-		AfxMessageBox(scalemsg);
-	}
-
-	CString text;			// Complete text for the list
-	CHARS output[132];		// Single line in the list
-	UINT4 minkey=0;			// Min key in range
-	UINT4 maxkey=0;			// Max key in range
-
-//	Only show the first 100 ranges (any more, and the string
-//	might get too long to display).
-
-	for ( UINT4 i=0; i<min(100,m_NumRange); i++ ) {
-
-//		Get the range
-		minkey = m_Ranges[i].GetMin();
-		maxkey = m_Ranges[i].GetMax();
-
-//		Form status string
-		UINT4 nfound = m_Ranges[i].GetNumDefined();
-		UINT4 ncontr = m_Ranges[i].GetNumControl();
-		CHARS status[80];
-
-		if ( nfound==ncontr ) {
-			if ( nfound==1 )
-				strcpy ( status, "found" );
-			else
-				strcpy ( status, "all found" );
-		}
-		else
-			sprintf ( status, "found %d out of %d", nfound, ncontr );
-
-		if ( minkey==maxkey )
-			sprintf ( output, "%d (%s)\r\n", minkey, status );
-		else
-			sprintf ( output, "%d-%d (%s)\r\n", minkey, maxkey, status );
-
-//		pEdit->SetWindowText(output);
-		text += output;
-	}
-
-	pEdit->SetWindowText(text);
-
-//	Draw the control points too.
-	this->OnDraw();
-
-//	Message if all the ranges could not be shown.
-	if ( m_NumRange>100 ) {
-		CHARS msg[132];
-		sprintf ( msg, "Only the first 100 ranges (of %d) have been listed.",
-						m_NumRange );
-		AfxMessageBox(msg);
-	}
-
-} // end of ShowRanges
-         */
 
         /// <summary>
         /// Parses a string that defines a range of IDs.
@@ -438,17 +426,20 @@ void CdGetControl::ShowRanges ( const CeWindow& win ) {
 
                 using (StreamReader sr = File.OpenText(fspec))
                 {
-                    string str = sr.ReadLine();
-                    ControlPoint control;
-                    if (ControlPoint.TryParse(str, out control))
+                    string str;
+                    while ((str = sr.ReadLine()) != null)
                     {
-                        foreach (ControlRange r in m_Ranges)
+                        ControlPoint control;
+                        if (ControlPoint.TryParse(str, out control))
                         {
-                            if (control.IsInRange(r))
+                            foreach (ControlRange r in m_Ranges)
                             {
-                                r.Insert(control);
-                                win.Union(control);
-                                break;
+                                if (control.IsInRange(r))
+                                {
+                                    r.Insert(control);
+                                    win.Union(control);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -524,22 +515,25 @@ void CdGetControl::ShowRanges ( const CeWindow& win ) {
 
                 using (StreamReader sr = File.OpenText(fspec))
                 {
-                    string str = sr.ReadLine();
-                    if (ControlPoint.TryParse(str, out control) && drawin.IsOverlap(control))
+                    string str;
+                    while ((str = sr.ReadLine()) != null)
                     {
-                        nfound++;
+                        if (ControlPoint.TryParse(str, out control) && drawin.IsOverlap(control))
+                        {
+                            nfound++;
 
-                        // If a control range is currently defined, but the
-                        // control point cannot be appended, close the range.
-                        if (range!=null && !range.CanAppend(control))
-                            range = null;
+                            // If a control range is currently defined, but the
+                            // control point cannot be appended, close the range.
+                            if (range != null && !range.CanAppend(control))
+                                range = null;
 
-                        // If there is no control range, create a new one.
-                        if (range==null)
-                            range = AddRange();
+                            // If there is no control range, create a new one.
+                            if (range == null)
+                                range = AddRange();
 
-                        // Append the control point to the current range.
-                        range.Append(control);
+                            // Append the control point to the current range.
+                            range.Append(control);
+                        }
                     }
                 }
 

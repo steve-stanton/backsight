@@ -57,7 +57,7 @@ namespace Backsight.Editor
         static ControlPoint CreateInstance(string s)
         {
             // The string must contain at least 77 characters.
-            if (s.Trim().Length < 77)
+            if (s.TrimEnd().Length < 77)
                 throw new ArgumentException("Control point string must contain at least 77 characters");
 
             // Characters 7:13 (zero-based) must contain a numeric value.

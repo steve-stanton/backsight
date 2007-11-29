@@ -135,8 +135,9 @@ namespace Backsight.Editor.Forms
             // 
             // controlTextBox
             // 
-            this.controlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.controlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.controlTextBox.HideSelection = false;
             this.controlTextBox.Location = new System.Drawing.Point(15, 35);
             this.controlTextBox.Multiline = true;
             this.controlTextBox.Name = "controlTextBox";
