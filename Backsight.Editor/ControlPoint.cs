@@ -28,6 +28,25 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
+        /// Attempts to parse a string that may represent a control point.
+        /// </summary>
+        /// <param name="s">String read from external control file.</param>
+        /// <param name="control">The point created (if successfully parsed)</param>
+        /// <returns>True if control point was parsed ok</returns>
+        internal static bool TryParse(string s, out ControlPoint control)
+        {
+            try
+            {
+                control = CreateInstance(s);
+                return true;
+            }
+
+            catch (ArgumentException) { }
+            control = null;
+            return false;
+        }
+
+        /// <summary>
         /// Creates a <c>ControlPoint</c> based on the supplied string.
         /// </summary>
         /// <param name="s">String read from external control file.</param>
@@ -35,7 +54,7 @@ namespace Backsight.Editor
         /// <exception cref="ArgumentException">If the supplied string cannot be parsed as
         /// a control point</exception>
         /// <remarks>Assumes Manitoba control file</remarks>
-        internal ControlPoint CreateInstance(string s)
+        static ControlPoint CreateInstance(string s)
         {
             // The string must contain at least 77 characters.
             if (s.Trim().Length < 77)

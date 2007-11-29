@@ -595,7 +595,7 @@ namespace Backsight.Editor
         /// depends on the current display scale & the point drawing scale threshold
         /// that's noted as part of the current map model.
         /// </returns>
-        protected bool ArePointsDrawn()
+        internal bool ArePointsDrawn()
         {
             ISpatialDisplay display = ActiveDisplay;
             CadastralMapModel cmm = CadastralMapModel.Current;

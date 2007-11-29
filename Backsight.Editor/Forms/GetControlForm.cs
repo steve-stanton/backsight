@@ -18,6 +18,9 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 
+using Backsight.Editor.Operations;
+using Backsight.Environment;
+
 namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" on="10-FEB-1998" was="CdGetControl" />
@@ -49,6 +52,10 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
+        /// <summary>
+        /// Creates a new <c>GetControlForm</c>
+        /// </summary>
+        /// <param name="cmd">The command displaying this dialog</param>
         internal GetControlForm(GetControlUI cmd)
         {
             InitializeComponent();
@@ -98,116 +105,93 @@ namespace Backsight.Editor.Forms
 
         private void getDataButton_Click(object sender, EventArgs e)
         {
+            // Get rid of any control list previously loaded.
+            KillRanges();
+
+            // Go through each line in the edit box, to confirm that the control ranges
+            // are valid. While at it, get a count of the number of ranges.
+            int nrange = 0;
+            int nc = 0;
+
+            foreach (string line in controlTextBox.Lines)
+            {
+
+                // Skip empty lines
+                if (line.Length==0)
+                    continue;
+
+                // Confirm the text is valid. If not, select the current line,
+                // issue message, & return.
+
+                uint minid, maxid;
+                if (GetRange(line, out minid, out maxid)==0)
+                {
+                    controlTextBox.SelectionStart = nc;
+                    controlTextBox.SelectionLength = line.Length;
+                    string msg = String.Format("Bad range '{0}'", line);
+                    MessageBox.Show(msg);
+                    return;
+                }
+
+                // Increment the number of valid ranges.
+                nrange++;
+
+                // Update the number of characters processed (in case we later need to
+                // select problem text)
+                nc += line.Length;
+            }
+
+            // If no control has been specified, see if we can do things
+            // using the current display window.
+            if (nrange==0)
+            {
+                if (m_NewMap)
+                    MessageBox.Show("No control points have been specified.");
+                else
+                    GetInsideWindow();
+
+                return;
+            }
+
+            // Create array of the desired ranges.
+            m_Ranges = new List<ControlRange>(nrange);
+
+            // Define each range (same sort of loop as above).
+            foreach (string line in controlTextBox.Lines)
+            {
+                // Skip empty lines
+                if (line.Length==0)
+                    continue;
+
+                uint minid, maxid;
+                GetRange(line, out minid, out maxid);
+                //m_Ranges.Add(n
             /*
-//	Get pointer to the list of required control	points.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_CONTROL);
-
-//	Get rid of any control list previously loaded.
-	KillRanges();
-
-//	Go through each line in the edit box, to confirm
-//	that the control ranges are valid. While at it, get a count
-//	of the number of ranges.
-
-	UINT4 nrange=0;			// Number of ranges
-	UINT4 minid;			// Min ID in range
-	UINT4 maxid;			// Max ID in range
-
-//	How many lines have we got (returns 1 if NO text)
-	UINT4 nline = pEdit->GetLineCount();
-	CHARS line[128];
-
-	for ( UINT4 i=0; i<nline; i++ ) {
-
-//		Get index to the current line. Skip if line is empty.
-		UINT4 index = pEdit->LineIndex(i);
-		UINT4 nc = pEdit->LineLength(index);
-		if ( nc==0 ) continue;
-
-//		Pick out the text and confirm that it is valid. If
-//		not, select the current line, issue message, & return.
-		nc = pEdit->GetLine( i, line, sizeof(line)-1 );
-		line[nc] = '\0';
-		nc = StrLength(line);
-		line[nc] = '\0';
-		if ( nc==0 ) continue;
-
-		if ( !GetRange(line,minid,maxid) ) {
-			int schar = int(index);
-			int echar = int(index+nc);
-			pEdit->SetSel(schar,echar);
-			CHARS msg[128];
-			sprintf ( msg, "Bad range '%s'.", line);
-			AfxMessageBox(msg);
-			return;
-		}
-
-//		Increment the number of valid ranges.
-		nrange++;
-
-	} // next line
-
-//	If no control has been specified, see if we can do things
-//	using the current display window.
-	if ( nrange==0 ) {
-		if ( m_NewMap )
-			AfxMessageBox("No control points have been specified.");
-		else
-			GetInsideWindow();
-		return;
-	}
-
-//	Create array of the desired ranges.
-	m_Ranges = new CeControlRange[nrange];
-
-//	If someone enters a stupidly big range in order to try to
-//	get everything, we may have ran out of memory.
-	if ( !m_Ranges ) {
-		AfxMessageBox("Ran out of memory. Try smaller ranges.");
-		return;
-	}
-	m_NumRange = nrange;
-	m_NumAlloc = nrange;
-
-//	Define each range (same sort of loop as above).
-
 	for ( i=0; i<nline; i++ ) {
-
-//		Get index to the current line. Skip if line is empty.
-		UINT4 index = pEdit->LineIndex(i);
-		UINT4 nc = pEdit->LineLength(index);
-		if ( nc==0 ) continue;
-
-//		Pick out the text and confirm that it is valid. If
-//		not, select the current line, issue message, & return.
-		nc = pEdit->GetLine( i, line, sizeof(line)-1 );
-		line[nc] = '\0';
-		nc = StrLength(line);
-		line[nc] = '\0';
-		if ( nc==0 ) continue;
-
-//		Define the range.
-		GetRange(line,minid,maxid);
 		if ( !m_Ranges[i].SetRange(minid,maxid) ) {
 			KillRanges();
 			return;
 		}
+                    */
+            }
 
-	} // next line
+            // Load array of control data.
+            IWindow win = LoadControl();
+            if (win==null || win.IsEmpty)
+                return;
 
-//	Load array of control data.
-	CeWindow win;
-	if ( !LoadControl(win) ) return;
-
-//	Display the results.
-	ShowRanges(win);
-             */
+            // Display the results.
+            ShowRanges(win);
         }
 
+        /// <summary>
+        /// Displays all ranges.
+        /// </summary>
+        /// <param name="win"></param>
+        void ShowRanges(IWindow win)
+        {
+        }
         /*
-
-//	Display all ranges.
-
 void CdGetControl::ShowRanges ( const CeWindow& win ) {
 
 //	Get pointer to the list of control points. Then erase
@@ -291,265 +275,217 @@ void CdGetControl::ShowRanges ( const CeWindow& win ) {
 } // end of ShowRanges
          */
 
-        /*
-//	Parse a string that defines a range of IDs.
-//
-//	@rdesc	The number of IDs in the range (0 if range is invalid).
+        /// <summary>
+        /// Parses a string that defines a range of IDs.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="minid"></param>
+        /// <param name="maxid"></param>
+        /// <returns>The number of IDs in the range (0 if range is invalid).</returns>
+        uint GetRange(string str, out uint minid, out uint maxid)
+        {
+            minid = maxid = 0;
+            string s = str.Trim();
+            if (s.Length==0)
+                return 0;
 
-UINT4 CdGetControl::GetRange ( const CHARS* string
-							 , UINT4& minid
-							 , UINT4& maxid ) const {
+            // Do we have a range, or just a single value?
+            int dash = s.IndexOf('-');
 
-//	Get the number of characters in the string, excluding any
-//	trailing white space, and express as a pointer (to the
-//	first trailing white space character).
-	UINT4 slen = StrLength(string);
-	if ( slen==0 ) return 0;
-	const CHARS* const pEnd = &string[slen];
+            // Invalid if the dash is at the start.
+            if (dash==0)
+                return 0;
 
-//	Do we have a range, or just a single value?
-	const CHARS* const pDash = strchr(string,'-');
+            // If no dash, we should have just one integer value. Otherwise
+            // we should have two integer values.
+            if (dash<0)
+            {
+                if (!UInt32.TryParse(s, out minid) || minid==0)
+                    return 0;
 
-//	Invalid if the dash is at the start.
-	if ( pDash==string ) return 0;
+                // The end of range is the same as the start.
+                maxid = minid;
+                return 1;
+            }
 
-//	If no dash, we should have just one integer value. Otherwise
-//	we should have two integer values.
+            // Parse the first value. It should be the dash that
+            // stops the scan (or possibly white space prior to the dash).
+            string t = s.Substring(0, dash).Trim();
+            if (!UInt32.TryParse(t, out minid) || minid==0)
+                return 0;
 
-	CHARS* eptr;
+            t = s.Substring(dash+1).Trim();
+            if (!UInt32.TryParse(t, out maxid) || maxid==0)
+                return 0;
 
-	if ( !pDash ) {
+            // The max ID must be greater than the min. If not, assume
+            // the user has done something like 7436-43, meaning 7436-7443.
+            if (maxid < minid)
+            {
+                int nc = t.Length;
+                if (nc==1)
+                    maxid += (minid/10 * 10);
+                else
+                {
+                    uint factor=1;
+                    for (int i=0; i<(nc-1); factor*=10, i++);
+                    maxid += (minid/factor * factor);
+                }
+            }
 
-//		Parse the value.
-		minid = strtoul(string,&eptr,10);
-		if ( minid==0 || eptr!=pEnd ) return 0;
+            if (maxid < minid)
+                return 0;
 
-//		The end of range is the same as the start.
-		maxid = minid;
-		return 1;
-	}
-	else {
-
-//		Parse the first value. It should be the dash that
-//		stops the scan (or possibly white space prior to
-//		the dash).
-		minid = strtoul(string,&eptr,10);
-		if ( minid==0 || (eptr!=pDash && !isspace(*eptr)) ) return 0;
-
-		maxid = strtoul(&pDash[1],&eptr,10);
-		if ( maxid==0 || eptr!=pEnd ) return 0;
-
-//		The max ID must be greater than the min. If not, assume
-//		the user has done something like 7436-43, meaning 7436-7443.
-
-		if ( maxid<minid ) {
-			INT4 nc = eptr-pDash-1;	// Number of chars
-			if ( nc>0 ) {
-				if ( nc==1 )
-					maxid += (minid/10 * 10);
-				else {
-					UINT4 factor=1;
-					for ( INT4 i=0; i<(nc-1); factor*=10, i++ );
-					maxid += (minid/factor * factor);
-				}
-			}
-		}
-
-		if ( maxid<minid ) return 0;
-		return (maxid-minid+1);
-	}
-
-} // end of GetRange
-         */
+            return (maxid-minid+1);
+        }
 
         private void addToMapButton_Click(object sender, EventArgs e)
         {
-            /*
-//	Return if there is nothing to add.
-	if ( !m_Ranges ) {
-		AfxMessageBox("There is nothing to add.");
-		return;
-	}
+            // Return if there is nothing to add.
+            if (m_Ranges==null || m_Ranges.Count==0)
+            {
+                MessageBox.Show("There is nothing to add.");
+                return;
+            }
 
-//	Get the currently active theme. If there isn't one, ask
-//	for one and make it the default.
-	CeMap* pMap = CeMap::GetpMap();
-	const CeTheme* pTheme = pMap->GetpTheme();
-	if ( !pTheme ) {
-		pTheme = GetpView()->SetTheme();
-		if ( !pTheme ) return;
-	}
+        	// Do we have an entity type for control points?
+            // This was formerly obtained via the environment variable called CED$ControlEntity
+            int entId = GlobalUserSetting.ReadInt("ControlEntityTypeId", 0);
 
-	// Do we have an entity type for control points?
-	CHARS cent[256];
-	GetEnvironmentVariable("CED$ControlEntity",cent,sizeof(cent));
+            // Get the desired entity type.
+            GetEntityForm dial = new GetEntityForm(m_Cmd.ActiveLayer, SpatialType.Point, entId);
+            dial.ShowDialog();
+            IEntity ent = dial.SelectedEntity;
+            if (ent==null)
+            {
+                MessageBox.Show("An entity type must be specified");
+                return;
+            }
 
-	// If so, get its address in the map.
-	CeAttributeStructure* pAtt = pMap->GetpDatabase();
-	CeEntity* pDefEnt = pAtt->GetEntityPtr(os_string(cent));
+            // Remember the ID of the selected entity type
+            GlobalUserSetting.WriteInt("ControlEntityTypeId", ent.Id);
 
-//	Get the desired entity type.
-	CdGetEntity dial(pTheme,VERTEX,pDefEnt);
-	dial.DoModal();
-	const CeEntity* const pEnt = dial.GetpEntity();
+            // Save the control.
+            Save(ent);
 
-	// Save the control.
-	this->Save(*pEnt);
+            // Eliminate memory for the control points
+            KillRanges();
 
-//	Eliminate memory for the control points (this will cause
-//	them to be erased from the screen).
-	this->KillRanges();
+            // Issue a warning message if points are not currently displayed
+            if (!m_Cmd.ArePointsDrawn())
+                MessageBox.Show("Points will not be drawn at the current scale.");
 
-//	If points are not currently displayed, issue a warning message.
-//	Otherwise invalidate the entire area of the view's client area
-//	to force a redraw.
-
-	CeView* pView = GetpView();
-	if ( pView ) {
-		if ( !pView->ArePointsDrawn() )
-			AfxMessageBox("Points will not be drawn at the current scale." );
-		else
-			pView->InvalidateRect(0);
-	}
-
-//	Finish the dialog (this deletes the memory for the dialog).
-//	CDialog::OnOK();
-	pView->OnFinishControl();
-             */
+            m_Cmd.DialFinish(this);
         }
 
-        /*
+        /// <summary>
+        /// Saves loaded control points in the map. This creates the editing operation
+        /// and executes it.
+        /// </summary>
+        /// <param name="ent">The entity type to assign to control points</param>
+        /// <returns>The number of points added to the map</returns>
+        int Save(IEntity ent)
+        {
+            GetControlOperation save = null;
 
-INT4 CdGetControl::Save ( const CeEntity& ent ) const {
+            try
+            {
+                m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.WaitCursor;
 
-	CWaitCursor wait;		// Start hourglass
+                // Create import operation.
+                CadastralMapModel map = CadastralMapModel.Current;
+                save = new GetControlOperation();
 
-	// Create import operation.
-	CeMap* pMap = CeMap::GetpMap();
-	CeGetControl* pSave = new ( os_database::of(pMap)
-							  , os_ts<CeGetControl>::get() ) CeGetControl();
+                // Tell each range to add itself to the map.
+                foreach (ControlRange r in m_Ranges)
+                    r.Save(save, ent);
 
-	// Tell the map a save is starting.
-	pMap->SaveOp(pSave);
+                // Execute the op
+                save.Execute();
+                return save.Count;
+            }
 
-	// Tell each range to add itself to the map.
-	for ( UINT4 i=0; i<m_NumRange; i++ )
-		m_Ranges[i].Save(*pSave,ent);
+            catch (Exception ex)
+            {
+                Session.CurrentSession.Remove(save);
+                MessageBox.Show(ex.Message);
+                return -1;
+            }
 
+            finally
+            {
+                m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+            }
+        }
 
-	// Execute the op.
-	LOGICAL ok = pSave->Execute();
+        /// <summary>
+        /// Loads control data from external file.
+        /// </summary>
+        /// <returns>The window of the loaded data (null if an error is reported)</returns>
+        IWindow LoadControl()
+        {
+            // Get the name of the control file.
+            string fspec = controlFileTextBox.Text;
 
-	// Tell map the save has finished.
-	pMap->SaveOp(pSave,ok);
+            // Open the control file and scan through it. For each line, try to form
+            // a control object. If successful, scan the array of control ranges we have
+            // to try to find a match.
 
-	if ( ok )
-		return pSave->GetCount();
-	else {
-		delete pSave;
-		return -1;
-	}
+            try
+            {
+                // Initialize the window of loaded data
+                Window win = new Window();
 
-} // end of Save
-         */
+                using (StreamReader sr = File.OpenText(fspec))
+                {
+                    string str = sr.ReadLine();
+                    ControlPoint control;
+                    if (ControlPoint.TryParse(str, out control))
+                    {
+                        foreach (ControlRange r in m_Ranges)
+                        {
+                            if (control.IsInRange(r))
+                            {
+                                r.Insert(control);
+                                win.Union(control);
+                                break;
+                            }
+                        }
+                    }
+                }
 
-        /*
-//	Load control data from external file.
+                return win;
+            }
 
-LOGICAL CdGetControl::LoadControl ( CeWindow& win ) {
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
-//	Get the name of the control file.
-	CString fspec;
-	GetDlgItem(IDC_CONTROL_FILE)->GetWindowText(fspec);
+            return null;
+        }
 
-//	Initialize the window.
-	win.Reset();
+        /// <summary>
+        /// Gets rid of any previously loaded ranges.
+        /// </summary>
+        void KillRanges()
+        {
+            m_Ranges = null;
+        }
 
-//	Open the control file.
-//	CFile cfile();
-//	if ( !cfile.Open((LPCTSTR)fspec,CFile::modeRead) ) {
-	FILE* fp;
-	if ( (fp=fopen((LPCTSTR)fspec,"r"))==0 ) {
-		CHARS msg[256];
-		sprintf ( msg, "Cannot access '%s'", fspec );
-		AfxMessageBox(msg);
-		return FALSE;
-	}
-
-//	Scan though the control file. For each line, try to form
-//	a control object. If successful, scan the array of control
-//	ranges we have to try to find a match.
-
-	CHARS str[132];			// Input buffer
-	UINT4 ncontrol=0;		// Number of valid control points read.
-	UINT4 nfound=0;			// Number of control points found.
-	CWaitCursor wait;		// Start hourglass (stops when it
-							// goes out of scope).
-
-//	while ( cfile.Read(str,sizeof(str)) ) {
-	while ( fgets(str,sizeof(str),fp) ) {
-		CeControl control(str);
-		if ( control.IsDefined() ) {
-			ncontrol++;
-//			if ( ncontrol>5660 ) {
-//				CHARS deb[132];
-//				sprintf ( deb, "%d = %s", ncontrol, str );
-//				AfxMessageBox(deb);
-//			}
-			for ( UINT4 i=0; i<m_NumRange; i++ ) {
-				if ( control.IsInRange(m_Ranges[i]) ) {
-					m_Ranges[i].Insert(control);
-					win.Expand(control.GetEasting(),
-							   control.GetNorthing());
-					nfound++;
-					break;
-				}
-			}
-		}
-	}
-
-//	Close the control file.
-//	cfile.Close();
-	fclose(fp);
-
-	return TRUE;
-
-} // end of LoadControl
-         */
-
-        /*
-//	Get rid of any previously loaded ranges.
-
-void CdGetControl::KillRanges ( void ) {
-
-	if ( m_Ranges ) {
-		for ( UINT4 i=0; i<m_NumRange; i++ )
-			m_Ranges[i].Erase();
-		delete [] m_Ranges;
-		m_Ranges = 0;
-	}
-
-	m_NumRange = 0;
-	m_NumAlloc = 0;
-	m_CurrRange = 0;
-
-} // end of KillRanges
-         */
-
-        /*
-//	Redraw any control points.
-
-void CdGetControl::OnDraw ( void ) const {
-
-//	Return if no ranges.
-	if ( !m_Ranges ) return;
-
-//	Draw each range.
-	for ( UINT4 i=0; i<m_NumRange; i++ )
-		m_Ranges[i].Draw();
-
-} // end of OnDraw
-         */
+        /// <summary>
+        /// Redraws any control points.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The style for the drawing</param>
+        internal void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+            if (m_Ranges!=null)
+            {
+                foreach (ControlRange r in m_Ranges)
+                    r.Render(display, style);
+            }
+        }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
@@ -560,110 +496,81 @@ void CdGetControl::OnDraw ( void ) const {
             m_Cmd.DialAbort(this);
         }
 
-        /*
+        /// <summary>
+        /// Asks the user if they want to load control inside current draw window. If so,
+        /// the control file is scanned to obtain all points inside the window.
+        /// </summary>
+        /// <returns>True if process ran to completion. False if the user indicated that
+        /// they don't want to load points inside the current window, or some error
+        /// was reported during the scan.</returns>
+        bool GetInsideWindow()
+        {
+            // Ask the user whether they want the data inside the current draw window.
+            if (MessageBox.Show("Load control inside current map window?", "No range specified",
+                MessageBoxButtons.YesNo) != DialogResult.Yes) return false;
 
-LOGICAL CdGetControl::GetInsideWindow ( void ) {
+            // Get the current display window.
+            IWindow drawin = EditingController.Current.ActiveDisplay.Extent;
 
-//	Ask the user whether they want the data inside the current
-//	draw window.
+            try
+            {
+                // Scan the control file. For each line, try to form a control object. If
+                // successful, see if it falls within the current draw window.
 
-	if ( AfxMessageBox(
-			"Load control inside current map window?",
-			MB_YESNO )!=IDYES ) return FALSE;
+                string fspec = controlFileTextBox.Text;
+                ControlRange range = null;
+                ControlPoint control;
+                int nfound = 0;
 
-//	Get the current display window.
-	CeMap* pMap = CeMap::GetpMap();
-	const CeWindow& drawin = pMap->GetDrawWin();
+                using (StreamReader sr = File.OpenText(fspec))
+                {
+                    string str = sr.ReadLine();
+                    if (ControlPoint.TryParse(str, out control) && drawin.IsOverlap(control))
+                    {
+                        nfound++;
 
-//	Get the name of the control file.
-	CString fspec;
-	GetDlgItem(IDC_CONTROL_FILE)->GetWindowText(fspec);
+                        // If a control range is currently defined, but the
+                        // control point cannot be appended, close the range.
+                        if (range!=null && !range.CanAppend(control))
+                            range = null;
 
-//	Open the control file.
-	FILE* fp;
-	if ( (fp=fopen((LPCTSTR)fspec,"r"))==0 ) {
-		CHARS msg[256];
-		sprintf ( msg, "Cannot access '%s'", fspec );
-		AfxMessageBox(msg);
-		return FALSE;
-	}
+                        // If there is no control range, create a new one.
+                        if (range==null)
+                            range = AddRange();
 
-//	Scan though the control file. For each line, try to form
-//	a control object. If successful, see if it falls within
-//	the current draw window.
+                        // Append the control point to the current range.
+                        range.Append(control);
+                    }
+                }
 
-	CHARS str[132];				// Input buffer
-	UINT4 ncontrol=0;			// Number of valid control points read.
-	UINT4 nfound=0;				// Number of control points found.
-	CeControlRange* pRange=0;	// Current control range
-	CWaitCursor wait;			// Start hourglass (stops when it
-								// goes out of scope).
+                // Show the results
+                ShowRanges(drawin);
+                if (nfound==0)
+                    MessageBox.Show("No control in current window");
 
-	while ( fgets(str,sizeof(str),fp) ) {
-		CeControl control(str);
-		if ( control.IsDefined() ) {
-			ncontrol++;
-			CeVertex pos(control.GetEasting(),
-					     control.GetNorthing());
-			if ( drawin.IsOverlap(pos) ) {
-				nfound++;
+                return true;
+            }
 
-//				If a control range is currently defined, but the
-//				control point cannot be appended, close the range.
-				if ( pRange && !pRange->CanAppend(control) )
-					pRange = 0;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
-//				If there is no control range, create a new one.
-				if ( !pRange ) pRange = AddRange();
+            return false;
+        }
 
-//				Append the control point to the current range.
-				pRange->Append(control);
-			}
-		}
-	}
+        /// <summary>
+        /// Gets another control range
+        /// </summary>
+        /// <returns>The newly created range (with everything set to null)</returns>
+        ControlRange AddRange()
+        {
+            if (m_Ranges==null)
+                m_Ranges = new List<ControlRange>(1);
 
-//	Close the control file.
-	fclose(fp);
-
-//	Show the results
-	ShowRanges(drawin);
-	if ( nfound==0 ) AfxMessageBox("No control in current window");
-
-	return TRUE;
-
-} // end of GetInsideWindow
-
-         */
-
-        /*
-//	Get another control range, re-allocating if necessary.
-
-CeControlRange*	CdGetControl::AddRange ( void ) {
-
-//	If the current allocation is insufficient for an extra range,
-//	re-allocate to a bigger size.
-
-	if ( m_NumRange == m_NumAlloc ) {
-
-		m_NumAlloc += 32;
-		CeControlRange* pNew = new CeControlRange[m_NumAlloc];
-
-//		Copy over all the ranges (if any) that we currently have.
-		for ( UINT4 i=0; i<m_NumRange; i++ )
-			pNew[i] = m_Ranges[i];
-
-//		Get rid of the old ranges & replace with the new stuff.
-		delete [] m_Ranges;
-		m_Ranges = pNew;
-	}
-
-//	Increment the number of active ranges.
-	m_NumRange++;
-
-//	Return pointer to the last active range.
-	return &m_Ranges[m_NumRange-1];
-
-} // end of AddRange
-         */
+            ControlRange r = new ControlRange();
+            m_Ranges.Add(r);
+            return r;
+        }
     }
 }

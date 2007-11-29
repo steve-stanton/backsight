@@ -18,6 +18,8 @@ using System;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using System.Windows.Forms;
+using System.Drawing;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -82,6 +84,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Does any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+        internal override void Paint(PointFeature point)
+        {
+            if (m_Dialog!=null)
+            {
+                ISpatialDisplay display = ActiveDisplay;
+                IDrawStyle style = Controller.DrawStyle;
+                style.FillColor = Color.Magenta;
+                m_Dialog.Render(display, style);
+            }
+        }
+
+        /// <summary>
         /// Reacts to selection of the Cancel button in the dialog.
         /// </summary>
         /// <param name="wnd">The dialog window. If this matches the dialog that
@@ -121,31 +138,6 @@ namespace Backsight.Editor
                 MessageBox.Show("GetControlUI.DialFinish - No dialog!");
                 return false;
             }
-
-            /*
-            // Get info from the dialog
-            m_IsExtendFromEnd = m_Dialog.IsExtendFromEnd;
-            m_Length = m_Dialog.Length;
-            IdHandle idh = m_Dialog.PointId;
-            CadastralMapModel map = CadastralMapModel.Current;
-            m_LineType = (m_Dialog.WantLine ? map.DefaultLineType : null);
-
-            // Execute the edit
-            LineExtensionOperation op = null;
-
-            try
-            {
-                op = new LineExtensionOperation();
-                op.Execute(m_ExtendLine, m_IsExtendFromEnd, m_Length, idh, m_LineType);
-            }
-
-            catch (Exception ex)
-            {
-                Session.CurrentSession.Remove(op);
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-             */
 
             // Destroy the dialog(s).
             KillDialogs();
