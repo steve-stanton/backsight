@@ -149,7 +149,7 @@ namespace Backsight.Editor
         /// <param name="control">The control point to insert.</param>
         /// <returns>True if control point was inserted. False if the control point does
         /// not belong to this range.</returns>
-        bool Insert(ControlPoint control)
+        internal bool Insert(ControlPoint control)
         {
             if (control==null)
                 throw new ArgumentNullException();
@@ -186,7 +186,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation doing the save.</param>
         /// <param name="ent">The entity type to assign to the control.</param>
-        void Save(GetControlOperation op, IEntity ent)
+        internal void Save(GetControlOperation op, IEntity ent)
         {
             // Return if there is nothing to save.
             if (m_Control==null)
@@ -225,7 +225,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="control">The control point you want to append.</param>
         /// <returns>True if the control point can be appended.</returns>
-        bool CanAppend(ControlPoint control)
+        internal bool CanAppend(ControlPoint control)
         {
             // We can append if the range is undefined, or the specified
             // control point has a key that is consecutive with the last one.
@@ -239,7 +239,7 @@ namespace Backsight.Editor
         /// it may not be consecutive with the rest of the range.
         /// </summary>
         /// <param name="control">The control point to append (not null)</param>
-        void Append(ControlPoint control)
+        internal void Append(ControlPoint control)
         {
             if (control==null)
                 throw new ArgumentNullException();

@@ -24,9 +24,10 @@ namespace Backsight.Editor.Forms
     {
         private readonly ILayer m_Layer;
         private readonly SpatialType m_Type;
+        private readonly int m_DefaultEntityId;
         private IEntity m_SelectedEntity;
 
-        internal GetEntityForm(ILayer layer, SpatialType t)
+        internal GetEntityForm(ILayer layer, SpatialType t, int defaultEntityId)
         {
             if (layer==null)
                 throw new ArgumentNullException("Map layer must be specified");
@@ -36,6 +37,12 @@ namespace Backsight.Editor.Forms
             m_Layer = layer;
             m_Type = t;
             m_SelectedEntity = null;
+            m_DefaultEntityId = defaultEntityId;
+        }
+
+        internal GetEntityForm(ILayer layer, SpatialType t)
+            : this(layer, t, 0)
+        {
         }
 
         internal IEntity SelectedEntity
@@ -83,16 +90,31 @@ namespace Backsight.Editor.Forms
         /// <returns></returns>
         IEntity GetListDefault()
         {
+            // If the ID of a default entity type was supplied to the constructor,
+            // first try to locate the list item using that.
+            IEntity e = null;
+            if (m_DefaultEntityId > 0)
+            {
+                e = FindListItemByEntityId(m_DefaultEntityId);
+                if (e!=null)
+                    return e;
+            }
+
             // Get the object from the layer
-            IEntity e = GetLayerDefault();
+            e = GetLayerDefault();
 
             // The object the layer knows about should only be a facade. What we
             // want is the corresponding object from the env container (since that's
             // what's displayed in the list).
+            return FindListItemByEntityId(e.Id);
+        }
+
+        IEntity FindListItemByEntityId(int entId)
+        {
             foreach (object o in listBox.Items)
             {
                 IEntity listEnt = (IEntity)o;
-                if (listEnt.Id == e.Id)
+                if (listEnt.Id == entId)
                     return listEnt;
             }
 

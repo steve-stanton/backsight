@@ -193,7 +193,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The number of point features that were created.
         /// </summary>
-        int Count
+        internal int Count
         {
             get { return m_Features.Count; }
         }
