@@ -48,7 +48,7 @@ namespace Backsight.Editor
         /// Number of control points that have been defined (the number of elements
         /// in m_Control that have not-null references).
         /// </summary>
-        uint m_NumDefined;
+        int m_NumDefined;
 
         #endregion
 
@@ -88,7 +88,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of control points in the range (zero if the range hasn't been defined)
         /// </summary>
-        int NumControl
+        internal int NumControl
         {
             get { return (m_Control==null ? 0 : m_Control.Length); }
         }
@@ -96,7 +96,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Number of control points that have been defined within the range.
         /// </summary>
-        uint NumDefined
+        internal int NumDefined
         {
             get { return m_NumDefined; }
         }
@@ -104,7 +104,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The low end of the range.
         /// </summary>
-        uint Min
+        internal uint Min
         {
             get { return m_MinId; }
         }
@@ -112,7 +112,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The high end of the range.
         /// </summary>
-        uint Max
+        internal uint Max
         {
             get { return m_MaxId; }
         }
