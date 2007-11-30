@@ -61,6 +61,28 @@ namespace Backsight.Editor
         {
             Zero();
         }
+        /// <summary>
+        /// Creates a <c>ControlRange</c> for a specific set of points.
+        /// </summary>
+        /// <param name="minid">The ID at the lower end of the range</param>
+        /// <param name="maxid">The ID at the upper end of the range</param>
+        /// <exception cref="ArgumentException">If <paramref name="minid"/> is
+        /// greater than <paramref name="maxid"/></exception>
+        internal ControlRange(uint minid, uint maxid)
+        {
+            // Confirm the range is valid.
+            if (minid>maxid)
+                throw new ArgumentException("ControlRange - Inverted range");
+
+            // Remember the range.
+            m_MinId = minid;
+            m_MaxId = maxid;
+
+            // Allocate array of undefined control point objects.
+            int numControl = (int)(m_MaxId-m_MinId+1);
+            m_Control = new ControlPoint[numControl];
+            m_NumDefined = 0;
+        }
 
         #endregion
 
@@ -124,6 +146,7 @@ namespace Backsight.Editor
         /// <param name="maxid"></param>
         /// <exception cref="ArgumentException">If <paramref name="minid"/> is
         /// greater than <paramref name="maxid"/></exception>
+        /*
         void SetRange(uint minid, uint maxid)
         {
             // If we previously had a control array, get rid of it.
@@ -141,6 +164,7 @@ namespace Backsight.Editor
             int numControl = (int)(m_MaxId-m_MinId+1);
             m_Control = new ControlPoint[numControl];
         }
+         */
 
         /// <summary>
         /// Inserts a control point into this range (if applicable). Prior to call the

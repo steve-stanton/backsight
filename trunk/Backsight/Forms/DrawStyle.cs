@@ -139,9 +139,12 @@ namespace Backsight.Forms
             {
                 PointF p = CreatePoint(display, position);
                 float d = size * 0.5F;
-                display.Graphics.DrawLine(m_Pen, p.X-d, p.Y+d, p.X+d, p.Y+d);
-                display.Graphics.DrawLine(m_Pen, p.X+d, p.Y+d, p.X, p.Y-d);
-                display.Graphics.DrawLine(m_Pen, p.X, p.Y-d, p.X-d, p.Y+d);
+                PointF[] outline = new PointF[4];
+                outline[0] = new PointF(p.X-d, p.Y+d);
+                outline[1] = new PointF(p.X+d, p.Y+d);
+                outline[2] = new PointF(p.X, p.Y-d);
+                outline[3] = outline[0];
+                display.Graphics.FillPolygon(m_Fill.Brush, outline);
             }
         }
 

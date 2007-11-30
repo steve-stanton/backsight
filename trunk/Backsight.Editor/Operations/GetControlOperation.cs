@@ -24,6 +24,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Import control points.
     /// </summary>
+    [Serializable]
     class GetControlOperation : Operation
     {
         #region Class data

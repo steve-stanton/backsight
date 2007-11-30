@@ -29,7 +29,7 @@ using Backsight.Geometry;
 namespace Backsight.Editor
 {
     [Serializable]
-    class CadastralMapModel : IEditSpatialModel, ISpatialData, IInternalIdFactory
+    class CadastralMapModel : ISpatialModel, ISpatialData, IInternalIdFactory
     {
         #region Static Methods
 
@@ -253,7 +253,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new empty model
         /// </summary>
-        internal CadastralMapModel()
+        CadastralMapModel()
         {
             m_Format = 1;
 
@@ -286,6 +286,7 @@ namespace Backsight.Editor
             m_DefaultLineType = null;
             m_DefaultPolygonType = null;
             m_DefaultTextType = null;
+            m_Index = new EditingIndex();
         }
 
         #endregion
@@ -317,7 +318,14 @@ namespace Backsight.Editor
 
         internal ISpatialIndex Index
         {
-            get { return m_Index; }
+            get
+            {
+                // The index may be null if the model has just been deserialized
+                if (m_Index==null)
+                    m_Index = new EditingIndex();
+
+                return m_Index;
+            }
         }
 
         internal double ShowPointScale
@@ -435,20 +443,7 @@ namespace Backsight.Editor
 
         public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
         {
-            return m_Index.QueryClosest(p, radius, types);
-        }
-
-        public void Save()
-        {
-            /*
-            using (Stream s = new FileStream(@"C:\Temp\Test.bin"))
-            {
-                using (BinaryWriter w = new BinaryWriter(s))
-                {
-                    Write(w);
-                }
-            }
-             */
+            return Index.QueryClosest(p, radius, types);
         }
 
         /*
@@ -500,8 +495,8 @@ namespace Backsight.Editor
         public void Render(ISpatialDisplay display, IDrawStyle style)
         {
             // Do nothing if the index hasn't been created yet
-            if (m_Index==null)
-                return;
+            //if (m_Index==null)
+            //    return;
 
             // Default to draw all defined feature types
             SpatialType types = SpatialType.Feature;
@@ -514,11 +509,11 @@ namespace Backsight.Editor
             if (display.MapScale > m_ShowPointScale)
                 types ^= SpatialType.Point;
 
-            new DrawQuery(m_Index, display, style, types);
+            new DrawQuery(Index, display, style, types);
 
             // Draw intersections if necessary
             if (m_AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
-                (m_Index as EditingIndex).DrawIntersections(display);
+                (Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
         }
@@ -656,8 +651,8 @@ namespace Backsight.Editor
 
             m_Window.Union(extent);
 
-            if (m_Index==null)
-                CreateIndex();
+            //if (m_Index==null)
+            //    CreateIndex();
         }
 
         internal void Write(string fileName)
@@ -753,27 +748,18 @@ namespace Backsight.Editor
         /// </summary>
         private void CreateIndex()
         {
-            //System.Windows.Forms.MessageBox.Show("start");
-            //DateTime start = DateTime.Now;
+            EditingIndex x = (EditingIndex)Index;
 
+            foreach (Session s in m_Sessions)
+                s.AddToIndex(x);
+
+            /*
             EditingIndex index = new EditingIndex();
 
             foreach (Session s in m_Sessions)
                 s.AddToIndex(index);
 
             m_Index = index;
-            //index.DumpStats();
-            //index.Dump();
-
-            /*
-            DateTime end = DateTime.Now;
-            TimeSpan ts = end-start;
-            System.Windows.Forms.MessageBox.Show(ts.ToString());
-
-            features = this.GetFeatures(SpatialType.Line);
-            System.Windows.Forms.MessageBox.Show("line count:"+features.Length);
-            features = this.GetFeatures(SpatialType.Text);
-            System.Windows.Forms.MessageBox.Show("text count:"+features.Length);
             */
         }
 

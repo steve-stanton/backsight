@@ -38,7 +38,7 @@ namespace Backsight
         /// The current draw scale, as a scale denominator (i.e. 100 for a map at
         /// a scale of 1:100)
         /// </summary>
-        double MapScale { get; }
+        double MapScale { get; set; }
 
         /// <summary>
         /// The surface on which to draw
