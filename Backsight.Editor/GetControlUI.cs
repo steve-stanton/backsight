@@ -92,8 +92,7 @@ namespace Backsight.Editor
             if (m_Dialog!=null)
             {
                 ISpatialDisplay display = ActiveDisplay;
-                IDrawStyle style = Controller.DrawStyle;
-                style.FillColor = Color.Magenta;
+                IDrawStyle style = Controller.Style(Color.Magenta);
                 m_Dialog.Render(display, style);
             }
         }

@@ -21,6 +21,7 @@ using System.IO;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using System.Text;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -40,14 +41,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Control ranges (one for each line in the dialog).
         /// </summary>
-        List<ControlRange> m_Ranges;
+        readonly List<ControlRange> m_Ranges;
 
         /// <summary>
         /// True if the map initially has an undefined extent.
         /// </summary>
         bool m_NewMap;
-
-    	// uint m_CurrRange; // used in methods for CCF file input
 
         #endregion
 
@@ -62,7 +61,7 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             m_Cmd = cmd;
-            m_Ranges = null;
+            m_Ranges = new List<ControlRange>();
             m_NewMap = false;
         }
 
@@ -107,7 +106,7 @@ namespace Backsight.Editor.Forms
         private void getDataButton_Click(object sender, EventArgs e)
         {
             // Get rid of any control list previously loaded.
-            KillRanges();
+            m_Ranges.Clear();
 
             // Go through each line in the edit box, to confirm that the control ranges
             // are valid. While at it, get a count of the number of ranges.
@@ -154,10 +153,8 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            // Create array of the desired ranges.
-            m_Ranges = new List<ControlRange>(nrange);
-
             // Define each range (same sort of loop as above).
+            m_Ranges.Capacity = nrange;
             foreach (string line in controlTextBox.Lines)
             {
                 // Skip empty lines
@@ -166,14 +163,8 @@ namespace Backsight.Editor.Forms
 
                 uint minid, maxid;
                 GetRange(line, out minid, out maxid);
-                //m_Ranges.Add(n
-            /*
-	for ( i=0; i<nline; i++ ) {
-		if ( !m_Ranges[i].SetRange(minid,maxid) ) {
-			KillRanges();
-			return;
-		}
-                    */
+                ControlRange r = new ControlRange(minid, maxid);
+                m_Ranges.Add(r);
             }
 
             // Load array of control data.
@@ -195,21 +186,29 @@ namespace Backsight.Editor.Forms
             controlTextBox.Text = String.Empty;
 
             // Return if there are no ranges.
-            if (m_Ranges == null || m_Ranges.Count == 0)
+            if (m_Ranges.Count == 0)
                 return;
 
-            // We need to ensure that the map has a defined extent. If not,
-            // set it to match the extent of the control data we have
-            // loaded, and tell the draw to initialize draw parameters.
+            // If the map doesn't have a defined extent, we'll need to initialize
+            // the display with the window we've got
             if (m_NewMap)
             {
-                // not sure if this is still needed...
-                //CadastralMapModel.Current.Extent = win;
                 ISpatialDisplay display = m_Cmd.ActiveDisplay;
-                display.DrawWindow(win);
+                display.ReplaceMapModel(win);
 
-                // Tell the user the draw scale that has been defined.
-                double scale = display.MapScale;
+                // Tell the user the draw scale that has been defined, and ensure points are drawn
+                // at that scale.
+                double scale = GetSensibleScale(display.MapScale);
+                display.MapScale = scale;
+                if (!m_Cmd.ArePointsDrawn())
+                {
+                    CadastralMapModel.Current.ShowPointScale = (scale+1);
+                    Debug.Assert(m_Cmd.ArePointsDrawn());
+                }
+
+                // Ensure the point size isn't TOO small (2mm at the display scale should be fine)
+                CadastralMapModel.Current.PointHeight = new Length(0.002 * scale);
+
                 string scalemsg = String.Format("Draw scale has been set to 1:{0}", (uint)scale);
                 MessageBox.Show(scalemsg);
             }
@@ -261,6 +260,33 @@ namespace Backsight.Editor.Forms
                                                 m_Ranges.Count);
                 MessageBox.Show(msg);
             }
+        }
+
+        double GetSensibleScale(double scale)
+        {
+            // Pick a scale (1:25 is the largest scale we'll go to).
+
+            // 25, 50, 75, 100
+            // 150 200 250 .... 1000
+            // 1500 2000 2500 .... 10000
+            // 15000 20000 25000 .... 50000
+            // 60000 70000 ....
+
+            double mult;
+
+            if (scale < 100.0)
+                mult = 25.0;
+            else if (scale < 1000.0)
+                mult = 50.0;
+            else if (scale < 10000.0)
+                mult = 500.0;
+            else if (scale < 50000.0)
+                mult = 5000.0;
+            else
+                mult = 10000.0;
+
+        	uint nmult = (uint)(scale/mult) + 1;
+	        return (double)nmult * mult;
         }
 
         /// <summary>
@@ -330,40 +356,47 @@ namespace Backsight.Editor.Forms
         private void addToMapButton_Click(object sender, EventArgs e)
         {
             // Return if there is nothing to add.
-            if (m_Ranges==null || m_Ranges.Count==0)
+            if (m_Ranges.Count==0)
             {
                 MessageBox.Show("There is nothing to add.");
                 return;
             }
 
-        	// Do we have an entity type for control points?
-            // This was formerly obtained via the environment variable called CED$ControlEntity
-            int entId = GlobalUserSetting.ReadInt("ControlEntityTypeId", 0);
-
-            // Get the desired entity type.
-            GetEntityForm dial = new GetEntityForm(m_Cmd.ActiveLayer, SpatialType.Point, entId);
-            dial.ShowDialog();
-            IEntity ent = dial.SelectedEntity;
-            if (ent==null)
+            try
             {
-                MessageBox.Show("An entity type must be specified");
-                return;
+                // Hide this dialog. If you don't, the entity type dialog that's about to get
+                // displayed may be obscured, and there's no way to close it.
+                this.Hide();
+
+                // Do we have an entity type for control points?
+                // This was formerly obtained via the environment variable called CED$ControlEntity
+                int entId = GlobalUserSetting.ReadInt("ControlEntityTypeId", 0);
+
+                // Get the desired entity type.
+                GetEntityForm dial = new GetEntityForm(m_Cmd.ActiveLayer, SpatialType.Point, entId);
+                dial.ShowDialog();
+                IEntity ent = dial.SelectedEntity;
+                if (ent==null)
+                    throw new Exception("An entity type must be specified");
+
+                // Remember the ID of the selected entity type
+                GlobalUserSetting.WriteInt("ControlEntityTypeId", ent.Id);
+
+                // Save the control.
+                Save(ent);
+
+                // Issue a warning message if points are not currently displayed
+                if (!m_Cmd.ArePointsDrawn())
+                    MessageBox.Show("Points will not be drawn at the current scale.");
+
+                m_Cmd.DialFinish(this);
             }
 
-            // Remember the ID of the selected entity type
-            GlobalUserSetting.WriteInt("ControlEntityTypeId", ent.Id);
-
-            // Save the control.
-            Save(ent);
-
-            // Eliminate memory for the control points
-            KillRanges();
-
-            // Issue a warning message if points are not currently displayed
-            if (!m_Cmd.ArePointsDrawn())
-                MessageBox.Show("Points will not be drawn at the current scale.");
-
-            m_Cmd.DialFinish(this);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                this.Show();
+            }
         }
 
         /// <summary>
@@ -407,7 +440,8 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Loads control data from external file.
+        /// Loads control data from external file (based on the ranges currently defined
+        /// in <see cref="m_Ranges"/>)
         /// </summary>
         /// <returns>The window of the loaded data (null if an error is reported)</returns>
         IWindow LoadControl()
@@ -457,25 +491,14 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Gets rid of any previously loaded ranges.
-        /// </summary>
-        void KillRanges()
-        {
-            m_Ranges = null;
-        }
-
-        /// <summary>
         /// Redraws any control points.
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The style for the drawing</param>
         internal void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            if (m_Ranges!=null)
-            {
-                foreach (ControlRange r in m_Ranges)
-                    r.Render(display, style);
-            }
+            foreach (ControlRange r in m_Ranges)
+                r.Render(display, style);
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -559,9 +582,6 @@ namespace Backsight.Editor.Forms
         /// <returns>The newly created range (with everything set to null)</returns>
         ControlRange AddRange()
         {
-            if (m_Ranges==null)
-                m_Ranges = new List<ControlRange>(1);
-
             ControlRange r = new ControlRange();
             m_Ranges.Add(r);
             return r;

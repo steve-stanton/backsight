@@ -166,7 +166,6 @@
     <Compile Include="ISpatialData.cs" />
     <Compile Include="ISpatialDisplay.cs" />
     <Compile Include="ISpatialModel.cs" />
-    <Compile Include="IEditSpatialModel.cs" />
     <Compile Include="ISpatialObject.cs" />
     <Compile Include="ISpatialSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -165,22 +165,27 @@ namespace Backsight.Editor
         /// <param name="ent">The entity type for the control (not null)</param>
         /// <param name="op">The editing operation creating the point (not null)</param>
         /// <returns>The point representing the control (null if the position
-        /// of this control point is undefined)</returns>
+        /// of this control point is undefined). May be a previously existing point feature if
+        /// a point with the same ID already exists at the position of this control point.</returns>
         internal PointFeature Save(IEntity ent, Operation op)
         {
             // Return if the control point is undefined
             if (!this.IsDefined)
                 return null;
 
-            // Add to the map
-            PointFeature p = CadastralMapModel.Current.AddPoint(this, ent, op);
+            // Check whether a point already exists at the location of this point. If it does,
+            // and it has a foreign ID that matches the ID of this control point, just return it.
+            CadastralMapModel map = CadastralMapModel.Current;
+            ISpatialIndex index = map.Index;
+            PointFeature p = (index.QueryClosest(this, Length.Zero, SpatialType.Point) as PointFeature);
+            if (p!=null && p.IsForeignId && p.FormattedKey==m_ControlId.ToString())
+                return p;
 
-            // Define the feature's ID.
+            // Add a new point to the map & define it's ID
+            p = CadastralMapModel.Current.AddPoint(this, ent, op);
             IdHandle idh = new IdHandle(p);
             string keystr = m_ControlId.ToString();
     		idh.CreateForeignId(keystr);
-
-            // and is the FeatureId assigned??
 
             return p;
         }

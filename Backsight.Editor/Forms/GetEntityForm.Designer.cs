@@ -104,6 +104,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.cancelButton);
             this.Name = "GetEntityForm";
             this.Text = "Select desired entity type";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.GetEntityForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();

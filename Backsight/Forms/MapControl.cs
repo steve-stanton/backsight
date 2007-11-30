@@ -138,8 +138,14 @@ namespace Backsight.Forms
                 OnOverview();
             else
             {
-                // The overview should get defined ok so long as the draw extent isn't empty
+                // The overview should get defined ok so long as the current map model
+                // has a defined extent.
                 bool ok = SetOverviewExtent();
+
+                // If the map model doesn't have any extent, use the extent provided
+                if (!ok)
+                    ok = SetOverviewExtent(initialDrawExtent);
+
                 Debug.Assert(ok);
                 SetNewWindow(initialDrawExtent, true);
             }
@@ -264,15 +270,31 @@ namespace Backsight.Forms
         /// <summary>
         /// Sets the extent covered by an overview display, based on the extent of
         /// the current map model. The extent of the map panel will be defined to match.
+        /// </summary>
         /// <returns>True if overview extent defined. False if the map model doesn't
         /// have any extent (e.g. empty map)</returns>
-        /// </summary>
         bool SetOverviewExtent()
         {
             // Initialize with the window of the map(s)
             IEditWindow window = new Window(this.MapModel.Extent);
             if (window.IsEmpty)
                 return false;
+
+            return SetOverviewExtent(window);
+        }
+
+        /// <summary>
+        /// Sets the extent covered by an overview display, based on the extent of
+        /// the supplied window. The extent of the map panel will be defined to match.
+        /// </summary>
+        /// <param name="w">The window to use for initializing the overview extent</param>
+        /// <returns>True if overview extent defined. False if the supplied window is null or empty.</returns>
+        bool SetOverviewExtent(IWindow w)
+        {
+            if (w==null || w.IsEmpty)
+                return false;
+
+            Window window = new Window(w);
 
             //	If the map window is only ONE unit (i.e. we have just added
             //	our first point), define the window so that a point will draw
@@ -719,6 +741,7 @@ namespace Backsight.Forms
         public double MapScale
         {
             get { return m_MapScale; }
+            set { SetCenterAndScale(Center, value, true); }
         }
 
         // Not browsable, since the setter otherwise leads to periodic error messages in design mode
