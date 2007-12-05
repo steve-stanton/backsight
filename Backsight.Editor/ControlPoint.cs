@@ -176,7 +176,7 @@ namespace Backsight.Editor
             // Check whether a point already exists at the location of this point. If it does,
             // and it has a foreign ID that matches the ID of this control point, just return it.
             CadastralMapModel map = CadastralMapModel.Current;
-            ISpatialIndex index = map.Index;
+            ISpatialIndex index = map.EditingIndex;
             PointFeature p = (index.QueryClosest(this, Length.Zero, SpatialType.Point) as PointFeature);
             if (p!=null && p.IsForeignId && p.FormattedKey==m_ControlId.ToString())
                 return p;

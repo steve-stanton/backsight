@@ -297,7 +297,7 @@ namespace Backsight.Editor.Operations
         {
             SectionGeometry section = AddSection(sdist, edist);
             LineFeature newLine = m_Line.MakeSubSection(section, this);
-            (CadastralMapModel.Current.Index as IEditSpatialIndex).Add(newLine);
+            //MapModel.EditingIndex.Add(newLine);
             return newLine;
         }
 

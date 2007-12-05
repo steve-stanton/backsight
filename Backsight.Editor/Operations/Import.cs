@@ -18,17 +18,43 @@ using System.Collections.Generic;
 
 namespace Backsight.Editor.Operations
 {
+    /// <summary>
+    /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
+    /// the current map model.
+    /// </summary>
     [Serializable]
     class Import : Operation
     {
-        /// <summary>
-        /// The features that were imported.
-        /// </summary>
-        private readonly Feature[] m_Data;
+        #region Class data
 
-        public Import(FileImportSource source) : base()
+        /// <summary>
+        /// The features that were imported (null until the <see cref="Execute"/> method
+        /// is called).
+        /// </summary>
+        Feature[] m_Data;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>Import</c> in readiness for a data transfer.
+        /// </summary>
+        public Import() : base()
+        {
+            m_Data = null;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Executes this import by loading data from the supplied source.
+        /// </summary>
+        /// <param name="source">The data source to use for the import</param>
+        internal void Execute(FileImportSource source)
         {
             m_Data = source.Load(this);
+            Complete();
         }
 
         internal override Feature[] Features

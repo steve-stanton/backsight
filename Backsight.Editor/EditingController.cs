@@ -140,16 +140,6 @@ namespace Backsight.Editor
             base.Close();
         }
 
-        internal void Add(Operation o)
-        {
-            CadastralMapModel cmm = this.CadastralMapModel;
-            cmm.Add(o);
-
-            // For now, re-specify the model so that map control will refresh to
-            // reflect the updated extent.
-            //31-May-07 this.MapModel = cmm;
-        }
-
         public CadastralMapModel CadastralMapModel
         {
             get { return (this.MapModel as CadastralMapModel); }

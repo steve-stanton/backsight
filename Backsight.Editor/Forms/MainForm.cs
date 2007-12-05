@@ -1536,7 +1536,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void HelpAbout(IUserAction action)
         {
             //MessageBox.Show(action.Title);
-            EditingIndex index = (EditingIndex)CadastralMapModel.Current.Index;
+            EditingIndex index = CadastralMapModel.Current.EditingIndex;
             uint nx = index.GetIntersectCount();
             MessageBox.Show("nx=" + nx);
             //TestForm test = new TestForm();

@@ -764,12 +764,23 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// portion of the divider). Not currently used.</param>
         static void Cut(IntersectionResult xres, List<LineFeature> retrims)
         {
-            // Grab the divider that's been intersected
-            IIntersectable ir = xres.IntersectedObject;
-            Debug.Assert(ir is IDivider);
-            IDivider div = (IDivider)ir;
+            // Grab the thing that's been intersected. It'll be a LineFeature if the
+            // intersected object is a new line that's being processed via the Split
+            // method.
 
-            div.Line.Cut(div, xres, retrims);
+            IIntersectable ir = xres.IntersectedObject;
+            if (ir is LineFeature)
+            {
+                LineFeature line = (ir as LineFeature);
+                Debug.Assert(line.Topology is LineTopology);
+                line.Cut((IDivider)line.Topology, xres, retrims);
+            }
+            else
+            {
+                Debug.Assert(ir is IDivider);
+                IDivider div = (IDivider)ir;
+                div.Line.Cut(div, xres, retrims);
+            }
         }
 
         /// <summary>
@@ -790,7 +801,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             Debug.Assert(!div.IsOverlap);
 
             // Return if nothing to do
-            Debug.Assert(xres.IntersectedObject == div);
             List<IntersectionData> data = xres.Intersections;
             if (data == null || data.Count == 0)
                 return;

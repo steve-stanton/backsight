@@ -94,14 +94,14 @@ namespace Backsight.Editor
         public void OnPreMove(Feature f)
         {
             CadastralMapModel map = f.MapModel;
-            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
+            IEditSpatialIndex index = map.EditingIndex;
             index.Remove(this);
         }
 
         public void OnPostMove(Feature f)
         {
             CadastralMapModel map = f.MapModel;
-            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
+            IEditSpatialIndex index = map.EditingIndex;
             index.Add(this);
         }
 

@@ -101,7 +101,7 @@ namespace Backsight.Editor
                 }
 
                 // Mark all features as moved, so they will be intersected against the map model
-                SetMoved(m_Result);
+                //SetMoved(m_Result);
 
                 return m_Result.ToArray();
             }
@@ -112,11 +112,13 @@ namespace Backsight.Editor
             }
         }
 
+        /*
         void SetMoved(List<Feature> features)
         {
             foreach (Feature f in features)
                 f.IsMoved = true;
         }
+        */
 
         /// <summary>
         /// Loads all point features (symbols) from an NTX file.

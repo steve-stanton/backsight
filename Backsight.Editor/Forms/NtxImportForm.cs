@@ -134,17 +134,14 @@ namespace Backsight.Editor.Forms
             // displayed extent).
             bool wasEmpty = CadastralMapModel.Current.IsEmpty;
 
+            Import i = new Import();
             NtxImport ni = new NtxImport(ntxFile, this);
-            Import i = new Import(ni);
-            EditingController c = EditingController.Current;
-            c.Add(i);
-
-            // Test building topology
-            CadastralMapModel.Current.CleanEdit();
+            i.Execute(ni);
             Trace.Write("Map model updates completed");
 
             // Re-assigning the current model has the desired effect of causing
             // an overview display...
+            EditingController c = EditingController.Current;
             if (wasEmpty)
                 c.MapModel = CadastralMapModel.Current;
             else

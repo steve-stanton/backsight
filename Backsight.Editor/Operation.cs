@@ -97,63 +97,6 @@ namespace Backsight.Editor
         abstract internal Feature[] Features { get; }
 
         /// <summary>
-        /// The circles associated with an array of features
-        /// </summary>
-        /// <param name="fa">The features of interest</param>
-        /// <returns>The circles (if any) that are associated with the supplied features</returns>
-        List<Circle> GetCreatedCircles(Feature[] fa)
-        {
-            if (fa.Length==0)
-                return new List<Circle>();
-
-            // The following will be overkill in most cases, but not for things like
-            // bulk data imports...
-
-            // The circles found so far will be noted in an index that's keyed by the
-            // internal ID of the point at the center of the circle.
-            Dictionary<string, List<Circle>> dic = new Dictionary<string, List<Circle>>();
-
-            List<Circle> result = new List<Circle>(100);
-
-            foreach (Feature f in fa)
-            {
-                if (f is ArcFeature)
-                {
-                    Circle c = (f as ArcFeature).Circle;
-
-                    if (c.Creator == f.Creator)
-                    {
-                        string centerPointId = c.CenterPoint.DataId;
-                        bool addToResult = false;
-                        List<Circle> circles;
-
-                        if (dic.TryGetValue(centerPointId, out circles))
-                        {
-                            if (circles.IndexOf(c)==0)
-                            {
-                                circles.Add(c);
-                                addToResult = true;
-                            }
-                        }
-                        else
-                        {
-                            circles = new List<Circle>(1);
-                            circles.Add(c);
-                            dic.Add(centerPointId, circles);
-                            addToResult = true;
-                        }
-
-                        if (addToResult)
-                            result.Add(c);
-                    }
-                }
-            }
-
-            result.TrimExcess();
-            return result;
-        }
-
-        /// <summary>
         /// The number of features created by this edit.
         /// </summary>
         public int FeatureCount
@@ -181,22 +124,6 @@ namespace Backsight.Editor
             Feature[] createdFeatures = this.Features;
             foreach (Feature f in createdFeatures)
                 f.OnLoad(this, true);
-        }
-
-        /// <summary>
-        /// Inserts data into the supplied index. This should be called shortly after a model
-        /// is opened (after a prior call to <c>OnLoad</c>).
-        /// </summary>
-        /// <param name="index">The spatial index to add to</param>
-        internal void AddToIndex(IEditSpatialIndex index)
-        {
-            Feature[] createdFeatures = this.Features;
-            foreach (Feature f in createdFeatures)
-                f.AddToIndex(index);
-
-            List<Circle> createdCircles = GetCreatedCircles(createdFeatures);
-            foreach (Circle c in createdCircles)
-                c.AddToIndex(index);
         }
 
         /// <summary>
@@ -246,16 +173,6 @@ namespace Backsight.Editor
         /// The unique identifier for this edit.
         /// </summary>
         abstract internal EditingActionId EditId { get; }
-
-        /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// <para/>
-        /// This should be called by the <c>Execute</c> method in derived classes, to ensure
-        /// that the referenced features are cross-referenced to the editing operations
-        /// that depend on them.
-        /// </summary>
-        abstract public void AddReferences();
 
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
@@ -373,31 +290,45 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Performs processing that should be performed at the end of each editing
-        /// operation. This involves calls to <see cref="AddReferences"/> and
-        /// <see cref="Intersect"/>, followed by <see cref="CadastralMapModel.CleanEdit"/>.
+        /// Performs processing that should be performed at the end of the <c>Execute
+        /// </c> method of each editing operation. Features that were created will initially
+        /// get indexed via a call to <see cref="CadastralMapModel.AddToIndex"/>. Followed
+        /// by calls to <see cref="AddReferences"/>,  <see cref="PrepareForIntersect"/>, and
+        /// <see cref="CadastralMapModel.CleanEdit"/>.
         /// </summary>
         protected void Complete()
         {
-            // Index any circles that got created (perhaps this should have been done earlier)
+            // Index features that were created (and ensure the map extent has been
+            // expanded to include the new features)
             Feature[] feats = Features;
-            List<Circle> circles = GetCreatedCircles(feats);
-            if (circles.Count > 0)
-            {
-                EditingIndex index = (EditingIndex)MapModel.Index;
-                foreach (Circle c in circles)
-                    index.AddCircle(c);
-            }
+            MapModel.AddToIndex(feats);
 
+            // Point referenced features to this editing operation
             AddReferences();
+
+            // Mark any new topological lines as "moved" so that they will be
+            // intersected with the map
             PrepareForIntersect(feats);
+
+            // Ensure the map structure has been updated to account for the new data.
             MapModel.CleanEdit();
         }
+
+        /// <summary>
+        /// Adds references to existing features referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// <para/>
+        /// This is called by the <see cref="Complete"/> method, to ensure
+        /// that the referenced features are cross-referenced to the editing operations
+        /// that depend on them.
+        /// </summary>
+        abstract public void AddReferences();
 
         /// <summary>
         /// Prepares the supplied features for intersect detection that should be
         /// performed by <see cref="CadastralMapModel.CleanEdit"/>. This modifies
         /// line features by setting the <see cref="LineFeature.IsMoved"/> property.
+        /// Called by the <see cref="Complete"/> method
         /// </summary>
         /// <param name="fa">The features that may contain lines that need to be prepared</param>
         void PrepareForIntersect(Feature[] fa)
