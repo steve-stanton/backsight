@@ -221,7 +221,13 @@ namespace Backsight.Editor
             }
         }
 
-        public void Open(string connectionString)
+        /// <summary>
+        /// Attempts to open a map.
+        /// </summary>
+        /// <param name="connectionString">The file name of the map to open</param>
+        /// <returns>True if map opened ok. False if map couldn't be opened (in that case,
+        /// a brand new map gets created)</returns>
+        public bool Open(string connectionString)
         {
             try
             {
@@ -231,6 +237,7 @@ namespace Backsight.Editor
                 SetMapModel(cmm, cmm.DrawExtent);
                 InitializeIdManager();
                 m_AutoSaver.OnOpen();
+                return true;
             }
 
             catch (Exception e)
@@ -239,6 +246,8 @@ namespace Backsight.Editor
                 MessageBox.Show("Creating new map");
                 Create();
             }
+
+            return false;
         }
 
         void InitializeIdManager()

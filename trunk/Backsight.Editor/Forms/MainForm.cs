@@ -41,6 +41,11 @@ namespace Backsight.Editor.Forms
         /// </remarks>
         FileCheckUI m_Check;
 
+        /// <summary>
+        /// Most-recently used file list
+        /// </summary>
+        readonly MruStripMenuInline m_MruMenu;
+
         #endregion
 
         public MainForm()
@@ -49,6 +54,9 @@ namespace Backsight.Editor.Forms
             m_Controller = new EditingController(this);
 
             InitializeComponent();
+
+            string regkey = GlobalUserSetting.Root + @"\Editor\MRU";
+            m_MruMenu = new MruStripMenuInline(mnuFile, mnuFileRecent, new MruStripMenu.ClickedHandler(OnMruFile), regkey, 10);
 
             // Hide property panel unless it's requested
             vSplitContainer.Panel2Collapsed = true;
@@ -91,6 +99,7 @@ namespace Backsight.Editor.Forms
             AddAction(new ToolStripItem[] { mnuFileOpen, toolFileOpen }, IsFileOpenEnabled, FileOpen);
             AddAction(new ToolStripItem[] { mnuFileSave, toolFileSave }, IsFileSaveEnabled, FileSave);
             AddAction(new ToolStripItem[] { mnuFileSaveAs }, IsFileSaveAsEnabled, FileSaveAs);
+            m_MruMenu.LoadFromRegistry();
             AddAction(mnuFileShowChanges, IsFileShowChangesEnabled, FileShowChanges);
             AddAction(mnuFileStatistics, IsFileStatisticsEnabled, FileStatistics);
             AddAction(mnuFileCoordinateSystem, IsFileCoordinateSystemEnabled, FileCoordinateSystem);
@@ -331,6 +340,9 @@ namespace Backsight.Editor.Forms
                     m_Controller.DiscardModel();
             }
 
+            if (map!=null && !String.IsNullOrEmpty(map.Name))
+                AddRecentFile(map.Name);
+
             m_Controller.Close();
             Application.Idle -= OnIdle;
         }
@@ -503,7 +515,16 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             dial.Filter = "Backsight files (*.bs)|*.bs|All files (*)|*";
 
             if (dial.ShowDialog() == DialogResult.OK)
+            {
                 m_Controller.Open(dial.FileName);
+                AddRecentFile(dial.FileName);
+            }
+        }
+
+        void AddRecentFile(string fileName)
+        {
+            m_MruMenu.AddFile(fileName);
+            m_MruMenu.SaveToRegistry();
         }
 
         private bool IsFileSaveEnabled()
@@ -526,7 +547,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             string name = AskForFileName();
             if (!String.IsNullOrEmpty(name))
+            {
                 CadastralMapModel.Current.Write(name);
+                AddRecentFile(name);
+            }
         }
 
         internal string AskForFileName()
@@ -537,6 +561,20 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return dial.FileName;
 
             return String.Empty;
+        }
+
+        void OnMruFile(int number, string filename)
+        {
+            if (m_Controller.Open(filename))
+                m_MruMenu.SetFirstFile(number);
+            else
+            {
+                string msg = String.Format("Cannot access '{0}'", filename);
+                MessageBox.Show(msg);
+                m_MruMenu.RemoveFile(number);
+            }
+
+            m_MruMenu.SaveToRegistry();
         }
 
         private bool IsFileShowChangesEnabled()

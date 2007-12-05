@@ -87,6 +87,7 @@
       <DependentUpon>MapControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MapControlAction.cs" />
+    <Compile Include="Forms\MruStripMenu.cs" />
     <Compile Include="Forms\SpatialDisplayTool.cs" />
     <Compile Include="Forms\MapResources.cs" />
     <Compile Include="Forms\NewCenterTool.cs" />
