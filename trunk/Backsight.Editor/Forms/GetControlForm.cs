@@ -17,11 +17,11 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
-using System.Text;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {

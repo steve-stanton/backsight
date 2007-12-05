@@ -286,7 +286,7 @@ namespace Backsight.Editor
             m_DefaultLineType = null;
             m_DefaultPolygonType = null;
             m_DefaultTextType = null;
-            m_Index = new EditingIndex();
+            //m_Index = new EditingIndex();
         }
 
         #endregion
@@ -316,7 +316,30 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// The spatial index for this model (in a form that's suitable for typical queries).
+        /// </summary>
+        /// <remarks>The result may be null, since some older software may rely on
+        /// a null result to determine the course of events. Where appropriate, use the
+        /// <see cref="EditingIndex"/> property instead.</remarks>
         internal ISpatialIndex Index
+        {
+            get
+            {
+                /*
+                // The index may be null if the model has just been deserialized
+                if (m_Index==null)
+                    m_Index = new EditingIndex();
+                */
+                return m_Index;
+            }
+        }
+
+        /// <summary>
+        /// The spatial index for this model (in a form that's suitable for editing).
+        /// If it doesn't already exist, it will be created.
+        /// </summary>
+        internal EditingIndex EditingIndex
         {
             get
             {
@@ -443,7 +466,7 @@ namespace Backsight.Editor
 
         public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
         {
-            return Index.QueryClosest(p, radius, types);
+            return m_Index.QueryClosest(p, radius, types);
         }
 
         /*
@@ -495,8 +518,8 @@ namespace Backsight.Editor
         public void Render(ISpatialDisplay display, IDrawStyle style)
         {
             // Do nothing if the index hasn't been created yet
-            //if (m_Index==null)
-            //    return;
+            if (m_Index==null)
+                return;
 
             // Default to draw all defined feature types
             SpatialType types = SpatialType.Feature;
@@ -509,11 +532,11 @@ namespace Backsight.Editor
             if (display.MapScale > m_ShowPointScale)
                 types ^= SpatialType.Point;
 
-            new DrawQuery(Index, display, style, types);
+            new DrawQuery(m_Index, display, style, types);
 
             // Draw intersections if necessary
             if (m_AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
-                (Index as EditingIndex).DrawIntersections(display);
+                (m_Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
         }
@@ -640,21 +663,6 @@ namespace Backsight.Editor
             return me;
         }
 
-        public void Add(Operation op)
-        {
-            Feature[] data = op.Features;
-            Window extent = new Window();
-            foreach (Feature f in data)
-            {
-                extent.Union(f.Extent);
-            }
-
-            m_Window.Union(extent);
-
-            //if (m_Index==null)
-            //    CreateIndex();
-        }
-
         internal void Write(string fileName)
         {
             if (m_ModelFileName==null)
@@ -720,8 +728,21 @@ namespace Backsight.Editor
             }
 
             // Generate a spatial index
-            CreateIndex();
+            foreach (Session s in m_Sessions)
+                s.AddToIndex();
         }
+
+        /*
+        private void CreateIndex()
+        {
+            EditingIndex index = new EditingIndex();
+
+            foreach (Session s in m_Sessions)
+                s.AddToIndex(index);
+
+            m_Index = index;
+        }
+         */
 
         /// <summary>
         /// Reserves the next operation sequence number. This should be obtained each time
@@ -741,26 +762,6 @@ namespace Backsight.Editor
         internal uint LastOpSequence
         {
             get { return m_OpSequence; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void CreateIndex()
-        {
-            EditingIndex x = (EditingIndex)Index;
-
-            foreach (Session s in m_Sessions)
-                s.AddToIndex(x);
-
-            /*
-            EditingIndex index = new EditingIndex();
-
-            foreach (Session s in m_Sessions)
-                s.AddToIndex(index);
-
-            m_Index = index;
-            */
         }
 
         /// <summary>
@@ -853,16 +854,16 @@ namespace Backsight.Editor
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
             PointFeature f = PointFeature.Create(p, e, ActiveLayer, creator);
-            m_Window.Union(p);
-            m_Index.Add(f);
+            //m_Window.Union(p);
+            //m_Index.Add(f);
             return f;
         }
 
         internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
             LineFeature f = new LineFeature(e, creator, from, to);
-            m_Window.Union(f.Extent);
-            m_Index.Add(f);
+            //m_Window.Union(f.Extent);
+            //m_Index.Add(f);
 
             // If topology needs to be maintained, ensure polygons in the vicinity have
             // been marked for rebuild
@@ -870,6 +871,88 @@ namespace Backsight.Editor
                 f.MarkPolygons();
 
             return f;
+        }
+
+        /// <summary>
+        /// Includes features created by an editing operation as part of the editing
+        /// index. Also ensures the overal map extent has been expanded (if necessary)
+        /// to include the extent of the features.
+        /// </summary>
+        /// <param name="fa">The features to add to the index</param>
+        internal void AddToIndex(Feature[] fa)
+        {
+            EditingIndex index = this.EditingIndex;
+
+            foreach (Feature f in fa)
+            {
+                f.AddToIndex(index);
+                m_Window.Union(f.Extent);
+            }
+
+            // The extent of circles don't get included in the map extent, because
+            // they're regarded only as construction lines (that should be invisible
+            // to the user).
+
+            List<Circle> createdCircles = GetCreatedCircles(fa);
+            foreach (Circle c in createdCircles)
+                c.AddToIndex(index);
+        }
+
+        /// <summary>
+        /// The circles associated with an array of features
+        /// </summary>
+        /// <param name="fa">The features of interest</param>
+        /// <returns>The circles (if any) that are associated with the supplied features</returns>
+        static List<Circle> GetCreatedCircles(Feature[] fa)
+        {
+            if (fa.Length==0)
+                return new List<Circle>();
+
+            // The following will be overkill in most cases, but not for things like
+            // bulk data imports...
+
+            // The circles found so far will be noted in an index that's keyed by the
+            // internal ID of the point at the center of the circle.
+            Dictionary<string, List<Circle>> dic = new Dictionary<string, List<Circle>>();
+
+            List<Circle> result = new List<Circle>(100);
+
+            foreach (Feature f in fa)
+            {
+                if (f is ArcFeature)
+                {
+                    Circle c = (f as ArcFeature).Circle;
+
+                    if (c.Creator == f.Creator)
+                    {
+                        string centerPointId = c.CenterPoint.DataId;
+                        bool addToResult = false;
+                        List<Circle> circles;
+
+                        if (dic.TryGetValue(centerPointId, out circles))
+                        {
+                            if (circles.IndexOf(c)==0)
+                            {
+                                circles.Add(c);
+                                addToResult = true;
+                            }
+                        }
+                        else
+                        {
+                            circles = new List<Circle>(1);
+                            circles.Add(c);
+                            dic.Add(centerPointId, circles);
+                            addToResult = true;
+                        }
+
+                        if (addToResult)
+                            result.Add(c);
+                    }
+                }
+            }
+
+            result.TrimExcess();
+            return result;
         }
 
         /// <summary>
@@ -1143,8 +1226,8 @@ namespace Backsight.Editor
             bool clockwise, IEntity lineEnt, Operation creator)
         {
             ArcFeature result = new ArcFeature(lineEnt, creator, circle, start, end, clockwise);
-            m_Window.Union(result.Extent);
-            m_Index.Add(result);
+            //m_Window.Union(result.Extent);
+            //m_Index.Add(result);
 
             // If topology needs to be maintained, ensure polygons in the vicinity have
             // been marked for rebuild

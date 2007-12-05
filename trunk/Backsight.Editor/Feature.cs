@@ -525,9 +525,7 @@ namespace Backsight.Editor
 
         public void OnPostMove(Feature f)
         {
-            CadastralMapModel map = this.MapModel;
-            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
-            index.Add(this);
+            MapModel.EditingIndex.Add(this);
         }
 
         public string TypeName
@@ -573,8 +571,7 @@ namespace Backsight.Editor
             }
 
             // Add back into the map index.
-            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
-            index.Add(this);
+            MapModel.EditingIndex.Add(this);
 
             // Remember that the feature is now active
             IsInactive = false;

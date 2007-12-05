@@ -341,7 +341,7 @@ namespace Backsight.Editor.Forms
         /// <returns>The circles that were found (null if nothing found)</returns>
         Circle[] GetCircles (PointFeature point)
         {
-            EditingIndex index = (EditingIndex)CadastralMapModel.Current.Index;
+            EditingIndex index = CadastralMapModel.Current.EditingIndex;
             ILength tol = new Length(0.001);
             List<Circle> circles = index.QueryCircles(point, tol);
             return (circles.Count==0 ? null : circles.ToArray());

@@ -155,7 +155,7 @@ namespace Backsight.Editor.Operations
         {
             SectionGeometry section = new SectionGeometry(m_Line, start, end);
             LineFeature newLine = m_Line.MakeSubSection(section, this);
-            (MapModel.Index as IEditSpatialIndex).Add(newLine);
+            //MapModel.EditingIndex.Add(newLine);
             return newLine;
         }
 

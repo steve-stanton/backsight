@@ -104,6 +104,7 @@ namespace Backsight.Editor
         {
             get { return m_Model; }
         }
+
         /// <summary>
         /// The map layer that was active throughout the session.
         /// </summary>
@@ -147,7 +148,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Adds an editing operation to this session.
+        /// Adds an editing operation to this session. This is called by the constructor
+        /// for the <see cref="Operation"/> class, so the operation will not necessarily
+        /// know about the features involved at this stage (things like indexing the
+        /// content of the operation will usually be done when the operation actually
+        /// instantiates features).
         /// </summary>
         /// <param name="o">The operation to append to this session.</param>
         internal void Add(Operation o)
@@ -206,16 +211,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Inserts data into the supplied index. This should be called shortly after a model
-        /// is opened (after a prior call to <c>OnLoad</c>).
+        /// Inserts data into the spatial index of the map model associated with this
+        /// session. This should be called shortly after a model is opened (after a prior
+        /// call to <c>OnLoad</c>).
         /// </summary>
-        /// <param name="index">The spatial index to add to</param>
-        internal void AddToIndex(IEditSpatialIndex index)
+        internal void AddToIndex()
         {
             if (m_Operations!=null)
             {
                 foreach (Operation op in m_Operations)
-                    op.AddToIndex(index);
+                {
+                    Feature[] createdFeatures = op.Features;
+                    m_Model.AddToIndex(createdFeatures);
+                }
             }
         }
 
