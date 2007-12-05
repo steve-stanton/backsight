@@ -303,6 +303,8 @@ namespace Backsight.Editor.Forms
             this.ctxNewText25 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuFileRecent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator39 = new System.Windows.Forms.ToolStripSeparator();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.vSplitContainer.Panel1.SuspendLayout();
@@ -358,6 +360,8 @@ namespace Backsight.Editor.Forms
             this.mnuFileOpen,
             this.mnuFileSave,
             this.mnuFileSaveAs,
+            this.toolStripSeparator39,
+            this.mnuFileRecent,
             this.toolStripSeparator3,
             this.mnuFileShowChanges,
             this.toolStripSeparator1,
@@ -1338,6 +1342,7 @@ namespace Backsight.Editor.Forms
             this.mapControl.Center = null;
             this.mapControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapControl.Location = new System.Drawing.Point(0, 0);
+            this.mapControl.MapScale = double.NaN;
             this.mapControl.Name = "mapControl";
             this.mapControl.Size = new System.Drawing.Size(744, 442);
             this.mapControl.TabIndex = 2;
@@ -2345,6 +2350,17 @@ namespace Backsight.Editor.Forms
             this.ctxNewTextCancel.Size = new System.Drawing.Size(146, 22);
             this.ctxNewTextCancel.Text = "Cancel";
             // 
+            // mnuFileRecent
+            // 
+            this.mnuFileRecent.Name = "mnuFileRecent";
+            this.mnuFileRecent.Size = new System.Drawing.Size(235, 22);
+            this.mnuFileRecent.Text = "&Recent Files";
+            // 
+            // toolStripSeparator39
+            // 
+            this.toolStripSeparator39.Name = "toolStripSeparator39";
+            this.toolStripSeparator39.Size = new System.Drawing.Size(232, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2669,6 +2685,8 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripStatusLabel lineEntityStatusLabel;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPage0;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator39;
+        private System.Windows.Forms.ToolStripMenuItem mnuFileRecent;
     }
 }
 

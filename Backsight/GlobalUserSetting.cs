@@ -45,6 +45,14 @@ namespace Backsight
         static string s_UserRoot = @"HKEY_CURRENT_USER\Software\Backsight";
 
         /// <summary>
+        /// The registry key that acts as the root for user-specific settings.
+        /// </summary>
+        public static string Root
+        {
+            get { return s_UserRoot; }
+        }
+
+        /// <summary>
         /// Saves a global setting
         /// </summary>
         /// <param name="settingName">The name of the setting</param>
