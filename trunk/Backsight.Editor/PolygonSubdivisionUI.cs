@@ -56,7 +56,12 @@ namespace Backsight.Editor
             ActiveDisplay.MapPanel.Cursor = EditorResources.PolygonSubdivisionCursor;
         }
 
-        internal override void LButtonDown(IPosition p)
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
+        internal override bool LButtonDown(IPosition p)
         {
             // Find out what polygon we need to subdivide
             IPointGeometry pg = PointGeometry.Create(p);
@@ -65,7 +70,7 @@ namespace Backsight.Editor
             if (pol==null)
             {
                 MessageBox.Show("Specified position does not fall inside any polygon.");
-                return;
+                return false;
             }
 
 
@@ -79,7 +84,7 @@ namespace Backsight.Editor
                 if (!sub.GetLink(0, out start, out end))
                 {
                     MessageBox.Show("Cannot locate any points to connect.");
-                    return;
+                    return true;
                 }
 
                 op = new PolygonSubdivisionOperation();
@@ -93,6 +98,8 @@ namespace Backsight.Editor
                 MessageBox.Show(ex.Message);
                 AbortCommand();
             }
+
+            return true;
         }
 
         /// <summary>

@@ -87,26 +87,57 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// Do any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
         internal override void Paint(PointFeature point)
         {
+            // do nothing
         }
 
+        /// <summary>
+        /// Handles mouse-move.
+        /// </summary>
+        /// <param name="p">The new position of the mouse</param>
         internal override void MouseMove(IPosition p)
         {
+            // do nothing
         }
 
-        internal override void LButtonDown(IPosition p)
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>False (always), indicating that nothing was done.</returns>
+        internal override bool LButtonDown(IPosition p)
         {
+            return false;
         }
 
+        /// <summary>
+        /// Handles left-up mouse click.
+        /// </summary>
+        /// <param name="p">The position where the left-up occurred.</param>
         internal override void LButtonUp(IPosition p)
         {
+            // do nothing
         }
 
+        /// <summary>
+        /// Handles double-click.
+        /// </summary>
+        /// <param name="p">The position where the double-click occurred.</param>
         internal override void LButtonDblClick(IPosition p)
         {
+            // do nothing
         }
 
+        /// <summary>
+        /// Handles right mouse click.
+        /// </summary>
+        /// <param name="p">The position where the right-click occurred.</param>
+        /// <returns>True if handled.</returns>
         internal override bool RButtonDown(IPosition p)
         {
             return false;
@@ -126,14 +157,27 @@ namespace Backsight.Editor
             return false;
         }
 
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
         internal override void OnSelectPoint(PointFeature point)
         {
         }
 
+        /// <summary>
+        /// Reacts to the selection of a line feature.
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
         internal override void OnSelectLine(LineFeature line)
         {
         }
 
+        /// <summary>
+        /// Receives a sub-command. These actually get sent down via the controller class.
+        /// </summary>
+        /// <param name="id">The ID of the sub-command.</param>
+        /// <returns>False (always), indicating that a sub-command was not dispatched.</returns>
         internal override bool Dispatch(int id)
         {
             return false;

@@ -155,13 +155,13 @@ namespace Backsight.Editor
             Highlight(m_Line);
         }
 
-        internal override void LButtonDown(IPosition p)
+        internal override bool LButtonDown(IPosition p)
         {
             // Quit if we don't have a selected line
             if (m_Line==null)
             {
                 AbortCommand();
-                return;
+                return false;
             }
 
             // Get the position on the selected line that is closest
@@ -173,7 +173,7 @@ namespace Backsight.Editor
             if (pos==null)
             {
                 MessageBox.Show("You appear to be moving the mouse too fast");
-                return;
+                return false;
             }
 
             // Attach a new point to the line
@@ -193,12 +193,14 @@ namespace Backsight.Editor
             {
                 Session.CurrentSession.Remove(op);
                 MessageBox.Show(ex.Message);
-                return;
+                return true;
             }
 
             // Exit the command if we're not supposed to repeat
             if (!m_Repeat)
                 AbortCommand();
+
+            return true;
         }
 
         internal override bool DialFinish(Control wnd)

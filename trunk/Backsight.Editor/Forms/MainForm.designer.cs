@@ -51,6 +51,8 @@ namespace Backsight.Editor.Forms
             this.mnuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileSave = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator39 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuFileRecent = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileShowChanges = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -303,8 +305,6 @@ namespace Backsight.Editor.Forms
             this.ctxNewText25 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuFileRecent = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator39 = new System.Windows.Forms.ToolStripSeparator();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.vSplitContainer.Panel1.SuspendLayout();
@@ -360,8 +360,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileOpen,
             this.mnuFileSave,
             this.mnuFileSaveAs,
-            this.toolStripSeparator39,
-            this.mnuFileRecent,
             this.toolStripSeparator3,
             this.mnuFileShowChanges,
             this.toolStripSeparator1,
@@ -375,6 +373,8 @@ namespace Backsight.Editor.Forms
             this.mnuFilePrintWindow,
             this.mnuFilePrint,
             this.toolStripSeparator6,
+            this.mnuFileRecent,
+            this.toolStripSeparator39,
             this.mnuFileExit});
             this.mnuFile.Name = "mnuFile";
             this.mnuFile.Size = new System.Drawing.Size(40, 20);
@@ -410,6 +410,17 @@ namespace Backsight.Editor.Forms
             this.mnuFileSaveAs.Size = new System.Drawing.Size(235, 22);
             this.mnuFileSaveAs.Text = "Save &As...";
             this.mnuFileSaveAs.ToolTipText = "Save the current map with a new name";
+            // 
+            // toolStripSeparator39
+            // 
+            this.toolStripSeparator39.Name = "toolStripSeparator39";
+            this.toolStripSeparator39.Size = new System.Drawing.Size(232, 6);
+            // 
+            // mnuFileRecent
+            // 
+            this.mnuFileRecent.Name = "mnuFileRecent";
+            this.mnuFileRecent.Size = new System.Drawing.Size(235, 22);
+            this.mnuFileRecent.Text = "Recent Files";
             // 
             // toolStripSeparator3
             // 
@@ -2349,17 +2360,6 @@ namespace Backsight.Editor.Forms
             this.ctxNewTextCancel.Name = "ctxNewTextCancel";
             this.ctxNewTextCancel.Size = new System.Drawing.Size(146, 22);
             this.ctxNewTextCancel.Text = "Cancel";
-            // 
-            // mnuFileRecent
-            // 
-            this.mnuFileRecent.Name = "mnuFileRecent";
-            this.mnuFileRecent.Size = new System.Drawing.Size(235, 22);
-            this.mnuFileRecent.Text = "&Recent Files";
-            // 
-            // toolStripSeparator39
-            // 
-            this.toolStripSeparator39.Name = "toolStripSeparator39";
-            this.toolStripSeparator39.Size = new System.Drawing.Size(232, 6);
             // 
             // MainForm
             // 

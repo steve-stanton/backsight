@@ -130,7 +130,14 @@ namespace Backsight.Editor
         abstract internal bool Run();
         abstract internal void Paint(PointFeature point);
         abstract internal void MouseMove(IPosition p);
-        abstract internal void LButtonDown(IPosition p);
+
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
+        abstract internal bool LButtonDown(IPosition p);
+
         abstract internal void LButtonUp(IPosition p);
         abstract internal void LButtonDblClick(IPosition p);
         abstract internal bool RButtonDown(IPosition p);
