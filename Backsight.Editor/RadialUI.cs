@@ -23,7 +23,7 @@ using Backsight.Environment;
 
 namespace Backsight.Editor
 {
-    class RadialUI : CommandUI, IDisposable
+    class RadialUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -319,36 +319,6 @@ namespace Backsight.Editor
         {
             if (m_Dialog!=null)
                 m_Dialog.SetOffset(offset);
-        }
-
-        internal override void MouseMove(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonDown(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonUp(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonDblClick(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override bool RButtonDown(IPosition p)
-        {
-            return false; // Do nothing
-        }
-
-        internal override bool Dispatch(int id)
-        {
-            return false; // Do nothing
         }
     }
 }

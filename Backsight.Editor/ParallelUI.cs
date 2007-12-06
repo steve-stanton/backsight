@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// <summary>
     /// User interface for generating a parallel line.
     /// </summary>
-    class ParallelUI : CommandUI, IDisposable
+    class ParallelUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -961,36 +961,6 @@ namespace Backsight.Editor
 
             // Redraw.
             Draw();
-        }
-
-        internal override void MouseMove(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonDown(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonUp(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override void LButtonDblClick(IPosition p)
-        {
-            // Do nothing
-        }
-
-        internal override bool RButtonDown(IPosition p)
-        {
-            return false; // Do nothing
-        }
-
-        internal override bool Dispatch(int id)
-        {
-            return false; // Do nothing
         }
     }
 }

@@ -25,7 +25,7 @@ using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
-    class UpdateUI : CommandUI
+    class UpdateUI : SimpleCommandUI
     {
         /// <summary>
         /// The update that is currently being executed.
@@ -354,61 +354,6 @@ namespace Backsight.Editor
         }
 
         internal override bool Run()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void Paint(PointFeature point)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void MouseMove(IPosition p)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void LButtonDown(IPosition p)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void LButtonUp(IPosition p)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void LButtonDblClick(IPosition p)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool RButtonDown(IPosition p)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void DialAbort(Control wnd)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool DialFinish(Control wnd)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void OnSelectPoint(PointFeature point)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void OnSelectLine(LineFeature line)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool Dispatch(int id)
         {
             throw new Exception("The method or operation is not implemented.");
         }

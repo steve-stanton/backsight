@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// <summary>
     /// User interface for defining a new point (also used for updating control points).
     /// </summary>
-    class NewPointUI : CommandUI, IDisposable
+    class NewPointUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -130,71 +130,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Do any command-specific drawing.
-        /// </summary>
-        /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
-        internal override void Paint(PointFeature point)
-        {
-            // do nothing
-        }
-
-        /// <summary>
-        /// Handles mouse-move.
-        /// </summary>
-        /// <param name="p">The new position of the mouse</param>
-        internal override void MouseMove(IPosition p)
-        {
-            // do nothing
-        }
-
-        /// <summary>
-        /// Handles left mouse click.
-        /// </summary>
-        /// <param name="p">The position where the left-click occurred.</param>
-        internal override void LButtonDown(IPosition p)
-        {
-            // do nothing
-        }
-
-        /// <summary>
-        /// Handles left-up mouse click.
-        /// </summary>
-        /// <param name="p">The position where the left-up occurred.</param>
-        internal override void LButtonUp(IPosition p)
-        {
-            // do nothing
-        }
-
-        /// <summary>
-        /// Handles double-click.
-        /// </summary>
-        /// <param name="p">The position where the double-click occurred.</param>
-        internal override void LButtonDblClick(IPosition p)
-        {
-            // do nothing
-        }
-
-        /// <summary>
-        /// Handles right mouse click.
-        /// </summary>
-        /// <param name="p">The position where the right-click occurred.</param>
-        /// <returns>True if handled.</returns>
-        internal override bool RButtonDown(IPosition p)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Reacts to selection of the Cancel button in the dialog.
-        /// </summary>
-        /// <param name="wnd">The dialog window.</param>
-        internal override void DialAbort(Control wnd)
-        {
-	        // Get the base class to finish up.
-	        AbortCommand();
-        }
-
-        /// <summary>
         /// Reacts to selection of the OK button in the dialog.
         /// </summary>
         /// <param name="wnd">The dialog window.</param>
@@ -223,34 +158,6 @@ namespace Backsight.Editor
 
 	        // Get the base class to finish up.
 	        return FinishCommand();
-        }
-
-        /// <summary>
-        /// Reacts to the selection of a point feature.
-        /// </summary>
-        /// <param name="point">The point (if any) that has been selected.</param>
-        internal override void OnSelectPoint(PointFeature point)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        /// <summary>
-        /// Reacts to the selection of a line feature.
-        /// </summary>
-        /// <param name="line">The line (if any) that has been selected.</param>
-        internal override void OnSelectLine(LineFeature line)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        /// <summary>
-        /// Receives a sub-command. These actually get sent down via the controller class.
-        /// </summary>
-        /// <param name="id">The ID of the sub-command.</param>
-        /// <returns>True if sub-command was dispatched.</returns>
-        internal override bool Dispatch(int id)
-        {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         /// <summary>

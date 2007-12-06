@@ -149,18 +149,19 @@ namespace Backsight.Editor
             ErasePainting();
         }
 
-        internal override void LButtonDown(IPosition p)
+        internal override bool LButtonDown(IPosition p)
         {
             // Cancel the new line if there is no point selected.
             if (m_CurrentPoint==null)
             {
                 DialAbort(null);
-                return;
+                return true;
             }
 
             // If we don't have the first point yet, remember the start location.
             // Otherwise remember the end point & add the line.
             AppendToLine(m_CurrentPoint);
+            return true;
         }
 
         /// <summary>

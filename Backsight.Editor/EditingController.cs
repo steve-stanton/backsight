@@ -147,10 +147,17 @@ namespace Backsight.Editor
 
         public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
+            // If there's no command, or it doesn't handle mouse downs, let the base
+            // class have a stab.
+            if (m_Command==null || !m_Command.LButtonDown(p))
+                base.MouseDown(sender, p, b);
+
+            /*
             if (m_Command!=null)
                 m_Command.LButtonDown(p);
             else
                 base.MouseDown(sender, p, b);
+             */
         }
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
