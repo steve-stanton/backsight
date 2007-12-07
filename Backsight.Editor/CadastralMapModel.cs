@@ -859,6 +859,14 @@ namespace Backsight.Editor
             return f;
         }
 
+        /// <summary>
+        /// Creates a new line feature that connects two points.
+        /// </summary>
+        /// <param name="from">The starting point for the new line</param>
+        /// <param name="to">The end point for the new line</param>
+        /// <param name="e">The entity type for the line (not null)</param>
+        /// <param name="creator">The operation creating the line</param>
+        /// <returns>The created line feature.</returns>
         internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
             LineFeature f = new LineFeature(e, creator, from, to);

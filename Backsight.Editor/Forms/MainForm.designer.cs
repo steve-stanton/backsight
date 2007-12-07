@@ -51,8 +51,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileSave = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator39 = new System.Windows.Forms.ToolStripSeparator();
-            this.mnuFileRecent = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileShowChanges = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -66,6 +64,8 @@ namespace Backsight.Editor.Forms
             this.mnuFilePrintWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFilePrint = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuFileRecent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator39 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileExit = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuEditDelete = new System.Windows.Forms.ToolStripMenuItem();
@@ -411,17 +411,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileSaveAs.Text = "Save &As...";
             this.mnuFileSaveAs.ToolTipText = "Save the current map with a new name";
             // 
-            // toolStripSeparator39
-            // 
-            this.toolStripSeparator39.Name = "toolStripSeparator39";
-            this.toolStripSeparator39.Size = new System.Drawing.Size(232, 6);
-            // 
-            // mnuFileRecent
-            // 
-            this.mnuFileRecent.Name = "mnuFileRecent";
-            this.mnuFileRecent.Size = new System.Drawing.Size(235, 22);
-            this.mnuFileRecent.Text = "Recent Files";
-            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -501,6 +490,17 @@ namespace Backsight.Editor.Forms
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(232, 6);
+            // 
+            // mnuFileRecent
+            // 
+            this.mnuFileRecent.Name = "mnuFileRecent";
+            this.mnuFileRecent.Size = new System.Drawing.Size(235, 22);
+            this.mnuFileRecent.Text = "Recent Files";
+            // 
+            // toolStripSeparator39
+            // 
+            this.toolStripSeparator39.Name = "toolStripSeparator39";
+            this.toolStripSeparator39.Size = new System.Drawing.Size(232, 6);
             // 
             // mnuFileExit
             // 

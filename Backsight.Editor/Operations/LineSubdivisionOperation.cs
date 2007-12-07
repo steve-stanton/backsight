@@ -270,6 +270,9 @@ namespace Backsight.Editor.Operations
         public override void AddReferences()
         {
             m_Line.AddReference(this);
+
+            foreach (LineSubdivisionFace face in m_Faces)
+                face.AddReferences(this);
         }
 
         internal override bool Undo()

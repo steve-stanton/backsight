@@ -1088,7 +1088,7 @@ namespace Backsight.Editor
         /// <param name="x1">The 1st intersection (if any).</param>
         /// <param name="x2">The 2nd intersection (if any).</param>
         /// <returns>The number of intersections found.</returns>
-        static uint Intersect(ICircleGeometry a, ICircleGeometry b, out IPosition x1, out IPosition x2)
+        internal static uint Intersect(ICircleGeometry a, ICircleGeometry b, out IPosition x1, out IPosition x2)
         {
             // Get the intersections (if any).
             uint nx = Geom.IntersectCircles(a.Center, a.Radius.Meters, b.Center, b.Radius.Meters, out x1, out x2);

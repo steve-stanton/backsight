@@ -300,6 +300,7 @@ namespace Backsight.Editor.Operations
         public override void AddReferences()
         {
             m_ExtendLine.AddOp(this);
+            m_Length.AddReferences(this);
         }
 
         /// <summary>
