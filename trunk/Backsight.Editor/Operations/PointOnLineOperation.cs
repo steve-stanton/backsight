@@ -239,6 +239,7 @@ namespace Backsight.Editor.Operations
         public override void AddReferences()
         {
             m_Line.AddReference(this);
+            m_Distance.AddReferences(this);
         }
 
         /// <summary>

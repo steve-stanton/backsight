@@ -29,14 +29,14 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.fromPointTextBox = new System.Windows.Forms.TextBox();
             this.distanceTextBox = new System.Windows.Forms.TextBox();
+            this.fromPointTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lineTypeComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.lineTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -55,14 +55,19 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Distance";
             // 
-            // label1
+            // distanceTextBox
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 34);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 16);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "From point";
+            this.distanceTextBox.Location = new System.Drawing.Point(101, 73);
+            this.distanceTextBox.Name = "distanceTextBox";
+            this.distanceTextBox.Size = new System.Drawing.Size(100, 22);
+            this.distanceTextBox.TabIndex = 3;
+            // 
+            // fromPointTextBox
+            // 
+            this.fromPointTextBox.Location = new System.Drawing.Point(101, 31);
+            this.fromPointTextBox.Name = "fromPointTextBox";
+            this.fromPointTextBox.Size = new System.Drawing.Size(100, 22);
+            this.fromPointTextBox.TabIndex = 2;
             // 
             // label2
             // 
@@ -73,19 +78,14 @@ namespace Backsight.Editor.Forms
             this.label2.TabIndex = 1;
             this.label2.Text = "Distance";
             // 
-            // fromPointTextBox
+            // label1
             // 
-            this.fromPointTextBox.Location = new System.Drawing.Point(101, 31);
-            this.fromPointTextBox.Name = "fromPointTextBox";
-            this.fromPointTextBox.Size = new System.Drawing.Size(100, 22);
-            this.fromPointTextBox.TabIndex = 2;
-            // 
-            // distanceTextBox
-            // 
-            this.distanceTextBox.Location = new System.Drawing.Point(101, 73);
-            this.distanceTextBox.Name = "distanceTextBox";
-            this.distanceTextBox.Size = new System.Drawing.Size(100, 22);
-            this.distanceTextBox.TabIndex = 3;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(24, 34);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 16);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "From point";
             // 
             // groupBox2
             // 
@@ -100,23 +100,6 @@ namespace Backsight.Editor.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Line type";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 73);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(152, 16);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Specify if you want a line";
-            // 
-            // lineTypeComboBox
-            // 
-            this.lineTypeComboBox.FormattingEnabled = true;
-            this.lineTypeComboBox.Location = new System.Drawing.Point(15, 29);
-            this.lineTypeComboBox.Name = "lineTypeComboBox";
-            this.lineTypeComboBox.Size = new System.Drawing.Size(214, 24);
-            this.lineTypeComboBox.TabIndex = 1;
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -126,6 +109,23 @@ namespace Backsight.Editor.Forms
             this.label3.TabIndex = 2;
             this.label3.Text = "to the intersection.";
             // 
+            // lineTypeComboBox
+            // 
+            this.lineTypeComboBox.FormattingEnabled = true;
+            this.lineTypeComboBox.Location = new System.Drawing.Point(15, 29);
+            this.lineTypeComboBox.Name = "lineTypeComboBox";
+            this.lineTypeComboBox.Size = new System.Drawing.Size(214, 24);
+            this.lineTypeComboBox.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 73);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(152, 16);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Specify if you want a line";
+            // 
             // GetDistanceControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -134,6 +134,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.groupBox1);
             this.Name = "GetDistanceControl";
             this.Size = new System.Drawing.Size(568, 175);
+            this.Load += new System.EventHandler(this.GetDistanceControl_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

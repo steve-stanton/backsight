@@ -72,6 +72,9 @@
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
+    <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
+    <Compile Include="Operations\IntersectOperation.cs" />
+    <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />

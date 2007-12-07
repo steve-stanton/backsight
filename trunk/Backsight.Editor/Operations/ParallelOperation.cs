@@ -378,6 +378,8 @@ namespace Backsight.Editor.Operations
 
 	        if (m_Term2!=null && m_Term2!=m_Term1)
                 m_Term2.AddOp(this);
+
+            m_Offset.AddReferences(this);
         }
 
         /// <summary>

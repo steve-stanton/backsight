@@ -214,11 +214,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Convenience method that marks a feature as "deleted" (first checks whether
+        /// Convenience method that marks a feature as "being undone" (first checks whether
         /// the specified feature is null). This is normally called by implementations
         /// of the <c>Rollback(void)</c> method.
         /// </summary>
-        /// <param name="line">The feature to mark as deleted (may be null)</param>
+        /// <param name="line">The feature to mark for undo (may be null)</param>
         protected void Rollback(Feature f)
         {
             if (f!=null && f.Creator==this)

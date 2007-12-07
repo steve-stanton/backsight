@@ -195,5 +195,14 @@ namespace Backsight.Editor.Operations
 
             return true;
         }
+        /// <summary>
+        /// Adds references to existing features referenced by this face
+        /// </summary>
+        /// <param name="op">The operation that makes use of this face</param>
+        internal void AddReferences(Operation op)
+        {
+            foreach (MeasuredLineFeature m in m_Sections)
+                m.ObservedLength.AddReferences(op);
+        }
     }
 }
