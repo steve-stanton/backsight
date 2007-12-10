@@ -860,6 +860,26 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Ensures a point feature exists at a specific location in this map model.
+        /// </summary>
+        /// <param name="p">The position where a point feature is required</param>
+        /// <param name="creator">The operation that should be recorded as the creator
+        /// of any newly created point</param>
+        /// <returns>The point feature at the specified position (may be a new point)</returns>
+        internal PointFeature EnsurePointExists(IPosition p, Operation creator)
+        {
+            if (p is PointFeature)
+                return (p as PointFeature);
+
+            EditingIndex index = EditingIndex;
+            PointFeature pf = (index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+            if (pf==null)
+                pf = AddPoint(p, DefaultPointType, creator);
+
+            return pf;
+        }
+
+        /// <summary>
         /// Creates a new line feature that connects two points.
         /// </summary>
         /// <param name="from">The starting point for the new line</param>

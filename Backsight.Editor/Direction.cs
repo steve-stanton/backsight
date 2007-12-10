@@ -254,14 +254,9 @@ namespace Backsight.Editor
         /// Intersects this direction with another direction.
         /// </summary>
         /// <param name="other">The other direction.</param>
-        /// <param name="intersect">The intersection (if any). Returned as null if no
-        /// intersection found.</param>
-        /// <returns>True if intersection exists.</returns>
-        bool Intersect(Direction other, out IPosition intersect)
+        /// <returns>The calculated intersection (null if it doesn't exist)</returns>
+        internal IPosition Intersect(Direction other)
         {
-            // Initialize the intersection.
-            intersect = null;
-
             // Get the starting positions for the two directions (may be offset).
             IPosition from1 = this.StartPosition;
             IPosition from2 = other.StartPosition;
@@ -291,7 +286,7 @@ namespace Backsight.Editor
 
             // Check whether lines are parallel.
 	        if (Math.Abs(det) < Double.Epsilon)
-                return false;
+                return null;
 
             // Work out the intersection.
 
@@ -300,8 +295,7 @@ namespace Backsight.Editor
 	        double dy = from2.Y - yo;
 	        double dx = from2.X - xo;
 	        double prat = (sinb2*dy - cosb2*dx)/det;
-	        intersect = new Position((xo+sinb1*prat), (yo+cosb1*prat));
-	        return true;
+	        return new Position((xo+sinb1*prat), (yo+cosb1*prat));
         }
 
         /// <summary>
@@ -313,7 +307,7 @@ namespace Backsight.Editor
         /// <param name="x1">The 1st intersection (if any). Returned as null if no intersection.</param>
         /// <param name="x2">The 2nd intersection (if any). Returned as null if no intersection.</param>
         /// <returns>The number of intersections found.</returns>
-        uint Intersect(ICircleGeometry circle, out IPosition x1, out IPosition x2)
+        internal uint Intersect(ICircleGeometry circle, out IPosition x1, out IPosition x2)
         {
             // Initialize both intersections.
             x1 = x2 = null;
