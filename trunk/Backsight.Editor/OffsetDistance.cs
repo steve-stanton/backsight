@@ -21,6 +21,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An offset that is expressed in the form of a distance observation.
     /// </summary>
+    [Serializable]
     class OffsetDistance : Offset
     {
         #region Class data
