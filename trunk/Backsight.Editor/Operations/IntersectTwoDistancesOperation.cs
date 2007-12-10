@@ -173,7 +173,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override string Name
         {
-            get { return "Distance-distance intersection"; }
+            get { return "Distance - distance intersection"; }
         }
 
         /// <summary>
@@ -312,11 +312,11 @@ namespace Backsight.Editor.Operations
             // Add the intersection point
             m_To = AddIntersection(xsect, pointId);
 
-            // Remember the from points.
+            // Remember input
+            m_Distance1 = dist1;
             m_From1 = from1;
+            m_Distance2 = dist2;
             m_From2 = from2;
-
-            // Save option about whether we want default intersection or not.
             m_Default = isdefault;
 
             // If we have a defined entity types for lines, add them too.
@@ -366,7 +366,6 @@ namespace Backsight.Editor.Operations
         /// <param name="xsect2">The 2nd choice intersection (if any).</param>
         /// <returns>True if intersections were calculated. False if the distance circles
         /// don't intersect.</returns>
-        /// <returns></returns>
         internal static bool Calculate(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2, bool usedefault,
                                         out IPosition xsect, out IPosition xsect1, out IPosition xsect2)
         {

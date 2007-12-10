@@ -150,5 +150,26 @@ protected:
         {
             throw new Exception("The method or operation is not implemented.");
         }
+
+        /// <summary>
+        /// Adds to list of features created by this operation. This appends the
+        /// supplied line (if it's not null) to the results, and may also add the
+        /// point at the start of the line (this covers a situation where an offset
+        /// to the start of the line was specified). Note that the end point of the
+        /// line is not checked, since that should correspond to the intersect point.
+        /// </summary>
+        /// <param name="line">A line created by this operation (may be null)</param>
+        /// <param name="result">The list to append to</param>
+        protected void AddCreatedFeatures(LineFeature line, List<Feature> result)
+        {
+            if (line!=null)
+            {
+                result.Add(line);
+
+                PointFeature start = line.StartPoint;
+                if (Object.ReferenceEquals(start.Creator, this))
+                    result.Add(start);
+            }
+        }
     }
 }

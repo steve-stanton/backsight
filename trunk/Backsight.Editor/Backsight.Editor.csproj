@@ -74,6 +74,7 @@
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
     <Compile Include="Operations\IntersectOperation.cs" />
+    <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
     <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
