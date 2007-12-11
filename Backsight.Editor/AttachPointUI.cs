@@ -15,13 +15,13 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
-using System.Drawing;
 
 namespace Backsight.Editor
 {

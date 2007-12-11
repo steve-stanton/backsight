@@ -55,7 +55,7 @@ namespace Backsight.Editor.Forms
 
             InitializeComponent();
 
-            string regkey = GlobalUserSetting.Root + @"\Editor\MRU";
+            string regkey = @"Software\Backsight\Editor\MRU";
             m_MruMenu = new MruStripMenuInline(mnuFile, mnuFileRecent, new MruStripMenu.ClickedHandler(OnMruFile), regkey, 10);
 
             // Hide property panel unless it's requested
@@ -1502,24 +1502,35 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         #region Intersect menu
 
-        private bool IsIntersectTwoDirectionsEnabled()
-        {
-            return false;
-        }
-
-        private void IntersectTwoDirections(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
-        }
-
-        private bool IsIntersectTwoDistancesEnabled()
+        bool IsIntersectEnabled()
         {
             return (HasMap && !m_Controller.IsCommandRunning);
         }
 
+        void StartIntersectUI(IUserAction action)
+        {
+            CommandUI cmd = new IntersectUI(action);
+            m_Controller.StartCommand(cmd);
+        }
+
+        private bool IsIntersectTwoDirectionsEnabled()
+        {
+            return IsIntersectEnabled();
+        }
+
+        private void IntersectTwoDirections(IUserAction action)
+        {
+            StartIntersectUI(action);
+        }
+
+        private bool IsIntersectTwoDistancesEnabled()
+        {
+            return IsIntersectEnabled();
+        }
+
         private void IntersectTwoDistances(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            StartIntersectUI(action);
         }
 
         private bool IsIntersectTwoLinesEnabled()
@@ -1534,12 +1545,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsIntersectDirectionAndDistanceEnabled()
         {
-            return false;
+            return IsIntersectEnabled();
         }
 
         private void IntersectDirectionAndDistance(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            StartIntersectUI(action);
         }
 
         private bool IsIntersectDirectionAndLineEnabled()
