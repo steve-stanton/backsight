@@ -351,6 +351,7 @@ namespace Backsight.Editor
         /// <param name="combo">The combo to load</param>
         /// <param name="type">The spatial type(s) of interest</param>
         /// <returns>The default entity type in the combo (if any)</returns>
+        [Obsolete("Use the EntityTypeComboBox class")]
         internal IEntity LoadEntityCombo(ComboBox combo, SpatialType type)
         {
             ILayer layer = this.ActiveLayer;
@@ -365,6 +366,7 @@ namespace Backsight.Editor
         /// <param name="type">The spatial type(s) of interest</param>
         /// <param name="layer">The layer of interest</param>
         /// <returns>The default entity type in the combo (if any)</returns>
+        [Obsolete("Use the EntityTypeComboBox class")]
         internal static IEntity LoadEntityCombo(ComboBox combo, SpatialType type, ILayer layer)
         {
             IEntity[] entities = EnvironmentContainer.EntityTypes(type, layer);
@@ -390,6 +392,7 @@ namespace Backsight.Editor
         /// <param name="layer">The layer of interest</param>
         /// <param name="type">The geometric type of interest</param>
         /// <returns>The default entity type (may be null)</returns>
+        [Obsolete("Remove when LoadEntityCombo is removed")]
         internal static IEntity GetDefaultEntity(ILayer layer, SpatialType type)
         {
             switch (type)

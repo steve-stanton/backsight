@@ -28,32 +28,32 @@ namespace Backsight.Editor.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.distanceGroupBox = new System.Windows.Forms.GroupBox();
             this.distanceTextBox = new System.Windows.Forms.TextBox();
             this.fromPointTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lineTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.lineTypeComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
+            this.distanceGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // distanceGroupBox
             // 
-            this.groupBox1.Controls.Add(this.distanceTextBox);
-            this.groupBox1.Controls.Add(this.fromPointTextBox);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(26, 27);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(235, 126);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Distance";
+            this.distanceGroupBox.Controls.Add(this.distanceTextBox);
+            this.distanceGroupBox.Controls.Add(this.fromPointTextBox);
+            this.distanceGroupBox.Controls.Add(this.label2);
+            this.distanceGroupBox.Controls.Add(this.label1);
+            this.distanceGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.distanceGroupBox.Location = new System.Drawing.Point(26, 27);
+            this.distanceGroupBox.Name = "distanceGroupBox";
+            this.distanceGroupBox.Size = new System.Drawing.Size(235, 126);
+            this.distanceGroupBox.TabIndex = 0;
+            this.distanceGroupBox.TabStop = false;
+            this.distanceGroupBox.Text = "Distance";
             // 
             // distanceTextBox
             // 
@@ -61,6 +61,8 @@ namespace Backsight.Editor.Forms
             this.distanceTextBox.Name = "distanceTextBox";
             this.distanceTextBox.Size = new System.Drawing.Size(100, 22);
             this.distanceTextBox.TabIndex = 3;
+            this.distanceTextBox.Leave += new System.EventHandler(this.distanceTextBox_Leave);
+            this.distanceTextBox.TextChanged += new System.EventHandler(this.distanceTextBox_TextChanged);
             // 
             // fromPointTextBox
             // 
@@ -68,6 +70,8 @@ namespace Backsight.Editor.Forms
             this.fromPointTextBox.Name = "fromPointTextBox";
             this.fromPointTextBox.Size = new System.Drawing.Size(100, 22);
             this.fromPointTextBox.TabIndex = 2;
+            this.fromPointTextBox.Leave += new System.EventHandler(this.fromPointTextBox_Leave);
+            this.fromPointTextBox.TextChanged += new System.EventHandler(this.fromPointTextBox_TextChanged);
             // 
             // label2
             // 
@@ -89,8 +93,8 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.lineTypeComboBox);
+            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(291, 27);
@@ -100,6 +104,16 @@ namespace Backsight.Editor.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Line type";
             // 
+            // lineTypeComboBox
+            // 
+            this.lineTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lineTypeComboBox.FormattingEnabled = true;
+            this.lineTypeComboBox.Location = new System.Drawing.Point(15, 29);
+            this.lineTypeComboBox.Name = "lineTypeComboBox";
+            this.lineTypeComboBox.Size = new System.Drawing.Size(213, 24);
+            this.lineTypeComboBox.TabIndex = 3;
+            this.lineTypeComboBox.SelectedValueChanged += new System.EventHandler(this.lineTypeComboBox_SelectedValueChanged);
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -108,14 +122,6 @@ namespace Backsight.Editor.Forms
             this.label3.Size = new System.Drawing.Size(114, 16);
             this.label3.TabIndex = 2;
             this.label3.Text = "to the intersection.";
-            // 
-            // lineTypeComboBox
-            // 
-            this.lineTypeComboBox.FormattingEnabled = true;
-            this.lineTypeComboBox.Location = new System.Drawing.Point(15, 29);
-            this.lineTypeComboBox.Name = "lineTypeComboBox";
-            this.lineTypeComboBox.Size = new System.Drawing.Size(214, 24);
-            this.lineTypeComboBox.TabIndex = 1;
             // 
             // label4
             // 
@@ -131,12 +137,12 @@ namespace Backsight.Editor.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.distanceGroupBox);
             this.Name = "GetDistanceControl";
             this.Size = new System.Drawing.Size(568, 175);
             this.Load += new System.EventHandler(this.GetDistanceControl_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.distanceGroupBox.ResumeLayout(false);
+            this.distanceGroupBox.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -145,7 +151,7 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox distanceGroupBox;
         private System.Windows.Forms.TextBox distanceTextBox;
         private System.Windows.Forms.TextBox fromPointTextBox;
         private System.Windows.Forms.Label label2;
@@ -153,6 +159,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox lineTypeComboBox;
+        private EntityTypeComboBox lineTypeComboBox;
     }
 }

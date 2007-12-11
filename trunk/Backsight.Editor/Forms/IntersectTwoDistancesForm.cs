@@ -18,11 +18,38 @@ using System.Windows.Forms;
 
 namespace Backsight.Editor.Forms
 {
-    public partial class IntersectTwoDistancesForm : Form
+    /// <written by="Steve Stanton" was="CdIntersectDist" />
+    /// <summary>
+    /// Dialog for the Intersect - Two Distances command.
+    /// </summary>
+    /// <remarks>This was formerly the CdIntersectDist dialog, which was a CPropertySheet
+    /// containing two CdGetDist objects and a CdIntersectTwo object.</remarks>
+    partial class IntersectTwoDistancesForm : Form, IIntersectDialog
     {
-        public IntersectTwoDistancesForm()
+        #region Class data
+
+        /// <summary>
+        /// The command displaying this dialog (either an instance of <see cref="IntersectUI"/>
+        /// or <see cref="UpdateUI"/>)
+        /// </summary>
+        readonly CommandUI m_Cmd;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>IntersectTwoDistancesForm</c>
+        /// </summary>
+        /// <param name="cmd">The command displaying this dialog (not null)</param>
+        /// <param name="title">The string to display in the form's title bar</param>
+        internal IntersectTwoDistancesForm(CommandUI cmd, string title)
         {
             InitializeComponent();
+            this.Text = title;
+            m_Cmd = cmd;
         }
+
+        #endregion
     }
 }

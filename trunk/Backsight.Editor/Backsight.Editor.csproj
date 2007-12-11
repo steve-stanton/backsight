@@ -51,6 +51,12 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="Forms\EntityTypeComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityTypeComboBox.Designer.cs">
+      <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\GetControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,6 +69,7 @@
     <Compile Include="Forms\GetDistanceControl.Designer.cs">
       <DependentUpon>GetDistanceControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\IIntersectDialog.cs" />
     <Compile Include="Forms\IntersectTwoDistancesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +78,7 @@
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
+    <Compile Include="IntersectUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
     <Compile Include="Operations\IntersectOperation.cs" />
@@ -423,6 +431,10 @@
     <EmbeddedResource Include="Forms\EntityTranslationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>EntityTranslationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityTypeComboBox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FileCheckForm.resx">
       <SubType>Designer</SubType>
