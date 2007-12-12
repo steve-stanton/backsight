@@ -156,7 +156,7 @@ namespace Backsight.Editor
             get { return m_IsFixed; }
         }
 
-        void SetFixed()
+        internal void SetFixed()
         {
             m_IsFixed = true;
         }
