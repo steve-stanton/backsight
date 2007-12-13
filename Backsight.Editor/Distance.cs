@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// A distance observation.
     /// </summary>
     [Serializable]
-    class Distance : Observation, ILength
+    class Distance : Observation, ILength, IEquatable<Distance>
     {
         #region Class data
 
@@ -189,9 +189,9 @@ namespace Backsight.Editor
         /// Formats this distance in a specific unit of measurement.
         /// </summary>
         /// <param name="unit">The desired unit of measurement.</param>
-        /// <param name="appendAbbrev">True if units abbreviation should be appended.</param>
+        /// <param name="appendAbbrev">True if units abbreviation should be appended (default was TRUE)</param>
         /// <returns></returns>
-        string Format(DistanceUnit unit, bool appendAbbrev)
+        internal string Format(DistanceUnit unit, bool appendAbbrev)
         {
             return unit.Format(m_ObservedMetric, appendAbbrev);
         }
@@ -317,6 +317,18 @@ namespace Backsight.Editor
         internal override void AddReferences(Operation op)
         {
             // Nothing to do
+        }
+
+        /// <summary>
+        /// Relational equality test
+        /// </summary>
+        /// <param name="that">The distance to compare with.</param>
+        /// <returns>True if the distance values are the same, and the distances are
+        /// either both fixed or both floating</returns>
+        public bool Equals(Distance that) // IEquatable<Distance>
+        {
+            return (this.IsFixed == that.IsFixed &&
+                    Math.Abs(this.Meters - that.Meters) < Constants.TINY);
         }
     }
 }

@@ -27,6 +27,16 @@ namespace Backsight.Editor.Forms
     /// <seealso cref="IEntity"/>
     public partial class EntityTypeComboBox : ComboBox
     {
+        #region Class data
+
+        /// <summary>
+        /// The text of any item that represents the null entity type. If null,
+        /// the combo won't contain a null entity.
+        /// </summary>
+        //string m_NullItemName;
+
+        #endregion
+
         /// <summary>
         /// Creates an empty <c>EntityTypeComboBox</c>. Before making use of the
         /// combo, you need to load it via a call to the <see cref="Load"/> method.
@@ -35,6 +45,19 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// The text that should appear alongside the "null" entity type. If the name
+        /// is null, the null entity type will not appear in the combo (if blank, you
+        /// get an item with no text).
+        /// </summary>
+        /*
+        public string NullItemName
+        {
+            get { return m_NullItemName; }
+            set { m_NullItemName = value; }
+        }
+        */
 
         /// <summary>
         /// Loads this combo with entity types relating to the current
@@ -78,7 +101,8 @@ namespace Backsight.Editor.Forms
         /// Selects the item that has the same ID as the supplied entity type. A prior
         /// call to <see cref="Load"/> is required.
         /// </summary>
-        /// <param name="e">The entity type of interest (null to clear current selection)</param>
+        /// <param name="e">The entity type of interest (null to select the entity type
+        /// with ID==0)</param>
         /// <returns>The entity type selected from the combo (null if the combo doesn't
         /// contain an entity type with a matching ID)</returns>
         /// <remarks>The entity types that act as the datasource for the combo may be
@@ -88,11 +112,7 @@ namespace Backsight.Editor.Forms
         /// environment container.</remarks>
         public IEntity SelectEntity(IEntity e)
         {
-            if (e==null)
-            {
-                this.SelectedItem = null;
-                return null;
-            }
+            int id = (e==null ? 0 : e.Id);
 
             IEntity[] entities = (DataSource as IEntity[]);
             if (entities==null)
@@ -101,7 +121,7 @@ namespace Backsight.Editor.Forms
             // The objects representing the default may be in a different address
             // space, so ensure we return the item from the combo.
             IEntity ent = Array.Find<IEntity>(entities, delegate(IEntity a)
-                                    { return (e.Id == a.Id); });
+                                    { return (id == a.Id); });
             this.SelectedItem = ent;
             return ent;
         }
