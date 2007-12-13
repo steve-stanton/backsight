@@ -36,7 +36,7 @@ namespace Backsight.Editor.Forms
             this.counterClockwiseRadioButton = new System.Windows.Forms.RadioButton();
             this.clockwiseRadioButton = new System.Windows.Forms.RadioButton();
             this.useCenterCheckBox = new System.Windows.Forms.CheckBox();
-            this.angleTextBox = new System.Windows.Forms.TextBox();
+            this.directionTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.backsightTextBox = new System.Windows.Forms.TextBox();
@@ -74,6 +74,7 @@ namespace Backsight.Editor.Forms
             this.lineTypeComboBox.Name = "lineTypeComboBox";
             this.lineTypeComboBox.Size = new System.Drawing.Size(194, 24);
             this.lineTypeComboBox.TabIndex = 4;
+            this.lineTypeComboBox.SelectedValueChanged += new System.EventHandler(this.lineTypeComboBox_SelectedValueChanged);
             // 
             // label3
             // 
@@ -98,7 +99,7 @@ namespace Backsight.Editor.Forms
             this.directionGroupBox.Controls.Add(this.counterClockwiseRadioButton);
             this.directionGroupBox.Controls.Add(this.clockwiseRadioButton);
             this.directionGroupBox.Controls.Add(this.useCenterCheckBox);
-            this.directionGroupBox.Controls.Add(this.angleTextBox);
+            this.directionGroupBox.Controls.Add(this.directionTextBox);
             this.directionGroupBox.Controls.Add(this.label6);
             this.directionGroupBox.Controls.Add(this.label5);
             this.directionGroupBox.Controls.Add(this.backsightTextBox);
@@ -145,12 +146,13 @@ namespace Backsight.Editor.Forms
             this.useCenterCheckBox.UseVisualStyleBackColor = true;
             this.useCenterCheckBox.CheckedChanged += new System.EventHandler(this.useCenterCheckBox_CheckedChanged);
             // 
-            // angleTextBox
+            // directionTextBox
             // 
-            this.angleTextBox.Location = new System.Drawing.Point(87, 111);
-            this.angleTextBox.Name = "angleTextBox";
-            this.angleTextBox.Size = new System.Drawing.Size(74, 22);
-            this.angleTextBox.TabIndex = 2;
+            this.directionTextBox.Location = new System.Drawing.Point(87, 111);
+            this.directionTextBox.Name = "directionTextBox";
+            this.directionTextBox.Size = new System.Drawing.Size(74, 22);
+            this.directionTextBox.TabIndex = 2;
+            this.directionTextBox.TextChanged += new System.EventHandler(this.directionTextBox_TextChanged);
             // 
             // label6
             // 
@@ -176,6 +178,7 @@ namespace Backsight.Editor.Forms
             this.backsightTextBox.Name = "backsightTextBox";
             this.backsightTextBox.Size = new System.Drawing.Size(74, 22);
             this.backsightTextBox.TabIndex = 1;
+            this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
             // 
             // fromPointTextBox
             // 
@@ -183,6 +186,7 @@ namespace Backsight.Editor.Forms
             this.fromPointTextBox.Name = "fromPointTextBox";
             this.fromPointTextBox.Size = new System.Drawing.Size(74, 22);
             this.fromPointTextBox.TabIndex = 0;
+            this.fromPointTextBox.TextChanged += new System.EventHandler(this.fromPointTextBox_TextChanged);
             // 
             // label2
             // 
@@ -253,6 +257,7 @@ namespace Backsight.Editor.Forms
             this.offsetTextBox.Name = "offsetTextBox";
             this.offsetTextBox.Size = new System.Drawing.Size(110, 22);
             this.offsetTextBox.TabIndex = 3;
+            this.offsetTextBox.TextChanged += new System.EventHandler(this.offsetTextBox_TextChanged);
             // 
             // GetDirectionControl
             // 
@@ -284,7 +289,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.RadioButton counterClockwiseRadioButton;
         private System.Windows.Forms.RadioButton clockwiseRadioButton;
         private System.Windows.Forms.CheckBox useCenterCheckBox;
-        private System.Windows.Forms.TextBox angleTextBox;
+        private System.Windows.Forms.TextBox directionTextBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox backsightTextBox;

@@ -107,5 +107,10 @@ public:
         {
             throw new NotImplementedException("IntersectForm.OnSelectLine - not implemented by derived class");
         }
+
+        internal void AdvanceToNextPage()
+        {
+            throw new NotImplementedException("IntersectForm.AdvanceToNextPage");
+        }
     }
 }

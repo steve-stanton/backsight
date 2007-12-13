@@ -19,6 +19,7 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Operations;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -563,48 +564,56 @@ LOGICAL CdGetDir::IsPointValid ( void ) const {
         //
         /////////////////////////////////////////////////////////////////////////////
 
-        /*
+        /// <summary>
+        /// Set checkmark signifying a clockwise direction
+        /// </summary>
+        void OnClockwise()
+        {
+            m_IsClockwise = true;
+            m_Radians = Math.Abs(m_Radians);
+            clockwiseRadioButton.Checked = true;
+            //counterClockwiseRadioButton.Checked = false;
+            //OnNewDirection();
+            ErasePainting();
+        }
 
-void CdGetDir::OnClockwise ( void ) {
+        /// <summary>
+        /// Set checkmark signifying a counter-clockwise direction
+        /// </summary>
+        void OnCounterClockwise()
+        {
+            m_IsClockwise = false;
+            m_Radians = Math.Abs(m_Radians); // not < 0 ?
+            //clockwiseRadioButton.Checked = false;
+            counterClockwiseRadioButton.Checked = true;
+            //OnNewDirection();
+            ErasePainting();
+        }
 
-	m_IsClockwise = TRUE;
-	m_Radians = fabs(m_Radians);
-	CheckDlgButton(IDC_CLOCKWISE,1);
-	CheckDlgButton(IDC_COUNTER_CLOCKWISE,0);
-	OnNewDirection();
-}
+        /// <summary>
+        /// Set checkmark signifying an offset to the left of the entered direction.
+        /// </summary>
+        void OnLeft()
+        {
+            m_IsRight = false;
+            leftRadioButton.Checked = true;
+            //rightRadioButton.Checked = false;
+            //OnNewDirection();
+            ErasePainting();
+        }
 
-void CdGetDir::OnCounterClockwise ( void ) {
+        /// <summary>
+        /// Set checkmark signifying an offset to the right of the entered direction.
+        /// </summary>
+        void OnRight()
+        {
+            m_IsRight = true;
+            //leftRadioButton.Checked = false;
+            rightRadioButton.Checked = true;
+            //OnNewDirection();
+            ErasePainting();
+        }
 
-	m_IsClockwise = FALSE;
-	m_Radians = fabs(m_Radians);
-	CheckDlgButton(IDC_CLOCKWISE,0);
-	CheckDlgButton(IDC_COUNTER_CLOCKWISE,1);
-	OnNewDirection();
-}
-         */
-
-        /*
-// Offset to the left
-
-void CdGetDir::OnLeft ( void ) {
-
-	m_IsRight = FALSE;
-	CheckDlgButton(IDC_LEFT,1);
-	CheckDlgButton(IDC_RIGHT,0);
-	OnNewDirection();
-}
-
-// Offset to the right
-
-void CdGetDir::OnRight ( void ) {
-
-	m_IsRight = TRUE;
-	CheckDlgButton(IDC_LEFT,0);
-	CheckDlgButton(IDC_RIGHT,1);
-	OnNewDirection();
-}
-         */
         /////////////////////////////////////////////////////////////////////////////
         //
         //	The OnChange functions that follow are executed whenever
@@ -619,165 +628,143 @@ void CdGetDir::OnRight ( void ) {
         //
         /////////////////////////////////////////////////////////////////////////////
 
-        /*
-void CdGetDir::OnChangeBacksight ( void ) {
+        private void backsightTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // If field is now empty, ensure that backsight is undefined,
+            // and see if this impacts any displayed direction.
 
-//	If field is now empty, ensure that backsight is undefined,
-//	and see if this impacts any displayed direction.
+            if (backsightTextBox.Text.Trim().Length==0)
+            {
+                m_Backsight = null;
+                ErasePainting();
+            }
+            else if (m_Backsight==null)
+            {
+                MessageBox.Show("You can only specify the backsight by pointing at the map.");
+            }
+        }
 
-	if ( IsFieldEmpty(IDC_BACKSIGHT) ) {
-		SetNormalColour(m_pBacksight);
-		m_pBacksight = 0;
-		OnNewDirection();
-	}
-	else if ( !m_pBacksight )
-		AfxMessageBox
-		( "You can only specify the backsight by pointing at the map." );
-	
-} // end of OnChangeBacksight
-         */
+        private void fromPointTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // If the field is now empty, ensure that the from point is undefined.
+            if (fromPointTextBox.Text.Trim().Length==0)
+            {
+                m_From = null;
+                GetCircles();
+                backsightTextBox.Enabled = true;
+                ErasePainting();
+            }
+            else if (m_From==null)
+            {
+                MessageBox.Show("You can only specify the from-point by pointing at the map.");
+            }
+        }
 
-        /*
-void CdGetDir::OnChangeFromPoint ( void ) {
+        private void directionTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (directionTextBox.Text.Trim().Length==0)
+            {
+                // If we already had direction info, reset it.
+                m_Par1 = m_Par2 = null;
+                m_Radians = 0.0;
+                m_IsClockwise = true;
+                m_IsDeflection = false;
+                ErasePainting();
 
-//	If the field is now empty, ensure that the from point
-//	is undefined.
+                // Field is empty, so revert to defaults.
+                TurnRadioOff(clockwiseRadioButton);
+                TurnRadioOff(counterClockwiseRadioButton);
+            }
+            else
+            {
+                // The direction could have been specified by the
+                // user, or it could have been set as the result of
+                // a pointing operation. In the latter case, m_Par1
+                // will be defined.
 
-	if ( IsFieldEmpty(IDC_FROMPOINT) ) {
-		SetNormalColour(m_pFrom);
-		m_pFrom = 0;
-		GetCircles();
-		GetDlgItem(IDC_BACKSIGHT)->EnableWindow(TRUE);
-		OnNewDirection();
-	}
-	else if ( !m_pFrom )
-		AfxMessageBox
-		( "You can only specify the from-point by pointing at the map." );
+                if (m_Par1!=null)
+                {
+                    TurnRadioOff(clockwiseRadioButton);
+                    TurnRadioOff(counterClockwiseRadioButton);
+                }
+                else
+                {
+                    // Explicitly entered by the user.
 
-} // end of OnChangeFromPoint
-         */
+                    // Enable ability to specify clockwise/counter-clockwise.
+                    clockwiseRadioButton.Enabled = counterClockwiseRadioButton.Enabled = true;
 
-        /*
-void CdGetDir::OnChangeDirection ( void ) {
+                    // Parse the direction.
+                    ParseDirection();
+                }
+            }
+        }
 
-	if ( IsFieldEmpty(IDC_DIRECTION) ) {
+        private void offsetTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (offsetTextBox.Text.Trim().Length==0)
+            {
+                // Erase any previously defined offset info.
+                m_OffsetPoint = null;
+                m_OffsetDistance = null;
+                ErasePainting();
 
-//		If we already had direction info, reset it.
-		SetNormalColour(m_pPar1);
-		SetNormalColour(m_pPar2);
-		m_pPar1 = 0;
-		m_pPar2 = 0;
-		m_Radians = 0.0;
-		m_IsClockwise = TRUE;
-		m_IsDeflection = FALSE;
-		OnNewDirection();
+                // Go back to default settings.
+                TurnRadioOff(leftRadioButton);
+                TurnRadioOff(rightRadioButton);
+                lineTypeComboBox.Enabled = true;
+            }
+            else
+            {
+                // If the method used to define the offset was by
+                // pointing at the map, enable line type, and set
+                // the other radio buttons accordingly.
+                if (m_OffsetPoint!=null)
+                {
+                    TurnRadioOff(leftRadioButton);
+                    TurnRadioOff(rightRadioButton);
+                    lineTypeComboBox.Enabled = true;
+                    setDefaultOffsetButton.Enabled = false;
+                }
+                else // Offset specified by entered distance.
+                {
+                    leftRadioButton.Enabled = rightRadioButton.Enabled = true;
+                    lineTypeComboBox.Enabled = false;
+                    m_LineType = null;
 
-//		Field is empty, so revert to defaults.
-		TurnRadioOff(IDC_CLOCKWISE);
-		TurnRadioOff(IDC_COUNTER_CLOCKWISE);
+                    // Parse the distance.
+                    OnOffsetDistance();
+                }
+            }
 
-	}
-	else {
+            setDefaultOffsetButton.Enabled = CanSetDefaultOffset();
+        }
 
-//		The direction could have been specified by the
-//		user, or it could have been set as the result of
-//		a pointing operation. In the latter case, m_pPar1
-//		will be defined.
+        bool CanSetDefaultOffset()
+        {
+            if (m_OffsetPoint!=null)
+                return false;
 
-		if ( m_pPar1 ) {
-			TurnRadioOff(IDC_CLOCKWISE);
-			TurnRadioOff(IDC_COUNTER_CLOCKWISE);
-		}
-		else {
+            if (m_DefaultOffset==null)
+                return true;
 
-//			Explicitly entered by the user.
+            Distance soff = new Distance(m_OffsetDistance);
+            if (!m_IsRight)
+                soff.SetNegative();
 
-//			Enable ability to specify clockwise/counter-clockwise.
-			TurnOn(IDC_CLOCKWISE);
-			TurnOn(IDC_COUNTER_CLOCKWISE);
+            return !soff.Equals(m_DefaultOffset);
+        }
 
-//			Parse the direction.
-			ParseDirection();
-		}
+        private void lineTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            // Get the new selection (if any)
+            m_LineType = (IEntity)lineTypeComboBox.SelectedItem;
 
-	}
-
-} // end of OnChangeDirection
-         */
-
-        /*
-void CdGetDir::OnChangeOffset ( void ) {
-
-	if ( IsFieldEmpty(IDC_OFFSET) ) {
-
-//		Erase any previously defined offset info.
-		SetNormalColour(m_pOffset);
-		m_pOffset = 0;
-		m_Offset = CeDistance();
-		OnNewDirection();
-
-//		Go back to default settings.
-		TurnRadioOff(IDC_LEFT);
-		TurnRadioOff(IDC_RIGHT);
-		TurnOn(IDC_LINE_TYPE);
-	}
-	else {
-
-//		If the method used to define the offset was by
-//		pointing at the map, enable line type, and set
-//		the other radio buttons accordingly.
-
-		if ( m_pOffset ) {
-			TurnRadioOff(IDC_LEFT);
-			TurnRadioOff(IDC_RIGHT);
-			TurnOn(IDC_LINE_TYPE);
-			TurnOff(IDC_SET_DEFAULT_OFFSET);
-		}
-		else { // Offset specified by entered distance.
-
-			TurnOn(IDC_LEFT);
-			TurnOn(IDC_RIGHT);
-			TurnComboOff(IDC_LINE_TYPE);
-			m_pLineType = 0;
-
-//			Parse the distance.
-			OnOffsetDistance();
-		}
-	}
-
-	if ( CanSetDefaultOffset() )
-		TurnOn(IDC_SET_DEFAULT_OFFSET);
-	else
-		TurnOff(IDC_SET_DEFAULT_OFFSET);
-
-} // end of OnChangeOffset
-         */
-
-        /*
-LOGICAL CdGetDir::CanSetDefaultOffset ( void ) const
-{
-	if ( m_pOffset ) return FALSE;
-
-	CeDistance soff(m_Offset);
-	if ( !m_IsRight ) soff.SetNegative();
-	return (soff != m_DefaultOffset);
-}
-         */
-
-        /*
-void CdGetDir::OnSelChangeLineType ( void ) {
-
-//	Get the new selection (if any)
-	m_pLineType = ReadEntityCombo(IDC_LINE_TYPE);
-
-//	If we have a direction, move directly to the next page.
-	if ( m_pDir ) {
-		CdDialog* pDial = (CdDialog*)GetParent();
-		pDial->PressButton(PSBTN_NEXT);
-	}
-
-} // end of OnSelChangeLineType
-         */
+            // If we have a direction, move directly to the next page.
+            IntersectForm dial = (this.ParentForm as IntersectForm);
+            if (m_Dir!=null && dial!=null)
+                dial.AdvanceToNextPage();
+        }
 
         /*
 void CdGetDir::OnKillfocusDirection ( void ) {
@@ -1077,485 +1064,379 @@ void CdGetDir::OnDrawAll ( const LOGICAL draw ) const {
 } // end of OnDraw
          */
 
-        /*
-//	@mfunc Parse an explicitly entered offset distance.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-LOGICAL CdGetDir::OnOffsetDistance ( void ) {
-
-//	Null out the current offset.
-	m_Offset = CeDistance();
-
-//	Get the entered string.
-	CHARS str[32];
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_OFFSET);
-	UINT4 nc = pEdit->GetWindowText(str,sizeof(str)-1);
-	if ( nc==0 ) return FALSE;
-
-//	Ignore any trailing white space.
-	UINT4 slen = StrLength(str);
-	str[slen] = '\0';
-
-//	If all we have is a "-", disable the ability to specify
-//	offset right & return.
-	if ( str[0]=='-' ) {
-		TurnRadioOff(IDC_RIGHT);
-		CheckDlgButton(IDC_LEFT,1);
-		if ( slen==1 ) return FALSE;
-	}
-
-//	Parse the distance.
-	CeDistance dist(str);
-
-//	Convert the entered offset to a float.
-//	CHARS* end;
-//	FLOAT8 dval = strtod(str,&end);
-
-//	The character that stopped the scan should have been the trailing null.
-//	if ( *end ) {
-	if ( !dist.IsDefined() ) {
-		AfxMessageBox ( "Offset distance contains extraneous characters." );
-		return FALSE;
-	}
-
-//	Save the entered distance (in the current document units if
-//	units were not specified). Make it a fixed distance.
-
-	m_Offset = dist;
-	m_Offset.SetFixed();
-
-//	If we have signed offset, it HAS to be an offset to the
-//	left. Otherwise make sure we preserve the directional sense.
-//	which may have been previously defined.
-
-	if ( m_Offset.SetPositive() )	// i.e. the offset had to be
-		m_IsRight = FALSE;			// made positive => offset left
-	else
-		m_IsRight = TRUE;
-
-//	If the offset is signed, make it an offset left and
-//	disable the ability to make it an offset right.
-
-	if ( m_IsRight )
-		OnRight();
-	else
-		OnLeft();
-	
-	return TRUE;
-
-} // end of OnOffsetDistance
-         */
-
-        /*
-//	@mfunc Parse an explicitly entered direction.
-//
-//	@rdesc TRUE if direction parses ok.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-LOGICAL CdGetDir::ParseDirection ( void ) {
-			
-	// Get the entered string.
-	CString dirstr;
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_DIRECTION);
-	pEdit->GetWindowText(dirstr);
-
-	// Ignore any trailing white space.
-	dirstr.TrimLeft();
-	dirstr.TrimRight();
-
-//	If all we have is a "-", disable the ability to specify
-//	clockwise direction & return.
-	if ( dirstr[0]=='-' ) {
-		TurnRadioOff(IDC_CLOCKWISE);
-		CheckDlgButton(IDC_COUNTER_CLOCKWISE,1);
-		if ( dirstr.GetLength()==1 ) return FALSE;
-	}
-
-	// If the entered angle contains a "d" (anywhere), treat it
-	// as a deflection (and strip it out).
-	dirstr.MakeUpper();
-	INT4 dindex = dirstr.Find('D');
-	if ( dindex>=0 ) {
-		CString temp(dirstr);
-		dirstr = temp.Left(dindex) + temp.Mid(dindex+1);
-		m_IsDeflection = TRUE;
-	}
-	else
-		m_IsDeflection = FALSE;
-
-//	Validate entered angle.
-	FLOAT8 srad=0.0;
-	if ( !dirstr.IsEmpty() ) {
-		if ( !StrRad(srad,(LPCTSTR)dirstr) ) {
-			AfxMessageBox ( "Invalid angle." );
-			pEdit->SetFocus();
-			return FALSE;
-		}
-	}
-
-//	If we have signed radians, it HAS to be a counter-clockwise
-//	angle. Otherwise make sure we preserve the directional sense.
-//	which may have been previously defined.
-	if ( srad<0.0 ) m_IsClockwise = FALSE;
-	m_Radians = fabs(srad);
-
-//	The radian value should ALWAYS be > 0.0. These calls
-//	will fix the sign & go on to call OnNewDirection.
-
-	if ( m_IsClockwise )
-		OnClockwise();
-	else
-		OnCounterClockwise();
-
-	return TRUE;
-
-} // end of ParseDirection
-         */
-
-        /*
-//	@mfunc	Initialize dialog for an update.
-//
-//	@parm	The direction number (1 or 2). A value of 2 is only
-//			valid for CdIntersectDir parents.
-//
-//	@rdesc	TRUE if update (or recalled command) was shown.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-#include "CeIntersectDirLine.h"
-
-LOGICAL CdGetDir::ShowUpdate ( const UINT1 dir ) {
-
-//	Return if no update feature (and no recall op).
-	const CeIntersect* pop = GetUpdateOp();
-	if ( pop==0 ) pop = GetRecall();
-	if ( !pop ) return FALSE;
-
-//	Ensure that there is no direction line. If you don't do
-//	this, it is possible that when we select a string in the
-//	entity combo, we'll move directly to the next page of the
-//	dialog (see <mf CdGetDir::OnSelChangeLineType>).
-	delete m_pDir;
-	m_pDir = 0;
-
-//	Populate the dialog, depending on what sort of operation
-//	we have.
-
-	switch ( pop->GetType() ) {
-
-	case CEOP_DIR_INTERSECT: {
-
-		const CeIntersectDir* pOper = dynamic_cast<const CeIntersectDir*>(pop);
-
-		if ( dir==1 )
-			this->Show( pOper->GetpDir1(), pOper->GetpArc1() );
-		else
-			this->Show( pOper->GetpDir2(), pOper->GetpArc2() );
-
-		break;
-	}
-
-	case CEOP_DIRDIST_INTERSECT: {
-
-		const CeIntersectDirDist* pOper = dynamic_cast<const CeIntersectDirDist*>(pop);
-		this->Show( pOper->GetpDir(), pOper->GetpDirArc() );
-		break;
-	}
-
-	case CEOP_DIRLINE_INTERSECT: {
-
-		const CeIntersectDirLine* pOper = dynamic_cast<const CeIntersectDirLine*>(pop);
-		this->Show( pOper->GetpDir(), pOper->GetpDirArc() );
-		break;
-	}
-
-	default:
-
-		AfxMessageBox("CdGetDir::ShowUpdate\nUnexpected editing operation");
-		break;
-
-	} // end switch
-
-//	Ensure everything is drawn ok.
-	this->OnDrawAll();
-	return TRUE;
-
-} // end of ShowUpdate
-         */
-
-        /*
-//	@mfunc	Display info for a specific direction & arc.
-//
-//	@parm	The direction to show.
-//	@parm	The arc to show (0 if no arc).
-//
-/////////////////////////////////////////////////////////////////////////////
-
-#include "CeArc.h"
-
-void CdGetDir::Show ( const CeDirection* const pDir
-					, const CeArc* const pArc ) {
-
-//	If we have an arc, define its entity type and scroll the
-//	entity combo box to that type. Note that when the string
-//	is selected, it is important that m_pDir is null; otherwise
-//	<mf CdGetDir::OnSelChangeLineType> may automatically move
-//	on to the next page of the wizard dialog.
-
-	if ( pArc ) {
-		m_pLineType = pArc->GetpEntity();
-		if ( m_pLineType ) {
-			CComboBox* pBox = (CComboBox*)GetDlgItem(IDC_LINE_TYPE);
-			pBox->SelectString(-1,m_pLineType->GetpName());
-		}
-	}
-	else {
-		CComboBox* pBox = (CComboBox*)GetDlgItem(IDC_LINE_TYPE);
-		pBox->SelectString(-1,"<none>");
-		m_pLineType = 0;
-	}
-
-//	Define the from-point of the direction.
-	m_pFrom = (CePoint*)pDir->GetpFrom();
-	ShowKey(IDC_FROMPOINT,m_pFrom);
-
-	// Ensure we've got any circle info.
-	GetCircles();
-
-//	Does the direction have an offset?
-	const CeOffset* const pOffset = pDir->GetpOffset();
-	if ( pOffset ) this->ShowOffset(pDir);
-
-//	The rest depends on what sort of direction we have.
-	switch ( pDir->GetType() ) {
-
-	case DIR_BEARING: {
-		this->ShowBearing(pDir);
-		break;
-	}
-
-	case DIR_ANGLE: {
-		this->ShowAngle(pDir);
-		break;
-	}
-
-	case DIR_PARALLEL: {
-		this->ShowParallel(pDir);
-		break;
-	}
-
-	case DIR_DEFLECTION: {
-
-		this->ShowAngle(pDir);	// same as angle
-		break;
-	}
-
-	default:
-
-		AfxMessageBox("CdGetDir::Show\nCannot display direction info.");
-		break;
-
-	} // end switch
-
-} // end of Show
-         */
-
-        /*
-//	@mfunc	Display info for a direction angle.
-//
-//	@parm	The direction to show.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::ShowAngle ( const CeDirection* const pDir ) {
-
-	const CeAngle* const pAngle =
-		dynamic_cast<const CeAngle* const>(pDir);
-	if ( !pAngle ) return;
-
-//	There should be no parallel points.
-	m_pPar1 = 0;
-	m_pPar2 = 0;
-
-//	Get the backsight
-	m_pBacksight = (CePoint*)pAngle->GetpBacksight();
-	ShowKey(IDC_BACKSIGHT,m_pBacksight);
-
-//	Define the observed angle.
-	m_Radians = pAngle->GetObservation();
-	m_IsClockwise = (m_Radians>=0.0);
-	m_Radians = fabs(m_Radians);
-
-	CString dirstr = RadStrDms(m_Radians);
-	if ( pAngle->GetType() == DIR_DEFLECTION ) dirstr += "d";
-	GetDlgItem(IDC_DIRECTION)->SetWindowText(dirstr);
-
-//	Indicate whether it's clockwise or otherwise.
-
-	TurnRadioOn(IDC_CLOCKWISE);
-	TurnRadioOn(IDC_COUNTER_CLOCKWISE);
-
-	if ( m_IsClockwise ) {
-		CheckDlgButton(IDC_CLOCKWISE,1);
-		CheckDlgButton(IDC_COUNTER_CLOCKWISE,0);
-	}
-	else {
-		CheckDlgButton(IDC_CLOCKWISE,0);
-		CheckDlgButton(IDC_COUNTER_CLOCKWISE,1);
-	}
-
-} // end of ShowAngle
-         */
-
-        /*
-//	@mfunc	Display info for a direction bearing.
-//
-//	@parm	The direction to show.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::ShowBearing ( const CeDirection* const pDir ) {
-
-	const CeBearing* const pBearing =
-		dynamic_cast<const CeBearing* const>(pDir);
-	if ( !pBearing ) return;
-
-//	There should be nothing in the backsight field.
-	m_pBacksight = 0;
-	m_pPar1 = 0;
-	m_pPar2 = 0;
-
-//	Define the bearing.
-
-	m_Radians = pBearing->GetBearing();
-	GetDlgItem(IDC_DIRECTION)->SetWindowText(RadStrDms(m_Radians));
-
-//	Always comes back clockwise.
-
-	m_IsClockwise = TRUE;
-
-	TurnRadioOn(IDC_CLOCKWISE);
-	TurnRadioOn(IDC_COUNTER_CLOCKWISE);
-
-	CheckDlgButton(IDC_CLOCKWISE,1);
-	CheckDlgButton(IDC_COUNTER_CLOCKWISE,0);
-
-} // end of ShowBearing
-         */
-
-        /*
-//	@mfunc	Display info for a direction defined as parallel to
-//			2 other points.
-//
-//	@parm	The direction to show.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::ShowParallel ( const CeDirection* const pDir ) {
-
-	const CeParallel* const pPar =
-		dynamic_cast<const CeParallel* const>(pDir);
-	if ( !pPar ) return;
-
-//	Pick up the points that define the parallel.
-	m_pPar1 = pPar->GetpStart();
-	m_pPar2 = pPar->GetpEnd();
-
-//	Display the IDs of the 2 points.
-	CHARS str[132];
-	sprintf ( str, "%d->", m_pPar1->FormatKey() );
-	strcat ( str, m_pPar2->FormatKey() );
-	GetDlgItem(IDC_DIRECTION)->SetWindowText(str);
-
-//	Disallow the ability to say whether the direction is clockwise
-//	or otherwise.
-
-	CheckDlgButton(IDC_CLOCKWISE,0);
-	CheckDlgButton(IDC_COUNTER_CLOCKWISE,0);
-	TurnRadioOff(IDC_CLOCKWISE);
-	TurnRadioOff(IDC_COUNTER_CLOCKWISE);
-
-//	The angle value should be undefined.
-	m_Radians = 0.0;
-	m_IsClockwise = TRUE;
-
-} // end of ShowParallel
-         */
-
-        /*
-//	@mfunc	Display any offset info for a direction.
-//
-//	@parm	The direction that may have an offset.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::ShowOffset ( const CeDirection* const pDir ) {
-
-//	Initialize offset-related data members.
-	m_IsRight = TRUE;
-	m_Offset = CeDistance();
-	m_pOffset = 0;
-
-//	Return if there is no offset.
-	const CeOffset* const pOffset = pDir->GetpOffset();
-	if ( !pOffset ) return;
-
-
-//	It could be one of 2 types of offset.
-
-	const CeOffsetDistance* const pDist =
-		dynamic_cast<const CeOffsetDistance* const>(pOffset);
-
-	if ( pDist ) {
-
-//		Display the offset distance, in the current data entry units.
-//		Setting the window text will end up calling OnChangeOffset,
-//		which calls OnOffsetDistance, where it will be deduced that
-//		we have an offset to the right. This may or may not be correct.
-
-		m_Offset = pDist->GetOffset();
-		const CeDistanceUnit& entry = CeMap::GetpMap()->GetEntryUnit();
-		GetDlgItem(IDC_OFFSET)->SetWindowText(m_Offset.Format(entry));
-
-//		Override whatever we got above.
-
-		m_IsRight = pDist->IsRight();
-
-		if ( m_IsRight )
-			OnRight();
-		else
-			OnLeft();
-	}
-	else {
-
-//		It SHOULD be an offset point.
-
-		const CeOffsetPoint* const pPoint =
-			dynamic_cast<const CeOffsetPoint* const>(pOffset);
-
-		if ( pPoint ) {
-
-//			Display the ID of the offset point.
-
-			m_pOffset = pPoint->GetpPoint();
-			ShowKey(IDC_OFFSET,m_pOffset);
-
-//			Disable the radio buttons to allow specification to
-//			the right or the left.
-			TurnRadioOff(IDC_LEFT);
-			TurnRadioOff(IDC_RIGHT);
-
-		}
-		else {
-			AfxMessageBox("CdGetDir::ShowOffset\nUnexpected type of offset.");
-			return;
-		}
-	}
-
-} // end of ShowOffset
-         */
+        /// <summary>
+        /// Parses an explicitly entered offset distance. 
+        /// </summary>
+        /// <returns></returns>
+        bool OnOffsetDistance()
+        {
+            // Null out the current offset.
+            m_OffsetDistance = null;
+
+            // Get the entered string.
+            string str = offsetTextBox.Text.Trim();
+            if (str.Length==0)
+                return false;
+
+            // If all we have is a "-", disable the ability to specify
+            // offset right & return.
+            if (str[0] == '-')
+            {
+                TurnRadioOff(rightRadioButton);
+                leftRadioButton.Checked = true;
+                if (str.Length==1)
+                    return false;
+            }
+
+            // Parse the distance.
+            Distance dist = new Distance(str);
+            if (!dist.IsDefined)
+            {
+                MessageBox.Show("Offset distance contains extraneous characters.");
+                return false;
+            }
+
+            // Save the entered distance (in the current data entry units if
+            // units were not specified). Make it a fixed distance.
+            m_OffsetDistance = dist;
+            m_OffsetDistance.SetFixed();
+
+            // If we have signed offset, it HAS to be an offset to the
+            // left. Otherwise make sure we preserve the directional sense.
+            // which may have been previously defined.
+            if (m_OffsetDistance.SetPositive()) // i.e. the offset had to be
+                m_IsRight = false;              // made positive => offset left
+            else
+                m_IsRight = true;
+
+            // If the offset is signed, make it an offset left and
+            // disable the ability to make it an offset right.
+            if (m_IsRight)
+                OnRight();
+            else
+                OnLeft();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Parses an explicitly entered direction. 
+        /// </summary>
+        /// <returns>True if direction parses ok.</returns>
+        bool ParseDirection()
+        {
+            // Get the entered string.
+            string dirstr = directionTextBox.Text.Trim();
+
+            // If all we have is a "-", disable the ability to specify
+            // clockwise direction & return.
+            if (dirstr.Length>0 && dirstr[0]=='-')
+            {
+                TurnRadioOff(clockwiseRadioButton);
+                counterClockwiseRadioButton.Checked = true;
+                if (dirstr.Length==1)
+                    return false;
+            }
+
+            // If the entered angle contains a "d" (anywhere), treat it
+            // as a deflection (and strip it out).
+            dirstr = dirstr.ToUpper();
+            int dindex = dirstr.IndexOf('D');
+            if (dindex>=0)
+            {
+                dirstr = dirstr.Remove(dindex, 1);
+                m_IsDeflection = true;
+            }
+            else
+                m_IsDeflection = false;
+
+            // Validate entered angle.
+            double srad = 0.0;
+            if (dirstr.Length > 0)
+            {
+                if (!RadianValue.TryParse(dirstr, out srad))
+                {
+                    MessageBox.Show("Invalid angle.");
+                    directionTextBox.Focus();
+                    return false;
+                }
+            }
+
+            // If we have signed radians, it HAS to be a counter-clockwise
+            // angle. Otherwise make sure we preserve the directional sense.
+            // which may have been previously defined.
+            if (srad<0.0)
+                m_IsClockwise = false;
+
+            m_Radians = Math.Abs(srad);
+
+            // The radian value should ALWAYS be > 0.0. These calls
+            // will fix the sign & go on to call OnNewDirection.
+
+            if (m_IsClockwise)
+                OnClockwise();
+            else
+                OnCounterClockwise();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Initializes dialog for an update.
+        /// </summary>
+        /// <param name="op">The edit that is being updated or recalled</param>
+        /// <param name="dir">The direction number (1 or 2). A value of 2 is only
+        /// valid when dealing with the <see cref="IntersectTwoDirectionsForm"/> dialog.</param>
+        /// <returns>True if update (or recalled command) was shown.</returns>
+        bool ShowUpdate(IntersectOperation op, byte dir)
+        {
+            /*
+    //	Return if no update feature (and no recall op).
+        const CeIntersect* pop = GetUpdateOp();
+        if ( pop==0 ) pop = GetRecall();
+        if ( !pop ) return FALSE;
+             */
+
+            if (op==null)
+                return false;
+
+            // Ensure that there is no direction line. If you don't do
+            // this, it is possible that when we select a string in the
+            // entity combo, we'll move directly to the next page of the
+            // dialog (see <mf CdGetDir::OnSelChangeLineType>).
+            m_Dir = null;
+
+            // Populate the dialog, depending on what sort of operation we have.
+            if (op.EditId == EditingActionId.DirIntersect)
+            {
+                Debug.Assert(dir==1 || dir==2);
+                IntersectTwoDirectionsOperation oper = (IntersectTwoDirectionsOperation)op;
+
+                if (dir==1)
+                    Show(oper.Direction1, oper.CreatedLine1);
+                else
+                    Show(oper.Direction2, oper.CreatedLine2);
+            }
+            else if (op.EditId == EditingActionId.DirDistIntersect)
+            {
+                IntersectDirectionAndDistanceOperation oper = (IntersectDirectionAndDistanceOperation)op;
+                Show(oper.Direction, oper.CreatedDirectionLine);
+            }
+            else if (op.EditId == EditingActionId.DirLineIntersect)
+            {
+                throw new NotImplementedException("GetDirectionControl.Show");
+                //IntersectDirectionAndLineOperation oper = (IntersectDirectionAndLineOperation)op;
+                //Show(oper.Direction, oper.CreatedDirectionLine);
+            }
+            else
+            {
+                MessageBox.Show("GetDirectionControl.ShowUpdate - Unexpected editing operation");
+            }
+
+            // Ensure everything is drawn ok.
+            // this->OnDrawAll();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Displays info for a specific direction and line.
+        /// </summary>
+        /// <param name="dir">The direction to show.</param>
+        /// <param name="line">The line to show (null if there is no line).</param>
+        void Show(Direction dir, LineFeature line)
+        {
+            // If we have a line, define its entity type and scroll the
+            // entity combo box to that type. Note that when the string
+            // is selected, it is important that m_Dir is null; otherwise
+            // <mf CdGetDir::OnSelChangeLineType> may automatically move
+            // on to the next page of the wizard dialog.
+
+            m_LineType = (line==null ? null : line.EntityType);
+            lineTypeComboBox.SelectEntity(m_LineType);
+
+            // Define the from-point of the direction.
+            m_From = dir.From;
+            ShowKey(fromPointTextBox, m_From);
+
+            // Ensure we've got any circle info.
+            GetCircles();
+
+            // Does the direction have an offset?
+	        Offset offset = dir.Offset;
+	        if (offset!=null)
+                ShowOffset(dir);
+
+            // The rest depends on what sort of direction we have.
+            if (dir.DirectionType == DirectionType.Bearing)
+                ShowBearing(dir);
+            else if (dir.DirectionType == DirectionType.Angle) // Deflection too
+                ShowAngle(dir);
+            else if (dir.DirectionType == DirectionType.Parallel)
+                ShowParallel(dir);
+            else
+                MessageBox.Show("GetDirectionControl.Show - Cannot display direction info.");
+
+        }
+
+        /// <summary>
+        /// Displays info for a direction angle.
+        /// </summary>
+        /// <param name="dir">The direction to show.</param>
+        void ShowAngle(Direction dir)
+        {
+            AngleDirection angle = (dir as AngleDirection);
+            if (angle==null)
+                return;
+
+            // There should be no parallel points.
+            m_Par1 = m_Par2 = null;
+
+            // Get the backsight
+            m_Backsight = angle.Backsight;
+            ShowKey(backsightTextBox, m_Backsight);
+
+            // Define the observed angle.
+            m_Radians = angle.Observation.Radians;
+            m_IsClockwise = (m_Radians>=0.0);
+            m_Radians = Math.Abs(m_Radians);
+
+            string dirstr = RadianValue.AsString(m_Radians);
+            if (angle is DeflectionDirection)
+                dirstr += "d";
+            directionTextBox.Text = dirstr;
+
+            // Indicate whether it's clockwise or otherwise.
+            clockwiseRadioButton.Enabled = counterClockwiseRadioButton.Enabled = true;
+
+            if (m_IsClockwise)
+            {
+                clockwiseRadioButton.Checked = true;
+                //counterClockwiseRadioButton.Checked = false;
+            }
+            else
+            {
+                //clockwiseRadioButton.Checked = false;
+                counterClockwiseRadioButton.Checked = true;
+            }
+        }
+
+        /// <summary>
+        /// Displays info for a direction bearing.
+        /// </summary>
+        /// <param name="dir">The direction to show.</param>
+        void ShowBearing(Direction dir)
+        {
+            BearingDirection bearing = (dir as BearingDirection);
+            if (bearing==null)
+                return;
+
+            // There should be nothing in the backsight field.
+            m_Backsight = m_Par1 = m_Par2 = null;
+
+            // Define the bearing.
+            m_Radians = bearing.Bearing.Radians;
+            directionTextBox.Text = RadianValue.AsString(m_Radians);
+
+            // Always comes back clockwise.
+            m_IsClockwise = true;
+            clockwiseRadioButton.Enabled = counterClockwiseRadioButton.Enabled = true;
+            counterClockwiseRadioButton.Checked = false;
+            clockwiseRadioButton.Checked = true;
+        }
+
+        /// <summary>
+        /// Displays info for a direction defined as parallel to 2 other points.
+        /// </summary>
+        /// <param name="dir">The direction to show.</param>
+        void ShowParallel(Direction dir)
+        {
+            ParallelDirection par = (dir as ParallelDirection);
+            if (par==null)
+                return;
+
+            // Pick up the points that define the parallel.
+            m_Par1 = par.Start;
+            m_Par2 = par.End;
+
+            // Display the IDs of the 2 points.
+            directionTextBox.Text = String.Format("{0}->{1}", m_Par1.FormattedKey, m_Par2.FormattedKey);
+
+            // Disallow the ability to say whether the direction is clockwise or otherwise.
+            TurnRadioOff(clockwiseRadioButton);
+            TurnRadioOff(counterClockwiseRadioButton);
+
+            // The angle value should be undefined.
+            m_Radians = 0.0;
+            m_IsClockwise = true;
+        }
+
+        /// <summary>
+        /// Disables the specified button, and ensures it isn't checked.
+        /// </summary>
+        /// <param name="rb">The radio button to disable and uncheck.</param>
+        void TurnRadioOff(RadioButton rb)
+        {
+            rb.Enabled = false;
+            rb.Checked = false;
+        }
+
+        /// <summary>
+        /// Displays any offset info for a direction.
+        /// </summary>
+        /// <param name="dir">The direction that may have an offset.</param>
+        void ShowOffset(Direction dir)
+        {
+            // Initialize offset-related data members.
+            m_IsRight = true;
+            m_OffsetDistance = null;
+            m_OffsetPoint = null;
+
+            // Return if there is no offset.
+            Offset offset = dir.Offset;
+	        if (offset==null)
+                return;
+
+            // It could be one of 2 types of offset.
+            if (offset is OffsetDistance)
+            {
+                OffsetDistance dist = (offset as OffsetDistance);
+
+                // Display the offset distance, in the current data entry units.
+                // Setting the window text will end up calling OnChangeOffset,
+                // which calls OnOffsetDistance, where it will be deduced that
+                // we have an offset to the right. This may or may not be correct.
+
+                m_OffsetDistance = dist.Offset;
+                DistanceUnit entry = CadastralMapModel.Current.EntryUnit;
+                offsetTextBox.Text = m_OffsetDistance.Format(entry, true);
+
+                // Override whatever we got above.
+                m_IsRight = dist.IsRight;
+
+                if (m_IsRight)
+                    OnRight();
+                else
+                    OnLeft();
+            }
+            else
+            {
+                // It SHOULD be an offset point.
+                OffsetPoint point = (offset as OffsetPoint);
+                if (point!=null)
+                {
+                    // Display the ID of the offset point.
+                    m_OffsetPoint = point.Point;
+                    ShowKey(offsetTextBox, m_OffsetPoint);
+
+                    // Disable (and turn off) the radio buttons to allow right or left specification.
+                    TurnRadioOff(leftRadioButton);
+                    TurnRadioOff(rightRadioButton);
+                }
+                else
+                    MessageBox.Show("GetDirectionControl.ShowOffset - Unexpected type of offset.");
+            }
+        }
 
         /*
 //	@mfunc	Handle activation of this dialog.
@@ -1637,7 +1518,7 @@ BOOL CdGetDir::OnSetActive ( void ) {
                 backsightTextBox.Enabled = false;
 
         		// Resume in the direction field.
-                angleTextBox.Focus();
+                directionTextBox.Focus();
             }
             else
             {
