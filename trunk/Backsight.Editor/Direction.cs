@@ -129,7 +129,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="other">The direction to compare with</param>
         /// <returns></returns>
-        bool IsEquivalent(Direction other)
+        internal bool IsEquivalent(Direction other)
         {
             // Check the simple fields.
             if (this.DirectionType != other.DirectionType || this.m_Flag != other.m_Flag)

@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Forms
 {
@@ -44,7 +45,6 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
             m_Cmd = null;
-            Debug.Assert(DesignMode);
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ public:
 	virtual void Select ( CePoint* pPoint ) const;
 	virtual	CeIntersect* GetUpdateOp ( void ) const;
 	virtual const CeIntersect* GetRecall ( void ) const;
-
-//	Pure virtuals
-
-	virtual void OnDraw ( const CePoint* const pPoint=0 ) const = 0;
-	virtual void OnSelectPoint ( CePoint* pPoint ) = 0;
-	virtual void OnSelectArc ( const CeArc* const pArc ) = 0;
          */
+
+        internal virtual void OnDraw(PointFeature point)
+        {
+            throw new NotImplementedException("IntersectForm.OnDraw - not implemented by derived class");
+        }
+
         /// <summary>
         /// Performs any processing on selection of a point feature.
         /// An implementation must be provided by derived classes, since this implementation
@@ -111,6 +111,15 @@ public:
         internal void AdvanceToNextPage()
         {
             throw new NotImplementedException("IntersectForm.AdvanceToNextPage");
+        }
+
+        internal IntersectOperation GetUpdateOp()
+        {
+            UpdateUI up = (m_Cmd as UpdateUI);
+            if (up==null)
+                return null;
+            else
+                return (up.GetOp() as IntersectOperation);
         }
     }
 }

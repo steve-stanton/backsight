@@ -27,7 +27,7 @@ namespace Backsight.Editor
         DataImport          =1,
         LineSubdivision     =2,
         Annotation          =3,     // not supported
-        LineIntersection    =4,
+        //LineIntersection    =4,
         Network             =5,     // not supported
         RadialStakeout      =6,
         Extension           =7,

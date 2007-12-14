@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The dialog for the command.
         /// </summary>
-        IIntersectDialog m_Dialog;
+        IntersectForm m_Dialog;
 
         #endregion
 
@@ -109,13 +109,10 @@ namespace Backsight.Editor
 
             if (edid == EditingActionId.DirIntersect)
             {
-                /*
                 if (pup==null)
-                    m_Dialog = new IntersectDirectionForm(this, "Intersect two directions");
+                    m_Dialog = new IntersectTwoDirectionsForm(this, "Intersect two directions");
                 else
-                    m_Dialog = new IntersectDirectionForm(pup, "Update (intersect two directions)");
-                 */
-
+                    m_Dialog = new IntersectTwoDirectionsForm(pup, "Update (intersect two directions)");
             }
             else if (edid == EditingActionId.DirDistIntersect)
             {
@@ -137,10 +134,12 @@ namespace Backsight.Editor
             }
             else if (edid == EditingActionId.DistIntersect)
             {
+                /*
                 if (pup==null)
                     m_Dialog = new IntersectTwoDistancesForm(this, "Intersect two distances");
                 else
                     m_Dialog = new IntersectTwoDistancesForm(this, "Update (intersect two distances)");
+                 */
             }
             else if (edid == EditingActionId.DirLineIntersect)
             {
@@ -156,8 +155,28 @@ namespace Backsight.Editor
                 throw new Exception("IntersectUI.Run - Unexpected command id.");
             }
 
-            (m_Dialog as Form).Show();
+            m_Dialog.Show();
             return true;
+        }
+
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return (m_Dialog!=null); }
+        }
+
+        /// <summary>
+        /// Does any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+        internal override void Paint(PointFeature point)
+        {
+            if (m_Dialog!=null)
+                m_Dialog.OnDraw(point);
         }
     }
 }
