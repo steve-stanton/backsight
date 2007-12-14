@@ -15,6 +15,13 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
         }
+
+        internal override void OnDraw(PointFeature point)
+        {
+            getDirection1.OnDrawAll();
+            getDirection2.OnDrawAll();
+        }
+
     }
 }
 

@@ -152,6 +152,8 @@ namespace Backsight.Editor.Forms
             this.directionTextBox.Name = "directionTextBox";
             this.directionTextBox.Size = new System.Drawing.Size(74, 22);
             this.directionTextBox.TabIndex = 2;
+            this.directionTextBox.Enter += new System.EventHandler(this.directionTextBox_Enter);
+            this.directionTextBox.Leave += new System.EventHandler(this.directionTextBox_Leave);
             this.directionTextBox.TextChanged += new System.EventHandler(this.directionTextBox_TextChanged);
             // 
             // label6
@@ -178,6 +180,8 @@ namespace Backsight.Editor.Forms
             this.backsightTextBox.Name = "backsightTextBox";
             this.backsightTextBox.Size = new System.Drawing.Size(74, 22);
             this.backsightTextBox.TabIndex = 1;
+            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
+            this.backsightTextBox.Leave += new System.EventHandler(this.backsightTextBox_Leave);
             this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
             // 
             // fromPointTextBox
@@ -186,6 +190,8 @@ namespace Backsight.Editor.Forms
             this.fromPointTextBox.Name = "fromPointTextBox";
             this.fromPointTextBox.Size = new System.Drawing.Size(74, 22);
             this.fromPointTextBox.TabIndex = 0;
+            this.fromPointTextBox.Enter += new System.EventHandler(this.fromPointTextBox_Enter);
+            this.fromPointTextBox.Leave += new System.EventHandler(this.fromPointTextBox_Leave);
             this.fromPointTextBox.TextChanged += new System.EventHandler(this.fromPointTextBox_TextChanged);
             // 
             // label2
@@ -257,6 +263,8 @@ namespace Backsight.Editor.Forms
             this.offsetTextBox.Name = "offsetTextBox";
             this.offsetTextBox.Size = new System.Drawing.Size(110, 22);
             this.offsetTextBox.TabIndex = 3;
+            this.offsetTextBox.Enter += new System.EventHandler(this.offsetTextBox_Enter);
+            this.offsetTextBox.Leave += new System.EventHandler(this.offsetTextBox_Leave);
             this.offsetTextBox.TextChanged += new System.EventHandler(this.offsetTextBox_TextChanged);
             // 
             // GetDirectionControl
@@ -268,7 +276,6 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.directionGroupBox);
             this.Name = "GetDirectionControl";
             this.Size = new System.Drawing.Size(752, 191);
-            this.Load += new System.EventHandler(this.GetDirectionControl_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.directionGroupBox.ResumeLayout(false);

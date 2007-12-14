@@ -16,10 +16,11 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Editor.Operations;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -30,6 +31,15 @@ namespace Backsight.Editor.Forms
     /// </summary>
     partial class GetDirectionControl : UserControl
     {
+        #region Constants
+
+        /// <summary>
+        /// Registry key for default offset value
+        /// </summary>
+        const string DEFAULT_OFFSET_KEY = "DirectionOffset";
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -117,7 +127,10 @@ namespace Backsight.Editor.Forms
         /// </summary>
         bool m_WantCentre;
 
-    	//UINT m_Focus;		// The field that last had the focus.
+        /// <summary>
+        /// The field that last had the focus.
+        /// </summary>
+        Control m_Focus;
 
         #endregion
 
@@ -145,34 +158,19 @@ namespace Backsight.Editor.Forms
             m_Dir = null;
             m_Circles = new List<Circle>();
             m_WantCentre = false;
-            //m_Focus = 0;
+            m_Focus = null;
         }
 
         #endregion
 
-        /*
-private:
-
-	virtual LOGICAL		IsPointValid	( void ) const;
-	virtual void		OnNewDirection	( void );
-	virtual LOGICAL		OnOffsetDistance ( void );
-	virtual void		SetNormalColour ( const CePoint* const pPoint ) const;
-	virtual void		SetColour		( const CePoint* const pPoint, const UINT id=0 ) const;
-	virtual void		OnDrawAll		( const LOGICAL draw=TRUE ) const;
-	virtual LOGICAL		ParseDirection	( void );
-
-	virtual LOGICAL		ShowUpdate		( const UINT1 dir );
-	virtual void		Show			( const CeDirection* const pDir
-										, const CeArc* const pArc );
-	virtual void		ShowAngle		( const CeDirection* const pDir );
-	virtual void		ShowBearing		( const CeDirection* const pDir );
-	virtual void		ShowParallel	( const CeDirection* const pDir );
-	virtual void		ShowOffset		( const CeDirection* const pDir );
-	virtual	void		ShowKey			( const int id
-										, const CePoint* const pPoint );
-	virtual	void		GetCircles		( void );
-	virtual	LOGICAL		CanSetDefaultOffset ( void ) const;
-         */
+        /// <summary>
+        /// The title that appears around the UI elements dealing with the entered direction
+        /// </summary>
+        public string DirectionTitle
+        {
+            get { return directionGroupBox.Text; }
+            set { directionGroupBox.Text = value; }
+        }
 
         /// <summary>
         /// Performs any processing on selection of a point feature.
@@ -180,120 +178,93 @@ private:
         /// <param name="point">The point that has just been selected.</param>
         internal void OnSelectPoint(PointFeature point)
         {
-            /*
+            // Return if point is not defined.
+            if (point==null)
+                return;
 
-//	Return if point is not defined.
-	if ( !pPoint ) return;
+            // Return if point is not valid.
+            if (!IsPointValid())
+                return;
 
-//	Return if point is not valid.
-	if ( !IsPointValid() ) return;
+            // Draw the point with appropriate color
+            SetColor(point, m_Focus);
 
-//	Set colour
-	SetColour(pPoint);
+            // Handle the pointing, depending on what field we were last in.
 
-	CHARS	 str[132];		// Character string
+            if (m_Focus == fromPointTextBox)
+            {
+                // Save the from point.
+                SetNormalColor(m_From);
+                m_From = point;
 
-//	Handle the pointing, depending on what field we were
-//	last in.
+                // Initialize list of any circles that are incident on
+                // the new from point ...
+                GetCircles();
 
-	switch ( m_Focus ) {
+                // Display it (causes a call to OnChangeFromPoint).
+                ShowKey(fromPointTextBox, m_From);
 
-	case IDC_FROMPOINT: {
+                // Move focus to the backsight field.
+                backsightTextBox.Focus();
+            }
+            else if (m_Focus == backsightTextBox)
+            {
+                // Ensure that any previously selected backsight reverts
+                // to its normal color.
+                SetNormalColor(m_Backsight);
 
-//		Save the from point.
-		SetNormalColour(m_pFrom);
-		m_pFrom = pPoint;
+                // Save the specified backsight.
+                m_Backsight = point;
 
-		// Initialize list of any circles that are incident on
-		// the new from point ...
-		GetCircles();
+                // Display it (causes a call to OnChangeBacksight).
+                ShowKey(backsightTextBox, m_Backsight);
 
-		// Display it (causes a call to OnChangeFromPoint).
-		ShowKey(IDC_FROMPOINT,m_pFrom);
+                // Move focus to the direction field.
+                directionTextBox.Focus();
+            }
+            else if (m_Focus == directionTextBox)
+            {
+                // The direction must be getting specified by pointing
+                // to two parallel points.
 
-//		Move focus to the backsight field.
-		GetDlgItem(IDC_BACKSIGHT)->SetFocus();
+                // Define either the first or the second parallel point.
+                if (m_Par1!=null)
+                {
+                    SetNormalColor(m_Par2);
+                    m_Par2 = point;
+                }
+                else
+                {
+                    SetNormalColor(m_Par1);
+                    m_Par1 = point;
+                }
 
-		return;
-	}
+                // Figure out the window text.
+                if (m_Par1!=null && m_Par2!=null)
+                    directionTextBox.Text = String.Format("{0}->{1}", m_Par1.FormattedKey, m_Par2.FormattedKey);
+                else
+                    directionTextBox.Text = String.Format("{0}->", m_Par1.FormattedKey);
 
-	case IDC_BACKSIGHT: {
+                // Move focus to the offset field if we have both parallel points.
+                if (m_Par2!=null)
+                    offsetTextBox.Focus();
+            }
+            else if (m_Focus == offsetTextBox)
+            {
+                // Hold on to the offset point & ensure distance is null.
+                SetNormalColor(m_OffsetPoint);
+                m_OffsetPoint = point;
+                m_OffsetDistance = null;
 
-//		Ensure that any previously selected backsight reverts
-//		to its normal colour.
-		SetNormalColour(m_pBacksight);
+                // Display the window text.
+                ShowKey(offsetTextBox, m_OffsetPoint);
 
-//		Save the specified backsight.
-		m_pBacksight = pPoint;
+                // Can't set default offset if it was specified via a point
+                setDefaultOffsetButton.Enabled = false;
 
-		// Display it (causes a call to OnChangeBacksight).
-		ShowKey(IDC_BACKSIGHT,m_pBacksight);
-
-//		Move focus to the direction field.
-		GetDlgItem(IDC_DIRECTION)->SetFocus();
-
-		return;
-	}
-
-	case IDC_DIRECTION: {
-
-//		The direction must be getting specified by pointing
-//		to two parallel points.
-
-//		Define either the first or the second parallel point.
-		if ( m_pPar1 ) {
-			SetNormalColour(m_pPar2);
-			m_pPar2 = pPoint;
-		}
-		else {
-			SetNormalColour(m_pPar1);
-			m_pPar1 = pPoint;
-		}
-
-//		Figure out the window text.
-
-		if ( m_pPar1 && m_pPar2 ) {
-			sprintf ( str, "%s->", m_pPar1->FormatKey() );
-			strcat ( str, m_pPar2->FormatKey() );
-		}
-		else
-			sprintf ( str, "%s->", m_pPar1->FormatKey() );
-
-//		Display it.
-		GetDlgItem(IDC_DIRECTION)->SetWindowText(str);
-
-//		Move focus to the offset field if we have both
-//		parallel points.
-		if ( m_pPar2 ) GetDlgItem(IDC_OFFSET)->SetFocus();
-
-		return;
-	}
-	
-	case IDC_OFFSET: {
-
-//		Hold on to the offset point & ensure distance is null.
-		SetNormalColour(m_pOffset);
-		m_pOffset = pPoint;
-		m_Offset = CeDistance();
-
-//		Display the window text.
-		ShowKey(IDC_OFFSET,m_pOffset);
-
-		// Can't set default offset if it was specified via a point
-		TurnOff(IDC_SET_DEFAULT_OFFSET);
-
-//		Move focus to the line type.
-		GetDlgItem(IDC_LINE_TYPE)->SetFocus();
-
-		return;
-	}
-
-	default:
-
-		return;
-
-	} // end switch
-             */
+                // Move focus to the line type.
+                lineTypeComboBox.Focus();
+            }
         }
 
         /// <summary>
@@ -302,54 +273,53 @@ private:
         /// <param name="point">The line that has just been selected.</param>
         internal void OnSelectLine(LineFeature line)
         {
-            /*
+            // Return if line is not defined.
+            if (line==null)
+                return;
 
-	// Return if line is not defined.
-	if ( !pArc ) return;
+            // If the focus is in the backsight field, and the selected
+            // line connects to the from-point, define the backsight to
+            // be the point at the other end of the line.
+            if (m_From==null || m_Focus!=backsightTextBox)
+                return;
 
-	// If the focus is in the backsight field, and the selected
-	// line connects to the from-point, define the backsight to
-	// be the point at the other end of the line.
+            PointFeature point = null;
 
-	if ( !m_pFrom ) return;
-	if ( m_Focus!=IDC_BACKSIGHT ) return;
+            if (m_From.IsCoincident(line.StartPoint))
+                point = line.EndPoint;
+            else if (m_From.IsCoincident(line.EndPoint))
+                point = line.StartPoint;
 
-	const CeLine* const pLine = pArc->GetpLine();
-	const CeLocation* const psLoc = pLine->GetpStart();
-	const CeLocation* const peLoc = pLine->GetpEnd();
+            // Return if a connected point cannot be found.
+            if (point==null)
+            {
+                MessageBox.Show("Cannot locate backsight point.");
+                return;
+            }
 
-	CeLayerList curlayer;	// only the currently active theme
-	CePoint* pPoint = 0;
-
-	if ( m_pFrom->GetpVertex() == psLoc )
-		pPoint = peLoc->GetpPoint(pLine,&curlayer);
-	else if ( m_pFrom->GetpVertex() == peLoc )
-		pPoint = psLoc->GetpPoint(pLine,&curlayer);
-
-	// Return if a connected point cannot be found.
-	if ( !pPoint ) {
-		ShowMessage("Cannot locate backsight point.");
-		return;
-	}
-
-	OnSelectPoint(pPoint);
-             */
+            OnSelectPoint(point);
         }
 
         internal void OnDraw(PointFeature point)
         {
-            /*
+	        if (point==null)
+		        OnDrawAll();
+	        else {
+                if (point==m_Backsight)
+                    SetColor(m_Backsight, backsightTextBox);
 
-	if ( !pPoint )
-		OnDrawAll();
-	else {
-		if ( pPoint==m_pBacksight ) SetColour(m_pBacksight,IDC_BACKSIGHT);
-		if ( pPoint==m_pFrom      ) SetColour(m_pFrom,     IDC_FROMPOINT);
-		if ( pPoint==m_pPar1      ) SetColour(m_pPar1,     IDC_DIRECTION);
-		if ( pPoint==m_pPar2      ) SetColour(m_pPar2,     IDC_DIRECTION);
-		if ( pPoint==m_pOffset    ) SetColour(m_pOffset,   IDC_OFFSET);
-	}
-             */
+                if (point==m_From)
+                    SetColor(m_From, fromPointTextBox);
+
+                if (point==m_Par1)
+                    SetColor(m_Par1, directionTextBox);
+
+                if (point==m_Par2)
+                    SetColor(m_Par2, directionTextBox);
+
+                if (point==m_OffsetPoint)
+                    SetColor(m_OffsetPoint, offsetTextBox);
+	        }
         }
 
         internal Direction Direction
@@ -362,184 +332,185 @@ private:
             get { return m_LineType; }
         }
 
-        private void GetDirectionControl_Load(object sender, EventArgs e)
+        internal void InitializeControl(IntersectForm parent, int dirNum)
         {
-            /*
-	CdPage::OnInitDialog();
-	//AfxMessageBox("OnInitDialog");
+            // Default settings for direction radio buttons.
+            TurnRadioOff(clockwiseRadioButton);
+            TurnRadioOff(counterClockwiseRadioButton);
 
-//	Default settings for direction radio buttons.
-	TurnRadioOff(IDC_CLOCKWISE);
-	TurnRadioOff(IDC_COUNTER_CLOCKWISE);
+            // Default settings for offset radio buttons (not checked, not enabled)
+            TurnRadioOff(leftRadioButton);
+            TurnRadioOff(rightRadioButton);
 
-//	Default settings for offset radio buttons (not checked, not enabled)
-	TurnRadioOff(IDC_LEFT);
-	TurnRadioOff(IDC_RIGHT);
+            // Clear the button that lets the displayed offset value be set as default
+            setDefaultOffsetButton.Enabled = false;
 
-	// Clear the button that lets the displayed offset value
-	// be set as default
-	TurnOff(IDC_SET_DEFAULT_OFFSET);
+            // If we've got a default offset, display it (and set the
+            // appropriate radio button)
+            string value = GlobalUserSetting.Read(DEFAULT_OFFSET_KEY);
+            if (value.Length > 0)
+            {
+                m_DefaultOffset = new Distance(value);
+                if (m_DefaultOffset.IsDefined)
+                    m_DefaultOffset.SetFixed();
+                else
+                    m_DefaultOffset = null;
+            }
 
-	// If we've got a default offset, display it (and set the
-	// appropriate radio button)
-	CString value = AfxGetApp()->GetProfileString("Settings","DirectionOffset");
-	if ( !value.IsEmpty() )
-	{
-		m_DefaultOffset = CeDistance((LPCTSTR)value);
-		m_DefaultOffset.SetFixed();
-	}
+            // Initialize combo box with a list of all line entity types
+            // for the currently active theme.
+            m_LineType = lineTypeComboBox.Load(SpatialType.Line);
 
-//	Initialize combo box with a list of all line entity types
-//	for the currently active theme.
-	CeMap* pMap = CeMap::GetpMap();
-	const CeTheme* const pTheme = pMap->GetpTheme();
-	m_pLineType = LoadEntityCombo(IDC_LINE_TYPE,pTheme,LINE);
+            if (m_DefaultOffset!=null)
+            {
+                lineTypeComboBox.SelectEntity(null);
+                lineTypeComboBox.Enabled = false;
+                m_LineType = null;
+            }
 
-	if ( m_DefaultOffset.IsDefined() )
-	{
-		TurnComboOff(IDC_LINE_TYPE);
-		m_pLineType = 0;
-	}
+            if (parent is IntersectDirectionAndLineForm)
+            {
+                // For direction-line intersections, the default is NOT
+                // to add a line, so if we're not doing an update, make
+                // sure the line type is undefined.
 
-	CdDialog* pParent = (CdDialog*)GetParent();
-	CdIntersectDirLine* pDirLine =
-		dynamic_cast<CdIntersectDirLine*>(pParent);
+                if (parent.GetUpdateOp()==null)
+                {
+                    lineTypeComboBox.SelectEntity(null);
+                    lineTypeComboBox.Enabled = false;
+                    m_LineType = null;
+                }
+            }
 
-	if ( pDirLine ) {
-
-		// For direction-line intersections, the default is NOT
-		// to add a line, so if we're not doing an update, make
-		// sure the line type is undefined.
-		if ( !GetUpdateOp() ) {
-			CComboBox* pBox = (CComboBox*)GetDlgItem(IDC_LINE_TYPE);
-			m_pLineType = 0;
-			pBox->SelectString(-1,"<none>");
-		}
-	}
-
-	// If we are updating a feature that was previously created (or recalling
-	// a previous edit), load the original info. For direction-direction intersections,
-	// we need to know which page this is, to determine whether we
-	// should display info for the 1st or 2nd direction.
-
-	if ( !ShowUpdate(this->m_PageNum) )
-	{
-		// Display default offset (if there is one). Setting the text will cause
-		// a call to OnChangeOffset, which will define m_Offset & m_IsRight
-		if ( m_DefaultOffset.IsDefined() )
-			GetDlgItem(IDC_OFFSET)->SetWindowText(m_DefaultOffset.Format(TRUE));
-	}
-             */
+            // If we are updating a feature that was previously created (or recalling
+            // a previous edit), load the original info. For direction-direction intersections,
+            // we need to know which page this is, to determine whether we
+            // should display info for the 1st or 2nd direction.
+            IntersectOperation op = parent.GetUpdateOp();
+            if (!ShowUpdate(op, (byte)dirNum))
+            {
+                // Display default offset (if there is one). Setting the text will cause
+                // a call to OnChangeOffset, which will define m_Offset & m_IsRight
+                if (m_DefaultOffset!=null)
+                    offsetTextBox.Text = m_DefaultOffset.Format();
+            }
         }
 
-        /*
-// We remember the ID of the last thing that was in focus so
-// that we can respond to a possible OnSelectPoint.
+        // Remember the last thing that was in focus so that we can respond
+        // to a possible OnSelectPoint.
 
-void CdGetDir::OnSetfocusBacksight() { m_Focus = IDC_BACKSIGHT;	}
-void CdGetDir::OnSetfocusFrompoint() { m_Focus = IDC_FROMPOINT; }
-void CdGetDir::OnSetfocusOffset() { m_Focus = IDC_OFFSET; }
-void CdGetDir::OnSetfocusDirection() { m_Focus = IDC_DIRECTION; }
-         */
+        private void fromPointTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = fromPointTextBox;
+        }
 
-        /*
-//	@mfunc Check if it is OK to accept a selected point in the field
-//	that last had the input focus.
-//
-/////////////////////////////////////////////////////////////////////////////
+        private void backsightTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = backsightTextBox;
+        }
 
-LOGICAL CdGetDir::IsPointValid ( void ) const {
+        private void directionTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = directionTextBox;
+        }
 
-	CHARS str[132];
+        private void offsetTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = offsetTextBox;
+        }
 
-	switch ( m_Focus ) {
+        /// <summary>
+        /// Checks if it is OK to accept a selected point in the field that last
+        /// had the input focus.
+        /// </summary>
+        /// <returns></returns>
+        bool IsPointValid()
+        {
+            if (m_Focus == backsightTextBox)
+            {
+                // Disallow a backsight if the direction has been specified
+                // using two (or even just one) parallel points.
 
-	case IDC_BACKSIGHT: {
+		        if (m_Par1!=null)
+                {
+                    string msg = String.Empty;
+                    msg += ("You cannot specify a backsight if you intend" + System.Environment.NewLine);
+                    msg += ("to define direction using two points.");
+			        MessageBox.Show(msg);
+			        return false;
+		        }
 
-//		Disallow a backsight if the direction has been specified
-//		using two (or even just one) parallel points.
+		        return true;
+            }
 
-		if ( m_pPar1 ) {
-			sprintf ( str, "%s\n%s",
-				"You cannot specify a backsight if you intend",
-				"to define direction using two points." );
-			AfxMessageBox( str );
-			return FALSE;
-		}
+            if (m_Focus == fromPointTextBox)
+            {
+                // If a from point is already defined, allow the point only
+                // if the user wants to change it. If the from point is not
+                // already defined, the from point is always valid.
 
-		return TRUE;
-	}
+                if (m_From!=null)
+                {
+                    string msg = String.Empty;
+                    msg += ("You have already specified the from-point." + System.Environment.NewLine);
+                    msg += ("If you want to change it, erase it first.");
+                    MessageBox.Show(msg);
+                    return false;
+                }
 
-	case IDC_FROMPOINT: {
+                return true;
+            }
 
-//		If a from point is already defined, allow the point only
-//		if the user wants to change it. If the from point is not
-//		already defined, the from point is always valid.
+            if (m_Focus == directionTextBox)
+            {
+                // The direction must be getting specified by pointing
+                // to two parallel points. This is not allowed if a
+                // backsight has been specified.
 
-		if ( m_pFrom ) {
-			sprintf ( str, "%s\n%s",
-				"You have already specified the from-point.",
-				"If you want to change it, erase it first." );
-			AfxMessageBox ( str );
-			return FALSE;
-		}
-		else
-			return TRUE;
-	}
+                if (m_Backsight!=null)
+                {
+                    string msg = String.Empty;
+                    msg += ("You cannot specify two points for direction" + System.Environment.NewLine);
+                    msg += ("when the direction has a backsight.");
+                    MessageBox.Show(msg);
+                    return false;
+                }
 
-	case IDC_DIRECTION: {
+                // Disallow if two parallel points have already been specified.
+                if (m_Par1!=null && m_Par2!=null)
+                {
+                    MessageBox.Show("You have already specified two points for direction.");
+                    return false;
+                }
 
-//		The direction must be getting specified by pointing
-//		to two parallel points. This is not allowed if a
-//		backsight has been specified.
+        		return true;
+            }
 
-		if ( m_pBacksight ) {
-			sprintf ( str, "%s\n%s",
-				"You cannot specify two points for direction",
-				"when the direction has a backsight." );
-			AfxMessageBox( str );
-			return FALSE;
-		}
+            if (m_Focus == offsetTextBox)
+            {
+                // Disallow if an offset has already been specified.
+                if (m_OffsetPoint!=null)
+                {
+                    MessageBox.Show("You have already specified the offset point.");
+                    return false;
+                }
 
-//		Disallow if two parallel points have already been specified.
-		if ( m_pPar1 && m_pPar2 ) {
-			AfxMessageBox (
-				"You have already specified two points for direction." );
-			return FALSE;
-		}
+                // Disallow if the distance is already defined.
+                if (m_OffsetDistance!=null)
+                {
+                    MessageBox.Show("You have already specified an offset distance.");
+                    return false;
+                }
 
-		return TRUE;
-	}
-	
-	case IDC_OFFSET: {
+                return true;
+            }
 
-//		Disallow if an offset has already been specified.
-		if ( m_pOffset ) {
-			AfxMessageBox ( "You have already specified the offset point." );
-			return FALSE;
-		}
+            // If it's none of the above fields, a point is not valid.
+            // Just return quietly, in case the user is just mucking about
+            // pointing at stuff in the map window.
 
-//		Disallow if the distance is already defined.
-		if ( m_Offset.IsDefined() ) {
-			AfxMessageBox ( "You have already specified an offset distance." );
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	default:
-
-//		If it's none of the above fields, a point is not valid.
-//		Just return quietly, in case the user is just mucking about
-//		pointing at stuff in the map window.
-
-		return FALSE;
-
-	} // end switch
-
-} // end of IsPointValid
-         */
+		    return false;
+        }
 
         /////////////////////////////////////////////////////////////////////////////
         //
@@ -766,303 +737,243 @@ LOGICAL CdGetDir::IsPointValid ( void ) const {
                 dial.AdvanceToNextPage();
         }
 
-        /*
-void CdGetDir::OnKillfocusDirection ( void ) {
-
-//	No validation if the direction is being specified by pointing (in
-//	that case, losing the focus before the second point has been
-//	specified is normal, because the user has to point at the 2nd
-//	parallel point).
-	if ( m_pPar1 ) {
-		OnNewDirection();
-		return;
-	}
-
-//	Return if the field is empty.
-	if ( IsFieldEmpty(IDC_DIRECTION) ) {
-		OnNewDirection();
-		return;
-	}
-
-//	Parse the direction.
-	ParseDirection();
-
-} // end of OnKillfocusDirection
-         */
-
-        /*
-void CdGetDir::OnKillfocusOffset ( void ) {
-
-//	Return if the field is empty.
-	if ( IsFieldEmpty(IDC_OFFSET) ) {
-		OnNewDirection();
-		return;
-	}
-
-//	Return if the text was obtained via a pointing operation.
-	if ( m_pOffset ) {
-		OnNewDirection();
-		return;
-	}
-
-//	Get the entered string.
-	if ( !OnOffsetDistance() ) {
-		OnNewDirection();
-		return;
-	}
-
-//	Try new direction.
-	OnNewDirection();
-
-} // end of OnKillfocusOffset
-         */
-
-        /*
-void CdGetDir::OnKillfocusFromPoint ( void ) {
-
-//	See if a new direction should be drawn.
-	OnNewDirection();	
-}
-
-void CdGetDir::OnKillfocusBacksight ( void ) {
-
-//	See if a new direction should be drawn.
-	OnNewDirection();	
-}
-         */
-
-        /*
-//	@mfunc Check whether the current data is enough to
-//	construct a direction. If so, draw it. Take care to
-//	erase any previously drawn direction.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::OnNewDirection ( void ) {
-
-	if ( CanSetDefaultOffset() )
-		TurnOn(IDC_SET_DEFAULT_OFFSET);
-	else
-		TurnOff(IDC_SET_DEFAULT_OFFSET);
-
-	CeDirection* pDir=0;	// Constructed direction.
-	CeAngle angle;			// Angle from a backsight.
-	CeDeflection deflect;	// Deflection
-	CeBearing bearing;		// Bearing from north.
-	CeParallel par;			// Parallel to 2 points.
-	CeOffset* pOffset=0;	// Constructed offset.
-	CeOffsetDistance odist;	// Offset distance.
-	CeOffsetPoint opt;		// Offset point.
-	FLOAT8 srad;			// Signed radian value.
-
-//	Apply sign to any direction we have.
-	if ( m_IsClockwise )
-		srad = m_Radians;
-	else
-		srad = -m_Radians;
-
-
-	if ( m_pBacksight ) {
-
-		// If we have a backsight, we could either have a regular
-		// angle or a deflection. To construct either, we need a
-		// from-point as well.
-
-		// Note that an angle of zero (passing through the backsight
-		// or foresight) is fine.
-
-		if ( m_pFrom ) {
-
-			if ( m_IsDeflection ) {
-				deflect = CeDeflection(*m_pBacksight,*m_pFrom,srad);
-				pDir = &deflect;
-			}
-			else {
-				angle = CeAngle(*m_pBacksight,*m_pFrom,srad);
-				pDir = &angle;
-			}
-		}
-
-	}
-	else if ( m_pFrom ) {
-
-//		No backsight, so we could have either a bearing,
-//		or a direction defined using 2 parallel points.
-//		Since a bearing of zero is quite valid, we check
-//		the dialog field to see if this is an entered value,
-//		or just the initial value.
-
-		if ( m_pPar1 && m_pPar2 ) {
-			par = CeParallel(*m_pFrom,*m_pPar1,*m_pPar2);
-			pDir = &par;
-		}
-		else if ( m_Radians>TINY || !IsFieldEmpty(IDC_DIRECTION) ) {
-			bearing = CeBearing(*m_pFrom,srad);
-			pDir = &bearing;
-		}
-
-	}
-
-//	If we have formed a direction, see if there's an offset.
-
-	if ( pDir ) {
-
-//		It could have been specified by a point, or by
-//		entering a distance left or right of the direction.
-
-		if ( m_pOffset ) {
-			opt = CeOffsetPoint(*m_pOffset);
-			pOffset = &opt;
-		}
-		else if ( m_Offset.IsDefined() ) {
-			odist = CeOffsetDistance(m_Offset,!m_IsRight);
-			pOffset = &odist;
-		}
-
-//		If we got an offset, include it in the direction.
-		if ( pOffset ) pDir->SetOffset(pOffset);
-
-//		Return if we previously had a direction, and what
-//		we have now is just the same.
-		if ( m_pDir && *m_pDir==*pDir ) return;
-
-	}
-
-//	Get pointer to the dialog that encloses this one.
-	CdDialog* pDial = (CdDialog*)GetParent();
-	if ( !pDial ) return;
-
-//	If we previously drew a direction, erase it now.
-	if ( m_pDir ) {
-		pDial->Erase(*m_pDir);
-		delete m_pDir;
-		m_pDir = 0;
-	}
-
-//	If we have a new direction, draw it.
-	if ( pDir ) {
-		m_pDir = pDir->MakeNewCopy();
-		pDial->Draw(*m_pDir);
-
-//		Redraw the from-point. Otherwise any previous version of the
-//		line leaves a white remnant on the point.
-		OnDraw(m_pDir->GetpFrom());
-	}
-
-
-	return;
-
-} // end of OnNewDirection
-         */
-
-        /*
-//	@mfunc Set colour for a point.
-//
-//	@parm The point to draw.
-//	@parm The ID of the field that the point relates to. The
-//	default is the field that currently has the focus.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::SetColour ( const CePoint* const pPoint, const UINT id ) const {
-
-//	Return if point not specified.
-	if ( !pPoint ) return;
-
-//	Determine the colour.
-
-	COL col;
-	UINT field = id;
-	if ( !field ) field = m_Focus;
-
-	switch ( field ) {
-	case IDC_BACKSIGHT:	col = COL_DARKBLUE;		break;
-	case IDC_FROMPOINT: col = COL_LIGHTBLUE;	break;
-	case IDC_DIRECTION: col = COL_YELLOW;		break;
-	case IDC_OFFSET:	col = COL_GREEN;		break;
-	default:			return;
-	}
-
-	// Draw the point in the proper colour.
-	pPoint->DrawThis(col);
-
-} // end of SetColour
-         */
-
-        /*
-//	@mfunc Set colour for a point. The colour depends on the
-//	field that currently has the focus.
-//
-//	@parm The point to set the colour for.
-//	@parm The ID of the field that the point relates to. The
-//	default is the field that currently has the focus.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::SetNormalColour ( const CePoint* const pPoint ) const {
-
-//	Return if point not specified.
-	if ( !pPoint ) return;
-
-//	Ask the enclosing dialog to set the colour to black.
-
-	CdDialog* pDial = (CdDialog*)GetParent();
-	if ( pDial ) pDial->SetColour(*pPoint,COL_BLACK);
-
-	return;
-
-} // end of SetNormalColour
-         */
-
-        /*
-//	@mfunc Handle any redrawing. This just ensures that points
-//	are drawn in the right colour, and that any direction line
-//	shown is still there.
-//
-//	@parm TRUE to draw. FALSE to erase.
-//
-//	This function is called at the end of the view's OnDraw
-//	function. I though about reacting to a WM_PAINT message,
-//	but wasn't sure what's going to get drawn first.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDir::OnDrawAll ( const LOGICAL draw ) const {
-
-//	There's not much to draw, so just do everything.
-
-//	Draw any currently selected points & any direction.
-
-	if ( draw ) {
-		SetColour(m_pBacksight,IDC_BACKSIGHT);
-		SetColour(m_pFrom,IDC_FROMPOINT);
-		SetColour(m_pPar1,IDC_DIRECTION);
-		SetColour(m_pPar2,IDC_DIRECTION);
-		SetColour(m_pOffset,IDC_OFFSET);
-	}
-	else {
-		SetNormalColour(m_pBacksight);
-		SetNormalColour(m_pFrom);
-		SetNormalColour(m_pPar1);
-		SetNormalColour(m_pPar2);
-		SetNormalColour(m_pOffset);
-	}
-
-	if ( m_pDir ) {
-		
-		CdDialog* pDial = (CdDialog*)GetParent();
-		if ( pDial ) {
-			if ( draw )
-				pDial->Draw(*m_pDir);
-			else
-				pDial->Erase(*m_pDir);
-		}
-	}
-
-	return;
-
-} // end of OnDraw
-         */
+        private void directionTextBox_Leave(object sender, EventArgs e)
+        {
+            // No validation if the direction is being specified by pointing (in
+            // that case, losing the focus before the second point has been
+            // specified is normal, because the user has to point at the 2nd
+            // parallel point).
+
+            if (m_Par1!=null)
+            {
+                OnNewDirection();
+                return;
+            }
+
+            // Return if the field is empty.
+            if (directionTextBox.Text.Trim().Length==0)
+            {
+                OnNewDirection();
+                return;
+            }
+
+            // Parse the direction.
+            ParseDirection();
+        }
+
+        private void offsetTextBox_Leave(object sender, EventArgs e)
+        {
+            // Return if the field is empty.
+            if (offsetTextBox.Text.Trim().Length==0)
+            {
+                OnNewDirection();
+                return;
+            }
+
+            // Return if the text was obtained via a pointing operation.
+            if (m_OffsetPoint!=null)
+            {
+                OnNewDirection();
+                return;
+            }
+
+            // Get the entered string.
+	        if (!OnOffsetDistance())
+            {
+		        OnNewDirection();
+		        return;
+	        }
+
+            // Try new direction.
+	        OnNewDirection();
+        }
+
+        private void fromPointTextBox_Leave(object sender, EventArgs e)
+        {
+            // See if a new direction should be drawn.
+            OnNewDirection();	
+        }
+
+        private void backsightTextBox_Leave(object sender, EventArgs e)
+        {
+            // See if a new direction should be drawn.
+            OnNewDirection();	
+        }
+
+        /// <summary>
+        /// Uses the currently displayed information to try to construct a
+        /// direction object.
+        /// </summary>
+        /// <returns>The constructed direction (null if a direction cannot be created
+        /// based on the information that's currently displayed)</returns>
+        Direction GetCurrentDirection()
+        {
+            Direction result = null;
+
+            // Get signed direction
+            double srad = (m_IsClockwise ? m_Radians : -m_Radians);
+            IAngle dir = new RadianValue(srad);
+
+            if (m_Backsight!=null)
+            {
+                // If we have a backsight, we could either have a regular
+                // angle or a deflection. To construct either, we need a
+                // from-point as well.
+
+                // Note that an angle of zero (passing through the backsight
+                // or foresight) is fine.
+
+                if (m_From!=null)
+                {
+                    if (m_IsDeflection)
+                        result = new DeflectionDirection(m_Backsight, m_From, dir);
+                    else
+                        result = new AngleDirection(m_Backsight, m_From, dir);
+                }
+            }
+            else if (m_From!=null)
+            {
+                // No backsight, so we could have either a bearing,
+                // or a direction defined using 2 parallel points.
+                // Since a bearing of zero is quite valid, we check
+                // the dialog field to see if this is an entered value,
+                // or just the initial value.
+
+                if (m_Par1!=null && m_Par2!=null)
+                    result = new ParallelDirection(m_From, m_Par1, m_Par2);
+                else if (m_Radians > Constants.TINY || directionTextBox.Text.Length>0)
+                    result = new BearingDirection(m_From, dir);
+            }
+
+            // If we haven't formed a direction, ignore any offset
+            if (result==null)
+                return null;
+
+            // An offset could have been specified by a point, or by
+            // entering a distance left or right of the direction.
+
+            Offset offset = null;
+
+            if (m_OffsetPoint!=null)
+                offset = new OffsetPoint(m_OffsetPoint);
+            else if (m_OffsetDistance!=null)
+                offset = new OffsetDistance(m_OffsetDistance, !m_IsRight);
+
+            // If we got an offset, include it in the direction.
+            if (offset!=null)
+                result.Offset = offset;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Checks whether the current data is enough to construct a direction.
+        /// If so, draw it.
+        /// </summary>
+        void OnNewDirection()
+        {
+            setDefaultOffsetButton.Enabled = CanSetDefaultOffset();
+
+            // Try to constructr direction based on what's been entered
+            Direction dir = GetCurrentDirection();
+
+            if (dir==null)
+            {
+                // If we didn't get anything, but we previously had a direction, ensure
+                // it gets erased.
+                if (m_Dir!=null)
+                {
+                    m_Dir = null;
+                    ErasePainting();
+                }
+            }
+            else
+            {
+                // Just return if current direction matches what we've already got
+                if (m_Dir!=null && m_Dir.IsEquivalent(dir))
+                    return;
+
+                // Draw the new direction
+                m_Dir = dir;
+                ErasePainting();
+            }
+        }
+
+        /// <summary>
+        /// Draws the supplied point with a color that's consistent with the
+        /// meaning of a control appearing on this dialog.
+        /// </summary>
+        /// <param name="point">The point to draw</param>
+        /// <param name="field">The control the point relates to
+        /// (default was the field that currently has the focus)
+        /// </param>
+        void SetColor(PointFeature point, Control field)
+        {
+            // Return if point not specified.
+            if (point==null)
+                return;
+
+            // Determine the color.
+            Color col;
+
+            if (field == backsightTextBox)
+                col = Color.DarkBlue;
+            else if (field == fromPointTextBox)
+                col = Color.LightBlue;
+            else if (field == directionTextBox)
+                col = Color.Yellow;
+            else if (field == offsetTextBox)
+                col = Color.LightGreen;
+            else
+                return;
+
+            // Draw the point in the proper color.
+            point.Draw(ActiveDisplay, col);
+        }
+
+        ISpatialDisplay ActiveDisplay
+        {
+            get { return EditingController.Current.ActiveDisplay; }
+        }
+
+        /// <summary>
+        /// Ensure that a point is drawn with it's "normal" color.
+        /// </summary>
+        /// <param name="point">The point to set the color for.</param>
+        void SetNormalColor(PointFeature point)
+        {
+            // Redraw in idle time
+            if (point!=null)
+                ErasePainting();
+
+            /*
+            //	Return if point not specified.
+	            if ( !pPoint ) return;
+
+            //	Ask the enclosing dialog to set the colour to black.
+
+	            CdDialog* pDial = (CdDialog*)GetParent();
+	            if ( pDial ) pDial->SetColour(*pPoint,COL_BLACK);
+             */
+        }
+
+        /// <summary>
+        /// Handles any redrawing. This just ensures that points are drawn in the right
+        /// color, and that any direction line shown is still there.
+        /// </summary>
+        internal void OnDrawAll()
+        {
+            // Draw any currently selected points
+            SetColor(m_Backsight, backsightTextBox);
+            SetColor(m_From, fromPointTextBox);
+            SetColor(m_Par1, directionTextBox);
+            SetColor(m_Par2, directionTextBox);
+            SetColor(m_OffsetPoint, offsetTextBox);
+
+            // Draw any current direction
+            if (m_Dir!=null)
+                m_Dir.Render(ActiveDisplay);
+        }
 
         /// <summary>
         /// Parses an explicitly entered offset distance. 
@@ -1586,7 +1497,7 @@ BOOL CdGetDir::OnSetActive ( void ) {
             // Handle case where no offset is defined (remove from registry)
             if (Math.Abs(m_OffsetDistance.Meters) < Constants.TINY)
             {
-                GlobalUserSetting.Write("DirectionOffset", String.Empty);
+                GlobalUserSetting.Write(DEFAULT_OFFSET_KEY, String.Empty);
                 return;
             }
 
@@ -1595,7 +1506,7 @@ BOOL CdGetDir::OnSetActive ( void ) {
             string value = m_OffsetDistance.Format();
             if (!m_IsRight)
                 value = "-" + value;
-            GlobalUserSetting.Write("DirectionOffset", value);
+            GlobalUserSetting.Write(DEFAULT_OFFSET_KEY, value);
 
             // Remember the new default (it's different from m_OffsetDistance if
             // it's an offset to the left)
@@ -1615,6 +1526,13 @@ BOOL CdGetDir::OnSetActive ( void ) {
         internal void ErasePainting()
         {
             EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        }
+
+        IntersectOperation GetUpdateOp()
+        {
+            IntersectForm parent = (this.ParentForm as IntersectForm);
+            Debug.Assert(parent!=null);
+        	return parent.GetUpdateOp();
         }
     }
 }

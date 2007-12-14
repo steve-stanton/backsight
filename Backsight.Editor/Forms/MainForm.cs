@@ -277,15 +277,31 @@ namespace Backsight.Editor.Forms
             AddAction(ctxPolygonProperties, null, ShowProperties);
 
             // Intersect menu...
-            AddAction(mnuIntersectTwoDirections, IsIntersectTwoDirectionsEnabled, IntersectTwoDirections);
+            AddEdit(
+                EditingActionId.DirIntersect,
+                new ToolStripItem[] { mnuIntersectTwoDirections },
+                IsIntersectTwoDirectionsEnabled,
+                IntersectTwoDirections);
             AddEdit(
                 EditingActionId.DistIntersect,
                 new ToolStripItem[] { mnuIntersectTwoDistances },
                 IsIntersectTwoDistancesEnabled,
                 IntersectTwoDistances);
-            AddAction(mnuIntersectTwoLines, IsIntersectTwoLinesEnabled, IntersectTwoLines);
-            AddAction(mnuIntersectDirectionAndDistance, IsIntersectDirectionAndDistanceEnabled, IntersectDirectionAndDistance);
-            AddAction(mnuIntersectDirectionAndLine, IsIntersectDirectionAndLineEnabled, IntersectDirectionAndLine);
+            AddEdit(
+                EditingActionId.LineIntersect,
+                new ToolStripItem[] { mnuIntersectTwoLines },
+                IsIntersectTwoLinesEnabled,
+                IntersectTwoLines);
+            AddEdit(
+                EditingActionId.DirDistIntersect,
+                new ToolStripItem[] { mnuIntersectDirectionAndDistance },
+                IsIntersectDirectionAndDistanceEnabled,
+                IntersectDirectionAndDistance);
+            AddEdit(
+                EditingActionId.DirLineIntersect,
+                new ToolStripItem[] { mnuIntersectDirectionAndLine },
+                IsIntersectDirectionAndLineEnabled,
+                IntersectDirectionAndLine);
 
             // Help menu...
             AddAction(mnuHelpTopics, IsHelpTopicsEnabled, HelpTopics);
@@ -1535,12 +1551,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsIntersectTwoLinesEnabled()
         {
-            return false;
+            return IsIntersectEnabled();
         }
 
         private void IntersectTwoLines(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            StartIntersectUI(action);
         }
 
         private bool IsIntersectDirectionAndDistanceEnabled()
@@ -1555,12 +1571,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsIntersectDirectionAndLineEnabled()
         {
-            return false;
+            return IsIntersectEnabled();
         }
 
         private void IntersectDirectionAndLine(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            StartIntersectUI(action);
         }
 
         #endregion
