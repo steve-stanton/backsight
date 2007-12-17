@@ -33,9 +33,11 @@ namespace Backsight.Editor.Forms
             this.directionTwoPage = new Gui.Wizard.WizardPage();
             this.getDirection2 = new Backsight.Editor.Forms.GetDirectionControl();
             this.finishPage = new Gui.Wizard.WizardPage();
+            this.intersectInfo = new Backsight.Editor.Forms.IntersectInfoControl();
             this.wizard.SuspendLayout();
             this.directionOnePage.SuspendLayout();
             this.directionTwoPage.SuspendLayout();
+            this.finishPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // wizard
@@ -89,6 +91,7 @@ namespace Backsight.Editor.Forms
             // 
             // finishPage
             // 
+            this.finishPage.Controls.Add(this.intersectInfo);
             this.finishPage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.finishPage.IsFinishPage = true;
             this.finishPage.Location = new System.Drawing.Point(0, 0);
@@ -96,15 +99,25 @@ namespace Backsight.Editor.Forms
             this.finishPage.Size = new System.Drawing.Size(759, 190);
             this.finishPage.TabIndex = 3;
             // 
+            // intersectInfo
+            // 
+            this.intersectInfo.CanHaveTwoIntersections = false;
+            this.intersectInfo.Location = new System.Drawing.Point(12, 12);
+            this.intersectInfo.Name = "intersectInfo";
+            this.intersectInfo.Size = new System.Drawing.Size(604, 136);
+            this.intersectInfo.TabIndex = 0;
+            // 
             // IntersectTwoDirectionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.ClientSize = new System.Drawing.Size(759, 238);
             this.Name = "IntersectTwoDirectionsForm";
             this.TopMost = true;
+            this.Shown += new System.EventHandler(this.IntersectTwoDirectionsForm_Shown);
             this.wizard.ResumeLayout(false);
             this.directionOnePage.ResumeLayout(false);
             this.directionTwoPage.ResumeLayout(false);
+            this.finishPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -116,6 +129,7 @@ namespace Backsight.Editor.Forms
         private GetDirectionControl getDirection2;
         private Gui.Wizard.WizardPage directionOnePage;
         private GetDirectionControl getDirection1;
+        private IntersectInfoControl intersectInfo;
 
     }
 }

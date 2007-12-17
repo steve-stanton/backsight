@@ -394,6 +394,9 @@ namespace Backsight.Editor.Forms
                 if (m_DefaultOffset!=null)
                     offsetTextBox.Text = m_DefaultOffset.Format();
             }
+
+            // Go to the first text box
+            fromPointTextBox.Focus();
         }
 
         // Remember the last thing that was in focus so that we can respond
@@ -512,92 +515,71 @@ namespace Backsight.Editor.Forms
 		    return false;
         }
 
-        /////////////////////////////////////////////////////////////////////////////
-        //
-        //	Radio buttons fall into 2 groups:
-        //
-        //	Group 1 -- Related to direction.
-        //
-        //	IDC_CLOCKWISE -- direction measured clockwise.
-        //	IDC_COUNTER_CLOCKWISE -- direction measured counter-clockwise.
-        //
-        //	Group 2 -- Related to offset.
-        //
-        //	IDC_LEFT -- offset to left of direction.
-        //	IDC_RIGHT -- offset to right of direction.
-        //
-        //	The aim of the functions that follow is to validate that the
-        //	user's action is consistent with everything that has gone
-        //	before. In practice, many of the radio buttons do not need
-        //	to be visited by the user, because they are frequently set
-        //	or activated in response to pointing operations, or on the
-        //	basis of what has been entered into edit boxes.
-        //
-        /////////////////////////////////////////////////////////////////////////////
+        private void clockwiseRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (clockwiseRadioButton.Checked)
+                SetClockwise();
+        }
 
         /// <summary>
         /// Set checkmark signifying a clockwise direction
         /// </summary>
-        void OnClockwise()
+        void SetClockwise()
         {
             m_IsClockwise = true;
             m_Radians = Math.Abs(m_Radians);
             clockwiseRadioButton.Checked = true;
-            //counterClockwiseRadioButton.Checked = false;
-            //OnNewDirection();
-            ErasePainting();
+            OnNewDirection();
+        }
+
+        private void counterClockwiseRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (counterClockwiseRadioButton.Checked)
+                SetCounterClockwise();
         }
 
         /// <summary>
         /// Set checkmark signifying a counter-clockwise direction
         /// </summary>
-        void OnCounterClockwise()
+        void SetCounterClockwise()
         {
             m_IsClockwise = false;
             m_Radians = Math.Abs(m_Radians); // not < 0 ?
-            //clockwiseRadioButton.Checked = false;
             counterClockwiseRadioButton.Checked = true;
-            //OnNewDirection();
-            ErasePainting();
+            OnNewDirection();
+        }
+
+        private void leftRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (leftRadioButton.Checked)
+                SetOffsetLeft();
         }
 
         /// <summary>
         /// Set checkmark signifying an offset to the left of the entered direction.
         /// </summary>
-        void OnLeft()
+        void SetOffsetLeft()
         {
             m_IsRight = false;
             leftRadioButton.Checked = true;
-            //rightRadioButton.Checked = false;
-            //OnNewDirection();
-            ErasePainting();
+            OnNewDirection();
+        }
+
+        private void rightRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rightRadioButton.Checked)
+                SetOffsetRight();
         }
 
         /// <summary>
         /// Set checkmark signifying an offset to the right of the entered direction.
         /// </summary>
-        void OnRight()
+        void SetOffsetRight()
         {
             m_IsRight = true;
-            //leftRadioButton.Checked = false;
             rightRadioButton.Checked = true;
-            //OnNewDirection();
-            ErasePainting();
+            OnNewDirection();
         }
-
-        /////////////////////////////////////////////////////////////////////////////
-        //
-        //	The OnChange functions that follow are executed whenever
-        //	new text is entered into one of the edit boxes (either
-        //	by the user, or by calls made to SetWindowText). The
-        //	intent of these functions is to validate the action, and
-        //	to enable or disable fields that are no longer applicable
-        //	as a result.
-        //
-        //	Take care on calls to SetWindowText, because that may
-        //	cause the same function to be called again.
-        //
-        /////////////////////////////////////////////////////////////////////////////
 
         private void backsightTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -607,7 +589,7 @@ namespace Backsight.Editor.Forms
             if (backsightTextBox.Text.Trim().Length==0)
             {
                 m_Backsight = null;
-                ErasePainting();
+                OnNewDirection();
             }
             else if (m_Backsight==null)
             {
@@ -623,7 +605,7 @@ namespace Backsight.Editor.Forms
                 m_From = null;
                 GetCircles();
                 backsightTextBox.Enabled = true;
-                ErasePainting();
+                OnNewDirection();
             }
             else if (m_From==null)
             {
@@ -640,7 +622,6 @@ namespace Backsight.Editor.Forms
                 m_Radians = 0.0;
                 m_IsClockwise = true;
                 m_IsDeflection = false;
-                ErasePainting();
 
                 // Field is empty, so revert to defaults.
                 TurnRadioOff(clockwiseRadioButton);
@@ -669,6 +650,8 @@ namespace Backsight.Editor.Forms
                     ParseDirection();
                 }
             }
+
+            OnNewDirection();
         }
 
         private void offsetTextBox_TextChanged(object sender, EventArgs e)
@@ -678,7 +661,7 @@ namespace Backsight.Editor.Forms
                 // Erase any previously defined offset info.
                 m_OffsetPoint = null;
                 m_OffsetDistance = null;
-                ErasePainting();
+                OnNewDirection();
 
                 // Go back to default settings.
                 TurnRadioOff(leftRadioButton);
@@ -1023,9 +1006,9 @@ namespace Backsight.Editor.Forms
             // If the offset is signed, make it an offset left and
             // disable the ability to make it an offset right.
             if (m_IsRight)
-                OnRight();
+                SetOffsetRight();
             else
-                OnLeft();
+                SetOffsetLeft();
 
             return true;
         }
@@ -1085,9 +1068,9 @@ namespace Backsight.Editor.Forms
             // will fix the sign & go on to call OnNewDirection.
 
             if (m_IsClockwise)
-                OnClockwise();
+                SetClockwise();
             else
-                OnCounterClockwise();
+                SetCounterClockwise();
 
             return true;
         }
@@ -1326,9 +1309,9 @@ namespace Backsight.Editor.Forms
                 m_IsRight = dist.IsRight;
 
                 if (m_IsRight)
-                    OnRight();
+                    SetOffsetRight();
                 else
-                    OnLeft();
+                    SetOffsetLeft();
             }
             else
             {
@@ -1348,23 +1331,6 @@ namespace Backsight.Editor.Forms
                     MessageBox.Show("GetDirectionControl.ShowOffset - Unexpected type of offset.");
             }
         }
-
-        /*
-//	@mfunc	Handle activation of this dialog.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-BOOL CdGetDir::OnSetActive ( void ) {
-
-//	Enable standard buttons
-	CdPage::OnSetActive();
-
-//	Make sure everything is drawn on top.
-	this->OnDrawAll(TRUE);
-	return TRUE;
-
-} // end of OnSetActive
-         */
 
         private void useCenterCheckBox_CheckedChanged(object sender, EventArgs e)
         {
@@ -1418,10 +1384,6 @@ BOOL CdGetDir::OnSetActive ( void ) {
                     return;
                 }
 
-		        // Set colour
-                //m_Focus = IDC_BACKSIGHT;
-                //SetColour(m_pBacksight);
-
 		        // Display the key of the backsight.
 		        ShowKey(backsightTextBox, m_Backsight);
 
@@ -1442,8 +1404,7 @@ BOOL CdGetDir::OnSetActive ( void ) {
                 backsightTextBox.Focus();
             }
 
-            //OnNewDirection();
-            ErasePainting();
+            OnNewDirection();
         }
 
         void ShowKey(TextBox tb, PointFeature point)

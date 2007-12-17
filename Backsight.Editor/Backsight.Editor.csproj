@@ -88,6 +88,12 @@
     <Compile Include="Forms\IntersectForm.Designer.cs">
       <DependentUpon>IntersectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\IntersectInfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\IntersectInfoControl.Designer.cs">
+      <DependentUpon>IntersectInfoControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IntersectTwoDirectionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -503,6 +509,10 @@
     <EmbeddedResource Include="Forms\IntersectForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IntersectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IntersectInfoControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IntersectInfoControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\IntersectTwoDirectionsForm.resx">
       <SubType>Designer</SubType>

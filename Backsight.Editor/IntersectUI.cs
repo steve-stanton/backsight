@@ -178,5 +178,41 @@ namespace Backsight.Editor
             if (m_Dialog!=null)
                 m_Dialog.OnDraw(point);
         }
+
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal override void OnSelectPoint(PointFeature point)
+        {
+            if (m_Dialog!=null)
+                m_Dialog.OnSelectPoint(point);
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a line feature.
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
+        internal override void OnSelectLine(LineFeature line)
+        {
+            if (m_Dialog!=null)
+                m_Dialog.OnSelectLine(line);
+        }
+
+        /// <summary>
+        /// Reacts to selection of the OK button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window (ignored).</param>
+        /// <returns></returns>
+        internal override bool DialFinish(Control wnd)
+        {
+            if (m_Dialog==null)
+            {
+                MessageBox.Show("IntersectUI.DialFinish - No dialog!");
+                return false;
+            }
+
+            return m_Dialog.Finish();
+        }
     }
 }
