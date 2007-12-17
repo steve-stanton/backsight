@@ -123,6 +123,7 @@ namespace Backsight.Editor.Forms
             this.counterClockwiseRadioButton.TabIndex = 9;
             this.counterClockwiseRadioButton.Text = "&Counter-clockwise";
             this.counterClockwiseRadioButton.UseVisualStyleBackColor = true;
+            this.counterClockwiseRadioButton.CheckedChanged += new System.EventHandler(this.counterClockwiseRadioButton_CheckedChanged);
             // 
             // clockwiseRadioButton
             // 
@@ -133,6 +134,7 @@ namespace Backsight.Editor.Forms
             this.clockwiseRadioButton.TabIndex = 8;
             this.clockwiseRadioButton.Text = "Clock&wise";
             this.clockwiseRadioButton.UseVisualStyleBackColor = true;
+            this.clockwiseRadioButton.CheckedChanged += new System.EventHandler(this.clockwiseRadioButton_CheckedChanged);
             // 
             // useCenterCheckBox
             // 
@@ -246,6 +248,7 @@ namespace Backsight.Editor.Forms
             this.rightRadioButton.TabIndex = 10;
             this.rightRadioButton.Text = "&Right";
             this.rightRadioButton.UseVisualStyleBackColor = true;
+            this.rightRadioButton.CheckedChanged += new System.EventHandler(this.rightRadioButton_CheckedChanged);
             // 
             // leftRadioButton
             // 
@@ -256,6 +259,7 @@ namespace Backsight.Editor.Forms
             this.leftRadioButton.TabIndex = 9;
             this.leftRadioButton.Text = "&Left";
             this.leftRadioButton.UseVisualStyleBackColor = true;
+            this.leftRadioButton.CheckedChanged += new System.EventHandler(this.leftRadioButton_CheckedChanged);
             // 
             // offsetTextBox
             // 

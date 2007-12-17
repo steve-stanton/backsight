@@ -677,5 +677,10 @@ namespace Backsight.Editor
             if (!newFeature.IsTopological)
                 newFeature.SetBuilt(true);
         }
+
+        internal ILayer BaseLayer
+        {
+            get { return (m_What==null ? null : m_What.Layer);  }
+        }
     }
 }

@@ -18,6 +18,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using Backsight.Editor.Operations;
 
+using System.ComponentModel;
+
 namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" was="CdDialog" />
@@ -30,9 +32,9 @@ namespace Backsight.Editor.Forms
 
         /// <summary>
         /// The command displaying this dialog (either an instance of <see cref="IntersectUI"/>
-        /// or <see cref="UpdateUI"/>)
+        /// or <see cref="UpdateUI"/>). Nulled when the command is saved.
         /// </summary>
-        readonly CommandUI m_Cmd;
+        CommandUI m_Cmd;
 
         #endregion
 
@@ -120,6 +122,45 @@ public:
                 return null;
             else
                 return (up.GetOp() as IntersectOperation);
+        }
+
+        /// <summary>
+        /// Handles click on the wizard Finish button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void wizard_Finish(object sender, EventArgs e)
+        {
+            // The call to IntersectUI.DialFinish will usually lead to a call
+            // to the Finish method below. It won't if we're doing an update.
+            if (m_Cmd!=null)
+            {
+                m_Cmd.DialFinish(null);
+                m_Cmd = null;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Finish button.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the command will be executed (and, on success,
+        /// the dialog will be destroyed). If it's some other window, it must
+        /// be a sub-dialog created by our guy, so let it handle the request.</param>
+        /// <returns></returns>
+        internal virtual bool Finish()
+        {
+            throw new NotImplementedException("IntersectForm.DialFinish");
+        }
+
+        private void IntersectForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // If the command hasn't been finished, cancel it now.
+            if (m_Cmd != null)
+            {
+                m_Cmd.DialAbort(null);
+                m_Cmd = null;
+            }
         }
     }
 }

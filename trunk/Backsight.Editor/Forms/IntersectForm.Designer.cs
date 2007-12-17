@@ -54,6 +54,7 @@ namespace Backsight.Editor.Forms
             this.wizard.Name = "wizard";
             this.wizard.Size = new System.Drawing.Size(620, 212);
             this.wizard.TabIndex = 0;
+            this.wizard.Finish += new System.EventHandler(this.wizard_Finish);
             // 
             // IntersectForm
             // 
@@ -64,6 +65,7 @@ namespace Backsight.Editor.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "IntersectForm";
             this.Text = "Intersect";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IntersectForm_FormClosing);
             this.ResumeLayout(false);
 
         }
