@@ -702,7 +702,10 @@ namespace Backsight.Editor.Forms
             if (m_DefaultOffset==null)
                 return true;
 
-            Distance soff = new Distance(m_OffsetDistance);
+            // If the currently entered offset is blank, treat as zero.
+            Distance d = (m_OffsetDistance==null ? new Distance() : m_OffsetDistance);
+
+            Distance soff = new Distance(d);
             if (!m_IsRight)
                 soff.SetNegative();
 

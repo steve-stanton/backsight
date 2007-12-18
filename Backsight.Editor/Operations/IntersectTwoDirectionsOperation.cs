@@ -314,7 +314,7 @@ namespace Backsight.Editor.Operations
         /// <param name="lineEnt1">The entity type for a line connecting the 1st direction to the intersection</param>
         /// <param name="lineEnt2">The entity type for a line connecting the 2nd direction to the intersection</param>
         /// <returns>True if operation updated ok.</returns>
-        bool Correct(Direction dir1, Direction dir2, IEntity lineEnt1, IEntity lineEnt2)
+        internal bool Correct(Direction dir1, Direction dir2, IEntity lineEnt1, IEntity lineEnt2)
         {
             if ((lineEnt1==null && m_Line1!=null) || (lineEnt2==null && m_Line2!=null))
                 throw new Exception("You cannot delete lines via update. Use Line Delete.");
