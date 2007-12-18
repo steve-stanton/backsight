@@ -212,7 +212,20 @@ namespace Backsight.Editor
                 return false;
             }
 
-            return m_Dialog.Finish();
+            PointFeature p = m_Dialog.Finish();
+            if (p==null)
+                return false;
+
+            /*
+            // Get the view to select the intersection point.
+            CdDialog* pParent = (CdDialog*)GetParent();
+            if (pParent)
+                pParent->Select(ptSave);
+             */
+
+            m_Dialog.Dispose();
+            m_Dialog = null;
+            return FinishCommand();
         }
     }
 }

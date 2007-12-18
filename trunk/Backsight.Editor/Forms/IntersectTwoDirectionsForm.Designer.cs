@@ -98,6 +98,7 @@ namespace Backsight.Editor.Forms
             this.finishPage.Name = "finishPage";
             this.finishPage.Size = new System.Drawing.Size(759, 190);
             this.finishPage.TabIndex = 3;
+            this.finishPage.ShowFromNext += new System.EventHandler(this.finishPage_ShowFromNext);
             // 
             // intersectInfo
             // 

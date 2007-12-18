@@ -156,6 +156,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.label1);
             this.Name = "IntersectInfoControl";
             this.Size = new System.Drawing.Size(604, 136);
+            this.VisibleChanged += new System.EventHandler(this.IntersectInfoControl_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
 

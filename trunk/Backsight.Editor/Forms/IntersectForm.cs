@@ -16,9 +16,9 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
-using Backsight.Editor.Operations;
-
 using System.ComponentModel;
+
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Forms
 {
@@ -63,19 +63,14 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
-        /*
-public:
-	virtual void OnHighlight ( CePoint* pPoint ) const;
-	virtual CeView* GetpView ( void ) const;
-	virtual void OnCancel ( void );
-	virtual void OnDialogFinish ( void );
-	virtual void Erase ( const CeDirection& dir ) const;
-	virtual void Draw ( const CeDirection& dir ) const;
-	virtual void SetColour ( const CePoint& point, const COL colour ) const;
-	virtual void Select ( CePoint* pPoint ) const;
-	virtual	CeIntersect* GetUpdateOp ( void ) const;
-	virtual const CeIntersect* GetRecall ( void ) const;
-         */
+        /// <summary>
+        /// The command displaying this dialog (either an instance of <see cref="IntersectUI"/>
+        /// or <see cref="UpdateUI"/>). Nulled when the command is saved.
+        /// </summary>
+        protected CommandUI GetCommand()
+        {
+            return m_Cmd;
+        }
 
         internal virtual void OnDraw(PointFeature point)
         {
@@ -133,22 +128,22 @@ public:
         {
             // The call to IntersectUI.DialFinish will usually lead to a call
             // to the Finish method below. It won't if we're doing an update.
-            if (m_Cmd!=null)
-            {
-                m_Cmd.DialFinish(null);
+            if (m_Cmd!=null && m_Cmd.DialFinish(null))
                 m_Cmd = null;
-            }
         }
 
         /// <summary>
-        /// Handles the Finish button.
+        /// Handles the Finish button. This is called by <see cref="IntersectUI.DialFinish"/>.
+        /// An implementation must be provided by derived classes, since this implementation
+        /// just throws an exception, indicating that it needs to be implemented. While it
+        /// would be preferable to declare this as an abstract method, an attempt to do
+        /// so causes VisualStudio to complain (the designer needs to create an instance
+        /// of the base class).
         /// </summary>
-        /// <param name="wnd">The dialog window. If this matches the dialog that
-        /// this command knows about, the command will be executed (and, on success,
-        /// the dialog will be destroyed). If it's some other window, it must
-        /// be a sub-dialog created by our guy, so let it handle the request.</param>
-        /// <returns></returns>
-        internal virtual bool Finish()
+        /// <returns>The point created at the intersection (null if an error was reported).
+        /// The caller is responsible for disposing of the dialog and telling the controller
+        /// the command is done)</returns>
+        internal virtual PointFeature Finish()
         {
             throw new NotImplementedException("IntersectForm.DialFinish");
         }
@@ -162,5 +157,20 @@ public:
                 m_Cmd = null;
             }
         }
-    }
+
+        /// <summary>
+        /// Attempts to calculate the position of the intersect, using the currently
+        /// entered information.
+        /// An implementation must be provided by derived classes, since this implementation
+        /// just throws an exception, indicating that it needs to be implemented. While it
+        /// would be preferable to declare this as an abstract method, an attempt to do
+        /// so causes VisualStudio to complain (the designer needs to create an instance
+        /// of the base class).
+        /// </summary>
+        /// <returns>The position of the intersect (null if there isn't one)</returns>
+        internal virtual IPosition CalculateIntersect()
+        {
+            throw new NotImplementedException("IntersectForm.CalculateIntersect");
+        }
+   }
 }
