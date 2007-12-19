@@ -447,7 +447,7 @@ namespace Gui.Wizard
 				//yep Finish was pressed
 
                 this.OnFinish(vActivePage);
-                if (DesignMode == false)
+                if (DesignMode == false && this.ParentForm!=null) // the parent may have been closed by an event handler
                 {
                     this.ParentForm.Close();
                 }
