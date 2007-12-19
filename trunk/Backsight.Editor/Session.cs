@@ -158,6 +158,9 @@ namespace Backsight.Editor
         internal void Add(Operation o)
         {
             Debug.Assert(object.ReferenceEquals(s_CurrentSession,this));
+            if (m_Operations==null)
+                m_Operations = new List<Operation>();
+
             m_Operations.Add(o);
         }
 
