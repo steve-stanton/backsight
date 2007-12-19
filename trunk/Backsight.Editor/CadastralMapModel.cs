@@ -959,7 +959,7 @@ namespace Backsight.Editor
 
                         if (dic.TryGetValue(centerPointId, out circles))
                         {
-                            if (circles.IndexOf(c)==0)
+                            if (circles.IndexOf(c)<0)
                             {
                                 circles.Add(c);
                                 addToResult = true;
