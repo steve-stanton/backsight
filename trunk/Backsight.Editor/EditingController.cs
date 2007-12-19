@@ -483,6 +483,10 @@ namespace Backsight.Editor
             if (m_Command!=null)
                 throw new InvalidOperationException();
 
+            // Disable auto-highlight for the duration of the command
+            if (m_IsAutoSelect>0)
+                m_IsAutoSelect = -m_IsAutoSelect;
+
             m_AutoSaver.StartEdit(cmd);
             m_Command = cmd;
             m_Command.Run();
