@@ -24,6 +24,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on two direction observations.
     /// </summary>
+    [Serializable]
     class IntersectTwoDirectionsOperation : IntersectOperation
     {
         #region Class data
@@ -238,7 +239,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="dir1">First direction observation.</param>
         /// <param name="dir2">Second direction observation.</param>
-        /// <param name="pointId">The ID and entity type for the intersect point</param>
+        /// <param name="pointId">The ID and entity type for the intersect point
+        /// If null, the default entity type for point features will be used.</param>
         /// <param name="lineEnt1">The entity type for a line connecting the 1st direction to the
         /// intersection (null for no line)</param>
         /// <param name="lineEnt2">The entity type for a line connecting the 2nd direction to the

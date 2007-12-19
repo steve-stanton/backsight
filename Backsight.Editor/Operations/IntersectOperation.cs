@@ -23,6 +23,7 @@ namespace Backsight.Editor.Operations
     /// An intersect is a COGO operation used to generate a point where two
     /// lines intersect.
     /// </summary>
+    [Serializable]
     abstract class IntersectOperation : Operation
     {
         #region Class data
@@ -106,11 +107,15 @@ protected:
         /// Adds a new intersection point to the map.
         /// </summary>
         /// <param name="xsect">Position of the intersection.</param>
-        /// <param name="pointId">The ID and entity type for the intersection point.</param>
+        /// <param name="pointId">The ID and entity type for the intersection point.
+        /// If null, the default entity type for point features will be used.</param>
         /// <returns>The new point feature</returns>
         protected PointFeature AddIntersection(IPosition xsect, IdHandle pointId)
         {
             CadastralMapModel map = MapModel;
+            if (pointId==null)
+                return map.AddPoint(xsect, map.DefaultPointType, this);
+
             PointFeature p = map.AddPoint(xsect, pointId.Entity, this);
             pointId.CreateId(p);
             return p;
@@ -160,6 +165,8 @@ protected:
         /// </summary>
         /// <param name="line">A line created by this operation (may be null)</param>
         /// <param name="result">The list to append to</param>
+        /// <remarks>This method may be unecessary - I suspect the UI may block an
+        /// attempt to add a line when an offset is involved, need to check.</remarks>
         protected void AddCreatedFeatures(LineFeature line, List<Feature> result)
         {
             if (line!=null)

@@ -40,8 +40,9 @@ namespace Backsight.Editor.Forms
             // Initialize the first page last, to ensure focus is on the initial text box
             // of the first page.
             intersectInfo.InitializeControl(this);
-            getDirection2.InitializeControl(this, 2);
             getDirection1.InitializeControl(this, 1);
+
+            // getDirection2 gets initialized by directionTwoPage_ShowFromNext
         }
 
         internal override void OnDraw(PointFeature point)
@@ -192,6 +193,16 @@ namespace Backsight.Editor.Forms
                 return null;
 
             return d1.Intersect(d2);
+        }
+
+        private void directionTwoPage_ShowFromNext(object sender, EventArgs e)
+        {
+            // Initialize the direction now (rather than when the form is shown). In
+            // a situation where the user has just changed the default offset (on page
+            // 1 of the wizard), it makes little sense to show the old offset when
+            // page 2 is displayed.
+
+            getDirection2.InitializeControl(this, 2);
         }
     }
 }
