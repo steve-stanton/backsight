@@ -105,9 +105,13 @@ namespace Backsight.Editor.Forms
             throw new NotImplementedException("IntersectForm.OnSelectLine - not implemented by derived class");
         }
 
+        /// <summary>
+        /// Moves to the next wizard page (so long as the current page isn't the finish page).
+        /// </summary>
         internal void AdvanceToNextPage()
         {
-            throw new NotImplementedException("IntersectForm.AdvanceToNextPage");
+            if (!wizard.Page.IsFinishPage)
+                wizard.Next();
         }
 
         internal IntersectOperation GetUpdateOp()
