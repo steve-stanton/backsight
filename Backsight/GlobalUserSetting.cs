@@ -42,7 +42,7 @@ namespace Backsight
         /// <summary>
         /// The registry key for user-specific settings.
         /// </summary>
-        static string s_UserRoot = @"HKEY_CURRENT_USER\Software\Backsight";
+        static string s_UserRoot = Registry.CurrentUser + @"\Software\Backsight";
 
         /// <summary>
         /// The registry key that acts as the root for user-specific settings.
