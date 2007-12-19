@@ -48,8 +48,14 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
-        public MainForm()
+        public MainForm(string[] args)
         {
+            // If user double-clicked on a file, it should appear as an argument. In that
+            // case, remember it as the last map (the controller will pick it up later
+            // during startup)
+            if (args!=null && args.Length>0 && File.Exists(args[0]))
+                Settings.Default.LastMap = args[0];
+
             // Define the controller for the application
             m_Controller = new EditingController(this);
 
@@ -90,6 +96,12 @@ namespace Backsight.Editor.Forms
             m_Controller.OnStartup(cs);
 
             InitializeActions();
+
+            // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
+            string fullMapName = m_Controller.CadastralMapModel.Name;
+            if (!String.IsNullOrEmpty(fullMapName))
+                m_MruMenu.AddFile(fullMapName);
+
         }
 
         private void InitializeActions()
