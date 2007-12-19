@@ -42,8 +42,8 @@ namespace Backsight.Editor.Forms
             // 
             // wizard
             // 
-            this.wizard.Controls.Add(this.finishPage);
             this.wizard.Controls.Add(this.directionTwoPage);
+            this.wizard.Controls.Add(this.finishPage);
             this.wizard.Controls.Add(this.directionOnePage);
             this.wizard.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.directionOnePage,
@@ -79,6 +79,7 @@ namespace Backsight.Editor.Forms
             this.directionTwoPage.Name = "directionTwoPage";
             this.directionTwoPage.Size = new System.Drawing.Size(759, 190);
             this.directionTwoPage.TabIndex = 2;
+            this.directionTwoPage.ShowFromNext += new System.EventHandler(this.directionTwoPage_ShowFromNext);
             // 
             // getDirection2
             // 

@@ -30,7 +30,7 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// ID and entity type for the intersection point.
+        /// ID and entity type for the intersection point (should never be null)
         /// </summary>
         IdHandle m_PointId;
 
@@ -52,7 +52,7 @@ namespace Backsight.Editor.Forms
 
             // No point feature at the intersection.
             m_Intersect = null;
-            m_PointId = null;
+            m_PointId = new IdHandle();
         }
 
         #endregion
@@ -77,7 +77,7 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// ID and entity type for the intersection point.
+        /// ID and entity type for the intersection point (should never be null)
         /// </summary>
         internal IdHandle PointId
         {
@@ -131,9 +131,6 @@ namespace Backsight.Editor.Forms
 
         private void pointTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (m_PointId==null)
-                return;
-
             // Get the new point type.
             IEntity ent = (IEntity)pointTypeComboBox.SelectedItem;
 

@@ -1459,7 +1459,7 @@ namespace Backsight.Editor.Forms
             }
 
             // Handle case where no offset is defined (remove from registry)
-            if (Math.Abs(m_OffsetDistance.Meters) < Constants.TINY)
+            if (m_OffsetDistance==null || Math.Abs(m_OffsetDistance.Meters) < Constants.TINY)
             {
                 GlobalUserSetting.Write(DEFAULT_OFFSET_KEY, String.Empty);
                 return;
