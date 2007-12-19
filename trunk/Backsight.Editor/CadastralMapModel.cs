@@ -297,6 +297,10 @@ namespace Backsight.Editor
             return (String.IsNullOrEmpty(name) ? "(Untitled)" : name);
         }
 
+        /// <summary>
+        /// The user-name of the model (including the path).
+        /// Blank if the model is undefined, or it's got a temporary system-generated name.
+        /// </summary>
         public string Name
         {
             get
