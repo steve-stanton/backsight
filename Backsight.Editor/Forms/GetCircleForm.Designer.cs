@@ -114,6 +114,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.splitContainer1);
             this.Name = "GetCircleForm";
             this.Text = "Which circle?";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.GetCircleForm_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
