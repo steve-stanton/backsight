@@ -76,6 +76,12 @@
       <DependentUpon>GetDistanceControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\IIntersectDialog.cs" />
+    <Compile Include="Forms\IntersectDirectionAndDistanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IntersectDirectionAndDistanceForm.Designer.cs">
+      <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IntersectDirectionAndLineForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -505,6 +511,10 @@
     <EmbeddedResource Include="Forms\IdAllocationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IdAllocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IntersectDirectionAndDistanceForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\IntersectForm.resx">
       <SubType>Designer</SubType>

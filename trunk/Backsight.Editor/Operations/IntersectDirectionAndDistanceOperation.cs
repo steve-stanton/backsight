@@ -443,8 +443,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ent1">The entity type for 1st line (null for no line)</param>
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
         /// <returns></returns>
-
-        bool Correct(Direction dir, Observation distance, PointFeature from, bool isdefault,
+        internal bool Correct(Direction dir, Observation distance, PointFeature from, bool isdefault,
                         IEntity ent1, IEntity ent2)
         {
             if ((ent1==null && m_DirLine!=null) || (ent2==null && m_DistLine!=null))

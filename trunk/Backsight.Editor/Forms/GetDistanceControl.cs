@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Editor.Operations;
@@ -120,6 +121,10 @@ namespace Backsight.Editor.Forms
         internal IEntity LineType
         {
             get { return m_LineType; }
+        }
+
+        internal void InitializeControl(IntersectForm parent, int distNum)
+        {
         }
 
         private void GetDistanceControl_Load(object sender, EventArgs e)
@@ -456,120 +461,78 @@ LOGICAL CdGetDist::ParseDistance ( void ) {
 } // end of ParseDistance
          */
 
-        /*
-//	@mfunc Set colour for a point.
-//
-//	@parm The point to draw.
-//	@parm The ID of the field that the point relates to. The
-//	default is the field that currently has the focus.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Draws the supplied point with a color that's consistent with the
+        /// meaning of a control appearing on this dialog.
+        /// </summary>
+        /// <param name="point">The point to draw</param>
+        /// <param name="field">The control the point relates to
+        /// (default was the field that currently has the focus)
+        /// </param>
+        void SetColor(PointFeature point, Control field)
+        {
+            // Return if point not specified.
+            if (point==null)
+                return;
 
-void CdGetDist::SetColour ( const CePoint* const pPoint, const UINT id ) const {
+            // Determine the color.
+            Color col;
 
-//	Return if point not specified.
-	if ( !pPoint ) return;
+            if (field == fromPointTextBox)
+                col = Color.LightBlue;
+            else if (field == distanceTextBox)
+                col = Color.Yellow;
+            else
+                return;
 
-//	Determine the colour.
+            // Draw the point in the proper color.
+            point.Draw(ActiveDisplay, col);
+        }
 
-	COL col;
-	UINT field = id;
-	if ( !field ) field = m_Focus;
+        /// <summary>
+        /// Ensure that a point is drawn with it's "normal" color.
+        /// </summary>
+        /// <param name="point">The point to set the color for.</param>
+        void SetNormalColor(PointFeature point)
+        {
+            // Redraw in idle time
+            if (point!=null)
+                ErasePainting();
+        }
 
-	switch ( field ) {
-	case IDC_FROMPOINT: col = COL_LIGHTBLUE;	break;
-	case IDC_DISTANCE:	col = COL_YELLOW;		break;
-	default:			return;
-	}
+        internal void OnDraw(PointFeature point)
+        {
+            if (point==null)
+                OnDrawAll();
+            else
+            {
+                if (point==m_From)
+                    SetColor(m_From, fromPointTextBox);
 
-//	Ask the enclosing dialog to set the colour.
+                if (point==m_DistancePoint)
+                    SetColor(m_DistancePoint, distanceTextBox);
+            }
+        }
 
-	CdDialog* pDial = (CdDialog*)GetParent();
-	if ( pDial ) pDial->SetColour(*pPoint,col);
+        /// <summary>
+        /// Handles any redrawing. This just ensures that points are drawn in the right
+        /// color, and that any distance circle shown is still there.
+        /// </summary>
+        internal void OnDrawAll()
+        {
+            // Draw any currently selected points
+            SetColor(m_From, fromPointTextBox);
+            SetColor(m_DistancePoint, distanceTextBox);
 
-	return;
+            // Draw any current circle
+            if (m_Circle!=null)
+                m_Circle.Render(ActiveDisplay, new DottedStyle());
+        }
 
-} // end of SetColour
-         */
-
-        /*
-//	@mfunc Set colour for a point. The colour depends on the
-//	field that currently has the focus.
-//
-//	@parm The point to set the colour for.
-//	@parm The ID of the field that the point relates to. The
-//	default is the field that currently has the focus.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDist::SetNormalColour ( const CePoint* const pPoint ) const {
-
-//	Return if point not specified.
-	if ( !pPoint ) return;
-
-//	Ask the enclosing dialog to set the colour to black.
-
-	CdDialog* pDial = (CdDialog*)GetParent();
-	if ( pDial ) pDial->SetColour(*pPoint,COL_BLACK);
-
-	return;
-
-} // end of SetNormalColour
-         */
-
-        /*
-void CdGetDist::OnDraw ( const CePoint* const pPoint ) const {
-
-	if ( !pPoint )
-		OnDrawAll();
-	else {
-		if ( pPoint==m_pFrom )
-			SetColour(m_pFrom,IDC_FROMPOINT);
-		if ( pPoint==m_pDistancePoint )
-			SetColour(m_pDistancePoint,IDC_DISTANCE);
-	}
-}
-         */
-
-        /*
-//	@mfunc Handle any redrawing. This just ensures that points
-//	are drawn in the right colour, and that any distance circle
-//	shown is still there.
-//
-//	@parm TRUE to draw. FALSE to erase.
-//
-//	This function is called at the end of the view's OnDraw
-//	function. I though about reacting to a WM_PAINT message,
-//	but wasn't sure what's going to get drawn first.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDist::OnDrawAll ( const LOGICAL draw ) const {
-
-//	There's not much to draw, so just do everything.
-
-//	Draw any currently selected points & any distance circle.
-
-	if ( draw ) {
-		SetColour(m_pFrom,IDC_FROMPOINT);
-		SetColour(m_pDistancePoint,IDC_DISTANCE);
-	}
-	else {
-		SetNormalColour(m_pFrom);
-		SetNormalColour(m_pDistancePoint);
-	}
-
-	if ( m_pCircle ) {
-		if ( draw )
-			m_pCircle->Draw();
-		else
-			m_pCircle->Erase();
-	}
-
-	return;
-
-} // end of OnDrawAll
-         */
+        ISpatialDisplay ActiveDisplay
+        {
+            get { return EditingController.Current.ActiveDisplay; }
+        }
 
         /// <summary>
         /// Initialize for an update (or recall)
@@ -686,8 +649,6 @@ private:
 	virtual LOGICAL		IsPointValid	( void ) const;
 	virtual void		OnNewDistance	( void );
 	virtual void		SetNormalColour	( const CePoint* const pPoint ) const;
-	virtual void		SetColour		( const CePoint* const pPoint
-										, const UINT id=0 ) const;
 	virtual void		OnDrawAll		( const LOGICAL draw=TRUE ) const;
 	virtual LOGICAL		ParseDistance	( void );
 	virtual void		ShowUpdate		( const UINT1 distnum );
@@ -695,5 +656,23 @@ private:
 										, const CeObservation* const pDist
 										, const CeArc* const pArc );
          */
+
+        /// <summary>
+        /// Indicates that any painting previously done by a command should be erased. This
+        /// tells the command's active display that it should revert the display buffer to
+        /// the way it was at the end of the last draw from the map model. Given that a command
+        /// supports painting, it's <c>Paint</c> method will be called during idle time.
+        /// </summary>
+        internal void ErasePainting()
+        {
+            EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        }
+
+        IntersectOperation GetUpdateOp()
+        {
+            IntersectForm parent = (this.ParentForm as IntersectForm);
+            Debug.Assert(parent!=null);
+            return parent.GetUpdateOp();
+        }
     }
 }

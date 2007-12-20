@@ -116,12 +116,10 @@ namespace Backsight.Editor
             }
             else if (edid == EditingActionId.DirDistIntersect)
             {
-                /*
                 if (pup==null)
                     m_Dialog = new IntersectDirectionAndDistanceForm(this, "Intersect direction and distance");
                 else
                     m_Dialog = new IntersectDirectionAndDistanceForm(this, "Update (intersect direction and distance)");
-                 */
             }
             else if (edid == EditingActionId.LineIntersect)
             {

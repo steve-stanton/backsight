@@ -39,6 +39,12 @@ namespace Backsight.Editor.Forms
         /// </summary>
         IPosition m_Intersect; // was also transient m_pPoint object
 
+        /// <summary>
+        /// Does the intersection correspond to the default position? Has no meaning
+        /// if the <see cref="CanHaveTwoIntersections"/> property is false.
+        /// </summary>
+        bool m_IsDefault;
+
         #endregion
 
         #region Constructors
@@ -53,6 +59,7 @@ namespace Backsight.Editor.Forms
             // No point feature at the intersection.
             m_Intersect = null;
             m_PointId = new IdHandle();
+            m_IsDefault = true;
         }
 
         #endregion
@@ -82,6 +89,15 @@ namespace Backsight.Editor.Forms
         internal IdHandle PointId
         {
             get { return m_PointId; }
+        }
+
+        /// <summary>
+        /// Does the intersection correspond to the default position? Has no meaning
+        /// if the <see cref="CanHaveTwoIntersections"/> property is false.
+        /// </summary>
+        internal bool IsDefault
+        {
+            get { return m_IsDefault; }
         }
 
         internal void InitializeControl(IntersectForm parent)
