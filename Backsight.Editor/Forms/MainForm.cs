@@ -540,7 +540,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void FileOpen(IUserAction action)
         {
             OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Backsight files (*.bs)|*.bs|All files (*)|*";
+            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
 
             if (dial.ShowDialog() == DialogResult.OK)
             {
@@ -584,7 +584,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         internal string AskForFileName()
         {
             SaveFileDialog dial = new SaveFileDialog();
-            dial.DefaultExt = "bs";
+            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
+            dial.DefaultExt = "ce";
             if (dial.ShowDialog() == DialogResult.OK)
                 return dial.FileName;
 
