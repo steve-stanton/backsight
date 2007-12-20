@@ -22,37 +22,36 @@ using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
-    /// <written by="Steve Stanton" was="CdIntersectDir" />
+    /// <written by="Steve Stanton" was="CdIntersectDirDist" />
     /// <summary>
-    /// Dialog for the Intersect - Two Directions command.
+    /// Dialog for the Intersect - Direction and Distance command.
     /// </summary>
-    partial class IntersectTwoDirectionsForm : IntersectForm
+    partial class IntersectDirectionAndDistanceForm : IntersectForm
     {
         /// <summary>
         /// Creates a new <c>IntersectTwoDirectionsForm</c>
         /// </summary>
         /// <param name="cmd">The command displaying this dialog (not null)</param>
         /// <param name="title">The string to display in the form's title bar</param>
-        internal IntersectTwoDirectionsForm(CommandUI cmd, string title)
+        internal IntersectDirectionAndDistanceForm(CommandUI cmd, string title)
             : base(cmd, title)
         {
             InitializeComponent();
         }
 
-        private void IntersectTwoDirectionsForm_Shown(object sender, EventArgs e)
+        private void IntersectDirectionAndDistanceForm_Shown(object sender, EventArgs e)
         {
             // Initialize the first page last, to ensure focus is on the initial text box
             // of the first page.
             intersectInfo.InitializeControl(this);
-            getDirection1.InitializeControl(this, 1);
-
-            // getDirection2 gets initialized by directionTwoPage_ShowFromNext
+            getDistance.InitializeControl(this, 1);
+            getDirection.InitializeControl(this, 1);
         }
 
         internal override void OnDraw(PointFeature point)
         {
-            getDirection1.OnDrawAll();
-            getDirection2.OnDrawAll();
+            getDirection.OnDrawAll();
+            getDistance.OnDrawAll();
 
             IPosition x = intersectInfo.Intersection;
             if (x!=null)
@@ -61,17 +60,17 @@ namespace Backsight.Editor.Forms
                 IDrawStyle style = EditingController.Current.Style(Color.Magenta);
                 style.Render(display, x);
 
-                if (getDirection1.LineType!=null)
+                if (getDirection.LineType!=null)
                 {
-                    Direction d = getDirection1.Direction;
+                    Direction d = getDirection.Direction;
                     style.Render(display, new IPosition[] { d.StartPosition, x });
                 }
 
-                if (getDirection2.LineType!=null)
+                if (getDistance.LineType!=null)
                 {
-                    Direction d = getDirection2.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
-                }                    
+                    PointFeature p = getDistance.From;
+                    style.Render(display, new IPosition[] { p, x });
+                }
             }
         }
 
@@ -81,9 +80,10 @@ namespace Backsight.Editor.Forms
         /// <param name="point">The point (if any) that has been selected.</param>
         internal override void OnSelectPoint(PointFeature point)
         {
-            GetDirectionControl gdc = GetVisibleDirectionControl();
-            if (gdc!=null)
-                gdc.OnSelectPoint(point);
+            if (getDirection.Visible)
+                getDirection.OnSelectPoint(point);
+            else if (getDistance.Visible)
+                getDistance.OnSelectPoint(point);
         }
 
         /// <summary>
@@ -92,20 +92,8 @@ namespace Backsight.Editor.Forms
         /// <param name="line">The line (if any) that has been selected.</param>
         internal override void OnSelectLine(LineFeature line)
         {
-            GetDirectionControl gdc = GetVisibleDirectionControl();
-            if (gdc!=null)
-                gdc.OnSelectLine(line);
-        }
-
-        GetDirectionControl GetVisibleDirectionControl()
-        {
-            if (getDirection1.Visible)
-                return getDirection1;
-
-            if (getDirection2.Visible)
-                return getDirection2;
-
-            return null;
+            if (getDirection.Visible)
+                getDirection.OnSelectLine(line);
         }
 
         /// <summary>
@@ -128,7 +116,7 @@ namespace Backsight.Editor.Forms
             // Save the intersect point if we're not updating
             IntersectOperation upd = GetUpdateOp();
             if (upd==null)
-                return SaveDirDir();
+                return SaveDirDist();
 
             // Apply corrections and return the point previously created at the intersect
             Correct(upd);
@@ -136,23 +124,25 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Saves a direction-direction intersection. 
+        /// Saves a direction-distance intersection. 
         /// </summary>
         /// <returns>The point feature at the intersection (null if something went wrong).</returns>
-        PointFeature SaveDirDir()
+        PointFeature SaveDirDist()
         {
-            IntersectTwoDirectionsOperation op = null;
+            IntersectDirectionAndDistanceOperation op = null;
 
             try
             {
-                Direction d1 = getDirection1.Direction;
-                IEntity e1 = getDirection1.LineType;
-                Direction d2 = getDirection2.Direction;
-                IEntity e2 = getDirection2.LineType;
+                Direction dir = getDirection.Direction;
+                IEntity e1 = getDirection.LineType;
+                Observation dist = getDistance.ObservedDistance;
+                PointFeature from = getDistance.From;
+                IEntity e2 = getDistance.LineType;
                 IdHandle pointId = intersectInfo.PointId;
+                bool isdefault = intersectInfo.IsDefault;
 
-                op = new IntersectTwoDirectionsOperation();
-                op.Execute(d1, d2, pointId, e1, e2);
+                op = new IntersectDirectionAndDistanceOperation();
+                op.Execute(dir, dist, from, isdefault, pointId, e1, e2);
                 return op.IntersectionPoint;
             }
 
@@ -170,9 +160,10 @@ namespace Backsight.Editor.Forms
         /// </summary>
         void Correct(IntersectOperation io)
         {
-            IntersectTwoDirectionsOperation op = (IntersectTwoDirectionsOperation)io;
-            op.Correct(getDirection1.Direction, getDirection2.Direction,
-                       getDirection1.LineType, getDirection2.LineType);
+            IntersectDirectionAndDistanceOperation op = (IntersectDirectionAndDistanceOperation)io;
+            op.Correct(getDirection.Direction,
+                       getDistance.ObservedDistance, getDistance.From,
+                       intersectInfo.IsDefault, getDirection.LineType, getDistance.LineType);
         }
 
         private void finishPage_ShowFromNext(object sender, EventArgs e)
@@ -189,26 +180,24 @@ namespace Backsight.Editor.Forms
         /// <returns>The position of the intersect (null if there isn't one)</returns>
         internal override IPosition CalculateIntersect()
         {
-            Direction d1 = getDirection1.Direction;
-            if (d1==null)
+            Direction dir = getDirection.Direction;
+            if (dir==null)
                 return null;
 
-            Direction d2 = getDirection2.Direction;
-            if (d2==null)
+            Observation dist = getDistance.ObservedDistance;
+            PointFeature from = getDistance.From;
+            if (dist==null || from==null)
                 return null;
 
-            return d1.Intersect(d2);
+            bool isdefault = intersectInfo.IsDefault;
+
+            IPosition xsect, xsect1, xsect2;
+            if (IntersectDirectionAndDistanceOperation.Calculate(dir, dist, from, isdefault,
+                                out xsect, out xsect1, out xsect2))
+                return xsect;
+
+            return null;
         }
 
-        private void directionTwoPage_ShowFromNext(object sender, EventArgs e)
-        {
-            // Initialize the direction now (rather than when the form is shown). In
-            // a situation where the user has just changed the default offset (on page
-            // 1 of the wizard), it makes little sense to show the old offset when
-            // page 2 is displayed.
-
-            getDirection2.InitializeControl(this, 2);
-        }
     }
 }
-
