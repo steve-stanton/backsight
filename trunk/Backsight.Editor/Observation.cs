@@ -55,7 +55,7 @@ namespace Backsight.Editor
         public ILength GetDistance(PointFeature from)
         {
             // It's easy if the observation is a distance object.
-	        Distance dist = (Distance)this;
+            Distance dist = (this as Distance);
             if (dist!=null)
                 return dist;
 

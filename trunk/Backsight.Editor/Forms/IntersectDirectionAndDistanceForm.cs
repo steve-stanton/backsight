@@ -53,23 +53,26 @@ namespace Backsight.Editor.Forms
             getDirection.OnDrawAll();
             getDistance.OnDrawAll();
 
-            IPosition x = intersectInfo.Intersection;
-            if (x!=null)
+            if (intersectInfo.Visible)
             {
-                ISpatialDisplay display = GetCommand().ActiveDisplay;
-                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
-                style.Render(display, x);
-
-                if (getDirection.LineType!=null)
+                IPosition x = intersectInfo.Intersection;
+                if (x!=null)
                 {
-                    Direction d = getDirection.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
-                }
+                    ISpatialDisplay display = GetCommand().ActiveDisplay;
+                    IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                    style.Render(display, x);
 
-                if (getDistance.LineType!=null)
-                {
-                    PointFeature p = getDistance.From;
-                    style.Render(display, new IPosition[] { p, x });
+                    if (getDirection.LineType!=null)
+                    {
+                        Direction d = getDirection.Direction;
+                        style.Render(display, new IPosition[] { d.StartPosition, x });
+                    }
+
+                    if (getDistance.LineType!=null)
+                    {
+                        PointFeature p = getDistance.From;
+                        style.Render(display, new IPosition[] { p, x });
+                    }
                 }
             }
         }
@@ -199,5 +202,11 @@ namespace Backsight.Editor.Forms
             return null;
         }
 
+        private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
+        {
+            // The intersection and any connecting lines should only be visible when
+            // the finish page is on screen.
+            ErasePainting();
+        }
     }
 }

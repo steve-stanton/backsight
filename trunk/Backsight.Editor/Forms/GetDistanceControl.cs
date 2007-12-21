@@ -71,6 +71,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         OffsetPoint m_OffsetPoint;
 
+        /// <summary>
+        /// The field that last had the focus.
+        /// </summary>
+        Control m_Focus;
+
         #endregion
 
         #region Constructors
@@ -86,6 +91,7 @@ namespace Backsight.Editor.Forms
             m_DistancePoint = null;
             m_Distance = null;
             m_OffsetPoint = null;
+            m_Focus = null;
         }
 
         #endregion
@@ -125,121 +131,114 @@ namespace Backsight.Editor.Forms
 
         internal void InitializeControl(IntersectForm parent, int distNum)
         {
-        }
-
-        private void GetDistanceControl_Load(object sender, EventArgs e)
-        {
-            if (DesignMode)
-                return;
-
             // Initialize combo box with a list of all line entity types
             // for the currently active editing layer.
             lineTypeComboBox.Load(SpatialType.Line);
 
-/*	
-//	If we are updating a feature that was previously created,
-//	load the original info. For distance-distance intersections,
-//	we need to know which page this is, to determine whether we
-//	should display info for the 1st or 2nd distance.
+            // If we are updating a feature that was previously created,
+            // load the original info. For distance-distance intersections,
+            // we need to know which page this is, to determine whether we
+            // should display info for the 1st or 2nd distance.
+            IntersectOperation op = parent.GetUpdateOp();
+            ShowUpdate(op, distNum);
 
-	ShowUpdate(this->m_PageNum);
-*/
+            // Go to the first text box
+            fromPointTextBox.Focus();
         }
 
         private void distanceTextBox_TextChanged(object sender, EventArgs e)
         {
-            /*
-	if ( IsFieldEmpty(IDC_DISTANCE) ) {
+            if (distanceTextBox.Text.Trim().Length==0)
+            {
+                // If we already had direction info, reset it.
+                SetNormalColor(m_DistancePoint);
+                m_DistancePoint = null;
+                m_Distance = null;
+                OnNewDistance();
+            }
+            else
+            {
+                // The distance could have been specified by the user, or it could have been
+                // set as the result of a pointing operation. In the latter case, m_DistancePoint
+                // will be defined.
 
-//		If we already had direction info, reset it.
-		SetNormalColour(m_pDistancePoint);
-		m_pDistancePoint = 0;
-		m_Distance = CeDistance();
-		OnNewDistance();
+                if (m_DistancePoint==null)
+                {
+                    // Explicitly entered by the user, so parse the distance.
+                    ParseDistance();
+                }
+            }
+        }
 
-	}
-	else {
-
-//		The distance could have been specified by the
-//		user, or it could have been set as the result of
-//		a pointing operation. In the latter case,
-//		m_pDistancePoint will be defined.
-
-		if ( !m_pDistancePoint ) {
-
-//			Explicitly entered by the user.
-
-//			Parse the distance.
-			ParseDistance();
-		}
-	}
-             */
+        private void distanceTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = distanceTextBox;
         }
 
         private void distanceTextBox_Leave(object sender, EventArgs e)
         {
-            /*
+            // No validation if the distance is being specified by pointing (in
+            // that case, losing the focus is ok.
+            if (m_DistancePoint!=null)
+            {
+                OnNewDistance();
+                return;
+            }
 
-//	No validation if the distance is being specified by pointing (in
-//	that case, losing the focus is ok.
-	if ( m_pDistancePoint ) {
-		OnNewDistance();
-		return;
-	}
+            // Return if the field is empty.
+            if (distanceTextBox.Text.Trim().Length==0)
+            {
+                OnNewDistance();
+                return;
+            }
 
-//	Return if the field is empty.
-	if ( IsFieldEmpty(IDC_DISTANCE) ) {
-		OnNewDistance();
-		return;
-	}
-
-//	Parse the distance.
-	ParseDistance();
-             */
+            // Parse the distance.
+            ParseDistance();
         }
 
         private void fromPointTextBox_TextChanged(object sender, EventArgs e)
         {
-            /*
-//	If the field is now empty, ensure that the from point
-//	is undefined.
+            // If the field is now empty, ensure that the from point
+            // is undefined.
+            if (fromPointTextBox.Text.Trim().Length==0)
+            {
+                SetNormalColor(m_From);
+                m_From = null;
+                OnNewDistance();
+            }
+            else if (m_From==null)
+            {
+                MessageBox.Show("You can only specify the from-point by pointing at the map.");
+            }
+        }
 
-	if ( IsFieldEmpty(IDC_FROMPOINT) ) {
-		SetNormalColour(m_pFrom);
-		m_pFrom = 0;
-		OnNewDistance();
-	}
-	else if ( !m_pFrom )
-		AfxMessageBox
-		( "You can only specify the from-point by pointing at the map." );
-             */
+        private void fromPointTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = fromPointTextBox;
         }
 
         private void fromPointTextBox_Leave(object sender, EventArgs e)
         {
-            /*
-//	See if a new circle should be drawn.
-	OnNewDistance();	
-             */
+            // See if a new circle should be drawn.
+	        OnNewDistance();	
         }
 
         private void lineTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            /*
-//	Get the new selection (if any)
-	m_pLineType = ReadEntityCombo(IDC_LINE_TYPE);
+            // Get the new selection (if any)
+            m_LineType = (IEntity)lineTypeComboBox.SelectedItem;
 
-//	If we have everything we need, move directly to the
-//	next page. Otherwise move to the first field we need.
-	if ( m_pFrom && m_pDistance ) {
-		CdDialog* pDial = (CdDialog*)GetParent();
-		pDial->PressButton(PSBTN_NEXT);
-	}
-	else if ( !m_pFrom )
-		GetDlgItem(IDC_FROMPOINT)->SetFocus();
-	else
-		GetDlgItem(IDC_DISTANCE)->SetFocus();
-             */
+            // If we have everything we need, move directly to the
+            // next page. Otherwise move to the first field we need.
+            if (m_From==null)
+                fromPointTextBox.Focus();
+            else if (m_Distance==null)
+                distanceTextBox.Focus();
+            else
+            {
+                IntersectForm dial = (this.ParentForm as IntersectForm);
+                dial.AdvanceToNextPage();
+            }
         }
 
         /// <summary>
@@ -248,218 +247,206 @@ namespace Backsight.Editor.Forms
         /// <param name="point"></param>
         internal void OnSelectPoint(PointFeature point)
         {
+            // Return if point is not defined.
+            if (point==null)
+                return;
+
+            // Return if point is not valid.
+            if (!IsPointValid())
+                return;
+
+            // Draw the point with appropriate color
+            SetColor(point, m_Focus);
+
+            // Handle the pointing, depending on what field we were last in.
+            if (m_Focus == fromPointTextBox)
+            {
+                // Save the from point.
+                SetNormalColor(m_From);
+                m_From = point;
+
+                // Display it (causes a call to OnChangeFromPoint).
+                ShowKey(fromPointTextBox, m_From);
+
+                // Move focus to the distance field.
+                distanceTextBox.Focus();
+            }
+            else if (m_Focus == distanceTextBox)
+            {
+                // The distance must be getting specified by pointing
+                // at an offset point.
+
+                SetNormalColor(m_DistancePoint);
+                m_DistancePoint = point;
+
+                // Display the point number.
+                distanceTextBox.Text = m_DistancePoint.FormattedKey;
+
+                // Move focus to the line type.
+                lineTypeComboBox.Focus();
+            }
         }
-        /*
-void CdGetDist::OnSelectPoint ( CePoint* pPoint ) {
 
-//	Return if point is not defined.
-	if ( !pPoint ) return;
+        /// <summary>
+        /// Checks if it is OK to accept a selected point in the field that last
+        /// had the input focus.
+        /// </summary>
+        /// <returns></returns>
+        bool IsPointValid()
+        {
+            if (m_Focus == fromPointTextBox)
+            {
+                // If a from point is already defined, allow the point only
+                // if the user wants to change it. If the from point is not
+                // already defined, the from point is always valid.
 
-//	Return if point is not valid.
-	if ( !IsPointValid() ) return;
+                if (m_From!=null)
+                {
+                    string msg = String.Empty;
+                    msg += ("You have already specified the from-point." + System.Environment.NewLine);
+                    msg += ("If you want to change it, erase it first.");
+                    MessageBox.Show(msg);
+                    return false;
+                }
 
-//	Set colour
-	SetColour(pPoint);
+                return true;
+            }
 
-//	Handle the pointing, depending on what field we were
-//	last in.
+            if (m_Focus == distanceTextBox)
+            {
+                // The distance must be getting specified by pointing at an offset point.
+                // Disallow if offset point has already been specified.
+                if (m_DistancePoint!=null)
+                {
+                    MessageBox.Show("You have already specified a distance offset point.");
+                    return false;
+                }
 
-	switch ( m_Focus ) {
+                return true;
+            }
 
-	case IDC_FROMPOINT: {
+            // If it's none of the above fields, a point is not valid.
+            // Just return quietly, in case the user is just mucking about
+            // pointing at stuff in the map window.
 
-//		Save the from point.
-		SetNormalColour(m_pFrom);
-		m_pFrom = pPoint;
+            return false;
+        }
 
-//		Display it (causes a call to OnChangeFromPoint).
-		GetDlgItem(IDC_FROMPOINT)->SetWindowText(m_pFrom->FormatKey());
+        /// <summary>
+        /// Checks whether the current data is enough to construct a distance
+        /// circle. If so, draw it.
+        /// </summary>
+        void OnNewDistance()
+        {
+            // Try to construct circle based on what's been entered
+            Circle c = GetCurrentCircle();
 
-//		Move focus to the distance field.
-		GetDlgItem(IDC_DISTANCE)->SetFocus();
+            if (c==null)
+            {
+                // If we didn't get anything, but we previously had a circle, ensure
+                // it gets erased.
+                if (m_Circle!=null)
+                {
+                    m_Circle = null;
+                    ErasePainting();
+                }
+            }
+            else
+            {
+                // Just return if current circle matches what we've already got
+                if (m_Circle!=null && CirclesMatch(m_Circle, c))
+                    return;
 
-		return;
-	}
+                // Draw the new circle
+                m_Circle = c;
+                ErasePainting();
+            }
+        }
 
-	case IDC_DISTANCE: {
+        /// <summary>
+        /// Checks whether two circles match
+        /// </summary>
+        /// <param name="c1">The first circle to check (not null)</param>
+        /// <param name="c2">The second circle to check (not null)</param>
+        /// <returns>True if the circles refer to the same center point, and have the same radius</returns>
+        bool CirclesMatch(Circle c1, Circle c2)
+        {
+            return (c1.CenterPoint == c2.CenterPoint &&
+                    Math.Abs(c1.Radius.Meters - c2.Radius.Meters) < Double.Epsilon);
+        }
 
-//		The distance must be getting specified by pointing
-//		at an offset point.
+        /// <summary>
+        /// Uses the currently displayed information to try to construct a
+        /// circle representing the distance.
+        /// </summary>
+        /// <returns>The constructed circle (null if a circle cannot be created
+        /// based on the information that's currently displayed)</returns>
+        Circle GetCurrentCircle()
+        {
+            Circle result = null;
 
-//		Define either the first or the second parallel point.
-		SetNormalColour(m_pDistancePoint);
-		m_pDistancePoint = pPoint;
+            // Undefine the address of the relevant distance observation.
+            m_ObservedDistance = null;
 
-//		Display the point number.
-		GetDlgItem(IDC_DISTANCE)->SetWindowText
-			(m_pDistancePoint->FormatKey());
+            if (m_From==null)
+                return null;
 
-//		Move focus to the line type.
-		GetDlgItem(IDC_LINE_TYPE)->SetFocus();
+            if (m_DistancePoint!=null || (m_Distance!=null && m_Distance.Meters>Constants.TINY))
+            {
+                double radius;
 
-		return;
-	}
-	
-	default:
+                // If we have an offset point, get the radius.
+                if (m_DistancePoint!=null)
+                    radius = Geom.Distance(m_From, m_DistancePoint);
+                else
+                    radius = m_Distance.Meters;
 
-		return;
+                // Construct the circle
+                result = new Circle(m_From, new Length(radius));
 
-	} // end switch
+                // Create the appropriate distance observation (this is what
+                // gets picked up when we actually go to work out the
+                // intersection on the last page of the intersect dialog.
 
-} // end of OnSelectPoint
-         */
+                if (m_DistancePoint!=null)
+                {
+                    m_OffsetPoint = new OffsetPoint(m_DistancePoint);
+                    m_ObservedDistance = m_OffsetPoint;
+                }
+                else
+                    m_ObservedDistance = m_Distance;
+            }
 
-        /*
-//	@mfunc Check if it is OK to accept a selected point in the field
-//	that last had the input focus.
-//
-/////////////////////////////////////////////////////////////////////////////
+            return result;
+        }
 
-LOGICAL CdGetDist::IsPointValid ( void ) const {
+        /// <summary>
+        /// Parses an explicitly entered distance. 
+        /// </summary>
+        /// <returns>True if distance parses ok (may be null for a blank string).</returns>
+        bool ParseDistance()
+        {
+            // Get the entered string.
+            string str = distanceTextBox.Text.Trim();
 
-	CHARS str[132];
+            // No distance if empty string
+            if (str.Length==0)
+            {
+                m_Distance = null;
+                return true;
+            }
 
-	switch ( m_Focus ) {
+            // Parse the distance.
+            if (!Distance.TryParse(str, out m_Distance))
+            {
+                MessageBox.Show("Invalid distance.");
+                distanceTextBox.Focus();
+                return false;
+            }
 
-	case IDC_FROMPOINT: {
-
-//		If a from point is already defined, allow the point only
-//		if the user wants to change it. If the from point is not
-//		already defined, the from point is always valid.
-
-		if ( m_pFrom ) {
-			sprintf ( str, "%s\n%s",
-				"You have already specified the from-point.",
-				"If you want to change it, erase it first." );
-			AfxMessageBox ( str );
-			return FALSE;
-		}
-		else
-			return TRUE;
-	}
-
-	case IDC_DISTANCE: {
-
-//		The distance must be getting specified by pointing
-//		at an offset point.
-
-//		Disallow if offset point has already been specified.
-		if ( m_pDistancePoint ) {
-			AfxMessageBox (
-				"You have already specified a distance offset point." );
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-	
-	default:
-
-//		If it's none of the above fields, a point is not valid.
-//		Just return quietly, in case the user is just mucking about
-//		pointing at stuff in the map window.
-
-		return FALSE;
-
-	} // end switch
-
-} // end of IsPointValid
-         */
-
-        /*
-//	@mfunc Check whether the current data is enough to
-//	construct a distance circle. If so, draw it. Remember
-//	to erase any previously drawn circle.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetDist::OnNewDistance ( void ) {
-
-	CeCircle* pCircle=0;	// Constructed circle.
-
-//	If we had a circle before, erase it.
-	if ( m_pCircle ) {
-		m_pCircle->Erase();
-		delete m_pCircle;
-		m_pCircle = 0;
-	}
-
-//	Undefine the address of the relevant distance observation.
-	m_pDistance = 0;
-
-	if ( m_pFrom && (m_pDistancePoint || m_Distance.GetMetric()>TINY) ) {
-
-		FLOAT8 radius;
-
-//		If we have an offset point, get the radius.
-		if ( m_pDistancePoint ) {
-			CeVertex centre(*m_pFrom);
-			CeVertex edge(*m_pDistancePoint);
-			radius = sqrt(centre.DistanceSquared(edge));
-		}
-		else
-			radius = m_Distance.GetMetric();
-
-//		Construct circle & draw it.
-		m_pCircle = new CeCircle(*m_pFrom,radius);
-		m_pCircle->Draw();
-
-//		Create the appropriate distance observation (this is what
-//		gets picked up when we actually go to work out the
-//		intersection on the last page of the property sheet --
-//		see CdIntersectTwo).
-
-		if ( m_pDistancePoint ) {
-			m_OffsetPoint.SetPoint(*m_pDistancePoint);
-			m_pDistance = &m_OffsetPoint;
-		}
-		else
-			m_pDistance = &m_Distance;
-	}
-
-} // end of OnNewDistance
-         */
-
-        /*
-//	@mfunc Parse an explicitly entered distance.
-//
-//	@rdesc TRUE if distance parses ok.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-LOGICAL CdGetDist::ParseDistance ( void ) {
-			
-//	Get the entered string.
-	CHARS str[32];
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_DISTANCE);
-	pEdit->GetWindowText(str,sizeof(str)-1);
-
-//	No distance if empty string (ignore any trailing
-//	white space).
-	UINT4 slen = StrLength(str);
-	str[slen] = '\0';
-	if ( slen==0 ) {
-		m_Distance = CeDistance();
-		return TRUE;
-	}
-
-//	Parse the distance.
-	m_Distance = CeDistance(str);
-
-//	Parsing was successful if the distance comes back
-//	as a defined value.
-
-	if ( !m_Distance.IsDefined() ) {
-		AfxMessageBox ( "Invalid distance." );
-		pEdit->SetFocus();
-		return FALSE;
-	}
-
-	OnNewDistance();
-	return TRUE;
-
-} // end of ParseDistance
-         */
+            OnNewDistance();
+            return true;
+        }
 
         /// <summary>
         /// Draws the supplied point with a color that's consistent with the
@@ -542,13 +529,7 @@ LOGICAL CdGetDist::ParseDistance ( void ) {
         /// a <see cref="IntersectTwoDistancesOperation"/>)</param>
         internal void ShowUpdate(IntersectOperation op, int distNum)
         {
-            /*
-        // Return if no update object (and no recall op).
-        const CeIntersect* pop = GetUpdateOp();
-        if ( pop==0 ) pop = GetRecall();
-        if ( !pop ) return;
-             */
-
+            // Return if no update object (and no recall op).
             if (op==null)
                 return;
 
@@ -638,25 +619,6 @@ LOGICAL CdGetDist::ParseDistance ( void ) {
             }
         }
 
-        /*
-public:
-	virtual void OnDraw ( const CePoint* const pPoint=0 ) const;
-         */
-
-        /*
-private:
-
-	virtual LOGICAL		IsPointValid	( void ) const;
-	virtual void		OnNewDistance	( void );
-	virtual void		SetNormalColour	( const CePoint* const pPoint ) const;
-	virtual void		OnDrawAll		( const LOGICAL draw=TRUE ) const;
-	virtual LOGICAL		ParseDistance	( void );
-	virtual void		ShowUpdate		( const UINT1 distnum );
-	virtual void		Show			( const CePoint* const pFrom
-										, const CeObservation* const pDist
-										, const CeArc* const pArc );
-         */
-
         /// <summary>
         /// Indicates that any painting previously done by a command should be erased. This
         /// tells the command's active display that it should revert the display buffer to
@@ -673,6 +635,19 @@ private:
             IntersectForm parent = (this.ParentForm as IntersectForm);
             Debug.Assert(parent!=null);
             return parent.GetUpdateOp();
+        }
+
+        void ShowKey(TextBox tb, PointFeature point)
+        {
+            string keystr = String.Empty;
+            if (point!=null)
+            {
+                keystr = point.FormattedKey;
+                if (keystr.Length==0)
+                    keystr = "+";
+            }
+
+            tb.Text = keystr;
         }
     }
 }

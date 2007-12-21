@@ -194,5 +194,29 @@ namespace Backsight.Editor.Forms
                 eastingLabel.Text = String.Format("{0:0.0000}", m_Intersect.X);
             }
         }
+
+        private void otherButton_Click(object sender, EventArgs e)
+        {
+            bool oldDefault = m_IsDefault;
+
+            try
+            {
+                IntersectForm parent = GetIntersectForm();
+                m_IsDefault = !m_IsDefault;
+                IPosition other = parent.CalculateIntersect();
+                if (other==null || other.IsAt(m_Intersect, Constants.TINY))
+                    throw new Exception("There isn't another intersection");
+
+                m_Intersect = other;
+                ShowIntersection();
+                EditingController.Current.ActiveDisplay.RestoreLastDraw();
+            }
+
+            catch (Exception ex)
+            {
+                m_IsDefault = oldDefault;
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

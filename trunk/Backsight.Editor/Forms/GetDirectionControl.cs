@@ -860,7 +860,7 @@ namespace Backsight.Editor.Forms
         {
             setDefaultOffsetButton.Enabled = CanSetDefaultOffset();
 
-            // Try to constructr direction based on what's been entered
+            // Try to construct direction based on what's been entered
             Direction dir = GetCurrentDirection();
 
             if (dir==null)

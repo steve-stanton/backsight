@@ -179,5 +179,13 @@ namespace Backsight.Editor.Forms
 
             throw new NotImplementedException("IntersectForm.CalculateIntersect");
         }
+
+        /// <summary>
+        /// Restores the last draw in the command's active display.
+        /// </summary>
+        internal void ErasePainting()
+        {
+            m_Cmd.ActiveDisplay.RestoreLastDraw();
+        }
    }
 }

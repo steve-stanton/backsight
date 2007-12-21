@@ -24,6 +24,24 @@ namespace Backsight.Editor
     [Serializable]
     class Distance : Observation, ILength, IEquatable<Distance>
     {
+        #region Static
+
+        /// <summary>
+        /// Attempts to parse the supplied string.
+        /// </summary>
+        /// <param name="s">The string to parse</param>
+        /// <param name="d">The result of the parse attempt (null if the string cannot
+        /// be parsed as a distance)</param>
+        /// <returns>True if <paramref name="d"/> was successfully defined</returns>
+        internal static bool TryParse(string s, out Distance d)
+        {
+            Distance t = new Distance(s);
+            d = (t.IsDefined ? t : null);
+            return t.IsDefined;
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -87,7 +105,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Constructor that accepts a string. Use the <c>IsDefined</c> property to check
-        /// whether the string was parsed ok.
+        /// whether the string was parsed ok. Also see <see cref="TryParse"/>.
         /// </summary>
         /// <param name="s">The string to parse. It should look like a floating
         ///	point number, but may have a units abbreviation stuck on the end (like that
