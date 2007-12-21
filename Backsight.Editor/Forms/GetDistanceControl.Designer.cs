@@ -61,6 +61,7 @@ namespace Backsight.Editor.Forms
             this.distanceTextBox.Name = "distanceTextBox";
             this.distanceTextBox.Size = new System.Drawing.Size(100, 22);
             this.distanceTextBox.TabIndex = 3;
+            this.distanceTextBox.Enter += new System.EventHandler(this.distanceTextBox_Enter);
             this.distanceTextBox.Leave += new System.EventHandler(this.distanceTextBox_Leave);
             this.distanceTextBox.TextChanged += new System.EventHandler(this.distanceTextBox_TextChanged);
             // 
@@ -70,6 +71,7 @@ namespace Backsight.Editor.Forms
             this.fromPointTextBox.Name = "fromPointTextBox";
             this.fromPointTextBox.Size = new System.Drawing.Size(100, 22);
             this.fromPointTextBox.TabIndex = 2;
+            this.fromPointTextBox.Enter += new System.EventHandler(this.fromPointTextBox_Enter);
             this.fromPointTextBox.Leave += new System.EventHandler(this.fromPointTextBox_Leave);
             this.fromPointTextBox.TextChanged += new System.EventHandler(this.fromPointTextBox_TextChanged);
             // 
@@ -140,7 +142,6 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.distanceGroupBox);
             this.Name = "GetDistanceControl";
             this.Size = new System.Drawing.Size(568, 175);
-            this.Load += new System.EventHandler(this.GetDistanceControl_Load);
             this.distanceGroupBox.ResumeLayout(false);
             this.distanceGroupBox.PerformLayout();
             this.groupBox2.ResumeLayout(false);

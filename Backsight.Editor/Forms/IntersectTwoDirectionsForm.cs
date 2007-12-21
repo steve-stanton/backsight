@@ -54,24 +54,27 @@ namespace Backsight.Editor.Forms
             getDirection1.OnDrawAll();
             getDirection2.OnDrawAll();
 
-            IPosition x = intersectInfo.Intersection;
-            if (x!=null)
+            if (intersectInfo.Visible)
             {
-                ISpatialDisplay display = GetCommand().ActiveDisplay;
-                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
-                style.Render(display, x);
-
-                if (getDirection1.LineType!=null)
+                IPosition x = intersectInfo.Intersection;
+                if (x!=null)
                 {
-                    Direction d = getDirection1.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
+                    ISpatialDisplay display = GetCommand().ActiveDisplay;
+                    IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                    style.Render(display, x);
+
+                    if (getDirection1.LineType!=null)
+                    {
+                        Direction d = getDirection1.Direction;
+                        style.Render(display, new IPosition[] { d.StartPosition, x });
+                    }
+
+                    if (getDirection2.LineType!=null)
+                    {
+                        Direction d = getDirection2.Direction;
+                        style.Render(display, new IPosition[] { d.StartPosition, x });
+                    }
                 }
-
-                if (getDirection2.LineType!=null)
-                {
-                    Direction d = getDirection2.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
-                }                    
             }
         }
 
@@ -208,6 +211,13 @@ namespace Backsight.Editor.Forms
             // page 2 is displayed.
 
             getDirection2.InitializeControl(this, 2);
+        }
+
+        private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
+        {
+            // The intersection and any connecting lines should only be visible when
+            // the finish page is on screen.
+            ErasePainting();            
         }
     }
 }

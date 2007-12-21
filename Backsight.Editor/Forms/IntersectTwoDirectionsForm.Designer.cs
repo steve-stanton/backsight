@@ -42,8 +42,8 @@ namespace Backsight.Editor.Forms
             // 
             // wizard
             // 
-            this.wizard.Controls.Add(this.directionTwoPage);
             this.wizard.Controls.Add(this.finishPage);
+            this.wizard.Controls.Add(this.directionTwoPage);
             this.wizard.Controls.Add(this.directionOnePage);
             this.wizard.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.directionOnePage,
@@ -99,6 +99,7 @@ namespace Backsight.Editor.Forms
             this.finishPage.Name = "finishPage";
             this.finishPage.Size = new System.Drawing.Size(759, 190);
             this.finishPage.TabIndex = 3;
+            this.finishPage.CloseFromBack += new Gui.Wizard.PageEventHandler(this.finishPage_CloseFromBack);
             this.finishPage.ShowFromNext += new System.EventHandler(this.finishPage_ShowFromNext);
             // 
             // intersectInfo

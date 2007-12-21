@@ -129,6 +129,7 @@ namespace Backsight.Editor.Forms
             this.otherButton.TabIndex = 19;
             this.otherButton.Text = "&Other Intersection";
             this.otherButton.UseVisualStyleBackColor = true;
+            this.otherButton.Click += new System.EventHandler(this.otherButton_Click);
             // 
             // pointTypeComboBox
             // 
