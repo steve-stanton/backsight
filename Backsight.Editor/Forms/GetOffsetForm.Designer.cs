@@ -137,6 +137,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.label1);
             this.Name = "GetOffsetForm";
             this.Text = "Specify Offset";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.GetOffsetForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
