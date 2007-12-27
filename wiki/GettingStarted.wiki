@@ -5,7 +5,7 @@ Backsight is coded in C# and NET 2.0. It consists of 2 main applications:
   # The Cadastral Editor is used to enter data from survey plans.
   # The Environment Editor is used to define things like the names of valid map layers.
 
-Before you can use the Cadastral Editor, you need to use the Environment Editor to define the sort of information you want to store. The Environment Editor uses a SQLServer database to store this definition. If you don't already have access to SQLServer, you can download SQLServer Express from [http://msdn.microsoft.com/vstudio/express/sql here] (the SQLServer Management Studio is also a handy utility that you can download from the same place). Once you have SQLServer installed, create a new database called Backsight.
+Before you can use the Cadastral Editor, you need to use the Environment Editor to define the sort of information you want to store. The Environment Editor uses a SQLServer 2005 database to store this definition. If you don't already have access to SQLServer, you can download SQLServer Express from [http://msdn.microsoft.com/vstudio/express/sql here] (the SQLServer Management Studio is also a handy utility that you can download from the same place). Once you have SQLServer 2005 installed, create a new database called Backsight.
 
 When you start the Environment Editor for the very first time, it will look for a database called Backsight on your computer. If it cannot find one, you get the following message:
 {{{
@@ -31,7 +31,7 @@ Click the Create button to create the database tables where the Environment Edit
 }}}
 Click OK and you will be asked to locate a Backsight environment file. A sample called "Manitoba Environment.xml" is provided in the trunk/Files folder. Once you have located the file, click OK, and it will be loaded into your database. The Environment Editor will then display a list of all valid "entity types". Use the View menu to look at the various things the environment contains.
 
-Once you have got a defined environment, you can start the Cadastral Editor (it always works with the environment database you last opened). At the present time, the Cadastral Editor writes output to binary flat files with a file extension of ".bs"
+Once you have got a defined environment, you can start the Cadastral Editor (it always works with the environment database you last opened). At the present time, the Cadastral Editor writes output to binary flat files with a file extension of ".ce"
 
   
   
