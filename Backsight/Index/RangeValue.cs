@@ -83,18 +83,19 @@ namespace Backsight.Index
         /// Checks whether a pair of ranges overlap
         /// </summary>
         /// <param name="that">The range to compare with this one</param>
-        /// <returns>True if the ranges refer to the same positional dimension and they overlap.
-        /// False if they refer to different dimensions, or they don't overlap (or only touch).
+        /// <returns>True if the ranges refer to the same positional dimension and they overlap or touch.
+        /// False if they refer to different dimensions, or they don't overlap.
         /// </returns>
         internal bool IsOverlap(RangeValue that)
         {
             if (this.m_Dimension!=that.m_Dimension)
                 return false;
 
+            // The "range" may actually be a point
             if (that.m_Min==that.m_Max)
-                return (this.m_Min<that.m_Min && that.m_Max<this.m_Max);
+                return (this.m_Min<=that.m_Min && that.m_Max<=this.m_Max);
 
-            return (Math.Max(this.m_Min, that.m_Min) < Math.Min(this.m_Max, that.m_Max));
+            return (Math.Max(this.m_Min, that.m_Min) <= Math.Min(this.m_Max, that.m_Max));
         }
 
         /// <summary>
