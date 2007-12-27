@@ -507,38 +507,21 @@ namespace Backsight.Editor.Forms
             if (m_From==null || m_Focus!=backsightTextBox)
                 return;
 
-            throw new NotImplementedException("RadialControl.OnSelectLine");
             PointFeature point = null;
-            /*
-                const CeLine* const pLine = pArc->GetpLine();
-                const CeLocation* const psLoc = pLine->GetpStart();
-                const CeLocation* const peLoc = pLine->GetpEnd();
 
-                CeLayerList curlayer;	// only the currently active theme
-                CePoint* pPoint = 0;
+            if (m_From.IsCoincident(line.StartPoint))
+                point = line.EndPoint;
+            else if (m_From.IsCoincident(line.EndPoint))
+                point = line.StartPoint;
 
-                if ( m_pFrom->GetpVertex() == psLoc )
-                    pPoint = peLoc->GetpPoint(pLine,&curlayer);
-                else if ( m_pFrom->GetpVertex() == peLoc )
-                    pPoint = psLoc->GetpPoint(pLine,&curlayer);
+            // Return if a connected point cannot be found.
+            if (point==null)
+            {
+                MessageBox.Show("Cannot locate backsight point.");
+                return;
+            }
 
-                // Return if a connected point cannot be found.
-                if ( !pPoint ) {
-                    ShowMessage("Cannot locate backsight point.");
-                    return;
-                }
-            */
-            // Ensure that any previously selected backsight reverts to its normal colour.
-            SetNormalColour(m_Backsight);
-
-            // Save the specified backsight.
-            m_Backsight = point;
-
-            // Display it (causes a call to OnChangeBacksight).
-            backsightTextBox.Text = String.Format("+{0}", m_Backsight.FormattedKey);
-
-            // Move focus to the angle field.
-            angleTextBox.Focus();
+            OnSelectPoint(point);
         }
 
         private void okButton_Click(object sender, EventArgs e)
