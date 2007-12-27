@@ -15,6 +15,9 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
+using Backsight.Editor.Operations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -24,18 +27,8 @@ namespace Backsight.Editor.Forms
     /// </summary>
     /// <remarks>This was formerly the CdIntersectDist dialog, which was a CPropertySheet
     /// containing two CdGetDist objects and a CdIntersectTwo object.</remarks>
-    partial class IntersectTwoDistancesForm : Form, IIntersectDialog
+    partial class IntersectTwoDistancesForm : IntersectForm
     {
-        #region Class data
-
-        /// <summary>
-        /// The command displaying this dialog (either an instance of <see cref="IntersectUI"/>
-        /// or <see cref="UpdateUI"/>)
-        /// </summary>
-        readonly CommandUI m_Cmd;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -44,12 +37,184 @@ namespace Backsight.Editor.Forms
         /// <param name="cmd">The command displaying this dialog (not null)</param>
         /// <param name="title">The string to display in the form's title bar</param>
         internal IntersectTwoDistancesForm(CommandUI cmd, string title)
+            : base(cmd, title)
         {
             InitializeComponent();
-            this.Text = title;
-            m_Cmd = cmd;
         }
 
         #endregion
+
+        private void IntersectTwoDistancesForm_Shown(object sender, EventArgs e)
+        {
+            // Initialize the first page last, to ensure focus is on the initial text box
+            // of the first page.
+            intersectInfo.InitializeControl(this);
+            getDistance1.InitializeControl(this, 1);
+            getDistance2.InitializeControl(this, 2);
+        }
+
+        internal override void OnDraw(PointFeature point)
+        {
+            getDistance1.OnDrawAll();
+            getDistance2.OnDrawAll();
+
+            if (intersectInfo.Visible)
+            {
+                IPosition x = intersectInfo.Intersection;
+                if (x!=null)
+                {
+                    ISpatialDisplay display = GetCommand().ActiveDisplay;
+                    IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                    style.Render(display, x);
+
+                    if (getDistance1.LineType!=null)
+                    {
+                        PointFeature p = getDistance2.From;
+                        style.Render(display, new IPosition[] { p, x });
+                    }
+
+                    if (getDistance2.LineType!=null)
+                    {
+                        PointFeature p = getDistance1.From;
+                        style.Render(display, new IPosition[] { p, x });
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal override void OnSelectPoint(PointFeature point)
+        {
+            if (getDistance1.Visible)
+                getDistance1.OnSelectPoint(point);
+            else if (getDistance2.Visible)
+                getDistance2.OnSelectPoint(point);
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a line feature (by doing nothing)
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
+        internal override void OnSelectLine(LineFeature line)
+        {
+            // do nothing
+        }
+
+        /// <summary>
+        /// Handles the Finish button.
+        /// </summary>
+        /// <returns>The point created at the intersection (null if an error was reported).
+        /// The caller is responsible for disposing of the dialog and telling the controller
+        /// the command is done)</returns>
+        internal override PointFeature Finish()
+        {
+            // The intersection SHOULD be defined (the Finish button should have
+            // been disabled if it wasn't)
+            IPosition x = intersectInfo.Intersection;
+            if (x==null)
+            {
+                MessageBox.Show("No intersection. Nothing to save");
+                return null;
+            }
+
+            // Save the intersect point if we're not updating
+            IntersectOperation upd = GetUpdateOp();
+            if (upd==null)
+                return SaveDistDist();
+
+            // Apply corrections and return the point previously created at the intersect
+            Correct(upd);
+            return upd.IntersectionPoint;
+        }
+
+        /// <summary>
+        /// Saves a distance-distance intersection. 
+        /// </summary>
+        /// <returns>The point feature at the intersection (null if something went wrong).</returns>
+        PointFeature SaveDistDist()
+        {
+            IntersectTwoDistancesOperation op = null;
+
+            try
+            {
+                Observation dist1 = getDistance1.ObservedDistance;
+                PointFeature from1 = getDistance1.From;
+                IEntity e1 = getDistance1.LineType;
+
+                Observation dist2 = getDistance2.ObservedDistance;
+                PointFeature from2 = getDistance2.From;
+                IEntity e2 = getDistance2.LineType;
+
+                IdHandle pointId = intersectInfo.PointId;
+                bool isdefault = intersectInfo.IsDefault;
+
+                op = new IntersectTwoDistancesOperation();
+                op.Execute(dist1, from1, dist2, from2, isdefault, pointId, e1, e2);
+                return op.IntersectionPoint;
+            }
+
+            catch (Exception ex)
+            {
+                Session.CurrentSession.Remove(op);
+                MessageBox.Show(ex.Message);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Correct an edit using the info from this dialog.
+        /// </summary>
+        void Correct(IntersectOperation io)
+        {
+            IntersectTwoDistancesOperation op = (IntersectTwoDistancesOperation)io;
+            op.Correct(getDistance1.ObservedDistance, getDistance1.From,
+                       getDistance2.ObservedDistance, getDistance2.From,
+                       intersectInfo.IsDefault, getDistance1.LineType, getDistance2.LineType);
+        }
+
+        private void finishPage_ShowFromNext(object sender, EventArgs e)
+        {
+            // Enable finish button only if we have an intersection
+            IPosition x = CalculateIntersect();
+            wizard.NextEnabled = (x!=null);
+        }
+
+        /// <summary>
+        /// Attempts to calculate the position of the intersect, using the currently
+        /// entered information.
+        /// </summary>
+        /// <returns>The position of the intersect (null if there isn't one)</returns>
+        internal override IPosition CalculateIntersect()
+        {
+            Observation dist1 = getDistance1.ObservedDistance;
+            PointFeature from1 = getDistance1.From;
+            if (from1==null || dist1==null)
+                return null;
+
+            Observation dist2 = getDistance2.ObservedDistance;
+            PointFeature from2 = getDistance2.From;
+            if (from2==null || dist2==null)
+                return null;
+
+            bool isdefault = intersectInfo.IsDefault;
+
+            IPosition xsect, xsect1, xsect2;
+            if (IntersectTwoDistancesOperation.Calculate(dist1, from1, dist2, from2, isdefault,
+                                                            out xsect, out xsect1, out xsect2))
+                return xsect;
+
+            return null;
+        }
+
+        private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
+        {
+            // The intersection and any connecting lines should only be visible when
+            // the finish page is on screen.
+            ErasePainting();
+        }
     }
 }
