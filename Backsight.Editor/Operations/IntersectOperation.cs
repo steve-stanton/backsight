@@ -100,7 +100,7 @@ protected:
 										, CeArc& line
 										, CeArc*& pNew1
 										, CeArc*& pNew2 );
-	virtual LOGICAL		IsSplitAtIntersection ( const CeArc* const pSplit ) const;
+
          */
 
         /// <summary>
@@ -155,5 +155,93 @@ protected:
                     result.Add(start);
             }
         }
+
+        /// <summary>
+        /// Determines whether a pair of line sections (as created by IntersectTwoLinesOperation or
+        /// IntersectDirectionAndLineOperation) are coincident with the intersection point.
+        /// </summary>
+        /// <param name="split">Line that should be prior to intersection (null if no split)</param>
+        /// <returns>True if the specified lines is not null, and the location at the end of
+        /// the line matches the location of the intersection point.</returns>
+        /// <remarks>I'm not sure why this method exists. A comment in a derived class uselessly
+        /// informs me that "Defective logic means the intersection point may not coincide with the
+        /// location that's common to split sections". However, the way the result is then used looks
+        /// highly suspect.</remarks>
+        //protected bool IsSplitAtIntersection(LineFeature split)
+        //{
+        //    if (split==null)
+        //        return false;
+
+        //    // Get the common end location
+        //    IPointGeometry pE = split.End;
+        //    IPointGeometry pX = IntersectionPoint.PointGeometry;
+        //    return pE.IsCoincident(pX);
+        //}
+
+
+
+        /// <summary>
+        /// Split a line at an intersection point. If the intersection is coincident with the
+        /// start or end of the line, nothing is done. However, if the intersection falls somewhere
+        /// along the line, 2 new user-perceived lines will be created, having the same entity type
+        /// (and key) as the original line.
+        /// </summary>
+        /// <param name="xsect">The point at the intersection.</param>
+        /// <param name="line">The line to split.</param>
+        /// <param name="new1">The new line prior to the intersection (may be null).</param>
+        /// <param name="new2">The new line after the intersection (may be null).</param>
+        /// <returns>True if a split was done. False if no split (because the intersection
+        /// coincides with the start or end of the original line). If no split done, the new
+        /// lines are returned as null references.</returns>
+        /// <remarks>This function is used by IntersectTwoLinesOperation and
+        /// IntersectDirectionAndLineOperation) to split one of their input lines.</remarks>
+        protected bool SplitLine(PointFeature xsect, LineFeature line,
+                                    out LineFeature new1, out LineFeature new2)
+        {
+            // Initialize pointers to the new lines.
+            new1 = new2 = null;
+
+            // If the intersection corresponds EXACTLY to the start
+            // or end of the line, there's nothing to do.
+            IPointGeometry xLoc = xsect.PointGeometry;
+            IPointGeometry sLoc = line.Start;
+            IPointGeometry eLoc = line.End;
+
+            if (xLoc.IsCoincident(sLoc) || xLoc.IsCoincident(eLoc))
+                return false;
+
+            /*
+             * how PointOnLineOperation does it...
+
+            // Create two line sections (one of them will be associated with the distance)
+            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
+            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
+
+            // De-activate the parent line
+            m_Line.IsInactive = true;
+             */
+
+            throw new NotImplementedException("IntersectOperation.SplitLine");
+        }
+
+        /*
+	// Create the line primitives.
+	CeMap* pMap = CeMap::GetpMap();
+	const CeLine* const pLine = line.GetpLine();
+	CeSection* pSect1 = pMap->AddLineSection(*pLine,sLoc,xLoc);
+	CeSection* pSect2 = pMap->AddLineSection(*pLine,xLoc,eLoc);
+
+	// And the arcs to go with them.
+	pNew1 = line.MakeSubSection(*pSect1,*this,pSubTheme);
+	pNew2 = line.MakeSubSection(*pSect2,*this,pSubTheme);
+
+	// Make the original line inactive (and delete all system-defined
+	// sections that are derived from it).
+	line.SetInactive(this);
+
+	return TRUE;
+
+} // end of SplitLine
+         */
     }
 }

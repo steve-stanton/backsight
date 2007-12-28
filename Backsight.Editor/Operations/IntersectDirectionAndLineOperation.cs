@@ -256,40 +256,30 @@ namespace Backsight.Editor.Operations
                 return base.OnRollforward();
 
             // Re-calculate the position of the point of intersection.
-            //m_Direction.Intersect( - not implemented
-            /*
-
-	CeVertex xsect;
-	CePoint* pClosest;
-
-	if ( !m_pDirection->Intersect(*m_pArc,m_pCloseTo,xsect,pClosest) )
-		return FALSE;
-
-	// Defective logic means the intersection point may not
-	// coincide with the location that's common to split sections,
-
-	const LOGICAL moveSplit = IsSplitAtIntersection(m_pArcA);
-
-	// Update the intersection point to the new position.
-	if ( m_pIntersection->Move(xsect) && moveSplit )
-	{
-		// Perform post-processing of any split sections (this
-		// covers a situation where the intersection coincided
-		// with a location in a CeMultiSegment)
-		SplitPostMove(m_pArcA,m_pArcB,*m_pArc);
-	}
-             */
-
-            /*
-            // Re-calculate the position of the point of intersection.
-            IPosition xsect = Calculate(m_Direction, m_Distance, m_From, m_Default);
-
-            if (xsect==null)
+            IPosition xsect;
+            PointFeature closest;
+            if (!m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
                 throw new RollforwardException(this, "Cannot re-calculate intersection point.");
 
             // Update the intersection point to the new position.
-            m_To.Move(xsect);
-            */
+            m_Intersection.Move(xsect);
+
+                /*
+                // Defective logic means the intersection point may not
+                // coincide with the location that's common to split sections
+                // TODO: Looks flakey. Is this worth doing?
+
+                bool moveSplit = IsSplitAtIntersection(m_LineA);
+
+                // Update the intersection point to the new position.
+                if (m_Intersection.Move(xsect) && moveSplit)
+                {
+                    // Perform post-processing of any split sections (this
+                    // covers a situation where the intersection coincided
+                    // with a location in a CeMultiSegment)
+                    SplitPostMove(m_LineA, m_LineB, m_Line);
+                }
+                */
 
             // Rollforward the base class.
             return base.OnRollforward();
@@ -327,16 +317,58 @@ namespace Backsight.Editor.Operations
             return null;
         }
 
+        /// <summary>
+        /// Executes this operation.
+        /// </summary>
+        /// <param name="dir">The direction to intersect.</param>
+        /// <param name="line">The line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        /// <param name="wantsplit">True if line should be split at the intersection.</param>
+        /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
+        /// <param name="dirEnt">The entity type for any line that should be added along the direction
+        /// line. Specify null if you don't want a line.</param>
+        internal void Execute(Direction dir, LineFeature line, PointFeature closeTo,
+                    bool wantsplit, IdHandle pointId, IEntity dirEnt)
+        {
+            // Calculate the position of the point of intersection.
+            IPosition xsect;
+            PointFeature closest;
+            if (!dir.Intersect(line, closeTo, out xsect, out closest))
+                throw new Exception("Cannot calculate intersection point");
+
+            // Add the intersection point
+            m_Intersection = AddIntersection(xsect, pointId);
+
+            // Remember input
+            m_Direction = dir;
+            m_Line = line;
+
+            // If a close-to point was not specified, use the one we picked.
+            if (closeTo==null)
+                m_CloseTo = closest;
+            else
+                m_CloseTo = closeTo;
+
+            // Are we splitting the input line? If so, do it.
+            m_IsSplit = wantsplit;
+            if (m_IsSplit)
+                SplitLine(m_Intersection, m_Line, out m_LineA, out m_LineB);
+
+            // If we have a defined entity type for the direction line, add a line too.
+            CadastralMapModel map = MapModel;
+            if (dirEnt!=null)
+                m_DirLine = map.AddLine(m_Direction.From, m_Intersection, dirEnt, this);
+
+            // Peform standard completion steps
+            Complete();
+        }
+
         /*
 public:
 	virtual LOGICAL			GetCircles			( CeObjectList& clist
 												, const CePoint& point ) const;
-	virtual LOGICAL			Execute				( const CeDirection& dir
-												, const CeArc& line
-												, const CePoint* const pCloseTo
-												, const LOGICAL wantsplit
-												, const CeIdHandle& pointId
-												, CeEntity* pDirEnt );
 	virtual LOGICAL			Execute				( const CeDirection& dir
 												, const CeArc& line
 												, const CePoint* const pCloseTo
