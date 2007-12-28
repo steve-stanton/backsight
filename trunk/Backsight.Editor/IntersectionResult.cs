@@ -397,6 +397,43 @@ namespace Backsight.Editor
             return (xsect!=null);
         }
 
+
+        //	@parm	The point feature that correspond to the search location.
+        //			Defined only if a better intersection is actually found.
+
+        /// <summary>
+        /// Calculates whether the supplied point is closer to the intersections defined
+        /// in this results object.
+        /// </summary>
+        /// <param name="point">The point to test</param>
+        /// <param name="mindsq">The best distance (squared) so far. This should be initially passed in
+        /// as a very big value.</param>
+        /// <param name="xsect">The intersection. This will be defined only if a better intersection is
+        /// actually found.</param>
+        /// <returns>True if a <paramref name="point"/> is closer to an intersection (in that case,
+        /// <paramref name="mindsq"/> and <paramref name="xsect"/> will have been updated). False
+        /// if the point is no closer.</returns>
+        /// <remarks>This replaces the old CeArc.GetCloserPoint method</remarks>
+        internal bool GetCloserPoint(IPosition point, ref double mindsq, ref IPosition xsect)
+        {
+            // Scan the set of intersections to find the closest, disallowing
+            // any intersections that are coincident with the search location
+            // (to within some very small tolerance).
+            IPosition xi;
+            if (!GetClosest(point, out xi, Constants.XYTOLSQ))
+                return false;
+
+            // Get the distance (squared) to the intersection,
+            double dsq = Geom.DistanceSquared(xi, point);
+            if (mindsq < dsq)
+                return false;
+
+            // The newly found intersection is the best so far.
+            mindsq = dsq;
+            xsect = xi;
+            return true;
+        }
+
         /// <summary>
         /// Eliminates all simple intersections that refer to lines that only meet end
         /// to end. A prior call to <c>SetContext</c> is required.

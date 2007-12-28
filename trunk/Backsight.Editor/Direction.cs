@@ -539,8 +539,7 @@ namespace Backsight.Editor
         /// <param name="closest">The default point that is closest to the intersection. Null if
         /// intersection wasn't found.</param>
         /// <returns>True if intersection was found.</returns>
-        bool Intersect( LineFeature line
-        //internal bool Intersect( LineFeature line
+        internal bool Intersect( LineFeature line
                                , PointFeature closeTo
                                , out IPosition xsect
                                , out PointFeature closest )
@@ -548,11 +547,6 @@ namespace Backsight.Editor
         	// Initialize results
             xsect = null;
             closest = null;
-
-            // What point does the direction start from (the position of this
-	        // point may be different from the start of the direction line,
-	        // because the direction may have an offset).
-            PointFeature from = this.From;
 
             // Define the length of the direction line as the length
 	        // of a diagonal that crosses the map's extent.
@@ -565,27 +559,33 @@ namespace Backsight.Editor
             IPosition fromPos = this.StartPosition;
             IPosition toPos = Geom.Polar(fromPos, this.Bearing.Radians, dist);
 
-            throw new NotImplementedException("Direction.Intersect");
-            /*
-	        // Construct a corresponding line segment.
-	        CeLocation start(vfrom);
-	        CeLocation end(vto);
-	        CeSegment seg(start,end);
+            // Construct a corresponding line segment.
+            ITerminal start = new FloatingTerminal(fromPos);
+            ITerminal end = new FloatingTerminal(toPos);
+            SegmentGeometry seg = new SegmentGeometry(start, end);
 
-	        // Intersect the line segment with the other one.
-	        const CeLine* const pLine = line.GetpLine();
-	        CeXResult xres(*pLine);
-	        UINT4 nx = seg.Intersect(xres);
-	        if ( nx==0 ) return FALSE;
-             */
+            // Intersect the line segment with the other one.
+            IntersectionResult xres = new IntersectionResult(line);
+            uint nx = seg.Intersect(xres);
+            if (nx==0)
+                return false;
 
-        	// Determine which terminal point is the best.
-	        //double mindsq = Double.MaxValue;
+        	// Determine which terminal point is the best. Start with the
+            // ends of the intersected line.
+	        double mindsq = Double.MaxValue;
 
-            /*
-            line.GetCloserPoint(line.GetpStart(),xres,mindsq,xsect,pClosest);
-	        line.GetCloserPoint(line.GetpEnd(),xres,mindsq,xsect,pClosest);
-	        line.GetCloserPoint(pFrom->GetpVertex(),xres,mindsq,xsect,pClosest);
+            if (xres.GetCloserPoint(line.StartPoint, ref mindsq, ref xsect))
+                closest = line.StartPoint;
+
+            if (xres.GetCloserPoint(line.EndPoint, ref mindsq, ref xsect))
+                closest = line.EndPoint;
+
+            // Check whether the direction from-point is any closer (the position may be
+            // different from the start of the direction line, because the direction may
+            // have an offset).
+
+            if (xres.GetCloserPoint(this.From, ref mindsq, ref xsect))
+                closest = this.From;
 
 	        // If a close-to point has been specified, that overrides
 	        // everything else (however, doing the above has the desired
@@ -594,13 +594,9 @@ namespace Backsight.Editor
 	        // the line being intersected.
 
         	if (closeTo!=null)
-            {
-		        CeVertex posn(*pCloseTo);
-		        xres.GetClosest(posn,xsect,0.0);
-	        }
-            */
+                xres.GetClosest(closeTo, out xsect, 0.0);
 
-        	return (xsect!=null);
+            return (xsect!=null);
         }
 
         /// <summary>
