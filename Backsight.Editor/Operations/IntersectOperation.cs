@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -122,6 +123,18 @@ protected:
         }
 
         /// <summary>
+        /// Adds a new intersection point to the map.
+        /// </summary>
+        /// <param name="xsect">Position of the intersection.</param>
+        /// <param name="pointType">The entity type to assign to the intersection point.</param>
+        /// <returns>The new point feature</returns>
+        protected PointFeature AddIntersection(IPosition xsect, IEntity pointType)
+        {
+            CadastralMapModel map = MapModel;
+            return map.AddPoint(xsect, pointType, this);
+        }
+
+        /// <summary>
         /// Finds the observed length of a line that was created by this operation.
         /// This implementation always returns null.
         /// </summary>
@@ -210,38 +223,25 @@ protected:
             if (xLoc.IsCoincident(sLoc) || xLoc.IsCoincident(eLoc))
                 return false;
 
-            /*
-             * how PointOnLineOperation does it...
+            // Create line sections and de-activate the parent line
+            new1 = MakeSection(line, line.StartPoint, xsect);
+            new2 = MakeSection(line, xsect, line.EndPoint);
+            line.IsInactive = true;
 
-            // Create two line sections (one of them will be associated with the distance)
-            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
-            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
-
-            // De-activate the parent line
-            m_Line.IsInactive = true;
-             */
-
-            throw new NotImplementedException("IntersectOperation.SplitLine");
+            return true;
         }
 
-        /*
-	// Create the line primitives.
-	CeMap* pMap = CeMap::GetpMap();
-	const CeLine* const pLine = line.GetpLine();
-	CeSection* pSect1 = pMap->AddLineSection(*pLine,sLoc,xLoc);
-	CeSection* pSect2 = pMap->AddLineSection(*pLine,xLoc,eLoc);
-
-	// And the arcs to go with them.
-	pNew1 = line.MakeSubSection(*pSect1,*this,pSubTheme);
-	pNew2 = line.MakeSubSection(*pSect2,*this,pSubTheme);
-
-	// Make the original line inactive (and delete all system-defined
-	// sections that are derived from it).
-	line.SetInactive(this);
-
-	return TRUE;
-
-} // end of SplitLine
-         */
+        /// <summary>
+        /// Creates a line section
+        /// </summary>
+        /// <param name="parent">The line that's being subdivided</param>
+        /// <param name="start">The point at the start of the section</param>
+        /// <param name="end">The point at the end of the section</param>
+        /// <returns>The created section</returns>
+        LineFeature MakeSection(LineFeature parent, PointFeature start, PointFeature end)
+        {
+            SectionGeometry section = new SectionGeometry(parent, start, end);
+            return parent.MakeSubSection(section, this);
+        }
     }
 }
