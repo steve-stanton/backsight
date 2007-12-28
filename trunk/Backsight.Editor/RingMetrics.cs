@@ -16,8 +16,6 @@
 using System;
 using System.Collections.Generic;
 
-//using Backsight.
-
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="04-SEP-2007" />
@@ -132,6 +130,5 @@ namespace Backsight.Editor
         {
             get { return m_Window; }
         }
-
     }
 }
