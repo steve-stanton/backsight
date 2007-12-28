@@ -540,9 +540,10 @@ namespace Backsight.Editor
         /// intersection wasn't found.</param>
         /// <returns>True if intersection was found.</returns>
         bool Intersect( LineFeature line
-                      , PointFeature closeTo
-                      , out IPosition xsect
-                      , out PointFeature closest )
+        //internal bool Intersect( LineFeature line
+                               , PointFeature closeTo
+                               , out IPosition xsect
+                               , out PointFeature closest )
         {
         	// Initialize results
             xsect = null;

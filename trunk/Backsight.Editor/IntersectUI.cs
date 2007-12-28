@@ -139,12 +139,10 @@ namespace Backsight.Editor
             }
             else if (edid == EditingActionId.DirLineIntersect)
             {
-                /*
                 if (pup==null)
                     m_Dialog = new IntersectDirectionAndLineForm(this, "Intersect direction and line");
                 else
                     m_Dialog = new IntersectDirectionAndLineForm(this, "Update (intersect direction and line)");
-                 */
             }
             else
             {

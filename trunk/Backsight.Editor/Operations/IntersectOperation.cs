@@ -67,7 +67,7 @@ namespace Backsight.Editor.Operations
         /// <param name="line">The line of interest</param>
         /// <returns>The superseded line that the line of interest was derived from. Null if
         /// this edit did not create the line of interest.</returns>
-        internal LineFeature GetPredecessor(LineFeature line)
+        internal virtual LineFeature GetPredecessor(LineFeature line)
         {
             // This edit doesn't supersede anything
             return null;
@@ -121,39 +121,16 @@ protected:
             return p;
         }
 
-        public override string Name
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
+        /// <summary>
+        /// Finds the observed length of a line that was created by this operation.
+        /// This implementation always returns null.
+        /// </summary>
+        /// <param name="line">The line to find</param>
+        /// <returns>The observed length of the line (null if this operation doesn't
+        /// reference the specified line)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override Feature[] Features
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        internal override EditingActionId EditId
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        internal override bool Undo()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool Rollforward()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void AddReferences()
-        {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         /// <summary>
