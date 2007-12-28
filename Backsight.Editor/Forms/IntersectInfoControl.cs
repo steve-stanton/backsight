@@ -75,6 +75,17 @@ namespace Backsight.Editor.Forms
             set { otherButton.Visible = value; }
         }
 
+        public bool CanHaveClosestPoint
+        {
+            get { return closestPointValueLabel.Visible; }
+            set
+            {
+                closestPointTrimLabel.Visible =
+                closestPointValueLabel.Visible =
+                closestPointExplanationLabel.Visible = value;
+            }
+        }
+
         /// <summary>
         /// The displayed location of the intersection (null if nothing is showing)
         /// </summary>

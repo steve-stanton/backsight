@@ -75,6 +75,12 @@
     <Compile Include="Forms\GetDistanceControl.Designer.cs">
       <DependentUpon>GetDistanceControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GetLineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\GetLineControl.Designer.cs">
+      <DependentUpon>GetLineControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IntersectDirectionAndDistanceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,6 +122,7 @@
     <Compile Include="IntersectUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
+    <Compile Include="Operations\IntersectDirectionAndLineOperation.cs" />
     <Compile Include="Operations\IntersectOperation.cs" />
     <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
     <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
@@ -499,6 +506,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>GetLayerForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetLineControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetLineControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetOffsetForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetOffsetForm.cs</DependentUpon>
@@ -514,6 +525,10 @@
     <EmbeddedResource Include="Forms\IntersectDirectionAndDistanceForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IntersectDirectionAndLineForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IntersectDirectionAndLineForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\IntersectForm.resx">
       <SubType>Designer</SubType>

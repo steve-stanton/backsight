@@ -38,13 +38,16 @@ namespace Backsight.Editor.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.otherButton = new System.Windows.Forms.Button();
             this.pointTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
+            this.closestPointExplanationLabel = new System.Windows.Forms.Label();
+            this.closestPointTrimLabel = new System.Windows.Forms.Label();
+            this.closestPointValueLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(435, 37);
+            this.label5.Location = new System.Drawing.Point(456, 36);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(111, 16);
             this.label5.TabIndex = 18;
@@ -54,7 +57,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(435, 21);
+            this.label4.Location = new System.Drawing.Point(456, 20);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(149, 16);
             this.label4.TabIndex = 17;
@@ -64,7 +67,7 @@ namespace Backsight.Editor.Forms
             // 
             this.pointIdComboBox.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pointIdComboBox.FormattingEnabled = true;
-            this.pointIdComboBox.Location = new System.Drawing.Point(274, 51);
+            this.pointIdComboBox.Location = new System.Drawing.Point(295, 50);
             this.pointIdComboBox.Name = "pointIdComboBox";
             this.pointIdComboBox.Size = new System.Drawing.Size(133, 24);
             this.pointIdComboBox.TabIndex = 16;
@@ -74,7 +77,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(248, 54);
+            this.label3.Location = new System.Drawing.Point(269, 53);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(20, 16);
             this.label3.TabIndex = 15;
@@ -84,7 +87,7 @@ namespace Backsight.Editor.Forms
             // 
             this.eastingLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.eastingLabel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.eastingLabel.Location = new System.Drawing.Point(88, 52);
+            this.eastingLabel.Location = new System.Drawing.Point(109, 51);
             this.eastingLabel.Name = "eastingLabel";
             this.eastingLabel.Size = new System.Drawing.Size(137, 23);
             this.eastingLabel.TabIndex = 13;
@@ -94,7 +97,7 @@ namespace Backsight.Editor.Forms
             // 
             this.northingLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.northingLabel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.northingLabel.Location = new System.Drawing.Point(88, 19);
+            this.northingLabel.Location = new System.Drawing.Point(109, 18);
             this.northingLabel.Name = "northingLabel";
             this.northingLabel.Size = new System.Drawing.Size(137, 23);
             this.northingLabel.TabIndex = 12;
@@ -104,7 +107,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(20, 55);
+            this.label2.Location = new System.Drawing.Point(48, 54);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 16);
             this.label2.TabIndex = 11;
@@ -114,7 +117,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 22);
+            this.label1.Location = new System.Drawing.Point(41, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(56, 16);
             this.label1.TabIndex = 10;
@@ -123,7 +126,7 @@ namespace Backsight.Editor.Forms
             // otherButton
             // 
             this.otherButton.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.otherButton.Location = new System.Drawing.Point(88, 89);
+            this.otherButton.Location = new System.Drawing.Point(109, 88);
             this.otherButton.Name = "otherButton";
             this.otherButton.Size = new System.Drawing.Size(137, 23);
             this.otherButton.TabIndex = 19;
@@ -135,16 +138,53 @@ namespace Backsight.Editor.Forms
             // 
             this.pointTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pointTypeComboBox.FormattingEnabled = true;
-            this.pointTypeComboBox.Location = new System.Drawing.Point(251, 18);
+            this.pointTypeComboBox.Location = new System.Drawing.Point(272, 17);
             this.pointTypeComboBox.Name = "pointTypeComboBox";
             this.pointTypeComboBox.Size = new System.Drawing.Size(178, 24);
             this.pointTypeComboBox.TabIndex = 20;
             this.pointTypeComboBox.SelectedValueChanged += new System.EventHandler(this.pointTypeComboBox_SelectedValueChanged);
             // 
+            // closestPointExplanationLabel
+            // 
+            this.closestPointExplanationLabel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closestPointExplanationLabel.Location = new System.Drawing.Point(269, 130);
+            this.closestPointExplanationLabel.Name = "closestPointExplanationLabel";
+            this.closestPointExplanationLabel.Size = new System.Drawing.Size(353, 59);
+            this.closestPointExplanationLabel.TabIndex = 21;
+            this.closestPointExplanationLabel.Text = "The closest point (in red) is used to relocate the intersection in the event that" +
+    " the intersection moves due to subsequent edits. Specify an alternative point if" +
+    " desired.";
+            this.closestPointExplanationLabel.Visible = false;
+            // 
+            // closestPointTrimLabel
+            // 
+            this.closestPointTrimLabel.AutoSize = true;
+            this.closestPointTrimLabel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closestPointTrimLabel.Location = new System.Drawing.Point(16, 130);
+            this.closestPointTrimLabel.Name = "closestPointTrimLabel";
+            this.closestPointTrimLabel.Size = new System.Drawing.Size(81, 16);
+            this.closestPointTrimLabel.TabIndex = 22;
+            this.closestPointTrimLabel.Text = "Closest Point";
+            this.closestPointTrimLabel.Visible = false;
+            // 
+            // closestPointValueLabel
+            // 
+            this.closestPointValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.closestPointValueLabel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closestPointValueLabel.Location = new System.Drawing.Point(109, 127);
+            this.closestPointValueLabel.Name = "closestPointValueLabel";
+            this.closestPointValueLabel.Size = new System.Drawing.Size(137, 23);
+            this.closestPointValueLabel.TabIndex = 23;
+            this.closestPointValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.closestPointValueLabel.Visible = false;
+            // 
             // IntersectInfoControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.closestPointValueLabel);
+            this.Controls.Add(this.closestPointTrimLabel);
+            this.Controls.Add(this.closestPointExplanationLabel);
             this.Controls.Add(this.pointTypeComboBox);
             this.Controls.Add(this.otherButton);
             this.Controls.Add(this.label5);
@@ -156,7 +196,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "IntersectInfoControl";
-            this.Size = new System.Drawing.Size(604, 136);
+            this.Size = new System.Drawing.Size(628, 196);
             this.VisibleChanged += new System.EventHandler(this.IntersectInfoControl_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -175,5 +215,8 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button otherButton;
         private EntityTypeComboBox pointTypeComboBox;
+        private System.Windows.Forms.Label closestPointExplanationLabel;
+        private System.Windows.Forms.Label closestPointTrimLabel;
+        private System.Windows.Forms.Label closestPointValueLabel;
     }
 }
