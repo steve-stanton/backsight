@@ -262,6 +262,13 @@ namespace Backsight.Editor
             if (closest==null)
                 return false;
 
+            // The point can't be inside if we're dealing with an island, and the
+            // divider we've found is either a bridge, or a dangle that radiates outwards
+            // from the island (this assumes that points exactly coincident with the edge
+            // can be treated as "outside").
+            if (this is Island && closest.Left==closest.Right)
+                return false;
+
             // Which side of the divider does the directed line hit?
             IDivider sideDivider;
             Side side = Topology.GetSide(closest, vs, ve, out sideDivider);
