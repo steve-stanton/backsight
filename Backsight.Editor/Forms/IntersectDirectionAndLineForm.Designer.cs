@@ -42,9 +42,9 @@ namespace Backsight.Editor.Forms
             // 
             // wizard
             // 
-            this.wizard.Controls.Add(this.directionPage);
-            this.wizard.Controls.Add(this.linePage);
             this.wizard.Controls.Add(this.finishPage);
+            this.wizard.Controls.Add(this.linePage);
+            this.wizard.Controls.Add(this.directionPage);
             this.wizard.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.directionPage,
             this.linePage,
@@ -102,7 +102,7 @@ namespace Backsight.Editor.Forms
             // 
             // intersectInfo
             // 
-            this.intersectInfo.CanHaveClosestPoint = false;
+            this.intersectInfo.CanHaveClosestPoint = true;
             this.intersectInfo.CanHaveTwoIntersections = false;
             this.intersectInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.intersectInfo.Location = new System.Drawing.Point(0, 0);

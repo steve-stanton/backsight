@@ -136,6 +136,8 @@ namespace Backsight.Editor.Forms
 
         internal void InitializeControl(IntersectForm parent, int lineNum)
         {
+            SetWantSplit(false);
+
             //	If we are updating a feature that was previously created,
             //	load the original info. For line-line intersections,
             //	we need to know which page this is, to determine whether we
@@ -184,17 +186,13 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            yesCheckBox.Checked = true;
-            noCheckBox.Checked = false;
-            m_WantSplit = 1;
+            SetWantSplit(true);
             MoveNext();
         }
 
         private void noSplitButton_Click(object sender, EventArgs e)
         {
-            yesCheckBox.Checked = false;
-            noCheckBox.Checked = true;
-            m_WantSplit = -1;
+            SetWantSplit(false);
             MoveNext();
         }
 
@@ -290,18 +288,23 @@ namespace Backsight.Editor.Forms
         	// Define the selected line and whether it should be split.
             OnSelectLine(line);
 
-            if (wantsplit)
+            SetWantSplit(wantsplit);
+        }
+
+        void SetWantSplit(bool want)
+        {
+            if (want)
             {
-		        m_WantSplit = 1;
+                m_WantSplit = 1;
                 yesCheckBox.Checked = true;
                 noCheckBox.Checked = false;
-	        }
-	        else
+            }
+            else
             {
-		        m_WantSplit = -1;
+                m_WantSplit = -1;
                 yesCheckBox.Checked = false;
                 noCheckBox.Checked = true;
-	        }
-        }       
+            }
+        }
     }
 }

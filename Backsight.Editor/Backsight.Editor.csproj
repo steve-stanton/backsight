@@ -771,13 +771,13 @@
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
       <Name>Backsight</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Gui.Wizard\Gui.Wizard.csproj">
-      <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
-      <Name>Gui.Wizard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Ntx\Ntx.csproj">
       <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
       <Name>Ntx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WizardLib\WizardLib.csproj">
+      <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
+      <Name>WizardLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

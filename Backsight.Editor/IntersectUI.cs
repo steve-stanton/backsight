@@ -210,12 +210,9 @@ namespace Backsight.Editor
             if (p==null)
                 return false;
 
-            /*
-            // Get the view to select the intersection point.
-            CdDialog* pParent = (CdDialog*)GetParent();
-            if (pParent)
-                pParent->Select(ptSave);
-             */
+            // Get the controller to select the intersection point
+            ISpatialSelection ss = new SpatialSelection(p);
+            Controller.SetSelection(ss);
 
             m_Dialog.Dispose();
             m_Dialog = null;
