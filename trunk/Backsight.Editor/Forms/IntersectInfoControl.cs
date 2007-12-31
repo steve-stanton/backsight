@@ -211,7 +211,12 @@ namespace Backsight.Editor.Forms
         private void IntersectInfoControl_VisibleChanged(object sender, EventArgs e)
         {
             if (this.Visible)
+            {
+                if (m_CloseTo==null)
+                    SetDefaultClosestPoint();
+
                 RecalculateIntersection();
+            }
         }
 
         void RecalculateIntersection()
@@ -221,6 +226,16 @@ namespace Backsight.Editor.Forms
             {
                 m_Intersect = parent.CalculateIntersect();
                 ShowIntersection();
+            }
+        }
+
+        void SetDefaultClosestPoint()
+        {
+            IntersectForm parent = GetIntersectForm();
+            if (parent!=null)
+            {
+                m_CloseTo = parent.GetDefaultClosestPoint();
+                ShowCloseTo();
             }
         }
 

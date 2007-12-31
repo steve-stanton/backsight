@@ -213,6 +213,29 @@ namespace Backsight.Editor.Forms
             */
         }
 
+        /// <summary>
+        /// Returns the point feature closest to an intersection involving one or more line features.
+        /// </summary>
+        /// <returns>Null (always). Dialogs that involve instances of <see cref="GetLineControl"/>
+        /// are expected to override.</returns>
+        internal override PointFeature GetDefaultClosestPoint()
+        {
+            Direction dir = getDirection.Direction;
+            if (dir==null)
+                return null;
+
+            LineFeature line = getLine.Line;
+            if (line==null)
+                return null;
+
+            // The closest point may be null if the finish page has never been shown
+            PointFeature closeTo = intersectInfo.ClosestPoint;
+            IPosition xsect;
+            PointFeature closest;
+            dir.Intersect(line, closeTo, out xsect, out closest);
+            return closest;
+        }
+
         private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
         {
             // The intersection and any connecting lines should only be visible when

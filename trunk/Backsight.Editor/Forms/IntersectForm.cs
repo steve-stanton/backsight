@@ -181,6 +181,16 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
+        /// Returns the point feature closest to an intersection involving one or more line features.
+        /// </summary>
+        /// <returns>Null (always). Dialogs that involve instances of <see cref="GetLineControl"/>
+        /// are expected to override.</returns>
+        internal virtual PointFeature GetDefaultClosestPoint()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Restores the last draw in the command's active display.
         /// </summary>
         internal void ErasePainting()
