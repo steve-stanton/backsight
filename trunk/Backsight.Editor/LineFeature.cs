@@ -940,5 +940,63 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         {
             get { return m_Topology; }
         }
+
+        /// <summary>
+        /// Intersect this line with another line.
+        /// </summary>
+        /// <param name="line">The line to intersect with (not equal to THIS line)</param>
+        /// <param name="closeTo">The point that the intersection should be closest to.
+        /// Specify null if you don't care. In that case, if there are multiple intersections,
+        /// you get the intersection that is closest to one of 3 points: the start of the
+        /// direction line, the start of the line, or the end of the line.</param>
+        /// <param name="xsect">The position of the intersection (if any). Null if not found.</param>
+        /// <param name="closest">The default point that is closest to the intersection. Null if
+        /// intersection wasn't found.</param>
+        /// <returns>True if intersection was found.</returns>
+        internal bool Intersect( LineFeature line
+                               , PointFeature closeTo
+                               , out IPosition xsect
+                               , out PointFeature closest)
+        {
+            // Initialize results
+            xsect = null;
+            closest = null;
+
+            // Don't intersect a line with itself.
+            if (Object.ReferenceEquals(this, line))
+                throw new Exception("Cannot intersect a line with itself.");
+
+            // Intersect this line with the other one.
+            IntersectionResult xres = new IntersectionResult(this);
+            uint nx = line.LineGeometry.Intersect(xres);
+            if (nx==0)
+                return false;
+
+            // Determine which terminal point is the best.
+            double mindsq = Double.MaxValue;
+
+            if (xres.GetCloserPoint(this.StartPoint, ref mindsq, ref xsect))
+                closest = this.StartPoint;
+
+            if (xres.GetCloserPoint(this.EndPoint, ref mindsq, ref xsect))
+                closest = this.EndPoint;
+
+            if (xres.GetCloserPoint(line.StartPoint, ref mindsq, ref xsect))
+                closest = line.StartPoint;
+
+            if (xres.GetCloserPoint(line.EndPoint, ref mindsq, ref xsect))
+                closest = line.EndPoint;
+
+            // If a close-to point has been specified, that overrides
+            // everything else (however, doing the above has the desired
+            // effect of defining the best of the default points). In
+            // this case, we allow an intersection that coincides with
+            // the line being intersected.
+
+            if (closeTo!=null)
+                xres.GetClosest(closeTo, out xsect, 0.0);
+
+            return (xsect!=null);
+        }
     }
 }
