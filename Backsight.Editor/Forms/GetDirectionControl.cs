@@ -377,7 +377,7 @@ namespace Backsight.Editor.Forms
                 if (parent.GetUpdateOp()==null)
                 {
                     lineTypeComboBox.SelectEntity(null);
-                    lineTypeComboBox.Enabled = false;
+                    //lineTypeComboBox.Enabled = false;
                     m_LineType = null;
                 }
             }

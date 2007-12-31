@@ -61,12 +61,13 @@ namespace Backsight.Editor.Forms
 
             if (intersectInfo.Visible)
             {
+                intersectInfo.OnDraw();
+
                 IPosition x = intersectInfo.Intersection;
                 if (x!=null)
                 {
                     ISpatialDisplay display = GetCommand().ActiveDisplay;
                     IDrawStyle style = EditingController.Current.Style(Color.Magenta);
-                    style.Render(display, x);
 
                     if (getDistance1.LineType!=null)
                     {
