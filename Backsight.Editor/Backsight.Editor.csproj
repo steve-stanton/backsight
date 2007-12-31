@@ -126,6 +126,7 @@
     <Compile Include="Operations\IntersectOperation.cs" />
     <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
     <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
+    <Compile Include="Operations\IntersectTwoLinesOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
