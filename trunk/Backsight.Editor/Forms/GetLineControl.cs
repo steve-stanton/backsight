@@ -74,6 +74,14 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
+        /// Reacts to the selection of a point feature (does nothing).
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal void OnSelectPoint(PointFeature point)
+        {
+        }
+
+        /// <summary>
         /// Reacts to selection of a line on the map.
         /// </summary>
         /// <param name="point"></param>
@@ -263,11 +271,8 @@ namespace Backsight.Editor.Forms
             }
             else if (op.EditId == EditingActionId.DirLineIntersect)
             {
-                /*
-		CeIntersectDirLine* pOper = dynamic_cast<CeIntersectDirLine*>(pop);
-		this->Show ( pOper->GetpArc()
-				   , pOper->IsSplit() );
-                 */
+                IntersectDirectionAndLineOperation oper = (IntersectDirectionAndLineOperation)op;
+                ShowLine(oper.Line, oper.IsSplit);
             }
             else
             {

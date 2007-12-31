@@ -18,6 +18,7 @@ using System.Windows.Forms;
 
 using Backsight.Environment;
 using Backsight.Editor.Operations;
+using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
@@ -45,6 +46,12 @@ namespace Backsight.Editor.Forms
         /// </summary>
         bool m_IsDefault;
 
+        /// <summary>
+        /// The point nearest to the intersection. Has no meaning
+        /// if the <see cref="CanHaveClosestPoint"/> property is false.
+        /// </summary>
+        PointFeature m_CloseTo;
+
         #endregion
 
         #region Constructors
@@ -60,6 +67,7 @@ namespace Backsight.Editor.Forms
             m_Intersect = null;
             m_PointId = new IdHandle();
             m_IsDefault = true;
+            m_CloseTo = null;
         }
 
         #endregion
@@ -75,6 +83,10 @@ namespace Backsight.Editor.Forms
             set { otherButton.Visible = value; }
         }
 
+        /// <summary>
+        /// Is the <see cref="ClosestPoint"/> property relevant? Should be set true when dealing
+        /// with intersects involving line features.
+        /// </summary>
         public bool CanHaveClosestPoint
         {
             get { return closestPointValueLabel.Visible; }
@@ -109,6 +121,15 @@ namespace Backsight.Editor.Forms
         internal bool IsDefault
         {
             get { return m_IsDefault; }
+        }
+
+        /// <summary>
+        /// The point nearest to the intersection. Has no meaning
+        /// if the <see cref="CanHaveClosestPoint"/> property is false.
+        /// </summary>
+        internal PointFeature ClosestPoint
+        {
+            get { return m_CloseTo; }
         }
 
         internal void InitializeControl(IntersectForm parent)
@@ -153,6 +174,10 @@ namespace Backsight.Editor.Forms
                 // Display the point key (if any) and disable it.
                 pointIdComboBox.Text = m_PointId.FormattedKey;
                 pointIdComboBox.Enabled = false;
+
+                // Intersects involving line features...
+                m_CloseTo = op.ClosePoint;
+                ShowCloseTo();
             }
         }
 
@@ -185,8 +210,14 @@ namespace Backsight.Editor.Forms
 
         private void IntersectInfoControl_VisibleChanged(object sender, EventArgs e)
         {
+            if (this.Visible)
+                RecalculateIntersection();
+        }
+
+        void RecalculateIntersection()
+        {
             IntersectForm parent = GetIntersectForm();
-            if (this.Visible && parent!=null)
+            if (parent!=null)
             {
                 m_Intersect = parent.CalculateIntersect();
                 ShowIntersection();
@@ -227,6 +258,76 @@ namespace Backsight.Editor.Forms
             {
                 m_IsDefault = oldDefault;
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        ISpatialDisplay ActiveDisplay
+        {
+            get { return EditingController.Current.ActiveDisplay; }
+        }
+
+        /// <summary>
+        /// Handles any redrawing.
+        /// </summary>
+        internal void OnDraw()
+        {
+            ISpatialDisplay display = ActiveDisplay;
+
+            // If the point the intersection needs to be close to is defined, draw it.
+            if (m_CloseTo!=null)
+            {
+                IDrawStyle style = EditingController.Current.Style(Color.Red);
+                m_CloseTo.Render(display, style);
+            }
+
+            // Draw the intersection point in magenta
+            if (m_Intersect!=null)
+            {
+                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                style.Render(display, m_Intersect);
+            }
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a line feature (does nothing).
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
+        internal void OnSelectLine(LineFeature line)
+        {
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal void OnSelectPoint(PointFeature point)
+        {
+            // Return if point is not defined, or closest point isn't relevant
+            if (point==null || !CanHaveClosestPoint)
+                return;
+
+            // Save the specified point.
+            m_CloseTo = point;
+
+            // Display the point's key
+            ShowCloseTo();
+
+            // Rework any intersection.
+            RecalculateIntersection();
+        }
+
+        void ShowCloseTo()
+        {
+            // If the close-to point is undefined, ensure the field is blank.
+            if (m_CloseTo==null)
+                closestPointValueLabel.Text = String.Empty;
+            else
+            {
+                // Display the key of the point
+                closestPointValueLabel.Text = m_CloseTo.FormattedKey;
+
+                // Display the point in an appropriate colour.
+                OnDraw();
             }
         }
     }

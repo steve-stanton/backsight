@@ -42,9 +42,9 @@ namespace Backsight.Editor.Forms
             // 
             // wizard
             // 
-            this.wizard.Controls.Add(this.finishPage);
-            this.wizard.Controls.Add(this.linePage);
             this.wizard.Controls.Add(this.directionPage);
+            this.wizard.Controls.Add(this.linePage);
+            this.wizard.Controls.Add(this.finishPage);
             this.wizard.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.directionPage,
             this.linePage,
@@ -97,10 +97,12 @@ namespace Backsight.Editor.Forms
             this.finishPage.Name = "finishPage";
             this.finishPage.Size = new System.Drawing.Size(753, 199);
             this.finishPage.TabIndex = 3;
+            this.finishPage.CloseFromBack += new Gui.Wizard.PageEventHandler(this.finishPage_CloseFromBack);
+            this.finishPage.ShowFromNext += new System.EventHandler(this.finishPage_ShowFromNext);
             // 
             // intersectInfo
             // 
-            this.intersectInfo.CanHaveClosestPoint = true;
+            this.intersectInfo.CanHaveClosestPoint = false;
             this.intersectInfo.CanHaveTwoIntersections = false;
             this.intersectInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.intersectInfo.Location = new System.Drawing.Point(0, 0);
@@ -114,6 +116,8 @@ namespace Backsight.Editor.Forms
             this.ClientSize = new System.Drawing.Size(753, 247);
             this.Name = "IntersectDirectionAndLineForm";
             this.Text = "Intersect Direction and Line";
+            this.TopMost = true;
+            this.Shown += new System.EventHandler(this.IntersectDirectionAndLineForm_Shown);
             this.wizard.ResumeLayout(false);
             this.directionPage.ResumeLayout(false);
             this.linePage.ResumeLayout(false);
