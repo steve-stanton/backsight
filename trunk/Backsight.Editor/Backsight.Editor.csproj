@@ -117,6 +117,12 @@
     <Compile Include="Forms\IntersectTwoDistancesForm.Designer.cs">
       <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\IntersectTwoLinesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
+      <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
     <Compile Include="IntersectUI.cs" />
@@ -546,6 +552,10 @@
     <EmbeddedResource Include="Forms\IntersectTwoDistancesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IntersectTwoLinesForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InverseArcDistanceBearingForm.resx">
       <SubType>Designer</SubType>

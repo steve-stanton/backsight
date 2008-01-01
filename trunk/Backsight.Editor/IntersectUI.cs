@@ -123,12 +123,10 @@ namespace Backsight.Editor
             }
             else if (edid == EditingActionId.LineIntersect)
             {
-                /*
                 if (pup==null)
                     m_Dialog = new IntersectTwoLinesForm(this, "Intersect two lines");
                 else
                     m_Dialog = new IntersectTwoLinesForm(this, "Update (intersect two lines)");
-                 */
             }
             else if (edid == EditingActionId.DistIntersect)
             {

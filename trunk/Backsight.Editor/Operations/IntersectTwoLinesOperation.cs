@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 
+using Backsight.Environment;
+
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="03-DEC-1998" was="CeIntersectLine" />
@@ -317,24 +319,147 @@ namespace Backsight.Editor.Operations
             return null;
         }
 
-        /*
-	virtual LOGICAL			Execute				( const CeArc& line1
-												, const CeArc& line2
-												, const CePoint* const pCloseTo
-												, const LOGICAL wantsplit1
-												, const LOGICAL wantsplit2
-												, const CeIdHandle& pointId );
-	virtual LOGICAL			Execute				( const CeArc& line1
-												, const CeArc& line2
-												, const CePoint* const pCloseTo
-												, const LOGICAL wantsplit1
-												, const LOGICAL wantsplit2
-												, const CeEntity* const pPointType );
-	virtual	LOGICAL			Correct				( const CeArc& line1
-												, const CeArc& line2
-												, const CePoint* const pCloseTo
-												, const LOGICAL wantsplit1
-												, const LOGICAL wantsplit2 );
-         */
+        /// <summary>
+        /// Executes this operation.
+        /// </summary>
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
+        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
+        /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
+        internal void Execute(LineFeature line1, LineFeature line2, PointFeature closeTo,
+                                bool wantsplit1, bool wantsplit2, IdHandle pointId)
+        {
+            // Calculate the position of the point of intersection.
+            IPosition xsect;
+            PointFeature closest;
+            if (!line1.Intersect(line2, closeTo, out xsect, out closest))
+                throw new Exception("Cannot calculate intersection point");
+
+            // Add the intersection point
+            m_Intersection = AddIntersection(xsect, pointId);
+
+            // Remember input
+            m_Line1 = line1;
+            m_Line2 = line2;
+
+            // If a close-to point was not specified, use the one we picked.
+            if (closeTo == null)
+                m_CloseTo = closest;
+            else
+                m_CloseTo = closeTo;
+
+            // Are we splitting the input lines? If so, do it.
+            m_IsSplit1 = wantsplit1;
+            if (m_IsSplit1)
+                SplitLine(m_Intersection, m_Line1, out m_Line1a, out m_Line1b);
+
+            m_IsSplit2 = wantsplit2;
+            if (m_IsSplit2)
+                SplitLine(m_Intersection, m_Line2, out m_Line2a, out m_Line2b);
+
+            // Peform standard completion steps
+            Complete();
+        }
+
+        /// <summary>
+        /// Executes this operation.
+        /// </summary>
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
+        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
+        /// <param name="pointType">The entity type to assign to the intersection point.</param>
+        internal void Execute(LineFeature line1, LineFeature line2, PointFeature closeTo,
+                                bool wantsplit1, bool wantsplit2, IEntity pointType)
+        {
+            // Calculate the position of the point of intersection.
+            IPosition xsect;
+            PointFeature closest;
+            if (!line1.Intersect(line2, closeTo, out xsect, out closest))
+                throw new Exception("Cannot calculate intersection point");
+
+            // Add the intersection point
+            m_Intersection = AddIntersection(xsect, pointType);
+
+            // Remember input
+            m_Line1 = line1;
+            m_Line2 = line2;
+
+            // If a close-to point was not specified, use the one we picked.
+            if (closeTo == null)
+                m_CloseTo = closest;
+            else
+                m_CloseTo = closeTo;
+
+            // Are we splitting the input lines? If so, do it.
+            m_IsSplit1 = wantsplit1;
+            if (m_IsSplit1)
+                SplitLine(m_Intersection, m_Line1, out m_Line1a, out m_Line1b);
+
+            m_IsSplit2 = wantsplit2;
+            if (m_IsSplit2)
+                SplitLine(m_Intersection, m_Line2, out m_Line2a, out m_Line2b);
+
+            // Peform standard completion steps
+            Complete();
+        }
+
+        /// <summary>
+        /// Updates this operation.
+        /// </summary>
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
+        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
+        /// <returns>True if operation updated ok.</returns>
+        internal bool Correct(LineFeature line1, LineFeature line2, PointFeature closeTo,
+                                bool wantsplit1, bool wantsplit2)
+        {
+            // Disallow attempts to change the split status
+
+            if (wantsplit1 != m_IsSplit1 || wantsplit2 != m_IsSplit2)
+                throw new Exception("You cannot make line splits via update.");
+
+            // If the lines have changed, cut references to this
+            // operation from the old lines, and change it so the
+            // operation is referenced from the new lines.
+
+            if (!Object.ReferenceEquals(m_Line1, line1))
+            {
+                m_Line1.CutOp(this);
+                m_Line1 = line1;
+                m_Line1.AddOp(this);
+            }
+
+            if (!Object.ReferenceEquals(m_Line2, line2))
+            {
+                m_Line2.CutOp(this);
+                m_Line2 = line2;
+                m_Line2.AddOp(this);
+            }
+
+            if (!Object.ReferenceEquals(m_CloseTo, closeTo))
+            {
+                if (m_CloseTo != null)
+                    m_CloseTo.CutOp(this);
+
+                m_CloseTo = closeTo;
+
+                if (m_CloseTo != null)
+                    m_CloseTo.AddOp(this);
+            }
+
+            return true;
+        }
     }
 }
