@@ -226,7 +226,7 @@ namespace Backsight.Editor.Forms
         private void lineTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
             // Get the new selection (if any)
-            m_LineType = (IEntity)lineTypeComboBox.SelectedItem;
+            m_LineType = lineTypeComboBox.SelectedEntityType;
 
             // If we have everything we need, move directly to the
             // next page. Otherwise move to the first field we need.
