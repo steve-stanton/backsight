@@ -184,7 +184,7 @@ namespace Backsight.Editor.Forms
         private void pointTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
             // Get the new point type.
-            IEntity ent = (IEntity)pointTypeComboBox.SelectedItem;
+            IEntity ent = pointTypeComboBox.SelectedEntityType;
 
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).

@@ -127,6 +127,22 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
+        /// The currently selected entity type (null if the entity type has an ID of 0,
+        /// indicating the blank entity type).
+        /// </summary>
+        public IEntity SelectedEntityType
+        {
+            get
+            {
+                IEntity e = (this.SelectedItem as IEntity);
+                if (e==null || e.Id==0)
+                    return null;
+                else
+                    return e;
+            }
+        }
+
+        /// <summary>
         /// Returns the default entity for a type of geometry on a map layer.
         /// </summary>
         /// <param name="layer">The layer of interest</param>
