@@ -133,6 +133,7 @@
     <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
     <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
     <Compile Include="Operations\IntersectTwoLinesOperation.cs" />
+    <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
@@ -671,6 +672,7 @@
     <Compile Include="ThemeFacade.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="TranslationFile.cs" />
+    <Compile Include="TrimLineUI.cs" />
     <Compile Include="UndoUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateUI.cs" />

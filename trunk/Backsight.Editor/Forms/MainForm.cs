@@ -260,9 +260,11 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuLinePolygonBoundary, ctxLinePolygonBoundary },
                 IsLinePolygonBoundaryEnabled,
                 LinePolygonBoundary);
-            AddAction(new ToolStripItem[] { mnuLineTrimDangles
-                                          , ctxLineTrimDangle
-                                          , ctxMultiTrim }, IsLineTrimDanglesEnabled, LineTrimDangles);
+            AddEdit(
+                EditingActionId.Trim,
+                new ToolStripItem[] { mnuLineTrimDangles, ctxLineTrimDangle, ctxMultiTrim },
+                IsLineTrimDanglesEnabled,
+                LineTrimDangles);
             AddAction(mnuLineDefaultEntity, IsLineDefaultEntityEnabled, LineDefaultEntity);
             AddEdit(
                 EditingActionId.PolygonSubdivision,
@@ -1429,14 +1431,26 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             m_Controller.StartCommand(cmd);
         }
 
+        /// <summary>
+        /// Checks whether the Line - Trim Dangles command is enabled or not.
+        /// </summary>
+        /// <returns>True if the current selection contains at least one line, and no other command is
+        /// currently running.</returns>
+        /// <remarks>
+        /// The UI will be enabled even if a selected line is non-topological. If you don't, and
+        /// you've picked a non-topological line, and you trim via the right click button, nothing
+        /// appears to happen. By letting it through, the user will at least be told why the line
+        /// can't be trimmed.
+        /// </remarks>
         private bool IsLineTrimDanglesEnabled()
         {
-            return false;
+            return (m_Controller.IsLineSelected() && !m_Controller.IsCommandRunning);
         }
 
         private void LineTrimDangles(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new TrimLineUI(action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsLineDefaultEntityEnabled()

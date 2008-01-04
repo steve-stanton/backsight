@@ -16,6 +16,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -234,6 +237,82 @@ namespace Backsight.Editor
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Determines whether the sections in this list can be trimmed using the
+        /// <see cref="TrimLineOperation"/>
+        /// </summary>
+        /// <returns>True if either end dangles, and we would be left with something
+        /// after the trim.</returns>
+        internal bool CanTrim()
+        {
+            // Can't trim if we don't have at least two sections
+            if (m_Sections.Count<2)
+                return false;
+
+            // Get the sections at the ends.
+            IDivider s = this.FirstDivider;
+            IDivider e = this.LastDivider;
+            Debug.Assert(s!=e);
+
+            // Return if neither end is dangling
+            bool sDangle = Topology.IsDangle(s, s.From);
+            bool eDangle = Topology.IsDangle(e, e.To);
+            if (!(sDangle || eDangle))
+                return false;
+
+            // Can't process if both ends are dangling and the common point is coincident
+            if (sDangle && eDangle && s.To.IsCoincident(e.From))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Draws sections on the specified display, excluding dangling ends.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal void RenderTrimmed(ISpatialDisplay display, IDrawStyle style)
+        {
+            // If we're highlighting, dangling portions should be drawn dotted
+            IDrawStyle dangleStyle = (style is HighlightStyle ? new DottedStyle(Color.Red) : null);
+
+            bool sDangle = Line.IsStartDangle();
+            bool eDangle = Line.IsEndDangle();
+
+            int last = m_Sections.Count-1;
+            for (int i=0; i<=last; i++)
+            {
+                if ((i==0 && !sDangle) || (i>0 && i<last) || (i==last && !eDangle))
+                {
+                    IDivider d = m_Sections[i];
+                    d.LineGeometry.Render(display, style);
+                }
+                else if (dangleStyle!=null && ((i==0 && sDangle) || (i==last && eDangle)))
+                {
+                    IDivider d = m_Sections[i];
+                    d.LineGeometry.Render(display, dangleStyle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Will a divider associated with this topology be drawn by the <see cref="RenderTrimmed"/>
+        /// method?
+        /// </summary>
+        /// <param name="d">One of the dividers in this list</param>
+        /// <returns>True if the divider coincides with a dangling portion of the line.</returns>
+        internal bool IsVisible(IDivider d)
+        {
+            if (Object.ReferenceEquals(d, FirstDivider))
+                return !Line.IsStartDangle();
+
+            if (Object.ReferenceEquals(d, LastDivider))
+                return !Line.IsEndDangle();
+
+            return true;
         }
     }
 }
