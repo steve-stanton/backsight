@@ -164,13 +164,12 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
-
             if (style is HighlightStyle)
             {
                 // If we're highlighting a non-topological line, always draw it in turquoise,
                 // regardless of the supplied style.
                 if (IsTopological)
-                    m_Geom.Render(display, style);
+                    RenderTopologicalLine(display, style);
                 else
                 {
                     Color oldCol = style.LineColor;
@@ -196,7 +195,38 @@ namespace Backsight.Editor
                 }
             }
             else
+                RenderTopologicalLine(display, style);
+        }
+
+        /// <summary>
+        /// Draws a topological line on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        void RenderTopologicalLine(ISpatialDisplay display, IDrawStyle style)
+        {
+            // If we're dealing with a line that's been divided into at least two sections,
+            // and the line is marked as trimmed, ensure we only render the non-dangling
+            // sections.
+            if (IsTrimmed && (m_Topology is SectionTopologyList))
+                (m_Topology as SectionTopologyList).RenderTrimmed(display, style);
+            else
                 m_Geom.Render(display, style);
+        }
+
+        /// <summary>
+        /// Is a divider associated with this line visible?
+        /// </summary>
+        /// <param name="d">One of the dividers associated with the topology for this line</param>
+        /// <returns>False if this line is marked as trimmed, and the specified divider is not
+        /// currently drawn.</returns>
+        internal bool IsVisible(IDivider d)
+        {
+            // The logic here should mimic that of RenderTopologicalLine above.
+            if (IsTrimmed && (m_Topology is SectionTopologyList))
+                return (m_Topology as SectionTopologyList).IsVisible(d);
+            else
+                return true;
         }
 
         public override SpatialType SpatialType
@@ -997,6 +1027,32 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 xres.GetClosest(closeTo, out xsect, 0.0);
 
             return (xsect!=null);
+        }
+
+        /// <summary>
+        /// Is the start of this line a topological dangle?
+        /// </summary>
+        /// <returns>True if this line has topology, but the start is not connected to any other line</returns>
+        internal bool IsStartDangle()
+        {
+            if (m_Topology==null)
+                return false;
+
+            IDivider d = m_Topology.FirstDivider;
+            return Topology.IsDangle(d, d.From);
+        }
+
+        /// <summary>
+        /// Is the end of this line a topological dangle?
+        /// </summary>
+        /// <returns>True if this line has topology, but the end is not connected to any other line</returns>
+        internal bool IsEndDangle()
+        {
+            if (m_Topology==null)
+                return false;
+
+            IDivider d = m_Topology.LastDivider;
+            return Topology.IsDangle(d, d.To);
         }
     }
 }

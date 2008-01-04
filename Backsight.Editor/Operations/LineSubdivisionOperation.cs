@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
 {
@@ -178,13 +179,14 @@ namespace Backsight.Editor.Operations
 
             // Create line sections
             MeasuredLineFeature[] sections = face.Sections;
-            double sdist=0.0;		// Distance to start of section.
 	        double edist=0.0;		// Distance to end of section.
+            PointFeature start = m_Line.StartPoint;
 
-        	for (int i=0; i<adjray.Length; sdist=edist, i++)
+        	for (int i=0; i<adjray.Length; i++)
 	        {
 		        edist += adjray[i];
-                sections[i].Line = MakeSection(sdist, edist);
+                sections[i].Line = MakeSection(start, edist);
+                start = sections[i].Line.EndPoint;
 	        }
 
             // De-activate the parent line
@@ -269,20 +271,52 @@ namespace Backsight.Editor.Operations
 
         public override void AddReferences()
         {
-            m_Line.AddReference(this);
+            m_Line.AddOp(this);
 
             foreach (LineSubdivisionFace face in m_Faces)
                 face.AddReferences(this);
         }
 
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.OnRollback();
+
+            m_Line.CutOp(this);
+
+            // Process each face. Do it in reverse order, just in case
+            // subsequently created faces have some sort of dependency
+            // on the earlier faces.
+            int nFace = m_Faces.Count;
+            for (int i=nFace-1; i>=0; i--)
+            {
+                LineSubdivisionFace face = m_Faces[i];
+                face.Undo(this);
+            }
+
+            // Restore the original line
+            m_Line.Restore();
+            return true;
         }
 
+        /// <summary>
+        /// Rollforward this edit in response to some sort of update.
+        /// </summary>
+        /// <returns>True if operation has been re-executed successfully</returns>
         internal override bool Rollforward()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Return if this operation has not been marked as changed.
+            if (!IsChanged)
+                return base.OnRollforward();
+
+            foreach (LineSubdivisionFace face in m_Faces)
+                face.Rollforward(this);
+
+            // Rollforward the base class.
+            return base.OnRollforward();
         }
 
         internal bool CanCorrect
@@ -293,12 +327,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a section for this arc subdivision op.
         /// </summary>
-        /// <param name="sdist">The distance to the start of the section.</param>
+        /// <param name="start">The point at the start of the section</param>
         /// <param name="edist">The distance to the end of the section.</param>
         /// <returns>The created section</returns>
-        LineFeature MakeSection(double sdist, double edist)
+        LineFeature MakeSection(PointFeature start, double edist)
         {
-            SectionGeometry section = AddSection(sdist, edist);
+            SectionGeometry section = AddSection(start, edist);
             LineFeature newLine = m_Line.MakeSubSection(section, this);
             //MapModel.EditingIndex.Add(newLine);
             return newLine;
@@ -311,33 +345,21 @@ namespace Backsight.Editor.Operations
         /// The caller is responsible for associating the operation with the section,
         /// and the parent line with the operation.
         /// </summary>
-        /// <param name="sdist">Distance from the start of the parent line to the start
-        /// of the section.</param>
+        /// <param name="start">The point at the start of the section</param>
         /// <param name="edist">Distance from the start of the parent line to the end
         /// of the section.</param>
         /// <returns>The new section.</returns>
-        SectionGeometry AddSection(double sdist, double edist)
+        SectionGeometry AddSection(PointFeature start, double edist)
         {
             CadastralMapModel map = CadastralMapModel.Current;
 
-            // Get the position for the start and end points.
+            // Get the position for the end point.
             LineGeometry parent = m_Line.LineGeometry;
-            IPosition start, end;
-            parent.GetPosition(new Length(sdist), out start);
+            IPosition end;
             parent.GetPosition(new Length(edist), out end);
 
             // Add points at these positions (with no ID & default entity). If they
             // did not previously exist, reference them to THIS operation.
-
-            PointFeature spt = (start as PointFeature);
-            if (spt==null)
-                spt = (map.Index.QueryClosest(start, Length.Zero, SpatialType.Point) as PointFeature);
-
-            if (spt==null)
-            {
-                spt = map.AddPoint(start, map.DefaultPointType, this);
-                spt.SetNextId();
-            }
 
             PointFeature ept = (end as PointFeature);
             if (ept==null)
@@ -349,7 +371,7 @@ namespace Backsight.Editor.Operations
                 ept.SetNextId();
             }
 
-            SectionGeometry section = new SectionGeometry(m_Line, spt, ept);
+            SectionGeometry section = new SectionGeometry(m_Line, start, ept);
             return section;
         }
 

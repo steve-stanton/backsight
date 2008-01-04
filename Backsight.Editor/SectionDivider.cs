@@ -73,5 +73,14 @@ namespace Backsight.Editor
             get { return m_Right; }
             set { m_Right = value; }
         }
+
+        /// <summary>
+        /// Implements <see cref="IDivider"/> method by returning <c>false</c> if this divider
+        /// coincides with the trimmed portion of a line.
+        /// </summary>
+        public override bool IsVisible
+        {
+            get { return Line.IsVisible(this); }
+        }
     }
 }

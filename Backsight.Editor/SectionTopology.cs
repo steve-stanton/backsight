@@ -127,7 +127,7 @@ namespace Backsight.Editor
         /// Implements <see cref="IDivider"/> method by returning <c>true</c>,
         /// indicating that this topology is visible.
         /// </summary>
-        public bool IsVisible
+        public virtual bool IsVisible
         {
             get { return true; }
         }

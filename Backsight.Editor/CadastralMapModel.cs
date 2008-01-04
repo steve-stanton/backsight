@@ -473,48 +473,6 @@ namespace Backsight.Editor
             return m_Index.QueryClosest(p, radius, types);
         }
 
-        /*
-        internal void Write(BinaryWriter w)
-        {
-            w.Write(m_Format);
-            w.Write(m_JobRegistrationId);
-            w.Write(m_NumInternalIds);
-
-            m_Meters.Write(w);
-            m_Feet.Write(w);
-            m_Chains.Write(w);
-            m_AsEntered.Write(w);
-
-            m_DisplayUnit.Write(w);
-        }
-         */
-
-        /*
-        DistanceUnit m_DisplayUnit;
-        DistanceUnit m_EntryUnit;
-        bool m_AutoNumber;
-        double m_ShowLabelScale;
-        double m_ShowPointScale;
-        ILength m_PointHeight;
-        bool m_AreIntersectionsDrawn;
-        bool m_MaintainTopology;
-        LineAnnotationStyle m_Annotation;
-        double m_Rotation;
-        uint m_MapScale;
-        uint m_OpSequence;
-        readonly CoordinateSystem m_CoordSystem;
-        IEditWindow m_Window;
-        IWindow m_UpdateWindow;
-        IWindow m_DrawWindow;
-        List<Person> m_People;
-        List<Session> m_Sessions;
-        List<MapEntity> m_Entities;
-        List<LayerFacade> m_Layers;
-        readonly List<IdRange> m_IdRanges;
-        LayerFacade m_ActiveLayer;
-        EntityFacade m_DefaultPointType;
-        EntityFacade m_DefaultLineType;
-         */
         #endregion
 
         #region ISpatialData Members

@@ -410,6 +410,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Has this feature been marked as "trimmed".
+        /// </summary>
+        /// <remarks>In the past, this attribute related only to line features, and meant that
+        /// a portion of the line would be flagged with a "hidden" attribute. These sections
+        /// were not selectable.
+        /// <para/>
+        /// In the current implementation, trim status may be set for both lines and points.
+        /// It acts only as a drawing hint, since visibility is determined dynamically at draw
+        /// time. Sections that have been trimmed can still be selected by the user (if you know
+        /// where to point).
+        /// </remarks>
+        /// <seealso cref="TrimLineOperation"/>
+        public bool IsTrimmed
+        {
+            get { return IsFlagSet(FeatureFlag.Trim); }
+            internal set { SetFlag(FeatureFlag.Trim, value); }
+        }
+
+        /// <summary>
         /// A string representing the key of this feature. If the feature does not
         /// have an ID, you get a blank string.
         /// </summary>

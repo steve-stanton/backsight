@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Operations
 {
@@ -203,6 +204,62 @@ namespace Backsight.Editor.Operations
         {
             foreach (MeasuredLineFeature m in m_Sections)
                 m.ObservedLength.AddReferences(op);
+        }
+
+        /// <summary>
+        /// Rollback this face (occurs when a user undoes the edit containing this face).
+        /// </summary>
+        /// <param name="op">The editing operation that contains this face</param>
+        internal void Undo(LineSubdivisionOperation op)
+        {
+            // Go through each section we created, marking each one as
+            // deleted. Also mark the point features at the start of each
+            // section, so long as it was created by this operation (should
+            // do nothing for the 1st section).
+
+            foreach (MeasuredLineFeature m in m_Sections)
+            {
+                LineFeature line = m.Line;
+                line.Undo();
+
+                PointFeature point = line.StartPoint;
+                if (Object.ReferenceEquals(point.Creator, op))
+                    point.Undo();
+            }
+        }
+
+        /// <summary>
+        /// Rollforwards this face in response to some sort of update.
+        /// </summary>
+        /// <param name="op">The editing operation that contains this face</param>
+        internal void Rollforward(LineSubdivisionOperation op)
+        {
+            // How many distances (it's at least 2).
+            int ndist = m_Sections.Count;
+
+            // Adjust the observed distances
+            LineFeature parent = op.Parent;
+            double[] adjray = GetAdjustedLengths(parent.Length);
+            Debug.Assert(adjray.Length==m_Sections.Count);
+
+            double edist = 0.0; // Distance to end of section.
+
+            // Adjust the position of the end of each section (except the last one).
+            for (int i=0; i<(adjray.Length-1); i++)
+            {
+                // Get the distance from the start of the parent line.
+                edist += adjray[i];
+
+                // Get a position on the parent that is that distance along the line.
+                // It shouldn't fail.
+                IPosition to;
+                if (!parent.LineGeometry.GetPosition(new Length(edist), out to))
+                    throw new RollforwardException(op, "Cannot adjust line section");
+
+                // Move the point at the end of the section
+                MeasuredLineFeature section = m_Sections[i];
+                section.Line.EndPoint.Move(to);
+            }
         }
     }
 }

@@ -846,6 +846,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Does the current selection refer to any line?
+        /// </summary>
+        /// <returns>True if the selection refers to at least one line</returns>
+        internal bool IsLineSelected()
+        {
+            foreach (ISpatialObject so in Selection.Items)
+            {
+                if (so.SpatialType == SpatialType.Line)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Is some sort of editing command currently active?
         /// </summary>
         internal bool IsCommandRunning
