@@ -153,22 +153,17 @@ namespace Backsight.Editor.Operations
         {
             base.OnRollback();
 
-            // Revert the trim status of the line(s) involved. And mark as
-            // moved so they will be re-intersected.
+            // Revert the trim status of the line(s) involved.
             if (m_Lines!=null)
             {
                 foreach (LineFeature line in m_Lines)
-                {
                     line.IsTrimmed = false;
-                    line.IsMoved = true;
-                }
             }
 
             // Restore point features that were de-activated
             if (m_Points!=null)
             {
                 foreach (PointFeature p in m_Points)
-                    //p.Restore();
                     p.IsTrimmed = false;
             }
 
@@ -236,7 +231,9 @@ namespace Backsight.Editor.Operations
         /// to the static <see cref="PreCheck"/> method).</param>
         internal void Execute(LineFeature[] lines)
         {
-            foreach (LineFeature line in lines)
+            m_Lines = new List<LineFeature>(lines);
+
+            foreach (LineFeature line in m_Lines)
             {
                 // Mark it as trimmed.
                 line.IsTrimmed = true;
@@ -264,7 +261,6 @@ namespace Backsight.Editor.Operations
             if (!m_Points.Contains(point))
             {
                 m_Points.Add(point);
-                //point.IsInactive = true;
                 point.IsTrimmed = true;
             }
         }
