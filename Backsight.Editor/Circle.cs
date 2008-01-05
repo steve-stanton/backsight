@@ -259,5 +259,25 @@ namespace Backsight.Editor
             Debug.Assert(cx!=null);
             cx.AddCircle(this);
         }
+
+        /// <summary>
+        /// Obtains a list of circles that exist in two lists
+        /// </summary>
+        /// <param name="a">The first list</param>
+        /// <param name="b">The second list</param>
+        /// <returns>The circles that exist in both lists (the test is based simply
+        /// on reference equality)</returns>
+        internal static List<Circle> GetCommonCircles(List<Circle> a, List<Circle> b)
+        {
+            List<Circle> result = new List<Circle>();
+
+            foreach (Circle c in a)
+            {
+                if (b.Contains(c))
+                    result.Add(c);
+            }
+
+            return result;
+        }
     }
 }

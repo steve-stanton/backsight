@@ -322,8 +322,15 @@ namespace Backsight.Editor
 
         public override void ShowContextMenu(ISpatialDisplay where, IPosition p)
         {
-            ContextMenuStrip menu = m_Main.CreateContextMenu(this.Selection);
-            where.ShowContextMenu(p, menu);
+            ContextMenuStrip menu = null;
+            if (m_Command != null)
+                menu = m_Command.CreateContextMenu();
+
+            if (menu==null)
+                menu = m_Main.CreateContextMenu(this.Selection);
+
+            if (menu!=null)
+                where.ShowContextMenu(p, menu);
         }
 
         public override IDrawStyle DrawStyle

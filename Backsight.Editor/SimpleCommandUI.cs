@@ -174,13 +174,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Receives a sub-command. These actually get sent down via the controller class.
+        /// Creates any applioable context menu
         /// </summary>
-        /// <param name="id">The ID of the sub-command.</param>
-        /// <returns>False (always), indicating that a sub-command was not dispatched.</returns>
-        internal override bool Dispatch(int id)
+        /// <returns>Null (always), indicating that this command does not utilize a context menu.</returns>
+        internal override ContextMenuStrip CreateContextMenu()
         {
-            return false;
+            return null;
         }
     }
 }
