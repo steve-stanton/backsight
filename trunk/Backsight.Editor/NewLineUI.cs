@@ -170,7 +170,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        bool AppendToLine(PointFeature p)
+        internal virtual bool AppendToLine(PointFeature p)
         {
             // If the start point is not defined, just remember it.
             if (m_Start==null)
@@ -179,8 +179,7 @@ namespace Backsight.Editor
                 return true;
             }
 
-		    // Get the location of the end point and confirm that it's
-		    // different from the start.
+		    // Confirm the point is  different from the start.
             if (p.IsCoincident(m_Start))
             {
 			    MessageBox.Show("End point cannot match the start point.");
@@ -193,92 +192,12 @@ namespace Backsight.Editor
             DialFinish(null);
 	        return true;
         }
-        /*
-LOGICAL CeView::AppendToLine ( const CePoint& point ) {
-
-	// If the start point is not defined, just remember it. For
-	// lines that are expected to be curves, ensure that the
-	// point coincides with at least one circle.
-	if ( !m_pStart ) {
-		if ( m_Op == ID_LINE_CURVE ) {
-			if ( !GetCircles(point) ) {
-				AfxMessageBox("Selected point does not coincide with any circles.");
-				return FALSE;
-			}
-		}
-		m_pStart = point.GetpVertex();
-		return TRUE;
-	}
-
-	if ( m_Op == ID_LINE_CURVE ) {
-
-		// Get the circles that pass through the selected point.
-
-		CeObjectList clist;
-		CeMap* pMap = CeMap::GetpMap();
-		CeVertex posn(point);
-		UINT4 ncircle = pMap->FindCircles(clist,posn);
-
-		if ( !ncircle ) {
-			AfxMessageBox("Selected point does not coincide with any circles.");
-			SetLineCursor();
-			return FALSE;
-		}
-
-		// The point MUST coincide with one of the circles that
-		// were found at the start point.
-
-		CeObjectList comlist;
-		ncircle = comlist.Intersect(clist,m_Circles);
-		if ( !ncircle ) {
-			CString msg;
-			msg.Format("%s\n%s"
-				, "Selected end point does not coincide with any of"
-				, "the circles that pass through the start point." );
-			AfxMessageBox(msg);
-			SetLineCursor();
-			return FALSE;
-		}
-
-		// Could we have more than 1 to choose from?
-		if ( ncircle > 1 ) {
-			CString msg;
-			msg.Format("%s\n%s"
-				, "More than one circle is common to the start"
-				, "and the end point. Don't know what to do." );
-			AfxMessageBox(msg);
-			SetLineCursor();
-			return FALSE;
-		}
-
-		// Get the location of the end point and confirm that it's
-		// different from the start.
-		m_pEnd = point.GetpVertex();
-		if ( m_pEnd==m_pStart ) {
-			AfxMessageBox("End point cannot match the start point.");
-			SetLineCursor();
-			return FALSE;
-		}
-
-		// Add the new arc.
-		CeCircle* pCircle = (CeCircle*)comlist.GetpFirst();
-		this->AddNewArc(*m_pStart,*m_pEnd,pCircle);
-	}
-	else {
-
-	}
-
-	OnFinishCommand();
-	return TRUE;
-
-} // end of AppendToLine
-         */
 
         /// <summary>
         /// Adds a new line segment feature.
         /// </summary>
         /// <param name="end"></param>
-        void AddNewLine(PointFeature end)
+        internal virtual void AddNewLine(PointFeature end)
         {
             // Create the persistent edit (adds to current session)
             NewLineOperation op = new NewLineOperation();
@@ -297,6 +216,23 @@ LOGICAL CeView::AppendToLine ( const CePoint& point ) {
         {
             FinishCommand();
             return true;
+        }
+
+        /// <summary>
+        /// The point at the start of the new line (null if not yet specified)
+        /// </summary>
+        protected PointFeature StartPoint
+        {
+            get { return m_Start; }
+        }
+
+        /// <summary>
+        /// Creates any applioable context menu
+        /// </summary>
+        /// <returns>The context menu for this command.</returns>
+        internal override ContextMenuStrip CreateContextMenu()
+        {
+           return new CommandContextMenus().NewLineContextMenu(this);
         }
     }
 }

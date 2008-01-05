@@ -64,5 +64,6 @@ namespace Backsight.Editor
         Parallel            =38,
         Trim                =39,
         AttachPoint         =40,
+        NewCircularArc      =41,
     }
 }

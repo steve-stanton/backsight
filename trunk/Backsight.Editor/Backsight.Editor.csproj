@@ -51,6 +51,12 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="Forms\CommandContextMenus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\CommandContextMenus.Designer.cs">
+      <DependentUpon>CommandContextMenus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -126,6 +132,7 @@
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
     <Compile Include="IntersectUI.cs" />
+    <Compile Include="NewCircularArcUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndLineOperation.cs" />
@@ -473,6 +480,10 @@
     <EmbeddedResource Include="Forms\CheckReviewForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>CheckReviewForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommandContextMenus.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CommandContextMenus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ContainerForm.resx">
       <SubType>Designer</SubType>

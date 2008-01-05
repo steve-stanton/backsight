@@ -16,11 +16,11 @@
 using System;
 using System.Drawing;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Editor.Forms;
-using System.Windows.Forms;
 
 namespace Backsight.Editor
 {
@@ -151,7 +151,13 @@ namespace Backsight.Editor
         abstract internal void OnSelectPoint(PointFeature point);
 
         abstract internal void OnSelectLine(LineFeature line);
-        abstract internal bool Dispatch(int id);
+        //abstract internal bool Dispatch(int id);
+
+        /// <summary>
+        /// Creates any applioable context menu
+        /// </summary>
+        /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
+        abstract internal ContextMenuStrip CreateContextMenu();
 
         internal ISpatialDisplay ActiveDisplay
         {
