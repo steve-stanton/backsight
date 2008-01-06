@@ -51,12 +51,6 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
-    <Compile Include="Forms\CommandContextMenus.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\CommandContextMenus.Designer.cs">
-      <DependentUpon>CommandContextMenus.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -128,6 +122,9 @@
     </Compile>
     <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
       <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewLineContextMenu.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
@@ -481,10 +478,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>CheckReviewForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CommandContextMenus.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CommandContextMenus.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ContainerForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ContainerForm.cs</DependentUpon>
@@ -608,6 +601,10 @@
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewLineContextMenu.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewLineContextMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewPointForm.resx">
       <DependentUpon>NewPointForm.cs</DependentUpon>

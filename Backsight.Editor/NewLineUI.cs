@@ -232,7 +232,34 @@ namespace Backsight.Editor
         /// <returns>The context menu for this command.</returns>
         internal override ContextMenuStrip CreateContextMenu()
         {
-           return new CommandContextMenus().NewLineContextMenu(this);
+            return new NewLineContextMenu(this);
         }
+
+        /// <summary>
+        /// Handles the context menu "Cancel" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void Cancel(IUserAction action)
+        {
+            Escape();
+        }
+
+        /// <summary>
+        /// Handles the context menu "Specify ID" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void SpecifyId(IUserAction action)
+        {
+            MessageBox.Show("SpecifyId");
+        }
+
+        /// <summary>
+        /// Reacts to a situation where the user presses the ESC key, by aborting this command.
+        /// </summary>
+        internal override void Escape()
+        {
+            AbortCommand();
+        }
+
     }
 }
