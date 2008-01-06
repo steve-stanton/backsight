@@ -68,6 +68,17 @@ namespace Backsight.Forms
         #region Constructors
 
         /// <summary>
+        /// Creates a <c>UserAction</c> that is invoked by one UI item that is
+        /// always enabled.
+        /// </summary>
+        /// <param name="item">The associated UI element (not null)</param>
+        /// <param name="doAction">Delegate that should be called to perform the action (not null)</param>
+        public UserAction(ToolStripItem item, DoAction doAction)
+            : this(new ToolStripItem[] { item }, null, doAction)
+        {
+        }
+
+        /// <summary>
         /// Creates a new <c>UserAction</c>
         /// </summary>
         /// <param name="items">The associated UI elements (at least one of them)</param>
