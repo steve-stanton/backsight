@@ -51,6 +51,7 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="FindPointByIdQuery.cs" />
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -74,6 +75,12 @@
     </Compile>
     <Compile Include="Forms\GetDistanceControl.Designer.cs">
       <DependentUpon>GetDistanceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetKeyForm.Designer.cs">
+      <DependentUpon>GetKeyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\GetLineControl.cs">
       <SubType>UserControl</SubType>
@@ -123,8 +130,17 @@
     <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
       <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewCircularArcContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
+      <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewLineContextMenu.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\NewLineContextMenu.designer.cs">
+      <DependentUpon>NewLineContextMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="GetControlUI.cs" />
@@ -514,6 +530,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>GetEntityForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetKeyForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetLayerForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetLayerForm.cs</DependentUpon>
@@ -602,9 +622,13 @@
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewLineContextMenu.resx">
+    <EmbeddedResource Include="Forms\NewCircularArcContextMenu.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewLineContextMenu.resx">
       <DependentUpon>NewLineContextMenu.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewPointForm.resx">
       <DependentUpon>NewPointForm.cs</DependentUpon>

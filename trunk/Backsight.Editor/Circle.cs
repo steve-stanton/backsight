@@ -82,6 +82,11 @@ namespace Backsight.Editor
             get { return CircleGeometry.GetExtent(this); }
         }
 
+        /// <summary>
+        /// Calculates the distance from the perimeter of this circle to the specified position.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public ILength Distance(IPosition point)
         {
             return CircleGeometry.Distance(this, point);

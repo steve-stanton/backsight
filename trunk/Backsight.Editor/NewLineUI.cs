@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Editor.Forms;
 using Backsight.Forms;
@@ -110,13 +111,26 @@ namespace Backsight.Editor
                 CadastralMapModel map = CadastralMapModel.Current;
                 if (map.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
                 {
-                    ITerminal endTerm = new FloatingTerminal(m_End);
-                    LineGeometry line = new SegmentGeometry(m_Start, endTerm);
+                    LineGeometry line = GetIntersectGeometry();
+                    Debug.Assert(line!=null);
                     IntersectionFinder xf = new IntersectionFinder(line, false);
                     style.FillColor = Color.Transparent;
                     xf.Render(display, style);
                 }
             }
+        }
+
+        /// <summary>
+        /// Geometry that can be used to detect intersections with the map
+        /// </summary>
+        /// <returns>The geometry for the new line (null if insufficient information has been specified)</returns>
+        internal virtual LineGeometry GetIntersectGeometry()
+        {
+            if (m_Start==null || m_End==null)
+                return null;
+
+            ITerminal endTerm = new FloatingTerminal(m_End);
+            return new SegmentGeometry(m_Start, endTerm);
         }
 
         /// <summary>
@@ -227,12 +241,43 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The last mouse position
+        /// </summary>
+        protected IPointGeometry LastMousePosition
+        {
+            get { return m_End; }
+        }
+
+        /// <summary>
         /// Creates any applioable context menu
         /// </summary>
         /// <returns>The context menu for this command.</returns>
         internal override ContextMenuStrip CreateContextMenu()
         {
             return new NewLineContextMenu(this);
+        }
+
+        /// <summary>
+        /// Handles the context menu "Specify ID" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void SpecifyId(IUserAction action)
+        {
+            // Ask the user for the point ID.
+            GetKeyForm dial = new GetKeyForm("Specify Point ID");
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                // Locate the point with the specified key
+                string keyval = dial.Key;
+                CadastralMapModel map = CadastralMapModel.Current;
+                PointFeature point = new FindPointByIdQuery(map.Index, keyval).Result;
+
+                if (point==null)
+                    MessageBox.Show("Cannot find point with specified key");
+                else
+                    AppendToLine(point);
+            }
+            dial.Dispose();
         }
 
         /// <summary>
@@ -245,21 +290,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Handles the context menu "Specify ID" menuitem.
-        /// </summary>
-        /// <param name="action">The action that initiated this method call</param>
-        internal void SpecifyId(IUserAction action)
-        {
-            MessageBox.Show("SpecifyId");
-        }
-
-        /// <summary>
         /// Reacts to a situation where the user presses the ESC key, by aborting this command.
         /// </summary>
         internal override void Escape()
         {
             AbortCommand();
         }
-
     }
 }
