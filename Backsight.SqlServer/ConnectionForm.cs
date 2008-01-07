@@ -147,7 +147,7 @@ namespace Backsight.SqlServer
 
                 ServerConnection result = new ServerConnection();
                 result.ServerInstance = serverName;
-                result.ConnectTimeout = 5;
+                result.ConnectTimeout = 15;
 
                 result.LoginSecure = windowsAuthenticationRadioButton.Checked;
                 if (!result.LoginSecure)

@@ -76,7 +76,7 @@ namespace Backsight.SqlServer
 
             ServerConnection sc = new ServerConnection();
             sc.ServerInstance = csb.DataSource;
-            sc.ConnectTimeout = 5;
+            sc.ConnectTimeout = 15;
             sc.LoginSecure = csb.IntegratedSecurity;
             if (!sc.LoginSecure)
             {
@@ -510,7 +510,7 @@ namespace Backsight.SqlServer
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder();
             csb.DataSource = ds;
             csb.IntegratedSecurity = true;
-            csb.ConnectTimeout = 5;
+            csb.ConnectTimeout = 15;
             csb.InitialCatalog = "Backsight";
             return csb.ConnectionString;
         }
