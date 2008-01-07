@@ -24,22 +24,38 @@ namespace Backsight.Editor.Forms
     /// <summary>
     /// Context menu for the <see cref="NewCircularArcUI"/>
     /// </summary>
-    partial class NewLineContextMenu : ContextMenuStrip
+    partial class NewCircularArcContextMenu : ContextMenuStrip
     {
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>NewLineContextMenu</c>, wiring each menuitem to the specified UI.
+        /// Creates a new <c>NewCircularArcContextMenu</c>, wiring each menuitem to the specified UI.
         /// </summary>
         /// <param name="ui">The user interface displaying this context menu</param>
-        internal NewLineContextMenu(NewLineUI ui)
+        internal NewCircularArcContextMenu(NewCircularArcUI ui)
         {
             InitializeComponent();
 
             new UserAction(ctxSpecifyId, ui.SpecifyId);
+            new UserAction(ctxShortArc, ui.ShortArc);
+            new UserAction(ctxLongArc, ui.LongArc);
             new UserAction(ctxCancel, ui.Cancel);
         }
 
         #endregion
+
+        /// <summary>
+        /// Is the "Short Arc" menuitem currently checked? If true, the "Long Arc" menuitem
+        /// should be unchecked (and vice versa).
+        /// </summary>
+        internal bool IsShortArc
+        {
+            get { return ctxShortArc.Checked; }
+            set
+            {
+                ctxShortArc.Checked = value;
+                ctxLongArc.Checked = !value;
+            }
+        }
     }
 }
