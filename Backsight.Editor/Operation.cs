@@ -340,5 +340,24 @@ namespace Backsight.Editor
                     line.IsMoved = true;
             }
         }
+
+        /// <summary>
+        /// Cuts any reference made to this operation for an observed distance that was
+        /// specified using an <see cref="OffsetPoint"/> object.
+        /// </summary>
+        /// <param name="dist">The distance observation. If this is not an <c>OffsetPoint</c>
+        /// object, this function does nothing.</param>
+        protected void CutOffsetRef(Observation dist)
+        {
+            // Return if the distance observation is not for an offset point
+            OffsetPoint off = (dist as OffsetPoint);
+            if (off == null)
+                return;
+
+            // Get the offset point and cut the reference it has to this operation.
+            PointFeature point = off.Point;
+            if (point != null)
+                point.CutOp(this);
+        }
     }
 }

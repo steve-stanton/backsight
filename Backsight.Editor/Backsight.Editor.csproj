@@ -160,6 +160,7 @@
     <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
     <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
     <Compile Include="Operations\IntersectTwoLinesOperation.cs" />
+    <Compile Include="Operations\NewCircleOperation.cs" />
     <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />

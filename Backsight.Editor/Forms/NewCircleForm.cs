@@ -23,7 +23,60 @@ namespace Backsight.Editor.Forms
     /// </summary>
     partial class NewCircleForm : Form
     {
-        readonly NewCircleUI m_Cmd;
+        #region Class data
+
+        /// <summary>
+        /// The command that is running this dialog.
+        /// </summary>
+        readonly CommandUI m_Cmd;
+
+        /// <summary>
+        /// The circle (if any) that is being updated.
+        /// </summary>
+        LineFeature m_Update;
+
+        /// <summary>
+        /// The control that has the focus.
+        /// </summary>
+        Control m_Focus;
+
+        /// <summary>
+        /// A previous operation that was recalled (always null if doing
+        /// an update).
+        /// </summary>
+        //NewCircleOperation m_Recall;
+
+        // For the operation ...
+
+        /// <summary>
+        /// Point at the center of the circle.
+        /// </summary>
+        PointFeature m_Center;
+
+        /// <summary>
+        /// Observed distance (either a <see cref="Distance"/> object,
+        /// or an <see cref="OffsetPoint"/>).
+        /// </summary>
+        Observation m_Radius; // was m_pRadius
+
+        // Preview related ...
+
+        /// <summary>
+        /// Currently displayed circle.
+        /// </summary>
+        Circle m_Circle;
+
+        /// <summary>
+        /// Point used to specify distance.
+        /// </summary>
+        PointFeature m_RadiusPoint;
+
+        /// <summary>
+        /// Entered distance value (if specified that way).
+        /// </summary>
+        Distance m_RadiusDistance; // was m_Radius
+
+        #endregion
 
         internal NewCircleForm(NewCircleUI cmd)
         {
