@@ -39,36 +39,36 @@ namespace Backsight.Editor.Forms
             // ctxCancel
             // 
             this.ctxCancel.Name = "ctxCancel";
-            this.ctxCancel.Size = new System.Drawing.Size(133, 22);
+            this.ctxCancel.Size = new System.Drawing.Size(158, 22);
             this.ctxCancel.Text = "Cancel";
             // 
             // ctxSpecifyId
             // 
             this.ctxSpecifyId.Name = "ctxSpecifyId";
-            this.ctxSpecifyId.Size = new System.Drawing.Size(133, 22);
+            this.ctxSpecifyId.Size = new System.Drawing.Size(158, 22);
             this.ctxSpecifyId.Text = "Specify ID...";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(130, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(155, 6);
             // 
             // ctxShortArc
             // 
             this.ctxShortArc.Name = "ctxShortArc";
-            this.ctxShortArc.Size = new System.Drawing.Size(133, 22);
+            this.ctxShortArc.Size = new System.Drawing.Size(158, 22);
             this.ctxShortArc.Text = "Short arc";
             // 
             // ctxLongArc
             // 
             this.ctxLongArc.Name = "ctxLongArc";
-            this.ctxLongArc.Size = new System.Drawing.Size(133, 22);
+            this.ctxLongArc.Size = new System.Drawing.Size(158, 22);
             this.ctxLongArc.Text = "Long arc";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(155, 6);
             // 
             // NewCircularArcContextMenu
             // 
@@ -79,8 +79,9 @@ namespace Backsight.Editor.Forms
             this.ctxLongArc,
             this.toolStripSeparator2,
             this.ctxCancel});
+            this.ShowCheckMargin = true;
             this.ShowImageMargin = false;
-            this.Size = new System.Drawing.Size(134, 98);
+            this.Size = new System.Drawing.Size(159, 104);
             this.ResumeLayout(false);
 
         }

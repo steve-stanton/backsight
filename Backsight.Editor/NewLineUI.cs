@@ -106,7 +106,7 @@ namespace Backsight.Editor
 
             if (m_Start!=null && m_End!=null)
             {
-                style.Render(display, new IPosition[] { m_Start, m_End });
+                RenderGeometry(display, style);
 
                 CadastralMapModel map = CadastralMapModel.Current;
                 if (map.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
@@ -118,6 +118,17 @@ namespace Backsight.Editor
                     xf.Render(display, style);
                 }
             }
+        }
+
+        /// <summary>
+        /// Draws the new line based on currently entered data
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal virtual void RenderGeometry(ISpatialDisplay display, IDrawStyle style)
+        {
+            if (m_Start!=null && m_End!=null)
+                style.Render(display, new IPosition[] { m_Start, m_End });
         }
 
         /// <summary>
@@ -146,14 +157,25 @@ namespace Backsight.Editor
 
         internal override void MouseMove(IPosition p)
         {
+            PointFeature oldCurrentPoint = m_CurrentPoint;
             CadastralMapModel map = CadastralMapModel.Current;
             ILength size = new Length(map.PointHeight.Meters * 0.5);
             m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
 
             if (m_Start==null)
-                return;
+            {
+                // If the mouse is over a different point, ensure the old point is erased
+                if (oldCurrentPoint!=null && !Object.ReferenceEquals(oldCurrentPoint, m_CurrentPoint))
+                    ErasePainting();
 
-            m_End = PointGeometry.Create(p);
+                return;
+            }
+
+            if (m_CurrentPoint==null)
+                m_End = PointGeometry.Create(p);
+            else
+                m_End = m_CurrentPoint;
+
             if (m_End.IsCoincident(m_Start))
             {
                 m_End = null;
@@ -246,6 +268,7 @@ namespace Backsight.Editor
         protected IPointGeometry LastMousePosition
         {
             get { return m_End; }
+            set { m_End = value; }
         }
 
         /// <summary>
