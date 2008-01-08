@@ -21,6 +21,7 @@ using System.Drawing;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Operations;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -47,6 +48,12 @@ namespace Backsight.Editor
         /// </summary>
         Circle m_NewArcCircle;
 
+        /// <summary>
+        /// The current arc geometry. This gets defined by the mouse move handler, used
+        /// for draws, and for calculating intersect positions.
+        /// </summary>
+        ArcGeometry m_Geom;
+
         #endregion
 
         #region Constructors
@@ -63,6 +70,7 @@ namespace Backsight.Editor
             m_IsShortArc = true;
             m_Circles = null;
             m_NewArcCircle = null;
+            m_Geom = null;
         }
 
         #endregion
@@ -108,11 +116,38 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Geometry that can be used to detect intersections with the map. This will be called
-        /// by <c>base.Paint</c> if intersections with the map need to be shown during mouse moves.
+        /// Draws the new line based on currently entered data. This is called by the
+        /// <c>base.Paint</c> method.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal override void RenderGeometry(ISpatialDisplay display, IDrawStyle style)
+        {
+            // The supplied style is a solid magenta line, which doesn't show up well
+            // on top of a dotted magenta circle. So make it a bit thicker.
+
+            if (m_Geom!=null)
+            {
+                DrawStyle thickStyle = new DrawStyle(style.LineColor);
+                thickStyle.Pen.Width = 3.0f;
+                m_Geom.Render(display, thickStyle);
+            }
+        }
+
+        /// <summary>
+        /// Geometry that can be used to detect intersections with the map.
         /// </summary>
         /// <returns>The geometry for the new line (null if insufficient information has been specified)</returns>
         internal override LineGeometry GetIntersectGeometry()
+        {
+            return m_Geom;
+        }
+
+        /// <summary>
+        /// Creates the geometry that can be used to detect intersections with the map.
+        /// </summary>
+        /// <returns>The geometry for the new line (null if insufficient information has been specified)</returns>
+        ArcGeometry CreateIntersectGeometry()
         {
             if (m_Circles==null)
                 return null;
@@ -131,8 +166,8 @@ namespace Backsight.Editor
             // that are within a 1mm tolerance). Return null geometry if none of the circles
             // are within reach.
 
-            Circle best = m_Circles[0];
-            double bestdist = best.Distance(end).Meters;
+            Circle bestCircle = m_Circles[0];
+            double bestdist = bestCircle.Distance(end).Meters;
 
             if (m_Circles.Count > 1)
             {
@@ -143,7 +178,7 @@ namespace Backsight.Editor
                     double dist = c.Distance(end).Meters;
                     if (dist < bestdist)
                     {
-                        best = c;
+                        bestCircle = c;
                         bestdist = dist;
                     }
                 }
@@ -155,65 +190,37 @@ namespace Backsight.Editor
                 return null;
 
             // Project the end point ON to the circle.
+            //IPointGeometry center = bestCircle.Center;
+            //Turn eturn = new Turn(center, end);
+            //IAngle bearing = eturn.Bearing;
+            //IPosition cirend = Geom.Polar(center, bearing.Radians, bestCircle.Radius.Meters);
+            IPosition cirend = CircleGeometry.GetClosestPosition(bestCircle, end);
 
-            /*
-			if ( pBest && m_pStart ) {
+            // Get the clockwise angle from the start to the current end point.
+            IPointGeometry center = bestCircle.Center;
+            Turn sturn = new Turn(center, start);
+            double angle = sturn.GetAngle(cirend).Radians;
 
-				// Project the end point ON to the circle.
-				CeVertex centre(*pBest);
-				CeTurn eturn(centre,end);
-				FLOAT8 bearing = eturn.GetBearing();
-				CeVertex cirend(centre,bearing,pBest->GetRadius());
+            // Figure out which direction the curve should go, depending
+            // on whether the user wants the short arc or the long one.
+            bool iscw = (angle < MathConstants.PI ? m_IsShortArc : !m_IsShortArc);
 
-				// Get the clockwise angle from the start to the
-				// current end point.
-				CeTurn sturn(centre,*m_pStart);
-				FLOAT8 angle = sturn.GetAngle(cirend);
-
-				// Figure out which direction the curve should go, depending
-				// on whether the user wants the short arc or the long one.
-				LOGICAL iscw;
-				if ( angle < PI )
-					iscw = m_IsShortArc;
-				else
-					iscw = !m_IsShortArc;
-
-				// Remember the point we've got to.
-				m_End = CeLocation(cirend);
-				m_pEnd = &m_End;
-
-				// Create new curve and draw it.
-				CeCurve curve(*pBest,*m_pStart,*m_pEnd,iscw);
-
-				//Draw(cirend);
-				// Check for intersections.
-				this->ShowX(&curve);
-			}
-             */
-            //return new ArcGeometry(
-            return new SegmentGeometry(start, endTerm);
+            // Create the required geometry
+            ITerminal ec = new FloatingTerminal(cirend);
+            return new ArcGeometry(bestCircle, start, ec, iscw);
         }
 
         internal override void MouseMove(IPosition p)
         {
             base.MouseMove(p);
-            /*
-            CadastralMapModel map = CadastralMapModel.Current;
-            ILength size = new Length(map.PointHeight.Meters * 0.5);
-            m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
 
-            if (m_Start==null)
-                return;
+            // Remember current geometry
+            m_Geom = CreateIntersectGeometry();
 
-            m_End = PointGeometry.Create(p);
-            if (m_End.IsCoincident(m_Start))
-            {
-                m_End = null;
-                return;
-            }
-
-            ErasePainting();
-             */
+            // If we got something, it's possible the end position doesn't exactly
+            // match the end location determined by base.MouseMove.
+            if (m_Geom!=null)
+                base.LastMousePosition = m_Geom.EC;
         }
 
         /// <summary>
@@ -235,7 +242,7 @@ namespace Backsight.Editor
                     return false;
                 }
 
-                return true;
+                return base.AppendToLine(p);
             }
 
             // Get the circles that pass through the selected point.
