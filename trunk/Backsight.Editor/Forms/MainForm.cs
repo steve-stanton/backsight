@@ -235,7 +235,11 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuLineAddCircularArc, ctxLineAddCircularArc, ctxPointAddCircularArc, toolLineAddCircularArc },
                 IsLineAddCircularArcEnabled,
                 LineAddCircularArc);
-            AddAction(mnuLineAddCircleConstructionLine, IsLineAddCircleConstructionLineEnabled, LineAddCircleConstructionLine);
+            AddEdit(
+                EditingActionId.NewCircle,
+                new ToolStripItem[] { mnuLineAddCircleConstructionLine },
+                IsLineAddCircleConstructionLineEnabled,
+                LineAddCircleConstructionLine);
             AddEdit(
                 EditingActionId.LineExtend,
                 new ToolStripItem[] { mnuLineExtend, ctxLineExtend, toolLineExtend },
@@ -1305,12 +1309,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsLineAddCircleConstructionLineEnabled()
         {
-            return false;
+            return (HasMap && !m_Controller.IsCommandRunning);
         }
 
         private void LineAddCircleConstructionLine(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new NewCircleUI(this, action);
+            m_Controller.StartCommand(cmd);
         }
 
         /// <summary>
