@@ -389,32 +389,5 @@ namespace Backsight.Editor.Operations
 
             return (ok ? end : null);
         }
-
-        /*
-//	@mfunc	Get any circles that were used to establish the position
-//			of a point that was created by this operation.
-//
-//	@parm	The list to append any circles to.
-//	@parm	One of the point features created by this op (either
-//			explicitly referred to, or added as a consequence of
-//			creating a new line).
-//
-//	@rdesc	TRUE if request was handled (does not necessarily mean
-//			that any circles were found). FALSE if this is a
-//			do-nothing function.
-
-LOGICAL CeArcExtension::GetCircles ( CeObjectList& clist
-								   , const CePoint& point ) const {
-
-	// If the arc we extended was a circular arc, append the
-	// circle on which it is based.
-	CeCircle* pCircle = m_pExtendArc->GetpCircle();
-	if ( pCircle ) clist.AddReference(pCircle);
-
-	return TRUE;
-
-} // end of GetCircles
-         */
-
     }
 }
