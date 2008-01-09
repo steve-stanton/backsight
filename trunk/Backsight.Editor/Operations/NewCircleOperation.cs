@@ -132,9 +132,6 @@ namespace Backsight.Editor.Operations
 
             Circle circle = (Circle)curve.Circle;
 
-            // Rollforward the base class (does nothing)
-            return base.Rollforward();
-
             // Get the new radius (on the ground).
             ILength rad = m_Radius.GetDistance(m_Center);
             if (rad.Meters < Constants.TINY)
@@ -172,35 +169,20 @@ namespace Backsight.Editor.Operations
 
                 // Alter the arc (the complete circle) so it starts at
                 // (and ends) at the offset position.
+                // 09-JAN-08: is this really needed? - the line ends where the point is!
                 //line.ChangeEnds(start, start);
             }
             else
             {
-                // Get the current BC/EC position.
+                // Get the new start location for the curve and shift the
+                // BC/EC point
+                IPosition newstart = new Position(m_Center.X, m_Center.Y + rad.Meters);
+                line.StartPoint.Move(newstart);
             }
+
+            // Rollforward the base class (does nothing)
+            return base.Rollforward();
         }
-        /*
-	else {
-
-		CeLocation* pStart = (CeLocation*)pCurve->GetpStart();
-
-		// Get the new start location for the curve.
-		newstart = CeVertex( m_pCentre->GetEasting()
-						   , m_pCentre->GetNorthing()+radm );
-
-		// If the current location somehow existed before this
-		// operation (highly unlikely, although it COULD be
-		// an old offset point I guess), create a new location.
-		// Otherwise shift it.
-
-		if ( pStart->GetpCreator()==this )
-			pStart->Move(newstart);
-		else {
-			pStart = (CeLocation*)pMap->AddLocation(newstart);
-			pCurve->ChangeEnds(*pStart,*pStart);
-		}
-	}
-         */
 
         /// <summary>
         /// Adds references to existing features referenced by this operation (including features

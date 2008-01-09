@@ -133,6 +133,7 @@ namespace Backsight.Editor.Forms
             this.Name = "NewCircleForm";
             this.Text = "New Circle";
             this.TopMost = true;
+            this.Shown += new System.EventHandler(this.NewCircleForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

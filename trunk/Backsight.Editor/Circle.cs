@@ -314,11 +314,11 @@ namespace Backsight.Editor
                 m_Center.AddReference(this);
             }
 
-            // Change the radius (this will go on to notify the arcs that
-            // sit on this circle, which notifies any dependent ops
+            // Change the radius
             m_Radius = radius;
 
-            // Re-index this circle and any attached arcs
+            // Re-index this circle and any attached arcs (this should also
+            // mark the operations that created the arcs for rollforward).
             m_Center.MapModel.EditingIndex.AddCircle(this);
             foreach (ArcFeature a in m_Arcs)
                 a.PostMove();
