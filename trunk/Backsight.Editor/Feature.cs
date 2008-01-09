@@ -519,7 +519,7 @@ namespace Backsight.Editor
         abstract public IWindow Extent { get; }
         abstract public ILength Distance(IPosition point);
 
-        protected void PreMove()
+        public void PreMove()
         {
             OnPreMove(this);
 
@@ -534,7 +534,7 @@ namespace Backsight.Editor
             index.Remove(this);
         }
 
-        protected void PostMove()
+        public void PostMove()
         {
             OnPostMove(this);
 

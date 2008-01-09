@@ -17,7 +17,7 @@ using System;
 
 namespace Backsight.Editor.Operations
 {
-    /// <written by="Steve Stanton" on="01-DEC-1998" />
+    /// <written by="Steve Stanton" on="01-DEC-1998" was="CeNewCircle" />
     /// <summary>
     /// Operation to add a new circle
     /// </summary>
@@ -125,10 +125,10 @@ namespace Backsight.Editor.Operations
                 return base.OnRollforward();
 
             // Get the circle that has changed.
-            LineFeature line = this.Line;
-            ArcGeometry curve = (line.LineGeometry as ArcGeometry);
-            if (curve==null)
+            ArcFeature line = (this.Line as ArcFeature);
+            if (line==null)
                 throw new RollforwardException(this, "NewCircleOperation.Rollforward - Unexpected line type.");
+            ArcGeometry curve = (ArcGeometry)line.LineGeometry;
 
             Circle circle = (Circle)curve.Circle;
 
@@ -144,53 +144,44 @@ namespace Backsight.Editor.Operations
             // Actually, I think this should do nothing, seeing how circle
             // construction lines are supposed to always be non-topolgical.
             line.IsMoved = true;
+
+	        // If the underlying circle was created by this op, update
+	        // it so that it has the correct center and radius.
+	        // If the circle previously existed, make a new one (if there
+	        // isn't one there already).
+
+            if (Object.ReferenceEquals(circle.Creator, this))
+                circle.MoveCircle(m_Center, rad);
+            else
+            {
+                // Is there a suitable circle where we're going to? If not, create a new one.
+                // If a new circle gets created, this will reference the center point to the circle.
+                circle = MapModel.AddCircle(m_Center, rad);
+            }
+
+            // Update the arc geometry. The BC=EC must move to
+            // fall on the updated circle. For circles where the
+            // radius was defined using an offset point, we move
+            // to there. Otherwise we want a point at the top of
+            // the circle.
+
+            if (m_Radius is OffsetPoint)
+            {
+                OffsetPoint offset = (m_Radius as OffsetPoint);
+                PointFeature start = offset.Point;
+
+                // Alter the arc (the complete circle) so it starts at
+                // (and ends) at the offset position.
+                //line.ChangeEnds(start, start);
+            }
+            else
+            {
+                // Get the current BC/EC position.
+            }
         }
         /*
-	// If the circle primitive was created by this op, update
-	// it so that it has the correct centre location and radius.
-	// If the circle previously existed, make a new one (if there
-	// isn't one there already).
-
-	CeMap* pMap = CeMap::GetpMap();
-
-	if ( pCircle->GetpCreator()==this )
-		pCircle->MoveCircle(*m_pCentre,radm);
 	else {
 
-		// Is there a suitable circle where we're going to?
-		pCircle = m_pCentre->GetCircle(radm);
-
-		// If not, create a new one.
-
-		if ( !pCircle ) pCircle =
-			new ( os_database::of(this)
-			    , os_ts<CeCircle>::get() )
-				  CeCircle(*m_pCentre,radm);
-	}
-
-	// Update the curve primitive. The BC=EC must move to
-	// fall on the updated circle. For circles where the
-	// radius was defined using an offset point, we move
-	// to there. Otherwise we want a point at the top of
-	// the circle.
-
-	CeVertex newstart;
-
-	const CeOffsetPoint* const pOffset =
-		dynamic_cast<const CeOffsetPoint* const>(m_pRadius);
-
-	if ( pOffset ) {
-
-		CeLocation* pStart = (CeLocation*)pOffset->GetpPoint()->GetpVertex();
-
-		// Alter the curve (the complete circle) so it starts at
-		// (and ends) at the offset position.
-
-		pCurve->ChangeEnds(*pStart,*pStart);
-	}
-	else {
-
-		// Get the current BC/EC position.
 		CeLocation* pStart = (CeLocation*)pCurve->GetpStart();
 
 		// Get the new start location for the curve.
@@ -244,7 +235,7 @@ namespace Backsight.Editor.Operations
 
             // Add a circle to the map.
             CadastralMapModel map = MapModel;
-            ArcFeature arc = map.AddCompleteCircularArc(center, rad, start); // to implement
+            ArcFeature arc = map.AddCompleteCircularArc(center, rad, start, this);
 
             // Record the new arc in the base class.
             SetNewLine(arc);
@@ -306,6 +297,25 @@ namespace Backsight.Editor.Operations
             m_Radius.AddReferences(this);
 
             return true;
+        }
+
+        /// <summary>
+        /// The features created by this editing operation.
+        /// </summary>
+        internal override Feature[] Features
+        {
+            get
+            {
+                // The point at the BC (and EC) of the arc may have been created by this
+                // operation, or may be a previously existing point used to define the radius.
+
+                PointFeature p = this.Line.StartPoint;
+
+                if (Object.ReferenceEquals(p.Creator, this))
+                    return new Feature[] { this.Line, p };
+                else                
+                    return new Feature[] { this.Line };
+            }
         }
     }
 }

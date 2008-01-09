@@ -35,12 +35,11 @@ namespace Backsight.Editor
         /// The radius of the circle.
         /// </summary>
         private ILength m_Radius;
-        //private readonly Offset m_Radius;
 
         /// <summary>
         /// The center of the circle. This may be quite remote from the main body of the map.
         /// </summary>
-        private readonly PointFeature m_Center;
+        private PointFeature m_Center;
 
         /// <summary>
         /// The arcs that coincide with the perimeter of this circle.
@@ -283,6 +282,46 @@ namespace Backsight.Editor
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Updates the definition of this circle.
+        /// </summary>
+        /// <param name="center">The point at the center of the circle.</param>
+        /// <param name="radius">The radius of the circle, on the ground.</param>
+        internal void MoveCircle(PointFeature center, ILength radius)
+        {
+            // Remove this circle (and attached arcs) from the spatial index
+            foreach (ArcFeature a in m_Arcs)
+                a.PreMove();
+
+            m_Center.MapModel.EditingIndex.RemoveCircle(this);
+
+            // If the center location is changing then ensure that
+            // the old location no longer refers to this circle,
+            // and ensure the new one does.
+
+            // 08-DEC-99: Note that there appears to be inconsistency
+            // in the cross-referencing of the center location to the
+            // circle. Some places seem to do it, while other don't.
+            // The extra reference shouldn't hurt, and at some stage
+            // in the future, it would be good to enforce this.
+
+            if (!Object.ReferenceEquals(m_Center, center))
+            {
+                m_Center.CutReference(this);
+                m_Center = center;
+                m_Center.AddReference(this);
+            }
+
+            // Change the radius (this will go on to notify the arcs that
+            // sit on this circle, which notifies any dependent ops
+            m_Radius = radius;
+
+            // Re-index this circle and any attached arcs
+            m_Center.MapModel.EditingIndex.AddCircle(this);
+            foreach (ArcFeature a in m_Arcs)
+                a.PostMove();
         }
     }
 }
