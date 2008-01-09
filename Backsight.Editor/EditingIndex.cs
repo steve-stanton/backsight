@@ -64,6 +64,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Removes a circle from this index.
+        /// </summary>
+        /// <param name="c">The circle to remove from the index</param>
+        internal void RemoveCircle(Circle c)
+        {
+            m_ExtraData.Remove(c);
+        }
+
+        /// <summary>
         /// Attempts to locate the circle closest to a position of interest.
         /// </summary>
         /// <param name="p">The search position (on the circumference of the circle)</param>

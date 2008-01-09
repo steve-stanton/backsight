@@ -144,5 +144,14 @@ namespace Backsight.Environment
             IEntity[] ents = s_Container.EntityTypes;
             return Array.Find<IEntity>(ents, delegate(IEntity e) { return e.Id==id; });
         }
+
+        /// <summary>
+        /// Locate the entity type with an ID==0.
+        /// </summary>
+        /// <returns>The "blank" entity type</returns>
+        public static IEntity FindBlankEntity()
+        {
+            return FindEntityById(0);
+        }
     }
 }

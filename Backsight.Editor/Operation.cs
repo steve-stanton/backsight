@@ -279,12 +279,12 @@ namespace Backsight.Editor
 
         public void OnPreMove(Feature f)
         {
-            throw new Exception("The method or operation is not implemented.");
+            throw new NotImplementedException("Operation.OnPreMove");
         }
 
         public void OnPostMove(Feature f)
         {
-            throw new Exception("The method or operation is not implemented.");
+            SetFlag(OperationFlag.Changed, true);
         }
 
         #endregion

@@ -802,8 +802,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new point feature as part of this model. This expands the extent of
-        /// this model, and updates the spatial index. The caller is responsible for assigning
+        /// Creates a new point feature as part of this model. The caller is responsible for assigning
         /// any ID that the new point should have.
         /// </summary>
         /// <param name="p">The position for the point (not null). If it's an instance of
@@ -1209,86 +1208,61 @@ namespace Backsight.Editor
         /// <param name="start">The point (if any) that should be regarded as the
         /// "start" of the circle. If null, an arbitrary start point at the top of
         /// the circle will be used.</param>
+        /// <param name="creator">The operation creating the arc</param>
         /// <returns>The newly created line</returns>
-        internal ArcFeature AddCompleteCircularArc(PointFeature center, ILength radius, PointFeature start)
+        internal ArcFeature AddCompleteCircularArc(PointFeature center, ILength radius, PointFeature start,
+                                                    Operation creator)
         {
-            throw new NotImplementedException("CadastralMapModel.AddCompleteCircularArc");
+            // Do we already have a suitable circle object? If not, create one.
+            Circle circle = AddCircle(center, radius);
+
+            // Create an arc that runs all the way round the circle.
+            // If an explicit start point has been supplied, that location
+            // will be treated as the BC (and EC) of the new curve. Otherwise
+            // we'll define an arbitrary location at the top of the circle.
+
+            // The arc is regarded as a construction line (with blank entity type)
+            IEntity e = EnvironmentContainer.FindBlankEntity();
+
+            PointFeature bc = start;
+            if (bc==null)
+            {
+                IPosition p = new Position(center.X, center.Y+radius.Meters);
+                bc = AddPoint(p, e, creator);
+            }
+
+            // Create a clockwise arc.
+            LineFeature curve = AddCircularArc(circle, bc, bc, true, e, creator);
+
+            // The line is NEVER topological.
+            //pArc->SetTopology(FALSE);
+
+            // Get the window of the circle, and ensure the map's window
+	        // is big enough to enclose it. The only other place this is
+	        // done is in CeMap::AddLocation. However, since a circle may
+	        // extend beyond any defined location, we need to do it here
+	        // too.
+            //CeWindow win(*pCurve);
+            //m_Window.Expand(win);
+
+            return (ArcFeature)curve;
         }
-        /*
-	// Do we already have a suitable circle object?
-	CeCircle* pCircle = centre.GetCircle(radius);
-
-	// If not, create one.
-	if ( !pCircle ) {
-		pCircle = new ( os_database::of(&centre)
-					  , os_ts<CeCircle>::get() ) CeCircle(centre,radius);
-		if ( !pCircle ) {
-			ShowMessage("CeMap::AddCircle\nCannot create circle");
-			return 0;
-		}
-	}
-
-	// Create a curve primitive ...
-
-	// If an explicit start point has been supplied, that location
-	// will be treated as the BC (and EC) of the new curve. Otherwise
-	// we'll define an arbitrary location at the top of the circle.
-
-	CeLocation* pBC = 0;
-	if ( pStart )
-		pBC = (CeLocation*)pStart->GetpVertex();
-	else {
-		CeVertex bc(centre.GetEasting(),centre.GetNorthing()+radius);
-		pBC = (CeLocation*)this->AddLocation(bc);
-	}
-
-	// Create a clockwise curve.
-
-	CeCurve* pCurve = new ( os_database::of(pCircle)
-						  , os_ts<CeCurve>::get() )
-							CeCurve(*pCircle,*pBC,*pBC,TRUE);
-
-	// Refer the circle to the curve.
-	pCircle->AddObject(*pCurve);
-
-	// Refer the start (=end) location to the curve.
-	pBC->AddObject(*pCurve);
-
-	// Append the curve to the spatial index.
-	m_Space.Add(pCurve);
-
-	// Add the user-perceived line as well (without any entity type).
-	CeArc* pArc = this->AddArc(pCurve,0); 
-
-	// The line is NEVER topological.
-	pArc->SetTopology(FALSE);
-
-	// Get the window of the circle, and ensure the map's window
-	// is big enough to enclose it. The only other place this is
-	// done is in CeMap::AddLocation. However, since a circle may
-	// extend beyond any defined location, we need to do it here
-	// too.
-	CeWindow win(*pCurve);
-	m_Window.Expand(win);
-
-	return pArc;
-
-} // end of AddCircle
-         */
 
         /// <summary>
         /// Add a circular arc to the map, along with a line on the currently active editing layer,
         /// along with terminal points.
         /// </summary>
-        /// <param name="circle">The circle on which the arc lies.</param>
-        /// <param name="start">The point at the start of arc.</param>
-        /// <param name="end">The point at the end of arc.</param>
+        /// <param name="circle">The circle on which the arc lies. This will be modified to refer
+        /// to the newly created arc.</param>
+        /// <param name="start">The point at the start of arc. This will be modified to refer
+        /// to the newly created arc.</param>
+        /// <param name="end">The point at the end of arc. This will be modified to refer
+        /// to the newly created arc.</param>
         /// <param name="clockwise">True if the arc is clockwise.</param>
-        /// <param name="lineEnt">The entity type for the new line. Null is valid, referring
-        /// to circle construction lines.</param>
+        /// <param name="lineEnt">The entity type for the new line.</param>
         /// <param name="creator">The editing operation creating the arc</param>
         /// <returns>The newly created line</returns>
-        internal LineFeature AddCircularArc (Circle circle, PointFeature start, PointFeature end,
+        internal LineFeature AddCircularArc(Circle circle, PointFeature start, PointFeature end,
             bool clockwise, IEntity lineEnt, Operation creator)
         {
             ArcFeature result = new ArcFeature(lineEnt, creator, circle, start, end, clockwise);
