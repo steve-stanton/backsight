@@ -17,6 +17,8 @@ using System;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
+using System.Windows.Forms;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -48,17 +50,36 @@ namespace Backsight.Editor
             m_Dialog = null;
         }
 
+        /// <summary>
+        /// Constructor for command recall.
+        /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
+        /// <param name="action">The action that initiated this command</param>
+        /// <param name="op">The operation that's being recalled.</param>
+        internal NewCircleUI(IControlContainer cc, IUserAction action, Operation op)
+            : base(cc, action, null, op)
+        {
+            m_Dialog = null;
+        }
+
+        /// <summary>
+        /// Constructor for doing an update.
+        /// </summary>
+        /// <param name="cc">Object for holding any displayed dialogs</param>
+        /// <param name="action">The action that initiated this command</param>
+        /// <param name="updcmd">The update command.</param>
+        internal NewCircleUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
+            : base(cc, action, updcmd)
+        {
+            m_Dialog = null;
+        }
+
         #endregion
 
         public override void Dispose()
         {
             base.Dispose(); // removes any controls from container
-
-            if (m_Dialog!=null)
-            {
-                m_Dialog.Dispose();
-                m_Dialog = null;
-            }
+            KillDialogs();
         }
 
         /// <summary>
@@ -75,12 +96,133 @@ namespace Backsight.Editor
             UpdateUI pup = this.Update;
 
             if (pup!=null)
-                m_Dialog = new NewCircleForm(this);
+                m_Dialog = new NewCircleForm(pup);
             else
-                m_Dialog = new NewCircleForm(this);
+                m_Dialog = new NewCircleForm(this, this.Recall);
 
             m_Dialog.Show();
             return true;
+        }
+
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Does any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+        internal override void Paint(PointFeature point)
+        {
+            if (m_Dialog!=null)
+                m_Dialog.Draw(point);
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal override void OnSelectPoint(PointFeature point)
+        {
+            if (m_Dialog!=null)
+                m_Dialog.OnSelectPoint(point);
+        }
+
+        /// <summary>
+        /// Reacts to selection of the Cancel button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the dialog will be destroyed and the command
+        /// terminates. If it's some other window, it must be a sub-dialog created
+        /// by our guy, so let it handle the request.</param>
+        internal override void DialAbort(Control wnd)
+        {
+            KillDialogs();
+            AbortCommand();
+        }
+
+        /// <summary>
+        /// Destroys any dialogs that are currently displayed.
+        /// </summary>
+        void KillDialogs()
+        {
+            if (m_Dialog!=null)
+            {
+                m_Dialog.Dispose();
+                m_Dialog = null;
+            }
+        }
+
+        /// <summary>
+        /// Reacts to selection of the OK button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the command will be executed (and, on success,
+        /// the dialog will be destroyed). If it's some other window, it must
+        /// be a sub-dialog created by our guy, so let it handle the request.</param>
+        /// <returns></returns>
+        internal override bool DialFinish(Control wnd)
+        {
+            if (m_Dialog==null)
+            {
+                MessageBox.Show("NewCircleUI.DialFinish - No dialog!");
+                return false;
+            }
+
+            // Get info from the dialog.
+            PointFeature center = m_Dialog.Center;
+            Observation radius = m_Dialog.Radius;
+
+            // Both items must be defined (the dialog should have confirmed
+            // this in its OnOK handler).
+            if (center==null || radius==null)
+            {
+                MessageBox.Show("NewCircleUI.DialFinish - Insufficient data to add circle.");
+                return false;
+            }
+
+            // If we are doing an update, alter the original operation.
+            UpdateUI pup = this.Update;
+
+            if (pup!=null)
+            {
+                // Get the original operation.
+                NewCircleOperation pop = (pup.GetOp() as NewCircleOperation);
+                if (pop==null)
+                {
+                    MessageBox.Show("NewCircleUI.DialFinish - Unexpected edit type.");
+                    return false;
+                }
+
+                pop.Correct(center, radius);
+            }
+            else
+            {
+                // Create empty persistent object (adds to current session)
+                NewCircleOperation op = null;
+
+                try
+                {
+                    op = new NewCircleOperation();
+                    op.Execute(center, radius);
+                }
+
+                catch (Exception ex)
+                {
+                    Session.CurrentSession.Remove(op);
+                    MessageBox.Show(ex.Message);
+                    return false;
+                }
+            }
+
+            // Get the base class to finish up.
+            return FinishCommand();
         }
     }
 }

@@ -384,7 +384,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Does this curve represents a complete circle?
         /// </summary>
-        bool IsCircle
+        internal bool IsCircle
         {
             get { return BC.IsCoincident(EC); }
         }

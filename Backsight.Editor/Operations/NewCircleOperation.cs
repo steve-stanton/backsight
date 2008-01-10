@@ -252,7 +252,7 @@ namespace Backsight.Editor.Operations
         /// <param name="radius">The radius of the circle (either a <see cref="Distance"/> object,
         /// or an <see cref="OffsetPoint"/> that sits on the circumference of the circle.</param>
         /// <returns>True if operation updated ok.</returns>
-        bool Correct(PointFeature center, Observation radius)
+        internal bool Correct(PointFeature center, Observation radius)
         {
             // If the center point has changed, cut the reference to this
             // operation from the old point, and change it so the
