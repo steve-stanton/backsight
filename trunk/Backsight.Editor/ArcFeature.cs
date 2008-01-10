@@ -18,6 +18,7 @@ using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -141,6 +142,21 @@ namespace Backsight.Editor
             }
             else
                 Geometry.IsClockwise = isClockwise;
+        }
+
+        /// <summary>
+        /// Draws this object on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        public override void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+            // If we're dealing with a construction line, it's drawn dotted
+            // regardless of the supplied style.
+            if (Geometry.IsCircle && Creator.EditId == EditingActionId.NewCircle)
+                CircleGeometry.Render(Geometry.Circle, display, new DottedStyle(style.LineColor));
+            else
+                base.Render(display, style);
         }
     }
 }

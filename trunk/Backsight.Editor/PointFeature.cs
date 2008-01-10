@@ -96,7 +96,11 @@ namespace Backsight.Editor
         /// <returns>The attached circle (null if no such circle).</returns>
         internal Circle GetCircle(ILength radius)
         {
-            foreach (IFeatureDependent d in Dependents)
+            List<IFeatureDependent> deps = this.Dependents;
+            if (deps == null)
+                return null;
+
+            foreach (IFeatureDependent d in deps)
             {
                 if (d is Circle)
                 {

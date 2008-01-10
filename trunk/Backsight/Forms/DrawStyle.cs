@@ -343,8 +343,18 @@ namespace Backsight.Forms
                 {
                     PointF[] pts = GetDisplayPoints(display, a);
                     GraphicsPath p = new GraphicsPath();
-                    p.AddLines(pts);
-                    m_Path.AddPath(p, false);
+
+                    // TODO: I periodically get an ArgumentException with this call, don't see anything
+                    // in the online help. So quietly ignore it (I think it's relating to circular arcs,
+                    // so it might be an idea to draw something like a straight line).
+
+                    try
+                    {
+                        p.AddLines(pts);
+                        m_Path.AddPath(p, false);
+                    }
+
+                    catch { }
                 }
 
                 Brush b = new HatchBrush(HatchStyle.BackwardDiagonal, Color.LightSalmon, Color.Transparent);
