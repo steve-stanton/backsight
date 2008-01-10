@@ -323,5 +323,33 @@ namespace Backsight.Editor
             foreach (ArcFeature a in m_Arcs)
                 a.PostMove();
         }
+
+        /// <summary>
+        /// Checks whether this circle is referenced to arcs that terminaye at
+        /// a specific point. This excludes arcs that correspond to the whole circle.
+        /// </summary>
+        /// <param name="p">The point to look for</param>
+        /// <returns>True if an incident arc was found.</returns>
+        internal bool HasArcsAt(PointFeature p)
+        {
+            // A location to check has to be specified!
+            if (p==null)
+                return false;
+
+            // Loop through each arc (including inactive ones).
+            foreach (ArcFeature a in m_Arcs)
+            {
+                // Skip if the arc represents the whole circle.
+                if (a.Geometry.IsCircle)
+                    continue;
+
+                // Check whether either end of the arc coincides with
+                // the check location.
+                if (p.IsCoincident(a.StartPoint) || p.IsCoincident(a.EndPoint))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -45,6 +45,9 @@ namespace Backsight.Editor.Forms
             this.centerTextBox.Name = "centerTextBox";
             this.centerTextBox.Size = new System.Drawing.Size(72, 22);
             this.centerTextBox.TabIndex = 0;
+            this.centerTextBox.Enter += new System.EventHandler(this.centerTextBox_Enter);
+            this.centerTextBox.Leave += new System.EventHandler(this.centerTextBox_Leave);
+            this.centerTextBox.TextChanged += new System.EventHandler(this.centerTextBox_TextChanged);
             // 
             // radiusTextBox
             // 
@@ -53,6 +56,9 @@ namespace Backsight.Editor.Forms
             this.radiusTextBox.Name = "radiusTextBox";
             this.radiusTextBox.Size = new System.Drawing.Size(72, 22);
             this.radiusTextBox.TabIndex = 1;
+            this.radiusTextBox.Enter += new System.EventHandler(this.radiusTextBox_Enter);
+            this.radiusTextBox.Leave += new System.EventHandler(this.radiusTextBox_Leave);
+            this.radiusTextBox.TextChanged += new System.EventHandler(this.radiusTextBox_TextChanged);
             // 
             // label1
             // 
