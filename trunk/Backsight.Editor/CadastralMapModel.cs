@@ -409,10 +409,22 @@ namespace Backsight.Editor
             set { m_DisplayUnit = GetUnits(value.UnitType); }
         }
 
+        internal DistanceUnitType DisplayUnitType
+        {
+            get { return m_DisplayUnit.UnitType; }
+            set { m_DisplayUnit = GetUnits(value); }
+        }
+
         internal DistanceUnit EntryUnit
         {
             get { return m_EntryUnit; }
             set { m_EntryUnit = GetUnits(value.UnitType); }
+        }
+
+        internal DistanceUnitType EntryUnitType
+        {
+            get { return m_EntryUnit.UnitType; }
+            set { m_EntryUnit = GetUnits(value); }
         }
 
         internal DistanceUnit GetUnits(DistanceUnitType unitType)

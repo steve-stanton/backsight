@@ -65,19 +65,32 @@ namespace Backsight.Editor
         public bool ShowAdjustedLengths
         {
             get { return (m_Options & LineAnnotationOptions.ShowAdjustedLengths)!=0; }
-            set { m_Options = (m_Options | LineAnnotationOptions.ShowAdjustedLengths); }
+            set { SetOption(LineAnnotationOptions.ShowAdjustedLengths, value); }
         }
 
         public bool ShowObservedLengths
         {
             get { return (m_Options & LineAnnotationOptions.ShowObservedLengths)!=0; }
-            set { m_Options = (m_Options | LineAnnotationOptions.ShowObservedLengths); }
+            set { SetOption(LineAnnotationOptions.ShowObservedLengths, value); }
         }
 
         public bool ShowObservedAngles
         {
             get { return (m_Options & LineAnnotationOptions.ShowObservedAngles)!=0; }
-            set { m_Options = (m_Options | LineAnnotationOptions.ShowObservedAngles); }
+            set { SetOption(LineAnnotationOptions.ShowObservedAngles, value); }
+        }
+
+        /// <summary>
+        /// Sets option bit(s)
+        /// </summary>
+        /// <param name="option">The option bit(s) to set</param>
+        /// <param name="setting">True to set, false to clear</param>
+        void SetOption(LineAnnotationOptions option, bool setting)
+        {
+            if (setting)
+                m_Options |= option;
+            else
+                m_Options &= (~option);
         }
     }
 }

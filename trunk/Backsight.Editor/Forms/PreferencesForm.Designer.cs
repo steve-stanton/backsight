@@ -82,7 +82,7 @@ namespace Backsight.Editor.Forms
             this.annoObservedLengthsRadioButton = new System.Windows.Forms.RadioButton();
             this.SymbologyTabPage = new System.Windows.Forms.TabPage();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.symScaleTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -230,6 +230,7 @@ namespace Backsight.Editor.Forms
             // 
             // changeFontButton
             // 
+            this.changeFontButton.Enabled = false;
             this.changeFontButton.Location = new System.Drawing.Point(401, 86);
             this.changeFontButton.Name = "changeFontButton";
             this.changeFontButton.Size = new System.Drawing.Size(92, 23);
@@ -239,6 +240,7 @@ namespace Backsight.Editor.Forms
             // 
             // fontNameTextBox
             // 
+            this.fontNameTextBox.Enabled = false;
             this.fontNameTextBox.Location = new System.Drawing.Point(31, 87);
             this.fontNameTextBox.Name = "fontNameTextBox";
             this.fontNameTextBox.Size = new System.Drawing.Size(351, 22);
@@ -508,7 +510,7 @@ namespace Backsight.Editor.Forms
             // SymbologyTabPage
             // 
             this.SymbologyTabPage.Controls.Add(this.label8);
-            this.SymbologyTabPage.Controls.Add(this.textBox1);
+            this.SymbologyTabPage.Controls.Add(this.symScaleTextBox);
             this.SymbologyTabPage.Controls.Add(this.label7);
             this.SymbologyTabPage.Controls.Add(this.label6);
             this.SymbologyTabPage.Location = new System.Drawing.Point(4, 25);
@@ -528,14 +530,14 @@ namespace Backsight.Editor.Forms
             this.label8.TabIndex = 3;
             this.label8.Text = "Scale 1:";
             // 
-            // textBox1
+            // symScaleTextBox
             // 
-            this.textBox1.AcceptsReturn = true;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(104, 66);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(69, 22);
-            this.textBox1.TabIndex = 2;
+            this.symScaleTextBox.AcceptsReturn = true;
+            this.symScaleTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.symScaleTextBox.Location = new System.Drawing.Point(104, 66);
+            this.symScaleTextBox.Name = "symScaleTextBox";
+            this.symScaleTextBox.Size = new System.Drawing.Size(69, 22);
+            this.symScaleTextBox.TabIndex = 2;
             // 
             // label7
             // 
@@ -645,7 +647,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.TextBox labelScaleTextBox;
         private System.Windows.Forms.Button changeFontButton;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox symScaleTextBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox2;
