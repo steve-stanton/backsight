@@ -151,8 +151,48 @@ namespace Backsight.Editor
                 ShowContextMenu(sender, p);
 
             // If there's no command, or it doesn't handle left clicks, let the base class have a stab.
-            else if (m_Command==null || !m_Command.LButtonDown(p))
-                base.MouseDown(sender, p, b);
+            else if (m_Command == null || !m_Command.LButtonDown(p))
+            {
+                bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
+
+                // If we're currently auto-highlighting, and the user is doing
+                // a multi-select, turn off auto-highlight and get rid of the
+                // properties window (confusing).
+                if (isMultiSelect)
+                {
+                    m_IsAutoSelect = 0;
+                    m_Main.ClosePropertiesWindow();
+                }
+
+                // If the CTRL key is not pressed, free any limit known
+                // to the selection object and try to select something.
+                /*
+                if ((Control.ModifierKeys & Keys.ControlKey) == 0)
+                {
+                    OnSelect(point, isMultiSelect);
+                }
+                else
+                {
+                    // Really, it would be better UI to do this in OnLButtonUp
+                    // (otherwise there is a tendency to hold the left button
+                    // down while defining the limit line, with the expectation
+                    // that the selection will be made when you release the
+                    // left mouse button (which is NOT the way it works!). I
+                    // tried this, but the highlighting then comes on top
+                    // of any command-specific highlighting done below. This
+                    // happened even when I tried moving that stuff to
+                    // OnLButtonUp as well. So be warned.
+
+                    // Actually, it was something else, so maybe the above
+                    // would work after all. Let's see what users say.
+              
+                    CeVertex pos;
+                    LPToGround(point, &pos);
+                    m_Sel.LButton(pos);
+                }
+            */
+                Select(sender, p, SpatialType.All);
+            }
 
             /*
             if (m_Command!=null)

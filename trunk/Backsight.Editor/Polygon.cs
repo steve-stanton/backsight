@@ -493,5 +493,21 @@ namespace Backsight.Editor
         {
             return (IsRingEnclosing(p) && !HasIslandEnclosing(p));
         }
+
+        /// <summary>
+        /// The ID associated with this polygon. This is actually the ID of
+        /// the polygon's label (if any).
+        /// </summary>
+        /// <returns>The polygon label's ID (if any).</returns>
+        internal FeatureId GetId()
+        {
+            // Return if this polygon does not have any labels.
+            if (m_Label == null)
+                return null;
+
+            // Return the ID of the label.
+            return m_Label.Id;
+
+        }
     }
 }

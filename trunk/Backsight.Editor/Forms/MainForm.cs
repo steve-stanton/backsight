@@ -901,6 +901,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             vSplitContainer.Panel2Collapsed = !vSplitContainer.Panel2Collapsed;
         }
 
+        internal void ClosePropertiesWindow()
+        {
+            vSplitContainer.Panel2Collapsed = true;
+        }
+
         private bool IsViewAttributeStructureEnabled()
         {
             return false;
