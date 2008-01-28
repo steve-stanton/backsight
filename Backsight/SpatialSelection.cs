@@ -100,7 +100,7 @@ namespace Backsight
         /// <summary>
         /// Removes all items from this selection.
         /// </summary>
-        public void Clear()
+        public virtual void Clear()
         {
             m_Items.Clear();
         }

@@ -382,6 +382,7 @@
     <Compile Include="RingCheck.cs" />
     <Compile Include="SectionDivider.cs" />
     <Compile Include="SectionOverlap.cs" />
+    <Compile Include="SelectionTool.cs" />
     <Compile Include="TestForm.cs">
       <SubType>Form</SubType>
     </Compile>

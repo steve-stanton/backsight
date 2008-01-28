@@ -15,8 +15,9 @@
 
 using System;
 using System.Collections.Generic;
-using Backsight.Forms;
 using System.Drawing;
+
+using Backsight.Forms;
 
 //using Foresight.
 
@@ -35,7 +36,7 @@ namespace Backsight.Editor
         /// defined only if the selection refers to a single topological line that has
         /// been divided into a series of sections.
         /// </summary>
-        readonly IDivider m_Section;
+        IDivider m_Section;
 
         #endregion
 
@@ -66,6 +67,16 @@ namespace Backsight.Editor
                     m_Section = sections.FindClosestSection(searchPosition);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a new <c>Selection</c> that refers to nothing. This constructor
+        /// is used by the derived <see cref="SelectionTool"/> class.
+        /// </summary>
+        protected Selection()
+            : base()
+        {
+            m_Section = null;
         }
 
         #endregion
@@ -106,6 +117,26 @@ namespace Backsight.Editor
             // If both selections refer to the same divider (or null), they're the same
             Selection other = (that as Selection);
             return (other!=null && this.m_Section == other.m_Section);
+        }
+
+        /// <summary>
+        /// Clears this selection.
+        /// </summary>
+        public override void Clear()
+        {
+            m_Section = null;
+            base.Clear();
+        }
+
+        /// <summary>
+        /// The topological section that coincides with this selection. This should be
+        /// defined only if the selection refers to a single topological line that has
+        /// been divided into a series of sections.
+        /// </summary>
+        protected IDivider Section
+        {
+            get { return m_Section; }
+            set { m_Section = value; }
         }
     }
 }
