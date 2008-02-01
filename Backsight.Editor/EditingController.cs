@@ -93,6 +93,12 @@ namespace Backsight.Editor
         /// </summary>
         FileCheckUI m_Check;
 
+        /// <summary>
+        /// The thing that performs selections. The result gets saved as part of
+        /// the current <see cref="Selection"/>.
+        /// </summary>
+        readonly SelectionTool m_SelectionTool;
+
         #endregion
 
         #region Constructors
@@ -109,6 +115,7 @@ namespace Backsight.Editor
             m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
             m_Check = null;
+            m_SelectionTool = new SelectionTool();
         }
 
         #endregion
@@ -166,10 +173,10 @@ namespace Backsight.Editor
 
                 // If the CTRL key is not pressed, free any limit known
                 // to the selection object and try to select something.
-                /*
+
                 if ((Control.ModifierKeys & Keys.ControlKey) == 0)
                 {
-                    OnSelect(point, isMultiSelect);
+                    OnSelect(sender, p, isMultiSelect);
                 }
                 else
                 {
@@ -185,13 +192,14 @@ namespace Backsight.Editor
 
                     // Actually, it was something else, so maybe the above
                     // would work after all. Let's see what users say.
-              
+
+                /*              
                     CeVertex pos;
                     LPToGround(point, &pos);
                     m_Sel.LButton(pos);
+                 */
+                    Select(sender, p, SpatialType.All); // for now (this is old functionality)
                 }
-            */
-                Select(sender, p, SpatialType.All);
             }
 
             /*
@@ -200,6 +208,98 @@ namespace Backsight.Editor
             else
                 base.MouseDown(sender, p, b);
              */
+        }
+
+        /// <summary>
+        /// Tries to select something at the specified position
+        /// </summary>
+        /// <param name="p">The position where a left-click has occurred</param>
+        /// <param name="isMultiSelect">True if performing a multi-select (SHIFT key is pressed)</param>
+        void OnSelect(ISpatialDisplay display, IPosition p, bool isMultiSelect)
+        {
+            /*
+            // If importing from background, there's no way to select
+            // anything from the main map.
+            if (m_pGetBack)
+            {
+                m_pGetBack->OnSelect(point);
+                return;
+            }
+             */
+
+            // Try to select something.
+            ISpatialObject thing = SelectObject(display, p, SpatialType.All);
+
+            if (thing!=null)
+            {
+                // Caution: If we're auto-highlighting, and the thing
+                // we've just selected is the thing that's already
+                // selected, don't do ANYTHING (not even if the user
+                // is apparently doing a multi-select).
+
+                // Note that if the user IS doing a multi-select, any
+                // auto-highlighting is supposed to go away automatically
+                // (see OnLButtonDown && OnMouseMove).
+
+                if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, Selection.Item))
+                    return;
+
+                if (isMultiSelect)
+                {
+                    // Add the thing to the selection (or remove it if
+                    // it's currently selected).
+                    //m_Sel.AddOrRemove(pThing);
+                }
+                else
+                {
+                    /*
+                    // If we've selected a line that has system-generated
+                    // arc sections, determine the specific section that
+                    // is closest to the query point.
+
+                    CeArc* pSection=0;
+
+                    const CeArc* const pArc =
+                        dynamic_cast<const CeArc* const>(pThing);
+
+                    if ( pArc && pArc->IsSysTopology() ) {
+
+                        // Get the closest position on the arc. The tolerance
+                        // used here is expected to be the same as the
+                        // tolerance that was used in <mf CeView::Select>.
+
+                        CeVertex vtx;
+                        LPToGround(point,&vtx);
+                        FLOAT8 tol = 0.001 * GetDrawScale();
+                        CeVertex closest;
+                        pArc->GetClosest(vtx,tol,closest);
+
+                        // Find the corresponding section.
+                        pSection = pArc->FindSection(closest);
+                    }
+
+                    // Clear out everything in the selection, except for
+                    // the thing we're going to select.
+                    m_Sel.ReplaceWith(pThing,pSection);
+                     */
+                }
+            }
+            else
+            {
+                // Ensure the selection has been unhighlited & clear out the selection.
+                if (!isMultiSelect)
+                    ClearSelection(); // was m_Sel.RemoveSel();
+            }
+
+            // If we've now got a simple selection, notify any commands
+            // that are running so that their stuff will draw on top
+            // of the highlighting.
+            //OnSelect();
+
+            // If we are doing an inverse dialog, make sure its point
+            // coloring remains regardless of what is currently selected.
+            if (m_Inverse!=null)
+                m_Inverse.Draw();
         }
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
@@ -407,7 +507,7 @@ namespace Backsight.Editor
             return style;
         }
 
-        public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+        private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
             CadastralMapModel cmm = this.CadastralMapModel;
             ISpatialSelection currentSel = this.Selection;
@@ -420,10 +520,7 @@ namespace Backsight.Editor
                 ILength size = new Length(cmm.PointHeight.Meters * 0.5);
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
                 if (newItem!=null)
-                {
-                    this.Selection = new Selection(newItem, p);
-                    return;
-                }
+                    return newItem;
             }
 
             // If we are adding a line, don't bother trying to select
@@ -453,10 +550,7 @@ namespace Backsight.Editor
 
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Line);
                 if (newItem!=null)
-                {
-                    this.Selection = new Selection(newItem, p);
-                    return;
-                }
+                    return newItem;
             }
 
             // Try for a text string if text is drawn.
@@ -466,19 +560,20 @@ namespace Backsight.Editor
             {
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
                 if (newItem!=null)
-                {
-                    this.Selection = new Selection(newItem, p);
-                    return;
-                }
+                    return newItem;
             }
 
-            // Try for a polygon. Don't bother if there's a dialog up,
+            // Just return if a command dialog is up,
             // since selecting a polygon is distracting at that stage
             // (really, this applies to things like intersect commands).
             // There MIGHT be cases at some later date where we really
-            // do want to select pols.
+            // do want to select pols...
+            // For updates, allow polygon selection
 
-            if ((spatialType & SpatialType.Polygon)!=0 && !IsCommandRunning)
+            if (IsCommandRunning && !(m_Command is UpdateUI))
+                return null;
+
+            if ((spatialType & SpatialType.Polygon)!=0)
             {
                 // If we currently have a selected polygon, see if we're still inside it.
                 /*
@@ -494,22 +589,19 @@ namespace Backsight.Editor
                 ISpatialIndex index = cmm.Index;
                 Polygon pol = new FindPointContainerQuery(index, pg).Result;
                 if (pol!=null)
-                {
-                    this.Selection = new Selection(pol, p);
-                    return;
-                }
+                    return pol;
             }
 
-            // Allow it if we're doing updates.
-            this.Selection = new SpatialSelection();
-            /*
-	if ( m_pCommand &&
-		 m_pCommand->GetCommandId()!=ID_FEATURE_UPDATE ) return 0;
+            return null;
+        }
 
-	const CePolygon* pSelPol = this->SelectPol(point);
-	return (CeObject*)pSelPol;
-
-             */
+        public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+        {
+            ISpatialObject so = SelectObject(display, p, spatialType);
+            if (so!=null)
+                this.Selection = new Selection(so, p);
+            else
+                this.Selection = new SpatialSelection();
         }
 
         internal Operation CurrentEdit
