@@ -59,6 +59,15 @@ namespace Backsight
             }
         }
 
+        /// <summary>
+        /// Creates a new <c>SpatialSelection</c> that consists of the items in the supplied list.
+        /// </summary>
+        /// <param name="items">The items defining the content of the new selection</param>
+        public SpatialSelection(List<ISpatialObject> items)
+        {
+            m_Items = items;
+        }
+
         #endregion
 
         /// <summary>
