@@ -157,7 +157,7 @@ namespace Backsight.Editor
             if (b == MouseButtons.Right)
                 ShowContextMenu(sender, p);
 
-            // If there's no command, or it doesn't handle left clicks, let the base class have a stab.
+            // If there's no command, or it doesn't handle left clicks...
             else if (m_Command == null || !m_Command.LButtonDown(p))
             {
                 bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
@@ -165,6 +165,12 @@ namespace Backsight.Editor
                 // If we're currently auto-highlighting, and the user is doing
                 // a multi-select, turn off auto-highlight and get rid of the
                 // properties window (confusing).
+
+                // TODO: May want to keep the properties window, but disabled. In the
+                // past, it was ok to close because the dialog rested on top of the
+                // map. Now, closing the property window causes a redraw, which is
+                // a bit unexpected in the middle of a multiselect.
+
                 if (isMultiSelect)
                 {
                     m_IsAutoSelect = 0;
@@ -199,6 +205,7 @@ namespace Backsight.Editor
                     m_Sel.LButton(pos);
                  */
                     Select(sender, p, SpatialType.All); // for now (this is old functionality)
+                    //m_SelectionTool.
                 }
             }
 
