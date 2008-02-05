@@ -491,19 +491,32 @@ namespace Backsight.Editor
 
             if (m_Limit.Count==2)
             {
-                /*
-		// Make the selection.
-		CeMap::GetpMap()->Select(*m_pLimSel,m_pLimit->GetPosition(0)
-										   ,m_pLimit->GetPosition(1));
-                 */
+                // Make the selection.
+
+                ITerminal s = new FloatingTerminal(m_Limit[0]);
+                ITerminal e = new FloatingTerminal(m_Limit[1]);
+                LineGeometry line = new SegmentGeometry(s, e);
+                IList<IntersectionResult> res = new IntersectionFinder(line, true).Intersections;
+
+                foreach (IntersectionResult ir in res)
+                {
+                    ISpatialObject so = (ir.IntersectedObject as ISpatialObject);
+                    if (so!=null)
+                        m_LimSel.Add(so);
+                }
             }
             else
             {
                 // Close the limit line.
                 m_Limit.Add(m_Limit[0]);
 
+                // Select only those spatial types that are currently visible
+                SpatialType types = SpatialType.Feature;
+
                 // Make the selection.
-		        //CeMap::GetpMap()->Select(*m_pLimSel,*m_pLimit);
+                ISpatialIndex index = CadastralMapModel.Current.Index;
+                List<ISpatialObject> res = new FindOverlapsQuery(index, m_Limit.ToArray(), types).Result;
+                m_LimSel.AddRange(res);
 
                 // Remove the closing point.
                 int lastIndex = m_Limit.Count-1;
