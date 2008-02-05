@@ -51,6 +51,7 @@
     <Compile Include="EditingIndex.cs" />
     <Compile Include="CadastralMapModel.cs" />
     <Compile Include="ArcFeature.cs" />
+    <Compile Include="FindOverlapsQuery.cs" />
     <Compile Include="FindPointByIdQuery.cs" />
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
