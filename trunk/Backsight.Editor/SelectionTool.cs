@@ -215,7 +215,7 @@ namespace Backsight.Editor
             //base.Section = null;
 
             // If the thing is currently in the list, remove it.
-            if (Remove(thing))
+            if (m_Selection.Remove(thing))
                 return false;
 
             // If we currently have a single-item selected, un-highlight
@@ -226,7 +226,7 @@ namespace Backsight.Editor
             // get drawn for multi-selects).
 
             if (IsSingle())
-                UnHighlight(null);
+                UnHighlight(); //(null);
 
             // Append the thing to the list.
             Append(thing);
@@ -267,11 +267,12 @@ namespace Backsight.Editor
             // as soon as the mouse moves.
 
             // Select stuff within the current limit.
-            List<ISpatialObject> cutsel = SelectLimit();
+            List<ISpatialObject> cutsel = new List<ISpatialObject>();
+            SelectLimit(cutsel);
 
             // Undo the highlighting of any objects that are no longer selected.
             // Draw the ends, since we'll be re-highlighting.
-            CutHighlight(cutsel, 0, true);
+            CutHighlight(cutsel, null, true);
 
             // Ensure the current selection is highlighted.
             ReHighlight();
@@ -464,59 +465,61 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="cutsel">List of the objects that were removed from the the current
         /// limit selection as a consequence of making the new selection.</param>
-        /// <returns>The number of objects selected.</returns>
-        int SelectLimit(List<ISpatialObject> cutsel)
+        void SelectLimit(List<ISpatialObject> cutsel)
         {
-        }
-        /*
-void CeSelection::SelectLimit ( CeObjectList& cutsel ) {
+            // Ensure the list of cut objects is initially clear.
+            cutsel.Clear();
 
-	// Ensure the list of cut objects is initially clear.
-	cutsel.Remove();
+            // Nothing to do if there is no limit line.
+            if (m_Limit==null)
+                return;
 
-	// Nothing to do if there is no limit line.
-	if ( !m_pLimit ) return;
+            // Ensure list of objects to cut initially matches our
+            // current limit selection.
+            if (m_LimSel!=null)
+                cutsel.AddRange(m_LimSel);
 
-	// Ensure list of objects to cut initially matches our
-	// current limit selection.
-	cutsel = *m_pLimSel;
+            // Empty out the current limit selection.
+            m_LimSel = new List<ISpatialObject>();
 
-	// Empty out the current limit selection.
-	m_pLimSel->Remove();
+            // Nothing to do if there's only one position.
+            if (m_Limit.Count<=1)
+                return;
 
-	// Nothing to do if there's only one position.
-	const UINT4 nVertex = m_pLimit->GetCount();
-	if ( nVertex<=1 ) return;
+            // If we have just 2 positions, select everything that
+            // intersects the line. Otherwise select inside the shape.
 
-	// If we have just 2 positions, select everything that
-	// intersects the line. Otherwise select inside the
-	// shape.
-
-	if ( nVertex==2 ) {
+            if (m_Limit.Count==2)
+            {
+                /*
 		// Make the selection.
 		CeMap::GetpMap()->Select(*m_pLimSel,m_pLimit->GetPosition(0)
 										   ,m_pLimit->GetPosition(1));
-	}
-	else {
+                 */
+            }
+            else
+            {
+                // Close the limit line.
+                m_Limit.Add(m_Limit[0]);
 
-		// Close the limit line.
-		const CeVertex& start = m_pLimit->GetPosition(0);
-		m_pLimit->Append(start);
+                // Make the selection.
+		        //CeMap::GetpMap()->Select(*m_pLimSel,*m_pLimit);
 
-		// Make the selection.
-		CeMap::GetpMap()->Select(*m_pLimSel,*m_pLimit);
+                // Remove the closing point.
+                int lastIndex = m_Limit.Count-1;
+                m_Limit.RemoveAt(lastIndex);
+            }
 
-		// Remove the closing point.
-		m_pLimit->RemoveLast();
-	}
+            // Go through the things we've got selected now, removing
+            // them from the copy that we made up top of the original
+            // selection. While we're at it accumulate a list of those
+            // features that are not actually visible (the Select call
+            // might have given us points and labels, even though they
+            // might not be drawn by the view).
 
-	// Go through the things we've got selected now, removing
-	// them from the copy that we made up top of the original
-	// selection. While we're at it accumulate a list of those
-	// features that are not actually visible (the Select call
-	// might have given us points and labels, even though they
-	// might not be drawn by the view).
-
+            //ISpatialDisplay view = EditingController.Current.ActiveDisplay;
+        }
+        /*
 	CeObjectList invis;
 	CeListIter loop(m_pLimSel);
 	CeObject* pThing;
@@ -655,6 +658,9 @@ LOGICAL CeSelection::IsEmpty ( void ) const {
             return false;
         }
 
+        void UnHighlight()
+        {
+        }
         /*
 //	@mfunc	Make sure nothing is currently highlighted.
 //
@@ -690,6 +696,9 @@ void CeSelection::UnHighlight ( const CeObject* const pNewSel ) const {
 } // end of UnHighlight
          */
 
+        void CutHighlight(List<ISpatialObject> cutsel, ISpatialObject newSel, bool drawEnds)
+        {
+        }
         /*
 //	@mfunc	Eliminate highlighting. Does not change the
 //			actual selection in any way.
@@ -789,14 +798,15 @@ void CeSelection::CutHighlight ( const CeClass* const pWhat
 } // end of CutHighlight
          */
 
+        /// <summary>
+        /// Ensures the current selection is highlighted.
+        /// </summary>
+        void ReHighlight()
+        {
+        }
         /*
-//	@mfunc	Ensure the current selection is highlighted.
-//
 //	@parm	Device context that may already be know (by
 //			CeView::OnDraw for example). May be NULL.
-//
-/////////////////////////////////////////////////////////////
-
 void CeSelection::ReHighlight ( CDC* pDC ) const {
 
 	if ( pDC ) {
