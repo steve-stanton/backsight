@@ -45,6 +45,7 @@
     <Compile Include="AutoSaver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="BearingDirection.cs" />
+    <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="EditingController.cs" />

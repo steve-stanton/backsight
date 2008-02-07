@@ -182,6 +182,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The "geometry" for this text.
+        /// </summary>
+        internal TextGeometry TextGeometry
+        {
+            get { return m_Geom; }
+        }
+
+        /// <summary>
         /// Ensure that this label knows it's enclosing polygon.
         /// </summary>
         /// <returns>True if label successfully associated with polygon.</returns>
