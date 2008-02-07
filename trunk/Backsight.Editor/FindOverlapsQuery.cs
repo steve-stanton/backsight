@@ -30,12 +30,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The closed shape defining the search area.
         /// </summary>
-        private readonly IPosition[] m_ClosedShape;
-
-        /// <summary>
-        /// The window of the data in <c>m_ClosedShape</c>
-        /// </summary>
-        private readonly IWindow m_Window;
+        private readonly ClosedShape m_ClosedShape;
 
         /// <summary>
         /// The overlaps found so far.
@@ -60,8 +55,7 @@ namespace Backsight.Editor
         /// <param name="spatialType">The type of objects to look for.</param>
         internal FindOverlapsQuery(ISpatialIndex index, IPosition[] closedShape, SpatialType spatialType)
         {
-            m_ClosedShape = closedShape;
-            m_Window = new Window(m_ClosedShape);
+            m_ClosedShape = new ClosedShape(closedShape);
             m_Points = new List<PointFeature>(100);
             m_Result = new List<ISpatialObject>(100);
 
@@ -70,7 +64,7 @@ namespace Backsight.Editor
             // search, since it helps with the selection of lines.
             if ((spatialType & SpatialType.Point)!=0 || (spatialType & SpatialType.Line)!=0)
             {
-                index.QueryWindow(m_Window, SpatialType.Point, OnPointFound);
+                index.QueryWindow(m_ClosedShape.Extent, SpatialType.Point, OnPointFound);
 
                 // Remember the points in the result if the caller wants them
                 if ((spatialType & SpatialType.Point)!=0)
@@ -79,11 +73,14 @@ namespace Backsight.Editor
 
             // Find lines (this automatically includes lines connected to the points we just found)
             if ((spatialType & SpatialType.Line)!=0)
-                index.QueryWindow(m_Window, SpatialType.Line, OnLineFound);
+                index.QueryWindow(m_ClosedShape.Extent, SpatialType.Line, OnLineFound);
 
             // Find any overlapping text
             if ((spatialType & SpatialType.Text)!=0)
-                index.QueryWindow(m_Window, SpatialType.Text, OnTextFound);
+                index.QueryWindow(m_ClosedShape.Extent, SpatialType.Text, OnTextFound);
+
+            m_Result.TrimExcess();
+            m_Points = null;
         }
 
         #endregion
@@ -97,7 +94,7 @@ namespace Backsight.Editor
         {
             PointFeature p = (PointFeature)item;
 
-            if (Geom.IsPointInClosedShape(m_ClosedShape, p))
+            if (m_ClosedShape.IsOverlap(p))
                 m_Points.Add(p);
 
             return true;
@@ -112,6 +109,12 @@ namespace Backsight.Editor
         {
             LineFeature line = (LineFeature)item;
 
+            // If either line end point is in the list of selected points, just accept the line.
+            // Otherwise check whether the closed shape overlaps (or intersects) the line.
+            if (m_Points.Contains(line.StartPoint) ||
+                m_Points.Contains(line.EndPoint) ||
+                m_ClosedShape.IsOverlap(line.LineGeometry))
+                m_Result.Add(line);
 
             return true;
         }
@@ -123,8 +126,16 @@ namespace Backsight.Editor
         /// <returns>True (always), indicating that the query should continue.</returns>
         private bool OnTextFound(ISpatialObject item)
         {
-            TextFeature line = (TextFeature)item;
+            TextFeature text = (TextFeature)item;
 
+            // Get the outline for the text
+            IPosition[] outline = text.TextGeometry.Outline;
+
+            // If any corner of the text outline is inside the closed shape (or any edge of
+            // the outline intersects), remember the text in the results
+            ClosedShape cs = new ClosedShape(outline);
+            if (cs.IsOverlap(m_ClosedShape))
+                m_Result.Add(text);
 
             return true;
         }

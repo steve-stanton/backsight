@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-
 namespace Backsight.Editor
 {
     public class Geom : BasicGeom
@@ -548,7 +547,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Checks whether a shape encloses a point
+        /// Checks whether a closed shape encloses a point
         /// </summary>
         /// <param name="shape">Positions defining a closed outline (the last position
         /// must coincide with the first position). At least 3 positions.</param>

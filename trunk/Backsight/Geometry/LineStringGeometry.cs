@@ -47,6 +47,21 @@ namespace Backsight.Geometry
             m_Data = data;
         }
 
+        /// <summary>
+        /// Creates new <c>LineStringGeometry</c> that corresponds to the supplied positions (rounded
+        /// off to the nearest micron).
+        /// </summary>
+        /// <param name="data">The positions defining the line.</param>
+        public LineStringGeometry(IPosition[] data)
+        {
+            if (data==null || data.Length<2)
+                throw new ArgumentException();
+
+            m_Data = new IPointGeometry[data.Length];
+            for (int i=0; i<data.Length; i++)
+                m_Data[i] = PointGeometry.Create(data[i]);
+        }
+
         #endregion
 
         public IPointGeometry[] Data
@@ -64,7 +79,7 @@ namespace Backsight.Geometry
             style.Render(display, g.Data);
         }
 
-        public IWindow Extent
+        public virtual IWindow Extent
         {
            get { return GetExtent(this); }
         }
