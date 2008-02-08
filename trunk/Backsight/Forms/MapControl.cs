@@ -247,7 +247,7 @@ namespace Backsight.Forms
                 //CopyMapPanelToSavedDisplay();
 
                 // Any selection needs to be drawn too, but after the above
-                ISpatialSelection ss = controller.Selection;
+                ISpatialSelection ss = controller.SpatialSelection;
                 if (ss.Count > 0)
                 {
                     IDrawStyle style = controller.HighlightStyle;

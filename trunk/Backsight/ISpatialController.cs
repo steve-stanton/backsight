@@ -35,7 +35,7 @@ namespace Backsight
         /// The current selection (some subset of the stuff in the model). Never null,
         /// though it may be empty.
         /// </summary>
-        ISpatialSelection Selection { get; }
+        ISpatialSelection SpatialSelection { get; }
 
         /// <summary>
         /// Registers a map display with this controller.

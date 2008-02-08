@@ -264,7 +264,7 @@ namespace Backsight.Editor
         {
             // If the label either has no attributes, or it is inside a polygon that has
             // more than one label, select the enclosing polygon.
-            SpatialSelection ss = new SpatialSelection();
+            Selection ss = new Selection();
 
             CheckType types = Types;
             if ((types & CheckType.NoAttributes)!=0 || (types & CheckType.MultiLabel)!=0)

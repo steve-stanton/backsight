@@ -55,7 +55,7 @@ namespace Backsight
             else
             {
                 m_Items = new List<ISpatialObject>(1);
-                this.Add(so);
+                m_Items.Add(so);
             }
         }
 
@@ -63,56 +63,12 @@ namespace Backsight
         /// Creates a new <c>SpatialSelection</c> that consists of the items in the supplied list.
         /// </summary>
         /// <param name="items">The items defining the content of the new selection</param>
-        public SpatialSelection(List<ISpatialObject> items)
+        public SpatialSelection(IEnumerable<ISpatialObject> items)
         {
-            m_Items = items;
+            m_Items = new List<ISpatialObject>(items);
         }
 
         #endregion
-
-        /// <summary>
-        /// Adds a spatial object to this selection, given that it is not already
-        /// part of the selection.
-        /// </summary>
-        /// <param name="so">The object to remember as part of this selection (not null)</param>
-        /// <exception cref="ArgumentNullException">If the specified object is null</exception>
-        public void Add(ISpatialObject so)
-        {
-            if (so==null)
-                throw new ArgumentNullException();
-
-            if (!m_Items.Contains(so))
-                m_Items.Add(so);
-        }
-
-        /// <summary>
-        /// Removes a spatial object from this selection.
-        /// </summary>
-        /// <param name="so">The object to remove from this selection</param>
-        /// <returns>True if object removed. False if the object isn't part of this selection.</returns>
-        public bool Remove(ISpatialObject so)
-        {
-            return m_Items.Remove(so);
-        }
-
-        /// <summary>
-        /// Replaces the current selection with a specific item.
-        /// </summary>
-        /// <param name="so">The object that will replace the current selection.</param>
-        /// <exception cref="ArgumentNullException">If the specified object is null</exception>
-        public void Replace(ISpatialObject so)
-        {
-            m_Items.Clear();
-            this.Add(so);
-        }
-
-        /// <summary>
-        /// Removes all items from this selection.
-        /// </summary>
-        public virtual void Clear()
-        {
-            m_Items.Clear();
-        }
 
         /// <summary>
         /// The one and only item in this selection (null if the selection is empty, or
@@ -146,20 +102,43 @@ namespace Backsight
         /// <param name="that">The selection to compare with</param>
         /// <returns>True if the two selections refer to the same spatial objects (not
         /// necessarily in the same order)</returns>
-        public virtual bool Equals(ISpatialSelection that)
+        public bool Equals(ISpatialSelection that)
         {
-            if (that==null)
+            return Equals(this, that);
+        }
+
+        /// <summary>
+        /// Checks whether two selections refer to the same objects
+        /// </summary>
+        /// <param name="a">The 1st selection</param>
+        /// <param name="b">The 2nd selection</param>
+        /// <returns>True if both selections are not null, contain the same number
+        /// of elements, and refer to the same spatial objects (the same instances)</returns>
+        public static bool Equals(ISpatialSelection a, ISpatialSelection b)
+        {
+            if (a==null || b==null)
                 return false;
 
-            if (Object.ReferenceEquals(this, that))
+            if (Object.ReferenceEquals(a, b))
                 return true;
 
-            if (this.Count != that.Count)
+            if (a.Count != b.Count)
                 return false;
 
-            foreach (ISpatialObject so in that.Items)
+            foreach (ISpatialObject sob in b.Items)
             {
-                if (!m_Items.Contains(so))
+                bool found = false;
+
+                foreach (ISpatialObject soa in a.Items)
+                {
+                    if (Object.ReferenceEquals(soa, sob))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
                     return false;
             }
 

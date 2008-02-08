@@ -332,8 +332,7 @@ namespace Backsight.Editor
         /// </summary>
         internal override void Select()
         {
-            SpatialSelection ss = new SpatialSelection();
-            ss.Add(m_Ring);
+            Selection ss = new Selection(m_Ring, null);
             EditingController.Current.SetSelection(ss);
 
             // EditingController.Current.ActiveDisplay.MapPanel.Focus();

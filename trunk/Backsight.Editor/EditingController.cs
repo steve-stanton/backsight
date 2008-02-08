@@ -248,7 +248,7 @@ namespace Backsight.Editor
                 // auto-highlighting is supposed to go away automatically
                 // (see OnLButtonDown && OnMouseMove).
 
-                if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, Selection.Item))
+                if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, SpatialSelection.Item))
                     return;
 
                 if (isMultiSelect)
@@ -313,13 +313,14 @@ namespace Backsight.Editor
         {
             ISpatialObject so = SelectObject(display, p, spatialType);
             if (so!=null)
-                this.Selection = new Selection(so, p);
+                SetSelection(new Selection(so, p));
             else
-                this.Selection = new SpatialSelection();
+                SetSelection(null);
         }
 
         void AddOrRemoveFromSelection(ISpatialObject so)
         {
+            //SetSelection(new Selection(this.Selection, so));
         }
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
@@ -352,7 +353,7 @@ namespace Backsight.Editor
         /// <param name="k">Information about the event</param>
         public override void KeyDown(ISpatialDisplay sender, KeyEventArgs k)
         {
-            if (k.KeyCode == Keys.Delete && !IsCommandRunning && Selection.Count>0)
+            if (k.KeyCode == Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
                 StartCommand(new DeletionUI(null)); // and finishes!
 
             if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
@@ -489,7 +490,7 @@ namespace Backsight.Editor
                 menu = m_Command.CreateContextMenu();
 
             if (menu==null)
-                menu = m_Main.CreateContextMenu(this.Selection);
+                menu = m_Main.CreateContextMenu(this.SpatialSelection);
 
             if (menu!=null)
                 where.ShowContextMenu(p, menu);
@@ -530,7 +531,7 @@ namespace Backsight.Editor
         private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
             CadastralMapModel cmm = this.CadastralMapModel;
-            ISpatialSelection currentSel = this.Selection;
+            ISpatialSelection currentSel = this.SpatialSelection;
             ISpatialObject oldItem = currentSel.Item;
             ISpatialObject newItem;
 
@@ -867,7 +868,7 @@ namespace Backsight.Editor
 
             // Select the point if requested
             if (select)
-                this.Selection = new Selection(p, p);
+                SetSelection(new Selection(p, p));
         }
 
         /// <summary>
@@ -915,54 +916,62 @@ namespace Backsight.Editor
 
         internal void ClearSelection()
         {
-            this.Selection = new SpatialSelection();
+            SetSelection(null);
         }
 
         public void Select(Feature f)
         {
-            this.Selection = new SpatialSelection(f);
+            SetSelection(new SpatialSelection(f));
         }
 
-        public void SetSelection(ISpatialSelection ss)
+        /// <summary>
+        /// The currently selected objects, expressed as a <see cref="Selection"/> object.
+        /// </summary>
+        internal Selection Selection
         {
-            Selection = ss;
-        }
-
-        public override ISpatialSelection Selection
-        {
-            get { return base.Selection; }
-
-            protected set
+            get
             {
-                Debug.Assert(value!=null);
-                base.Selection = value;
-                ISpatialObject item = value.Item;
-                if (m_Main!=null)
-                    m_Main.SetSelection(item);
+                /*
+                ISpatialSelection ss = this.SpatialSelection;
+                if (ss is Selection)
+                    return (ss as Selection);
+                else
+                    return new Selection(ss);
+                 */
+                return null;
+            }
+        }
 
-                // If a single item has been selected
-                if (item!=null)
+        public override void SetSelection(ISpatialSelection ss)
+        {
+            base.SetSelection(ss);
+
+            ISpatialObject item = ss.Item;
+            if (m_Main!=null)
+                m_Main.SetSelection(item);
+
+            // If a single item has been selected
+            if (item!=null)
+            {
+                if (item is PointFeature)
                 {
-                    if (item is PointFeature)
+                    if (ArePointsDrawn)
                     {
-                        if (ArePointsDrawn)
-                        {
-                            PointFeature selPoint = (item as PointFeature);
+                        PointFeature selPoint = (item as PointFeature);
 
-                            if (m_Inverse!=null)
-                                m_Inverse.OnSelectPoint(selPoint);
+                        if (m_Inverse!=null)
+                            m_Inverse.OnSelectPoint(selPoint);
 
-                            if (m_Command!=null)
-                                m_Command.OnSelectPoint(selPoint);
-                        }
-                    }
-                    else if (item is LineFeature)
-                    {
                         if (m_Command!=null)
-                        {
-                            LineFeature selLine = (item as LineFeature);
-                            m_Command.OnSelectLine(selLine);
-                        }
+                            m_Command.OnSelectPoint(selPoint);
+                    }
+                }
+                else if (item is LineFeature)
+                {
+                    if (m_Command!=null)
+                    {
+                        LineFeature selLine = (item as LineFeature);
+                        m_Command.OnSelectLine(selLine);
                     }
                 }
             }
@@ -993,7 +1002,7 @@ namespace Backsight.Editor
         /// <returns>True if one object is currently selected, and it has the spatial type of interest</returns>
         internal bool IsItemSelected(SpatialType t)
         {
-            ISpatialObject so = Selection.Item;
+            ISpatialObject so = SpatialSelection.Item;
             return (so!=null && so.SpatialType==t);
         }
 
@@ -1003,7 +1012,7 @@ namespace Backsight.Editor
         /// <returns>True if the selection refers to at least one line</returns>
         internal bool IsLineSelected()
         {
-            foreach (ISpatialObject so in Selection.Items)
+            foreach (ISpatialObject so in SpatialSelection.Items)
             {
                 if (so.SpatialType == SpatialType.Line)
                     return true;
