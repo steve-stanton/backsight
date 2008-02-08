@@ -22,7 +22,7 @@ namespace Backsight
     /// <summary>
     /// A selection of spatial objects
     /// </summary>
-    public class SpatialSelection : IEditSpatialSelection
+    public class SpatialSelection : ISpatialSelection
     {
         #region Class data
 
