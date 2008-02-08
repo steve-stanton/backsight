@@ -255,7 +255,7 @@ namespace Backsight.Editor
                 {
                     // Add the thing to the selection (or remove it if
                     // it's currently selected).
-                    //m_Sel.AddOrRemove(pThing);
+                    AddOrRemoveFromSelection(thing);
                 }
                 else
                 {
@@ -307,6 +307,19 @@ namespace Backsight.Editor
             // coloring remains regardless of what is currently selected.
             if (m_Inverse!=null)
                 m_Inverse.Draw();
+        }
+
+        public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+        {
+            ISpatialObject so = SelectObject(display, p, spatialType);
+            if (so!=null)
+                this.Selection = new Selection(so, p);
+            else
+                this.Selection = new SpatialSelection();
+        }
+
+        void AddOrRemoveFromSelection(ISpatialObject so)
+        {
         }
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
@@ -600,15 +613,6 @@ namespace Backsight.Editor
             }
 
             return null;
-        }
-
-        public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
-        {
-            ISpatialObject so = SelectObject(display, p, spatialType);
-            if (so!=null)
-                this.Selection = new Selection(so, p);
-            else
-                this.Selection = new SpatialSelection();
         }
 
         internal Operation CurrentEdit

@@ -139,7 +139,6 @@
     <Compile Include="IClockwiseCircularArcGeometry.cs" />
     <Compile Include="IDrawStyle.cs" />
     <Compile Include="IEditSpatialIndex.cs" />
-    <Compile Include="IEditSpatialSelection.cs" />
     <Compile Include="ILength.cs" />
     <Compile Include="IPosition3D.cs" />
     <Compile Include="Index\DrawQuery.cs" />
