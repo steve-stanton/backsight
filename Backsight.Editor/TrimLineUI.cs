@@ -59,7 +59,7 @@ namespace Backsight.Editor
         {
             // Grab the current selection & filter out stuff that can't be trimmed
             EditingController c = Controller;
-            ISpatialSelection ss = c.Selection;
+            ISpatialSelection ss = c.SpatialSelection;
             LineFeature[] lines = TrimLineOperation.PreCheck(ss.Items);
             if (lines.Length==0)
             {

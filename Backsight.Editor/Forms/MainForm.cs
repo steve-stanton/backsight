@@ -523,7 +523,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (vSplitContainer.Panel2Collapsed)
                 vSplitContainer.Panel2Collapsed = false;
 
-            ISpatialObject so = m_Controller.Selection.Item;
+            ISpatialObject so = m_Controller.SpatialSelection.Item;
             propertyGrid.SelectedObject = so;
         }
 
@@ -713,7 +713,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsEditDeleteEnabled()
         {
-            return (m_Controller.Selection.Count>0);
+            return (m_Controller.SpatialSelection.Count>0);
         }
 
         private void EditDelete(IUserAction action)
@@ -1112,7 +1112,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISpatialObject so = m_Controller.Selection.Item;
+                ISpatialObject so = m_Controller.SpatialSelection.Item;
                 return (so as PointFeature);
             }
         }
@@ -1121,7 +1121,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISpatialObject so = m_Controller.Selection.Item;
+                ISpatialObject so = m_Controller.SpatialSelection.Item;
                 return (so as LineFeature);
             }
         }
@@ -1130,7 +1130,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISpatialObject so = m_Controller.Selection.Item;
+                ISpatialObject so = m_Controller.SpatialSelection.Item;
                 return (so as TextFeature);
             }
         }

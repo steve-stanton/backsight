@@ -96,7 +96,7 @@ namespace Backsight
         protected void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
         {
             m_Data = model;
-            this.Selection = new SpatialSelection();
+            SetSelection(null);
 
             foreach (ISpatialDisplay display in m_Displays)
                 display.ReplaceMapModel(initialDrawExtent);
@@ -163,26 +163,33 @@ namespace Backsight
             ILength size = new Length(0.002 * display.MapScale);
 
             ISpatialObject so = m_Data.QueryClosest(p, size, spatialType);
-            this.Selection = new SpatialSelection(so);
+            SetSelection(new SpatialSelection(so));
         }
 
-        public virtual ISpatialSelection Selection
+        /// <summary>
+        /// The currently selected elements (may be empty, but never null)
+        /// </summary>
+        public ISpatialSelection SpatialSelection
         {
             get { return m_Selection; }
-            protected set
+        }
+
+        /// <summary>
+        /// Remembers a new selection
+        /// </summary>
+        /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
+        public virtual void SetSelection(ISpatialSelection newSel)
+        {
+            ISpatialSelection ss = (newSel==null ? new SpatialSelection() : newSel);
+
+            if (!m_Selection.Equals(ss))
             {
-                if (value==null)
-                    throw new ArgumentNullException();
+                // Meant to ensure that any previous selection will be unhighlighted (and
+                // the new one highlighted)
+                foreach (ISpatialDisplay d in m_Displays)
+                    d.OnSelectionChanging(m_Selection, ss);
 
-                if (!m_Selection.Equals(value))
-                {
-                    // Meant to ensure that any previous selection will be unhighlighted (and
-                    // the new one highlighted)
-                    foreach (ISpatialDisplay d in m_Displays)
-                        d.OnSelectionChanging(m_Selection, value);
-
-                    m_Selection = value;
-                }
+                m_Selection = new SpatialSelection(ss.Items);
             }
         }
 

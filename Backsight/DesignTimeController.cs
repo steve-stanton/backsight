@@ -36,7 +36,7 @@ namespace Backsight
         public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
         public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
         public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-        public ISpatialSelection Selection { get { return null; } }
+        public ISpatialSelection SpatialSelection { get { return null; } }
         public IDrawStyle DrawStyle { get { return null; } }
         public IDrawStyle HighlightStyle { get { return null; } }
         public ISpatialDisplay ActiveDisplay { get { return null; } }

@@ -335,8 +335,7 @@ namespace Backsight.Editor
         /// </summary>
         internal override void Select()
         {
-            SpatialSelection ss = new SpatialSelection();
-            ss.Add(m_Divider.Line);
+            Selection ss = new Selection(m_Divider.Line, null);
 
             // If the divider has the same polygon on both sides, select
             // the polygon as well.
