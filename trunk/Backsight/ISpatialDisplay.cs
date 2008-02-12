@@ -84,9 +84,8 @@ namespace Backsight
         /// <summary>
         /// Handles a change to the current selection
         /// </summary>
-        /// <param name="oldSelection">The current selection (may be null)</param>
         /// <param name="newSelection">The new selection (may be null)</param>
-        void OnSelectionChanging(ISpatialSelection oldSelection, ISpatialSelection newSelection);
+        void OnSelectionChanged(ISpatialSelection newSelection);
 
         /// <summary>
         /// Force the display to reveal anything accumulated in its draw buffer. Meant

@@ -109,7 +109,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Removes everything from this selection.
         /// </summary>
-        void RemoveSel()
+        internal void RemoveSel()
         {
             // Unhighlight everything.
             UnHighlight();
@@ -604,33 +604,29 @@ namespace Backsight.Editor
             }
         }
 
-        /*
-//	@mfunc	Merge any limit line selection with the main selection.
-void CeSelection::UseLimit ( void ) {
+        /// <summary>
+        /// Grabs the current limit line selection and discards what we have here.
+        /// </summary>
+        internal Selection UseLimit()
+        {
+            // If there isn't any limit selection, just ensure that
+            // the limit line has been freed.
+            if (m_LimSel==null)
+            {
+                FreeLimit();
+                return new Selection();
+            }
 
-	// If there isn't any limit selection, just ensure that
-	// the limit line has been freed.
-	if ( !m_pLimSel ) {
-		FreeLimit();
-		return;
-	}
+            // Specific arc sections apply only to simple selections.
+            //m_pSection = 0;
 
-	// Specific arc sections apply only to simple selections.
-	m_pSection = 0;
+            // Add the limit selection to the base class.
+            Selection result = new Selection(m_LimSel);
 
-	// Add the limit selection to the base class.
-	CeListIter loop(m_pLimSel);
-	CeClass* pThing;
-
-	for ( pThing = (CeClass*)loop.GetHead();
-		  pThing;
-		  pThing = (CeClass*)loop.GetNext() ) AddReference(pThing);
-
-	// Discard the limit line and its selection,
-	DiscardLimit();
-
-} // end of UseLimit
-         */
+            // Discard the limit line and its selection,
+            DiscardLimit();
+            return result;
+        }
 
         /*
 //	@mfunc	Check if the selection is empty. This overrides the

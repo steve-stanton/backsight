@@ -855,6 +855,7 @@
     <Content Include="Resources\CheckPolygonIgnoreIcon.ico" />
     <Content Include="Resources\CheckSmallLineIcon.ico" />
     <Content Include="Resources\CheckSmallPolygonIcon.ico" />
+    <Content Include="Resources\DiagonalCursor.cur" />
     <Content Include="Resources\Editor.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />

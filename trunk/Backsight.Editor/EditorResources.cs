@@ -53,5 +53,15 @@ namespace Backsight.Editor
                 return c;
             }
         }
+
+        internal static Cursor DiagonalCursor
+        {
+            get
+            {
+                Cursor c = new Cursor(new MemoryStream(Resources.DiagonalCursor));
+                c.Tag = "DiagonalCursor";
+                return c;
+            }
+        }
     }
 }

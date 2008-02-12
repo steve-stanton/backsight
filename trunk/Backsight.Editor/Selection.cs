@@ -79,9 +79,19 @@ namespace Backsight.Editor
         /// Creates a new <c>Selection</c> that refers to nothing.
         /// </summary>
         internal Selection()
-            : base()
         {
             m_Section = null;
+            m_Items = new List<ISpatialObject>();
+        }
+
+        /// <summary>
+        /// Creates a new <c>Selection</c> that consists of the items in the supplied list.
+        /// </summary>
+        /// <param name="items">The items defining the content of the new selection</param>
+        internal Selection(IEnumerable<ISpatialObject> items)
+        {
+            m_Section = null;
+            m_Items = new List<ISpatialObject>(items);
         }
 
         #endregion
