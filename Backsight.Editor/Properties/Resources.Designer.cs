@@ -165,6 +165,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static byte[] DiagonalCursor {
+            get {
+                object obj = ResourceManager.GetObject("DiagonalCursor", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap DrawScale {
             get {
                 object obj = ResourceManager.GetObject("DrawScale", resourceCulture);

@@ -94,10 +94,9 @@ namespace Backsight.Editor
         FileCheckUI m_Check;
 
         /// <summary>
-        /// The thing that performs selections. The result gets saved as part of
-        /// the current <see cref="Selection"/>.
+        /// Helper for performing complex selections.
         /// </summary>
-        readonly SelectionTool m_SelectionTool;
+        readonly SelectionTool m_Sel;
 
         #endregion
 
@@ -115,7 +114,7 @@ namespace Backsight.Editor
             m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
             m_Check = null;
-            m_SelectionTool = new SelectionTool();
+            m_Sel = new SelectionTool();
         }
 
         #endregion
@@ -199,22 +198,9 @@ namespace Backsight.Editor
                     // Actually, it was something else, so maybe the above
                     // would work after all. Let's see what users say.
 
-                /*              
-                    CeVertex pos;
-                    LPToGround(point, &pos);
-                    m_Sel.LButton(pos);
-                 */
-                    Select(sender, p, SpatialType.All); // for now (this is old functionality)
-                    //m_SelectionTool.
+                    m_Sel.CtrlMouseDown(p);
                 }
             }
-
-            /*
-            if (m_Command!=null)
-                m_Command.LButtonDown(p);
-            else
-                base.MouseDown(sender, p, b);
-             */
         }
 
         /// <summary>
@@ -259,36 +245,7 @@ namespace Backsight.Editor
                 }
                 else
                 {
-                    /*
-                    // If we've selected a line that has system-generated
-                    // arc sections, determine the specific section that
-                    // is closest to the query point.
-
-                    CeArc* pSection=0;
-
-                    const CeArc* const pArc =
-                        dynamic_cast<const CeArc* const>(pThing);
-
-                    if ( pArc && pArc->IsSysTopology() ) {
-
-                        // Get the closest position on the arc. The tolerance
-                        // used here is expected to be the same as the
-                        // tolerance that was used in <mf CeView::Select>.
-
-                        CeVertex vtx;
-                        LPToGround(point,&vtx);
-                        FLOAT8 tol = 0.001 * GetDrawScale();
-                        CeVertex closest;
-                        pArc->GetClosest(vtx,tol,closest);
-
-                        // Find the corresponding section.
-                        pSection = pArc->FindSection(closest);
-                    }
-
-                    // Clear out everything in the selection, except for
-                    // the thing we're going to select.
-                    m_Sel.ReplaceWith(pThing,pSection);
-                     */
+                    SetSelection(new Selection(thing, p));
                 }
             }
             else
@@ -320,18 +277,53 @@ namespace Backsight.Editor
 
         void AddOrRemoveFromSelection(ISpatialObject so)
         {
-            //SetSelection(new Selection(this.Selection, so));
+            Selection sel = this.Selection;
+            if (!sel.Remove(so))
+                sel.Add(so);
+
+            SetSelection(sel);
         }
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
-            /*
-            using (StreamWriter sw = File.AppendText(@"C:\Temp\Debug.txt"))
+            // If the CTRL key is pressed (and there's nothing else
+            // going on), ensure the right cursor is displayed (for
+            // defining a limit line). This will stay up until one
+            // of 2 things happen:
+
+            // 1. The mouse moves without the CTRL key pressed
+            // 2. Focus is lost for any reason (like a right click
+            //	  or an attempt to start a command).
+
+            if (!IsCommandRunning && (Control.ModifierKeys & Keys.ControlKey) != 0)
             {
-                object t = Cursor.Current.Tag;
-                sw.WriteLine(String.Format("{0}: cursor tag={1}", DateTime.Now, (t==null ? "none" : t.ToString())));
+                // If we're currently auto-highlighting, get rid of it altogether (screws things up).
+                if (m_IsAutoSelect!=0)
+                {
+                    AutoSelect = false;
+                    m_Sel.RemoveSel();
+                }
+
+                m_Sel.CtrlMouseMoveTo(p);
+
+                // Ensure the right cursor is up.
+                ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
+
+                return;
             }
-             */
+
+            // If the CTRL key is NOT down, ensure any limit selection is part of the main selection.
+            if ((Control.ModifierKeys & Keys.ControlKey) == 0)
+            {
+                Selection sel = m_Sel.UseLimit();
+                if (sel.Count > 0)
+                {
+                    Selection cursel = this.Selection;
+                    foreach (ISpatialObject so in sel.Items)
+                        cursel.Add(so);
+                    SetSelection(cursel);
+                }
+            }
 
             // The main window of the cadastral editor provides the option to
             // display the current position of the mouse
@@ -345,6 +337,10 @@ namespace Backsight.Editor
                 m_Command.MouseMove(p);
         }
 
+        /*
+		m_AutoHighlight = 0;
+		m_Sel.RemoveSel();
+         */
         /// <summary>
         /// Handles delete key by removing any selected features (so long as a command is not
         /// currently running).
@@ -931,19 +927,17 @@ namespace Backsight.Editor
         {
             get
             {
-                /*
                 ISpatialSelection ss = this.SpatialSelection;
                 if (ss is Selection)
                     return (ss as Selection);
                 else
-                    return new Selection(ss);
-                 */
-                return null;
+                    return new Selection(ss.Items);
             }
         }
 
-        public override void SetSelection(ISpatialSelection ss)
+        public override void SetSelection(ISpatialSelection newSel)
         {
+            ISpatialSelection ss = (newSel==null ? new Selection() : newSel);
             base.SetSelection(ss);
 
             ISpatialObject item = ss.Item;
@@ -993,6 +987,14 @@ namespace Backsight.Editor
                 double displayScale = display.MapScale;
                 return (displayScale < CadastralMapModel.ShowPointScale);
             }
+        }
+
+        /// <summary>
+        /// The number of spatial objects that are currently selected
+        /// </summary>
+        internal int SelectionCount
+        {
+            get { return SpatialSelection.Count; }
         }
 
         /// <summary>

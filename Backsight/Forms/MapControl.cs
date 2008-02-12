@@ -653,29 +653,23 @@ namespace Backsight.Forms
             }
         }
 
-        public void OnSelectionChanging(ISpatialSelection oldSelection, ISpatialSelection newSelection)
+        /// <summary>
+        /// Handles a change to the current selection
+        /// </summary>
+        /// <param name="newSelection">The new selection (may be null)</param>
+        public void OnSelectionChanged(ISpatialSelection newSelection)
         {
             using (Graphics g = mapPanel.CreateGraphics())
             {
-                if (newSelection==null)
+                m_SavedDisplay.Render(g);
+
+                if (newSelection!=null)
                 {
-                    m_SavedDisplay.Render(g);
-                    //CopyMapPanelToBuffer(m_Display); // is this needed?
-                }
-                else
-                {
-                    if (oldSelection!=null)
-                    {
-                        m_SavedDisplay.Render(g);
-                        m_SavedDisplay.Render(m_Display.Graphics);
-                        //CopyMapPanelToBuffer(m_Display);
-                    }
+                    m_SavedDisplay.Render(m_Display.Graphics);
 
                     // Highlight the new selection
                     IDrawStyle style = SpatialController.Current.HighlightStyle;
                     newSelection.Render(this, style);
-                    //foreach(ISpatialObject item in newSelection.Items)
-                    //    item.Render(this, style);
 
                     m_Display.Render(g);
                 }

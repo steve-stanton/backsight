@@ -186,10 +186,13 @@ namespace Backsight
             {
                 // Meant to ensure that any previous selection will be unhighlighted (and
                 // the new one highlighted)
-                foreach (ISpatialDisplay d in m_Displays)
-                    d.OnSelectionChanging(m_Selection, ss);
+                //foreach (ISpatialDisplay d in m_Displays)
+                //    d.OnSelectionChanging(m_Selection, ss);
 
                 m_Selection = new SpatialSelection(ss.Items);
+
+                foreach (ISpatialDisplay d in m_Displays)
+                    d.OnSelectionChanged(m_Selection);
             }
         }
 
@@ -229,7 +232,7 @@ namespace Backsight
             if (m_Selection.Count>0)
             {
                 foreach (ISpatialDisplay d in m_Displays)
-                    d.OnSelectionChanging(m_Selection, m_Selection);
+                    d.OnSelectionChanged(m_Selection);
             }
         }
     }
