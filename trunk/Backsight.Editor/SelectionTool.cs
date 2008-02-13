@@ -15,6 +15,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -39,12 +42,12 @@ namespace Backsight.Editor
         /// <summary>
         /// True if the last position is currently being rubber-banded.
         /// </summary>
-        bool m_IsBand;
+        //bool m_IsBand;
 
         /// <summary>
         /// True if limit is currently drawn.
         /// </summary>
-        bool m_IsLimit;
+        //bool m_IsLimit;
 
         /// <summary>
         /// The current selection obtained via m_Limit. This will be included
@@ -66,8 +69,8 @@ namespace Backsight.Editor
         {
             m_Limit = null;
             m_Mouse = null;
-            m_IsBand = false;
-            m_IsLimit = false;
+            //m_IsBand = false;
+            //m_IsLimit = false;
             m_LimSel = null;
             m_Selection = new List<ISpatialObject>();
         }
@@ -102,7 +105,8 @@ namespace Backsight.Editor
             if (thing != null)
             {
                 Append(thing);
-                ReHighlight();
+                ErasePainting();
+                //ReHighlight();
             }
         }
 
@@ -230,8 +234,17 @@ namespace Backsight.Editor
 
             // Append the thing to the list.
             Append(thing);
-            ReHighlight();
+            ErasePainting();
+            //ReHighlight();
             return true;
+        }
+
+        /// <summary>
+        /// Has a limit line been started?
+        /// </summary>
+        internal bool HasLimit
+        {
+            get { return (m_Limit!=null && m_Limit.Count>0); }
         }
 
         /// <summary>
@@ -252,16 +265,16 @@ namespace Backsight.Editor
             }
 
             // Erase any rubber band.
-            EraseBand();
+            //EraseBand();
 
             // Erase the current limit.
-            EraseLimit();
+            //EraseLimit();
 
             // Append the new position to our list.
             m_Limit.Add(pos);
 
             // Draw the current limit.
-            DrawLimit();
+            //DrawLimit();
 
             // But don't redraw any rubber banding. It comes back
             // as soon as the mouse moves.
@@ -272,10 +285,11 @@ namespace Backsight.Editor
 
             // Undo the highlighting of any objects that are no longer selected.
             // Draw the ends, since we'll be re-highlighting.
-            CutHighlight(cutsel, null, true);
+            //CutHighlight(cutsel, null, true);
 
             // Ensure the current selection is highlighted.
-            ReHighlight();
+            //ReHighlight();
+            ErasePainting();
         }
 
         /// <summary>
@@ -289,13 +303,14 @@ namespace Backsight.Editor
                 return;
 
             // Erase any previously drawn rubber banding.
-            EraseBand();
+            //EraseBand();
 
             // Hold on to the current mouse position.
             m_Mouse = pos;
 
             // Draw any rubber banding.
-            DrawBand();
+            //DrawBand();
+            ErasePainting();
         }
 
         /// <summary>
@@ -310,21 +325,24 @@ namespace Backsight.Editor
                 return;
 
             // Erase any limit line we've drawn.
-            EraseLimit();
+            //EraseLimit();
 
             // And erase any rubber banding.
-            EraseBand();
+            //EraseBand();
 
             // Get rid of the limit positions.
             m_Limit = null;
 
             // Reset last mouse position.
             m_Mouse = null;
+
+            ErasePainting();
         }
 
         /// <summary>
         /// Draws any select limit.
         /// </summary>
+        /*
         void Paint()
         {
             // Draw any limit line.
@@ -333,10 +351,12 @@ namespace Backsight.Editor
             // Draw any rubber banding too.
             DrawBand();
         }
+        */
 
         /// <summary>
         /// Draws any rubber band.
         /// </summary>
+        /*
         void DrawBand()
         {
             // If there is no rubber band at the moment, invert it. But
@@ -346,10 +366,12 @@ namespace Backsight.Editor
             if (!m_IsBand)
                 m_IsBand = InvertBand();
         }
+        */
 
         /// <summary>
         /// Erases any rubber band.
         /// </summary>
+        /*
         void EraseBand()
         {
             if (m_IsBand)
@@ -359,6 +381,12 @@ namespace Backsight.Editor
                 m_IsBand = false;
             }
         }
+         */
+
+        void ErasePainting()
+        {
+            EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        }
 
         /// <summary>
         /// Inverts rubber banding. If it was previously drawn, it will be erased. To get
@@ -366,6 +394,7 @@ namespace Backsight.Editor
         /// ensure that the band doesn't get inverted when you don't expect it to invert.
         /// </summary>
         /// <returns></returns>
+        /*
         bool InvertBand()
         {
             if (m_Limit!=null && m_Mouse!=null)
@@ -388,10 +417,12 @@ namespace Backsight.Editor
 
             return false;
         }
+         */
 
         /// <summary>
         /// Draws any limit line.
         /// </summary>
+        /*
         void DrawLimit()
         {
             // If there is no limit line at the moment, invert it. But
@@ -401,10 +432,12 @@ namespace Backsight.Editor
             if (!m_IsLimit)
                 m_IsLimit = InvertLimit();
         }
+         */
 
         /// <summary>
         /// Erases any limit line.
         /// </summary>
+        /*
         void EraseLimit()
         {
             if (m_IsLimit)
@@ -414,6 +447,7 @@ namespace Backsight.Editor
                 m_IsLimit= false;
             }
         }
+         */
 
         /// <summary>
         /// Inverts the limit line. If it was previously drawn, it will be erased.
@@ -489,35 +523,27 @@ namespace Backsight.Editor
             // If we have just 2 positions, select everything that
             // intersects the line. Otherwise select inside the shape.
 
-            if (m_Limit.Count==2)
-            {
-                // Make the selection.
-
-                ITerminal s = new FloatingTerminal(m_Limit[0]);
-                ITerminal e = new FloatingTerminal(m_Limit[1]);
-                LineGeometry line = new SegmentGeometry(s, e);
-                IList<IntersectionResult> res = new IntersectionFinder(line, true).Intersections;
-
-                foreach (IntersectionResult ir in res)
-                {
-                    ISpatialObject so = (ir.IntersectedObject as ISpatialObject);
-                    if (so!=null)
-                        m_LimSel.Add(so);
-                }
-            }
-            else
+            try
             {
                 // Close the limit line.
                 m_Limit.Add(m_Limit[0]);
 
-                // Select only those spatial types that are currently visible
-                SpatialType types = SpatialType.Feature;
+                // Select only lines if the limit line consists of only 2 points (otherwise select
+                // whatever is currently visible on the active display)
+                SpatialType types = (m_Limit.Count==2 ? SpatialType.Line : EditingController.Current.VisibleFeatureTypes);
 
                 // Make the selection.
                 ISpatialIndex index = CadastralMapModel.Current.Index;
                 List<ISpatialObject> res = new FindOverlapsQuery(index, m_Limit.ToArray(), types).Result;
                 m_LimSel.AddRange(res);
+            }
 
+            catch
+            {
+            }
+
+            finally
+            {
                 // Remove the closing point.
                 int lastIndex = m_Limit.Count-1;
                 m_Limit.RemoveAt(lastIndex);
@@ -600,7 +626,8 @@ namespace Backsight.Editor
                 m_LimSel = null;
 
                 // Rehighlight the base selection (if any)
-                ReHighlight();
+                //ReHighlight();
+                ErasePainting();
             }
         }
 
@@ -705,9 +732,11 @@ void CeSelection::UnHighlight ( const CeObject* const pNewSel ) const {
 } // end of UnHighlight
          */
 
+        /*
         void CutHighlight(List<ISpatialObject> cutsel, ISpatialObject newSel, bool drawEnds)
         {
         }
+         */
         /*
 //	@mfunc	Eliminate highlighting. Does not change the
 //			actual selection in any way.
@@ -810,9 +839,11 @@ void CeSelection::CutHighlight ( const CeClass* const pWhat
         /// <summary>
         /// Ensures the current selection is highlighted.
         /// </summary>
+        /*
         void ReHighlight()
         {
         }
+         */
         /*
 //	@parm	Device context that may already be know (by
 //			CeView::OnDraw for example). May be NULL.
@@ -956,6 +987,33 @@ void CeSelection::SetZeroValues ( void ) {
         ISpatialObject Item
         {
             get { return (m_Selection.Count==1 ? m_Selection[0] : null); }
+        }
+
+        internal void Render(ISpatialDisplay display)
+        {
+            if (m_Limit==null || m_Limit.Count==0 || m_Mouse==null)
+                return;
+
+            // Draw dotted line from the last point on the limit line to the last known mouse position
+            int lastIndex = m_Limit.Count-1;
+            IPosition last = m_Limit[lastIndex];
+            DottedStyle dottedLine = new DottedStyle(Color.Gray);
+            dottedLine.Render(display, new IPosition[] { last, m_Mouse });
+
+            // If we have two or more positions, draw an additional dotted line to the start of
+            // the limit line.
+            if (m_Limit.Count>=2)
+                dottedLine.Render(display, new IPosition[] { m_Mouse, m_Limit[0] });
+
+            // Draw the limit line
+            dottedLine.Render(display, m_Limit.ToArray());
+
+            // Draw any limit line selection
+            if (m_LimSel!=null)
+            {
+                HighlightStyle style = new HighlightStyle();
+                new SpatialSelection(m_LimSel).Render(display, style);
+            }
         }
     }
 }

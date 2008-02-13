@@ -179,7 +179,7 @@ namespace Backsight.Editor
                 // If the CTRL key is not pressed, free any limit known
                 // to the selection object and try to select something.
 
-                if ((Control.ModifierKeys & Keys.ControlKey) == 0)
+                if ((Control.ModifierKeys & Keys.Control) == 0)
                 {
                     OnSelect(sender, p, isMultiSelect);
                 }
@@ -199,9 +199,20 @@ namespace Backsight.Editor
                     // would work after all. Let's see what users say.
 
                     m_Sel.CtrlMouseDown(p);
+
+                    // Ensure the right cursor is up.
+                    ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
+                    //MapControl.SetCursor(EditorResources.DiagonalCursor);
                 }
             }
         }
+
+        /*
+        MapControl MapControl
+        {
+            get { return (MapControl)ActiveDisplay; }
+        }
+        */
 
         /// <summary>
         /// Tries to select something at the specified position
@@ -295,7 +306,7 @@ namespace Backsight.Editor
             // 2. Focus is lost for any reason (like a right click
             //	  or an attempt to start a command).
 
-            if (!IsCommandRunning && (Control.ModifierKeys & Keys.ControlKey) != 0)
+            if (!IsCommandRunning && (Control.ModifierKeys & Keys.Control) != 0)
             {
                 // If we're currently auto-highlighting, get rid of it altogether (screws things up).
                 if (m_IsAutoSelect!=0)
@@ -307,14 +318,17 @@ namespace Backsight.Editor
                 m_Sel.CtrlMouseMoveTo(p);
 
                 // Ensure the right cursor is up.
-                ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
+                //ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
 
                 return;
             }
 
             // If the CTRL key is NOT down, ensure any limit selection is part of the main selection.
-            if ((Control.ModifierKeys & Keys.ControlKey) == 0)
+            if ((Control.ModifierKeys & Keys.Control) == 0)
             {
+                if (m_Sel.HasLimit)
+                    ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+
                 Selection sel = m_Sel.UseLimit();
                 if (sel.Count > 0)
                 {
@@ -978,15 +992,53 @@ namespace Backsight.Editor
         /// </summary>
         bool ArePointsDrawn
         {
+            get { return IsVisible(CadastralMapModel.ShowPointScale); }
+        }
+
+        /// <summary>
+        /// Are labels drawn in the display. If an editing command is currently running,
+        /// the display in question is the command display. Otherwise it's the currently
+        /// active display.
+        /// </summary>
+        bool AreLabelsDrawn
+        {
+            get { return IsVisible(CadastralMapModel.ShowLabelScale); }
+        }
+
+        /// <summary>
+        /// Checks whether something is visible on the active display.
+        /// </summary>
+        /// <param name="thresholdScale">The threshold scale for some sort of item</param>
+        /// <returns>True if the scale of the active display is such that the items would be drawn</returns>
+        bool IsVisible(double thresholdScale)
+        {
+            ISpatialDisplay display = (m_Command==null ? ActiveDisplay : m_Command.ActiveDisplay);
+            if (display==null)
+                return false;
+
+            double displayScale = display.MapScale;
+            return (displayScale < thresholdScale);
+        }
+
+        /// <summary>
+        /// Determines what type of spatial features are drawn on the active display
+        /// </summary>
+        internal SpatialType VisibleFeatureTypes
+        {
             get
             {
-                ISpatialDisplay display = (m_Command==null ? ActiveDisplay : m_Command.ActiveDisplay);
-                if (display==null)
-                    return false;
+                // Lines are always visible
+                SpatialType result = SpatialType.Line;
 
-                double displayScale = display.MapScale;
-                return (displayScale < CadastralMapModel.ShowPointScale);
+                if (ArePointsDrawn)
+                    result |= SpatialType.Point;
+
+                if (AreLabelsDrawn)
+                    result |= SpatialType.Text;
+
+                return result;
             }
+
         }
 
         /// <summary>
@@ -1093,6 +1145,12 @@ namespace Backsight.Editor
             if (m_Check!=null)
             {
                 m_Check.Render(ActiveDisplay, DrawStyle);
+                repaint = true;
+            }
+
+            if (m_Sel.HasLimit)
+            {
+                m_Sel.Render(ActiveDisplay);
                 repaint = true;
             }
 
