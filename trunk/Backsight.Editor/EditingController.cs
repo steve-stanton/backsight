@@ -98,6 +98,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly SelectionTool m_Sel;
 
+        /// <summary>
+        /// Has the selection been changed?
+        /// </summary>
+        bool m_HasSelectionChanged;
+
         #endregion
 
         #region Constructors
@@ -115,6 +120,7 @@ namespace Backsight.Editor
             m_Inverse = null;
             m_Check = null;
             m_Sel = new SelectionTool(this);
+            m_HasSelectionChanged = false;
         }
 
         #endregion
@@ -315,9 +321,11 @@ namespace Backsight.Editor
                     SetSelection(cursel);
                 }
 
+                // Ensure we've got the regular cursor back
+                ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+
                 if (hadLimit)
                 {
-                    ActiveDisplay.MapPanel.Cursor = Cursors.Default;
                     ActiveDisplay.RestoreLastDraw();
                     ActiveDisplay.PaintNow();
                 }
@@ -929,10 +937,12 @@ namespace Backsight.Editor
             }
         }
 
-        public override void SetSelection(ISpatialSelection newSel)
+        public override bool SetSelection(ISpatialSelection newSel)
         {
             ISpatialSelection ss = (newSel==null ? new Selection() : newSel);
-            base.SetSelection(ss);
+            bool isChanged = base.SetSelection(ss);
+            if (!isChanged)
+                return false;
 
             ISpatialObject item = ss.Item;
             if (m_Main!=null)
@@ -963,6 +973,9 @@ namespace Backsight.Editor
                     }
                 }
             }
+
+            m_HasSelectionChanged = true;
+            return true;
         }
 
         /// <summary>
@@ -1115,6 +1128,7 @@ namespace Backsight.Editor
         internal void OnIdle()
         {
             bool repaint = false;
+            ISpatialDisplay display = ActiveDisplay;
 
             if (m_Inverse!=null)
             {
@@ -1124,14 +1138,21 @@ namespace Backsight.Editor
 
             if (m_Check!=null)
             {
-                m_Check.Render(ActiveDisplay, DrawStyle);
+                m_Check.Render(display, DrawStyle);
                 repaint = true;
             }
 
             if (m_Sel.HasLimit)
             {
-                m_Sel.Render(ActiveDisplay);
+                m_Sel.Render(display);
                 repaint = true;
+            }
+
+            if (m_HasSelectionChanged)
+            {
+                SpatialSelection.Render(display, HighlightStyle);
+                repaint = true;
+                m_HasSelectionChanged = false;
             }
 
             if (m_Command!=null && m_Command.PerformsPainting)
@@ -1147,7 +1168,7 @@ namespace Backsight.Editor
             }
 
             if (repaint)
-                ActiveDisplay.PaintNow();
+                display.PaintNow();
         }
     }
 }
