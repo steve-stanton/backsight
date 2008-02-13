@@ -114,7 +114,7 @@ namespace Backsight.Editor
             m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
             m_Check = null;
-            m_Sel = new SelectionTool();
+            m_Sel = new SelectionTool(this);
         }
 
         #endregion
@@ -185,34 +185,13 @@ namespace Backsight.Editor
                 }
                 else
                 {
-                    // Really, it would be better UI to do this in OnLButtonUp
-                    // (otherwise there is a tendency to hold the left button
-                    // down while defining the limit line, with the expectation
-                    // that the selection will be made when you release the
-                    // left mouse button (which is NOT the way it works!). I
-                    // tried this, but the highlighting then comes on top
-                    // of any command-specific highlighting done below. This
-                    // happened even when I tried moving that stuff to
-                    // OnLButtonUp as well. So be warned.
-
-                    // Actually, it was something else, so maybe the above
-                    // would work after all. Let's see what users say.
-
                     m_Sel.CtrlMouseDown(p);
 
                     // Ensure the right cursor is up.
                     ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
-                    //MapControl.SetCursor(EditorResources.DiagonalCursor);
                 }
             }
         }
-
-        /*
-        MapControl MapControl
-        {
-            get { return (MapControl)ActiveDisplay; }
-        }
-        */
 
         /// <summary>
         /// Tries to select something at the specified position
@@ -317,17 +296,15 @@ namespace Backsight.Editor
 
                 m_Sel.CtrlMouseMoveTo(p);
 
-                // Ensure the right cursor is up.
-                //ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
-
+                // Ensure the right cursor is displayed
+                ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
                 return;
             }
 
             // If the CTRL key is NOT down, ensure any limit selection is part of the main selection.
             if ((Control.ModifierKeys & Keys.Control) == 0)
             {
-                if (m_Sel.HasLimit)
-                    ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+                bool hadLimit = m_Sel.HasLimit;
 
                 Selection sel = m_Sel.UseLimit();
                 if (sel.Count > 0)
@@ -336,6 +313,13 @@ namespace Backsight.Editor
                     foreach (ISpatialObject so in sel.Items)
                         cursel.Add(so);
                     SetSelection(cursel);
+                }
+
+                if (hadLimit)
+                {
+                    ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+                    ActiveDisplay.RestoreLastDraw();
+                    ActiveDisplay.PaintNow();
                 }
             }
 
@@ -351,10 +335,6 @@ namespace Backsight.Editor
                 m_Command.MouseMove(p);
         }
 
-        /*
-		m_AutoHighlight = 0;
-		m_Sel.RemoveSel();
-         */
         /// <summary>
         /// Handles delete key by removing any selected features (so long as a command is not
         /// currently running).
