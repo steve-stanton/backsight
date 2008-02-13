@@ -178,22 +178,20 @@ namespace Backsight
         /// Remembers a new selection
         /// </summary>
         /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
-        public virtual void SetSelection(ISpatialSelection newSel)
+        /// <returns>True if selection changed. False if the selection matches the#
+        /// current selection</returns>
+        public virtual bool SetSelection(ISpatialSelection newSel)
         {
             ISpatialSelection ss = (newSel==null ? new SpatialSelection() : newSel);
+            if (m_Selection.Equals(ss))
+                return false;
 
-            if (!m_Selection.Equals(ss))
-            {
-                // Meant to ensure that any previous selection will be unhighlighted (and
-                // the new one highlighted)
-                //foreach (ISpatialDisplay d in m_Displays)
-                //    d.OnSelectionChanging(m_Selection, ss);
+            m_Selection = new SpatialSelection(ss.Items);
 
-                m_Selection = new SpatialSelection(ss.Items);
+            foreach (ISpatialDisplay d in m_Displays)
+                d.OnSelectionChanged(m_Selection);
 
-                foreach (ISpatialDisplay d in m_Displays)
-                    d.OnSelectionChanged(m_Selection);
-            }
+            return true;
         }
 
         public virtual IDrawStyle DrawStyle
