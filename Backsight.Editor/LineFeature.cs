@@ -178,9 +178,11 @@ namespace Backsight.Editor
                     style.LineColor = oldCol;
                 }
 
+                bool showPoints = (style as HighlightStyle).ShowLineEndPoints;
+
                 // If we're highlighting, and points are displayed, render the end points too
                 // (if the line is not a polygon boundary, draw hatched ends).
-                if (display.MapScale < MapModel.ShowPointScale && EditingController.Current.SelectionCount==1)
+                if (showPoints && display.MapScale < MapModel.ShowPointScale)
                 {
                     if (IsTopological)
                     {

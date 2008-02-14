@@ -212,5 +212,16 @@ namespace Backsight.Editor
             if (!m_Items.Contains(so))
                 m_Items.Add(so);
         }
+
+        /// <summary>
+        /// Adds a collection of spatial objects to this selection (checking to confirm
+        /// that they're not already part of this selection)
+        /// </summary>
+        /// <param name="items">The items to add</param>
+        internal void AddRange(IEnumerable<ISpatialObject> items)
+        {
+            foreach (ISpatialObject so in items)
+                Add(so);
+        }
     }
 }

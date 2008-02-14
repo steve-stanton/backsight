@@ -94,9 +94,12 @@ namespace Backsight.Editor
         FileCheckUI m_Check;
 
         /// <summary>
-        /// Helper for performing complex selections.
+        /// Helper for performing complex selections. This gets created when the user
+        /// moves the mouse while holding down the CTRL key. It gets deleted
+        /// when the CTRL key is released (at that time, any selected features will be
+        /// merged with the current selection).
         /// </summary>
-        readonly SelectionTool m_Sel;
+        SelectionTool m_Sel;
 
         /// <summary>
         /// Has the selection been changed?
@@ -119,7 +122,7 @@ namespace Backsight.Editor
             m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
             m_Check = null;
-            m_Sel = new SelectionTool(this);
+            m_Sel = null;
             m_HasSelectionChanged = false;
         }
 
@@ -186,16 +189,41 @@ namespace Backsight.Editor
                 // to the selection object and try to select something.
 
                 if ((Control.ModifierKeys & Keys.Control) == 0)
-                {
                     OnSelect(sender, p, isMultiSelect);
-                }
                 else
-                {
-                    m_Sel.CtrlMouseDown(p);
+                    GetAreaSelectionTool().CtrlMouseDown(p);
+            }
+        }
 
-                    // Ensure the right cursor is up.
-                    ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
-                }
+        /// <summary>
+        /// Ensures the area selection tool has been created.
+        /// </summary>
+        /// <returns>The area selection tool (never null)</returns>
+        /// <remarks>
+        /// The selection tool should get created when the user moves the mouse while
+        /// holding down the CTRL key. However, it's possible the user might do something
+        /// like press CTRL and then do a mouse down (without moving the mouse).
+        /// </remarks>
+        SelectionTool GetAreaSelectionTool()
+        {
+            if (m_Sel==null)
+            {
+                m_Sel = new SelectionTool(this);
+                ActiveDisplay.MapPanel.Cursor = SelectionTool.Cursor;
+            }
+
+            return m_Sel;
+        }
+
+        /// <summary>
+        /// Frees any area selection tool.
+        /// </summary>
+        void FreeAreaSelectionTool()
+        {
+            if (m_Sel!=null)
+            {
+                m_Sel = null;
+                ActiveDisplay.MapPanel.Cursor = Cursors.Default;
             }
         }
 
@@ -282,6 +310,8 @@ namespace Backsight.Editor
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
+            bool isCtrlPressed = ((Control.ModifierKeys & Keys.Control) != 0);
+
             // If the CTRL key is pressed (and there's nothing else
             // going on), ensure the right cursor is displayed (for
             // defining a limit line). This will stay up until one
@@ -291,45 +321,37 @@ namespace Backsight.Editor
             // 2. Focus is lost for any reason (like a right click
             //	  or an attempt to start a command).
 
-            if (!IsCommandRunning && (Control.ModifierKeys & Keys.Control) != 0)
+            if (!IsCommandRunning && isCtrlPressed)
             {
                 // If we're currently auto-highlighting, get rid of it altogether (screws things up).
                 if (m_IsAutoSelect!=0)
-                {
                     AutoSelect = false;
-                    m_Sel.RemoveSel();
-                }
 
-                m_Sel.CtrlMouseMoveTo(p);
+                GetAreaSelectionTool().CtrlMouseMoveTo(p);
 
                 // Ensure the right cursor is displayed
-                ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
+                //ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
                 return;
             }
 
             // If the CTRL key is NOT down, ensure any limit selection is part of the main selection.
-            if ((Control.ModifierKeys & Keys.Control) == 0)
+            /*
+            if (!isCtrlPressed && m_Sel!=null)
             {
-                bool hadLimit = m_Sel.HasLimit;
-
-                Selection sel = m_Sel.UseLimit();
-                if (sel.Count > 0)
+                // Grab the selected items (if any) and merge any currently selected features.
+                Selection s = m_Sel.Selection;
+                FreeAreaSelectionTool();
+                if (s.Count > 0)
                 {
-                    Selection cursel = this.Selection;
-                    foreach (ISpatialObject so in sel.Items)
-                        cursel.Add(so);
-                    SetSelection(cursel);
+                    s.AddRange(this.SpatialSelection.Items);
+                    SetSelection(s);
                 }
 
-                // Ensure we've got the regular cursor back
-                ActiveDisplay.MapPanel.Cursor = Cursors.Default;
-
-                if (hadLimit)
-                {
-                    ActiveDisplay.RestoreLastDraw();
-                    ActiveDisplay.PaintNow();
-                }
+                // Ensure everything is back to normal
+                ActiveDisplay.RestoreLastDraw();
+                ActiveDisplay.PaintNow();
             }
+            */
 
             // The main window of the cadastral editor provides the option to
             // display the current position of the mouse
@@ -356,6 +378,31 @@ namespace Backsight.Editor
 
             if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
                 m_Command.Escape();
+        }
+
+        /// <summary>
+        /// Handles a key up event
+        /// </summary>
+        /// <param name="sender">The display where the key event originated</param>
+        /// <param name="k">Information about the event</param>
+        public override void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
+        {
+            // Whereas Control.ModifierKeys sees Keys.Control, the KeyUp event passes Keys.ControlKey
+            if (k.KeyCode == Keys.ControlKey && m_Sel!=null)
+            {
+                // Grab the selected items (if any) and merge any currently selected features.
+                Selection s = m_Sel.Selection;
+                FreeAreaSelectionTool();
+                if (s.Count > 0)
+                {
+                    s.AddRange(this.SpatialSelection.Items);
+                    SetSelection(s);
+                }
+
+                // Ensure everything is back to normal
+                ActiveDisplay.RestoreLastDraw();
+                ActiveDisplay.PaintNow();
+            }
         }
 
         internal void Create()
@@ -516,7 +563,12 @@ namespace Backsight.Editor
 
         public override IDrawStyle HighlightStyle
         {
-            get { return InitializeDrawStyle(base.HighlightStyle); }
+            get
+            {
+                HighlightStyle style = (HighlightStyle)base.HighlightStyle;
+                style.ShowLineEndPoints = (SelectionCount==1 && m_Sel==null);
+                return InitializeDrawStyle(style);
+            }
         }
 
         private IDrawStyle InitializeDrawStyle(IDrawStyle style)
@@ -1142,13 +1194,13 @@ namespace Backsight.Editor
                 repaint = true;
             }
 
-            if (m_Sel.HasLimit)
+            if (m_Sel!=null)
             {
                 m_Sel.Render(display);
                 repaint = true;
             }
 
-            if (m_HasSelectionChanged)
+            if (m_Sel!=null || m_HasSelectionChanged)
             {
                 SpatialSelection.Render(display, HighlightStyle);
                 repaint = true;
