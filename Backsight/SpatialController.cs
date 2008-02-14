@@ -190,7 +190,7 @@ namespace Backsight
             if (m_Selection.Equals(ss))
                 return false;
 
-            m_Selection = new SpatialSelection(ss.Items);
+            m_Selection = newSel; //new SpatialSelection(ss.Items);
 
             foreach (ISpatialDisplay d in m_Displays)
                 d.OnSelectionChanged(m_Selection);

@@ -305,7 +305,7 @@ namespace Backsight.Editor
 
         void AddOrRemoveFromSelection(ISpatialObject so)
         {
-            Selection sel = this.Selection;
+            Selection sel = new Selection(this.SpatialSelection.Items);
             if (!sel.Remove(so))
                 sel.Add(so);
 
