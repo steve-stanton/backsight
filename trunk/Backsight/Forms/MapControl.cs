@@ -111,6 +111,7 @@ namespace Backsight.Forms
 
             // Same deal for intercepting other keystrokes
             this.mapPanel.KeyDown += new KeyEventHandler(mapPanel_KeyDown);
+            this.mapPanel.KeyUp += new KeyEventHandler(mapPanel_KeyUp);
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.UserPaint, true);
@@ -638,6 +639,11 @@ namespace Backsight.Forms
         void mapPanel_KeyDown(object sender, KeyEventArgs e)
         {
             SpatialController.Current.KeyDown(this, e);
+        }
+
+        void mapPanel_KeyUp(object sender, KeyEventArgs e)
+        {
+            SpatialController.Current.KeyUp(this, e);
         }
 
         private void mapPanel_MouseDown(object sender, MouseEventArgs e)

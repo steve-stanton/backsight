@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Backsight.Forms;
+using System.Windows.Forms;
 
 namespace Backsight.Editor
 {
@@ -60,14 +61,9 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The current selection obtained via m_Limit. This will be included
-        /// in the selection when the limit line is completed.
+        /// in the selection when the limit line is completed. Never null.
         /// </summary>
-        List<ISpatialObject> m_LimSel;
-
-        /// <summary>
-        /// The currently selected items.
-        /// </summary>
-        readonly List<ISpatialObject> m_Selection;
+        readonly List<ISpatialObject> m_LimSel;
 
         #endregion
 
@@ -82,104 +78,25 @@ namespace Backsight.Editor
             m_Controller = controller;
             m_Limit = null;
             m_Mouse = null;
-            m_LimSel = null;
-            m_Selection = new List<ISpatialObject>();
+            m_LimSel = new List<ISpatialObject>();
         }
 
         #endregion
 
         /// <summary>
-        /// Adds a specific item to the current selection.
+        /// The cursor that should be used when using the <c>SelectionTool</c> class.
         /// </summary>
-        /// <param name="thing">The item to append to the selection</param>
-        /// <returns>True if item was appended. False if it's already in the selection</returns>
-        bool Append(ISpatialObject thing)
+        internal static Cursor Cursor
         {
-            if (m_Selection.Contains(thing))
-                return false;
-
-            m_Selection.Add(thing);
-            return true;
+            get { return EditorResources.DiagonalCursor; }
         }
 
         /// <summary>
-        /// Replaces the current selection with a specific object.
+        /// The features inside the limit line
         /// </summary>
-        /// <param name="thing">The object to select</param>
-        internal void ReplaceWith(ISpatialObject thing)
+        internal Selection Selection
         {
-            // Clear out the current selection.
-            RemoveSel();
-
-            // Append the thing to the selection (so long as it
-            // has a defined value)
-            if (thing != null)
-            {
-                Append(thing);
-                ErasePainting();
-            }
-        }
-
-        /// <summary>
-        /// Removes everything from this selection.
-        /// </summary>
-        internal void RemoveSel()
-        {
-            // Clear out the saved selection
-            m_Selection.Clear();
-
-            // Make sure we have no limit-line selection either.
-            DiscardLimit();
-        }
-
-        /// <summary>
-        /// Checks if a single line is selected.
-        /// </summary>
-        /// <returns>The currently selected line (null if a line isn't selected,
-        /// or the selection refers to more than one thing)</returns>
-        LineFeature GetLine() // was GetArc
-        {
-            return (this.Item as LineFeature);
-        }
-
-        /// <summary>
-        /// Checks if a single item of text is selected.
-        /// </summary>
-        /// <returns>The currently selected text (null if a text label isn't selected,
-        /// or the selection refers to more than one thing)</returns>
-        TextFeature GetText() // was GetLabel
-        {
-            return (this.Item as TextFeature);
-        }
-
-        /// <summary>
-        /// Checks if a single point is selected.
-        /// </summary>
-        /// <returns>The currently selected point (null if a point isn't selected,
-        /// or the selection refers to more than one thing)</returns>
-        PointFeature GetPoint()
-        {
-            return (this.Item as PointFeature);
-        }
-
-        /// <summary>
-        /// Checks if a single polygon is selected.
-        /// </summary>
-        /// <returns>The currently selected polygon (null if a polygon isn't selected,
-        /// or the selection refers to more than one thing)</returns>
-        Polygon GetPolygon()
-        {
-            return (this.Item as Polygon);
-        }
-
-        /// <summary>
-        /// Checks if a single spatial object is selected.
-        /// </summary>
-        /// <returns>The currently selected object (null if the selection refers to
-        /// more than one thing)</returns>
-        ISpatialObject GetObject()
-        {
-            return (this.Item as ISpatialObject);
+            get { return new Selection(m_LimSel); }
         }
 
         /// <summary>
@@ -187,6 +104,7 @@ namespace Backsight.Editor
         /// selected feature. Multi-selections don't return anything.
         /// </summary>
         /// <returns>The selected ID.</returns>
+        /*
         FeatureId GetId() // was SelPId
         {
             // Has to be just ONE object selected.
@@ -207,41 +125,7 @@ namespace Backsight.Editor
             // We SHOULD have got something, but...
             return null;
         }
-
-        /// <summary>
-        /// Adds or removes an object to this selection. It will be added if it is
-        /// not currently in the list. It will be removed if it was previously in
-        /// the list.
-        /// </summary>
-        /// <param name="thing">The object to add or remove.</param>
-        /// <returns>True if the object is in the selection at return.</returns>
-        internal bool AddOrRemove(ISpatialObject thing)
-        {
-            // We don't accept null things.
-            if (thing==null)
-                return false;
-
-            // A specific section can be drawn differently only
-            // if it's a simple selection (handled via ReplaceWith).
-            //base.Section = null;
-
-            // If the thing is currently in the list, remove it.
-            if (m_Selection.Remove(thing))
-                return false;
-
-            // Append the thing to the list.
-            Append(thing);
-            ErasePainting();
-            return true;
-        }
-
-        /// <summary>
-        /// Has a limit line been started?
-        /// </summary>
-        internal bool HasLimit
-        {
-            get { return (m_Limit!=null && m_Limit.Count>0); }
-        }
+         */
 
         /// <summary>
         /// Accepts a position that the user specified via a left click,
@@ -256,19 +140,19 @@ namespace Backsight.Editor
             {
                 m_Limit = new List<IPosition>();
                 m_Limit.Add(pos);
-                m_LimSel = new List<ISpatialObject>();
-                return;
+                m_LimSel.Clear();
             }
+            else
+            {
+                // Append the new position to our list.
+                m_Limit.Add(pos);
 
-            // Append the new position to our list.
-            m_Limit.Add(pos);
+                // Select stuff within the current limit.
+                SelectLimit();
 
-            // Select stuff within the current limit.
-            List<ISpatialObject> cutsel = new List<ISpatialObject>();
-            SelectLimit(cutsel);
-
-            // Ensure the current selection is highlighted.
-            ErasePainting();
+                // Ensure the current selection is highlighted.
+                ErasePainting();
+            }
         }
 
         /// <summary>
@@ -289,25 +173,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Frees any limit that has been specified. This is called whenever
-        /// the user presses a mouse button without having the CTRL key
-        /// pressed down.
+        /// Indicates that any painting previously done by this selection tool should be erased. This
+        /// tells the controller's active display that it should revert the display buffer to
+        /// the way it was at the end of the last draw from the map model. The controller should
+        /// end up calling the <see cref="Render"/> method during idle time.
         /// </summary>
-        void FreeLimit()
-        {
-            // Nothing to do if no defined limit.
-            if (m_Limit == null)
-                return;
-
-            // Get rid of the limit positions.
-            m_Limit = null;
-
-            // Reset last mouse position.
-            m_Mouse = null;
-
-            ErasePainting();
-        }
-
         void ErasePainting()
         {
             m_Controller.ActiveDisplay.RestoreLastDraw();
@@ -317,24 +187,14 @@ namespace Backsight.Editor
         /// Selects stuff within the current limit line. This makes a private selection
         /// over and above any previous selection.
         /// </summary>
-        /// <param name="cutsel">List of the objects that were removed from the the current
-        /// limit selection as a consequence of making the new selection.</param>
-        void SelectLimit(List<ISpatialObject> cutsel)
+        void SelectLimit()
         {
-            // Ensure the list of cut objects is initially clear.
-            cutsel.Clear();
-
             // Nothing to do if there is no limit line.
             if (m_Limit==null)
                 return;
 
-            // Ensure list of objects to cut initially matches our
-            // current limit selection.
-            if (m_LimSel!=null)
-                cutsel.AddRange(m_LimSel);
-
             // Empty out the current limit selection.
-            m_LimSel = new List<ISpatialObject>();
+            m_LimSel.Clear();
 
             // Nothing to do if there's only one position.
             if (m_Limit.Count<=1)
@@ -371,81 +231,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Arbitrarily discards any limit line (including any selection
-        /// that has been made).
+        /// Draws the limit line (if it contains at least 2 positions)
         /// </summary>
-        void DiscardLimit()
-        {
-            // Free the limit itself.
-            FreeLimit();
-
-            if (m_LimSel!=null)
-            {
-                // Clear out the limit selection.
-                m_LimSel = null;
-
-                // Rehighlight the base selection (if any)
-                //ReHighlight();
-                ErasePainting();
-            }
-        }
-
-        /// <summary>
-        /// Grabs the current limit line selection and discards what we have here.
-        /// </summary>
-        internal Selection UseLimit()
-        {
-            // If there isn't any limit selection, just ensure that
-            // the limit line has been freed.
-            if (m_LimSel==null)
-            {
-                FreeLimit();
-                return new Selection();
-            }
-
-            // Specific arc sections apply only to simple selections.
-            //m_pSection = 0;
-
-            // Add the limit selection to the base class.
-            Selection result = new Selection(m_LimSel);
-
-            // Discard the limit line and its selection,
-            DiscardLimit();
-            m_Mouse = null;
-            return result;
-        }
-
-        /// <summary>
-        /// Do we just have one object selected? This refers to both the base
-        /// class selection, as well as any limit line selection.
-        /// </summary>
-        /// <returns></returns>
-        bool IsSingle()
-        {
-            // Get base class count. If more than one, that's us done.
-            /*
-            if (this.Item==null)
-                return false;
-
-
-            // If we've got a limit line selection, add that to the total.
-            if (m_LimSel==null || m_LimSel.Count==0)
-                return true;
-            else
-                return false;
-             */
-            return false;
-        }
-
-        /// <summary>
-        /// The one and only item in this selection (null if the selection is empty, or
-        /// it contains more than one item).
-        /// </summary>
-        ISpatialObject Item
-        {
-            get { return (m_Selection.Count==1 ? m_Selection[0] : null); }
-        }
-
+        /// <param name="display">The display to draw to</param>
         internal void Render(ISpatialDisplay display)
         {
             if (m_Limit==null || m_Limit.Count==0 || m_Mouse==null)
@@ -462,14 +250,15 @@ namespace Backsight.Editor
             if (m_Limit.Count>=2)
                 dottedLine.Render(display, new IPosition[] { m_Mouse, m_Limit[0] });
 
-            // Draw the limit line (but not if it's just one point)
+            // Draw the limit line
             if (m_Limit.Count>1)
                 dottedLine.Render(display, m_Limit.ToArray());
 
             // Draw any limit line selection
-            if (m_LimSel!=null)
+            if (m_LimSel.Count>0)
             {
                 HighlightStyle style = new HighlightStyle();
+                style.ShowLineEndPoints = false;
                 new SpatialSelection(m_LimSel).Render(display, style);
             }
         }

@@ -18,14 +18,46 @@ using System.Drawing;
 
 namespace Backsight.Forms
 {
+    /// <written by="Steve Stanton" on="02-OCT-2006" />
+    /// <summary>
+    /// Drawing of highlighted features (typically map features the user has selected)
+    /// </summary>
     public class HighlightStyle : DrawStyle
     {
+        #region Class data
+
+        /// <summary>
+        /// Should the end points of lines be highlighted (given that points are
+        /// currently drawn).
+        /// </summary>
+        bool m_ShowLineEndPoints;
+
+        #endregion
+
+        #region Constructors
+
         public HighlightStyle()
         {
             base.Pen.Color = Color.Red;
             base.Pen.Width = 3.0F;
 
             (base.Brush as SolidBrush).Color = Color.Red;
+            m_ShowLineEndPoints = true;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Should the end points of lines be highlighted (given that points are
+        /// currently drawn). This is true by default. You may wish to turn it off
+        /// when highlighting selections containing more than one feature, since
+        /// highlighting the end points in that situation can give the impression
+        /// that they too are selected.
+        /// </summary>
+        public bool ShowLineEndPoints
+        {
+            get { return m_ShowLineEndPoints; }
+            set { m_ShowLineEndPoints = value; }
         }
     }
 }

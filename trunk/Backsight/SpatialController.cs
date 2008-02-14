@@ -154,6 +154,10 @@ namespace Backsight
         {
         }
 
+        public virtual void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
+        {
+        }
+
         public virtual void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
             if (m_Data==null)

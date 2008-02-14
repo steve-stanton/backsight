@@ -86,6 +86,13 @@ namespace Backsight
         void KeyDown(ISpatialDisplay sender, KeyEventArgs k);
 
         /// <summary>
+        /// Handles a key up event
+        /// </summary>
+        /// <param name="sender">The display where the key event originated</param>
+        /// <param name="k">Information about the event</param>
+        void KeyUp(ISpatialDisplay sender, KeyEventArgs k);
+
+        /// <summary>
         /// Returns the default drawing style
         /// </summary>
         /// <returns></returns>

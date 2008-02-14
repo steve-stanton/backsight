@@ -42,5 +42,6 @@ namespace Backsight
         public ISpatialDisplay ActiveDisplay { get { return null; } }
         public void OnSetExtent(ISpatialDisplay sender) { }
         public void KeyDown(ISpatialDisplay sender, KeyEventArgs k) {}
+        public void KeyUp(ISpatialDisplay sender, KeyEventArgs k) { }
     }
 }
