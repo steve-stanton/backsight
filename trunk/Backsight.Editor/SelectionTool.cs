@@ -16,21 +16,18 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 using Backsight.Forms;
-using System.Windows.Forms;
 
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="01-NOV-1999" was="CeSelection" />
     /// <summary>
-    /// Performs the selection of spatial features in a map. This basically
-    /// farms out selection-related stuff so that the controller class is
-    /// a bit less cluttered.
+    /// Performs line-based and area-based selection of spatial features.
+    /// This basically farms out the more complex selection stuff so that
+    /// the controller class is a bit less cluttered.
     /// </summary>
-    /// <remarks>For the time being, this just handles CTRL style selections,
-    /// though it would make sense to also extend this to the simpler style of
-    /// selections.</remarks>
     class SelectionTool
     {
         #region Class data
@@ -49,8 +46,7 @@ namespace Backsight.Editor
         /// that further limit line positions will invalidate some of the initially
         /// selected features (consider a situation where the user ends up defining
         /// a concave shape). Instead, we hold on to the features until the limit
-        /// line has been completed (which occurs when a MouseMove event occurs
-        /// while the CTRL key is NOT pressed).
+        /// line has been completed (which occurs when the CTRL key is released).
         /// </summary>
         List<IPosition> m_Limit;
 
@@ -69,8 +65,13 @@ namespace Backsight.Editor
 
         #region Constructors
 
+        /// <summary>
+        /// Creates a new <c>SelectionTool</c> for performing line- and area-
+        /// based selections.
+        /// </summary>
+        /// <param name="controller">The controller making use of this tool (not null)</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="controller"/> is null</exception>
         internal SelectionTool(EditingController controller)
-            : base()
         {
             if (controller == null)
                 throw new ArgumentNullException();
@@ -98,34 +99,6 @@ namespace Backsight.Editor
         {
             get { return new Selection(m_LimSel); }
         }
-
-        /// <summary>
-        /// Returns the feature ID (if any) that is associated with the currently
-        /// selected feature. Multi-selections don't return anything.
-        /// </summary>
-        /// <returns>The selected ID.</returns>
-        /*
-        FeatureId GetId() // was SelPId
-        {
-            // Has to be just ONE object selected.
-            ISpatialObject thing = this.Item;
-            if (thing == null)
-                return null;
-
-            // Points, lines, and labels are all handled by the Feature class
-            Feature feat = (thing as Feature);
-            if (feat != null)
-                return feat.Id;
-
-            // Polygons aren't.
-            Polygon pol = (thing as Polygon);
-            if (pol != null)
-                return pol.GetId();
-
-            // We SHOULD have got something, but...
-            return null;
-        }
-         */
 
         /// <summary>
         /// Accepts a position that the user specified via a left click,

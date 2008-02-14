@@ -185,13 +185,10 @@ namespace Backsight.Editor
                     m_Main.ClosePropertiesWindow();
                 }
 
-                // If the CTRL key is not pressed, free any limit known
-                // to the selection object and try to select something.
-
-                if ((Control.ModifierKeys & Keys.Control) == 0)
+                if (m_Sel==null)
                     OnSelect(sender, p, isMultiSelect);
                 else
-                    GetAreaSelectionTool().CtrlMouseDown(p);
+                    m_Sel.CtrlMouseDown(p);
             }
         }
 
@@ -206,6 +203,13 @@ namespace Backsight.Editor
         /// </remarks>
         SelectionTool GetAreaSelectionTool()
         {
+            // If we're currently auto-highlighting, get rid of it altogether (confuses things).
+            if (m_IsAutoSelect != 0)
+                AutoSelect = false;
+
+            // Ensure any property window has been removed
+            m_Main.ClosePropertiesWindow();
+
             if (m_Sel==null)
             {
                 m_Sel = new SelectionTool(this);
@@ -310,59 +314,23 @@ namespace Backsight.Editor
 
         public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
-            bool isCtrlPressed = ((Control.ModifierKeys & Keys.Control) != 0);
-
-            // If the CTRL key is pressed (and there's nothing else
-            // going on), ensure the right cursor is displayed (for
-            // defining a limit line). This will stay up until one
-            // of 2 things happen:
-
-            // 1. The mouse moves without the CTRL key pressed
-            // 2. Focus is lost for any reason (like a right click
-            //	  or an attempt to start a command).
-
-            if (!IsCommandRunning && isCtrlPressed)
+            if (m_Sel != null) // means the CTRL key is pressed
             {
-                // If we're currently auto-highlighting, get rid of it altogether (screws things up).
-                if (m_IsAutoSelect!=0)
-                    AutoSelect = false;
-
-                GetAreaSelectionTool().CtrlMouseMoveTo(p);
-
-                // Ensure the right cursor is displayed
-                //ActiveDisplay.MapPanel.Cursor = EditorResources.DiagonalCursor;
-                return;
+                m_Sel.CtrlMouseMoveTo(p);
             }
-
-            // If the CTRL key is NOT down, ensure any limit selection is part of the main selection.
-            /*
-            if (!isCtrlPressed && m_Sel!=null)
+            else
             {
-                // Grab the selected items (if any) and merge any currently selected features.
-                Selection s = m_Sel.Selection;
-                FreeAreaSelectionTool();
-                if (s.Count > 0)
-                {
-                    s.AddRange(this.SpatialSelection.Items);
-                    SetSelection(s);
-                }
+                // The main window of the cadastral editor provides the option to
+                // display the current position of the mouse
+                m_Main.MouseMove(sender, p, b);
 
-                // Ensure everything is back to normal
-                ActiveDisplay.RestoreLastDraw();
-                ActiveDisplay.PaintNow();
+                // Auto-highlight option
+                if (m_IsAutoSelect > 0)
+                    Select(sender, p, SpatialType.All);
+
+                if (m_Command != null)
+                    m_Command.MouseMove(p);
             }
-            */
-
-            // The main window of the cadastral editor provides the option to
-            // display the current position of the mouse
-            m_Main.MouseMove(sender, p, b);
-
-            // Auto-highlight option
-            if (m_IsAutoSelect>0)
-                Select(sender, p, SpatialType.All);
-
-            if (m_Command!=null)
-                m_Command.MouseMove(p);
         }
 
         /// <summary>
@@ -378,6 +346,9 @@ namespace Backsight.Editor
 
             if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
                 m_Command.Escape();
+
+            if (k.KeyCode == Keys.ControlKey && m_Sel == null && !IsCommandRunning)
+                GetAreaSelectionTool();
         }
 
         /// <summary>
@@ -401,7 +372,10 @@ namespace Backsight.Editor
 
                 // Ensure everything is back to normal
                 ActiveDisplay.RestoreLastDraw();
-                ActiveDisplay.PaintNow();
+
+                // Force any prior selection to show
+                m_HasSelectionChanged = true;
+                //ActiveDisplay.PaintNow();
             }
         }
 
