@@ -908,12 +908,14 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsViewAttributeStructureEnabled()
         {
-            return false;
+            return true;
         }
 
         private void ViewAttributeStructure(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            EnvironmentStructureForm dial = new EnvironmentStructureForm();
+            dial.ShowDialog();
+            dial.Dispose();
         }
 
         private bool IsViewToolbarEnabled()
