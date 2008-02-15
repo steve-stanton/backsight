@@ -60,6 +60,12 @@
     <Compile Include="Forms\EntityTypeComboBox.Designer.cs">
       <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EnvironmentStructureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EnvironmentStructureForm.Designer.cs">
+      <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\GetControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -517,6 +523,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EnvironmentStructureForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FileCheckForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FileCheckForm.cs</DependentUpon>
@@ -842,6 +852,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AttachPointCursor.cur" />
+    <Content Include="Resources\AttributeContainerIcon.ico" />
+    <Content Include="Resources\BodyIcon.ico" />
     <Content Include="Resources\CheckBridgeIcon.ico" />
     <Content Include="Resources\CheckDanglingIcon.ico" />
     <Content Include="Resources\CheckFloatingIcon.ico" />
@@ -856,9 +868,15 @@
     <Content Include="Resources\CheckSmallLineIcon.ico" />
     <Content Include="Resources\CheckSmallPolygonIcon.ico" />
     <Content Include="Resources\DiagonalCursor.cur" />
+    <Content Include="Resources\DomainIcon.ico" />
     <Content Include="Resources\Editor.ico" />
+    <Content Include="Resources\FieldDefinitionIcon.ico" />
+    <Content Include="Resources\LayerIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />
+    <Content Include="Resources\TableDefinitionIcon.ico" />
+    <Content Include="Resources\TemplateIcon.ico" />
+    <Content Include="Resources\ThemeIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
