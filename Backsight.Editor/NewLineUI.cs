@@ -111,11 +111,15 @@ namespace Backsight.Editor
                 CadastralMapModel map = CadastralMapModel.Current;
                 if (map.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
                 {
+                    // The intersect geometry could be null when starting to add a new
+                    // circular arc
                     LineGeometry line = GetIntersectGeometry();
-                    Debug.Assert(line!=null);
-                    IntersectionFinder xf = new IntersectionFinder(line, false);
-                    style.FillColor = Color.Transparent;
-                    xf.Render(display, style);
+                    if (line!=null)
+                    {
+                        IntersectionFinder xf = new IntersectionFinder(line, false);
+                        style.FillColor = Color.Transparent;
+                        xf.Render(display, style);
+                    }
                 }
             }
         }
