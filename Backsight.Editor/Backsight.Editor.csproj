@@ -139,6 +139,7 @@
     <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
       <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LineStyle.cs" />
     <Compile Include="Forms\NewCircleForm.cs">
       <SubType>Form</SubType>
     </Compile>

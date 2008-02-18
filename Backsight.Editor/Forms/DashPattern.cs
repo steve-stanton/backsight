@@ -165,7 +165,7 @@ namespace Backsight.Editor.Forms
         /// <param name="draw">The definition of the draw</param>
         /// <param name="logWidth">The width of the pen, in logical units</param>
         /// <param name="b">The brush defining the pen colour</param>
-        internal void DefinePen(Pen pen, ISpatialDisplay draw, int logWidth, Brush b)
+        internal void DefinePen(Pen pen, ISpatialDisplay draw, float logWidth, Brush b)
         {
             float[] style = new float[m_Pattern.Length];
             for (int i=0; i<m_Pattern.Length; i++)
@@ -185,7 +185,7 @@ namespace Backsight.Editor.Forms
             pen.DashPattern = style;
             pen.EndCap = LineCap.Flat;
             pen.Brush = b;
-            pen.Width = (float)logWidth;
+            pen.Width = logWidth;
 
             //pen.CreatePen(PS_GEOMETRIC | PS_USERSTYLE | PS_ENDCAP_FLAT
             //             , logWidth
