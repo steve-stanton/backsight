@@ -31,10 +31,10 @@ namespace Backsight.Editor.Forms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EnvironmentStructureForm));
             this.tree = new System.Windows.Forms.TreeView();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.okButton = new System.Windows.Forms.Button();
             this.colorLabel = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -51,6 +51,20 @@ namespace Backsight.Editor.Forms
             this.tree.SelectedImageIndex = 0;
             this.tree.Size = new System.Drawing.Size(422, 309);
             this.tree.TabIndex = 0;
+            this.tree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tree_AfterSelect);
+            // 
+            // imageList
+            // 
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "AttributeContainer");
+            this.imageList.Images.SetKeyName(1, "Theme");
+            this.imageList.Images.SetKeyName(2, "Body");
+            this.imageList.Images.SetKeyName(3, "TableDefinition");
+            this.imageList.Images.SetKeyName(4, "FieldDefinition");
+            this.imageList.Images.SetKeyName(5, "Domain");
+            this.imageList.Images.SetKeyName(6, "Template");
+            this.imageList.Images.SetKeyName(7, "Layer");
             // 
             // okButton
             // 
@@ -62,6 +76,7 @@ namespace Backsight.Editor.Forms
             this.okButton.TabIndex = 1;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // colorLabel
             // 
@@ -90,19 +105,6 @@ namespace Backsight.Editor.Forms
             this.splitContainer1.Size = new System.Drawing.Size(526, 309);
             this.splitContainer1.SplitterDistance = 422;
             this.splitContainer1.TabIndex = 3;
-            // 
-            // imageList
-            // 
-            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList.Images.SetKeyName(0, "AttributeContainer");
-            this.imageList.Images.SetKeyName(1, "Theme");
-            this.imageList.Images.SetKeyName(2, "Body");
-            this.imageList.Images.SetKeyName(3, "TableDefinition");
-            this.imageList.Images.SetKeyName(4, "FieldDefinition");
-            this.imageList.Images.SetKeyName(5, "Domain");
-            this.imageList.Images.SetKeyName(6, "Template");
-            this.imageList.Images.SetKeyName(7, "Layer");
             // 
             // EnvironmentStructureForm
             // 
