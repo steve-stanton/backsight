@@ -86,7 +86,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="style">The style to compare with</param>
         /// <returns>True if the supplied style is identical to this one.</returns>
-        internal bool Equals(Style style)
+        internal virtual bool Equals(Style style)
         {
             if (style==null)
                 return false;

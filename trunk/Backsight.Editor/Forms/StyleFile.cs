@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
@@ -37,7 +38,7 @@ namespace Backsight.Editor.Forms
         /// The key is the name of the entity type or theme, while the pointer
         /// refers to one of the instances in <c>m_Styles</c>
         /// </summary>
-        //Dictionary<string, Style> m_Styles;
+        Dictionary<string, Style> m_StyleLookup; // was m_pStyles
 
         /// <summary>
         /// The name of the last entity type or theme for which a style was requested
@@ -47,12 +48,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The style that was returned for <c>m_LastLookup</c> (may be null)
         /// </summary>
-        //Style m_LastStyle;
+        Style m_LastStyle;
 
         /// <summary>
         /// The created styles
         /// </summary>
-        //Style[] m_Styles;
+        Style[] m_Styles;
 
         /// <summary>
         /// Any dashed line styles
@@ -64,12 +65,45 @@ namespace Backsight.Editor.Forms
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>StyleFile</c>
+        /// Default constructor. After calling this function, the
+        /// object must be initialized with a call to <see cref="Create"/>
         /// </summary>
         internal StyleFile()
         {
+            ResetContents();
         }
 
         #endregion
+
+        /// <summary>
+        /// Reset data members to their initial values.
+        /// </summary>
+        void ResetContents()
+        {
+            m_Spec = String.Empty;
+            m_StyleLookup = null;
+            m_LastLookup = String.Empty;
+            m_LastStyle = null;
+            m_Styles = null;
+            m_DashPatterns = null;
+        }
+
+        /// <summary>
+        /// Loads a map all standard colour names
+        /// </summary>
+        /// <returns>Standard colors, keyed by a lower-case version of the name</returns>
+        Dictionary<string, Color> LoadColors()
+        {
+            string[] names = Enum.GetNames(typeof(KnownColor));
+
+            Dictionary<string, Color> result = new Dictionary<string,Color>(names.Length);
+            foreach (string name in names)
+            {
+                Color c = Color.FromName(name);
+                result[name.ToLower()] = c;
+            }
+
+            return result;
+        }
     }
 }

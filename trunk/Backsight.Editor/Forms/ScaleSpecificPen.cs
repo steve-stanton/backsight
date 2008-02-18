@@ -75,10 +75,10 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="width">The width of the pen (in pixels)</param>
         /// <param name="col">The color for the pen</param>
-        internal void CreateSolidPen(int width, Color col)
+        internal void CreateSolidPen(float width, Color col)
         {
             // The pen is always solid!
-            m_Pen.Width = (float)width;
+            m_Pen.Width = width;
             m_Pen.Color = col;
         }
 
