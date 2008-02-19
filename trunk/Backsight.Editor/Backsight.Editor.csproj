@@ -48,6 +48,10 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
+    <Compile Include="EntityBlock.cs" />
+    <Compile Include="EntityFile.cs" />
+    <Compile Include="EntityTranslation.cs" />
+    <Compile Include="EntityUtil.cs" />
     <Compile Include="Forms\DashPattern.cs" />
     <Compile Include="EditingController.cs" />
     <Compile Include="EditingIndex.cs" />
