@@ -1,0 +1,81 @@
+
+This file defines derived entity types that are based on the entity types of
+adjacent polygons. Seperate translation blocks are defined for those line entity
+types that need to be translated. Each block of translations starts with a
+record that contains the word "BEGIN", and ends with a record that contains
+the word "END".
+
+Immediately after the BEGIN statement, you must specify the line entity type
+that the block refers to. To do this, specify the keyword "ENTITY=", followed
+by the name of the entity type.
+
+You can also (optionally) restrict translation to a specific theme. To do that,
+specify the keyword "THEME=", followed by the name of the theme. If you do not
+specify a theme, the translation will be made for all themes.
+
+Each translation must fit on a single line, and take the form:
+
+ <derived type> = <polygon entity type> \ <polygon entity type>
+
+In situations where the second polygon entity type is immaterial, the field must
+be left blank (i.e. the last character in that sort of translation must be the
+backslash character). Note that each list is hierarchical. If a given line matches
+more than one translation, the first matching translation is the one that will be
+used.
+
+Any record in this file that appears outside a BEGIN-END block is treated as a
+comment. Blank records are ignored.
+
+
+BEGIN
+
+ENTITY = Property Line
+THEME = Registered Plan
+
+Public Lane Line and Street	  = Public Lane		\ Street Polygon - LARGE
+Public Lane Line and Street	  = Public Lane		\ Street Polygon - Regular
+Public Lane Line and Street	  = Public Lane		\ Street Polygon - small
+Public Walk and Public Lane Line  = Public Walk		\ Public Lane
+Public Lane Line		  = Public Lane		\
+Public Walk and Street Line	  = Public Walk		\ Street Polygon - LARGE
+Public Walk and Street Line	  = Public Walk		\ Street Polygon - Regular
+Public Walk and Street Line	  = Public Walk		\ Street Polygon - small
+Public Walk Line		  = Public Walk		\
+Street Closing Line		  = Street Polygon - LARGE   \ Street Polygon - LARGE
+Street Closing Line		  = Street Polygon - LARGE   \ Street Polygon - Regular
+Street Closing Line		  = Street Polygon - LARGE   \ Street Polygon - small
+Street Closing Line		  = Street Polygon - Regular \ Street Polygon - Regular
+Street Closing Line		  = Street Polygon - Regular \ Street Polygon - small
+Street Closing Line		  = Street Polygon - small   \ Street Polygon - small
+Street Line			  = Street Polygon - LARGE   \
+Street Line			  = Street Polygon - Regular \
+Street Line			  = Street Polygon - small   \
+
+END
+
+BEGIN
+
+ENTITY = Ownership Property Line
+THEME = Ownership
+
+Public Lane Line and Street - Ownership = Public Lane - Ownership \ Street Polygon - Owner - LARGE
+Public Lane Line and Street - Ownership = Public Lane - Ownership \ Street Polygon - Owner - Regular
+Public Lane Line and Street - Ownership = Public Lane - Ownership \ Street Polygon - Owner - small
+Public Walk and Public Lane Line - Ownership = Public Walk - Ownership \ Public Lane - Ownership
+Public Lane Line - Ownership = Public Lane - Ownership \
+Public Walk and Street Line - Ownership = Public Walk - Ownership \ Street Polygon - Owner - LARGE
+Public Walk and Street Line - Ownership = Public Walk - Ownership \ Street Polygon - Owner - Regular
+Public Walk and Street Line - Ownership = Public Walk - Ownership \ Street Polygon - Owner - small
+Public Walk Line - Ownership = Public Walk - Ownership \
+Street Closing Line - Ownership	 = Street Polygon - Owner - LARGE   \ Street Polygon - Owner - LARGE
+Street Closing Line - Ownership	 = Street Polygon - Owner - LARGE   \ Street Polygon - Owner - Regular
+Street Closing Line - Ownership	 = Street Polygon - Owner - LARGE   \ Street Polygon - Owner - small
+Street Closing Line - Ownership	 = Street Polygon - Owner - Regular \ Street Polygon - Owner - Regular
+Street Closing Line - Ownership	 = Street Polygon - Owner - Regular \ Street Polygon - Owner - small
+Street Closing Line - Ownership	 = Street Polygon - Owner - small   \ Street Polygon - Owner - small
+Street Line - Ownership = Street Polygon - Owner - LARGE   \
+Street Line - Ownership = Street Polygon - Owner - Regular \
+Street Line - Ownership = Street Polygon - Owner - small   \
+
+END
+

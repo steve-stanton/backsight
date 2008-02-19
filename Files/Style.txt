@@ -1,0 +1,32 @@
+DASH_STYLE=Large		= 5.0,5.0
+DASH_STYLE=Small		= 1.0,1.0,2.0
+DASH_STYLE=Large-Small		= 5.0,2.0,1.0,2.0
+
+THEME=Registered Plan				    COL=Black
+THEME=Ownership					    COL=Crimson
+THEME=Assessment				    COL=Dark Green
+
+ENTITY=Assessment Property Line                     RGB=0,255,0
+ENTITY=Computed Point                               COL=Dark Goldenrod
+ENTITY=Construction Line                            COL=Gray
+ENTITY=Construction Line - Ownership                COL=Teal
+ENTITY=Control Point                                COL=Tomato
+ENTITY=Current Water Boundary - Ownership           COL=Red
+ENTITY=Estimated C/L of O H W M - Ownership         COL=Red
+ENTITY=Historic Water Boundary - Ownership          COL=Red
+ENTITY=Hydro Easement Polygon                       COL=Navy
+ENTITY=Hydro Easement Property Line                 COL=Navy
+ENTITY=Integrated Point                             COL=Black
+ENTITY=Parish Lot Parcel                            COL=Black
+ENTITY=Parish Lot Parcel - Ownership                COL=Dark Red
+ENTITY=Plan Parcel or Lot                           COL=Rosy Brown
+ENTITY=Property Line                                COL=Black
+ENTITY=Public Lane Line                             COL=Firebrick
+ENTITY=Public Lane Line and Street                  COL=Firebrick
+ENTITY=Public Walk and Public Lane Line             COL=Firebrick
+ENTITY=Public Walk and Street Line                  COL=Firebrick
+ENTITY=Public Walk Line                             COL=Firebrick
+ENTITY=Street Closing Line                          COL=Firebrick
+ENTITY=Street Line                                  COL=Firebrick
+ENTITY=Water Body                                   COL=Blue
+ENTITY=Water Body - Ownership                       COL=Blue-Violet
