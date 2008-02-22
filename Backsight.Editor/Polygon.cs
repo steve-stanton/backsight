@@ -17,6 +17,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -508,6 +509,23 @@ namespace Backsight.Editor
             // Return the ID of the label.
             return m_Label.Id;
 
+        }
+
+        /// <summary>
+        /// The user-perceived polygon associated with this ring is <c>this</c>
+        /// </summary>
+        internal override Polygon RealPolygon
+        {
+            get { return this; }
+        }
+
+        /// <summary>
+        /// The entity type associated with this polygon is the entity type of
+        /// the label (if any) that this polygon is associated with. May be null.
+        /// </summary>
+        internal IEntity EntityType
+        {
+            get { return (m_Label==null ? null : m_Label.EntityType); }
         }
     }
 }

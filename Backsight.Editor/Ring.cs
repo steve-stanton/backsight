@@ -129,6 +129,13 @@ namespace Backsight.Editor
             get { return m_Edge; }
         }
 
+        /// <summary>
+        /// Returns the user-perceived polygon associated with this ring. For instances of
+        /// <see cref="Polygon"/>, it's just a reference to <c>this</c>. For instances of
+        /// <see cref="Island"/>, it's a reference to the polygon that encloses the island.
+        /// </summary>
+        abstract internal Polygon RealPolygon { get; }
+
         #region ISpatialObject Members
 
         /// <summary>
