@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="EditingSchema" targetNamespace="http://tempuri.org/EditingSchema.xsd" elementFormDefault="qualified" xmlns="http://tempuri.org/EditingSchema.xsd" xmlns:mstns="http://tempuri.org/EditingSchema.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:complexType name="operation">
+<!-- Created with Liquid XML Studio 1.0.7.0 (http://www.liquid-technologies.com) -->
+<xs:schema xmlns:mstns="http://tempuri.org/EditingSchema.xsd" xmlns="http://tempuri.org/EditingSchema.xsd" elementFormDefault="qualified" targetNamespace="http://tempuri.org/EditingSchema.xsd" id="EditingSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="operation" abstract="true">
     <xs:sequence />
   </xs:complexType>
   <xs:complexType name="person">
@@ -9,31 +10,38 @@
   </xs:complexType>
   <xs:complexType name="session">
     <xs:sequence>
-      <xs:element name="who" type="person" minOccurs="1" maxOccurs="1" />
-      <xs:element name="operations" type="operation" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="layer" type="layerFacade" minOccurs="1" maxOccurs="1" />
+      <xs:element minOccurs="1" maxOccurs="1" name="who" type="mstns:person" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="operations" type="mstns:operation" />
+      <xs:element minOccurs="1" maxOccurs="1" name="layer" type="mstns:layerFacade" />
     </xs:sequence>
     <xs:attribute name="start" type="xs:dateTime" />
     <xs:attribute name="end" type="xs:dateTime" />
   </xs:complexType>
   <xs:complexType name="layerFacade">
-    <xs:sequence>
-    </xs:sequence>
+    <xs:sequence />
     <xs:attribute name="id" type="xs:int" />
   </xs:complexType>
   <xs:complexType name="deletionOperation">
-    <xs:complexContent>
-      <xs:extension base="operation">
+    <xs:complexContent mixed="false">
+      <xs:extension base="mstns:operation">
         <xs:sequence>
-          <xs:element name="deletions" type="dataHandle" minOccurs="1" maxOccurs="unbounded" />
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="deletions" type="mstns:dataHandle" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="dataHandle">
-    <xs:sequence>
-    </xs:sequence>
+    <xs:sequence />
     <xs:attribute name="job" type="xs:int" />
     <xs:attribute name="item" type="xs:int" />
+  </xs:complexType>
+  <xs:complexType name="parallelOperation">
+    <xs:complexContent mixed="false">
+      <xs:extension base="mstns:operation">
+        <xs:sequence>
+          <xs:element name="refLine" type="mstns:dataHandle" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 </xs:schema>

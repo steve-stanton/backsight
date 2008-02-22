@@ -32,7 +32,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Information about symbology
         /// </summary>
-        static StyleFile m_StyleFile;
+        static StyleFile s_StyleFile;
+
+        /// <summary>
+        /// Information about derived entity types
+        /// </summary>
+        static EntityFile s_EntityFile;
 
         #endregion
 
@@ -74,10 +79,6 @@ private:
 	virtual CeStyleFile*	OpenStyleFile	( void );
 
 	static LOGICAL			GetStyleFile	( CString& spec );
-
-private:
-
-	static CeEntityFile*	m_pEntityFile;
          */
     }
 }

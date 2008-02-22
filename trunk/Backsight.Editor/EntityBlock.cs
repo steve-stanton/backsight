@@ -121,7 +121,7 @@ namespace Backsight.Editor
         /// <param name="entName">The name of the candidate entity type.</param>
         /// <param name="theName">The name of the candidate theme.</param>
         /// <returns>True if we have a match.</returns>
-        bool IsMatch(string entName, string theName)
+        internal bool IsMatch(string entName, string theName)
         {
             // Return if this entity block does not refer to the entity
             // type that is being translated.
@@ -148,7 +148,7 @@ namespace Backsight.Editor
         /// <param name="entName2">The name of the 2nd related entity type.</param>
         /// <returns>The name of the derived entity type (if one applies).
         /// Otherwise null.</returns>
-        string GetDerivedType(string entName1, string entName2)
+        internal string GetDerivedType(string entName1, string entName2)
         {
             // Scan through the array of entity translations, looking for a match
             // with the specified entity types.

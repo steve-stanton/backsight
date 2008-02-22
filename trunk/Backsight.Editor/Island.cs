@@ -162,5 +162,14 @@ namespace Backsight.Editor
 
             base.Clean();
         }
+
+        /// <summary>
+        /// The user-perceived polygon associated with this ring is the polygon that
+        /// encloses this island, as returned by the <see cref="Container"/> property.
+        /// </summary>
+        internal override Polygon RealPolygon
+        {
+            get { return this.Container; }
+        }
     }
 }

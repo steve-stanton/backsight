@@ -66,6 +66,8 @@ namespace Backsight.Environment.Editor
             this.newButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.viewPropertiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -154,7 +156,9 @@ namespace Backsight.Environment.Editor
             this.viewEntityTypesMenuItem,
             this.viewIdGroupsMenuItem,
             this.viewLayersMenuItem,
-            this.viewThemesMenuItem});
+            this.viewThemesMenuItem,
+            this.toolStripSeparator3,
+            this.viewPropertiesMenuItem});
             this.viewMenu.Name = "viewMenu";
             this.viewMenu.Size = new System.Drawing.Size(48, 20);
             this.viewMenu.Text = "&View";
@@ -300,6 +304,18 @@ namespace Backsight.Environment.Editor
             this.splitContainer2.SplitterDistance = 442;
             this.splitContainer2.TabIndex = 0;
             // 
+            // viewPropertiesMenuItem
+            // 
+            this.viewPropertiesMenuItem.Name = "viewPropertiesMenuItem";
+            this.viewPropertiesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewPropertiesMenuItem.Text = "&Properties...";
+            this.viewPropertiesMenuItem.Click += new System.EventHandler(this.viewPropertiesMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(156, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -351,6 +367,8 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem fileExportMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileImportMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewPropertiesMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

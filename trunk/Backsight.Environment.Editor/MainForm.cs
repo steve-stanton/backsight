@@ -479,5 +479,12 @@ namespace Backsight.Environment.Editor
             if (items.Length>0 && listBox.Items[0].ToString().Length==0)
                 listBox.Items.RemoveAt(0);
         }
+
+        private void viewPropertiesMenuItem_Click(object sender, EventArgs e)
+        {
+            PropertyListForm dial = new PropertyListForm();
+            dial.ShowDialog();
+            dial.Dispose();
+        }
     }
 }
