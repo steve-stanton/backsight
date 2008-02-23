@@ -88,5 +88,10 @@ namespace Backsight.Environment
         /// All defined map themes
         /// </summary>
         ITheme[] Themes { get; }
+
+        /// <summary>
+        /// All defined Backsight properties
+        /// </summary>
+        IProperty[] Properties { get; }
     }
 }

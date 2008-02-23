@@ -153,5 +153,16 @@ namespace Backsight.Environment
         {
             return FindEntityById(0);
         }
+
+        /// <summary>
+        /// Locates a Backsight property
+        /// </summary>
+        /// <param name="propertyName">The name of the property</param>
+        /// <returns></returns>
+        public static IProperty FindPropertyByName(string propertyName)
+        {
+            IProperty[] props = s_Container.Properties;
+            return Array.Find<IProperty>(props, delegate(IProperty p) { return p.Name == propertyName; });
+        }
     }
 }

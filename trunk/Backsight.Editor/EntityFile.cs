@@ -156,7 +156,7 @@ namespace Backsight.Editor
         /// <param name="dervEntName">The name of a (maybe) derived entity type.</param>
         /// <returns>The un-derived entity type (null if it is not derived, as far as this
         /// entity file is concerned).</returns>
-        string GetUnderivedType(string dervEntName)
+        internal string GetUnderivedType(string dervEntName)
         {
             // Go through each translation block, looking for a match.
             if (m_Blocks!=null)

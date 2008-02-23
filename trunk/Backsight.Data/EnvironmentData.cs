@@ -181,6 +181,11 @@ namespace Backsight.Data
             get { return (ITheme[])m_Data.Theme.Select(); }
         }
 
+        public IProperty[] Properties
+        {
+            get { return (IProperty[])m_Data.Property.Select(); }
+        }
+
         /*
         T[] Copy<T, F>(F[] rows) where F : T
         {

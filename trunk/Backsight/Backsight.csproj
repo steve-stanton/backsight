@@ -57,6 +57,7 @@
     <Compile Include="Environment\IEnvironmentItem.cs" />
     <Compile Include="Environment\IIdGroup.cs" />
     <Compile Include="Environment\ILayer.cs" />
+    <Compile Include="Environment\IProperty.cs" />
     <Compile Include="Environment\ItemType.cs" />
     <Compile Include="Environment\ITheme.cs" />
     <Compile Include="Forms\AdhocPropertyList.cs" />
