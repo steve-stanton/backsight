@@ -45,6 +45,7 @@ namespace Backsight.Data
                     AdapterFactory.Create<ThemeTableAdapter>().Update(this.Theme);
                     AdapterFactory.Create<LayerTableAdapter>().Update(this.Layer);
                     AdapterFactory.Create<SysIdTableAdapter>().Update(this.SysId);
+                    AdapterFactory.Create<PropertyTableAdapter>().Update(this.Property);
                 });
             }
 
@@ -64,13 +65,15 @@ namespace Backsight.Data
                 ThemeTableAdapter theme = new ThemeTableAdapter();
                 LayerTableAdapter layer = new LayerTableAdapter();
                 SysIdTableAdapter sysid = new SysIdTableAdapter();
+                PropertyTableAdapter prop = new PropertyTableAdapter();
 
                 font.Connection =
                 idGroup.Connection =
                 entity.Connection =
                 theme.Connection =
                 layer.Connection =
-                sysid.Connection = ic.Value;
+                sysid.Connection =
+                prop.Connection = ic.Value;
 
                 font.Fill(this.Font);
                 idGroup.Fill(this.IdGroup);
@@ -78,6 +81,7 @@ namespace Backsight.Data
                 theme.Fill(this.Theme);
                 layer.Fill(this.Layer);
                 sysid.Fill(this.SysId);
+                prop.Fill(this.Property);
             }
         }
 

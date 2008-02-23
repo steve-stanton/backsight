@@ -69,6 +69,7 @@
     <Compile Include="MapDataTable.cs" />
     <Compile Include="MapUserDataTable.cs" />
     <Compile Include="PropertyNaming.cs" />
+    <Compile Include="PropertyRow.cs" />
     <Compile Include="SchemaDataTable.cs" />
     <Compile Include="SchemaFieldDataTable.cs" />
     <Compile Include="SchemaTemplateDataTable.cs" />

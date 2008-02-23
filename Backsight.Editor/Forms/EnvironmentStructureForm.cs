@@ -106,13 +106,14 @@ namespace Backsight.Editor.Forms
 
         private void tree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            // To display the colour of the selected entity type
+            // Display the color of any selected entity type
 
             TreeNode node = e.Node;
             IEntity ent = (node.Tag as IEntity);
             colorLabel.Visible = (ent != null);
 
-            // TODO ... get the colour to show
+            if (ent !=null)
+                colorLabel.BackColor = EntityUtil.GetColor(ent);
         }
     }
 }

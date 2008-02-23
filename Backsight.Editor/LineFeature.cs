@@ -169,7 +169,7 @@ namespace Backsight.Editor
                 // If we're highlighting a non-topological line, always draw it in turquoise,
                 // regardless of the supplied style.
                 if (IsTopological)
-                    RenderTopologicalLine(display, style);
+                    RenderLine(display, style);
                 else
                 {
                     Color oldCol = style.LineColor;
@@ -197,7 +197,9 @@ namespace Backsight.Editor
                 }
             }
             else
-                RenderTopologicalLine(display, style);
+            {
+                RenderLine(display, style);
+            }
         }
 
         /// <summary>
@@ -205,7 +207,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
-        void RenderTopologicalLine(ISpatialDisplay display, IDrawStyle style)
+        void RenderLine(ISpatialDisplay display, IDrawStyle style)
         {
             // If we're dealing with a line that's been divided into at least two sections,
             // and the line is marked as trimmed, ensure we only render the non-dangling

@@ -484,6 +484,9 @@ namespace Backsight.Editor
             // Initialize layer ranges
             LayerRange.Initialize(ec);
 
+            // Initialize any entity translations and styles
+            new EntityUtil().Open();
+
             // Open the last map (if any)...
             string fileName = Settings.Default.LastMap;
 
