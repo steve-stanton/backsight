@@ -499,6 +499,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 if (t == SpatialType.Line)
                 {
                     LineFeature line = (s.Item as LineFeature);
+                    if (line == null && s.Item is DividerObject)
+                        line = (s.Item as DividerObject).Divider.Line;
+
                     if (line != null)
                         ctxLinePolygonBoundary.Checked = line.HasTopology;
 
@@ -1124,7 +1127,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             get
             {
                 ISpatialObject so = m_Controller.SpatialSelection.Item;
-                return (so as LineFeature);
+                if (so is DividerObject)
+                    return (so as DividerObject).Divider.Line;
+                else
+                    return (so as LineFeature);
             }
         }
 

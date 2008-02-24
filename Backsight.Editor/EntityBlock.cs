@@ -33,9 +33,9 @@ namespace Backsight.Editor
         string m_EntityName;
 
         /// <summary>
-        /// The name of the theme that this block refers to (blank for all themes)
+        /// The name of the layer that this block refers to (blank for all layers)
         /// </summary>
-        string m_ThemeName;
+        string m_LayerName;
         
         /// <summary>
         /// The defined translations
@@ -53,7 +53,7 @@ namespace Backsight.Editor
         internal EntityBlock()
         {
             m_EntityName = String.Empty;
-            m_ThemeName = String.Empty;
+            m_LayerName = String.Empty;
             m_Translations = new List<EntityTranslation>();
         }
 
@@ -97,10 +97,10 @@ namespace Backsight.Editor
                     // Parse the entity type.
                     AddEntity(str);
                 }
-                else if (upstr.Contains("THEME"))
+                else if (upstr.Contains("LAYER"))
                 {
-                    // Parse the theme.
-                    AddTheme(str);
+                    // Parse the layer.
+                    AddLayer(str);
                 }
                 else
                 {
@@ -116,24 +116,24 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Checks whether this translation block refers to a specific
-        /// entity type (and theme).
+        /// entity type (and layer).
         /// </summary>
         /// <param name="entName">The name of the candidate entity type.</param>
-        /// <param name="theName">The name of the candidate theme.</param>
+        /// <param name="lyrName">The name of the candidate map layer.</param>
         /// <returns>True if we have a match.</returns>
-        internal bool IsMatch(string entName, string theName)
+        internal bool IsMatch(string entName, string lyrName)
         {
             // Return if this entity block does not refer to the entity
             // type that is being translated.
             if (m_EntityName != entName)
                 return false;
 
-            // If the block is restricted to a specific theme, ensure we
+            // If the block is restricted to a specific layer, ensure we
             // have a match.
-            if (m_ThemeName.Length==0)
+            if (m_LayerName.Length==0)
                 return true;
 
-            if (m_ThemeName != theName)
+            if (m_LayerName != lyrName)
                 return false;
 
             return true;
@@ -163,28 +163,28 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Parses a record that contains the "THEME" keyword.
+        /// Parses a record that contains the "LAYER" keyword.
         /// </summary>
         /// <param name="str">The record to parse.</param>
-        /// <exception cref="Exception">If the theme could
-        /// not be found, or a theme has already been parsed for this
+        /// <exception cref="Exception">If the layer could
+        /// not be found, or a layer has already been parsed for this
         /// entity block.</exception>
-        void AddTheme(string str)
+        void AddLayer(string str)
         {
-            // Return with error if a theme pointer has already been obtained
+            // Return with error if a layer pointer has already been obtained
             // for this entity block.
-            if (m_ThemeName.Length>0)
-                throw new Exception("Multiple THEME keywords encountered.");
+            if (m_LayerName.Length>0)
+                throw new Exception("Multiple LAYER keywords encountered.");
 
             // Find the "=" character that should appear somewhere after
-            // the THEME keyword.
+            // the LAYER keyword.
             int eqpos = str.IndexOf('=');
             if (eqpos<0)
-                throw new Exception("THEME keyword is not followed by '=' character");
+                throw new Exception("LAYER keyword is not followed by '=' character");
 
             // Grab the stuff that follows the "=" character, and ensure
             // there is no leading or trailing white space.
-            m_ThemeName = str.Substring(eqpos + 1).Trim();
+            m_LayerName = str.Substring(eqpos + 1).Trim();
         }
 
         /// <summary>

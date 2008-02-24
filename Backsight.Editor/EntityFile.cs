@@ -109,10 +109,10 @@ namespace Backsight.Editor
         /// Tries to return the name of a derived entity type for a specific line.
         /// </summary>
         /// <param name="line">The line to process.</param>
-        /// <param name="theme">The theme of interest (in the same address space as
+        /// <param name="layer">The layer of interest (in the same address space as
         /// the map that contains the line).</param>
         /// <returns>The name of the derived entity type (null if not found).</returns>
-        internal string GetDerivedType(IDivider line, ITheme theme)
+        internal string GetDerivedType(IDivider line, ILayer layer)
         {
             // Return if the line does not have an entity type (it SHOULD do)
             IEntity ent = line.Line.EntityType;
@@ -121,9 +121,9 @@ namespace Backsight.Editor
 
             // Get the translation block (if any) that refers to the line's entity type.
             string entName = ent.Name;
-            string theName = theme.Name;
+            string lyrName = layer.Name;
             EntityBlock block = Array.Find<EntityBlock>(m_Blocks,
-                delegate(EntityBlock eb) { return eb.IsMatch(entName, theName); });
+                delegate(EntityBlock eb) { return eb.IsMatch(entName, lyrName); });
 
             // Return if the line's entity type is not associated with a translation.
             if (block==null)

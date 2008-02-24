@@ -169,15 +169,15 @@ namespace Backsight.Editor
         /// the same as the name of the line's "normal" entity type.
         /// </summary>
         /// <param name="line">The line to process.</param>
-        /// <param name="theme">The theme of interest.</param>
+        /// <param name="layer">The layer of interest.</param>
         /// <returns>The name of the derived entity type (may be blank)</returns>
-        internal static string GetDerivedType(IDivider line, ITheme theme)
+        internal static string GetDerivedType(IDivider line, ILayer layer)
         {
             // If we have an entity file, and it can return a derived type,
             // that's us done.
             if (s_EntityFile != null)
             {
-                string dervEntName = s_EntityFile.GetDerivedType(line, theme);
+                string dervEntName = s_EntityFile.GetDerivedType(line, layer);
                 if (dervEntName != null)
                     return dervEntName;
             }
@@ -248,15 +248,15 @@ namespace Backsight.Editor
         /// Returns the style for the specified line
         /// </summary>
         /// <param name="line">The feature to get the style for</param>
-        /// <param name="theme">The editing theme</param>
+        /// <param name="layer">The editing layer</param>
         /// <returns>The corresponding style (never null)</returns>
-        internal static Style GetStyle(IDivider line, ITheme theme)
+        internal static Style GetStyle(IDivider line, ILayer layer)
         {
             if (s_StyleFile == null)
                 return s_BlackStyle;
 
             // Get the name of the (possibly derived) entity type
-            string entName = GetDerivedType(line, theme);
+            string entName = GetDerivedType(line, layer);
 
             // Nothing at all means we should have a construction
             // line, which is always symbolized as a black dotted line.
@@ -305,7 +305,7 @@ namespace Backsight.Editor
                 return style;
 
             // If we didn't get anything, look for a style that
-            // refers to the line's base theme.
+            // refers to the line's base layer.
             ILayer t = f.BaseLayer;
             if (t != null)
             {
