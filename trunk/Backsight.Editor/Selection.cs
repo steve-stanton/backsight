@@ -192,7 +192,12 @@ namespace Backsight.Editor
 
             // If both selections refer to the same divider (or null), they're the same
             Selection other = (that as Selection);
-            return (other!=null && this.m_Section.Divider == other.m_Section.Divider);
+            if (other == null)
+                return false;
+
+            IDivider d1 = (this.m_Section == null ? null : this.m_Section.Divider);
+            IDivider d2 = (other.m_Section == null ? null : other.m_Section.Divider);
+            return Object.ReferenceEquals(d1, d2);
         }
 
         /// <summary>
