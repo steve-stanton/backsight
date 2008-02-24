@@ -527,5 +527,18 @@ namespace Backsight.Editor
         {
             get { return (m_Label==null ? null : m_Label.EntityType); }
         }
+
+        /// <summary>
+        /// The name associated with the <see cref="EntityType"/> property
+        /// </summary>
+        /// <remarks>Public so it shows up in property grid</remarks>
+        public string EntityTypeName
+        {
+            get
+            {
+                IEntity e = this.EntityType;
+                return (e == null ? String.Empty : e.Name);
+            }
+        }
     }
 }

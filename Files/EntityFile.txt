@@ -26,7 +26,6 @@ used.
 Any record in this file that appears outside a BEGIN-END block is treated as a
 comment. Blank records are ignored.
 
-
 BEGIN
 
 ENTITY = Property Line
