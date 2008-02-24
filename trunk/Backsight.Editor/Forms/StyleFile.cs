@@ -37,13 +37,13 @@ namespace Backsight.Editor.Forms
         string m_Spec;
 
         /// <summary>
-        /// The key is the name of the entity type or theme, while the pointer
+        /// The key is the name of the entity type or layer, while the pointer
         /// refers to one of the instances in <c>m_Styles</c>
         /// </summary>
         Dictionary<string, Style> m_StyleLookup; // was m_pStyles
 
         /// <summary>
-        /// The name of the last entity type or theme for which a style was requested
+        /// The name of the last entity type or layer for which a style was requested
         /// </summary>
         string m_LastLookup;
 
@@ -119,7 +119,7 @@ namespace Backsight.Editor.Forms
             // Load an index for standard colour names
             Dictionary<string, Color> colors = LoadColors();
 
-            // Create the index of entity and/or theme name vs it's style
+            // Create the index of entity and/or layer name vs it's style
             m_StyleLookup = new Dictionary<string, Style>(100);
 
             string line;
@@ -153,18 +153,18 @@ namespace Backsight.Editor.Forms
                 }
                 else
                 {
-                    // Only entity & theme entries are currently supported
+                    // Only entity & layer entries are currently supported
 
                     string itemName;
 
                     if (entry.IsEntityEntry)
                         itemName = entry.EntityToken;
-                    else if (entry.IsThemeEntry)
-                        itemName = entry.ThemeToken;
+                    else if (entry.IsLayerEntry)
+                        itemName = entry.LayerToken;
                     else
                         continue;
 
-                    // Both entity & theme entries should have some sort of colour (either a
+                    // Both entity & layer entries should have some sort of colour (either a
                     // named colour, or an RGB value)
 
                     Color col = Color.Black;
@@ -277,9 +277,9 @@ namespace Backsight.Editor.Forms
 
         /// <summary>
         /// Returns the style associated with the specified name (which is expected to
-        /// refer either to the name of an entity type, or the name of a theme)
+        /// refer either to the name of an entity type, or the name of a layer)
         /// </summary>
-        /// <param name="itemName">The name of the entity type or theme</param>
+        /// <param name="itemName">The name of the entity type or layer</param>
         /// <returns>The corresponding style (null if the supplied name could not be found
         /// in the style mapping, or a style file has not been loaded).</returns>
         internal Style GetStyle(string itemName)

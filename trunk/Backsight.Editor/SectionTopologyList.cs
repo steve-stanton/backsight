@@ -288,12 +288,12 @@ namespace Backsight.Editor
                 if ((i==0 && !sDangle) || (i>0 && i<last) || (i==last && !eDangle))
                 {
                     IDivider d = m_Sections[i];
-                    d.LineGeometry.Render(display, style);
+                    d.Line.RenderDivider(d, display, style);
                 }
                 else if (dangleStyle!=null && ((i==0 && sDangle) || (i==last && eDangle)))
                 {
                     IDivider d = m_Sections[i];
-                    d.LineGeometry.Render(display, dangleStyle);
+                    d.Line.RenderDivider(d, display, dangleStyle);
                 }
             }
         }

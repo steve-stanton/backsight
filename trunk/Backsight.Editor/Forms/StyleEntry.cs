@@ -32,9 +32,9 @@ namespace Backsight.Editor.Forms
         string m_EntityToken;
 
         /// <summary>
-        /// What follows THEME=
+        /// What follows LAYER=
         /// </summary>
-        string m_ThemeToken;
+        string m_LayerToken;
 
         /// <summary>
         /// What follows COL=
@@ -79,11 +79,11 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// What follows THEME=
+        /// What follows LAYER=
         /// </summary>
-        internal string ThemeToken
+        internal string LayerToken
         {
-            get { return m_ThemeToken; }
+            get { return m_LayerToken; }
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Backsight.Editor.Forms
             // Look for the various tokens
             int nToken = 0;
 
-            nToken += GetToken(s, "THEME=", ref m_ThemeToken);
+            nToken += GetToken(s, "LAYER=", ref m_LayerToken);
             nToken += GetToken(s, "ENTITY=", ref m_EntityToken);
             nToken += GetToken(s, "COL=", ref m_ColToken);
             nToken += GetToken(s, "RGB=", ref m_RGBToken);
@@ -152,12 +152,12 @@ namespace Backsight.Editor.Forms
 
             // If it has an entity token, it must have either
             // a color name or an RGB value and must not also
-            // have a theme token
+            // have a layer token
 
             if (m_EntityToken.Length>0)
             {
                 if ((m_ColToken.Length==0 && m_RGBToken.Length==0)
-                        || m_ThemeToken.Length!=0)
+                        || m_LayerToken.Length!=0)
                     return -1;
             }
 
@@ -170,7 +170,7 @@ namespace Backsight.Editor.Forms
         void Reset()
         {
             m_EntityToken = String.Empty;
-            m_ThemeToken = String.Empty;
+            m_LayerToken = String.Empty;
             m_ColToken = String.Empty;
             m_RGBToken = String.Empty;
             m_WtToken = String.Empty;
@@ -202,16 +202,16 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Does this entry represent the definition of a theme? If so, the relevant color token
+        /// Does this entry represent the definition of a layer? If so, the relevant color token
         /// can be obtained via either the <see cref="ColToken"/> or <see cref="RGBToken"/> property
         /// (one of them will be non-blank).
         /// </summary>
-        internal bool IsThemeEntry
+        internal bool IsLayerEntry
         {
             get
             {
-                // Must have the theme name token
-                if (m_ThemeToken.Length==0)
+                // Must have the layer name token
+                if (m_LayerToken.Length==0)
                     return false;
 
                 // Must have either the colour name or RGB token
@@ -230,8 +230,8 @@ namespace Backsight.Editor.Forms
             get
             {
                 // The definition is different from it's usage in
-                // theme or entity entries
-                if (IsEntityEntry || IsThemeEntry)
+                // layer or entity entries
+                if (IsEntityEntry || IsLayerEntry)
                     return false;
 
                 return (m_DashToken.Length>0);
@@ -273,7 +273,7 @@ namespace Backsight.Editor.Forms
                 len = Math.Min(index, len);
             if ((index = rest.IndexOf("ENTITY=")) > 0)
                 len = Math.Min(index, len);
-            if ((index = rest.IndexOf("THEME=")) > 0)
+            if ((index = rest.IndexOf("LAYER=")) > 0)
                 len = Math.Min(index, len);
             if ((index = rest.IndexOf("DASH_STYLE=")) > 0)
                 len = Math.Min(index, len);

@@ -2,9 +2,9 @@ DASH_STYLE=Large		= 5.0,5.0
 DASH_STYLE=Small		= 1.0,1.0,2.0
 DASH_STYLE=Large-Small		= 5.0,2.0,1.0,2.0
 
-THEME=Registered Plan				    COL=Black
-THEME=Ownership					    COL=Crimson
-THEME=Assessment				    COL=Dark Green
+LAYER=Survey					    COL=Black
+LAYER=Ownership					    COL=Crimson
+LAYER=Assessment				    COL=Dark Green
 
 ENTITY=Assessment Property Line                     RGB=0,255,0
 ENTITY=Computed Point                               COL=Dark Goldenrod

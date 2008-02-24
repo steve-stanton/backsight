@@ -9,9 +9,9 @@ Immediately after the BEGIN statement, you must specify the line entity type
 that the block refers to. To do this, specify the keyword "ENTITY=", followed
 by the name of the entity type.
 
-You can also (optionally) restrict translation to a specific theme. To do that,
-specify the keyword "THEME=", followed by the name of the theme. If you do not
-specify a theme, the translation will be made for all themes.
+You can also (optionally) restrict translation to a specific layer. To do that,
+specify the keyword "LAYER=", followed by the name of the layer. If you do not
+specify a layer, the translation will be made for all layer.
 
 Each translation must fit on a single line, and take the form:
 
@@ -30,7 +30,7 @@ comment. Blank records are ignored.
 BEGIN
 
 ENTITY = Property Line
-THEME = Registered Plan
+LAYER = Survey
 
 Public Lane Line and Street	  = Public Lane		\ Street Polygon - LARGE
 Public Lane Line and Street	  = Public Lane		\ Street Polygon - Regular
@@ -56,7 +56,7 @@ END
 BEGIN
 
 ENTITY = Ownership Property Line
-THEME = Ownership
+LAYER = Ownership
 
 Public Lane Line and Street - Ownership = Public Lane - Ownership \ Street Polygon - Owner - LARGE
 Public Lane Line and Street - Ownership = Public Lane - Ownership \ Street Polygon - Owner - Regular

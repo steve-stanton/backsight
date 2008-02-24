@@ -39,7 +39,7 @@ namespace Backsight.Editor
         /// defined only if the selection refers to a single topological line that has
         /// been divided into a series of sections.
         /// </summary>
-        IDivider m_Section;
+        DividerObject m_Section;
 
         #endregion
 
@@ -70,7 +70,9 @@ namespace Backsight.Editor
                 if (line != null && line.Topology is SectionTopologyList)
                 {
                     SectionTopologyList sections = (line.Topology as SectionTopologyList);
-                    m_Section = sections.FindClosestSection(searchPosition);
+                    IDivider d = sections.FindClosestSection(searchPosition);
+                    if (d != null)
+                        m_Section = new DividerObject(d);
                 }
             }
         }
@@ -112,7 +114,13 @@ namespace Backsight.Editor
         /// </summary>
         public ISpatialObject Item
         {
-            get { return (m_Items.Count==1 ? m_Items[0] : null); }
+            get
+            {
+                if (m_Section != null)
+                    return m_Section;
+
+                return (m_Items.Count==1 ? m_Items[0] : null);
+            }
         }
 
         /// <summary>
@@ -148,7 +156,7 @@ namespace Backsight.Editor
             if (m_Section!=null)
             {
                 IDrawStyle thinYellow = new DrawStyle(Color.Yellow);
-                m_Section.LineGeometry.Render(display, thinYellow);
+                m_Section.Render(display, thinYellow);
             }
         }
 
@@ -184,7 +192,7 @@ namespace Backsight.Editor
 
             // If both selections refer to the same divider (or null), they're the same
             Selection other = (that as Selection);
-            return (other!=null && this.m_Section == other.m_Section);
+            return (other!=null && this.m_Section.Divider == other.m_Section.Divider);
         }
 
         /// <summary>
@@ -194,8 +202,8 @@ namespace Backsight.Editor
         /// </summary>
         protected IDivider Section
         {
-            get { return m_Section; }
-            set { m_Section = value; }
+            get { return m_Section.Divider; }
+            set { m_Section = new DividerObject(value); }
         }
 
         /// <summary>

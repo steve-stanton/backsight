@@ -98,5 +98,27 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// The divider that this instance wraps.
+        /// </summary>
+        public IDivider Divider
+        {
+            get { return m_Divider; }
+        }
+
+        /// <summary>
+        /// The derived entity type associated with this divider (in normal
+        /// situations, this corresponds to the entity type of the associated
+        /// line feature);
+        /// </summary>
+        public string EntityTypeName
+        {
+            get
+            {
+                return EntityUtil.GetDerivedType(m_Divider,
+                    EditingController.Current.ActiveLayer);
+            }
+        }
     }
 }

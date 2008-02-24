@@ -21,6 +21,7 @@ using System.Drawing.Drawing2D;
 
 using Backsight.Environment;
 using Backsight.Forms;
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
@@ -212,10 +213,50 @@ namespace Backsight.Editor
             // If we're dealing with a line that's been divided into at least two sections,
             // and the line is marked as trimmed, ensure we only render the non-dangling
             // sections.
+            /*
             if (IsTrimmed && (m_Topology is SectionTopologyList))
                 (m_Topology as SectionTopologyList).RenderTrimmed(display, style);
             else
                 m_Geom.Render(display, style);
+             */
+
+            if (m_Topology is SectionTopologyList)
+            {
+                if (IsTrimmed)
+                    (m_Topology as SectionTopologyList).RenderTrimmed(display, style);
+                else
+                {
+                    foreach (IDivider d in m_Topology)
+                        RenderDivider(d, display, style);
+                }
+            }
+            else if (m_Topology is IDivider)
+                RenderDivider(m_Topology as IDivider, display, style);
+            else
+                m_Geom.Render(display, style);
+        }
+
+        /// <summary>
+        /// Draws a portion of this topological line on the specified display
+        /// </summary>
+        /// <param name="d">The divider that corresponds to a portion of this line (could
+        /// be the entire line)</param>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        internal void RenderDivider(IDivider d, ISpatialDisplay display, IDrawStyle style)
+        {
+            // If we're highlightling, don't attempt to pick up any other display color
+            if (style is HighlightStyle)
+            {
+                d.LineGeometry.Render(display, style);
+                return;
+            }
+
+            Style s = EntityUtil.GetStyle(d, EditingController.Current.ActiveLayer);
+            Color oldcol = style.LineColor;
+            style.LineColor = s.Color;
+            d.LineGeometry.Render(display, style);
+            style.LineColor = oldcol;
         }
 
         /// <summary>
@@ -1057,6 +1098,25 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
 
             IDivider d = m_Topology.LastDivider;
             return Topology.IsDangle(d, d.To);
+        }
+
+        /// <summary>
+        /// The name of the derived entity type associated with this line. If
+        /// the line has been divided into two or more topological sections
+        /// (or it's a non-topological line), the derived entity type name is
+        /// blank. A non-blank value will only be returned when dealing with
+        /// a topological line that hasn't been sectioned.
+        /// </summary>
+        public string DerivedEntityTypeName
+        {
+            get
+            {
+                if (m_Topology is IDivider)
+                    return EntityUtil.GetDerivedType(m_Topology as IDivider,
+                        EditingController.Current.ActiveLayer);
+                else
+                    return String.Empty;
+            }
         }
     }
 }
