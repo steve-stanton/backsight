@@ -15,6 +15,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace Backsight.Editor.Forms
 {
@@ -27,10 +28,10 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// Built-in MFC style (e.g. PS_DOT). If m_Pattern is not
-        /// null, this is always set to PS_SOLID
+        /// Built-in line style (may be solid). If m_Pattern is not
+        /// null, this is always set to <see cref="DashStyle.Custom"/>
         /// </summary>
-        readonly int m_Style;
+        readonly DashStyle m_Style;
 
         /// <summary>
         /// Line weight (in meters on the ground). Any value .le. 0
@@ -53,8 +54,8 @@ namespace Backsight.Editor.Forms
         /// will be displayed with a width of 1 pixel.
         /// </summary>
         /// <param name="col">The display color</param>
-        /// <param name="style">The line style (e.g. PS_SOLID)</param>
-        internal LineStyle(Color col, int style)
+        /// <param name="style">The line style</param>
+        internal LineStyle(Color col, DashStyle style)
             : base(col)
         {
             m_Style = style;
@@ -73,9 +74,9 @@ namespace Backsight.Editor.Forms
         internal LineStyle(Color col, double wt, DashPattern dp)
             : base(col)
         {
-            m_Style = 0; // PS_SOLID
             m_Weight = wt;
             m_Pattern = dp;
+            m_Style = (m_Pattern==null ? DashStyle.Solid : DashStyle.Custom);
         }
 
         #endregion
@@ -93,9 +94,9 @@ namespace Backsight.Editor.Forms
         /// Does this style match the supplied values
         /// </summary>
         /// <param name="col">The display color</param>
-        /// <param name="style">The line style (default is PS_SOLID)</param>
+        /// <param name="style">The line style</param>
         /// <returns></returns>
-        internal bool Equals(Color col, int style)
+        internal bool Equals(Color col, DashStyle style)
         {
             return (style == m_Style && base.Equals(col));
         }
@@ -105,9 +106,12 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="style">The style to compare with</param>
         /// <returns>True if the supplied style is identical to this one.</returns>
-        internal override bool Equals(Style style)
+        internal override bool IsMatch(Style style)
         {
-            if (!base.Equals(style))
+            if (!(style is LineStyle))
+                return false;
+
+            if (!base.IsMatch(style))
                 return false;
 
             // No match if the other style isn't also a line style
@@ -126,7 +130,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="pen">The pen to define</param>
         /// <param name="draw">The definition of the draw</param>
-        internal override void  DefinePen(ScaleSpecificPen pen, ISpatialDisplay draw)
+        internal override void DefinePen(ScaleSpecificPen pen, ISpatialDisplay draw)
         {
             float fwt = (m_Weight > 0.0 ? draw.LengthToDisplay(m_Weight) : 0.0F);
 
@@ -134,11 +138,30 @@ namespace Backsight.Editor.Forms
                 m_Pattern.DefinePen(pen.Pen, draw, fwt, new SolidBrush(this.Color));
 
             // MUST be solid for anything that has non-zero weight
-            else if ((int)fwt != 0)
-                pen.CreateSolidPen(fwt, this.Color);
+            //else if ((int)fwt != 0)
+            //    pen.CreateSolidPen(fwt, this.Color);
             else
-        		//pen.CreatePen(m_Style,0,GetColour());
+            {
                 pen.CreateSolidPen(0.0F, this.Color);
+                Pen p = pen.Pen;
+                p.DashStyle = m_Style;
+                p.Width = fwt;
+                p.StartCap = LineCap.Round;
+                p.EndCap = LineCap.Round;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the line width in pixels on a display.
+        /// </summary>
+        /// <param name="display">The display where a line will be drawn</param>
+        /// <returns>The pen width, in pixels</returns>
+        internal float LineWidth(ISpatialDisplay display)
+        {
+            if (m_Weight<=0.0)
+                return 1.0F;
+            else
+                return display.LengthToDisplay(m_Weight);
         }
     }
 }

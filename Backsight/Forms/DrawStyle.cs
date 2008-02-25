@@ -66,6 +66,7 @@ namespace Backsight.Forms
         public Pen Pen
         {
             get { return m_Pen; }
+            set { m_Pen = value; }
         }
 
         public Brush Brush

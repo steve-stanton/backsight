@@ -16,8 +16,6 @@
 using System;
 using System.Drawing;
 
-//using Backsight.Geometry;
-
 namespace Backsight
 {
 	/// <written by="Steve Stanton" on="02-OCT-2006" />
@@ -113,5 +111,10 @@ namespace Backsight
         /// The color used to draw lines
         /// </summary>
         Color LineColor { get; set; }
+
+        /// <summary>
+        /// The pen to use for drawing lines
+        /// </summary>
+        Pen Pen { get; set; }
     }
 }

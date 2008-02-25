@@ -253,10 +253,19 @@ namespace Backsight.Editor
             }
 
             Style s = EntityUtil.GetStyle(d, EditingController.Current.ActiveLayer);
-            Color oldcol = style.LineColor;
-            style.LineColor = s.Color;
-            d.LineGeometry.Render(display, style);
-            style.LineColor = oldcol;
+            Pen oldPen = style.Pen;
+
+            try
+            {
+                ScaleSpecificPen ssPen = s.GetPen(display);
+                style.Pen = ssPen.Pen;
+                d.LineGeometry.Render(display, style);
+            }
+
+            finally
+            {
+                style.Pen = oldPen;
+            }
         }
 
         /// <summary>

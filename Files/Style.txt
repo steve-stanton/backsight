@@ -11,6 +11,7 @@ ENTITY=Computed Point                               COL=Dark Goldenrod
 ENTITY=Construction Line                            COL=Gray
 ENTITY=Construction Line - Ownership                COL=Teal
 ENTITY=Control Point                                COL=Tomato
+ENTITY=Current Water Boundary		            COL=Dark Blue DASH_STYLE=Large-Small WT=0.5
 ENTITY=Current Water Boundary - Ownership           COL=Red
 ENTITY=Estimated C/L of O H W M - Ownership         COL=Red
 ENTITY=Historic Water Boundary - Ownership          COL=Red
@@ -27,6 +28,6 @@ ENTITY=Public Walk and Public Lane Line             COL=Firebrick
 ENTITY=Public Walk and Street Line                  COL=Firebrick
 ENTITY=Public Walk Line                             COL=Firebrick
 ENTITY=Street Closing Line                          COL=Firebrick
-ENTITY=Street Line                                  COL=Firebrick
+ENTITY=Street Line                                  COL=Firebrick WT=1.0
 ENTITY=Water Body                                   COL=Blue
 ENTITY=Water Body - Ownership                       COL=Blue-Violet
