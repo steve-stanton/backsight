@@ -75,7 +75,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="distance">The entered distance value</param>
         /// <param name="unit">The units for the entered distance.</param>
-        Distance(double distance, DistanceUnit unit) : this(distance, unit, false)
+        internal Distance(double distance, DistanceUnit unit) : this(distance, unit, false)
         {
         }
 
