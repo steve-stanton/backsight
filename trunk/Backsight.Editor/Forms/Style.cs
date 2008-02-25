@@ -86,7 +86,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="style">The style to compare with</param>
         /// <returns>True if the supplied style is identical to this one.</returns>
-        internal virtual bool Equals(Style style)
+        internal virtual bool IsMatch(Style style)
         {
             if (style==null)
                 return false;
@@ -117,7 +117,6 @@ namespace Backsight.Editor.Forms
         /// <param name="pen">The pen to define</param>
         internal void DefinePen(ScaleSpecificPen pen)
         {
-        	//pen.CreatePen(PS_SOLID,0,m_Colour);
             pen.CreateSolidPen(0, m_Color);
         }
 

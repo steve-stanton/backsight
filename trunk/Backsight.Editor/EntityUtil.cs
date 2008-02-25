@@ -16,6 +16,7 @@
 using System;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using Backsight.Editor.Forms;
 using Backsight.Environment;
@@ -51,7 +52,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The default black style for construction lines
         /// </summary>
-        static Style s_BlackDottedLineStyle = new LineStyle(Color.Black, 0); // should be PS_DOT
+        static Style s_BlackDottedLineStyle = new LineStyle(Color.Black, DashStyle.Dot);
 	
         #endregion
 
