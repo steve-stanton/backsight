@@ -173,5 +173,1272 @@ namespace Backsight.Editor
             return total;
         }
 
+        /// <summary>
+        /// Gets the observed distance to the start and end of a specific
+        /// span, in meters on the ground.
+        /// </summary>
+        /// <param name="index">Index of the required span.</param>
+        /// <param name="sdist">Distance to the start of the span.</param>
+        /// <param name="edist">Distance to the end of the span.</param>
+        void GetDistances(int index, ref double sdist, ref double edist)
+        {
+            // Confirm required index is in range.
+            if (index >= m_Distances.Length)
+                throw new IndexOutOfRangeException("Leg.GetDistances -- bad index");
+
+            // Initialize distance so far.
+            double total = 0.0;
+
+            // Accumulate the distance to the required span.
+            for (int i = 0; i < index; i++)
+            {
+                if (i == index)
+                    sdist = total;
+
+                total += m_Distances[i].Meters;
+
+                if (i == index)
+                    edist = total;
+            }
+        }
+
+        /// <summary>
+        /// Holds on to a reference to a feature that corresponds to a
+        /// specific span on this leg.
+        /// </summary>
+        /// <param name="index">Index of the span.</param>
+        /// <param name="feat">The associated feature.</param>
+        /// <returns></returns>
+        void SetFeature(int index, Feature feat)
+        {
+            // Confirm the index is valid. For cul-de-sacs with no observed
+            // spans, we only have one valid index.
+            if (m_Distances.Length>0 && index>=m_Distances.Length)
+                throw new IndexOutOfRangeException("Leg.SetFeature - Bad index");
+
+            // The array of feature references should already be defined.
+            if (m_Creations==null)
+                throw new Exception("Leg.SetFeature - No feature list");
+
+            if (m_Distances.Length == 0)
+                m_Creations[0] = feat;
+            else
+                m_Creations[index] = feat;
+
+        }
+
+        /// <summary>
+        /// Returns the feature that corresponds to a specific span on this leg.
+        /// </summary>
+        /// <param name="index">Index of the span.</param>
+        /// <returns>The associated feature (if any).</returns>
+        Feature GetFeature(int index)
+        {
+            // Confirm the index is valid. For cul-de-sacs with no observed
+            // spans, we only have one valid index.
+            if (m_Distances.Length > 0 && index >= m_Distances.Length)
+                throw new IndexOutOfRangeException("Leg.GetFeature - Bad index");
+
+
+            // The array of feature references should already be defined.
+            if (m_Creations == null)
+                throw new Exception("Leg.GetFeature - No feature list");
+
+            if (m_Distances.Length == 0)
+                return m_Creations[0];
+            else
+                return m_Creations[index];
+        }
+
+        /// <summary>
+        /// Handles rollback processing for this leg. This de-activates all
+        /// features that were created.
+        /// </summary>
+        /// <param name="op">The operation that this leg relates to.</param>
+        /// <returns></returns>
+        bool OnRollback(Operation op)
+        {
+            // Return if there are no creations.
+            if (m_Creations==null)
+                return true;
+
+            // If there were no observed spans, we must be dealing with
+            // a cul-de-sac, in which case we should know about ONE feature.
+            int nspan = Math.Max(1, m_Distances.Length);
+
+            // Go through each span, de-activating every feature that
+            // was created by the specified operation.
+            for (int i = 0; i < nspan; i++)
+            {
+                // What sort of feature (if any) represents the span. If
+                // it's null, just skip the span. If it's a point created
+                // by the specified op, de-activate the point. If it's a
+                // line created by the specified op, de-activate the line,
+                // as well as the two end points (so long as they were
+                // created by the specified op).
+
+                Feature feat = m_Creations[i];
+                if (feat != null)
+                    throw new NotImplementedException();
+                    //feat.OnRollback(op);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Handles any intersections created along this leg.
+        /// </summary>
+        /// <param name="op">The operation that created the leg.</param>
+        void Intersect(Operation op)
+        {
+            // Return if there are no creations.
+            if (m_Creations==null)
+                return;
+
+            // If there were no observed spans, we must be dealing with
+            // a cul-de-sac, in which case we should know about ONE feature
+            // (unless it was a mis-connect).
+            int nspan = Math.Max(1, m_Distances.Length);
+
+            // Go through each span, intersecting every feature that
+            // was created.
+            for (int i = 0; i < nspan; i++)
+            {
+                Feature feat = m_Creations[i];
+                if (feat != null)
+                    feat.IsMoved = true;
+            }
+        }
+
+        /// <summary>
+        /// Tries to find the observed length for a feature that may have been
+        /// created on this leg. Note that for lines representing cul-de-sacs
+        /// with no observed spans, there is no observed length (the length
+        /// in that case comes from the central angle & radius).
+        /// </summary>
+        /// <param name="feat">The feature to find.</param>
+        /// <returns>Reference to the distance (null if not found).</returns>
+        Distance GetDistance(Feature feat)
+        {
+            Distance dist = null;
+
+            for (int i = 0; i < m_Distances.Length && dist == null; i++)
+            {
+                if (Object.ReferenceEquals(m_Creations[i], feat))
+                    dist = m_Distances[i];
+            }
+
+            return dist;
+        }
+
+        /// <summary>
+        /// Loads a list with references to all the features that exist on
+        /// this leg. This function is called by <see cref="PathOperation.GetFeatures"/>
+        /// </summary>
+        /// <param name="features">The list to load.</param>
+        void GetFeatures(List<Feature> features)
+        {
+            features.AddRange(m_Creations);
+        }
+
+        /// <summary>
+        /// Loads a list of the features that were created by this operation.
+        /// </summary>
+        /// <param name="op">The operation that this leg relates to.</param>
+        /// <param name="flist">The list to store the results. This list will be
+        /// appended to, so you may want to clear the list prior to call.</param>
+        void GetFeatures(Operation op, List<Feature> flist)
+        {
+            // Append the features representing this leg.
+            int nspan = Math.Max(1, m_Distances.Length);
+
+            for (int i = 0; i < nspan; i++)
+            {
+                if (m_Creations[i] != null)
+                {
+                    // Append to the return list.
+                    flist.Add(m_Creations[i]);
+
+                    // If the feature is a line, also process any point
+                    // feature at the end. If it's a circular arc, add
+                    // the circle centre point if it isn't already in
+                    // the list.
+                    LineFeature line = (m_Creations[i] as LineFeature);
+                    if (line!=null)
+                    {
+        				// Include inactive points.
+                        PointFeature point = line.EndPoint;
+                        if (Object.ReferenceEquals(point.Creator, op))
+                            flist.Add(point);
+
+                        if (line is ArcFeature)
+                        {
+                            ArcFeature arc = (line as ArcFeature);
+                            point = arc.Circle.CenterPoint;
+                            if (Object.ReferenceEquals(point.Creator, op) && !flist.Contains(point))
+                                flist.Add(point);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads a list of distances with the observed lengths of each span on
+        /// this leg. In the case of cul-de-sacs that have no observed span,
+        /// the distance will be derived from the central angle and radius.
+        /// This function is called by <see cref="PathOperation.GetSpans"/>.
+        /// </summary>
+        /// <param name="distances">The list of Distance objects to load.</param>
+        void GetSpans(List<Distance> distances)
+        {
+            if (m_Distances.Length == 0)
+            {
+                // If this is a cul-de-sac that had no observed spans, get the
+                // circular leg to define the distance (in meters on the ground).
+                DistanceUnit mUnit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Meters);
+                distances.Add(new Distance(this.Length.Meters, mUnit));
+            }
+            else
+            {
+                // Otherwise copy over the distances as they were entered.
+                distances.AddRange(m_Distances);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether this leg is the leg that caused the creation of
+        /// a specific feature.
+        /// </summary>
+        /// <param name="feature">The feature to search for. The creator of this feature
+        /// is expected to match the operation that contains this leg. Note that if this
+        /// feature does not have a creating op, a return value of <c>false</c> will
+        /// always be returned (this assumes that a leg must be part of SOME operation).
+        /// </param>
+        /// <returns>True if this leg caused the creation of the feature.</returns>
+        bool IsCreatorOf(Feature feature)
+        {
+            // NOTE: the logic here should be similar to that in Leg.GetFeatures ...
+
+            // What operation does this leg belong to?
+            Operation op = feature.Creator;
+            if (op == null)
+                return false;
+
+            throw new NotImplementedException();
+        }
+        /*
+	// If the feature is inactive, we'll want CePrimitive::GetpPoint()
+	// to also search for inactive points.
+	LOGICAL onlyActive = feature.IsActive();
+
+	UINT2 nspan = max(1,m_NumSpan);
+
+	for ( UINT2 i=0; i<nspan; i++ ) {
+
+		// Skip if this was a null span.
+		if ( !m_pCreations[i] ) continue;
+
+		// Return if we have a match.
+		if ( m_pCreations[i] == &feature ) return TRUE;
+
+		// If the feature is an arc, also check any point feature at
+		// the end.
+		CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
+		if ( !pArc ) continue;
+
+		const CePoint* pPoint = pArc->GetpEnd()->GetpPoint(*pop,onlyActive);
+		if ( pPoint == &feature ) return TRUE;
+
+		// If it's a circular curve, check the circle centre point too.
+		pPoint = pArc->GetpCentre(pop,onlyActive);
+		if ( pPoint == &feature ) return TRUE;
+
+	} // next span
+
+	return FALSE;
+
+} // end of IsCreatorOf
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the point feature that is at the end of this leg.
+//
+//	@parm	The operation that is expected to have created the
+//			end point.
+//
+//	@rdesc	The CePoint object at the end (could conceivably be null).
+//
+//////////////////////////////////////////////////////////////////////
+
+CePoint* CeLeg::GetpEndPoint ( const CeOperation& op ) const {
+
+	if ( !m_pCreations ) return 0;
+
+	// If the very last feature for this leg is a point, that's
+	// the thing we want.
+	INT2 nspan = max(1,m_NumSpan);
+	const CeFeature* const pFeat = m_pCreations[nspan-1];
+	objectstore::touch(pFeat,false);	//09dec99
+	const CePoint* const pPoint =
+		dynamic_cast<const CePoint* const>(pFeat);
+	if ( pPoint ) return (CePoint*)pPoint;
+
+	// Otherwise the last feature should be a CeArc object, so
+	// we want IT'S end point (either active or inactive).
+	const CeArc* const pArc =
+		dynamic_cast<const CeArc* const>(pFeat);
+	if ( pArc )
+		return pArc->GetpEnd()->GetpPoint(op,FALSE);
+	else
+		return 0;
+
+} // end of GetpEndPoint
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the point feature (if any) that is at the
+//			start of this leg.
+//
+//	@parm	The operation that is expected to have created the
+//			start point.
+//
+//	@rdesc	The CePoint object at the start (may be null).
+//
+//////////////////////////////////////////////////////////////////////
+
+CePoint* CeLeg::GetpStartPoint ( const CeOperation& op  ) const {
+
+	if ( !m_pCreations ) return 0;
+
+	// If the first feature for this leg is a point, that's
+	// the thing we want.
+	CeFeature* pFeat = m_pCreations[0];
+	objectstore::touch(pFeat,false);	//09dec99
+	CePoint* pPoint = dynamic_cast<CePoint*>(pFeat);
+	if ( pPoint ) return pPoint;
+
+	// Otherwise the last feature should be a CeArc object, so
+	// we want IT'S start point (either active or inactive).
+	CeArc* pArc = dynamic_cast<CeArc*>(pFeat);
+	if ( pArc )
+		return pArc->GetpStart()->GetpPoint(op,FALSE);
+	else
+		return 0;
+
+} // end of GetpStartPoint
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the point feature (if any) that is at the
+//			centre of the circle that this leg lies on (does
+//			nothing for straight legs).
+//
+//	@parm	The operation that is expected to have created the
+//			centre point.
+//
+//	@rdesc	The CePoint object at the centre (may be null).
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "CeCircle.h"
+
+CePoint* CeLeg::GetpCentrePoint ( const CeOperation& op ) const {
+
+	// Get the circle (if any) that this leg lies on.
+	CeCircle* pCircle = GetpCircle();
+	if ( !pCircle ) return 0;
+
+	// Ask the circle to return the point (inactive centre
+	// points are ok).
+	return pCircle->GetpCentre(&op,FALSE);
+
+} // end of GetpCentrePoint
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Mark this leg as having a deflection angle at the
+//			start. This applies only to straight legs. There
+//			must be a preceding leg for this to make any sense.
+//
+//	@parm	Mark as deflection? Default=TRUE.
+//
+//////////////////////////////////////////////////////////////////////
+
+void CeLeg::SetDeflection ( const LOGICAL set ) {
+
+	// Return if there are no observed spans.
+	if ( !m_Switches ) return;
+
+	if ( set )
+		m_Switches[0] |= SWT_DEFLECTION;
+	else
+		m_Switches[0] &= (~SWT_DEFLECTION);
+
+} // end of SetDeflection
+#endif
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Check if this leg will generate a CeArc feature.
+//
+//	@parm	The index of the span in question.
+//
+//	@rdesc	TRUE if CeArc feature will be produced.
+//
+//////////////////////////////////////////////////////////////////////
+
+LOGICAL CeLeg::HasLine ( const UINT2 index ) const {
+
+	// No feature if the span index is out of range.
+	if ( index >= m_NumSpan ) return FALSE;
+
+	UINT1 swt = m_Switches[index];
+
+	if ( (swt & SWT_MC) || (swt & SWT_OP) )
+		return FALSE;
+	else
+		return TRUE;
+
+} // end of HasLine
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Create a transient CeMiscText object that represents
+//			an observed angle.
+//
+//			The caller is responsible for deleting the text
+//			objects once done with them.
+//
+//	@parm	Backsight for the angle.
+//	@parm	Position that the angle relates to.
+//	@parm	Foresight for the angle.
+//	@parm	The observed angle (negated if counter-clockwise)
+//	@parm	List to hold a pointer to the created text.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "CeMiscText.h"
+#include "CeTurn.h"
+
+void CeLeg::MakeText ( const CeVertex& bs
+					 , const CeVertex& from
+					 , const CeVertex& fs
+					 , const FLOAT8 sangle
+					 , CPtrList& text ) const {
+
+	// Get the bearing on the bisector of the angle.
+	CeTurn ref(from,bs);
+	FLOAT8 cwang = ref.GetAngle(fs);
+	FLOAT8 bearing = ref.GetBearing(cwang*0.5);
+
+	// Make sure the bearing is in the right hemisphere!
+	FLOAT8 angle = fabs(sangle);
+	if ( (angle>PI && cwang<PI) || (angle<PI && cwang>PI) ) {
+		bearing += PI;
+		if ( bearing>PIMUL2 ) bearing -= PIMUL2;
+	}
+
+	// Get the height of the text, in metres on the ground.
+	CeMap* pMap = CeMap::GetpMap();
+	FLOAT8 grheight = pMap->GetLineAnnoHeight();
+
+	// We will offset by the height, or half the point size
+	// (whichever is bigger).
+	FLOAT8 offset = grheight;
+	FLOAT8 poff = pMap->GetPointHeight() * 0.6; // 10% extra
+	offset = max(poff,grheight);
+
+	// Project to the position that passes through the
+	// middle of the text.
+	CeVertex pos(from,bearing,offset);
+
+	// Create text object.
+	CeMiscText* pText = new CeMiscText(pos,RadStr(angle));
+
+	// And define the height and clockwise rotation from horizontal.
+	pText->SetHeight(FLOAT4(grheight));
+
+	if ( bearing>0.0 && bearing<=PI ) {	// i.e. angle to the east
+		// Assumes TA_LEFT justification.
+		pText->SetRotation(FLOAT4(bearing+PIMUL1P5));
+	}
+	else {
+		// Assumes TA_RIGHT justification.
+		pText->SetRotation(FLOAT4(bearing-PIMUL1P5));
+	}
+
+	// Remember the text that has been created.
+	text.AddTail(pText);
+
+} // end of MakeText
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Load a multi-line edit box with the observed distances
+//			(if any) for this leg. Each item in the list is
+//			associated with the address of the corresponding
+//			CeDistance object.
+//
+//	@rdesc	The number of distances that were listed.
+//
+//////////////////////////////////////////////////////////////////////
+
+INT4 CeLeg::ListDistances ( CListBox* pList ) const {
+
+	pList->ResetContent();
+
+	if ( m_NumSpan==0 ) {
+		pList->AddString("see central angle");
+		return 0;
+	}
+
+	for ( UINT2 i=0; i<m_NumSpan; i++ ) {
+		INT4 index = pList->AddString((LPCTSTR)m_Distances[i].Format());
+		pList->SetItemDataPtr(index,&m_Distances[i]);
+
+	}
+
+	return (INT4)m_NumSpan;
+
+} // end of ListDistances
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Insert an extra distance into this leg.
+//
+//	@parm	The new (transient) distance to insert.
+//	@parm	A distance that this leg already knows about.
+//	@parm	Should the new distance go before the existing one?
+//	@parm	Should a new line be created (it won't happen until
+//			rollforward occurs, but it will get marked to happen).
+//
+//	@rdesc	The index where the extra distance was saved.
+//
+//////////////////////////////////////////////////////////////////////
+
+INT4 CeLeg::Insert ( const CeDistance& newdist
+				   , const CeDistance& curdist
+				   , const LOGICAL isBefore
+				   , const LOGICAL wantLine ) {
+
+	// Get the index of the currently defined distance.
+	INT4 index = GetIndex(curdist);
+	if ( index<0 ) return -1;
+
+	if ( isBefore ) {
+		if ( InsertAt(index,newdist,wantLine) ) return index;
+	}
+	else {
+		if ( InsertAt(index+1,newdist,wantLine) ) return index+1;
+	}
+
+	return -1;
+
+} // end of Insert
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Insert a new distance into this leg.
+//
+//	@parm	The index where the new distance should go.
+//	@parm	The (transient) distance to insert.
+//	@parm	Should a new line be created (it won't happen until
+//			rollforward occurs, but it will get marked to happen).
+//
+//	@rdesc	The address of the new distance (a persistent version
+//			of the supplied new distance).
+//
+//////////////////////////////////////////////////////////////////////
+
+CeDistance* CeLeg::InsertAt ( const INT4 index
+							, const CeDistance& newdist
+							, const LOGICAL wantLine ) {
+
+	// Expand the array of distances, as well as the arrays
+	// for creations and switches.
+	CeDistance* newd =
+		new ( os_database::of(this)
+		    , os_ts<CeDistance>::get()
+		    , m_NumSpan+1 ) CeDistance[m_NumSpan+1];
+
+	CeFeature** newf =
+		new ( os_database::of(this)
+			, os_typespec::get_pointer()
+			, m_NumSpan+1 ) CeFeature*[m_NumSpan+1];
+
+	UINT1* news =
+		new ( os_database::of(this)
+			, os_typespec::get_char()
+			, m_NumSpan+1 ) UINT1[m_NumSpan+1];
+
+	// Copy over stuff prior to the new distance
+	for ( UINT2 i=0; i<index; i++ ) {
+		newd[i] = m_Distances[i];
+		newf[i] = m_pCreations[i];
+		news[i] = m_Switches[i];
+	}
+
+	// Stick in the new guy with miss-connect flag
+	newd[index] = newdist;
+	newf[index] = 0;
+	news[index] = SWT_MC;
+
+	// If a line is required, flag it for creation
+	// when rollforward runs (we can't do it right now, since
+	// the end positions are currently coincident).
+	if ( wantLine ) news[index] |= SWT_NEWLINE;
+
+	// Copy over the rest.
+	for ( i=index; i<m_NumSpan; i++ ) {
+		newd[i+1] = m_Distances[i];
+		newf[i+1] = m_pCreations[i];
+		news[i+1] = m_Switches[i];
+	}
+
+	// Get rid of the original array, and replace with the
+	// new one.
+	delete [] m_Distances;
+	delete [] m_pCreations;
+	delete [] m_Switches;
+	m_Distances = newd;
+	m_pCreations = newf;
+	m_Switches = news;
+	m_NumSpan++;
+
+	// If we inserted at the very start, ensure that any
+	// deflection angle switch is still with the very
+	// first span.
+	if ( index==0 && (m_Switches[1] & SWT_DEFLECTION) ) {
+		m_Switches[0] |= SWT_DEFLECTION;
+		m_Switches[1] &= (~SWT_DEFLECTION);
+	}
+
+	return &m_Distances[index];
+
+} // end of InsertAt
+#endif
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the index of a specific distance along this leg.
+//
+//	@parm	The distance to look for.
+//
+//	@rdesc	The index of the distance (-1 if not found).
+//
+//////////////////////////////////////////////////////////////////////
+
+INT4 CeLeg::GetIndex ( const CeDistance& dist ) const {
+
+	// Could just do some address arithmetic, but what the hell.
+
+	for ( UINT2 i=0; i<m_NumSpan; i++ ) {
+		if ( &m_Distances[i] == &dist ) return i;
+	}
+
+	return -1;
+
+} // end of GetIndex
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the index of a feature along this leg.
+//
+//	@parm	The feature to look for.
+//
+//	@rdesc	The index of the feature (-1 if not found).
+//
+//////////////////////////////////////////////////////////////////////
+
+INT4 CeLeg::GetIndex ( const CeFeature& feat ) const {
+
+	for ( UINT2 i=0; i<m_NumSpan; i++ ) {
+		if ( m_pCreations[i] == &feat ) return i;
+	}
+
+	return -1;
+
+} // end of GetIndex
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Break this leg into two legs. The break must leave
+//			at least one distance in each of the resultant legs.
+//
+//	@parm	The index of the span that should be at the start
+//			of the extra leg. Should be greater than zero.
+//	@parm	The leg to move stuff to. Must have enough space
+//			to hold the extra stuff.
+//
+//	@rdesc	TRUE if moved ok.
+//
+//////////////////////////////////////////////////////////////////////
+
+LOGICAL CeLeg::MoveEndLeg ( const INT4 index
+						  , CeLeg& to ) {
+
+	// Destination MUST have exactly the right size.
+	if ( to.m_NumSpan != (m_NumSpan-index) ) return FALSE;
+
+	// Transfer stuff to the new leg.
+	for ( INT4 iSrc=index, iDst=0; iSrc<m_NumSpan; iSrc++, iDst++ ) {
+		to.m_Distances[iDst] = m_Distances[iSrc];
+		to.m_pCreations[iDst] = m_pCreations[iSrc];
+		to.m_Switches[iDst] = m_Switches[iSrc];
+	}
+
+	// Check for special case where the entire leg has been
+	// copied (this isn't really expected to happen).
+
+	if ( index==0 ) {
+		delete [] m_Distances;	m_Distances = 0;
+		delete [] m_pCreations;	m_pCreations = 0;
+		delete [] m_Switches;	m_Switches = 0;
+		m_NumSpan = 0;
+		return TRUE;
+	}
+
+	m_NumSpan = (UINT2)index;
+
+	CeDistance* newd =
+		new ( os_database::of(this)
+		    , os_ts<CeDistance>::get()
+		    , m_NumSpan ) CeDistance[m_NumSpan];
+
+	CeFeature** newf =
+		new ( os_database::of(this)
+			, os_typespec::get_pointer()
+			, m_NumSpan ) CeFeature*[m_NumSpan];
+
+	UINT1* news =
+		new ( os_database::of(this)
+			, os_typespec::get_char()
+			, m_NumSpan ) UINT1[m_NumSpan];
+
+	// Copy over the initial stuff.
+	for ( UINT2 i=0; i<m_NumSpan; i++ ) {
+		newd[i] = m_Distances[i];
+		newf[i] = m_pCreations[i];
+		news[i] = m_Switches[i];
+	}
+
+	// Get rid of the original arrays, and replace with
+	// the new ones.
+
+	delete [] m_Distances;
+	delete [] m_pCreations;
+	delete [] m_Switches;
+
+	m_Distances = newd;
+	m_pCreations = newf;
+	m_Switches = news;
+
+	return TRUE;
+
+} // end of MoveEndLeg
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Check whether a specific span is new.
+//
+//	@parm	The index of the span of interest.
+//
+//	@rdesc	TRUE if new span.
+//
+//////////////////////////////////////////////////////////////////////
+
+LOGICAL CeLeg::IsNewSpan ( const UINT2 index ) const
+{
+	if ( m_NumSpan==0 ) return FALSE;
+	return ((m_Switches[index] & SWT_NEWLINE)!=0);
+}
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Remember the line created for a new span.
+//
+//	@parm	The index of the span of interest.
+//	@parm	The line to refer to.
+//
+//////////////////////////////////////////////////////////////////////
+
+void CeLeg::AddNewSpan ( const UINT2 index
+					   , const CeArc& newspan ) {
+
+	assert(IsNewSpan(index));
+
+	// Point to the new line, and clear the flags that
+	// denote a new span.
+	if ( SetFeature(index,&newspan) ) {
+		m_Switches[index] &= (~SWT_NEWLINE);
+		m_Switches[index] &= (~SWT_MC);
+	}
+
+} // end of AddNewSpan
+#endif
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the very first line that was created along
+//			this leg (if any).
+//
+//	@rdesc	The first line (null if no lines were created).
+//
+//////////////////////////////////////////////////////////////////////
+
+CeArc* CeLeg::GetFirstArc ( void ) const {
+
+	const UINT2 nSpan = max(1,m_NumSpan);
+
+	for ( UINT2 i=0; i<nSpan; i++ ) {
+		CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
+		if ( pArc ) return pArc;
+	}
+
+	return 0;
+
+} // end of GetFirstArc
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Return the very last line that was created along
+//			this leg (if any).
+//
+//	@rdesc	The last line (null if no lines were created).
+//
+//////////////////////////////////////////////////////////////////////
+
+CeArc* CeLeg::GetLastArc ( void ) const {
+
+	const INT2 nSpan = max(1,INT2(m_NumSpan));
+
+	for ( INT2 i=(nSpan-1); i>=0; i-- ) {
+		CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
+		if ( pArc ) return pArc;
+	}
+
+	return 0;
+
+} // end of GetLastArc
+
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Append observations to a string that represents
+//			this leg.
+//
+//	@parm	The string to append to.
+//
+//////////////////////////////////////////////////////////////////////
+
+void CeLeg::AddToString ( CString& str ) const {
+
+	// Return if there are no observed spans.
+	if ( m_NumSpan==0 ) return;
+
+	// Format each distance.
+	for ( UINT2 i=0; i<m_NumSpan; i++ ) {
+
+		CString dstr;
+		dstr.Format("%s ",m_Distances[i].Format());
+
+		if ( (m_Switches[i] & SWT_MC) ) dstr += "/- ";
+		if ( (m_Switches[i] & SWT_OP) ) dstr += "/* ";
+
+		str += dstr;
+	}
+
+} // end of AddToString
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Record that this leg is one of two legs that make
+//			up a staggered leg.
+//
+//	@parm	The face number (1 or 2).
+//
+//////////////////////////////////////////////////////////////////////
+
+void CeLeg::SetStaggered ( const UINT4 face ) {
+
+	if ( face==1 )
+		m_Switches[0] |= SWT_FACE1;
+	else if ( face==2 )
+		m_Switches[0] |= SWT_FACE2;
+
+} // end of SetStaggered
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Create a set of line segments (and points) for
+//			this leg. This function is called only when
+//			adding features to a CeExtraLeg. THIS leg needs
+//			to be the second face of a pair of legs.
+//
+//	@parm	The connection path that this leg belongs to.
+//	@parm	The position at the start of the leg.
+//	@parm	The position at the end of the leg.
+//
+//	@rdesc	TRUE if created ok.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "CePath.h"
+
+LOGICAL CeLeg::MakeSegments ( const CePath& op
+						    , const CeVertex& spos
+							, const CeVertex& epos ) {
+
+	assert(m_NumSpan>0);
+
+	if ( m_NumSpan==0 ) return FALSE;
+
+	// Get the desired length.
+	const FLOAT8 len = spos.Distance(epos);
+
+	// Get the observed length.
+	const FLOAT8 obs = GetLength();
+
+	// Get the adjustment factor for stretching-compressing
+	// the observed distances.
+	const FLOAT8 factor = len/obs;
+
+	// Get the bearing of the line.
+	const FLOAT8 bearing = spos.GetBearing(epos);
+
+	// Define start of first segment.
+	CeVertex start(spos);
+	CeVertex end;
+
+	// Haven't got anywhere yet.
+	FLOAT8 totobs = 0.0;
+
+	CeMap* pMap = CeMap::GetpMap();
+
+	// Add non-topological arcs for each observed distance.
+	for ( UINT2 i=0; i<m_NumSpan; i++, start=end ) {
+
+		// Update the observed length.
+		totobs += m_Distances[i].GetMetric();
+
+		// Apply factor to get us to the end of the leg.
+		FLOAT8 elen = totobs * factor;
+
+		// Define the end position.
+		end = CeVertex(spos,bearing,elen);
+
+		// Add non-topological line to the map.
+		CeArc* pArc = pMap->AddArc(start,end,0);
+
+		// Mark the arc as non-topological, and ensure that the
+		// parent connection path is defined as its creator.
+		pArc->SetTopology(FALSE);
+		pArc->SetpCreator(op);
+
+		// Mark the arc as "void" so that it can be skipped
+		// on export to AutoCad.
+		pArc->SetVoidStatus(TRUE);
+
+		// Add a point as well (so long as we're not at the
+		// end of the leg). Duplicates are made if there is
+		// already a point there -- this simplifies the
+		// implementation of <mf CeLeg::UpdateSegments>.
+
+		if ( i<(m_NumSpan-1) ) {
+			CePoint* pp = pMap->AddPoint(pArc->GetpEnd(),0);
+			pp->SetpCreator(op);
+			pp->SetNextId();
+		}
+
+		// And remember the arc!
+		assert(m_pCreations && m_pCreations[i]==0);
+		m_pCreations[i] = pArc;
+
+	} // next span
+
+	return TRUE;
+
+} // end of MakeSegments
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Update a set of line segments (and points) for
+//			this leg. This function is called only when
+//			rolling forward a CeExtraLeg. THIS leg needs
+//			to be the second face of a pair of legs.
+//
+//	@parm	The connection path that this leg belongs to.
+//	@parm	The position at the start of the leg.
+//	@parm	The position at the end of the leg.
+//
+//	@rdesc	TRUE if updated ok.
+//
+//////////////////////////////////////////////////////////////////////
+
+LOGICAL CeLeg::UpdateSegments ( CeLocation*& pInsert
+							  , const CePath& op
+							  , const CeVertex& spos
+							  , const CeVertex& epos ) {
+
+
+	assert(m_NumSpan>0);
+
+	if ( m_NumSpan==0 ) return FALSE;
+
+	// Get the desired length.
+	const FLOAT8 len = spos.Distance(epos);
+
+	// Get the observed length.
+	const FLOAT8 obs = GetLength();
+
+	// Get the adjustment factor for stretching-compressing
+	// the observed distances.
+	const FLOAT8 factor = len/obs;
+
+	// Get the bearing of the line.
+	const FLOAT8 bearing = spos.GetBearing(epos);
+
+	// Haven't got anywhere yet.
+	FLOAT8 totobs = 0.0;
+
+	CeMap* pMap = CeMap::GetpMap();
+
+	// Go through each feature (which correspond to lines),
+	// shifting the location at the end of each one. Except the
+	// last one, which is the start of the last leg.
+
+	// The actual terminals should get moved when the adjacent
+	// legs are processed.
+
+	for ( UINT2 i=0; i<(m_NumSpan-1); i++ ) {
+
+		// Update the observed length.
+		totobs += m_Distances[i].GetMetric();
+
+		// Define the position of the point at the end of the span.
+		CeVertex pos(spos,bearing,totobs*factor);
+
+		// Get the line feature that was added and move
+		// the location at the end of it.
+		CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
+		assert(pArc);
+
+		CeLocation* pEnd = (CeLocation*)pArc->GetpEnd();
+		pEnd->Move(pos);
+
+	} // next span
+
+	return TRUE;
+
+} // end of UpdateSegments
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Create a set of circular arcs (and points) for
+//			this leg. This function is called only when
+//			adding features to a CeExtraLeg. THIS leg needs
+//			to be the second face of a pair of legs.
+//
+//	@parm	The connection path that this leg belongs to.
+//	@parm	The position at the start of the leg.
+//	@parm	The position at the end of the leg.
+//	@parm	The circle the curves should be related to (updated
+//			to refer to the new curves).
+//	@parm	Should the curves be directed clockwise?
+//
+//	@rdesc	TRUE if created ok.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "CeCurve.h"
+
+LOGICAL CeLeg::MakeCurves ( const CePath& op
+						  , const CeVertex& spos
+						  , const CeVertex& epos
+						  , CeCircle& circle
+						  , const LOGICAL iscw ) {
+
+	assert(m_NumSpan>0);
+
+	if ( m_NumSpan==0 ) return FALSE;
+
+	// Get the desired length.
+	CeLocation bc(spos);
+	CeLocation ec(epos);
+	CeCurve curve(circle,bc,ec,iscw);
+	const FLOAT8 len = curve.GetLength();
+
+	// Get the observed length.
+	const FLOAT8 obs = GetLength();
+
+	// Get the adjustment factor for stretching-compressing
+	// the observed distances.
+	const FLOAT8 factor = len/obs;
+
+	// Define start of first segment.
+	CeVertex start(bc);
+	CeVertex end;
+
+	// Haven't got anywhere yet.
+	FLOAT8 totobs = 0.0;
+
+	// We will use the current default entity type for the arcs.
+	// This MUST be specified to the AddCurve call, because
+	// CeMap does not pick up the default as you might expect.
+	CeMap* pMap = CeMap::GetpMap();
+	const CeEntity* const pArcEnt = pMap->GetpEntity(LINE);
+
+	// Update the arcs
+	for ( UINT2 i=0; i<m_NumSpan; i++, start=end ) {
+
+		// Update the observed length.
+		totobs += m_Distances[i].GetMetric();
+
+		// Apply factor to get us to the end of the leg.
+		FLOAT8 elen = totobs * factor;
+
+		// Define the end position.
+		curve.GetPointOnLine(elen,end);
+
+		// Add non-topological line to the map. DON'T add points,
+		// because we want duplicates (for compatibility with the
+		// way a straight face is handled).
+		CeArc* pArc = pMap->AddCurve(circle,start,end,iscw,pArcEnt,FALSE);
+
+		// Mark the arc as non-topological, and ensure that the
+		// parent connection path is defined as its creator.
+		pArc->SetTopology(FALSE);
+		pArc->SetpCreator(op);
+
+		// Mark the arc as "void" so that it can be skipped
+		// on export to AutoCad.
+		pArc->SetVoidStatus(TRUE);
+
+		// Add a point as well (so long as we're not at the
+		// end of the leg). Duplicates are made if there is
+		// already a point there -- this simplifies the
+		// implementation of <mf CeLeg::UpdateCurves>.
+
+		if ( i<(m_NumSpan-1) ) {
+			CePoint* pp = pMap->AddPoint(pArc->GetpEnd(),0);
+			pp->SetpCreator(op);
+			pp->SetNextId();
+		}
+
+		// And remember the arc!
+		assert(m_pCreations && m_pCreations[i]==0);
+		m_pCreations[i] = pArc;
+
+	} // next span
+
+	return TRUE;
+
+} // end of MakeCurves
+#endif
+
+#ifdef _CEDIT
+//////////////////////////////////////////////////////////////////////
+//
+//	@mfunc	Update a set of line segments (and points) for
+//			this leg. This function is called only when
+//			rolling forward a CeExtraLeg. THIS leg needs
+//			to be the second face of a pair of legs.
+//
+//	@parm	The connection path that this leg belongs to.
+//	@parm	The position at the start of the leg.
+//	@parm	The position at the end of the leg.
+//	@parm	The circle the curves should be related to (not
+//			necessarily the same one that the curves were
+//			previously related to).
+//	@parm	Should the curves be directed clockwise?
+//
+//	@rdesc	TRUE if updated ok.
+//
+//////////////////////////////////////////////////////////////////////
+
+LOGICAL CeLeg::UpdateCurves ( CeLocation*& pInsert
+							, const CePath& op
+							, const CeVertex& spos
+							, const CeVertex& epos
+							, CeCircle& circle
+							, const LOGICAL iscw ) {
+
+
+	assert(m_NumSpan>0);
+
+	if ( m_NumSpan==0 ) return FALSE;
+
+	// Get the desired length.
+	CeLocation bc(spos);
+	CeLocation ec(epos);
+	CeCurve curve(circle,bc,ec,iscw);
+	const FLOAT8 len = curve.GetLength();
+
+	// Get the observed length.
+	const FLOAT8 obs = GetLength();
+
+	// Get the adjustment factor for stretching-compressing
+	// the observed distances.
+	const FLOAT8 factor = len/obs;
+
+	// Define start of first segment.
+	CeVertex start(bc);
+	CeVertex end;
+
+	// Haven't got anywhere yet.
+	FLOAT8 totobs = 0.0;
+
+	CeMap* pMap = CeMap::GetpMap();
+
+	// Add non-topological arcs for each observed distance.
+	for ( UINT2 i=0; i<m_NumSpan; i++, start=end ) {
+
+		// Update the observed length.
+		totobs += m_Distances[i].GetMetric();
+
+		// Apply factor to get us to the end of the leg.
+		FLOAT8 elen = totobs * factor;
+
+		// Define the end position.
+		curve.GetPointOnLine(elen,end);
+
+		// Get the line feature that was added.
+		CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
+		assert(pArc);
+
+		// If the curve is now on a different circle, change it.
+		CeCurve* pCurve = dynamic_cast<CeCurve*>(pArc->GetpLine());
+		assert(pCurve);
+		pCurve->Move(circle,iscw);
+
+		// Move the location at the end of the curve (so long
+		// as it's not the very last location).
+		if ( i<(m_NumSpan-1) ) pArc->GetpEnd()->Move(end);
+
+	} // next span
+
+	return TRUE;
+
+} // end of UpdateCurves
+#endif
+         */
     }
 }
