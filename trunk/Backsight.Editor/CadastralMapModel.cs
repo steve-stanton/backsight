@@ -1131,6 +1131,20 @@ namespace Backsight.Editor
             }
         }
 
+        internal IEntity GetDefaultEntity(SpatialType t)
+        {
+            if (t == SpatialType.Point)
+                return DefaultPointType;
+            else if (t == SpatialType.Line)
+                return DefaultLineType;
+            else if (t == SpatialType.Polygon)
+                return DefaultPolygonType;
+            else if (t == SpatialType.Text)
+                return DefaultTextType;
+            else
+                throw new NotImplementedException("GetDefaultEntity");
+        }
+
         internal void SetDefaultEntity(SpatialType t, IEntity e)
         {
             if (t == SpatialType.Point)
