@@ -72,7 +72,7 @@ namespace Backsight.Editor
         SysTopol=0x0100,
 
         /// <summary>
-        /// Does label refer to void area?
+        /// Does line represent a staggered property face?
         /// </summary>
         Void=0x0200,
 
