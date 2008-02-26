@@ -701,5 +701,16 @@ namespace Backsight.Editor
         {
             get { return (m_What==null ? null : m_What.Layer);  }
         }
+
+        /// <summary>
+        /// Is this feature considered to be "void". This status is used to mark
+        /// lines along staggered faces in a connection path. Lines that are marked
+        /// thus do not get exported to AutoCad.
+        /// </summary>
+        internal bool IsVoid
+        {
+            get { return IsFlagSet(FeatureFlag.Void); }
+            set { SetFlag(FeatureFlag.Void, value); }
+        }
     }
 }
