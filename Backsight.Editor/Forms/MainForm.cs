@@ -1668,10 +1668,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (layer==null)
                 return;
 
-            GetEntityForm dial = new GetEntityForm(layer, t);
+            IEntity e = CadastralMapModel.Current.GetDefaultEntity(t);
+            int entId = (e == null ? 0 : e.Id);
+            GetEntityForm dial = new GetEntityForm(layer, t, entId);
             if (dial.ShowDialog() == DialogResult.OK)
             {
-                IEntity e = dial.SelectedEntity;
+                e = dial.SelectedEntity;
                 CadastralMapModel.Current.SetDefaultEntity(t, e);
             }
             dial.Dispose();
