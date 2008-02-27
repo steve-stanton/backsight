@@ -260,7 +260,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that this leg relates to.</param>
         /// <returns></returns>
-        bool OnRollback(Operation op)
+        internal bool OnRollback(Operation op)
         {
             // Return if there are no creations.
             if (m_Creations==null)
@@ -323,7 +323,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="feat">The feature to find.</param>
         /// <returns>Reference to the distance (null if not found).</returns>
-        Distance GetDistance(Feature feat)
+        internal Distance GetDistance(Feature feat)
         {
             Distance dist = null;
 

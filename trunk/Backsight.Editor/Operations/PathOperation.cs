@@ -75,7 +75,17 @@ namespace Backsight.Editor.Operations
         /// reference the specified line)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // No point doing anything if the line is undefined.
+            if (line==null)
+                return null;
+
+            // Ask each leg to try to locate the line.
+            Distance dist = null;
+
+            for (int i = 0; i < m_Legs.Count && dist == null; i++)
+                dist = m_Legs[i].GetDistance(line);
+
+            return dist;
         }
 
         /// <summary>
@@ -110,23 +120,20 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
-            throw new Exception("The method or operation is not implemented.");
-            /*
-//	Rollback any sub-operations.
-	CeOperation::OnRollback();
+            base.OnRollback();
 
-//	Cut references that features make to this operation.
-	if ( m_pFrom ) m_pFrom->CutOp(*this);
-	if ( m_pTo ) m_pTo->CutOp(*this);
+            // Cut references that features make to this operation.
+            if (m_From != null)
+                m_From.CutOp(this);
 
-//	Ask each leg to rollback.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		m_pLegs[i]->OnRollback(*this);
-		m_pLegs[i] = 0;
-	}
+            if (m_To != null)
+                m_To.CutOp(this);
 
-	return TRUE;
-             */
+            // Ask each leg to rollback.
+            foreach (Leg leg in m_Legs)
+                leg.OnRollback(this);
+
+            return true;
         }
 
         /// <summary>
@@ -176,17 +183,10 @@ namespace Backsight.Editor.Operations
 
         /*
 public:
-							CePath				( const CePoint& from
-												, const CePoint& to );
-							CePath				( const CePath& copy );
-	virtual					~CePath				( void );
-	virtual const CHARS*	GetpTitle			( void ) const;
 	virtual void			Draw				( const FLOAT8 rotation
 												, const FLOAT8 sfac
 												, const LOGICAL erase=FALSE ) const;
 	virtual void			Draw				( const LOGICAL preview=FALSE ) const;
-	virtual void			Erase				( const FLOAT8 rotation
-												, const FLOAT8 sfac ) const;
 	virtual void			DrawEnds			( void ) const;
 	virtual CeDistance*		GetpDistance		( const CeArc* const pArc ) const;
 	virtual UINT4			GetCount			( void ) const;
@@ -228,7 +228,6 @@ public:
 												, CeVertex& end ) const;
 	virtual LOGICAL			Rollback			( void );
 	virtual LOGICAL			Execute				( void );
-	virtual void			AddReferences		( void ) const;
 	virtual LOGICAL			Create				( const CePathItem* const items
 												, const UINT2 nitem );
 	virtual void			Intersect			( void );
@@ -947,38 +946,6 @@ LOGICAL CePath::Rollforward ( void ) {
 
 } // end of Rollforward
 #endif
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Find the observed length of an arc that was created
-//			by this operation.
-//
-//	@parm	The arc to find.
-//
-//	@rdesc	Pointer to the distance (0 if not found).
-//
-//////////////////////////////////////////////////////////////////////
-
-CeDistance* CePath::GetpDistance ( const CeArc* const pArc ) const {
-
-//	No point doing anything if the arc pointer is undefined.
-	if ( !pArc ) return 0;
-
-//	We need a feature pointer for the call.
-//	const CeFeature* const pFeat =
-//		dynamic_cast<const CeFeature* const>(pArc);
-
-//	Ask each leg to try to locate the arc.
-
-	CeDistance* pDist=0;
-
-	for ( UINT2 i=0; i<m_NumLeg && !pDist; i++ )
-//		pDist = m_pLegs[i]->GetpDistance(pFeat);
-		pDist = m_pLegs[i]->GetpDistance(pArc);	//09dec99
-
-	return pDist;
-
-} // end of GetpDistance
 
 //////////////////////////////////////////////////////////////////////
 //

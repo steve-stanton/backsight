@@ -40,7 +40,7 @@ namespace Backsight.Editor
         /// <summary>
         /// BeginningOfCurve
         /// </summary>
-        BC = 20;
+        BC = 20,
 
         /// <summary>
         /// Central angke
@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// <summary>
         /// EndOfCurve
         /// </summary>
-		Ec	= 70,
+		Ec = 70,
 		
         /// <summary>
         /// Miss-connect (no line)
