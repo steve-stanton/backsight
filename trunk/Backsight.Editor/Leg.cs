@@ -20,6 +20,7 @@ using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -957,12 +958,12 @@ void CeLeg::MakeText ( const CeVertex& bs
         bool MakeSegments(PathOperation op, IPosition spos, IPosition epos)
         {
             Debug.Assert(NumSpan>0);
-
             if (NumSpan==0)
                 return false;
 
-            // Get the desired length.
-            double len = Geom.Distance(spos, epos);
+            // Get the desired length. Construct a transient geometry, to ensure the length
+            // takes account of any coordinate roundoff.
+            double len = new LineSegmentGeometry(spos, epos).Length.Meters;
 
             // Get the observed length.
             double obs = this.Length.Meters;
@@ -993,31 +994,34 @@ void CeLeg::MakeText ( const CeVertex& bs
                 // Define the end position.
                 end = Geom.Polar(spos, bearing, elen);
 
-                // Add non-topological line to the map.
+                // The point at the start of the span should already be there
                 PointFeature startPoint = map.EnsurePointExists(start, op);
-                PointFeature endPoint = map.EnsurePointExists(end, op);
+
+                // Add a point at the end of the span (so long as we're not at the
+                // end of the leg). Duplicates are made if there is already a point
+                // there -- this simplifies the implementation of UpdateSegments.
+                // If we're at the end of the leg, a point should probably be
+                // there already.
+                PointFeature endPoint;
+                if (i<(NumSpan-1))
+                    endPoint = map.AddPoint(end, map.DefaultPointType, op);
+                else
+                    endPoint = map.EnsurePointExists(end, op);
+
+                // If the point at the end of the span was created by the operation, and
+                // an ID has not already been assigned, assign the next available ID
+                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.Id==null)
+                    endPoint.SetNextId();                
+
+                // Add non-topological line to the map.
                 IEntity blank = EnvironmentContainer.FindBlankEntity();
                 LineFeature line = map.AddLine(startPoint, endPoint, blank, op);
-                line.SetTopology(false); // should be false already, since blank entity is supposed to be non-topological
 
-                // Mark the line as "void" so that it can be skipped
-                // on export to AutoCad.
+                // The line should have been added as non-topological (since the blank entity type
+                // is supposed to be non-topological), but make it explicit here. And mark the line
+                // as "void" so that it can be skipped on export to AutoCad.
+                line.SetTopology(false); // should be false already, 
                 line.IsVoid = true;
-
-                // Add a point as well (so long as we're not at the
-                // end of the leg). Duplicates are made if there is
-                // already a point there -- this simplifies the
-                // implementation of UpdateSegments.
-
-                //if (i<(m_NumSpan-1))
-                //{
-                //    CePoint* pp = pMap->AddPoint(pArc->GetpEnd(), 0);
-                //    pp->SetpCreator(op);
-                //    pp->SetNextId();
-                //}
-
-                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.Id==null)
-                    endPoint.SetNextId();
 
                 // And remember the line!
                 Debug.Assert(m_Creations!=null);
@@ -1044,8 +1048,9 @@ void CeLeg::MakeText ( const CeVertex& bs
             if (NumSpan==0)
                 return false;
 
-            // Get the desired length.
-            double len = Geom.Distance(spos, epos);
+            // Get the desired length. Construct a transient geometry, to ensure the length
+            // takes account of any coordinate roundoff.
+            double len = new LineSegmentGeometry(spos, epos).Length.Meters;
 
             // Get the observed length.
             double obs = this.Length.Meters;
@@ -1102,169 +1107,141 @@ void CeLeg::MakeText ( const CeVertex& bs
             if (NumSpan==0)
                 return false;
 
-            // Get the desired length.
-            //ArcGeometry curve = new ArcGeometry(
-            throw new NotImplementedException();
+            // Get the desired length. Construct a transient geometry, to ensure the length
+            // takes account of any coordinate roundoff.
+            CircularArcGeometry curve = new CircularArcGeometry(circle, spos, epos, iscw);
+            double len = curve.Length.Meters;
+
+            // Get the observed length.
+            double obs = this.Length.Meters;
+
+            // Get the adjustment factor for stretching-compressing the observed distances.
+            double factor = len/obs;
+
+            // Define start of first arc.
+            IPosition start = curve.BC;
+            IPosition end;
+
+            // Haven't got anywhere yet.
+            double totobs = 0.0;
+            CadastralMapModel map = CadastralMapModel.Current;
+
+	        // Add non-topological arcs for each observed distance.
+            for (int i=0; i<NumSpan; i++, start=end)
+            {
+                // Update the observed length.
+                totobs += m_Distances[i].Meters;
+
+                // Apply factor to get us to the end of the leg.
+                double elen = totobs * factor;
+
+                // Define the end position.
+                bool isEndDefined = curve.GetPosition(new Length(elen), out end);
+                Debug.Assert(isEndDefined);
+
+                // The point at the start of the span should already be there
+                PointFeature startPoint = map.EnsurePointExists(start, op);
+
+                // Add a point at the end of the span (so long as we're not at the
+                // end of the leg). Duplicates are made if there is already a point
+                // there -- this simplifies the implementation of UpdateCurves.
+                // If we're at the end of the leg, a point should probably be
+                // there already.
+                PointFeature endPoint;
+                if (i<(NumSpan-1))
+                    endPoint = map.AddPoint(end, map.DefaultPointType, op);
+                else
+                    endPoint = map.EnsurePointExists(end, op);
+
+                // If the point at the end of the span was created by the operation, and
+                // an ID has not already been assigned, assign the next available ID
+                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.Id==null)
+                    endPoint.SetNextId();
+
+                // Add non-topological line to the map.
+                IEntity blank = EnvironmentContainer.FindBlankEntity();
+                LineFeature line = map.AddCircularArc(circle, startPoint, endPoint, iscw, blank, op);
+
+                // The line should have been added as non-topological (since the blank entity type
+                // is supposed to be non-topological), but make it explicit here. And mark the line
+                // as "void" so that it can be skipped on export to AutoCad.
+                line.SetTopology(false); // should be false already, 
+                line.IsVoid = true;
+
+                // And remember the line!
+                Debug.Assert(m_Creations!=null);
+                Debug.Assert(m_Creations[i]==null);
+                m_Creations[i] = line;
+            }
+
+            return true;
         }
-        /*
-            CeLocation bc(spos);
-            CeLocation ec(epos);
-            CeCurve curve(circle,bc,ec,iscw);
-            const FLOAT8 len = curve.GetLength();
+
+        /// <summary>
+        /// Updates a set of arcs (and points) for this leg. This function is called only when
+        /// rolling forward an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of
+        /// a pair of legs.
+        /// </summary>
+        /// <param name="insert"></param>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="spos">The position at the start of the leg.</param>
+        /// <param name="epos">The position at the end of the leg.</param>
+        /// <param name="circle">The circle the curves should be related to (not necessarily the
+        /// same one that the curves were previously related to).</param>
+        /// <param name="iscw">Should the curves be directed clockwise?</param>
+        /// <returns>True if updated ok.</returns>
+        bool UpdateCurves(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
+                            Circle circle, bool iscw)
+        {
+            Debug.Assert(NumSpan>0);
+            if (NumSpan==0)
+                return false;
+
+            // Get the desired length. Construct a transient geometry, to ensure the length
+            // takes account of any coordinate roundoff.
+            CircularArcGeometry curve = new CircularArcGeometry(circle, spos, epos, iscw);
+            double len = curve.Length.Meters;
 
             // Get the observed length.
-            const FLOAT8 obs = GetLength();
+            double obs = this.Length.Meters;
 
-            // Get the adjustment factor for stretching-compressing
-            // the observed distances.
-            const FLOAT8 factor = len/obs;
+            // Get the adjustment factor for stretching-compressing the observed distances.
+            double factor = len/obs;
 
-            // Define start of first segment.
-            CeVertex start(bc);
-            CeVertex end;
-
-            // Haven't got anywhere yet.
-            FLOAT8 totobs = 0.0;
-
-            // We will use the current default entity type for the arcs.
-            // This MUST be specified to the AddCurve call, because
-            // CeMap does not pick up the default as you might expect.
-            CeMap* pMap = CeMap::GetpMap();
-            const CeEntity* const pArcEnt = pMap->GetpEntity(LINE);
-
-            // Update the arcs
-            for ( UINT2 i=0; i<m_NumSpan; i++, start=end ) {
-
-                // Update the observed length.
-                totobs += m_Distances[i].GetMetric();
-
-                // Apply factor to get us to the end of the leg.
-                FLOAT8 elen = totobs * factor;
-
-                // Define the end position.
-                curve.GetPointOnLine(elen,end);
-
-                // Add non-topological line to the map. DON'T add points,
-                // because we want duplicates (for compatibility with the
-                // way a straight face is handled).
-                CeArc* pArc = pMap->AddCurve(circle,start,end,iscw,pArcEnt,FALSE);
-
-                // Mark the arc as non-topological, and ensure that the
-                // parent connection path is defined as its creator.
-                pArc->SetTopology(FALSE);
-                pArc->SetpCreator(op);
-
-                // Mark the arc as "void" so that it can be skipped
-                // on export to AutoCad.
-                pArc->SetVoidStatus(TRUE);
-
-                // Add a point as well (so long as we're not at the
-                // end of the leg). Duplicates are made if there is
-                // already a point there -- this simplifies the
-                // implementation of <mf CeLeg::UpdateCurves>.
-
-                if ( i<(m_NumSpan-1) ) {
-                    CePoint* pp = pMap->AddPoint(pArc->GetpEnd(),0);
-                    pp->SetpCreator(op);
-                    pp->SetNextId();
-                }
-
-                // And remember the arc!
-                assert(m_pCreations && m_pCreations[i]==0);
-                m_pCreations[i] = pArc;
-
-            } // next span
-
-            return TRUE;
-
-        } // end of MakeCurves
-        #endif
-
-        #ifdef _CEDIT
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Update a set of line segments (and points) for
-        //			this leg. This function is called only when
-        //			rolling forward a CeExtraLeg. THIS leg needs
-        //			to be the second face of a pair of legs.
-        //
-        //	@parm	The connection path that this leg belongs to.
-        //	@parm	The position at the start of the leg.
-        //	@parm	The position at the end of the leg.
-        //	@parm	The circle the curves should be related to (not
-        //			necessarily the same one that the curves were
-        //			previously related to).
-        //	@parm	Should the curves be directed clockwise?
-        //
-        //	@rdesc	TRUE if updated ok.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        LOGICAL CeLeg::UpdateCurves ( CeLocation*& pInsert
-                                    , const CePath& op
-                                    , const CeVertex& spos
-                                    , const CeVertex& epos
-                                    , CeCircle& circle
-                                    , const LOGICAL iscw ) {
-
-
-            assert(m_NumSpan>0);
-
-            if ( m_NumSpan==0 ) return FALSE;
-
-            // Get the desired length.
-            CeLocation bc(spos);
-            CeLocation ec(epos);
-            CeCurve curve(circle,bc,ec,iscw);
-            const FLOAT8 len = curve.GetLength();
-
-            // Get the observed length.
-            const FLOAT8 obs = GetLength();
-
-            // Get the adjustment factor for stretching-compressing
-            // the observed distances.
-            const FLOAT8 factor = len/obs;
-
-            // Define start of first segment.
-            CeVertex start(bc);
-            CeVertex end;
+            // Define start of first arc.
+            IPosition start = curve.BC;
+            IPosition end;
 
             // Haven't got anywhere yet.
-            FLOAT8 totobs = 0.0;
+            double totobs = 0.0;
+            CadastralMapModel map = CadastralMapModel.Current;
 
-            CeMap* pMap = CeMap::GetpMap();
-
-            // Add non-topological arcs for each observed distance.
-            for ( UINT2 i=0; i<m_NumSpan; i++, start=end ) {
-
+            for (int i=0; i<NumSpan; i++, start=end)
+            {
                 // Update the observed length.
-                totobs += m_Distances[i].GetMetric();
+                totobs += m_Distances[i].Meters;
 
                 // Apply factor to get us to the end of the leg.
-                FLOAT8 elen = totobs * factor;
+                double elen = totobs * factor;
 
                 // Define the end position.
-                curve.GetPointOnLine(elen,end);
+                bool isEndDefined = curve.GetPosition(new Length(elen), out end);
+                Debug.Assert(isEndDefined);
 
                 // Get the line feature that was added.
-                CeArc* pArc = dynamic_cast<CeArc*>(m_pCreations[i]);
-                assert(pArc);
+                ArcFeature arc = (m_Creations[i] as ArcFeature);
+                Debug.Assert(arc!=null);
 
-                // If the curve is now on a different circle, change it.
-                CeCurve* pCurve = dynamic_cast<CeCurve*>(pArc->GetpLine());
-                assert(pCurve);
-                pCurve->Move(circle,iscw);
+                // If the arc is now on a different circle, change it.
+                arc.Move(circle, iscw);
 
-                // Move the location at the end of the curve (so long
+                // Move the location at the end of the arc (so long
                 // as it's not the very last location).
-                if ( i<(m_NumSpan-1) ) pArc->GetpEnd()->Move(end);
+                if (i<(NumSpan-1))
+                    arc.EndPoint.Move(end);
+            }
 
-            } // next span
-
-            return TRUE;
-
-        } // end of UpdateCurves
-        #endif
-                 */
+            return true;
+        }
     }
 }
