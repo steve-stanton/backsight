@@ -145,62 +145,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets the position that is a specific distance from the start of this line.
         /// </summary>
-        /// <param name="dist">The distance from the start of the line.</param>
+        /// <param name="distance">The distance from the start of the line.</param>
         /// <param name="result">The position found</param>
         /// <returns>True if the distance is somewhere ON the line. False if the distance
         /// was less than zero, or more than the line length (in that case, the position
         /// found corresponds to the corresponding terminal point).</returns>
         internal override bool GetPosition(ILength distance, out IPosition result)
         {
-            // Check for invalid distances.
-            double d = distance.Meters;
-            if (d<0.0)
-            {
-                result = Start;
-                return false;
-            }
-
-            double clen = Length.Meters; // Curve length
-            if (d>clen)
-            {
-                result = End;
-                return false;
-            }
-
-            // Check for limiting values (if you don't do this, minute
-            // roundoff at the BC & EC can lead to spurious locations).
-            // (although it's possible to use TINY here, use 1 micron
-            // instead, since we can't represent position any better
-            // than that).
-
-            if (d<0.000001)
-            {
-                result = Start;
-                return true;
-            }
-
-            if (Math.Abs(d-clen)<0.000001)
-            {
-                result = End;
-                return true;
-            }
-
-            // Get the bearing of the BC
-            ICircleGeometry circle = Circle;
-            IPosition c = circle.Center;
-            double radius = circle.Radius.Meters;
-            double bearing = Geom.Bearing(c, BC).Radians;
-
-            // Add the angle that subtends the required distance (or
-            // subtract if the curve goes anti-clockwise).
-            if (m_IsClockwise)
-                bearing += (d/radius);
-            else
-                bearing -= (d/radius);
-
-            // Figure out the required point from the new bearing.
-            result = Geom.Polar(c, bearing, radius);
-            return true;
+            return CircularArcGeometry.GetPosition(this, distance, out result);
         }
 
         // If the specified position isn't actually on the arc, the length is to the

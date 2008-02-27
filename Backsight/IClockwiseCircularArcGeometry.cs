@@ -48,5 +48,10 @@ namespace Backsight
         /// The point at the end of the clockwise arc.
         /// </summary>
         IPointGeometry Second { get; }
+
+        /// <summary>
+        /// The length of the arc (on the map projection).
+        /// </summary>
+        ILength Length { get; }
     }
 }
