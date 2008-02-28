@@ -109,7 +109,7 @@ namespace Backsight.Editor
                 return true;
         }
 
-        bool IsDeflection
+        protected bool IsDeflection
         {
             get { return (m_Switches != null && (m_Switches[0] & LegItemFlag.Deflection) != 0); }
         }
@@ -184,11 +184,13 @@ namespace Backsight.Editor
         /// <param name="index">Index of the required span.</param>
         /// <param name="sdist">Distance to the start of the span.</param>
         /// <param name="edist">Distance to the end of the span.</param>
-        void GetDistances(int index, ref double sdist, ref double edist)
+        internal void GetDistances(int index, out double sdist, out double edist)
         {
             // Confirm required index is in range.
             if (index >= m_Distances.Length)
                 throw new IndexOutOfRangeException("Leg.GetDistances -- bad index");
+
+            sdist = edist = 0.0;
 
             // Initialize distance so far.
             double total = 0.0;
@@ -545,7 +547,7 @@ namespace Backsight.Editor
         /// straight legs. There must be a preceding leg for this to make any sense.
         /// </summary>
         /// <param name="set">Mark as deflection? Default=true.</param>
-        void SetDeflection(bool set)
+        protected void SetDeflection(bool set)
         {
             // Return if there are no observed spans.
             if (m_Switches==null)
@@ -914,7 +916,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Appends observations to a string that represents this leg.
         /// </summary>
         /// <param name="str">The string buffer to append to.</param>
-        void AddToString(StringBuilder str)
+        protected void AddToString(StringBuilder str)
         {
             // Return if there are no observed spans.
             if (NumSpan==0)

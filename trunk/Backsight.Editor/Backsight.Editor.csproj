@@ -403,6 +403,8 @@
     <Compile Include="Forms\Style.cs" />
     <Compile Include="Forms\StyleEntry.cs" />
     <Compile Include="Forms\StyleFile.cs" />
+    <Compile Include="StraightLeg.cs" />
+    <Compile Include="StraightSpan.cs" />
     <Compile Include="TestForm.cs">
       <SubType>Form</SubType>
     </Compile>
