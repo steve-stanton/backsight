@@ -93,7 +93,15 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override Feature[] Features
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                List<Feature> result = new List<Feature>(100);
+
+                foreach (Leg leg in m_Legs)
+                    leg.GetFeatures(this, result);
+
+                return result.ToArray();
+            }
         }
 
         /// <summary>
@@ -142,8 +150,94 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation has been re-executed successfully</returns>
         internal override bool Rollforward()
         {
-            throw new Exception("The method or operation is not implemented.");
+        	// Return if this operation has not been marked as changed.
+            if (!IsChanged)
+                return base.OnRollforward();
+
+            // If a line was originally attached to the start point (but
+            // is now preceded by one or more inserts), alter the start
+            // location so that its at a duplicate location.
+
+            // Don't do it at the start, since that's already covered
+            // via the passing of the end of the last insert (see below).
+            // If you do the following, the duplicate position will just
+            // get changed again!
+
+            //if ( IsInsertAtStart() ) {
+            //	CeArc* pFirst = GetFirstArc();
+            //	CeLocation* pStart = (CeLocation*)m_pFrom->GetpVertex();
+            //	if ( pFirst->GetpStart() == pStart ) {
+            //		CeMap* pMap = CeMap::GetpMap();
+            //		CeLocation* pS = pMap->AddDuplicate(*pStart);
+            //		CeLocation* pE = pFirst->GetpEnd();
+            //		pFirst->GetpLine()->ChangeEnds(*pS,*pE);
+            //	}
+            //}
+
+            // And similarly at the end. This is needed, because the very
+            // end the path never gets shifted (we need to detach it now
+            // to make sure the end of the existing line does move, since
+            // an insert will be taking its place).
+
+            // Rollforward the base class.
+            return base.OnRollforward();
         }
+
+        /*
+	if ( IsInsertAtEnd() ) {
+		CeArc* pLast = GetLastArc();
+		CeLocation* pEnd = (CeLocation*)m_pTo->GetpVertex();
+		if ( pLast->GetpEnd() == pEnd ) {
+			CeMap* pMap = CeMap::GetpMap();
+			CeLocation* pS = pLast->GetpStart();
+			CeLocation* pE = pMap->AddDuplicate(*pEnd);
+			CePoint* pPoint = pMap->AddPoint(pE,0);
+			pPoint->SetpCreator(*this);
+			pPoint->SetNextId();
+			pLast->GetpLine()->ChangeEnds(*pS,*pE);
+		}
+	}
+
+	// Get the rotation & scale factor to apply.
+	FLOAT8 rotation;
+	FLOAT8 sfac;
+	GetAdjustment( rotation, sfac );
+
+//	Notify each leg of the change ...
+
+//	Initialize position to the start of the path.
+	CeVertex start(*m_pFrom);
+	CeVertex gotend(start);		// Un-adjusted end point
+	CeLocation* pInsert = 0;	// No insert prior to start
+
+//	Initial bearing is whatever the desired rotation is.
+	FLOAT8 bearing = rotation;
+
+	// Go through each leg, telling them to "save" (the leg actually
+	// checks whether it already refers to features).
+
+	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
+
+		// For the second face of a staggered leg, we need to supply
+		// the newly adjusted ends of the leg that has just been
+		// processed (the regular version of it's rollforward function
+		// does nothing).
+
+		if ( m_pLegs[i]->GetFaceNumber()==2 ) {
+			CeExtraLeg* pLeg = dynamic_cast<CeExtraLeg*>(m_pLegs[i]);
+			if ( !pLeg ) {
+				AfxMessageBox("Second face has unexpected data type");
+				return FALSE;
+			}
+			if ( !pLeg->Rollforward(pInsert,*this,start,gotend) ) return FALSE;
+		}
+		else {
+			start = gotend;
+			if ( !(m_pLegs[i]->Rollforward(pInsert,*this,gotend,bearing,sfac)) ) return FALSE;
+		}
+
+	} // next leg
+         */
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
@@ -166,6 +260,11 @@ namespace Backsight.Editor.Operations
             get { return true; }
         }
 
+        /// <summary>
+        /// Checks whether the specified leg corresponds to the last leg in this path.
+        /// </summary>
+        /// <param name="leg">The leg to check</param>
+        /// <returns>True if the leg is the last leg of this path</returns>
         bool IsLastLeg(Leg leg)
         {
             return Object.ReferenceEquals(m_Legs[m_Legs.Count-1], leg);
@@ -181,103 +280,28 @@ namespace Backsight.Editor.Operations
             return Object.ReferenceEquals(m_From, feat) || Object.ReferenceEquals(m_To, feat);
         }
 
-        /*
-public:
-	virtual void			Draw				( const FLOAT8 rotation
-												, const FLOAT8 sfac
-												, const LOGICAL erase=FALSE ) const;
-	virtual void			Draw				( const LOGICAL preview=FALSE ) const;
-	virtual void			DrawEnds			( void ) const;
-	virtual CeDistance*		GetpDistance		( const CeArc* const pArc ) const;
-	virtual UINT4			GetCount			( void ) const;
-	virtual void			GetpFeatures		( CeFeature** pFeatures ) const;
-	virtual void			GetSpans			( CeDistance* distances ) const;
-	virtual void			DrawAngles			( const CePoint* const pFrom
-												, CeDC& gdc ) const;
-	virtual void			DrawAngles			( const CePoint* const pFrom
-												, CeView* view
-												, CDC* pDC
-												, const CeWindow* const pWin=0 ) const;
-	virtual void			CreateAngleText		( CPtrList& text
-												, const LOGICAL wantLinesToo
-												, const CePoint* const pFrom ) const;
-	virtual	UINT4			GetPrecision		( void ) const;
-	virtual LOGICAL			Adjust				( FLOAT8& dNorthing
-												, FLOAT8& dEasting
-												, FLOAT8& precision
-												, FLOAT8& length
-												, FLOAT8& rotation
-												, FLOAT8& sfac ) const;
-	virtual UINT4			GetFeatures			( CeObjectList& flist ) const;
-	virtual LOGICAL			GetCircles			( CeObjectList& clist
-												, const CePoint& point ) const;
-	virtual CeLeg*			GetpLeg				( const CeFeature& feature ) const;
-	virtual CeLeg*			GetpLeg				( const INT4 index ) const;
-	virtual CeStraightLeg*	GetpStraightLeg		( const LOGICAL prevStraightToo
-												, const CeFeature& feature ) const;
-	virtual LOGICAL			HasReference		( const CeFeature* const pFeat ) const;
-	virtual INT4			GetLegIndex			( const CeLeg& leg ) const;
-	virtual INT4			GetNumLeg			( void ) const;
-	virtual LOGICAL			IsLastLeg			( const CeLeg* const pLeg ) const;
-	virtual const CeLocation* GetpStart			( void ) const;
-	virtual const CeLocation* GetpEnd			( void ) const;
-	virtual void			GetString			( CString& str ) const;
-	virtual	UINT4			LoadVertexList		( CeVertexList& vlist ) const;
-	virtual	LOGICAL			GetLegEnds			( const CeLeg& leg
-												, CeVertex& start
-												, CeVertex& end ) const;
-	virtual LOGICAL			Rollback			( void );
-	virtual LOGICAL			Execute				( void );
-	virtual LOGICAL			Create				( const CePathItem* const items
-												, const UINT2 nitem );
-	virtual void			Intersect			( void );
-	virtual LOGICAL			Rollforward			( void );
-	virtual LOGICAL			InsertLeg			( const CeLeg* const pCurLeg
-												, const CeLeg* const pNewLeg );
-	virtual CeLeg*			InsertFace			( CeLeg* pAfter
-												, const UINT4 nDist
-												, const CeDistance* dists );
-
-private:
-
-	virtual UINT2			CountLegs			( const CePathItem* const items
-												, const UINT2 nitem ) const;
-	virtual	LOGICAL			GetAdjustment		( FLOAT8& rotation
-												, FLOAT8& sfac ) const;
-	virtual CeArc*			GetFirstArc			( void ) const;
-	virtual CeArc*			GetLastArc			( void ) const;
-	virtual void			KillLegs			( void );
-	virtual	CeLeg*			CreateStraightLeg	( const CePathItem* const items
-												, const UINT2 nitem
-												, const UINT2 si
-												, UINT2& ei ) const;
-	virtual	CeLeg*			CreateCircularLeg	( const CePathItem* const items
-												, const UINT2 nitem
-												, const UINT2 si
-												, UINT2& ei ) const;
-	virtual	LOGICAL			IsInsertAtStart		( void ) const;
-	virtual	LOGICAL			IsInsertAtEnd		( void ) const;
-         */
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
         bool Create(PathItem[] items)
         {
             return false;
         }
         /*
-//	@mfunc	Create this path using an array of path items. This
-//			function should be called after allocating the memory
-//			for a CePath object.
-//
-//			Note that if the path object is TRANSIENT, no points
-//			or arcs will be created for the path, even if the
-//			path items indicate that they should be.
-//
+Creates this path using an array of path items. This
+function should be called after allocating the memory
+for a CePath object.
+
+Note that if the path object is TRANSIENT, no points
+or arcs will be created for the path, even if the
+path items indicate that they should be.
+
 //	@parm	Array of path items.
 //	@parm	The number of items in the array.
 //
 //	@rdesc	TRUE if path successfully populated.
-//
-//////////////////////////////////////////////////////////////////////
 
 LOGICAL CePath::Create ( const CePathItem* const items
 					   , const UINT2 nitem ) {
@@ -337,138 +361,117 @@ LOGICAL CePath::Create ( const CePathItem* const items
 
 } // end of Create
 #endif
+*/
+        /// <summary>
+        /// Counts the number of legs for this path.
+        /// </summary>
+        /// <param name="items">Array of path items.</param>
+        /// <returns>The number of legs.</returns>
+        int CountLegs(PathItem[] items)
+        {
+            // Each path item contains a leg number, arranged sequentially.
+            uint nleg=0;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Count the number of legs for this path.
-//
-//	@parm	Array of path items.
-//	@parm	The number of items in the array.
-//
-//	@rdesc	The number of legs.
-//
-//////////////////////////////////////////////////////////////////////
+            foreach (PathItem item in items)
+                nleg = Math.Max(nleg, item.Leg);
 
-UINT2 CePath::CountLegs ( const CePathItem* const items
-					    , const UINT2 nitem ) const {
+            return (int)nleg;
+        }
 
-//	Each path item contains a leg number, arranged sequentially.
+        /// <summary>
+        /// Creates a circular leg.
+        /// </summary>
+        /// <param name="items">Array of path items.</param>
+        /// <param name="si">Index to the item where the leg data starts.</param>
+        /// <param name="nexti">Index of the item where the next leg starts.</param>
+        /// <returns>The new leg.</returns>
+        Leg CreateCircularLeg(PathItem[] items, int si, out int nexti)
+        {
+            // Confirm that the first item refers to the BC.
+            if (items[si].ItemType != PathItemType.BC)
+                throw new Exception("PathOperation.CreateCircularLeg - Not starting at BC");
 
-	UINT2 nleg=0;
-	UINT2 curleg;
+            // The BC has to be followed by at least 3 items: angle, radius
+            // and EC (add an extra 1 to account for 0-based indexing).
+        	if (items.Length < si+4)
+                throw new Exception("PathOperation.CreateCircularLeg - Insufficient curve data");
 
-	for ( UINT2 i=0; i<nitem; i++ ) {
-		curleg = items[i].GetLeg();
-		if ( curleg>nleg ) nleg = curleg;
-	}
+            double bangle = 0.0;		// Angle at BC
+            double cangle = 0.0;		// Central angle
+            double eangle = 0.0;		// Angle at EC
+            bool twoangles = false;	    // True if bangle & eangle are both defined.
+            bool clockwise = true;		// True if curve is clockwise
+            int irad = 0;				// Index of the radius item
+            bool cul = false;			// True if cul-de-sac case
 
-	return nleg;
+            // Point to item following the BC.
+            nexti = si+1;
+            PathItemType type = items[nexti].ItemType;
 
-} // end of CountLegs
+            // If the angle following the BC is a central angle
+            if (type==PathItemType.CentralAngle)
+            {
+                // We have a cul-de-sac
+                cul = true;
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Create a circular leg.
-//
-//	@parm	Array of path items.
-//	@parm	The number of items in the array.
-//	@parm	Index to the item where the leg data starts.
-//	@parm	Index of the item where the next leg starts.
-//
-//	@rdesc	Pointer to the new leg.
-//
-//////////////////////////////////////////////////////////////////////
+                // Get the central angle.
+                cangle = items[nexti].Value;
+                nexti++;
+            }
+            else if (type==PathItemType.BcAngle)
+            {
+                // Get the entry angle.
+                bangle = items[nexti].Value;
+                nexti++;
 
-CeLeg* CePath::CreateCircularLeg ( const CePathItem* const items
-								 , const UINT2 nitem
-							     , const UINT2 si
-								 , UINT2& nexti ) const {
+                // Does an exit angle follow?
+                if (items[nexti].ItemType == PathItemType.EcAngle)
+                {
+                    eangle = items[nexti].Value;
+                    twoangles = true;
+                    nexti++;
+                }
+            }
+            else
+            {
+                // The field after the BC HAS to be an angle.
+                throw new Exception("Angle does not follow BC");
+            }
 
-//	Confirm that the first item refers to the BC.
-	if ( items[si].GetType() != PAT_BC ) {
-		ShowMessage("CePath::CreateCircularLeg\nNot starting at BC");
-		return 0;
-	}
+            // Must be followed by radius.
+            if (items[nexti].ItemType != PathItemType.Radius)
+                throw new Exception("Radius does not follow angle");
 
-//	The BC has to be followed by at least 3 items: angle, radius
-//	and EC (add an extra 1 to account for 0-based indexing).
-	if ( nitem < si+4 ) {
-		ShowMessage("CePath::CreateCircularLeg\nInsufficient curve data");
-		return 0;
-	}
+            // Get the radius
+            Distance radius = items[nexti].GetDistance();
+            irad = nexti;
+            nexti++;
 
-	FLOAT8		bangle=0.0;			// Angle at BC
-	FLOAT8		cangle=0.0;			// Central angle
-	FLOAT8		eangle=0.0;			// Angle at EC
-	CeDistance	radius;				// Radius
-	LOGICAL		twoangles=FALSE;	// True if bangle & eangle are both defined.
-	LOGICAL		clockwise=TRUE;		// True if curve is clockwise
-	UINT2		irad=0;				// Index of the radius item
-	LOGICAL		cul=FALSE;			// True if cul-de-sac case
+            // The item after the radius indicates whether the curve is counterclockwise.
+            if (items[nexti].ItemType == PathItemType.CounterClockwise)
+            {
+                nexti++;
+                clockwise = false;
+            }
 
-//	Point to item following the BC.
-	nexti = si+1;
-	PAT type = items[nexti].GetType();
+            // Get the leg ID.
+            uint legnum = items[si].Leg;
 
-//	If the angle following the BC is a central angle
-	if (  type==PAT_CANGLE ) {
+            // How many distances have we got?
+	        int ndist = 0;
+            for (; nexti<items.Length && items[nexti].Leg==legnum; nexti++)
+            {
+                if (items[nexti].IsDistance)
+                    ndist++;
+            }
 
-//		We have a cul-de-sac
-		cul = TRUE;
+            // Create the leg.
+            //CircularLeg leg = new CircularLeg(radius, clockwise, ndist);
 
-//		Get the central angle.
-		cangle = items[nexti].GetValue();
-		nexti++;
-	}
-	else if ( type==PAT_BANGLE ) {
+            return null;
+        }
+        /*
 
-//		Get the entry angle.
-		bangle = items[nexti].GetValue();
-		nexti++;
-
-//		Does an exit angle follow?
-		if ( items[nexti].GetType() == PAT_EANGLE ) {
-			eangle = items[nexti].GetValue();
-			twoangles = TRUE;
-			nexti++;
-		}
-	}
-	else {
-
-//		The field after the BC HAS to be an angle.
-		ShowMessage("Angle does not follow BC");
-		return 0;
-	}
-
-//	Must be followed by radius.
-	if ( items[nexti].GetType() != PAT_RADIUS ) {
-		ShowMessage("Radius does not follow angle");
-		return 0;
-	}
-
-//	Get the radius
-	items[nexti].GetDistance(radius);
-	irad = nexti;
-	nexti++;
-
-//	The item after the radius indicates whether the curve
-//	is counterclockwise.
-	if ( items[nexti].GetType() == PAT_CC ) {
-		nexti++;
-		clockwise = FALSE;
-	}
-
-//	Get the leg ID.
-	UINT2 legnum = items[si].GetLeg();
-
-//	How many distances have we got?
-	UINT2 ndist=0;
-	for ( ; nexti<nitem && items[nexti].GetLeg()==legnum; nexti++ ) {
-		if ( items[nexti].IsDistance() ) ndist++;
-	}
-
-//	Create the leg.
 	CeCircularLeg* pLeg =
 		new ( os_database::of(this)
 		    , os_ts<CeCircularLeg>::get() )
@@ -526,7 +529,7 @@ CeLeg* CePath::CreateCircularLeg ( const CePathItem* const items
 //
 //////////////////////////////////////////////////////////////////////
 
-CeLeg* CePath::CreateStraightLeg ( const CePathItem* const items
+private CeLeg* CePath::CreateStraightLeg ( const CePathItem* const items
 								 , const UINT2 nitem
 							     , const UINT2 si
 								 , UINT2& nexti ) const {
@@ -819,7 +822,7 @@ LOGICAL CePath::Execute ( void ) {
 //
 //////////////////////////////////////////////////////////////////////
 
-LOGICAL CePath::GetAdjustment ( FLOAT8& rotation
+private LOGICAL CePath::GetAdjustment ( FLOAT8& rotation
 							  , FLOAT8& sfac ) const {
 
 	FLOAT8 dN;			// Misclosure in northings
@@ -846,106 +849,6 @@ void CePath::Intersect ( void ) {
 } // end of Intersect
 #endif
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Rollforward this operation.
-//
-//	@rdesc	TRUE on success.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeExtraLeg.h"
-
-LOGICAL CePath::Rollforward ( void ) {
-
-	// Return if this operation has not been marked as changed.
-	if ( !this->IsChanged() ) return CeOperation::OnRollforward();
-
-	// If a line was originally attached to the start point (but
-	// is now preceded by one or more inserts), alter the start
-	// location so that its at a duplicate location.
-
-	// Don't do it at the start, since that's already covered
-	// via the passing of the end of the last insert (see below).
-	// If you do the following, the duplicate position will just
-	// get changed again!
-
-	//if ( IsInsertAtStart() ) {
-	//	CeArc* pFirst = GetFirstArc();
-	//	CeLocation* pStart = (CeLocation*)m_pFrom->GetpVertex();
-	//	if ( pFirst->GetpStart() == pStart ) {
-	//		CeMap* pMap = CeMap::GetpMap();
-	//		CeLocation* pS = pMap->AddDuplicate(*pStart);
-	//		CeLocation* pE = pFirst->GetpEnd();
-	//		pFirst->GetpLine()->ChangeEnds(*pS,*pE);
-	//	}
-	//}
-
-	// And similarly at the end. This is needed, because the very
-	// end the path never gets shifted (we need to detach it now
-	// to make sure the end of the existing line does move, since
-	// an insert will be taking its place).
-
-	if ( IsInsertAtEnd() ) {
-		CeArc* pLast = GetLastArc();
-		CeLocation* pEnd = (CeLocation*)m_pTo->GetpVertex();
-		if ( pLast->GetpEnd() == pEnd ) {
-			CeMap* pMap = CeMap::GetpMap();
-			CeLocation* pS = pLast->GetpStart();
-			CeLocation* pE = pMap->AddDuplicate(*pEnd);
-			CePoint* pPoint = pMap->AddPoint(pE,0);
-			pPoint->SetpCreator(*this);
-			pPoint->SetNextId();
-			pLast->GetpLine()->ChangeEnds(*pS,*pE);
-		}
-	}
-
-	// Get the rotation & scale factor to apply.
-	FLOAT8 rotation;
-	FLOAT8 sfac;
-	GetAdjustment( rotation, sfac );
-
-//	Notify each leg of the change ...
-
-//	Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
-	CeLocation* pInsert = 0;	// No insert prior to start
-
-//	Initial bearing is whatever the desired rotation is.
-	FLOAT8 bearing = rotation;
-
-	// Go through each leg, telling them to "save" (the leg actually
-	// checks whether it already refers to features).
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-
-		// For the second face of a staggered leg, we need to supply
-		// the newly adjusted ends of the leg that has just been
-		// processed (the regular version of it's rollforward function
-		// does nothing).
-
-		if ( m_pLegs[i]->GetFaceNumber()==2 ) {
-			CeExtraLeg* pLeg = dynamic_cast<CeExtraLeg*>(m_pLegs[i]);
-			if ( !pLeg ) {
-				AfxMessageBox("Second face has unexpected data type");
-				return FALSE;
-			}
-			if ( !pLeg->Rollforward(pInsert,*this,start,gotend) ) return FALSE;
-		}
-		else {
-			start = gotend;
-			if ( !(m_pLegs[i]->Rollforward(pInsert,*this,gotend,bearing,sfac)) ) return FALSE;
-		}
-
-	} // next leg
-
-//	Rollforward the base class.
-	return CeOperation::OnRollforward();
-
-} // end of Rollforward
-#endif
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -1116,31 +1019,6 @@ void CePath::DrawAngles	( const CePoint* const pFrom
 	}
 
 } // end of DrawAngles
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return a list of the features that were created by
-//			this operation.
-//
-//	@parm	The list to store the results. This list will be
-//			appended to, so you may want to clear the list
-//			prior to call.
-//
-//	@rdesc	The number of features in the list at return.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeObjectList.h"
-
-UINT4 CePath::GetFeatures ( CeObjectList& flist ) const {
-
-	// Append the features that were created on each leg of
-	// the path.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) m_pLegs[i]->GetFeatures(*this,flist);
-
-	return flist.GetCount();
-
-} // end of GetFeatures
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -1490,7 +1368,7 @@ const CeLocation* CePath::GetpEnd ( void ) const {
 //
 //////////////////////////////////////////////////////////////////////
 
-CeArc* CePath::GetFirstArc ( void ) const {
+private CeArc* CePath::GetFirstArc ( void ) const {
 
 	CeArc* pFirst = 0;
 
@@ -1511,7 +1389,7 @@ CeArc* CePath::GetFirstArc ( void ) const {
 //
 //////////////////////////////////////////////////////////////////////
 
-CeArc* CePath::GetLastArc ( void ) const {
+private CeArc* CePath::GetLastArc ( void ) const {
 
 	CeArc* pLast = 0;
 
@@ -1522,47 +1400,30 @@ CeArc* CePath::GetLastArc ( void ) const {
 	return pLast;
 
 } // end of GetLastArc
+*/
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Have any new spans been inserted at the very start
-//			of this connection path?
-//
-//	@rdesc	TRUE if insert(s) at the start.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Have any new spans been inserted at the very start of this connection path?
+        /// </summary>
+        /// <returns>True if insert(s) at the start.</returns>
+        bool IsInsertAtStart()
+        {
+            return m_Legs[0].IsNewSpan(0);
+        }
 
-LOGICAL CePath::IsInsertAtStart ( void ) const {
+        /// <summary>
+        /// Have any new spans been inserted at the very end of this connection path?
+        /// </summary>
+        /// <returns>True if insert(s) at the end.</returns>
+        bool IsInsertAtEnd()
+        {
+            int endIndex = m_Legs.Count - 1;
+            Leg leg = m_Legs[endIndex];
+            int nSpan = leg.Count;
+            return leg.IsNewSpan(nSpan-1);
+        }
 
-	const CeLeg* const pLeg = m_pLegs[0];
-	const UINT2 nSpan = pLeg->GetCount();
-	if ( nSpan==0 ) return FALSE;
-	return pLeg->IsNewSpan(0);
-
-} // end of IsInsertAtStart
-#endif
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Have any new spans been inserted at the very end
-//			of this connection path?
-//
-//	@rdesc	TRUE if insert(s) at the end.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CePath::IsInsertAtEnd ( void ) const {
-
-	const CeLeg* const pLeg = m_pLegs[m_NumLeg-1];
-	const UINT2 nSpan = pLeg->GetCount();
-	if ( nSpan==0 ) return FALSE;
-	return pLeg->IsNewSpan(nSpan-1);
-
-} // end of IsInsertAtEnd
-#endif
-
+        /*
 //////////////////////////////////////////////////////////////////////
 //
 //	@mfunc	Return a string that represents the definition of

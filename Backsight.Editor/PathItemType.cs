@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Angle at EC
         /// </summary>
-        EAngle = 60,
+        EcAngle = 60,
 
         /// <summary>
         /// EndOfCurve
