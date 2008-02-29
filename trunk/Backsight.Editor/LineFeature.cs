@@ -1127,5 +1127,68 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                     return String.Empty;
             }
         }
+
+        /// <summary>
+        /// Alters the end points for this line (probably moving the line in the process)
+        /// </summary>
+        /// <param name="newStart">The new start point</param>
+        /// <param name="newEnd">The new end point</param>
+        internal virtual void ChangeEnds(PointFeature newStart, PointFeature newEnd)
+        {
+            // Return if there is no change to make.
+            if (Object.ReferenceEquals(StartPoint, newStart) && Object.ReferenceEquals(EndPoint, newEnd))
+                return;
+
+            // This is a bit rough, but I think I better solution needs quite a re-think
+            if (!(m_Geom is SegmentGeometry))
+                throw new Exception("LineFeature.ChangeEnds - Only segment geometry is supported");
+
+            try
+            {
+                // Remove this line from the spatial index.
+                PreMove();
+
+                if (!Object.ReferenceEquals(StartPoint, newStart))
+                {
+                    StartPoint.CutReference(this);
+                    newStart.AddReference(this);
+                    m_Geom.StartTerminal = newStart;
+                }
+
+                if (!Object.ReferenceEquals(EndPoint, newEnd))
+                {
+                    EndPoint.CutReference(this);
+                    newEnd.AddReference(this);
+                    m_Geom.EndTerminal = newEnd;
+                }
+            }
+
+            finally
+            {
+                // Re-add this line to the spatial index.
+                PostMove();
+            }
+        }
+
+        /*
+//	@mfunc	Change the location of one end of this line. This is
+//			used by implementations of the ChangeEnds function.
+//
+//	@parm	The old end location.
+//	@parm	The new end location.
+//
+//	@rdesc	Pointer to the new end location.
+CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
+							  , CeLocation& newend ) {
+
+	// Cut the reference from the old end location to this line.
+	oldend.CutObject(*this);
+
+	// Reference the new end location to this line.
+	newend.AddObject(*this);
+	return &newend;
+
+} // end of ChangeEnd
+         */
     }
 }

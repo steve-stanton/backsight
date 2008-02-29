@@ -32,12 +32,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The start of the connection.
         /// </summary>
-        readonly ITerminal m_Start;
+        ITerminal m_Start;
 
         /// <summary>
         /// The end of the connection.
         /// </summary>
-        readonly ITerminal m_End;
+        ITerminal m_End;
 
         #endregion
 
@@ -67,6 +67,18 @@ namespace Backsight.Editor
         public IPointGeometry End
         {
             get { return m_End; }
+        }
+
+        internal ITerminal StartTerminal
+        {
+            get { return m_Start; }
+            set { m_Start = value; }
+        }
+
+        internal ITerminal EndTerminal
+        {
+            get { return m_End; }
+            set { m_End = value; }
         }
 
         abstract public ILength Length { get; }
