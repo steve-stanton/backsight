@@ -45,6 +45,8 @@
     <Compile Include="AutoSaver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="BearingDirection.cs" />
+    <Compile Include="CircularLeg.cs" />
+    <Compile Include="CircularLegFlag.cs" />
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />

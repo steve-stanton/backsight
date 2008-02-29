@@ -96,9 +96,9 @@ namespace Backsight.Editor
         abstract internal bool RollforwardFace (ref IPointGeometry insert, PathOperation op, ExtraLeg face,
                                                     IPosition spos, IPosition epos);
 
-        ushort Count
+        internal int Count
         {
-            get { return (ushort)m_Distances.Length; }
+            get { return m_Distances.Length; }
         }
 
         bool HasEndPoint(ushort index)
@@ -343,10 +343,12 @@ namespace Backsight.Editor
         /// this leg. This function is called by <see cref="PathOperation.GetFeatures"/>
         /// </summary>
         /// <param name="features">The list to load.</param>
+        /*
         void GetFeatures(List<Feature> features)
         {
             features.AddRange(m_Creations);
         }
+        */
 
         /// <summary>
         /// Loads a list of the features that were created by this operation.
@@ -354,7 +356,7 @@ namespace Backsight.Editor
         /// <param name="op">The operation that this leg relates to.</param>
         /// <param name="flist">The list to store the results. This list will be
         /// appended to, so you may want to clear the list prior to call.</param>
-        void GetFeatures(Operation op, List<Feature> flist)
+        internal void GetFeatures(Operation op, List<Feature> flist)
         {
             // Append the features representing this leg.
             int nspan = Math.Max(1, m_Distances.Length);
@@ -853,7 +855,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// </summary>
         /// <param name="index">The index of the span of interest.</param>
         /// <returns>True if new span.</returns>
-        bool IsNewSpan(int index)
+        internal bool IsNewSpan(int index)
         {
             if (NumSpan==0)
                 return false;
