@@ -101,7 +101,7 @@ namespace Backsight.Editor
             get { return m_Distances.Length; }
         }
 
-        bool HasEndPoint(ushort index)
+        internal bool HasEndPoint(int index)
         {
             if (index >= Count || (m_Switches[index] & LegItemFlag.OmitPoint) != 0)
                 return false;
@@ -566,7 +566,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="index">The index of the span in question.</param>
         /// <returns>True if line feature will be produced.</returns>
-        bool HasLine(int index)
+        internal bool HasLine(int index)
         {
             // No feature if the span index is out of range.
             if (index >= m_Distances.Length)

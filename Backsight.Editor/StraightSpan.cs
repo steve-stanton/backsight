@@ -14,6 +14,11 @@
 /// </remarks>
 
 using System;
+using System.Drawing;
+using System.Diagnostics;
+
+using Backsight.Geometry;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -125,210 +130,163 @@ namespace Backsight.Editor
             double sdist, edist;
             m_Leg.GetDistances(index, out sdist, out edist);
 
+            // See if the span has a line and a terminal point.
+            m_IsLine = m_Leg.HasLine(index);
+            m_IsEndPoint = m_Leg.HasEndPoint(index);
+
+            // Define the start position.
+            if (index==0)
+                m_Start = new Position(m_LegStartE, m_LegStartN);
+            else
+            {
+                sdist *= m_ScaleFactor;
+                m_Start = new Position(m_LegStartE + (sdist*m_SinBearing),
+                                       m_LegStartN + (sdist*m_CosBearing));
+            }
+
+            // Define the end position.
+            edist *= m_ScaleFactor;
+            m_End = new Position(m_LegStartE + (edist*m_SinBearing),
+                                 m_LegStartN + (edist*m_CosBearing));
+
+            //	Remember the requested index
+            m_Index = index;
+        }
+
+        /// <summary>
+        /// Draws this span (if visible).
+        /// </summary>
+        void Draw()
+        {
+            EditingController ec = EditingController.Current;
+            ISpatialDisplay draw = ec.ActiveDisplay;
+            IDrawStyle style = ec.Style(Color.Magenta);
+            IPosition[] line = new IPosition[] { m_Start, m_End };
+
+            if (m_IsLine)
+                style.Render(draw, line);
+            else
+                new DottedStyle(Color.Magenta).Render(draw, line);
+
+            //	Draw terminal point if it exists.
+            if (m_IsEndPoint)
+                style.Render(draw, m_End);
+        }
+
+        /// <summary>
+        /// Saves this span in the map.
+        /// </summary>
+        /// <param name="op">The editing operation this span is part of</param>
+        /// <param name="insert">Reference to a new point that was inserted just before
+        /// this span. Defined only during rollforward.</param>
+        /// <param name="old">Pointer to the feature that was previously associated with
+        /// this span. This will be not null when the span is being saved as part of
+        /// rollforward processing.</param>
+        /// <param name="veryEnd">The location at the very end of the connection path
+        /// that this span is part of.</param>
+        /// <returns>The feature (if any) that represents the span. If the span has a line,
+        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
+        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
+        /// meaning that there is no line & no terminal point.</returns>
+        Feature Save(Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
+        {
+            // Get map info.
+            CadastralMapModel map = CadastralMapModel.Current;
+
+            // Reference to the created feature (if any).
+            Feature feat = null;
+
+            // Make sure the start and end points have been rounded to
+            // the internal resolution.
+            IPointGeometry sloc = PointGeometry.Create(m_Start);
+            IPointGeometry eloc = PointGeometry.Create(m_End);
+
+            // If the span was previously associated with a feature, just
+            // move it. If the feature is a line, we want to move the
+            // location at the end (except in a case where a new line
+            // has just been inserted prior to it, in which case we
+            // need to change the start location so that it matches
+            // the end of the new guy).
+
+            if (old!=null)
+            {
+                if (m_IsLine) // Feature should therefore be a line
+                {
+                    LineFeature line = (old as LineFeature);
+                    if (line==null)
+                        throw new Exception("StraightSpan.Save - Mismatched line");
+
+                    if (insert!=null)
+                    {
+                        line.ChangeEnds(insert, line.EndPoint);
+                        if (!line.EndPoint.IsCoincident(veryEnd))
+                            line.EndPoint.Move(eloc);
+                    }
+                    else
+                    {
+                        if (line.EndPoint.IsCoincident(veryEnd))
+                            line.StartPoint.Move(sloc);
+                        else
+                        {
+                            line.StartPoint.Move(sloc);
+                            line.EndPoint.Move(eloc);
+                        }
+                    }
+                }
+                else if (m_IsEndPoint) // Feature should be a point
+                {
+                    PointFeature point = (old as PointFeature);
+                    if (point==null)
+                        throw new Exception("StraightSpan.Save - Mismatched point");
+
+                    if (!point.IsCoincident(veryEnd))
+                        point.Move(eloc);
+                }
+            }
+            else
+            {
+                // If we have an end point, add it. If it creates something
+                // new, assign an ID to it.
+                if (m_IsEndPoint)
+                {
+                    feat = map.EnsurePointExists(eloc, op);
+                    if (Object.ReferenceEquals(feat.Creator, op) && feat.Id==null)
+                        feat.SetNextId();
+                }
+
+                // Add a line if we have one.
+                if (m_IsLine)
+                {
+                    PointFeature ps = map.EnsurePointExists(sloc, op);
+                    PointFeature pe = map.EnsurePointExists(eloc, op);
+                    feat = map.AddLine(ps, pe, map.DefaultLineType, op);
+                }
+            }
+
+            return feat;
+        }
+
+        /// <summary>
+        /// Saves a newly inserted span.
+        /// </summary>
+        /// <param name="index">The index of the new span.</param>
+        /// <param name="creator">The operation that the new span should be referred to.</param>
+        /// <param name="isLast">Is the new span going to be the very last span in the last
+        /// leg of a connection path?</param>
+        /// <returns>The line that was created.</returns>
+        LineFeature SaveInsert(int index, PathOperation creator, bool isLast)
+        {
+            // Get the end positions for the new span.
+            Get(index);
+
+            // Make sure the start and end points have been rounded to
+            // the internal resolution.
+            IPointGeometry sloc = PointGeometry.Create(m_Start);
+            IPointGeometry eloc = PointGeometry.Create(m_End);
+
+            return null;
         }
         /*
-	FLOAT8 sdist;
-	FLOAT8 edist;
-	if ( !m_pLeg->GetDistances(index,sdist,edist) ) return FALSE;
-
-//	See if the span has a line and a terminal point.
-	m_IsLine = m_pLeg->HasLine(index);
-	m_IsEndPoint = m_pLeg->HasEndPoint(index);
-
-//	Define the start position.
-
-	if ( index==0 )
-		m_Start = CeVertex(m_LegStartE,m_LegStartN);
-	else {
-		sdist *= m_ScaleFactor;
-		m_Start = CeVertex( m_LegStartE + (sdist*m_SinBearing)
-						  , m_LegStartN + (sdist*m_CosBearing) );
-	}
-
-//	Define the end position.
-
-	edist *= m_ScaleFactor;
-	m_End = CeVertex( m_LegStartE + (edist*m_SinBearing)
-		  		    , m_LegStartN + (edist*m_CosBearing) );
-
-//	Remember the requested index
-	m_Index = INT2(index);
-
-	return TRUE;
-
-} // end of Get
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw this span (if visible).
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeStraightSpan::Draw ( void ) const {
-
-//	Get the view to do the draw.
-	CeDraw* pDraw = GetpDraw();
-	if ( !pDraw ) return;
-
-//	Draw the line if it is visible.
-	if ( m_IsLine ) 
-		pDraw->Draw(m_Start,m_End);
-	else
-		pDraw->DrawDotted(m_Start,m_End);
-
-//	Draw terminal point if it exists.
-	if ( m_IsEndPoint ) pDraw->Draw(m_End);
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Erase this span.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeStraightSpan::Erase ( void ) const {
-
-//	Get the view to do the draw.
-	CeDraw* pDraw = GetpDraw();
-	if ( !pDraw ) return;
-
-//	Erase the line (even if no line, it has been drawn dotted)
-	pDraw->Erase(m_Start,m_End);
-
-//	Erase terminal point if it exists
-	if ( m_IsEndPoint ) pDraw->Erase(m_End);
-
-} // end of Erase
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Save this span in the map.
-//
-//	@parm	Pointer a new location that was inserted just before
-//			this span. Defined only during rollforward.
-//	@parm	Pointer to the feature that was previously associated with
-//			this span. This will be non-zero when the span is being
-//			saved as part of rollforward processing.
-//	@parm	The location at the very end of the connection path
-//			that this span is part of.
-//
-//	@rdesc	Pointer to the feature (if any) that represents the span.
-//			If the span has a line, this will be a CeArc pointer. If
-//			the span has no line, it may be a CePoint feature at the
-//			END of the span. A null pointer is also valid, meaning
-//			that there is no line & no terminal point.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeLocation.h"
-
-CeFeature* CeStraightSpan::Save	( CeLocation* pInsert
-								, CeFeature* pOld
-								, const CeLocation* const pVeryEnd ) const {
-
-//	Get map info.
-	CeMap* pMap = CeMap::GetpMap();
-
-//	Pointer to the created feature (if any).
-	CeFeature* pFeat = 0;
-
-//	Make sure the start and end points have been rounded to
-//	the internal resolution.
-	CeLocation sloc(m_Start);
-	CeLocation eloc(m_End);
-	CeVertex svtx(sloc);
-	CeVertex evtx(eloc);
-
-	// If the span was previously associated with a feature, just
-	// move it. If the feature is a line, we want to move the
-	// location at the end (except in a case where a new line
-	// has just been inserted prior to it, in which case we
-	// need to change the start location so that it matches
-	// the end of the new guy).
-
-	if ( pOld ) {
-
-		if ( m_IsLine ) {	// Feature should therefore be an arc.
-			CeArc* pArc = dynamic_cast<CeArc*>(pOld);
-			if ( !pArc )
-				ShowMessage("CeStraightSpan::Save\nMismatched line");
-			else {
-				if ( pInsert ) {
-					CeLocation* pE = pArc->GetpEnd();
-					pArc->GetpLine()->ChangeEnds(*pInsert,*pE);
-					if ( pE!=pVeryEnd ) pE->Move(evtx);
-				}
-				else {
-					if ( pArc->GetpEnd()==pVeryEnd )
-						pArc->GetpStart()->Move(svtx);
-					else
-						pArc->Move(sloc,eloc);
-				}
-			}
-		}
-		else if ( m_IsEndPoint ) { // Feature should be a point
-
-			CePoint* pPoint = dynamic_cast<CePoint*>(pOld);
-			if ( !pPoint )
-				ShowMessage("CeStraightSpan::Save\nMismatched point");
-			else {
-				if ( pPoint->GetpVertex()!=pVeryEnd )
-					pPoint->Move(eloc);
-			}
-		}
-	}
-	else {
-
-//		If we have an end point, add it. If it creates something
-//		new, assign an ID to it.
-
-		if ( m_IsEndPoint ) {
-			LOGICAL isold;
-			pFeat = (CeFeature*)pMap->AddPoint(evtx,0,isold);
-			if ( !isold ) pFeat->SetNextId();
-		}
-
-//		Add a line if we have one.
-		if ( m_IsLine ) pFeat = pMap->AddArc(svtx,evtx,0);
-	}
-
-	return pFeat;
-
-} // end of Save
-#endif
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Save a newly insert span.
-//
-//	@parm	The index of the new span.
-//	@parm	The operation that the new span should be referred to.
-//	@parm	Is the new span going to be the very last span in
-//			the last leg of a connection path?
-//
-//	@rdesc	The line that was created.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CePath.h"
-
-CeArc* CeStraightSpan::SaveInsert ( const UINT2 index
-								  , const CePath& creator
-								  , const LOGICAL isLast ) {
-
-	// Get the end positions for the new span.
-	Get(index);
-
-	// Make sure the start and end points have been rounded to
-	// the internal resolution.
-	CeLocation sloc(m_Start);
-	CeLocation eloc(m_End);
-	CeVertex svtx(sloc);
-	CeVertex evtx(eloc);
-
 	// Get the location at the start of the span (in most cases,
 	// it should be there already -- the only exception is a
 	// case where the point was omitted).
