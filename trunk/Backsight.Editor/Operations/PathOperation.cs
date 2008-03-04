@@ -1324,41 +1324,25 @@ LOGICAL CePath::InsertLeg ( const CeLeg* const pCurLeg
 
 } // end of InsertLeg
 #endif
+        */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Get the location where this path starts from.
-//
-//	@rdesc	The start location.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// The point where the path starts.
+        /// </summary>
+        internal PointFeature StartPoint
+        {
+            get { return m_From; }
+        }
 
-const CeLocation* CePath::GetpStart ( void ) const {
+        /// <summary>
+        /// The point where the path ends.
+        /// </summary>
+        internal PointFeature EndPoint
+        {
+            get { return m_To; }
+        }
 
-	if ( m_pFrom )
-		return m_pFrom->GetpVertex();
-	else
-		return 0;
-
-} // end of GetpStart
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Get the location where this path ends.
-//
-//	@rdesc	The end location.
-//
-//////////////////////////////////////////////////////////////////////
-
-const CeLocation* CePath::GetpEnd ( void ) const {
-
-	if ( m_pTo )
-		return m_pTo->GetpVertex();
-	else
-		return 0;
-
-} // end of GetpEnd
-
+        /*
 //////////////////////////////////////////////////////////////////////
 //
 //	@mfunc	Return the very first line that was created along

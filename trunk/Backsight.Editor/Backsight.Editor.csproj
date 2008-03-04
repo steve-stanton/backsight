@@ -103,6 +103,12 @@
     <Compile Include="Forms\GetLineControl.Designer.cs">
       <DependentUpon>GetLineControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GetPointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetPointForm.Designer.cs">
+      <DependentUpon>GetPointForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IntersectDirectionAndDistanceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -181,6 +187,7 @@
     <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="PathItem.cs" />
     <Compile Include="PathItemType.cs" />
+    <Compile Include="PathUI.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
@@ -582,6 +589,10 @@
     <EmbeddedResource Include="Forms\GetOffsetForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetOffsetForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetPointForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetPointForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HistoryForm.resx">
       <SubType>Designer</SubType>
