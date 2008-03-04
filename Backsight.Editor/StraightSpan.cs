@@ -284,66 +284,40 @@ namespace Backsight.Editor
             IPointGeometry sloc = PointGeometry.Create(m_Start);
             IPointGeometry eloc = PointGeometry.Create(m_End);
 
-            return null;
+            // Get the location at the start of the span (in most cases,
+            // it should be there already -- the only exception is a
+            // case where the point was omitted).
+            CadastralMapModel map = CadastralMapModel.Current;
+            PointFeature pS = map.EnsurePointExists(sloc, creator);
+
+            // If the insert is going to be the very last span in the
+            // enclosing connection path, just pick up the terminal
+            // location of the path.
+            PointFeature pE = null;
+
+            if (isLast)
+            {
+                // Pick up the end of the path.
+                pE = creator.EndPoint;
+
+                // And ensure there has been no roundoff in the end position.
+                eloc = pE;
+            }
+            else
+            {
+                // Add a point at the end of the span. Do NOT attempt to re-use any existing
+                // point that happens to fall there. If you did, we could be re-using a location
+                // that comes later in the connection path (i.e. it may later be moved again!).
+                pE = map.AddPoint(eloc, map.DefaultPointType, creator);
+                m_IsEndPoint = true;
+
+                // Assign the next available ID to the point
+                pE.SetNextId();
+            }
+
+            // Add a line.
+            m_IsLine = true;
+            return map.AddLine(pS, pE, map.DefaultLineType, creator);
         }
-        /*
-	// Get the location at the start of the span (in most cases,
-	// it should be there already -- the only exception is a
-	// case where the point was omitted).
-	CeMap* pMap = CeMap::GetpMap();
-	const CeLocation* pS = pMap->AddLocation(svtx);
-
-	// If the insert is going to be the very last span in the
-	// enclosing connection path, just pick up the terminal
-	// location of the path.
-
-	const CeLocation* pE=0;
-
-	if ( isLast ) {
-
-		// Pick up the end of the path.
-		pE = creator.GetpEnd();
-
-		// And ensure there has been no roundoff in the end position.
-		evtx = CeVertex(pE->GetEasting(),pE->GetNorthing());
-	}
-	else {
-
-		// Does the end coincide with something that is already
-		// in the map? If so, create a duplicate of it (otherwise
-		// add the end location as normal).
-
-		// If we don't add a duplicate, we could be re-using a
-		// location that comes later in the connection path (i.e.
-		// it may later be moved again!).
-
-		pE = pMap->FindLocation(&evtx,FALSE);
-
-		if ( pE )
-			pE = pMap->AddDuplicate(*pE);
-		else
-			pE = pMap->AddLocation(evtx);
-
-		// Create a point at the end of the span (if there's a
-		// point there already, create a duplicate).
-		m_IsEndPoint = TRUE;
-		CePoint* pPoint = pMap->AddPoint((CeLocation* const)pE,0);
-
-		// Assign the next available ID to the point, and record
-		// the specified op as the creator.
-		pPoint->SetNextId();
-		pPoint->SetpCreator(creator);
-
-	}
-
-	// Add a line.
-	m_IsLine = TRUE;
-	CeArc* pArc = pMap->AddArc(svtx,evtx,0);
-	pArc->SetpCreator(creator);
-
-	return pArc;
-
-} // end of SaveInsert
-         */
     }
 }
