@@ -96,7 +96,7 @@ namespace Backsight.Editor
         /// <param name="start">The position of the start of the leg.</param>
         /// <param name="bearing">The bearing of the leg.</param>
         /// <param name="sfac">The scale factor to apply to distances on the leg.</param>
-        StraightSpan(StraightLeg leg, IPosition start, double bearing, double sfac)
+        internal StraightSpan(StraightLeg leg, IPosition start, double bearing, double sfac)
         {
             // Hold on to the supplied stuff.
             m_Leg = leg;
@@ -123,7 +123,7 @@ namespace Backsight.Editor
         /// Gets info for a specific span on a leg.
         /// </summary>
         /// <param name="index">Index of the span to get.</param>
-        void Get(int index)
+        internal void Get(int index)
         {
             // Ask the leg to return the distance to the start and the
             // end of the requested span.
@@ -156,7 +156,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Draws this span (if visible).
         /// </summary>
-        void Draw()
+        internal void Draw()
         {
             EditingController ec = EditingController.Current;
             ISpatialDisplay draw = ec.ActiveDisplay;

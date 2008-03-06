@@ -238,13 +238,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="index">Index of the span.</param>
         /// <returns>The associated feature (if any).</returns>
-        Feature GetFeature(int index)
+        protected Feature GetFeature(int index)
         {
             // Confirm the index is valid. For cul-de-sacs with no observed
             // spans, we only have one valid index.
             if (m_Distances.Length > 0 && index >= m_Distances.Length)
                 throw new IndexOutOfRangeException("Leg.GetFeature - Bad index");
-
 
             // The array of feature references should already be defined.
             if (m_Creations == null)

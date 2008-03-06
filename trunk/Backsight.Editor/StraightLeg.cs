@@ -17,6 +17,7 @@ using System;
 using System.Text;
 
 using Backsight.Editor.Operations;
+using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -42,7 +43,7 @@ namespace Backsight.Editor
         /// Creates a new <c>StraightLeg</c>
         /// </summary>
         /// <param name="nspan">The number of spans for the leg.</param>
-        StraightLeg(int nspan)
+        internal StraightLeg(int nspan)
             : base(nspan)
         {
             m_StartAngle = 0.0;
@@ -72,16 +73,6 @@ namespace Backsight.Editor
         internal override ILength Length
         {
             get { return new Length(GetTotal()); }
-        }
-
-        internal override bool Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool Rollforward(ref IPointGeometry insert, PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
-        {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         internal override bool SaveFace(PathOperation op, ExtraLeg face)
@@ -144,66 +135,51 @@ namespace Backsight.Editor
             }
 
             // Create a straight span
+            StraightSpan span = new StraightSpan(this, pos, bearing, sfac);
+
+            // Draw each visible span in turn.
+            for (int i = 0; i < this.Count; i++)
+            {
+                span.Get(i);
+                span.Draw();
+            }
+
+            // Return the end position of the last span.
+            pos = span.End;
+        }
+
+        /// <summary>
+        /// Draws a previously saved leg.
+        /// </summary>
+        /// <param name="preview">True if the path should be drawn in preview
+        /// mode (i.e. in the normal construction colour, with miss-connects
+        /// shown as dotted lines).</param>
+        void Draw(bool preview)
+        {
+            EditingController ec = EditingController.Current;
+            ISpatialDisplay display = ec.ActiveDisplay;
+            IDrawStyle style = ec.DrawStyle;
+
+            int nfeat = this.Count;
+
+            for (int i = 0; i < nfeat; i++)
+            {
+                Feature feat = GetFeature(i);
+                if (feat != null)
+                {
+                    if (preview)
+                        feat.Draw(display, Color.Magenta);
+                    else
+                        feat.Render(display, style);
+                }
+            }
+        }
+
+        internal override bool Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
         /*
-	CeStraightSpan span(this,pos,bearing,sfac);
-
-//	Draw (or erase) each visible span in turn.
-
-	UINT2 nspan = this->GetCount();
-
-	for ( UINT2 i=0; i<nspan; i++ ) {
-		span.Get(i);
-		if ( erase )
-			span.Erase();
-		else
-			span.Draw();
-	}
-
-//	Return the end position of the last span.
-	pos = span.GetEnd();
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw a previously saved leg.
-//
-//	@parm	TRUE if the path should be drawn in preview mode (i.e.
-//			in the normal construction colour, with miss-connects
-//			shown as dotted lines).
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeStraightLeg::Draw ( const LOGICAL preview ) const {
-
-//	If NOT drawing in preview mode, just draw each feature
-//	known to the leg. If we hit any gaps, draw a dotted line
-//	in between.
-
-	UINT2 nfeat = this->GetCount();
-
-	if ( preview ) {
-
-//		CeVertex startdot;		// Position of start of dotted section.
-//		CeVertex enddot;		// Position of end of dotted section.
-
-		for ( UINT2 i=0; i<nfeat; i++ ) {
-			const CeFeature* const pFeat = this->GetpFeature(i);
-			if ( pFeat ) pFeat->DrawThis(COL_MAGENTA);
-		}
-	}
-	else {
-
-//		Draw each feature the normal way.
-		for ( UINT2 i=0; i<nfeat; i++ ) {
-			const CeFeature* const pFeat = this->GetpFeature(i);
-			if ( pFeat ) pFeat->DrawThis();
-		}
-	}
-
-} // end of Draw
-
 //	@mfunc	Save features for this leg.
 //
 //	@parm	The connection path that this leg belongs to (not used).
@@ -248,9 +224,13 @@ LOGICAL CeStraightLeg::Save ( const CePath& op
 	return TRUE;
 
 } // end of Save
-#endif
+         */
 
-#ifdef _CEDIT
+        internal override bool Rollforward(ref IPointGeometry insert, PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+        /*
 //////////////////////////////////////////////////////////////////////
 //
 //	@mfunc	Rollforward this leg.
@@ -321,10 +301,10 @@ LOGICAL CeStraightLeg::Rollforward ( CeLocation*& pInsert
 	return TRUE;
 
 } // end of Rollforward
-#endif
 
-//////////////////////////////////////////////////////////////////////
-//
+         */
+
+        /*
 //	@mfunc	Draw any angles for this leg.
 //
 //	@parm	The point the observation must be made from.
@@ -394,10 +374,6 @@ void CeStraightLeg::DrawAngles ( const CePoint* const pFrom
 //			refer to the bearing to the end of the leg.
 //	@parm	The position of the end of this leg.
 //	@parm	The thing we're drawing to.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeDC.h"
 
 void CeStraightLeg::DrawAngles ( const CePoint* const pFrom
 							   , const CeOperation& op
@@ -500,40 +476,34 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
 	return TRUE;
 
 } // end of CreateAngleText
+*/
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Break this leg into two legs. The break must leave
-//			at least one distance in each of the resultant legs.
-//
-//	@parm	The connection path that contains this leg.
-//	@parm	The index of the span that should be at the start
-//			of the extra leg.
-//
-//	@rdesc	The address of the extra leg (at the end of the
-//			original leg).
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Breaks this leg into two legs. The break must leave at least
+        /// one distance in each of the resultant legs.
+        /// </summary>
+        /// <param name="op">The connection path that contains this leg.</param>
+        /// <param name="index">The index of the span that should be at the
+        /// start of the extra leg.</param>
+        /// <returns>The extra leg (at the end of the original leg).</returns>
+        Leg Break(PathOperation op, int index)
+        {
+            // Can't break right at the start or end.
+            int nTotal = this.Count;
+            if (index <= 0 || index >= nTotal)
+                return null;
 
-CeLeg* CeStraightLeg::Break ( CePath& op
-							, const INT4 index ) {
+            // Create a new straight leg with the right number of spans.
+            int nSpan = nTotal - index;
+            StraightLeg newLeg = new StraightLeg(nSpan);
 
-	// Can't break right at the start or end.
-	const UINT2 nTotal = GetCount();
-	if ( index<=0 || index>=nTotal ) return 0;
+            // Tell the operation to insert the new leg.
+            if (!op.InsertLeg(this, newLeg))
+                return null;
 
-	// Create a new straight leg with the right number of spans.
-	const UINT2 nSpan = nTotal-index;
-	CeStraightLeg* pNewLeg =
-		new ( os_database::of(this)
-		    , os_ts<CeStraightLeg>::get() ) CeStraightLeg(nSpan);
-
-	// Tell the operation to insert the new leg.
-	if ( !op.InsertLeg(this,pNewLeg) ) {
-		delete pNewLeg;
-		return 0;
-	}
+            return null;
+        }
+        /*
 
 	// Stick in a (clockwise) angle of 180 degrees.
 	pNewLeg->m_StartAngle = PI;
@@ -542,9 +512,6 @@ CeLeg* CeStraightLeg::Break ( CePath& op
 	MoveEndLeg(index,*pNewLeg);
 
 	return pNewLeg;
-
-} // end of Break
-#endif
         */
 
         /// <summary>
