@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Backsight.Editor.Operations
 {
@@ -281,87 +282,60 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// 
+        /// Creates this path using an array of path items.
         /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        bool Create(PathItem[] items)
+        /// <param name="items">Array of path items.</param>
+        /// <remarks>
+        /// Note that if the path object is TRANSIENT, no points or arcs will be created
+        /// for the path, even if the path items indicate that they should be. -- TODO:
+        /// check whether this is still relevant.
+        /// </remarks>
+        void Create(PathItem[] items)
         {
-            return false;
+            // Count the number of legs.
+            int numLeg = CountLegs(items);
+            if (numLeg==0)
+                throw new Exception("PathOperation.Create -- No connection legs");
+
+            m_Legs.Capacity = numLeg;
+
+            // Create each leg.
+
+            int legnum=0;       // Current leg number
+            int nexti=0;        // Index of the start of the next leg
+
+            for (int si=0; si<items.Length; si=nexti)
+            {
+                // Skip if no leg number (could be new units spec).
+                if (items[si].Leg==null)
+                {
+                    nexti = si+1;
+                    continue;
+                }
+
+                // Confirm the leg count is valid.
+                if (legnum+1>numLeg)
+                    throw new Exception("PathOperation.Create -- Bad number of path legs.");
+
+                // Create the leg.
+                Leg newLeg;
+                if (items[si].ItemType == PathItemType.BC)
+                    newLeg = CreateCircularLeg(items, si, out nexti);
+                else
+                    newLeg = CreateStraightLeg(items, si, out nexti);
+
+                // Exit if we failed to create the leg.
+                if (newLeg==null)
+                    throw new Exception("PathOperation.Create -- Unable to create leg");
+
+                m_Legs.Add(newLeg);
+            }
+
+            // Confirm we created the number of legs we expected.
+            if (numLeg!=m_Legs.Count)
+                throw new Exception("PathOperation.Create -- Unexpected number of legs");
         }
-        /*
-Creates this path using an array of path items. This
-function should be called after allocating the memory
-for a CePath object.
 
-Note that if the path object is TRANSIENT, no points
-or arcs will be created for the path, even if the
-path items indicate that they should be.
-
-//	@parm	Array of path items.
-//	@parm	The number of items in the array.
-//
-//	@rdesc	TRUE if path successfully populated.
-
-LOGICAL CePath::Create ( const CePathItem* const items
-					   , const UINT2 nitem ) {
-
-//	Count the number of legs.
-	m_NumLeg = CountLegs(items,nitem);
-	if ( m_NumLeg==0 ) {
-		ShowMessage("CePath::Create\nNo connection legs");
-		return FALSE;
-	}
-
-//	Create array of pointers to each leg.
-	m_pLegs = new ( os_database::of(this),
-				    os_typespec::get_pointer(),
-					m_NumLeg ) CeLeg*[m_NumLeg];
-
-//	Create each leg.
-
-	UINT2 legnum=0;			// Current leg number
-	UINT2 nexti=0;			// Index of the start of the next leg
-
-	for ( UINT2 si=0; si<nitem; si=nexti ) {
-
-//		Skip if no leg number (could be new units spec).
-		if ( items[si].GetLeg()==0 ) {
-			nexti = si+1;
-			continue;
-		}
-
-//		Confirm the leg count is valid.
-		if ( legnum+1>m_NumLeg ) {
-			ShowMessage("CePath::Create\nBad number of path legs.");
-			return FALSE;
-		}
-
-//		Create the leg.
-		if ( items[si].GetType()==PAT_BC )
-			m_pLegs[legnum] = CreateCircularLeg(items,nitem,si,nexti);
-		else
-			m_pLegs[legnum] = CreateStraightLeg(items,nitem,si,nexti);
-
-//		Exit if we failed to create the leg.
-		if ( !m_pLegs[legnum] ) return FALSE;
-
-//		Increment the number of legs we have created.
-		legnum++;
-
-	} // next leg
-
-//	Confirm we created the number of legs we expected.
-	if ( m_NumLeg!=legnum ) {
-		ShowMessage("CePath::Create -- unexpected number of legs");
-		return FALSE;
-	}
-
-	return TRUE;
-
-} // end of Create
-#endif
-*/
         /// <summary>
         /// Counts the number of legs for this path.
         /// </summary>
@@ -514,258 +488,190 @@ LOGICAL CePath::Create ( const CePathItem* const items
 
 } // end of CreateCircularLeg
 #endif
+         */
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Create a straight leg.
-//
-//	@parm	Array of path items.
-//	@parm	The number of items in the array.
-//	@parm	Index to the item where the leg data starts.
-//	@parm	Index of the last item used to define the leg.
-//
-//	@rdesc	Pointer to the new leg.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Creates a straight leg.
+        /// </summary>
+        /// <param name="items">Array of path items.</param>
+        /// <param name="si">Index to the item where the leg data starts.</param>
+        /// <param name="nexti">Index of the item where the next leg starts.</param>
+        /// <returns>The new leg.</returns>
+        Leg CreateStraightLeg(PathItem[] items, int si, out int nexti)
+        {
+            // Get the leg ID.
+            uint legnum = items[si].Leg;
 
-private CeLeg* CePath::CreateStraightLeg ( const CePathItem* const items
-								 , const UINT2 nitem
-							     , const UINT2 si
-								 , UINT2& nexti ) const {
+            // How many distances have we got?
+            int ndist = 0;
+            for (nexti=si; nexti<items.Length && items[nexti].Leg==legnum; nexti++)
+            {
+                if (items[nexti].IsDistance)
+                    ndist++;
+            }
 
-//	Get the leg ID.
-	UINT2 legnum = items[si].GetLeg();
+            // Create the leg.
+            StraightLeg leg = new StraightLeg(ndist);
 
-//	How many distances have we got?
-	UINT2 ndist=0;
-	for ( nexti=si; nexti<nitem && items[nexti].GetLeg()==legnum; nexti++ ) {
-		if ( items[nexti].IsDistance() ) ndist++;
-	}
+            // Assign each distance.
+            ndist = 0;
+            for (int i=si; i<nexti; i++)
+            {
+                Distance d = items[i].GetDistance();
+                if (d!=null)
+                {
+                    // See if there is a qualifier after the distance
+                    LegItemFlag qual = LegItemFlag.Null;
+                    if ((i+1) < nexti)
+                    {
+                        PathItemType nexttype = items[i+1].ItemType;
 
-//	Create the leg.
-	CeStraightLeg* pLeg = new ( os_database::of(this)
-							  , os_ts<CeStraightLeg>::get() )
-							  CeStraightLeg(ndist);
-//	CHARS msg[80];
-//	sprintf ( msg, "CePath::CreateStraightLeg = %x", pLeg );
-//	ShowMessage(msg);
+                        if (nexttype==PathItemType.MissConnect)
+                            qual = LegItemFlag.MissConnect;
 
-//	Assign each distance.
-	CeDistance dist;
-	ndist=0;
-	for ( UINT2 i=si; i<nexti; i++ ) {
-		if ( items[i].GetDistance(dist) ) {
+                        if (nexttype==PathItemType.OmitPoint)
+                            qual = LegItemFlag.OmitPoint;
+                    }
 
-//			See if there is a qualifier after the distance
-			SWT qual = SWT_NULL;
-			if ( i+1<nexti ) {
-				PAT nexttype = items[i+1].GetType();
-				if ( nexttype==PAT_MC ) qual = SWT_MC;
-				if ( nexttype==PAT_OP ) qual = SWT_OP;
-			}
-			
-			pLeg->SetDistance(dist,ndist,qual);
-			ndist++;
-		}
-	}
+                    leg.SetDistance(d, ndist, qual);
+                    ndist++;
+                }
+                
+            }
 
-//	If the first item is an angle, remember it as part of the leg.
+            // If the first item is an angle, remember it as part of the leg.
+            if (items[si].ItemType == PathItemType.Angle)
+                leg.StartAngle = items[si].Value;
+            else if (items[si].ItemType == PathItemType.Deflection)
+                leg.SetDeflection(items[si].Value);
 
-	if ( items[si].GetType() == PAT_ANGLE )
-		pLeg->SetAngle(items[si].GetValue());
-	else if ( items[si].GetType() == PAT_DEFLECTION )
-		pLeg->SetDeflection(items[si].GetValue());
+            // Return a reference to the new leg
+            return leg;
+        }
 
-//	Return pointer to the leg.
-	return pLeg;
+        /// <summary>
+        /// Adjusts the path (Helmert adjustment).
+        /// </summary>
+        /// <param name="dN">Misclosure in northing.</param>
+        /// <param name="dE">Misclosure in easting.</param>
+        /// <param name="precision">Precision denominator (zero if no adjustment needed).</param>
+        /// <param name="length">Total observed length.</param>
+        /// <param name="rotation">The clockwise rotation to apply (in radians).</param>
+        /// <param name="sfac">The scaling factor to apply.</param>
+        /// <returns>True if adjusted ok.</returns>
+        bool Adjust(out double dN, out double dE, out double precision, out double length,
+                    out double rotation, out double sfac)
+        {
+            dN = dE = precision = length = rotation = sfac = 0.0;
 
-} // end of CreateStraightLeg
-#endif
+            // Initialize position to the start of the path, corresponding to the initial
+            // un-adjusted end point.
+            IPosition start = m_From;
+            IPosition gotend = new Position(m_From);
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Adjust the path (Helmert adjustment).
-//
-//	@parm	Misclosure in northing.
-//	@parm	Misclosure in easting.
-//	@parm	Precision denominator (zero if no adjustment needed).
-//	@parm	Total observed length.
-//	@parm	The clockwise rotation to apply (in radians).
-//	@parm	The scaling factor to apply.
-//
-//	@rdesc	TRUE if adjusted ok.
-//
-//////////////////////////////////////////////////////////////////////
+            // Initial bearing is due north.
+            double bearing = 0.0;
 
-LOGICAL CePath::Adjust ( FLOAT8& dN
-					   , FLOAT8& dE
-					   , FLOAT8& precision
-					   , FLOAT8& length
-					   , FLOAT8& rotation
-					   , FLOAT8& sfac ) const {
+            // Go through each leg, updating the end position, and getting
+            // the total path length.
+            foreach (Leg leg in m_Legs)
+            {
+                length += leg.Length.Meters;
+                leg.Project(ref gotend, ref bearing, sfac);
+            }
 
-//	Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
+            // Get the bearing and distance of the end point we ended up with.
+            double gotbear = Geom.Bearing(m_From, gotend).Radians;
+            double gotdist = Geom.Distance(m_From, gotend);
 
-//	Initial bearing is due north.
-	FLOAT8 bearing = 0.0;
-	length = 0.0;
+            // Get the bearing and distance we want.
+            double wantbear = Geom.Bearing(m_From, m_To).Radians;
+            double wantdist = Geom.Distance(m_From, m_To);
 
-//	Go through each leg, updating the end position, and getting
-//	the total path length.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		length += m_pLegs[i]->GetLength();
-		m_pLegs[i]->Project(gotend,bearing);
-	}
+            // Figure out the rotation.
+            rotation = wantbear-gotbear;
 
-//	Get the bearing and distance of the end point we ended up with.
-	CeQuadVertex qgot(start,gotend);
-	FLOAT8 gotbear = qgot.GetBearing();
-	FLOAT8 gotdist = sqrt(start.DistanceSquared(gotend));
+            // Rotate the end point we got.
+            gotend = Geom.Rotate(m_From, gotend, new RadianValue(rotation));
 
-//	Get the bearing and distance we want.
-	CeVertex wantend(*m_pTo);
-	CeQuadVertex qwant(start,wantend);
-	FLOAT8 wantbear = qwant.GetBearing();
-	FLOAT8 wantdist = sqrt(start.DistanceSquared(wantend));
+            // Calculate the line scale factor.
+            double linefac = CadastralMapModel.Current.CoordinateSystem.GetLineScaleFactor(m_From, gotend);
 
-//	Figure out the rotation.
-	rotation = wantbear-gotbear;
+            // Figure out where the rotated end point ends up when we apply the line scale factor.
+            gotend = Geom.Polar(m_From, wantbear, gotdist*linefac);
 
-//	Rotate the end point we got.
-	gotend.Rotate(start,rotation);
+            // What misclosure do we have?
+            dN = gotend.Y - m_To.Y;
+            dE = gotend.X - m_To.X;
+            double delta = Math.Sqrt(dN*dN + dE*dE);
 
-//	Calculate the line scale factor.
-	FLOAT8 linefac =
-		CeMap::GetpMap()->GetCoordSystem().GetLineScaleFactor(start,gotend);
+            // What's the precision denominator (use a value of 0 to denote an exact match).
+            if (delta > MathConstants.TINY)
+                precision = wantdist/delta;
+            else
+                precision = 0.0;
 
-//	Figure out where the rotated end point ends up when we
-//	apply the line scale factor.
-	gotend = CeVertex(start,wantbear,gotdist*linefac);
+            // Figure out the scale factor for the adjustment (use a value of 0 if the start and end
+            // points are coincident). The distances here have NOT been adjusted for the line scale factor.
+            if (gotdist > MathConstants.TINY)
+                sfac = wantdist/gotdist;
+            else
+                sfac = 0.0;
 
-//	What misclosure do we have?
-	dN = gotend.GetNorthing() - wantend.GetNorthing();
-	dE = gotend.GetEasting() - wantend.GetEasting();
-	if ( fabs(dN)<TINY ) dN = 0.0;
-	if ( fabs(dE)<TINY ) dE = 0.0;
-	FLOAT8 delta = sqrt(dN*dN + dE*dE);
+            return true;
+        }
 
-//	What's the precision denominator (use a value of 0 to
-//	denote an exact match).
-	if ( delta>TINY )
-		precision = wantdist/delta;
-	else
-		precision = 0.0;
+        /// <summary>
+        /// Draws this path.
+        /// </summary>
+        /// <param name="rotation">The rotation to apply (in radians). Clockwise rotations are>0.</param>
+        /// <param name="sfac">The scale factor to apply.</param>
+        void Draw(double rotation, double sfac)
+        {
+            // Do nothing if the scale factor is undefined.
+            if (Math.Abs(sfac) < MathConstants.TINY)
+                return;
 
-//	Figure out the scale factor for the adjustment (use a
-//	value of 0 if the start and end points are coincident).
-//	The distances here have NOT been adjusted for the line
-//	scale factor.
-	if ( gotdist>TINY )
-		sfac = wantdist/gotdist;
-	else
-		sfac = 0.0;
+            // Initialize position to the start of the path.
+            IPosition gotend = new Position(m_From);
 
-	return TRUE;
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
 
-} // end of Adjust
+            // Get each leg to draw itself
+            foreach (Leg leg in m_Legs)
+                leg.Draw(ref gotend, ref bearing, sfac);
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw this path.
-//
-//	@parm	The rotation to apply (in radians). Clockwise rotations
-//			are>0.
-//	@parm	The scale factor to apply.
-//	@parm	TRUE if the draw should actually erase (default
-//			is FALSE).
-//
-//////////////////////////////////////////////////////////////////////
+            // Re-draw the terminal points to ensure that their color is on top.
+            DrawEnds();
+        }
 
-void CePath::Draw ( const FLOAT8 rotation
-				  , const FLOAT8 sfac
-				  , const LOGICAL erase ) const {
+        /// <summary>
+        /// Draws a previously saved path.
+        /// </summary>
+        /// <param name="preview">True if the path should be drawn in preview 
+        /// mode (i.e. in the normal construction colour, with miss-connects
+        /// shown as dotted lines).</param>
+        void Draw(bool preview)
+        {
+            foreach (Leg leg in m_Legs)
+                leg.Draw(preview);
+        }
 
-	// Do nothing if the scale factor is undefined.
-	if ( fabs(sfac)<TINY ) return;
+        /// <summary>
+        /// Draws the end points for this path.
+        /// </summary>
+        void DrawEnds()
+        {
+            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
 
-//	Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
+            if (m_From!=null)
+                m_From.Draw(display, Color.DarkBlue);
 
-//	Initial bearing is whatever the desired rotation is.
-	FLOAT8 bearing = rotation;
-
-//	Go through each leg, updating the end position, and getting
-//	the total path length.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		if ( erase )
-			m_pLegs[i]->Erase(gotend,bearing,sfac);
-		else
-			m_pLegs[i]->Draw(gotend,bearing,sfac);
-	}
-
-//	Re-draw the terminal points to ensure that their colour
-//	is on top.
-	DrawEnds();
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw a previously saved path.
-//
-//	@parm	TRUE if the path should be drawn in preview mode (i.e.
-//			in the normal construction colour, with miss-connects
-//			shown as dotted lines).
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::Draw ( const LOGICAL preview ) const {
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ )
-		m_pLegs[i]->Draw(preview);
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Erase this path.
-//
-//	@parm	The rotation to apply (in radians). Clockwise rotations
-//			are>0.
-//	@parm	The scale factor to apply.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::Erase ( const FLOAT8 rotation
-				   , const FLOAT8 sfac ) const {
-
-	this->Draw(rotation,sfac,TRUE);
-
-} // end of Erase
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw the end points for this path.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::DrawEnds ( void  ) const {
-
-//	It is assumed that the colours specified here are consistent
-//	with the dialog (see CdPath::SetColour).
-
-	if ( m_pFrom ) m_pFrom->DrawThis(COL_DARKBLUE);
-	if ( m_pTo   ) m_pTo->DrawThis(COL_LIGHTBLUE);
-
-} // end of DrawEnds
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
+            if (m_To!=null)
+                m_To.Draw(display, Color.LightBlue);
+        }
+        /*
 //	@mfunc	Execute this operation. This attaches persistent features
 //			to the path.
 //
@@ -812,31 +718,25 @@ LOGICAL CePath::Execute ( void ) {
 
 } // end of Execute
 #endif
+         */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return adjustment parameters (the bare bones).
-//
-//	@parm	The rotation to apply.
-//	@parm	The scale factor to apply.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Returns adjustment parameters (the bare bones).
+        /// </summary>
+        /// <param name="rotation">The rotation to apply.</param>
+        /// <param name="sfac">The scale factor to apply.</param>
+        /// <returns></returns>
+        bool GetAdjustment(out double rotation, out double sfac)
+        {
+            double dN;			// Misclosure in northings
+            double dE;			// Misclosure in eastings
+            double precision;	// Precision denominator
+            double length;		// Total observed length
 
-private LOGICAL CePath::GetAdjustment ( FLOAT8& rotation
-							  , FLOAT8& sfac ) const {
+            return Adjust(out dN, out dE, out precision, out length, out rotation, out sfac);
+        }
 
-	FLOAT8 dN;			// Misclosure in northings
-	FLOAT8 dE;			// Misclosure in eastings
-	FLOAT8 precision;	// Precision denominator
-	FLOAT8 length;		// Total observed length
-
-	return this->Adjust(dN,dE,precision,length,rotation,sfac);
-
-} // end of GetAdjustment
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
+        /*
 //	@mfunc	Handle any intersections created by this operation.
 //
 //////////////////////////////////////////////////////////////////////
@@ -1207,7 +1107,6 @@ void CePath::CreateAngleText ( CPtrList& text
         /// Calculates the precision of the connection path.
         /// </summary>
         /// <returns>The precision</returns>
-        /*
         uint GetPrecision()
         {
             double de;				// Misclosure in eastings
@@ -1225,7 +1124,6 @@ void CePath::CreateAngleText ( CPtrList& text
             else
                 return (uint)prec;
         }
-         */
 
         /// <summary>
         /// Returns the array index of a specific leg.

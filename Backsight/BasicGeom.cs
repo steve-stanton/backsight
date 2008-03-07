@@ -312,5 +312,25 @@ namespace Backsight
             double y = origin.Y + distance * Math.Cos(bearing);
             return new Position(x, y);
         }
+
+        /// <summary>
+        /// Rotates a position by a clockwise angle.
+        /// </summary>
+        /// <param name="origin">The position to rotate around.</param>
+        /// <param name="point">The position that needs to be rotated</param>
+        /// <param name="rotation">The clockwise rotation (less than zero for a
+        /// counter-clockwise rotation.</param>
+        /// <returns></returns>
+        public static IPosition Rotate(IPosition origin, IPosition point, IAngle rotation)
+        {
+            // What's the distance between the point we're rotating and the origin?
+            double dist = Distance(origin, point);
+
+            // Get the bearing of the rotated point with respect to the origin.
+            double newbearing = Bearing(origin, point).Radians + rotation.Radians;
+
+            // Figure out the new position.
+            return Polar(origin, newbearing, dist);
+        }
     }
 }
