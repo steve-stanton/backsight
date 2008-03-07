@@ -1201,130 +1201,83 @@ void CePath::CreateAngleText ( CPtrList& text
 	}
 
 } // end of CreateAngleText
+*/
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Calculate the precision of the connection path.
-//
-//	@rdesc	The precision.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Calculates the precision of the connection path.
+        /// </summary>
+        /// <returns>The precision</returns>
+        /*
+        uint GetPrecision()
+        {
+            double de;				// Misclosure in eastings
+            double dn;				// Misclosure in northings
+            double prec;			// Precision
+            double length;			// Total observed length
+            double rotation;		// Rotation for adjustment
+            double sfac;			// Adjustment scaling factor
 
-UINT4 CePath::GetPrecision ( void ) const {
+            Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
 
-	FLOAT8 de;				// Misclosure in eastings
-	FLOAT8 dn;				// Misclosure in northings
-	FLOAT8 prec;			// Precision
-	FLOAT8 length;			// Total observed length
-	FLOAT8 rotation;		// Rotation for adjustment
-	FLOAT8 sfac;			// Adjustment scaling factor
+            // If it's REALLY good, return 1 billion.
+            if (prec > (double)0xFFFFFFFF)
+                return 1000000000;
+            else
+                return (uint)prec;
+        }
+         */
 
-	Adjust(dn,de,prec,length,rotation,sfac);
+        /// <summary>
+        /// Returns the array index of a specific leg.
+        /// </summary>
+        /// <param name="leg">The leg of interest.</param>
+        /// <returns>The array index of the leg (-1 if not found).</returns>
+        int GetLegIndex(Leg leg)
+        {
+            return m_Legs.IndexOf(leg);
+        }
 
-	// If it's REALLY good, return 1 billion.
+        /// <summary>
+        /// Returns the leg at a specific place along the connection path.
+        /// </summary>
+        /// <param name="index">The array index of the desired leg.</param>
+        /// <returns>The requested leg (null if index out of range).</returns>
+        Leg GetLeg(int index)
+        {
+            if (index<0 || index>=m_Legs.Count)
+                return null;
+            else
+                return m_Legs[index];
+        }
 
-	if ( prec > FLOAT8(0xFFFFFFFF) )
-		return 1000000000;
-	else
-		return UINT4(prec);
+        /// <summary>
+        /// The total number of legs in this path.
+        /// </summary>
+        int NumLeg
+        {
+            get { return m_Legs.Count; }
+        }
 
-} // end of GetPrecision
+        /// <summary>
+        /// Inserts an extra leg into this connection path.
+        /// </summary>
+        /// <param name="curLeg">The leg that we already know about.</param>
+        /// <param name="newLeg">The extra leg that should follow it.</param>
+        /// <returns>True if inserted ok.</returns>
+        internal bool InsertLeg(Leg curLeg, Leg newLeg)
+        {
+            // Find the leg.
+            if (curLeg==null || newLeg==null)
+                return false;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the array index of a specific leg.
-//
-//	@parm	The leg of interest.
-//
-//	@rdesc	The array index of the leg (-1 if not found).
-//
-//////////////////////////////////////////////////////////////////////
+            int index = GetLegIndex(curLeg);
+            if (index<0)
+                return false;
 
-INT4 CePath::GetLegIndex ( const CeLeg& leg ) const {
-
-	for ( INT4 i=0; i<m_NumLeg; i++ ) {
-		if ( m_pLegs[i] == &leg ) return i;
-	}
-
-	return -1;
-
-} // end of GetLegIndex
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the address of a leg.
-//
-//	@parm	The array index of the desired leg.
-//
-//	@rdesc	The address of the leg (null if index out of range).
-//
-//////////////////////////////////////////////////////////////////////
-
-CeLeg* CePath::GetpLeg ( const INT4 index ) const {
-
-	if ( index<0 || index>=m_NumLeg ) return 0;
-	return m_pLegs[index];
-
-} // end of GetpLeg
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the total number of legs in this path.
-//
-//	@rdesc	The leg count.
-//
-//////////////////////////////////////////////////////////////////////
-
-INT4 CePath::GetNumLeg ( void ) const
-	{ return (INT4)m_NumLeg; }
-
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Insert an extra leg into this connection path.
-//
-//	@parm	The leg that we already know about.
-//	@parm	The extra leg that should follow it.
-//
-//	@rdesc	TRUE if inserted ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CePath::InsertLeg ( const CeLeg* const pCurLeg
-						  , const CeLeg* const pNewLeg ) {
-
-	// Find the leg.
-	if ( pCurLeg==0 || pNewLeg==0 ) return FALSE;
-	INT4 index = GetLegIndex(*pCurLeg);
-	if ( index<0 ) return FALSE;
-
-	// Define 1st array index for the new guy.
-	index++;
-
-	// Allocate a new array of leg pointers.
-	CeLeg** newlegs =
-		new ( os_database::of(this)
-			, os_typespec::get_pointer()
-			, m_NumLeg+1 ) CeLeg*[m_NumLeg+1];
-
-	// Copy over the stuff prior to the new one.
-	for ( UINT2 i=0; i<index; i++ ) { newlegs[i] = m_pLegs[i]; }
-
-	// Append the new one.
-	newlegs[index] = (CeLeg*)pNewLeg;
-
-	// Copy over any stuff that comes after it.
-	for ( i=index; i<m_NumLeg; i++ ) { newlegs[i+1] = m_pLegs[i]; }
-
-	// Replace the original array with the new one.
-	delete [] m_pLegs;
-	m_pLegs = newlegs;
-	m_NumLeg++;
-	return TRUE;
-
-} // end of InsertLeg
-#endif
-        */
+            // Do the insert
+            m_Legs.Insert(index+1, newLeg);
+            return true;
+        }
 
         /// <summary>
         /// The point where the path starts.
