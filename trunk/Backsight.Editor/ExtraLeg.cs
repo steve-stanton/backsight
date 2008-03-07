@@ -111,6 +111,30 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Draws this leg
+        /// </summary>
+        /// <param name="pos">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated
+        /// for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
+        {
+            // Do nothing.
+        }
+
+        /// <summary>
+        /// Draws a previously saved leg.
+        /// </summary>
+        /// <param name="preview">True if the path should be drawn in preview
+        /// mode (i.e. in the normal construction colour, with miss-connects
+        /// shown as dotted lines).</param>
+        internal override void Draw(bool preview)
+        {
+            // Do nothing.
+        }
+
+        /// <summary>
         /// Saves features for this leg.
         /// </summary>
         /// <param name="op">The connection path that this leg belongs to.</param>

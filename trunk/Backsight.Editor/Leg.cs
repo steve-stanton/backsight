@@ -89,6 +89,8 @@ namespace Backsight.Editor
         abstract internal IPosition Center { get; }
         abstract internal string DataString { get; }
         abstract internal void Project (ref IPosition pos, ref double bearing, double sfac);
+        abstract internal void Draw (ref IPosition terminal, ref double bearing, double sfac);
+        abstract internal void Draw (bool preview);
         abstract internal bool Save (PathOperation op, ref IPosition terminal, ref double bearing, double sfac);
         abstract internal bool Rollforward (ref IPointGeometry insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
@@ -148,7 +150,7 @@ namespace Backsight.Editor
         /// <param name="index">The index of the distance [0,m_NumSpan-1]</param>
         /// <param name="qualifier"></param>
         /// <returns>True if index was valid.</returns>
-        protected bool SetDistance(Distance distance, int index, LegItemFlag qualifier)
+        internal bool SetDistance(Distance distance, int index, LegItemFlag qualifier)
         {
             // Return if index is out of range.
             if (index<0 || index>=m_Distances.Length)

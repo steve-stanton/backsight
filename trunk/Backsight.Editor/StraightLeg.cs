@@ -15,9 +15,9 @@
 
 using System;
 using System.Text;
+using System.Drawing;
 
 using Backsight.Editor.Operations;
-using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -51,6 +51,9 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// Angle at the start of the leg (signed). 
+        /// </summary>
         internal double StartAngle
         {
             get { return m_StartAngle; }
@@ -123,7 +126,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        void Draw(ref IPosition pos, ref double bearing, double sfac)
+        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
@@ -154,7 +157,7 @@ namespace Backsight.Editor
         /// <param name="preview">True if the path should be drawn in preview
         /// mode (i.e. in the normal construction colour, with miss-connects
         /// shown as dotted lines).</param>
-        void Draw(bool preview)
+        internal override void Draw(bool preview)
         {
             EditingController ec = EditingController.Current;
             ISpatialDisplay display = ec.ActiveDisplay;
@@ -412,7 +415,7 @@ void CeStraightLeg::DrawAngles ( const CePoint* const pFrom
         /// </summary>
         /// <param name="value">The deflection, in radians. Negated values go
         /// counter-clockwise.</param>
-        void SetDeflection(double value)
+        internal void SetDeflection(double value)
         {
             // Record the deflection angle at the start of this leg.
             m_StartAngle = value;
