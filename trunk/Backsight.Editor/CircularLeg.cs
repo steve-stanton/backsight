@@ -202,7 +202,7 @@ namespace Backsight.Editor
             throw new Exception("The method or operation is not implemented.");
         }
 
-        internal override bool Save(Backsight.Editor.Operations.PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override void Save(Backsight.Editor.Operations.PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
         {
             throw new Exception("The method or operation is not implemented.");
         }
