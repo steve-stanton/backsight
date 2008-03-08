@@ -671,54 +671,36 @@ namespace Backsight.Editor.Operations
             if (m_To!=null)
                 m_To.Draw(display, Color.LightBlue);
         }
-        /*
-//	@mfunc	Execute this operation. This attaches persistent features
-//			to the path.
-//
-//////////////////////////////////////////////////////////////////////
 
-LOGICAL CePath::Execute ( void ) {
+        /// <summary>
+        /// Executes this operation. This attaches persistent features to the path.
+        /// </summary>
+        internal void Execute()
+        {
+            // To from and to points MUST be defined.
+            if (m_From==null || m_To==null)
+                throw new Exception("PathOperation.Execute -- terminal(s) not defined.");
 
-//	To from and to points MUST be defined.
-	if ( !(m_pFrom && m_pTo) ) {
-		ShowMessage ( "CePath::Execute -- terminal(s) not defined." );
-		return FALSE;
-	}
+            // Get the rotation & scale factor to apply.
+            double rotation, sfac;
+            GetAdjustment(out rotation, out sfac);
 
-//	Get the rotation & scale factor to apply.
-	FLOAT8 rotation;
-	FLOAT8 sfac;
-	GetAdjustment( rotation, sfac );
+            // Go through each leg, adding features as required. This logic
+            // is basically the same as the Draw() logic ...
 
-//	Go through each leg, adding features as required. This logic
-//	is basically the same as the Draw() logic ...
+            // Initialize position to the start of the path.
+            IPosition gotend = new Position(m_From);
 
-//	Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
 
-//	Initial bearing is whatever the desired rotation is.
-	FLOAT8 bearing = rotation;
+            // Go through each leg, asking them to make features.
+            foreach (Leg leg in m_Legs)
+                leg.Save(this, ref gotend, ref bearing, sfac);
 
-//	Go through each leg, asking them to make features.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		if ( !(m_pLegs[i]->Save(*this,gotend,bearing,sfac)) ) return FALSE;
-	}
-
-//	Add references to this operation.
-	this->AddReferences();
-
-//	Handle any intersection the path has with the map.
-	this->Intersect();
-
-//	Clean up the map.
-	CeMap::GetpMap()->CleanEdit();
-
-	return TRUE;
-
-} // end of Execute
-#endif
-         */
+            // Peform standard completion steps
+            Complete();
+        }
 
         /// <summary>
         /// Returns adjustment parameters (the bare bones).
@@ -736,70 +718,27 @@ LOGICAL CePath::Execute ( void ) {
             return Adjust(out dN, out dE, out precision, out length, out rotation, out sfac);
         }
 
+        /// <summary>
+        /// Returns the total number of observed spans for this connection path.
+        /// </summary>
+        /// <returns>The total number of observed spans for this connection path.</returns>
+        int GetCount()
+        {
+            // Accumulate the number of spans in each leg. Treat cul-de-sacs
+            // with no observed spans as a count of 1 (although there is no
+            // observation, a feature is still created for it).
+
+            int tot = 0;
+
+            foreach (Leg leg in m_Legs)
+            {
+                int nspan = Math.Max(1, leg.Count);
+                tot += nspan;
+            }
+
+            return tot;
+        }
         /*
-//	@mfunc	Handle any intersections created by this operation.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::Intersect ( void ) {
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ )
-		m_pLegs[i]->Intersect(*this);
-
-} // end of Intersect
-#endif
-
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the total number of observed spans for this
-//			connection path. The return value is suitable for
-//			allocating memory for subsequent calls to
-//			<mf CePath::GetpFeatures> and <mf CePath::GetDistances>.
-//
-//////////////////////////////////////////////////////////////////////
-
-UINT4 CePath::GetCount ( void ) const {
-
-//	Accumulate the number of spans in each leg. Treat cul-de-sacs
-//	with no observed spans as a count of 1 (although there is no
-//	observation, a feature is still created for it).
-
-	UINT4 tot=0;
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		UINT2 nspan = max(1,m_pLegs[i]->GetCount());
-		tot += UINT4(nspan);
-	}
-
-	return tot;
-
-} // end of GetCount
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Load an array with pointers to all the features that
-//			exist on this path. Each span could be represented by
-//			pointers to CeArc or CePoint features. A span that is
-//			a miss-connect will have a NULL feature pointer.
-//
-//	@parm	Array of CeFeature pointers to load. The allocation
-//			for the array must match the value returned from
-//			<CePath::GetCount>.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::GetpFeatures ( CeFeature** pFeatures ) const {
-
-	UINT4 tot=0;
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ )
-		m_pLegs[i]->GetpFeatures(pFeatures,tot);
-
-} // end of GetpFeatures
-
-//////////////////////////////////////////////////////////////////////
-//
 //	@mfunc	Load an array of CeDistance objects with the observed
 //			lengths of each span on this path. In the case of
 //			cul-de-sacs that have no observed span, the distance
@@ -1193,49 +1132,35 @@ void CePath::CreateAngleText ( CPtrList& text
             get { return m_To; }
         }
 
-        /*
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the very first line that was created along
-//			this connection path (if any).
-//
-//	@rdesc	The first line (null if no lines were created).
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Returns the very first line that was created along this
+        /// connection path (if any).
+        /// </summary>
+        /// <returns>The first line (null if no lines were created).</returns>
+        LineFeature GetFirstLine()
+        {
+            LineFeature first = null;
 
-private CeArc* CePath::GetFirstArc ( void ) const {
+            for (int i = 0; i < m_Legs.Count && first == null; i++)
+                first = m_Legs[i].GetFirstLine();
 
-	CeArc* pFirst = 0;
+            return first;
+        }
 
-	for ( UINT2 i=0; i<m_NumLeg && pFirst==0; i++ ) {
-		pFirst = m_pLegs[i]->GetFirstArc();
-	}
+        /// <summary>
+        /// Returns the very last line that was created along this
+        /// connection path (if any).
+        /// </summary>
+        /// <returns>The last line (null if no lines were created).</returns>
+        LineFeature GetLastLine()
+        {
+            LineFeature last = null;
 
-	return pFirst;
+            for (int i = (m_Legs.Count - 1); i >= 0 && last == null; i--)
+                last = m_Legs[i].GetLastLine();
 
-} // end of GetFirstArc
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the very last line that was created along
-//			this connection path (if any).
-//
-//	@rdesc	The last line (null if no lines were created).
-//
-//////////////////////////////////////////////////////////////////////
-
-private CeArc* CePath::GetLastArc ( void ) const {
-
-	CeArc* pLast = 0;
-
-	for ( INT2 i=(m_NumLeg-1); i>=0 && pLast==0; i-- ) {
-		pLast = m_pLegs[i]->GetLastArc();
-	}
-
-	return pLast;
-
-} // end of GetLastArc
-*/
+            return last;
+        }
 
         /// <summary>
         /// Have any new spans been inserted at the very start of this connection path?

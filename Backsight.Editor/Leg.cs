@@ -91,7 +91,7 @@ namespace Backsight.Editor
         abstract internal void Project (ref IPosition pos, ref double bearing, double sfac);
         abstract internal void Draw (ref IPosition terminal, ref double bearing, double sfac);
         abstract internal void Draw (bool preview);
-        abstract internal bool Save (PathOperation op, ref IPosition terminal, ref double bearing, double sfac);
+        abstract internal void Save (PathOperation op, ref IPosition terminal, ref double bearing, double sfac);
         abstract internal bool Rollforward (ref IPointGeometry insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
         abstract internal bool SaveFace (PathOperation op, ExtraLeg face);
@@ -806,7 +806,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Should be greater than zero.</param>
         /// <param name="to">The leg to move stuff to. Must have enough space to hold the extra stuff.</param>
         /// <returns>True if moved ok.</returns>
-        bool MoveEndLeg(int index, Leg to)
+        internal bool MoveEndLeg(int index, Leg to)
         {
             // Destination MUST have exactly the right size.
             if (to.NumSpan != (this.NumSpan-index))
@@ -883,7 +883,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Returns the very first line that was created along this leg (if any).
         /// </summary>
         /// <returns>The first line (null if no lines were created).</returns>
-        LineFeature GetFirstLine()
+        internal LineFeature GetFirstLine()
         {
             int nSpan = Math.Max(1, NumSpan);
 
@@ -901,7 +901,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Returns the very last line that was created along this leg (if any).
         /// </summary>
         /// <returns>The last line (null if no lines were created).</returns>
-        LineFeature GetLastLine()
+        internal LineFeature GetLastLine()
         {
             int nSpan = Math.Max(1, NumSpan);
 

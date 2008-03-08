@@ -143,10 +143,8 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        /// <returns></returns>
-        internal override bool Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
         {
-            return false;
         }
 
         /// <summary>

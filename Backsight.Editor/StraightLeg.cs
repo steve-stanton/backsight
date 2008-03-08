@@ -178,7 +178,7 @@ namespace Backsight.Editor
             }
         }
 
-        internal override bool Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -504,18 +504,14 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             if (!op.InsertLeg(this, newLeg))
                 return null;
 
-            return null;
+            // Stick in a (clockwise) angle of 180 degrees.
+            newLeg.StartAngle = Math.PI;
+
+            // Move observations etc from the end of the original leg.
+            MoveEndLeg(index, newLeg);
+
+            return newLeg;
         }
-        /*
-
-	// Stick in a (clockwise) angle of 180 degrees.
-	pNewLeg->m_StartAngle = PI;
-
-	// Move observations etc from the end of the original leg.
-	MoveEndLeg(index,*pNewLeg);
-
-	return pNewLeg;
-        */
 
         /// <summary>
         /// A string representing the observations for this leg. 
