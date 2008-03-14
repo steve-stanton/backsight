@@ -126,6 +126,7 @@ namespace Backsight.Editor
         public ILength Radius
         {
             get { return m_Radius; }
+            internal set { m_Radius = value; }
         }
 
         #endregion
