@@ -14,6 +14,9 @@
 /// </remarks>
 
 using System;
+using System.Drawing;
+
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -28,7 +31,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// First angle. Either at the BC, or a central angle. In radians. It's
-        /// a central angle if the FLG_CULDESAC is set.
+        /// a central angle if the <see cref="IsCulDeSac"/> property is true.
         /// </summary>
         double m_Angle1;
 
@@ -99,15 +102,6 @@ namespace Backsight.Editor
 
         #endregion
 
-        /*
-        private:
-            virtual void		SaveSpan			( CeLocation*& pInsert
-                                                    , const CePath& path
-                                                    , CeCircularSpan& span
-                                                    , const UINT2 index );
-            virtual void		SetCuldesac			( const LOGICAL isculdesac );
-         */
-
         /// <summary>
         /// The circle that this leg sits on.
         /// </summary>
@@ -144,245 +138,205 @@ namespace Backsight.Editor
             }
         }
 
-        //	@mfunc	Given the position of the start of this leg, along with
-        //			an initial bearing, project the end of the leg, along with
-        //			an exit bearing.
-        //
-        //	@parm	The position for the start of the leg. Updated to be
-        //			the position for the end of the leg.
-        //	@parm	The bearing at the end of the previous leg. Updated for
-        //			this leg.
-        //	@parm	Scale factor to apply to distances (default=1.0).
-
+        /// <summary>
+        /// Given the position of the start of this leg, along with an initial bearing,
+        /// project the end of the leg, along with an exit bearing.
+        /// </summary>
+        /// <param name="pos">The position for the start of the leg. Updated to be the position
+        /// for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated for
+        /// this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
         internal override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
-            throw new Exception("The method or operation is not implemented.");
-            /*
-//	Get circle info
-	CeVertex centre;
-	CeVertex ec;
-	FLOAT8 ebearing;
-	FLOAT8 bear2bc;
-	GetPositions ( pos, bearing, sfac,
-				   centre, bear2bc, ec, ebearing );
+            // Get circle info
+            IPosition center, ec;
+            double ebearing, bear2bc;
+            GetPositions(pos, bearing, sfac, out center, out bear2bc, out ec, out ebearing);
 
-//	Stick results into return variables
-	pos = ec;
-	bearing = ebearing;
-             */
+            // Stick results into return variables
+            pos = ec;
+            bearing = ebearing;
         }
 
+        /// <summary>
+        /// Given the position of the start of this leg, along with an initial bearing, get
+        /// other positions (and bearings) relating to the circle.
+        /// </summary>
+        /// <param name="bc">The position for the BC.</param>
+        /// <param name="sbearing">The position for the BC.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <param name="center">Position of the circle centre.</param>
+        /// <param name="bear2bc">Bearing from the centre to the BC.</param>
+        /// <param name="ec">Position of the EC.</param>
+        /// <param name="ebearing">Exit bearing.</param>
+        internal void GetPositions(IPosition bc, double sbearing, double sfac,
+                            out IPosition center, out double bear2bc, out IPosition ec, out double ebearing)
+        {
+            // Have we got a cul-de-sac?
+            bool cul = IsCulDeSac;
+
+            // Remember reverse bearing if we have a cul-de-sac.
+            double revbearing = sbearing + Math.PI;
+
+            //	Initialize current bearing.
+            double bearing = sbearing;
+
+            // Counter-clockwise?
+            bool ccw = (m_Flag & CircularLegFlag.CounterClockwise)!=0;
+
+            // Get radius in meters on the ground (and scale it).
+            double radius = m_Radius.Meters * sfac;
+
+            // Get to the center (should really get to the P.I., but not sure
+            // where that is when the curve is > half a circle -- need to
+            // check some book).
+
+            if (cul)
+            {
+                if (ccw)
+                    bearing -= (m_Angle1*0.5);
+                else
+                    bearing += (m_Angle1*0.5);
+            }
+            else
+            {
+                if (ccw)
+                    bearing -= (Math.PI-m_Angle1);
+                else
+                    bearing += (Math.PI-m_Angle1);
+            }
+
+            double dE = radius * Math.Sin(bearing);
+            double dN = radius * Math.Cos(bearing);
+
+            double x = bc.X + dE;
+            double y = bc.Y + dN;
+            center = new Position(x, y);
+
+            // Return the bearing from the center to the BC (the reverse
+            // of the bearing we just used).
+            bear2bc = bearing + Math.PI;
+
+            // Now go out to the EC. For regular curves, figure out the
+            // central angle by comparing the observed length of the curve
+            // to the total circumference.
+            if (cul)
+            {
+                if (ccw)
+                    bearing -= (Math.PI-m_Angle1);
+                else
+                    bearing += (Math.PI-m_Angle1);
+            }
+            else
+            {
+                double length = GetTotal() * sfac;
+                double circumf = radius * MathConstants.PIMUL2;
+                double ca = MathConstants.PIMUL2 * (length/circumf);
+
+                if (ccw)
+                    bearing += (Math.PI-ca);
+                else
+                    bearing -= (Math.PI-ca);
+            }
+
+            // Define the position of the EC.
+            x += (radius * Math.Sin(bearing));
+            y += (radius * Math.Cos(bearing));
+            ec = new Position(x, y);
+
+            // Define the exit bearing. For cul-de-sacs, the exit bearing
+            // is the reverse of the original bearing (lines are parallel).
+
+            if (cul)
+                ebearing = revbearing;
+            else
+            {
+                // If we have a second angle, use that
+                double angle;
+                if ((m_Flag & CircularLegFlag.TwoAngles)!=0)
+                    angle = m_Angle2;
+                else
+                    angle = m_Angle1;
+
+                if (ccw)
+                    ebearing = bearing - (Math.PI-angle);
+                else
+                    ebearing = bearing + (Math.PI-angle);
+            }
+        }
+
+        /// <summary>
+        /// Draws this leg
+        /// </summary>
+        /// <param name="pos">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated
+        /// for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
+        {
+            //	Create an undefined circular span
+            CircularSpan span = new CircularSpan(this, pos, bearing, sfac);
+
+            // Draw each visible span in turn. Note that for cul-de-sacs, there may be
+            // no observed spans.
+
+            int nspan = this.Count;
+
+            if (nspan==0)
+            {
+                span.Get(0);
+                span.Draw();
+            }
+            else
+            {
+                for (int i = 0; i < nspan; i++)
+                {
+                    span.Get(i);
+                    span.Draw();
+                }
+            }
+
+            // Update BC info to refer to the EC.
+            pos = span.EC;
+            bearing = span.ExitBearing;
+        }
+
+        /// <summary>
+        /// Draws a previously saved leg.
+        /// </summary>
+        /// <param name="preview">True if the path should be drawn in preview
+        /// mode (i.e. in the normal construction colour, with miss-connects
+        /// shown as dotted lines).</param>
+        internal override void Draw(bool preview)
+        {
+            // Identical to StraightLeg.Draw...
+
+            EditingController ec = EditingController.Current;
+            ISpatialDisplay display = ec.ActiveDisplay;
+            IDrawStyle style = ec.DrawStyle;
+
+            int nfeat = this.Count;
+
+            for (int i = 0; i < nfeat; i++)
+            {
+                Feature feat = GetFeature(i);
+                if (feat != null)
+                {
+                    if (preview)
+                        feat.Draw(display, Color.Magenta);
+                    else
+                        feat.Render(display, style);
+                }
+            }
+        }
+
+        internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
         /*
-//	@mfunc	Given the position of the start of this leg, along with
-//			an initial bearing, get other positions (and bearings)
-//			relating to the circle.
-//
-//	@parm	The position for the BC.
-//	@parm	The bearing at the BC.
-//	@parm	Scale factor to apply to distances.
-//	@parm	Position of the circle centre.
-//	@parm	Bearing from the centre to the BC.
-//	@parm	Position of the EC.
-//	@parm	Exit bearing.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeCircularLeg::GetPositions ( const CeVertex& bc
-								 , const FLOAT8& sbearing
-								 , const FLOAT8 sfac
-								 , CeVertex& centre
-								 , FLOAT8& bear2bc
-								 , CeVertex& ec
-								 , FLOAT8& ebearing ) const {
-
-//	Have we got a cul-de-sac?
-	LOGICAL cul = (m_Flag & FLG_CULDESAC);
-
-//	Remember reverse bearing if we have a cul-de-sac.
-	FLOAT8 revbearing = sbearing + PI;
-
-//	Initialize current bearing.
-	FLOAT8 bearing = sbearing;
-
-//	Counter-clockwise?
-	LOGICAL ccw;
-	if ( m_Flag & FLG_CC )
-		ccw = TRUE;
-	else
-		ccw = FALSE;
-
-//	Get radius in metres on the ground (and scale it).
-	FLOAT8 radius = m_Radius.GetMetric() * sfac;
-
-//	Get to the centre (should really get to the P.I., but not sure
-//	where that is when the curve is > half a circle -- need to
-//	check some book).
-
-	if ( cul ) {
-		if ( ccw ) 
-			bearing -= (m_Angle1*0.5);
-		else
-			bearing += (m_Angle1*0.5);
-	}
-	else {
-		if ( ccw )
-			bearing -= (PI-m_Angle1);
-		else
-			bearing += (PI-m_Angle1);
-	}
-
-	FLOAT8 dE = radius * sin(bearing);
-	FLOAT8 dN = radius * cos(bearing);
-
-	FLOAT8 x = bc.GetEasting() + dE;
-	FLOAT8 y = bc.GetNorthing() + dN;
-
-	centre = CeVertex(x,y);
-
-//	Return the bearing from the centre to the BC (the reverse
-//	of the bearing we just used).
-	bear2bc = bearing + PI;
-
-//	Now go out to the EC. For regular curves, figure out the
-//	central angle by comparing the observed length of the curve
-//	to the total circumference.
-
-	if ( cul ) {
-
-		if ( ccw )
-			bearing -= (PI-m_Angle1);
-		else
-			bearing += (PI-m_Angle1);
-	}
-	else {
-
-		FLOAT8 length = GetTotal() * sfac;
-		FLOAT8 circumf = radius * PIMUL2;
-		FLOAT8 ca = PIMUL2 * (length/circumf);
-
-		if ( ccw )
-			bearing += (PI-ca);
-		else
-			bearing -= (PI-ca);
-	}
-
-//	Define the position of the EC.
-	x += (radius * sin(bearing));
-	y += (radius * cos(bearing));
-	ec = CeVertex(x,y);
-
-//	Define the exit bearing. For cul-de-sacs, the exit bearing
-//	is the reverse of the original bearing (lines are parallel).
-
-	if ( cul )
-		ebearing = revbearing;
-	else {
-
-//		If we have a second angle, use that
-		FLOAT8 angle;
-		if ( m_Flag & FLG_TWOANGLES )
-			angle = m_Angle2;
-		else
-			angle = m_Angle1;
-
-		if ( ccw )
-			ebearing = bearing - (PI-angle);
-		else
-			ebearing = bearing + (PI-angle);
-	}
-
-} // end of GetPositions
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw this leg.
-//
-//	@parm	The position for the start of the leg. Updated to be
-//			the position for the end of the leg.
-//	@parm	The bearing at the end of the previous leg. Updated for
-//			this leg.
-//	@parm	Scale factor to apply to distances.
-//	@parm	TRUE if the draw should actually erase.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeCircularLeg::Draw ( CeVertex& pos
-						 , FLOAT8& bearing
-						 , const FLOAT8 sfac
-						 , const LOGICAL erase ) const {
-
-//	Create an undefined circular span
-	CeCircularSpan span(this,pos,bearing,sfac);
-
-//	Draw (or erase) each visible span in turn. Note that for
-//	cul-de-sacs, there may be no observed spans.
-
-	UINT2 nspan = this->GetCount();
-
-	if ( nspan==0 ) {
-		span.Get(0);
-		if ( erase )
-			span.Erase();
-		else
-			span.Draw();
-	}
-	else {
-		for ( UINT2 i=0; i<nspan; i++ ) {
-			span.Get(i);
-			if ( erase )
-				span.Erase();
-			else
-				span.Draw();
-		}
-	}
-
-//	Update BC info to refer to the EC.
-	pos = span.GetEC();
-	bearing = span.GetExitBearing();
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw a previously saved leg.
-//
-//	@parm	TRUE if the path should be drawn in preview mode (i.e.
-//			in the normal construction colour, with miss-connects
-//			shown as dotted lines).
-//
-//////////////////////////////////////////////////////////////////////
-
-void CeCircularLeg::Draw ( const LOGICAL preview ) const {
-
-//	If NOT drawing in preview mode, just draw each feature
-//	known to the leg. If we hit any gaps, draw a dotted line
-//	in between.
-
-	UINT2 nfeat = this->GetCount();
-
-	if ( preview ) {
-
-//		CeVertex startdot;		// Position of start of dotted section.
-//		CeVertex enddot;		// Position of end of dotted section.
-
-		for ( UINT2 i=0; i<nfeat; i++ ) {
-			const CeFeature* const pFeat = this->GetpFeature(i);
-			if ( pFeat ) pFeat->DrawThis(COL_MAGENTA);
-		}
-	}
-	else {
-
-//		Draw each feature the normal way.
-		for ( UINT2 i=0; i<nfeat; i++ ) {
-			const CeFeature* const pFeat = this->GetpFeature(i);
-			if ( pFeat ) pFeat->DrawThis();
-		}
-	}
-
-} // end of Draw
-
-//////////////////////////////////////////////////////////////////////
-//
 //	@mfunc	Save features for this leg.
 //
 //	@parm	The connection path that this leg belongs to.
@@ -461,10 +415,13 @@ LOGICAL CeCircularLeg::Save	( const CePath& op
 
 } // end of Save
 #endif
+        */
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
+        internal override bool Rollforward(ref IPointGeometry insert, Backsight.Editor.Operations.PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+        /*
 //	@mfunc	Rollforward this leg.
 //
 //	@parm	The location of the end of any new insert that
@@ -574,7 +531,7 @@ LOGICAL CeCircularLeg::Rollforward ( CeLocation*& pInsert
 //
 //////////////////////////////////////////////////////////////////////
 
-void CeCircularLeg::SaveSpan ( CeLocation*& pInsert
+private void CeCircularLeg::SaveSpan ( CeLocation*& pInsert
 							 , const CePath& op
 							 , CeCircularSpan& span
 							 , const UINT2 index ) {
@@ -1006,7 +963,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         internal bool IsCulDeSac
         {
             get { return (m_Flag & CircularLegFlag.CulDeSac) != 0; }
-            set { SetFlag(CircularLegFlag.CulDeSac, value); }
+            private set { SetFlag(CircularLegFlag.CulDeSac, value); }
         }
 
         /// <summary>
@@ -1145,7 +1102,14 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 	}
 
 } // end of CreateAngleText
+        */
 
+        internal override string DataString
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        /*
 //////////////////////////////////////////////////////////////////////
 //
 //	@mfunc	Define a string with the observations that
@@ -1190,10 +1154,14 @@ void CeCircularLeg::GetDataString ( CString& str ) const {
 	str += ')';
 
 } // end of GetDataString
+        */
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
+        internal override bool SaveFace(Backsight.Editor.Operations.PathOperation op, ExtraLeg face)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        /*
 //	@mfunc	Save features for a second face that is based
 //			on this leg.
 //
@@ -1218,10 +1186,13 @@ LOGICAL CeCircularLeg::SaveFace ( const CePath& op
 
 } // end of SaveFace
 #endif
+*/
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
+        internal override bool RollforwardFace(ref IPointGeometry insert, Backsight.Editor.Operations.PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+        /*
 //	@mfunc	Rollforward the second face of this leg.
 //
 //	@parm	The location of the end of any new insert that
@@ -1256,40 +1227,5 @@ LOGICAL CeCircularLeg::RollforwardFace ( CeLocation*& pInsert
 } // end of RollforwardFace
 #endif
          */
-
-        internal override string DataString
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        internal override void Draw(ref IPosition terminal, ref double bearing, double sfac)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void Draw(bool preview)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override void Save(Backsight.Editor.Operations.PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool Rollforward(ref IPointGeometry insert, Backsight.Editor.Operations.PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool SaveFace(Backsight.Editor.Operations.PathOperation op, ExtraLeg face)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool RollforwardFace(ref IPointGeometry insert, Backsight.Editor.Operations.PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
     }
 }

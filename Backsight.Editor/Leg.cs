@@ -169,7 +169,7 @@ namespace Backsight.Editor
         /// Gets the total observed length of this leg
         /// </summary>
         /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        protected double GetTotal()
+        internal double GetTotal()
         {
             double total = 0.0;
 
