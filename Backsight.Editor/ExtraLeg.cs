@@ -150,7 +150,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg.
         /// </summary>
-        /// <param name="insert">The location of the end of any new insert that immediately
+        /// <param name="insert">The point of the end of any new insert that immediately
         /// precedes this leg. This will be updated if this leg also ends with a new insert
         /// (if not, it will be returned as a null value).</param>
         /// <param name="op">The connection path that this leg belongs to.</param>
@@ -160,7 +160,7 @@ namespace Backsight.Editor
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
         /// <returns></returns>
-        internal override bool Rollforward(ref IPointGeometry insert, PathOperation op,
+        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
                                             ref IPosition terminal, ref double bearing, double sfac)
         {
             return false;

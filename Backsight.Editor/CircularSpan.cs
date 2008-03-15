@@ -194,7 +194,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Position of center of circle.
         /// </summary>
-        IPosition Center
+        internal IPosition Center
         {
             get { return m_Center; }
         }
@@ -334,7 +334,7 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        Feature Save(Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
+        internal Feature Save(Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
         {
             // The circle on which this span is based should already be defined
             // (see the call that CircularLeg.Save makes to this.AddCircle).
@@ -427,7 +427,7 @@ namespace Backsight.Editor
         /// that is dependent on higher level stuff (see <see cref="CircularLeg.Save"/>).
         /// </summary>
         /// <param name="circle">The circle for this span (may be null).</param>
-        void SetCircle(Circle circle)
+        internal void SetCircle(Circle circle)
         {
             // Remember the circle.
             m_Circle = circle;
@@ -445,7 +445,7 @@ namespace Backsight.Editor
         /// <param name="isLast">Is the new span going to be the very last span in the last
         /// leg of a connection path?</param>
         /// <returns>The line that was created.</returns>
-        LineFeature SaveInsert(int index, PathOperation creator, bool isLast)
+        internal LineFeature SaveInsert(int index, PathOperation creator, bool isLast)
         {
             // SS:20080314 - Most of what follows is identical to the corresponding method
             // in StraightSpan. The only difference is right at the end, where the line

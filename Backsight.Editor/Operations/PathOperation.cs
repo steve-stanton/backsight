@@ -266,7 +266,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="leg">The leg to check</param>
         /// <returns>True if the leg is the last leg of this path</returns>
-        bool IsLastLeg(Leg leg)
+        internal bool IsLastLeg(Leg leg)
         {
             return Object.ReferenceEquals(m_Legs[m_Legs.Count-1], leg);
         }
@@ -1294,22 +1294,26 @@ UINT4 CePath::LoadVertexList ( CeVertexList& vlist ) const {
 	return vlist.GetCount();
 
 } // end of LoadVertexList
+         */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the two end positions for a specific
-//			leg in this connection path.
-//
-//	@parm	The leg of interest.
+        /// <summary>
+        /// Returns the two end positions for a specific leg in this connection path.
+        /// </summary>
+        /// <param name="leg">The leg of interest.</param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        internal bool GetLegEnds(Leg leg, out IPosition start, out IPosition end)
+        {
+            start = end = null;
+            return false;
+        }
+        /*
+
 //	@parm	The start of the leg.
 //	@parm	The end of the leg.
 //
 //	@rdesc	TRUE if positions defined ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeExtraLeg.h"
-
 LOGICAL CePath::GetLegEnds ( const CeLeg& leg
 						   , CeVertex& start
 						   , CeVertex& end ) const {
