@@ -229,7 +229,7 @@ LOGICAL CeStraightLeg::Save ( const CePath& op
 } // end of Save
          */
 
-        internal override bool Rollforward(ref IPointGeometry insert, PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override bool Rollforward(ref PointFeature insert, PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
         {
             throw new Exception("The method or operation is not implemented.");
         }

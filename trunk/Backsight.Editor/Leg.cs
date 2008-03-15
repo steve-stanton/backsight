@@ -92,7 +92,7 @@ namespace Backsight.Editor
         abstract internal void Draw (ref IPosition terminal, ref double bearing, double sfac);
         abstract internal void Draw (bool preview);
         abstract internal void Save (PathOperation op, ref IPosition terminal, ref double bearing, double sfac);
-        abstract internal bool Rollforward (ref IPointGeometry insert, PathOperation op,
+        abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
         abstract internal bool SaveFace (PathOperation op, ExtraLeg face);
         abstract internal bool RollforwardFace (ref IPointGeometry insert, PathOperation op, ExtraLeg face,
@@ -217,7 +217,7 @@ namespace Backsight.Editor
         /// <param name="index">Index of the span.</param>
         /// <param name="feat">The associated feature.</param>
         /// <returns></returns>
-        void SetFeature(int index, Feature feat)
+        protected void SetFeature(int index, Feature feat)
         {
             // Confirm the index is valid. For cul-de-sacs with no observed
             // spans, we only have one valid index.
@@ -869,7 +869,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// </summary>
         /// <param name="index">The index of the span of interest.</param>
         /// <param name="newspan">The line to refer to.</param>
-        void AddNewSpan(int index, LineFeature newspan)
+        protected void AddNewSpan(int index, LineFeature newspan)
         {
             Debug.Assert(IsNewSpan(index));
 
@@ -919,7 +919,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Appends observations to a string that represents this leg.
         /// </summary>
         /// <param name="str">The string buffer to append to.</param>
-        protected void AddToString(StringBuilder str)
+        internal void AddToString(StringBuilder str)
         {
             // Return if there are no observed spans.
             if (NumSpan==0)
@@ -1106,7 +1106,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// the new arcs).</param>
         /// <param name="iscw">Should the arcs be directed clockwise?</param>
         /// <returns>True if created ok.</returns>
-        bool MakeCurves(PathOperation op, IPosition spos, IPosition epos, Circle circle, bool iscw)
+        internal bool MakeCurves(PathOperation op, IPosition spos, IPosition epos, Circle circle, bool iscw)
         {
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
