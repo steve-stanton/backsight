@@ -15,9 +15,9 @@
 
 using System;
 using System.Drawing;
+using System.Text;
 
 using Backsight.Editor.Operations;
-using System.Text;
 
 namespace Backsight.Editor
 {
@@ -1140,44 +1140,26 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             return face.MakeCurves(op, spos, epos, m_Circle, IsClockwise);
         }
 
-        internal override bool RollforwardFace(ref IPointGeometry insert, Backsight.Editor.Operations.PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
+        /// <summary>
+        /// Rollforward the second face of this leg.
+        /// </summary>
+        /// <param name="insert">The point of the end of any new insert that immediately precedes
+        /// this leg. This will be updated if this leg also ends with a new insert (if not, it
+        /// will be returned as a null value).</param>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="face">The second face.</param>
+        /// <param name="spos">The new position for the start of this leg.</param>
+        /// <param name="epos">The new position for the end of this leg.</param>
+        /// <returns>True if rolled forward ok.</returns>
+        /// <remarks>
+        /// The start and end positions passed in should correspond to where THIS leg currently ends.
+        /// They are passed in because this leg may contain miss-connects (and maybe even missing
+        /// end points). So it would be tricky trying trying to work it out now.
+        /// </remarks>
+        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Get the extra face to do it.
+            return face.UpdateCurves(insert, op, spos, epos, m_Circle, IsClockwise);
         }
-        /*
-//	@mfunc	Rollforward the second face of this leg.
-//
-//	@parm	The location of the end of any new insert that
-//			immediately precedes this leg. This will be
-//			updated if this leg also ends with a new insert
-//			(if not, it will be returned as a null value).
-//	@parm	The connection path that this leg belongs to.
-//	@parm	The second face.
-//	@parm	The new position for the start of this leg.
-//	@parm	The new position for the end of this leg.
-//
-//	@devnote The start and end positions passed in should
-//			 correspond to where THIS leg currently ends.
-//			 They are passed in because this leg may contain
-//			 miss-connects (and maybe even missing end points).
-//		     So it would be tricky trying trying to work it
-//			 out now.
-//
-//	@rdesc	TRUE if rolled forward ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CeCircularLeg::RollforwardFace ( CeLocation*& pInsert
-									   , const CePath& op
-									   , CeExtraLeg& face
-									   , const CeVertex& spos
-									   , const CeVertex& epos ) const {
-
-	// Get the extra face to do it.
-	return face.UpdateCurves(pInsert,op,spos,epos,*m_pCircle,IsClockwise());
-
-} // end of RollforwardFace
-#endif
-         */
     }
 }

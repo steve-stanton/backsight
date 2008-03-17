@@ -960,7 +960,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="spos">The position at the start of the leg.</param>
         /// <param name="epos">The position at the end of the leg.</param>
         /// <returns>True if created ok.</returns>
-        bool MakeSegments(PathOperation op, IPosition spos, IPosition epos)
+        internal bool MakeSegments(PathOperation op, IPosition spos, IPosition epos)
         {
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
@@ -1047,7 +1047,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="spos">The position at the start of the leg.</param>
         /// <param name="epos">The position at the end of the leg.</param>
         /// <returns>True if updated ok.</returns>
-        bool UpdateSegments(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos)
+        internal bool UpdateSegments(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos)
         {
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
@@ -1195,7 +1195,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// same one that the curves were previously related to).</param>
         /// <param name="iscw">Should the curves be directed clockwise?</param>
         /// <returns>True if updated ok.</returns>
-        bool UpdateCurves(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
+        internal bool UpdateCurves(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
                             Circle circle, bool iscw)
         {
             Debug.Assert(NumSpan>0);

@@ -188,7 +188,7 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        Feature Save(Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
+        internal Feature Save(Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
         {
             // Get map info.
             CadastralMapModel map = CadastralMapModel.Current;
@@ -274,7 +274,7 @@ namespace Backsight.Editor
         /// <param name="isLast">Is the new span going to be the very last span in the last
         /// leg of a connection path?</param>
         /// <returns>The line that was created.</returns>
-        LineFeature SaveInsert(int index, PathOperation creator, bool isLast)
+        internal LineFeature SaveInsert(int index, PathOperation creator, bool isLast)
         {
             // Get the end positions for the new span.
             Get(index);
