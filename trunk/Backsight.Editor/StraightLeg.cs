@@ -78,16 +78,6 @@ namespace Backsight.Editor
             get { return new Length(GetTotal()); }
         }
 
-        internal override bool SaveFace(PathOperation op, ExtraLeg face)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         /// <summary>
         /// Given the position of the start of this leg, along with an initial bearing,
         /// project the end of the leg, along with an exit bearing.
@@ -178,134 +168,112 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// Saves features for this leg.
+        /// </summary>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg.
+        /// Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
         internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Add on any initial angle (it may be a deflection).
+            if (Math.Abs(m_StartAngle) > MathConstants.TINY)
+            {
+                if (IsDeflection)
+                    bearing += m_StartAngle;
+                else
+                    bearing += (m_StartAngle-Math.PI);
+            }
+
+            // Create a straight span
+            StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
+
+            int nspan = this.Count;
+            for (int i = 0; i < nspan; i++)
+            {
+                // Get info for the current span (this defines the
+                // adjusted start and end positions, among other things).
+                span.Get(i);
+
+                // Get the span to save itself.
+                Feature feat = span.Save(op, null, null, null);
+                SetFeature(i, feat);
+            }
+
+            // Return the end position of the last span.
+            terminal = span.End;
         }
-        /*
-//	@mfunc	Save features for this leg.
-//
-//	@parm	The connection path that this leg belongs to (not used).
-//	@parm	The position for the start of the leg. Updated to be
-//			the position for the end of the leg.
-//	@parm	The bearing at the end of the previous leg. Updated for
-//			this leg.
-//	@parm	Scale factor to apply to distances.
 
-LOGICAL CeStraightLeg::Save ( const CePath& op
-							, CeVertex& terminal
-							, FLOAT8& bearing
-							, const FLOAT8 sfac ) {
-
-	// Add on any initial angle (it may be a deflection).
-	if ( fabs(m_StartAngle)>TINY ) {
-		if ( IsDeflection() )
-			bearing += m_StartAngle;
-		else
-			bearing += (m_StartAngle-PI);
-	}
-
-	// Create a straight span
-	CeStraightSpan span(this,terminal,bearing,sfac);
-	UINT2 nspan = this->GetCount();
-
-	for ( UINT2 i=0; i<nspan; i++ ) {
-
-		// Get info for the current span (this defines the
-		// adjusted start and end positions, among other
-		// things).
-		span.Get(i);
-
-		// Get the span to save itself.
-		CeFeature* pFeat = span.Save(0,0,0);
-		SetFeature(i,pFeat);
-
-	} // next span
-
-	// Return the end position of the last span.
-	terminal = span.GetEnd();
-	return TRUE;
-
-} // end of Save
-         */
-
-        internal override bool Rollforward(ref PointFeature insert, PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        /// <summary>
+        /// Rollforward this leg.
+        /// </summary>
+        /// <param name="insert">The point of the end of any new insert that
+        /// immediately precedes this leg. This will be updated if this leg also
+        /// ends with a new insert (if not, it will be returned as a null value).</param>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg.
+        /// Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <returns></returns>
+        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
+            ref IPosition terminal, ref double bearing, double sfac)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Add on any initial angle (it may be a deflection).
+            if (Math.Abs(m_StartAngle) > MathConstants.TINY)
+            {
+                if (IsDeflection)
+                    bearing += m_StartAngle;
+                else
+                    bearing += (m_StartAngle-Math.PI);
+            }
+
+            // Create a straight span
+            StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
+
+            // The very end of a connection path should never be moved.
+            PointFeature veryEnd = op.EndPoint;
+
+            int nspan = this.Count;
+            for (int i=0; i<nspan; i++)
+            {
+                // Get info for the current span (this defines the
+                // adjusted start and end positions, among other things).
+                span.Get(i);
+
+                // If we've got a newly inserted span
+                if (IsNewSpan(i))
+                {
+                    bool isLast = (i==(nspan-1) && op.IsLastLeg(this));
+                    LineFeature newLine = span.SaveInsert(i, op, isLast);
+                    AddNewSpan(i, newLine);
+                    insert = newLine.EndPoint;
+                }
+                else
+                {
+                    // See if the span previously had a saved feature.
+                    Feature old = GetFeature(i);
+                    if (old!=null)
+                        span.Save(op, insert, old, veryEnd);
+                    else
+                    {
+                        Feature feat = span.Save(op, insert, null, veryEnd);
+                        SetFeature(i, feat);
+                    }
+
+                    // That wasn't an insert.
+                    insert = null;
+                }
+            }
+
+            // Return the end position of the last span.
+            terminal = span.End;
+            return true;
         }
-        /*
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Rollforward this leg.
-//
-//	@parm	The location of the end of any new insert that
-//			immediately precedes this leg. This will be
-//			updated if this leg also ends with a new insert
-//			(if not, it will be returned as a null value).
-//	@parm	The connection path that this leg belongs to.
-//	@parm	The position for the start of the leg. Updated to be
-//			the position for the end of the leg.
-//	@parm	The bearing at the end of the previous leg. Updated for
-//			this leg.
-//	@parm	Scale factor to apply to distances.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CeStraightLeg::Rollforward ( CeLocation*& pInsert
-								   , const CePath& op
-								   , CeVertex& terminal
-								   , FLOAT8& bearing
-								   , const FLOAT8 sfac ) {
-
-	// Add on any initial angle (it may be a deflection).
-	if ( fabs(m_StartAngle)>TINY ) {
-		if ( IsDeflection() )
-			bearing += m_StartAngle;
-		else
-			bearing += (m_StartAngle-PI);
-	}
-
-	// Create a straight span
-	CeStraightSpan span(this,terminal,bearing,sfac);
-	UINT2 nspan = this->GetCount();
-
-	// The very end of a connection path should never be moved.
-	const CeLocation* const pVeryEnd = op.GetpEnd();
-
-	for ( UINT2 i=0; i<nspan; i++ ) {
-
-		// Get info for the current span (this defines the
-		// adjusted start and end positions, among other
-		// things).
-		span.Get(i);
-
-		// If we've got a newly inserted span
-		if ( IsNewSpan(i) ) {
-			const LOGICAL isLast = (i==(nspan-1) && op.IsLastLeg(this));
-			CeArc* pNewArc = span.SaveInsert(i,op,isLast);
-			AddNewSpan(i,*pNewArc);
-			pInsert = (CeLocation*)pNewArc->GetpEnd();
-		}
-		else {
-			CeFeature* pOld = (CeFeature*)this->GetpFeature(i);
-			if ( pOld )
-				span.Save(pInsert,pOld,pVeryEnd);
-			else {
-				CeFeature* pFeat = span.Save(pInsert,0,pVeryEnd);
-				SetFeature(i,pFeat);
-			}
-			pInsert = 0;
-		}
-
-	} // next span
-
-//	Return the end position of the last span.
-	terminal = span.GetEnd();
-	return TRUE;
-
-} // end of Rollforward
-
-         */
 
         /*
 //	@mfunc	Draw any angles for this leg.
@@ -536,65 +504,43 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             }
         }
 
-        /*
-//	@mfunc	Save features for a second face that is based
-//			on this leg.
-//
-//	@parm	The connection path that this leg belongs to.
-//	@parm	The extra face to create features for.
-//
-//	@rdesc	TRUE if created ok.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Saves features for a second face that is based on this leg.
+        /// </summary>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="face">The extra face to create features for.</param>
+        /// <returns>True if created ok.</returns>
+        internal override bool SaveFace(PathOperation op, ExtraLeg face)
+        {
+            // Get the terminal positions for this leg.
+            IPosition spos, epos;
+            if (!op.GetLegEnds(this, out spos, out epos))
+                return false;
 
-#include "CeExtraLeg.h"
+            // Get the extra leg to do the rest.
+            return face.MakeSegments(op, spos, epos);
+        }
 
-LOGICAL CeStraightLeg::SaveFace ( const CePath& op
-							    , CeExtraLeg& face ) const {
-
-	// Get the terminal positions for this leg.
-	CeVertex spos;
-	CeVertex epos;
-	if ( !op.GetLegEnds(*this,spos,epos) ) return FALSE;
-
-	// Get the extra leg to do the rest.
-	return face.MakeSegments(op,spos,epos);
-
-} // end of SaveFace
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Rollforward the second face of this leg.
-//
-//	@parm	The location of the end of any new insert that
-//			immediately precedes this leg. This will be
-//			updated if this leg also ends with a new insert
-//			(if not, it will be returned as a null value).
-//	@parm	The connection path that this leg belongs to.
-//	@parm	The second face.
-//	@parm	The new position for the start of this leg.
-//	@parm	The new position for the end of this leg.
-//
-//	@devnote The start and end positions passed in should
-//			 correspond to where THIS leg currently ends.
-//			 They are passed in because this leg may contain
-//			 miss-connects (and maybe even missing end points).
-//		     So it would be tricky trying trying to work it
-//			 out now.
-//
-//	@rdesc	TRUE if rolled forward ok.
-
-LOGICAL CeStraightLeg::RollforwardFace ( CeLocation*& pInsert
-									   , const CePath& op
-									   , CeExtraLeg& face
-									   , const CeVertex& spos
-									   , const CeVertex& epos ) const {
-
-	// Get the extra face to do it.
-	return face.UpdateSegments(pInsert,op,spos,epos);
-
-} // end of RollforwardFace
-#endif
-         */
+        /// <summary>
+        /// Rollforward the second face of this leg.
+        /// </summary>
+        /// <param name="insert">The point of the end of any new insert that immediately precedes
+        /// this leg. This will be updated if this leg also ends with a new insert (if not, it
+        /// will be returned as a null value).</param>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="face">The second face.</param>
+        /// <param name="spos">The new position for the start of this leg.</param>
+        /// <param name="epos">The new position for the end of this leg.</param>
+        /// <returns>True if rolled forward ok.</returns>
+        /// <remarks>
+        /// The start and end positions passed in should correspond to where THIS leg currently ends.
+        /// They are passed in because this leg may contain miss-connects (and maybe even missing
+        /// end points). So it would be tricky trying trying to work it out now.
+        /// </remarks>
+        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
+        {
+            // Get the extra face to do it.
+            return face.UpdateSegments(insert, op, spos, epos);
+        }
     }
 }

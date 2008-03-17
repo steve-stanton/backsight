@@ -74,6 +74,7 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
 
+            m_Parent = cmd;
             m_Point = null;
             m_Color = col;
             m_Title = title;
@@ -82,12 +83,6 @@ namespace Backsight.Editor.Forms
         }
 
         #endregion
-
-        /*
-public:
-	virtual	void		OnSelectPoint	( CePoint* pPoint
-										, const LOGICAL movenext=TRUE );
-         */
 
         /// <summary>
         /// The selected point.
@@ -107,172 +102,133 @@ public:
 
             // Disable the "back" button if necessary.
             backButton.Enabled = m_IsBackEnabled;
+
+            colorButton.BackColor = m_Color;
         }
-        /*
-void CdGetPoint::OnBack() 
-{
-	m_Parent.OnPointBack();
-}
 
-void CdGetPoint::OnCancel() 
-{
-	m_Parent.OnPointCancel();
-}
+        private void backButton_Click(object sender, EventArgs e)
+        {
+            m_Parent.OnPointBack();
+        }
 
-void CdGetPoint::OnOK() 
-{
-	// Confirm that we have a point!
-	if ( !m_pPoint ) {
-		AfxMessageBox("You must select a point.");
-		GetDlgItem(IDC_POINT)->SetFocus();
-		return;
-	}
-	
-	m_Parent.OnPointNext();
-}
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            m_Parent.OnPointCancel();
+        }
 
-void CdGetPoint::OnChangePoint() 
-{
-	// If the field is now empty, allow the user to type in an ID.
-	if ( IsFieldEmpty(IDC_POINT) ) {
-		SetNormalColour();
-		m_IsPointed = FALSE;
-		m_pPoint = 0;
-	}
-}
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            // Confirm that we have a point!
+            if (m_Point==null)
+            {
+                MessageBox.Show("You must select a point.");
+                pointTextBox.Focus();
+                return;
+            }
 
-void CdGetPoint::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) 
-{
-	if ( nIDCtl==IDC_COL ) SetButtonColour();
-}
+            m_Parent.OnPointNext();
+        }
 
-private void CdGetPoint::SetButtonColour ( void ) const {
+        private void pointTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // If the field is now empty, allow the user to type in an ID.
+            if (pointTextBox.Text.Trim().Length==0)
+            {
+                SetNormalColor();
+                m_IsPointed = false;
+                m_Point = null;
+            }
+        }
 
-	CButton* pButton = (CButton*)GetDlgItem(IDC_COL);
-	CClientDC dc(pButton);
-	CRect crect;
-	pButton->GetClientRect(&crect);
-	CBrush brush(m_Colour);
-	dc.SelectObject(&brush);
-	dc.Rectangle(crect);
+        private void pointTextBox_Leave(object sender, EventArgs e)
+        {
+            // Just return if the user specified the point by pointing.
+            if (m_IsPointed)
+                return;
 
-} // end of SetButtonColour
+            // Return if the field is empty.
+            string str = pointTextBox.Text.Trim();
+            if (str.Length==0)
+                return;
 
-void CdGetPoint::OnKillfocusPoint() 
-{
-	// Just return if the user specified the point by pointing.
-	if ( m_IsPointed ) return;
+            // Parse the ID value.
+            uint idnum;
+            if (!UInt32.TryParse(str, out idnum))
+            {
+                MessageBox.Show("Invalid point ID");
+                pointTextBox.Focus();
+                return;
+            }
 
-	// Return if the field is empty.
-	if ( IsFieldEmpty(IDC_POINT) ) return;
+            // Ask the map to locate the specified point.
+            CadastralMapModel map = CadastralMapModel.Current;
+            m_Point = new FindPointByIdQuery(map.Index, idnum.ToString()).Result;
+            if (m_Point==null)
+            {
+                MessageBox.Show("No point with specified ID.");
+                pointTextBox.Focus();
+                return;
+            }
 
-	// Get address of the edit box.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_POINT);
+            // Tell the parent dialog we're done.
+            m_Parent.OnPointNext();
+        }
 
-	// Parse the ID value.
-	UINT4 idnum;
-	if ( !ReadUINT4(pEdit,idnum) ) {
-		AfxMessageBox("Invalid point ID");
-		pEdit->SetFocus();
-		return;
-	}
+        /// <summary>
+        /// Ensures the currently selected point (if any) is drawn in its normal color.
+        /// </summary>
+        void SetNormalColor()
+        {
+            if (m_Point!=null)
+                m_Parent.ErasePainting();
+        }
 
-	// Ask the map to locate the address of the specified point.
-	const CeKey key(idnum);
-	m_pPoint = CeMap::GetpMap()->GetpPoint(key);
-	if ( !m_pPoint ) {
-		AfxMessageBox("No point with specified ID.");
-		pEdit->SetFocus();
-		return;
-	}
+        /// <summary>
+        /// Sets the color for the currently selected point. 
+        /// </summary>
+        void SetColor()
+        {
+            // Draw the point in the correct color.
+            if (m_Point!=null)
+                m_Point.Draw(m_Parent.ActiveDisplay, m_Color);
+        }
 
-	// Tell the parent dialog we're done.
-	m_Parent.OnPointNext();
-	
-} // end of OnKillfocusPoint
+        /// <summary>
+        /// Performs processing upon selection of a new point (indicated by pointing at the map)
+        /// </summary>
+        /// <param name="point">The point that has been selected</param>
+        /// <param name="movenext">Should the dialog automatically move on to the next point (default was true)</param>
+        internal void OnSelectPoint(PointFeature point, bool movenext)
+        {
+            // Return if point is not defined.
+            if (point==null)
+                return;
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Set normal colour for currently select point (if any).
-//
-/////////////////////////////////////////////////////////////////////////////
+            // Ensure that any previously selected point reverts to its normal color.
+            SetNormalColor();
 
-private void CdGetPoint::SetNormalColour ( void ) const {
+            // Remember the new point.
+            m_Point = point;
+            m_IsPointed = true;
 
-	// Ask the point to draw itself.
-	if ( m_pPoint ) m_pPoint->DrawThis();
+            // Set the color of the point.
+            SetColor();
 
-} // end of SetNormalColour
+            // Display the point's ID.
+            pointTextBox.Text = point.FormattedKey;
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Set colour for the currently selected point.
-//
-//	@parm The point to draw.
-//
-/////////////////////////////////////////////////////////////////////////////
+            // Tell the command that's running this dialog to move on.
+            if (movenext)
+                m_Parent.OnPointNext();
+        }
 
-private void CdGetPoint::SetColour ( void ) const {
-
-	// Draw the point in the correct colour.
-	if ( m_pPoint ) m_pPoint->DrawThis(m_Colour);
-
-} // end of SetColour
-
-void CdGetPoint::OnSelectPoint ( CePoint* pPoint
-							   , const LOGICAL movenext ) {
-
-	// Return if point is not defined.
-	if ( !pPoint ) return;
-
-	// Ensure that any previously selected point reverts
-	// to its normal colour.
-	SetNormalColour();
-
-	// Remember the new point.
-	m_pPoint = pPoint;
-	m_IsPointed = TRUE;
-
-	// Set the colour of the point.
-	SetColour();
-
-	// Display the point's ID.
-	GetDlgItem(IDC_POINT)->SetWindowText(m_pPoint->FormatKey());
-
-	// Tell the command that's running this dialog to move on.
-	if ( movenext ) m_Parent.OnPointNext();
-
-} // end of OnSelectPoint
-				   
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Check if a field is empty. If it contains white space characters,
-//	it is considered to be empty.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-private LOGICAL CdGetPoint::IsFieldEmpty ( const UINT idd ) const {
-
-	// Say the field is empty if the field ID is unknown.
-	CWnd* pWnd = GetDlgItem(idd);
-	if ( !pWnd ) return TRUE;
-
-	// See if field is empty.
-	return ::IsFieldEmpty(pWnd);
-
-} // end of IsFieldEmpty
-				   
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Do any painting that this dialog does.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdGetPoint::Paint ( void ) const {
-
-	SetColour();
-
-} // end of Paint
-         */
+        /// <summary>
+        /// Does any painting that this dialog does.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal void Render(ISpatialDisplay display)
+        {
+            SetColor();
+        }
     }
 }
