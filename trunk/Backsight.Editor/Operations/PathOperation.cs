@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
+using System.Text;
 
 namespace Backsight.Editor.Operations
 {
@@ -307,7 +309,7 @@ namespace Backsight.Editor.Operations
             for (int si=0; si<items.Length; si=nexti)
             {
                 // Skip if no leg number (could be new units spec).
-                if (items[si].Leg==null)
+                if (items[si].LegNumber==0)
                 {
                     nexti = si+1;
                     continue;
@@ -347,7 +349,7 @@ namespace Backsight.Editor.Operations
             uint nleg=0;
 
             foreach (PathItem item in items)
-                nleg = Math.Max(nleg, item.Leg);
+                nleg = Math.Max(nleg, item.LegNumber);
 
             return (int)nleg;
         }
@@ -429,66 +431,55 @@ namespace Backsight.Editor.Operations
             }
 
             // Get the leg ID.
-            uint legnum = items[si].Leg;
+            uint legnum = items[si].LegNumber;
 
             // How many distances have we got?
 	        int ndist = 0;
-            for (; nexti<items.Length && items[nexti].Leg==legnum; nexti++)
+            for (; nexti<items.Length && items[nexti].LegNumber==legnum; nexti++)
             {
                 if (items[nexti].IsDistance)
                     ndist++;
             }
 
             // Create the leg.
-            //CircularLeg leg = new CircularLeg(radius, clockwise, ndist);
+            CircularLeg leg = new CircularLeg(radius, clockwise, ndist);
 
-            return null;
+            // Set the entry angle or the central angle, depending on what we have.
+            if (cul)
+                leg.SetCentralAngle(cangle);
+            else
+                leg.SetEntryAngle(bangle);
+
+            // Assign second angle if we have one.
+            if (twoangles)
+                leg.SetExitAngle(eangle);
+
+            // Assign each distance, starting one after the radius.
+            ndist = 0;
+            for (int i = irad + 1; i < nexti; i++)
+            {
+                Distance dist = items[i].GetDistance();
+                if (dist != null)
+                {
+                    // See if there is a qualifier after the distance
+                    LegItemFlag qual = LegItemFlag.Null;
+                    if (i + 1 < nexti)
+                    {
+                        PathItemType nexttype = items[i + 1].ItemType;
+                        if (nexttype == PathItemType.MissConnect)
+                            qual = LegItemFlag.MissConnect;
+                        if (nexttype == PathItemType.OmitPoint)
+                            qual = LegItemFlag.OmitPoint;
+                    }
+
+                    leg.SetDistance(dist, ndist, qual);
+                    ndist++;
+                }
+            }
+
+            // Return the new leg.
+            return leg;
         }
-        /*
-
-	CeCircularLeg* pLeg =
-		new ( os_database::of(this)
-		    , os_ts<CeCircularLeg>::get() )
-			  CeCircularLeg(radius,clockwise,ndist);
-//	CHARS msg[80];
-//	sprintf ( msg, "CePath::CreateCircularLeg = %x", pLeg );
-//	ShowMessage(msg);
-
-//	Set the entry angle or the central angle, depending on
-//	what we have.
-	if ( cul )
-		pLeg->SetCentralAngle(cangle);
-	else
-		pLeg->SetEntryAngle(bangle);
-
-//	Assign second angle if we have one.
-	if ( twoangles ) pLeg->SetExitAngle(eangle);
-
-//	Assign each distance, starting one after the radius.
-	CeDistance dist;
-	ndist=0;
-	for ( UINT2 i=irad+1; i<nexti; i++ ) {
-		if ( items[i].GetDistance(dist) ) {
-
-//			See if there is a qualifier after the distance
-			SWT qual = SWT_NULL;
-			if ( i+1<nexti ) {
-				PAT nexttype = items[i+1].GetType();
-				if ( nexttype==PAT_MC ) qual = SWT_MC;
-				if ( nexttype==PAT_OP ) qual = SWT_OP;
-			}
-
-			pLeg->SetDistance(dist,ndist,qual);
-			ndist++;
-		}
-	}
-
-//	Return pointer to the leg.
-	return pLeg;
-
-} // end of CreateCircularLeg
-#endif
-         */
 
         /// <summary>
         /// Creates a straight leg.
@@ -500,11 +491,11 @@ namespace Backsight.Editor.Operations
         Leg CreateStraightLeg(PathItem[] items, int si, out int nexti)
         {
             // Get the leg ID.
-            uint legnum = items[si].Leg;
+            uint legnum = items[si].LegNumber;
 
             // How many distances have we got?
             int ndist = 0;
-            for (nexti=si; nexti<items.Length && items[nexti].Leg==legnum; nexti++)
+            for (nexti=si; nexti<items.Length && items[nexti].LegNumber==legnum; nexti++)
             {
                 if (items[nexti].IsDistance)
                     ndist++;
@@ -738,29 +729,24 @@ namespace Backsight.Editor.Operations
 
             return tot;
         }
+
+        /// <summary>
+        /// Gets the observed lengths of each span on this path. In the case of
+        /// cul-de-sacs that have no observed span, the distance will be derived
+        /// from the central angle and radius.
+        /// </summary>
+        /// <returns>The distances for this path (with an array length that equals
+        /// the value of the <see cref="Count"/> property).</returns>
+        Distance[] GetSpans()
+        {
+            List<Distance> result = new List<Distance>(GetCount());
+
+            foreach (Leg leg in m_Legs)
+                leg.GetSpans(result);
+
+            return result.ToArray();
+        }
         /*
-//	@mfunc	Load an array of CeDistance objects with the observed
-//			lengths of each span on this path. In the case of
-//			cul-de-sacs that have no observed span, the distance
-//			will be derived from the central angle and radius.
-//
-//	@parm	Array of CeDistance objects to load. The allocation
-//			for this array must match the value returned from
-//			<CePath::GetCount>.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CePath::GetSpans ( CeDistance* distances ) const {
-
-	UINT4 tot=0;
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ )
-		m_pLegs[i]->GetSpans(distances,tot);
-
-} // end of GetSpans
-
-//////////////////////////////////////////////////////////////////////
-//
 //	@mfunc	Draw observed angles recorded as part of this op.
 //
 //	@parm	The point the observation must be made from.
@@ -858,78 +844,68 @@ void CePath::DrawAngles	( const CePoint* const pFrom
 	}
 
 } // end of DrawAngles
+         */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the definition of the leg which created a
-//			specific feature.
-//
-//	@parm	The feature to find.
-//
-//	@rdesc	Pointer to the leg that created the feature (or null
-//			if the leg could not be found).
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Returns the definition of the leg which created a specific feature.
+        /// </summary>
+        /// <param name="feature">The feature to find.</param>
+        /// <returns>The leg that created the feature (or null if the leg
+        /// could not be found).</returns>
+        Leg GetLeg(Feature feature)
+        {
+            foreach (Leg leg in m_Legs)
+            {
+                if (leg.IsCreatorOf(feature))
+                    return leg;
+            }
 
-CeLeg* CePath::GetpLeg ( const CeFeature& feature ) const {
+            return null;
+        }
 
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		if ( m_pLegs[i]->IsCreatorOf(feature) ) return m_pLegs[i];
-	}
+        /// <summary>
+        /// Returns the definition of the straight leg which created a specific feature.
+        /// </summary>
+        /// <param name="prevStraightToo">Does the leg preceding the one found need to be
+        /// straight as well? If you say <c>true</c>, a previous leg <b>must</b> exist.</param>
+        /// <param name="feature">The feature to find.</param>
+        /// <returns>The leg that created the feature (or null if the leg could
+        /// not be found).</returns>
+        StraightLeg GetStraightLeg(bool prevStraightToo, Feature feature)
+        {
+            // Find the leg that created the specified feature.
+            int index = -1;
+            for (int i = 0; i < m_Legs.Count && index < 0; i++)
+            {
+                if (m_Legs[i].IsCreatorOf(feature))
+                    index = i;
+            }
 
-	return 0;
+            // Return if it wasn't found.
+            if (index < 0)
+                return null;
 
-} // end of GetpLeg
+            // If the preceding leg has to be straight, getting the
+            // very first leg is no good.
+            if (prevStraightToo && index==0)
+                return null;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the definition of the straight leg which
-//			created a specific feature.
-//
-//	@parm	Does the leg preceding the one found need to be
-//			straight as well? If you say TRUE, a previous
-//			leg MUST exist.
-//	@parm	The feature to find.
-//
-//	@rdesc	Pointer to the leg that created the feature (or null
-//			if the leg could not be found).
-//
-//////////////////////////////////////////////////////////////////////
+            // The leg HAS to be straight.
+            StraightLeg straight = (m_Legs[index] as StraightLeg);
+            if (straight == null)
+                return null;
 
-CeStraightLeg* CePath::GetpStraightLeg ( const LOGICAL prevStraightToo
-									   , const CeFeature& feature ) const {
+            // Check if the preceding leg has to be straight as well.
+            if (prevStraightToo)
+            {
+                StraightLeg prev = (m_Legs[index - 1] as StraightLeg);
+                if (prev == null)
+                    return null;
+            }
 
-	// Find the leg that created the specified feature.
-	INT2 index = -1;
-	for ( UINT2 i=0; i<m_NumLeg && index<0; i++ ) {
-		if ( m_pLegs[i]->IsCreatorOf(feature) ) index = i;
-	}
-
-	// Return if it wasn't found.
-	if ( index<0 ) return 0;
-
-	// If the preceding leg has to be straight, getting the
-	// very first leg is no good.
-	if ( prevStraightToo && index==0 ) return 0;
-
-	// The leg HAS to be straight.
-	CeStraightLeg* pStraight =
-		dynamic_cast<CeStraightLeg*>(m_pLegs[index]);
-	if ( !pStraight ) return 0;
-
-	// Check if the preceding leg has to be straight as well.
-	if ( prevStraightToo ) {
-		CeStraightLeg* pPrev = 
-			dynamic_cast<CeStraightLeg*>(m_pLegs[index-1]);
-		if ( pPrev==0 ) return 0;
-	}
-
-	return pStraight;
-
-} // end of GetpStraightLeg
-
-//////////////////////////////////////////////////////////////////////
-//
+            return straight;
+        }
+        /*
 //	@mfunc	Get any circles that were used to establish the position
 //			of a point that was created by this operation.
 //
@@ -942,10 +918,6 @@ CeStraightLeg* CePath::GetpStraightLeg ( const LOGICAL prevStraightToo
 //	@rdesc	TRUE if request was handled (does not necessarily mean
 //			that any circles were found). FALSE if this is a
 //			do-nothing function.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeCircle.h"
 
 LOGICAL CePath::GetCircles ( CeObjectList& clist
 						   , const CePoint& point ) const {
@@ -1183,166 +1155,130 @@ void CePath::CreateAngleText ( CPtrList& text
             return leg.IsNewSpan(nSpan-1);
         }
 
-        /*
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return a string that represents the definition of
-//			this connection path.
-//
-//	@parm	The string to hold the result.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Returns a string that represents the definition of
+        /// this connection path.
+        /// </summary>
+        /// <returns>A string defining the complete path</returns>
+        string GetString()
+        {
+            StringBuilder sb = new StringBuilder(m_Legs.Count * 20);
 
-void CePath::GetString ( CString& str ) const {
+            for (int i = 0; i < m_Legs.Count; i++)
+            {
+                if (i > 0)
+                    sb.Append(" ");
 
-	str.Empty();
+                string legstr = m_Legs[i].DataString;
+                sb.Append(legstr);
+            }
 
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		CString legstr;
-		m_pLegs[i]->GetDataString(legstr);
-		if ( i>0 ) str += ' ';
-		str += legstr;
-	}
+            return sb.ToString();
+        }
 
-} // end of GetString
+        /// <summary>
+        /// Inserts a second face for a leg in this path.
+        /// </summary>
+        /// <param name="after">The leg that represents the existing face.</param>
+        /// <param name="dists">Distance observations for the 2nd face.</param>
+        /// <returns>The new leg.</returns>
+        Leg InsertFace(Leg after, Distance[] dists)
+        {
+            // Get the index of the existing face.
+            if (after==null)
+                return null;
 
-#ifdef _CEDIT
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Insert a second face for a leg in this path.
-//
-//	@parm	The leg that represents the existing face.
-//	@parm	The number of distance objects for the 2nd face.
-//	@parm	Distance observations for the 2nd face.
-//
-//	@rdesc	The address of the new leg.
-//
-//////////////////////////////////////////////////////////////////////
+            int index = GetLegIndex(after);
+            if (index < 0)
+                return null;
 
-#include "CeExtraLeg.h"
+            // Make an extra leg with the specified distances.
+            ExtraLeg newLeg = new ExtraLeg(after, dists);
 
-CeLeg* CePath::InsertFace ( CeLeg* pAfter
-						  , const UINT4 nDist
-						  , const CeDistance* dists ) {
+            // Create features for the extra leg.
+            newLeg.MakeFeatures(this);
 
-	// Get the index of the existing face.
-	if ( !pAfter ) return 0;
-	INT4 index = GetLegIndex(*pAfter);
-	if ( index<0 ) return 0;
+            // Insert the new leg into our array of legs.
+            InsertLeg(after, newLeg);
 
-	// Make an extra leg with the specified distances.
-	CeExtraLeg* pNewLeg = new ( os_database::of(this)
-							  , os_ts<CeExtraLeg>::get() ) 
-								CeExtraLeg(*pAfter,nDist,dists);
+            after.SetStaggered(1);
+            newLeg.SetStaggered(2);
 
-	// Create features for the extra leg.
-	pNewLeg->MakeFeatures(*this);
+            return newLeg;
+        }
 
-	// Insert the new leg into our array of legs.
-	InsertLeg(pAfter,pNewLeg);
+        /// <summary>
+        /// Gets the positions that define the end points of each leg in
+        /// this path. The first position corresponds to the from-point,
+        /// while the last position corresponds to the to-point. There
+        /// will be one more position than the number of legs in the path
+        /// (any instances of <see cref="ExtraLeg"/>  produce 2 coincident
+        /// positions in succession).
+        /// </summary>
+        /// <returns>The positions for each leg in this path</returns>
+        IPosition[] GetLegEnds() // was LoadVertexList
+        {
+            IPosition[] result = new IPosition[m_Legs.Count + 1];
 
-	pAfter->SetStaggered(1);
-	pNewLeg->SetStaggered(2);
+            // Get the rotation & scale factor to apply.
+            double rotation;
+            double sfac;
+            GetAdjustment(out rotation, out sfac);
 
-	return pNewLeg;
+            // Initialize position to the start of the path.
+	        IPosition start = m_From;
+            IPosition gotend = start; // Un-adjusted end point
 
-} // end of InsertFace
-#endif
+            // Remember the initial position.
+            result[0] = start;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Load a vertex list with the positions that define
-//			the end points of each leg in this path. The first
-//			vertex corresponds to the from-point, while the
-//			last vertex corresponds to the to-point. There
-//			will be one more vertex than the number of legs
-//			in the path (any CeExtraLeg's produce 2 coincident
-//			positions in succession).
-//
-//	@parm	The vertex list to load.
-//
-//	@rdesc	The number of positions in the list (equal to the
-//			number of legs + 1).
-//
-//////////////////////////////////////////////////////////////////////
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
 
-#include "CeVertexList.h"
+            // Project each leg, recording the position at each end.
+            for (int i=0; i<m_Legs.Count; i++)
+            {
+                Leg leg = m_Legs[i];
+                leg.Project(ref gotend, ref bearing, sfac);
+                result[i + 1] = gotend;
+            }
 
-UINT4 CePath::LoadVertexList ( CeVertexList& vlist ) const {
-
-	// Get the rotation & scale factor to apply.
-	FLOAT8 rotation;
-	FLOAT8 sfac;
-	GetAdjustment( rotation, sfac );
-
-	// Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
-
-	// Remember the initial position.
-	vlist.Append(start);
-
-	// Initial bearing is whatever the desired rotation is.
-	FLOAT8 bearing = rotation;
-
-	// Project each leg, recording the position at each end.
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-		m_pLegs[i]->Project(gotend,bearing,sfac);
-		vlist.Append(gotend);
-	}
-
-	return vlist.GetCount();
-
-} // end of LoadVertexList
-         */
+            return result;
+        }
 
         /// <summary>
         /// Returns the two end positions for a specific leg in this connection path.
         /// </summary>
         /// <param name="leg">The leg of interest.</param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
+        /// <param name="start">The start of the leg.</param>
+        /// <param name="end">The end of the leg.</param>
+        /// <returns>True if positions defined ok.</returns>
         internal bool GetLegEnds(Leg leg, out IPosition start, out IPosition end)
         {
             start = end = null;
-            return false;
+
+            // Get the array index of the specified leg.
+            int index = GetLegIndex(leg);
+            if (index < 0)
+                return false;
+
+            // Get positions for all legs.
+            IPosition[] vlist = GetLegEnds();
+            Debug.Assert(vlist.Length == m_Legs.Count + 1);
+
+            // Grab the positions. If the specified leg is actually
+            // an extra leg, we actually want the positions for the
+            // leg that precedes it.
+            if (leg is ExtraLeg)
+            {
+                index--;
+                Debug.Assert(index >= 0);
+            }
+
+            start = vlist[index];
+            end = vlist[index + 1];
+
+            return true;
         }
-        /*
-
-//	@parm	The start of the leg.
-//	@parm	The end of the leg.
-//
-//	@rdesc	TRUE if positions defined ok.
-LOGICAL CePath::GetLegEnds ( const CeLeg& leg
-						   , CeVertex& start
-						   , CeVertex& end ) const {
-
-	// Get the array index of the specified leg.
-	INT4 index = GetLegIndex(leg);
-	if ( index<0 ) return FALSE;
-
-	// Get positions for all legs.
-	CeVertexList vlist;
-	UINT4 nPos = LoadVertexList(vlist);
-	assert(nPos==m_NumLeg+1);
-
-	// Grab the positions. If the specified leg is actually
-	// an extra leg, we actually want the positions for the
-	// leg that precedes it.
-
-	const CeExtraLeg* pExtra = dynamic_cast<const CeExtraLeg*>(&leg);
-	if ( pExtra ) {
-		index--;
-		assert(index>=0);
-	}
-
-	start = vlist.GetPosition(index);
-	end = vlist.GetPosition(index+1);
-
-	return TRUE;
-
-} // end of GetLegEnds
-         */
     }
 }

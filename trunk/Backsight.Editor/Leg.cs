@@ -401,7 +401,7 @@ namespace Backsight.Editor
         /// This function is called by <see cref="PathOperation.GetSpans"/>.
         /// </summary>
         /// <param name="distances">The list of Distance objects to load.</param>
-        void GetSpans(List<Distance> distances)
+        internal void GetSpans(List<Distance> distances)
         {
             if (m_Distances.Length == 0)
             {
@@ -427,7 +427,7 @@ namespace Backsight.Editor
         /// always be returned (this assumes that a leg must be part of SOME operation).
         /// </param>
         /// <returns>True if this leg caused the creation of the feature.</returns>
-        bool IsCreatorOf(Feature feature)
+        internal bool IsCreatorOf(Feature feature)
         {
             // NOTE: the logic here should be similar to that in Leg.GetFeatures ...
 
@@ -943,7 +943,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Records that this leg is one of two legs that make up a staggered leg.
         /// </summary>
         /// <param name="face">The face number (1 or 2).</param>
-        void SetStaggered(int face)
+        internal void SetStaggered(int face)
         {
             if (face==1)
                 m_Switches[0] |= LegItemFlag.Face1;

@@ -80,7 +80,7 @@ namespace Backsight.Editor
 
         #endregion
 
-        internal uint Leg // was GetLeg
+        internal uint LegNumber // was GetLeg
         {
             get { return (uint)Math.Abs(m_Leg); }
         }
