@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
-using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// <summary>
     /// User interface for doing a connection path.
     /// </summary>
-    class PathUI : SimpleCommandUI
+    class PathUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -65,27 +65,62 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
-        /// Creates a new <c>PathUI</c>
+        /// Constructor for a new connection path.
         /// </summary>
-        internal PathUI(IUserAction action)
-            : base(action)
+        /// <param name="cc">The container for any dialog controls</param>
+        /// <param name="action">The action that initiated this command</param>
+        internal PathUI(IControlContainer cc, IUserAction action)
+            : base(cc, action)
         {
+            Zero();
+        }
+
+        /// <summary>
+        /// Constructor for command recall.
+        /// </summary>
+        /// <param name="cc">The container for any dialog controls</param>
+        /// <param name="action">The action that initiated this command</param>
+        /// <param name="op">The operation that's being recalled.</param>
+        internal PathUI(IControlContainer cc, IUserAction action, Operation op)
+            : base(cc, action, null, op)
+        {
+            Zero();
+        }
+
+        /// <summary>
+        /// Constructor for doing an update.
+        /// </summary>
+        /// <param name="cc">The container for any dialog controls</param>
+        /// <param name="action">The action that initiated this command</param>
+        /// <param name="updcmd">The update command.</param>
+        internal PathUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
+            : base(cc, action, updcmd)
+        {
+            Zero();
         }
 
         #endregion
 
-        /*
-private:
+        /// <summary>
+        /// Ensures all class data has initial values (for use by constructors)
+        /// </summary>
+        void Zero()
+        {
+            m_DialFrom = null;
+            m_DialTo = null;
+            //m_DialPath = null;
+            //m_DialUp = null;
+            m_From = null;
+            m_To = null;
+        }
 
-	virtual	void		KillDialogs		( void );
-	virtual void		StartFrom		( void );
-	virtual void		StopFrom		( void );
-	virtual void		StartTo			( void );
-	virtual void		StopTo			( void );
-	virtual void		StartPath		( void );
-	virtual	LOGICAL		StartUpdate		( void );
-         */
+        public override void Dispose()
+        {
+            base.Dispose(); // removes any controls from container
+
+            // Ensure any sub-dialogs have been destroyed.
+            KillDialogs();
+        }
 
         internal override bool Run()
         {
@@ -93,69 +128,6 @@ private:
         }
 
         /*
-
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Constructor.
-        //
-        //	@parm	The command ID (should be the ID of the menu-item that
-        //			invoked the command).
-        //	@parm	The window that the command was invoked from.
-        //	@parm	Command that is being recalled. Default=0.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        CuiPath::CuiPath ( const INT4 cmdid
-                         , CeDraw* pParent
-                         , const CeOperation* pRecall )
-                         : CuiCommand(cmdid,pParent,0,pRecall) {
-
-            m_pDialFrom		= 0;
-            m_pDialTo		= 0;
-            m_pDialPath		= 0;
-            m_pDialUp		= 0;
-            m_pFrom			= 0;
-            m_pTo			= 0;
-	
-        } // end of CuiPath
-
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Constructor for an update.
-        //
-        //	@parm	The command ID (should be the ID of the menu-item that
-        //			invoked the command).
-        //	@parm	The update command.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        CuiPath::CuiPath ( const INT4 cmdid
-                         , const CuiUpdate& updcmd ): CuiCommand(cmdid,updcmd) {
-
-            m_pDialFrom		= 0;
-            m_pDialTo		= 0;
-            m_pDialPath		= 0;
-            m_pDialUp		= 0;
-            m_pFrom			= 0;
-            m_pTo			= 0;
-	
-        } // end of CuiPath
-
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Destructor.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        CuiPath::~CuiPath ( void ) {
-
-            // Ensure any sub-dialogs have been destroyed.
-            KillDialogs();
-
-        } // end of ~CuiPath
-
-        //////////////////////////////////////////////////////////////////////
-        //
         //	@mfunc	Start the user interface (if any) for this command.
         //
         //	@rdesc	TRUE if command started ok.
@@ -224,41 +196,38 @@ private:
             AbortCommand();
 
         } // end of DialAbort
+        */
 
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Get rid of any active sub-dialog(s).
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        void CuiPath::KillDialogs ( void ) {
-
-            if ( m_pDialFrom ) {
-                m_pDialFrom->DestroyWindow();
-                delete m_pDialFrom;
-                m_pDialFrom = 0;
+        /// <summary>
+        /// Gets rid of any active sub-dialog(s).
+        /// </summary>
+        void KillDialogs()
+        {
+            if (m_DialFrom!=null)
+            {
+                m_DialFrom.Dispose();
+                m_DialFrom = null;
             }
 
-            if ( m_pDialTo ) {
-                m_pDialTo->DestroyWindow();
-                delete m_pDialTo;
-                m_pDialTo = 0;
+            if (m_DialTo!=null)
+            {
+                m_DialTo.Dispose();
+                m_DialTo = null;
             }
 
-            if ( m_pDialPath ) {
-                m_pDialPath->DestroyWindow();
-                delete m_pDialPath;
-                m_pDialPath = 0;
-            }
+            //if (m_DialPath!=null)
+            //{
+            //    m_DialPath.Dispose();
+            //    m_DialPath = null;
+            //}
 
-            if ( m_pDialUp ) {
-                m_pDialUp->DestroyWindow();
-                delete m_pDialUp;
-                m_pDialUp= 0;
-            }
-
-        } // end of KillDialogs
-
+            //if (m_DialUp!=null)
+            //{
+            //    m_DialUp.Dispose();
+            //    m_DialUp = null;
+            //}
+        }
+        /*
         //////////////////////////////////////////////////////////////////////
         //
         //	@mfunc	React to selection of the OK button in the dialog.
