@@ -223,7 +223,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The connection path that this leg belongs to.</param>
         /// <returns>True if created ok.</returns>
-        bool MakeFeatures(PathOperation op)
+        internal bool MakeFeatures(PathOperation op)
         {
             // Turn it over to the base leg.
             return m_Base.SaveFace(op, this);

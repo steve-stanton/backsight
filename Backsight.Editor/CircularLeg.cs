@@ -80,7 +80,7 @@ namespace Backsight.Editor
         /// <param name="radius">The radius of the circular leg.</param>
         /// <param name="clockwise">True if the curve is clockwise.</param>
         /// <param name="span">The number of spans on the curve.</param>
-        CircularLeg(Distance radius, bool clockwise, int nspan)
+        internal CircularLeg(Distance radius, bool clockwise, int nspan)
             : base(nspan)
         {
             // Angles were not specified.
@@ -864,7 +864,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// for cul-de-sacs (use <see cref="SetCentralAngle"/> instead).
         /// </summary>
         /// <param name="bangle">The angle to assign, in radians.</param>
-        void SetEntryAngle(double bangle)
+        internal void SetEntryAngle(double bangle)
         {
             // Store the specified angle.
             m_Angle1 = bangle;
@@ -880,7 +880,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// for cul-de-sacs (use <see cref="SetCentralAngle"/> instead).
         /// </summary>
         /// <param name="eangle">The angle to assign, in radians.</param>
-        void SetExitAngle(double eangle)
+        internal void SetExitAngle(double eangle)
         {
             // If the angle is the same as the entry angle, store an
             // undefined exit angle, and set the flag bit to indicate
@@ -906,7 +906,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// as being a cul-de-sac. 
         /// </summary>
         /// <param name="cangle">The central angle, in radians.</param>
-        void SetCentralAngle(double cangle)
+        internal void SetCentralAngle(double cangle)
         {
             // Store the central angle.
             m_Angle1 = cangle;
