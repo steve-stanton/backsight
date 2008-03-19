@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
@@ -43,12 +45,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The actual connection path.
         /// </summary>
-//        PathForm m_DialPath;
+        PathForm m_DialPath;
 
         /// <summary>
         /// The update dialog.
         /// </summary>
-//        UpdatePathForm m_DialUp;
+        UpdatePathForm m_DialUp;
 
         /// <summary>
         /// The from point.
@@ -108,8 +110,8 @@ namespace Backsight.Editor
         {
             m_DialFrom = null;
             m_DialTo = null;
-            //m_DialPath = null;
-            //m_DialUp = null;
+            m_DialPath = null;
+            m_DialUp = null;
             m_From = null;
             m_To = null;
         }
@@ -122,81 +124,76 @@ namespace Backsight.Editor
             KillDialogs();
         }
 
+        /// <summary>
+        /// Starts the user interface (if any) for this command.
+        /// </summary>
+        /// <returns>True if command started ok.</returns>
         internal override bool Run()
         {
-            throw new Exception("The method or operation is not implemented.");
+            if (!StartUpdate())
+                StartFrom();
+
+            return true;
         }
 
-        /*
-        //	@mfunc	Start the user interface (if any) for this command.
-        //
-        //	@rdesc	TRUE if command started ok.
-        //			
-        //////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return true; }
+        }
 
-        LOGICAL CuiPath::Run ( void ) {
+        /// <summary>
+        /// Does any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+        internal override void Paint(PointFeature point)
+        {
+            ISpatialDisplay display = ActiveDisplay;
 
-            if ( !StartUpdate() ) StartFrom();
+            if (m_DialFrom!=null)
+                m_DialFrom.Render(display);
 
-            return TRUE;
+            if (m_DialTo!=null)
+                m_DialTo.Render(display);
 
-        } // end of Run
+            if (m_DialPath!=null)
+                m_DialPath.Render(display); // was OnDraw(point)
 
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	Do any command-specific drawing.
-        //
-        //	@parm	The specific point (if any) that the parent window has
-        //			drawn. Not used.
-        //
-        //////////////////////////////////////////////////////////////////////
+            if (m_DialUp!=null)
+                m_DialUp.Render(display);
 
-        void CuiPath::Paint ( const CePoint* const pPoint ) {
+        }
 
-            if ( m_pDialFrom ) m_pDialFrom->Paint();
-            if ( m_pDialTo   ) m_pDialTo->Paint();
-            if ( m_pDialPath ) m_pDialPath->OnDraw(pPoint);
-            if ( m_pDialUp	 ) m_pDialUp->Paint();
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal override void OnSelectPoint(PointFeature point)
+        {
+            if (m_DialFrom!=null)
+                m_DialFrom.OnSelectPoint(point, true);
+            else if (m_DialTo!=null)
+                m_DialTo.OnSelectPoint(point, true);
+            else if (m_DialPath!=null)
+                m_DialPath.OnSelectPoint(point);
+        }
 
-        } // end of Paint
-
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	React to the selection of a point feature.
-        //
-        //	@parm	The point (if any) that has been selected.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        void CuiPath::OnSelectPoint ( const CePoint* const pPoint ) {
-
-            if ( m_pDialFrom )
-                m_pDialFrom->OnSelectPoint((CePoint*)pPoint);
-            else if ( m_pDialTo   )
-                m_pDialTo->OnSelectPoint((CePoint*)pPoint);
-            else if ( m_pDialPath )
-                m_pDialPath->OnSelectPoint((CePoint*)pPoint);
-
-        } // end of OnSelectPoint
-
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	React to selection of the Cancel button in the dialog.
-        //
-        //	@parm	The dialog window.
-        //
-        //////////////////////////////////////////////////////////////////////
-
-        void CuiPath::DialAbort ( CWnd* pWnd ) {
-
+        /// <summary>
+        /// Reacts to selection of the Cancel button in the dialog.
+        /// </summary>
+        /// <param name="wnd">The currently active control (not used)</param>
+        internal override void DialAbort(Control wnd)
+        {
             // Destroy any sub-dialogs we have going.
             KillDialogs();
 
             // Get the base class to finish off.
-            AbortCommand();
-
-        } // end of DialAbort
-        */
+            base.DialAbort(wnd);
+        }
 
         /// <summary>
         /// Gets rid of any active sub-dialog(s).
@@ -215,37 +212,36 @@ namespace Backsight.Editor
                 m_DialTo = null;
             }
 
-            //if (m_DialPath!=null)
-            //{
-            //    m_DialPath.Dispose();
-            //    m_DialPath = null;
-            //}
+            if (m_DialPath!=null)
+            {
+                m_DialPath.Dispose();
+                m_DialPath = null;
+            }
 
-            //if (m_DialUp!=null)
-            //{
-            //    m_DialUp.Dispose();
-            //    m_DialUp = null;
-            //}
+            if (m_DialUp!=null)
+            {
+                m_DialUp.Dispose();
+                m_DialUp = null;
+            }
         }
-        /*
-        //////////////////////////////////////////////////////////////////////
-        //
-        //	@mfunc	React to selection of the OK button in the dialog.
-        //
-        //	@parm	The dialog window.
-        //
-        //////////////////////////////////////////////////////////////////////
 
-        LOGICAL CuiPath::DialFinish ( CWnd* pWnd ) {
-
+        /// <summary>
+        /// Reacts to action that concludes the command dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the command will be executed (and, on success,
+        /// the dialog will be destroyed). If it's some other window, it must
+        /// be a sub-dialog created by our guy, so let it handle the request.</param>
+        /// <returns>True if command finished ok. This implementation always
+        /// returns <c>false</c>.</returns>
+        internal override bool DialFinish(Control wnd)
+        {
             // Get rid of sub-dialog(s).
             KillDialogs();
 
             // Get the base class to finish off.
             return FinishCommand();
-
-        } // end of DialFinish
-        */
+        }
 
         /// <summary>
         /// Handles stuff when user clicks on the "Back" button on one of the point sub-dialogs.
@@ -296,13 +292,9 @@ namespace Backsight.Editor
             if (up==null)
                 return false;
 
-            throw new NotImplementedException("PathUI.StartUpdate");
-
-            /*
             m_DialUp = new UpdatePathForm(up);
             m_DialUp.Show();
             return true;
-             */
         }
 
         /// <summary>
@@ -349,27 +341,19 @@ namespace Backsight.Editor
                 m_To.Draw(ActiveDisplay, Color.LightBlue);
         }
 
+        /// <summary>
+        /// Starts the main connection path sub-dialog.
+        /// </summary>
         void StartPath()
         {
-            throw new NotImplementedException("PathUI.StartPath");
+            Debug.Assert(m_DialFrom==null);
+            Debug.Assert(m_DialTo==null);
+
+            if (m_From==null || m_To==null)
+                throw new Exception("Terminal points are unavailable.");
+
+            m_DialPath = new PathForm(this, m_From, m_To);
+            m_DialPath.Show();
         }
-        /*
-        //	@mfunc	Start the main connection path sub-dialog.
-
-        void CuiPath::StartPath ( void ) {
-
-            assert(m_pDialFrom==0);
-            assert(m_pDialTo==0);
-
-            if ( m_pFrom==0 || m_pTo==0 ) {
-                ShowMessage("Terminal points are unavailable.");
-                return;
-            }
-
-            m_pDialPath = new CdPath(*this,*m_pFrom,*m_pTo);
-            m_pDialPath->Create(CdPath::IDD);
-
-        } // end of StartPath
-         */
     }
 }
