@@ -55,6 +55,12 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
+    <Compile Include="Forms\AdjustmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AdjustmentForm.Designer.cs">
+      <DependentUpon>AdjustmentForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DashPattern.cs" />
     <Compile Include="EditingController.cs" />
     <Compile Include="EditingIndex.cs" />
@@ -171,8 +177,20 @@
     <Compile Include="Forms\NewLineContextMenu.designer.cs">
       <DependentUpon>NewLineContextMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PathForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PathForm.Designer.cs">
+      <DependentUpon>PathForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="Forms\ScaleSpecificPen.cs" />
+    <Compile Include="Forms\UpdatePathForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdatePathForm.Designer.cs">
+      <DependentUpon>UpdatePathForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetControlUI.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="NewCircleUI.cs" />
@@ -527,6 +545,10 @@
     <Compile Include="PolygonSub.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\AdjustmentForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AdjustmentForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AttachPointForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AttachPointForm.cs</DependentUpon>
@@ -694,6 +716,10 @@
     <EmbeddedResource Include="Forms\ParallelControl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ParallelControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PathForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PathForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PointOnLineControl.resx">
       <SubType>Designer</SubType>

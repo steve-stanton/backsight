@@ -152,6 +152,15 @@ namespace Backsight.Editor
             AbortCommand();
         }
 
+        /// <summary>
+        /// Reacts to action that concludes the command dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window. If this matches the dialog that
+        /// this command knows about, the command will be executed (and, on success,
+        /// the dialog will be destroyed). If it's some other window, it must
+        /// be a sub-dialog created by our guy, so let it handle the request.</param>
+        /// <returns>True if command finished ok. This implementation always
+        /// returns <c>false</c>.</returns>
         internal override bool DialFinish(Control wnd)
         {
             return false;

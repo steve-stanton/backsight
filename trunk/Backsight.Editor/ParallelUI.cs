@@ -445,7 +445,7 @@ namespace Backsight.Editor
         /// this command knows about, the command will be executed (and, on success,
         /// the dialog will be destroyed). If it's some other window, it must
         /// be a sub-dialog created by our guy, so let it handle the request.</param>
-        /// <returns></returns>
+        /// <returns>True if command finished ok</returns>
         internal override bool DialFinish(Control wnd)
         {
             // If it's the offset dialog that's just finished, grab info
