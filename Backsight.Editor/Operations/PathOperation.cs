@@ -1160,7 +1160,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// this connection path.
         /// </summary>
         /// <returns>A string defining the complete path</returns>
-        string GetString()
+        internal string GetString()
         {
             StringBuilder sb = new StringBuilder(m_Legs.Count * 20);
 

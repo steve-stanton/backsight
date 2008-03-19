@@ -147,6 +147,9 @@ namespace Backsight.Editor.Forms
             this.toTextBox.Name = "toTextBox";
             this.toTextBox.Size = new System.Drawing.Size(101, 22);
             this.toTextBox.TabIndex = 4;
+            this.toTextBox.Enter += new System.EventHandler(this.toTextBox_Enter);
+            this.toTextBox.Leave += new System.EventHandler(this.toTextBox_Leave);
+            this.toTextBox.TextChanged += new System.EventHandler(this.toTextBox_TextChanged);
             // 
             // fromTextBox
             // 
@@ -155,6 +158,9 @@ namespace Backsight.Editor.Forms
             this.fromTextBox.Name = "fromTextBox";
             this.fromTextBox.Size = new System.Drawing.Size(100, 22);
             this.fromTextBox.TabIndex = 3;
+            this.fromTextBox.Enter += new System.EventHandler(this.fromTextBox_Enter);
+            this.fromTextBox.Leave += new System.EventHandler(this.fromTextBox_Leave);
+            this.fromTextBox.TextChanged += new System.EventHandler(this.fromTextBox_TextChanged);
             // 
             // label2
             // 
@@ -232,6 +238,7 @@ namespace Backsight.Editor.Forms
             this.pathTextBox.Name = "pathTextBox";
             this.pathTextBox.Size = new System.Drawing.Size(306, 237);
             this.pathTextBox.TabIndex = 0;
+            this.pathTextBox.TextChanged += new System.EventHandler(this.pathTextBox_TextChanged);
             // 
             // cancelButton
             // 
