@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
 
 using Backsight.Editor.Operations;
 
@@ -37,12 +38,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The start of the path.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From;
 
         /// <summary>
         /// The end of the path.
         /// </summary>
-        readonly PointFeature m_To;
+        PointFeature m_To;
 
         /// <summary>
         /// The control that last had the focus.
@@ -121,96 +122,21 @@ namespace Backsight.Editor.Forms
 
         private void PathForm_Shown(object sender, EventArgs e)
         {
+            // Display at top left corner of the screen.
+            this.Location = new Point(0, 0);
+
+            // If we are recalling an old operation, fill in the
+            // data entry string.
+            PathOperation op = null;
+            if (m_Command != null)
+                op = (m_Command.Recall as PathOperation);
+            ShowInput(op);
 
         }
 
-        private void distanceButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void curveButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void angleButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void culDeSacButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void endCurveButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void previewButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>
-        /// Does any painting that this dialog does.
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        internal void Render(ISpatialDisplay display)
-        {
-        }
-
-        /// <summary>
-        /// Performs processing upon selection of a new point (indicated by pointing at the map)
-        /// </summary>
-        /// <param name="point">The point that has been selected</param>
-        internal void OnSelectPoint(PointFeature point)
-        {
-        }
         /*
-
-BEGIN_MESSAGE_MAP(CdPath, CDialog)
-	//{{AFX_MSG_MAP(CdPath)
-	ON_EN_SETFOCUS(IDC_FROM, OnSetfocusFrom)
-	ON_EN_SETFOCUS(IDC_TO, OnSetfocusTo)
-	ON_EN_KILLFOCUS(IDC_TO, OnKillfocusTo)
-	ON_EN_KILLFOCUS(IDC_FROM, OnKillfocusFrom)
-	ON_BN_CLICKED(IDC_DISTANCE, OnDistance)
-	ON_EN_CHANGE(IDC_FROM, OnChangeFrom)
-	ON_EN_CHANGE(IDC_TO, OnChangeTo)
-	ON_BN_CLICKED(IDC_ANGLE, OnAngle)
-	ON_BN_CLICKED(IDC_CULDESAC, OnCuldesac)
-	ON_BN_CLICKED(IDC_CURVE, OnCurve)
-	ON_BN_CLICKED(IDC_PREVIEW, OnPreview)
-	ON_BN_CLICKED(IDC_EC, OnEC)
-	ON_EN_CHANGE(IDC_PATH, OnChangePath)
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CdPath message handlers
-
 BOOL CdPath::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-
-	// This dialog will display at top left corner of the screen.
-	SetWindowPos( &wndTopMost, 0,0, 0,0, SWP_NOSIZE );
-
-	// If we are recalling an old operation, fill in the
-	// data entry string.
-	const CePath* pop = 0;
-	if ( m_pCommand )
-		pop = dynamic_cast<const CePath*>(m_pCommand->GetRecall());
-	ShowInput(pop);
-
 	// Display the current default units.
 	CdDistance dist;
 	CStatic* pText = (CStatic*)GetDlgItem(IDC_UNITS);
@@ -286,44 +212,14 @@ void CdPath::Save ( void ) {
 	Finish();
 	
 } // end of Save
-//	Save the path. This function is invoked by CdAdjustment::OnOK.
+        */
 
-void CdPath::Save ( LOGICAL DisplayMessage ) // CCF Method
-{
-//	There SHOULD be a path to save.
-	if ( !m_pPath && DisplayMessage ) {
-		AfxMessageBox ( "CdPath::Save -- nothing to save" );
-		return;
-	}
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
 
-	// Ensure adjustment dialog has been destroyed.
-	OnDestroyAdj();
+        }
 
-//	Create persistent path.
-	CeMap* pMap = CeMap::GetpMap();
-	CePath* pSave = new ( os_database::of(pMap),
-						  os_ts<CePath>::get() )
-						  CePath(*m_pPath);
-
-//	Tell map a save is starting.
-	pMap->SaveOp(pSave);
-
-//	Execute the operation.
-	LOGICAL ok = pSave->Execute();
-
-//	Tell the map the save has finished.
-	pMap->SaveOp(pSave,ok);
-
-//	If something went wrong, get rid of the persistent path.
-	if ( !ok ) {
-		delete pSave;
-		return;
-	}
-
-	Finish();
-	
-} // end of Save
-
+        /*
 void CdPath::OnCancel ( void ) {
 
 //	If we are showing adjustment results, get rid of them (this
@@ -353,7 +249,17 @@ void CdPath::Finish ( void ) {
 	// finished (this will delete the memory for the CdPath object).
 	if ( m_pCommand ) m_pCommand->DialFinish(this);
 }
+        */
 
+        /// <summary>
+        /// Performs processing upon selection of a new point (indicated by pointing at the map)
+        /// </summary>
+        /// <param name="point">The point that has been selected</param>
+        internal void OnSelectPoint(PointFeature point)
+        {
+        }
+
+        /*
 // React to selection of a point on the map.
 
 void CdPath::OnSelectPoint ( CePoint* pPoint ) {
@@ -423,53 +329,49 @@ void CdPath::OnSelectPoint ( CePoint* pPoint ) {
 	} // end switch
 
 } // end of OnSelectPoint
+        */
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Set normal colour for a point.
-//
-//	@parm The point to set the colour for.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Ensures a point is drawn in its normal color.
+        /// </summary>
+        /// <param name="point">The point that needs to be drawn normally</param>
+        void SetNormalColor(PointFeature point)
+        {
+            // Redraw in idle time
+            if (point != null)
+                m_Command.ErasePainting();
+        }
 
-void CdPath::SetNormalColour ( const CePoint* const pPoint ) const {
+        /// <summary>
+        /// Sets color for a point. 
+        /// </summary>
+        /// <param name="point">The point to draw.</param>
+        /// <param name="c">The field that the point relates to. The default is
+        /// the field that currently has the focus.</param>
+        void SetColor(PointFeature point, Control c)
+        {
+            // Return if point not specified.
+            if (point==null)
+                return;
 
-//	Ask the point to draw itself.
-	if ( pPoint ) pPoint->DrawThis();
+            ISpatialDisplay display = m_Command.ActiveDisplay;
+            Control field = (c == null ? m_Focus : c);
 
-} // end of SetNormalColour
+            if (Object.ReferenceEquals(field, fromTextBox))
+                point.Draw(display, Color.DarkBlue);
+            else if (Object.ReferenceEquals(field, toTextBox))
+                point.Draw(display, Color.LightBlue);
+        }
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Set colour for a point.
-//
-//	@parm The point to draw.
-//	@parm The ID of the field that the point relates to. The
-//	default is the field that currently has the focus.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Does any painting that this dialog does.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        internal void Render(ISpatialDisplay display)
+        {
+        }
 
-void CdPath::SetColour ( const CePoint* const pPoint, const UINT id ) const {
-
-//	Return if point not specified.
-	if ( !pPoint ) return;
-
-//	Determine the colour.
-	COL col;
-	UINT field = id;
-	if ( !field ) field = m_Focus;
-
-	switch ( field ) {
-	case IDC_FROM:	col = COL_DARKBLUE;		break;
-	case IDC_TO:	col = COL_LIGHTBLUE;	break;
-	default:								return;
-	}
-
-//	Draw the point in the correct colour.
-	pPoint->DrawThis(col);
-
-} // end of SetColour
-
+        /*
 void CdPath::OnDraw ( const CePoint* const pPoint ) const {
 
 	if ( !pPoint )
@@ -509,9 +411,24 @@ void CdPath::OnDrawAll ( const LOGICAL draw ) const {
 
 } // end of OnDraw
 
-void CdPath::OnSetfocusFrom ( void ) { m_Focus = IDC_FROM; }
-void CdPath::OnSetfocusTo ( void ) { m_Focus = IDC_TO; }
+         */
 
+        private void fromTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = fromTextBox;
+        }
+
+        private void toTextBox_Enter(object sender, EventArgs e)
+        {
+            m_Focus = toTextBox;
+        }
+
+        private void distanceButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnDistance ( void ) {
 
 //	Display distance dialog. On OK, replace current selection
@@ -527,18 +444,26 @@ void CdPath::OnDistance ( void ) {
 	GetDlgItem(IDC_PATH)->SetFocus();
 
 } // end of OnDistance
+*/
 
-void CdPath::OnChangeFrom ( void ) {
+        private void fromTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // If the field is now empty, allow the user to type in an ID.
+            if (fromTextBox.Text.Trim().Length == 0)
+            {
+                SetNormalColor(m_From);
+                m_FromPointed = false;
+                m_From = null;
+                NoPreview();
+            }
+        }
 
-//	If the field is now empty, allow the user to type in an ID.
-	if ( IsFieldEmpty(IDC_FROM) ) {
-		SetNormalColour(m_pFrom);
-		m_FromPointed = FALSE;
-		m_pFrom = 0;
-		NoPreview();
-	}
-}
+        private void fromTextBox_Leave(object sender, EventArgs e)
+        {
 
+        }
+
+        /*
 void CdPath::OnKillfocusFrom ( void ) {
 
 //	Just return if the user specified the field by pointing.
@@ -572,7 +497,14 @@ void CdPath::OnKillfocusFrom ( void ) {
 	this->CheckPreview();
 
 } // end of OnKillfocusFrom
+*/
 
+        private void toTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnChangeTo ( void ) {
 
 //	If the field is now empty, allow the user to type in an ID.
@@ -583,7 +515,14 @@ void CdPath::OnChangeTo ( void ) {
 		NoPreview();
 	}
 }
+*/
 
+        private void toTextBox_Leave(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnKillfocusTo ( void ) {
 
 //	Just return if the user specified the field by pointing.
@@ -635,7 +574,14 @@ LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
 	return ::IsFieldEmpty(pWnd);
 
 } // end of IsFieldEmpty
+*/
 
+        private void angleButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnAngle ( void ) {
 
 //	Display angle dialog. On OK, replace current selection
@@ -650,7 +596,14 @@ void CdPath::OnAngle ( void ) {
 //	Put focus back in the data entry box
 	GetDlgItem(IDC_PATH)->SetFocus();
 }
+*/
 
+        private void culDeSacButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnCuldesac ( void ) {
 
 //	Display cul-de-sac dialog. On OK, replace current selection
@@ -665,7 +618,14 @@ void CdPath::OnCuldesac ( void ) {
 //	Put focus back in the data entry box
 	GetDlgItem(IDC_PATH)->SetFocus();
 }
+*/
 
+        private void curveButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnCurve ( void ) {
 
 //	Display curve dialog. On OK, replace current selection
@@ -680,7 +640,13 @@ void CdPath::OnCurve ( void ) {
 //	Put focus back in the data entry box
 	GetDlgItem(IDC_PATH)->SetFocus();
 }
+*/
 
+        private void previewButton_Click(object sender, EventArgs e)
+        {
+
+        }
+        /*
 void CdPath::OnPreview ( void ) {
 
 //	Parse the entered path
@@ -690,14 +656,28 @@ void CdPath::OnPreview ( void ) {
 	this->Adjust();
 
 } // end of OnPreview
+*/
 
+        private void endCurveButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnEC ( void ) {
 
 //	Stick an /EC at the end of the edit box.
 	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
 	pEdit->ReplaceSel ( ") " );
 }
+*/
 
+        private void pathTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
 void CdPath::OnChangePath ( void ) {
 
 //	If we previously had an adjustment dialog, cancel it.
@@ -723,12 +703,12 @@ void CdPath::CheckPreview ( void ) const {
 	else
 		this->NoPreview();
 }
-
-void CdPath::NoPreview ( void ) const {
-	TurnOff(GetDlgItem(IDC_PREVIEW));
-//	TurnOff(GetDlgItem(IDOK));
-}
-
+*/
+        void NoPreview()
+        {
+            previewButton.Enabled = false;
+        }
+        /*
 //	Set focus to the path field, ensuring that nothing is
 //	selected when the focus gets there.
 
@@ -1633,54 +1613,6 @@ void CdPath::Adjust ( void ) {
 
 } // end of Adjust
 
-void CdPath::Adjust ( LOGICAL DisplayMessage ) // CCF version
-{
-//	Confirm that the from-point & to-point are both defined (this
-//	should have been checked beforehand).
-	if ( !(m_pFrom && m_pTo) && DisplayMessage ) {
-		AfxMessageBox("Terminal points have not been defined");
-		return;
-	}
-
-//	Assign leg numbers to each path item.
-	SetLegs();
-
-//	Get rid of any path previously created.
-	delete m_pPath;
-	m_pPath = 0;
-
-//	Create new path object
-	m_pPath = new CePath(*m_pFrom,*m_pTo);
-
-//	Create the path.
-	if ( !m_pPath->Create(m_Items, m_NumItem) ) return;
-
-//	Adjust the path
-
-	FLOAT8 de;				// Misclosure in eastings
-	FLOAT8 dn;				// Misclosure in northings
-	FLOAT8 prec;			// Precision
-	FLOAT8 length;			// Total observed length
-
-	m_pPath->Adjust(dn,de,prec,length,
-		m_Rotation,m_ScaleFactor);
-
-//	Draw the path with the adjustment info
-	m_DrawPath = TRUE;
-	m_pPath->Draw(m_Rotation,m_ScaleFactor);
-
-	if ( DisplayMessage )
-	{
-	//	Display the numeric results.
-		m_pAdjustment = new CdAdjustment(dn,de,prec,length,this);
-		m_pAdjustment->Create(IDD_ADJUSTMENT);
-
-	//	Disable the preview button (it will be re-enabled when
-	//	the adjustment dialog is destroyed).
-		TurnOff(GetDlgItem(IDC_PREVIEW));
-	}
-} // end of Adjust - CCF version
-
 /////////////////////////////////////////////////////////////////////////////
 //
 //	@mfunc	Associate each path item with a leg sequence number.
@@ -1778,30 +1710,24 @@ void CdPath::OnDestroyAdj ( void ) {
 	TurnOn(GetDlgItem(IDC_PREVIEW));
 
 } // end of OnDestroyAdj
+        */
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Fill the data entry field with the stuff that
-//			was entered for a specific connection path.
-//
-//	@parm	The operation to show.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Fills the data entry field with the stuff that was entered for
+        /// a specific connection path.
+        /// </summary>
+        /// <param name="op">The operation to show.</param>
+        void ShowInput(PathOperation op)
+        {
+            // Return if the operation has not been specified.
+            if (op==null)
+                return;
 
-void CdPath::ShowInput ( const CePath* pop ) {
+            // Get the data entry string.
+            string str = op.GetString();
 
-	// Return if the operation has not been specified.
-	if ( !pop ) return;
-
-	// Get the data entry string.
-	CString str;
-	pop->GetString(str);
-
-	// Display the data entry string (this takes
-	// care of word wrap).
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-	pEdit->SetWindowText(str);
-
-} // end of ShowInput         */
+            // Display the data entry string (this takes care of word wrap).
+            pathTextBox.Text = str;
+        }
     }
 }
