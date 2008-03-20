@@ -68,6 +68,12 @@
     <Compile Include="ArcFeature.cs" />
     <Compile Include="FindOverlapsQuery.cs" />
     <Compile Include="FindPointByIdQuery.cs" />
+    <Compile Include="Forms\DistanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DistanceForm.Designer.cs">
+      <DependentUpon>DistanceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -560,6 +566,10 @@
     <EmbeddedResource Include="Forms\ContainerForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ContainerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DistanceForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DistanceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EntityTranslationForm.resx">
       <SubType>Designer</SubType>
