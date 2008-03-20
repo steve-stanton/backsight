@@ -100,7 +100,7 @@ namespace Backsight.Editor.Forms
             this.culDeSacButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.culDeSacButton.Size = new System.Drawing.Size(100, 30);
             this.culDeSacButton.TabIndex = 8;
-            this.culDeSacButton.Text = "Cul de &sac...";
+            this.culDeSacButton.Text = "Cul de &sac";
             this.culDeSacButton.UseVisualStyleBackColor = true;
             this.culDeSacButton.Click += new System.EventHandler(this.culDeSacButton_Click);
             // 
@@ -112,7 +112,7 @@ namespace Backsight.Editor.Forms
             this.angleButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.angleButton.Size = new System.Drawing.Size(100, 30);
             this.angleButton.TabIndex = 7;
-            this.angleButton.Text = "&Angle...";
+            this.angleButton.Text = "&Angle";
             this.angleButton.UseVisualStyleBackColor = true;
             this.angleButton.Click += new System.EventHandler(this.angleButton_Click);
             // 
@@ -124,7 +124,7 @@ namespace Backsight.Editor.Forms
             this.curveButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.curveButton.Size = new System.Drawing.Size(100, 30);
             this.curveButton.TabIndex = 6;
-            this.curveButton.Text = "&Curve...";
+            this.curveButton.Text = "&Curve";
             this.curveButton.UseVisualStyleBackColor = true;
             this.curveButton.Click += new System.EventHandler(this.curveButton_Click);
             // 
@@ -136,7 +136,7 @@ namespace Backsight.Editor.Forms
             this.distanceButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.distanceButton.Size = new System.Drawing.Size(100, 30);
             this.distanceButton.TabIndex = 5;
-            this.distanceButton.Text = "&Distance...";
+            this.distanceButton.Text = "&Distance\r\n...";
             this.distanceButton.UseVisualStyleBackColor = true;
             this.distanceButton.Click += new System.EventHandler(this.distanceButton_Click);
             // 
