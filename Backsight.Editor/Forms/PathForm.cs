@@ -132,12 +132,13 @@ namespace Backsight.Editor.Forms
                 op = (m_Command.Recall as PathOperation);
             ShowInput(op);
 
+            // Display the current default units.
+            //defaultUnitsLabel.Text = 
         }
 
         /*
 BOOL CdPath::OnInitDialog() 
 {
-	// Display the current default units.
 	CdDistance dist;
 	CStatic* pText = (CStatic*)GetDlgItem(IDC_UNITS);
 	pText->SetWindowText(dist.FormatUnits());
@@ -216,29 +217,19 @@ void CdPath::Save ( void ) {
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
+            // If we are showing adjustment results, get rid of them
+            if (m_Adjustment!=null)
+            {
+                m_Adjustment.Dispose();
+                m_Adjustment = null;
+            }
 
+            // Tell the command that's running this dialog that we're done
+            if (m_Command!=null)
+                m_Command.DialAbort(this);
         }
 
         /*
-void CdPath::OnCancel ( void ) {
-
-//	If we are showing adjustment results, get rid of them (this
-//	should end up calling this->OnDestroyAdj).
-	if ( m_pAdjustment ) {
-		m_pAdjustment->OnCancel();
-	}
-
-	// Revert from & to point to normal colour.
-	this->SetNormalColour(m_pFrom);
-	this->SetNormalColour(m_pTo);
-
-	// Tell the command that's running this dialog that we're
-	// finished (this will delete the memory for the CdPath object).
-	if ( m_pCommand ) m_pCommand->DialAbort(this);
-	
-//	CDialog::OnCancel();
-}
-
 void CdPath::Finish ( void ) {
 
 //	Revert from & to point to normal colour.
