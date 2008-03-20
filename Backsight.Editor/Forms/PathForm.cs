@@ -416,26 +416,22 @@ void CdPath::OnDrawAll ( const LOGICAL draw ) const {
 
         private void distanceButton_Click(object sender, EventArgs e)
         {
+            // Display distance dialog. On OK, replace current selection
+            // (if any) with the result of formatting the dialog.
 
-        }
-
-        /*
-void CdPath::OnDistance ( void ) {
-
-//	Display distance dialog. On OK, replace current selection
-//	(if any) with the result of formatting the dialog.
-
-	CdDistance dial;
-	if ( dial.DoModal()==IDOK ) {
+            DistanceForm dial = new DistanceForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                MessageBox.Show(dial.Format());
+                /*
 		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
 		pEdit->ReplaceSel ( dial.Format() );
-	}
+                 */
+            }
 
-//	Put focus back in the data entry box
-	GetDlgItem(IDC_PATH)->SetFocus();
-
-} // end of OnDistance
-*/
+            // Put focus back in the data entry box
+            pathTextBox.Focus();
+        }
 
         private void fromTextBox_TextChanged(object sender, EventArgs e)
         {

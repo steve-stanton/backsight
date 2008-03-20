@@ -207,7 +207,11 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuPointAddOnLine, ctxPointAddOnLine },
                 IsPointAddOnLineEnabled,
                 PointAddOnLine);
-            AddAction(new ToolStripItem[] { mnuPointConnectionPath, toolPointConnectionPath }, IsPointConnectionPathEnabled, PointConnectionPath);
+            AddEdit(
+                EditingActionId.Path,
+                new ToolStripItem[] { mnuPointConnectionPath, toolPointConnectionPath },
+                IsPointConnectionPathEnabled,
+                PointConnectionPath);
             AddEdit(
                 EditingActionId.Radial,
                 new ToolStripItem[] { mnuPointSideshot, ctxPointSideshot, toolPointSideshot },
@@ -1080,12 +1084,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsPointConnectionPathEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void PointConnectionPath(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new PathUI(this, action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsPointSideshotEnabled()

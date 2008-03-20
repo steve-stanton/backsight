@@ -299,6 +299,7 @@ namespace Backsight.Editor.Forms
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DistanceForm";
             this.Text = "Enter distance";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.DistanceForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
