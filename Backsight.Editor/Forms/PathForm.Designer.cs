@@ -77,14 +77,14 @@ namespace Backsight.Editor.Forms
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(700, 277);
+            this.splitContainer1.Size = new System.Drawing.Size(713, 259);
             this.splitContainer1.SplitterDistance = 260;
             this.splitContainer1.TabIndex = 0;
             // 
             // endCurveButton
             // 
             this.endCurveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.endCurveButton.Location = new System.Drawing.Point(139, 224);
+            this.endCurveButton.Location = new System.Drawing.Point(139, 209);
             this.endCurveButton.Name = "endCurveButton";
             this.endCurveButton.Size = new System.Drawing.Size(100, 30);
             this.endCurveButton.TabIndex = 9;
@@ -95,55 +95,55 @@ namespace Backsight.Editor.Forms
             // culDeSacButton
             // 
             this.culDeSacButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.culDeSacButton.Location = new System.Drawing.Point(139, 179);
+            this.culDeSacButton.Location = new System.Drawing.Point(139, 164);
             this.culDeSacButton.Name = "culDeSacButton";
             this.culDeSacButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.culDeSacButton.Size = new System.Drawing.Size(100, 30);
             this.culDeSacButton.TabIndex = 8;
-            this.culDeSacButton.Text = "Cul de &sac";
+            this.culDeSacButton.Text = "Cul de &sac...";
             this.culDeSacButton.UseVisualStyleBackColor = true;
             this.culDeSacButton.Click += new System.EventHandler(this.culDeSacButton_Click);
             // 
             // angleButton
             // 
             this.angleButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.angleButton.Location = new System.Drawing.Point(15, 179);
+            this.angleButton.Location = new System.Drawing.Point(15, 164);
             this.angleButton.Name = "angleButton";
             this.angleButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.angleButton.Size = new System.Drawing.Size(100, 30);
             this.angleButton.TabIndex = 7;
-            this.angleButton.Text = "&Angle";
+            this.angleButton.Text = "&Angle...";
             this.angleButton.UseVisualStyleBackColor = true;
             this.angleButton.Click += new System.EventHandler(this.angleButton_Click);
             // 
             // curveButton
             // 
             this.curveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.curveButton.Location = new System.Drawing.Point(139, 132);
+            this.curveButton.Location = new System.Drawing.Point(139, 117);
             this.curveButton.Name = "curveButton";
             this.curveButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.curveButton.Size = new System.Drawing.Size(100, 30);
             this.curveButton.TabIndex = 6;
-            this.curveButton.Text = "&Curve";
+            this.curveButton.Text = "&Curve...";
             this.curveButton.UseVisualStyleBackColor = true;
             this.curveButton.Click += new System.EventHandler(this.curveButton_Click);
             // 
             // distanceButton
             // 
             this.distanceButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.distanceButton.Location = new System.Drawing.Point(15, 132);
+            this.distanceButton.Location = new System.Drawing.Point(15, 117);
             this.distanceButton.Name = "distanceButton";
             this.distanceButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.distanceButton.Size = new System.Drawing.Size(100, 30);
             this.distanceButton.TabIndex = 5;
-            this.distanceButton.Text = "&Distance\r\n...";
+            this.distanceButton.Text = "&Distance...";
             this.distanceButton.UseVisualStyleBackColor = true;
             this.distanceButton.Click += new System.EventHandler(this.distanceButton_Click);
             // 
             // toTextBox
             // 
             this.toTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toTextBox.Location = new System.Drawing.Point(139, 80);
+            this.toTextBox.Location = new System.Drawing.Point(139, 65);
             this.toTextBox.Name = "toTextBox";
             this.toTextBox.Size = new System.Drawing.Size(101, 22);
             this.toTextBox.TabIndex = 4;
@@ -154,7 +154,7 @@ namespace Backsight.Editor.Forms
             // fromTextBox
             // 
             this.fromTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fromTextBox.Location = new System.Drawing.Point(139, 49);
+            this.fromTextBox.Location = new System.Drawing.Point(139, 34);
             this.fromTextBox.Name = "fromTextBox";
             this.fromTextBox.Size = new System.Drawing.Size(100, 22);
             this.fromTextBox.TabIndex = 3;
@@ -166,7 +166,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(44, 83);
+            this.label2.Location = new System.Drawing.Point(44, 68);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(57, 16);
             this.label2.TabIndex = 2;
@@ -176,7 +176,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(44, 52);
+            this.label1.Location = new System.Drawing.Point(44, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 16);
             this.label1.TabIndex = 1;
@@ -197,8 +197,8 @@ namespace Backsight.Editor.Forms
             // 
             this.splitContainer2.Panel2.Controls.Add(this.cancelButton);
             this.splitContainer2.Panel2.Controls.Add(this.previewButton);
-            this.splitContainer2.Size = new System.Drawing.Size(436, 277);
-            this.splitContainer2.SplitterDistance = 306;
+            this.splitContainer2.Size = new System.Drawing.Size(449, 259);
+            this.splitContainer2.SplitterDistance = 319;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
@@ -216,8 +216,8 @@ namespace Backsight.Editor.Forms
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.pathTextBox);
-            this.splitContainer3.Size = new System.Drawing.Size(306, 277);
-            this.splitContainer3.SplitterDistance = 36;
+            this.splitContainer3.Size = new System.Drawing.Size(319, 259);
+            this.splitContainer3.SplitterDistance = 27;
             this.splitContainer3.TabIndex = 0;
             // 
             // defaultUnitsLabel
@@ -232,18 +232,20 @@ namespace Backsight.Editor.Forms
             // 
             // pathTextBox
             // 
-            this.pathTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pathTextBox.Location = new System.Drawing.Point(0, 0);
+            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pathTextBox.Location = new System.Drawing.Point(6, 3);
             this.pathTextBox.Multiline = true;
             this.pathTextBox.Name = "pathTextBox";
-            this.pathTextBox.Size = new System.Drawing.Size(306, 237);
+            this.pathTextBox.Size = new System.Drawing.Size(292, 205);
             this.pathTextBox.TabIndex = 0;
             this.pathTextBox.TextChanged += new System.EventHandler(this.pathTextBox_TextChanged);
             // 
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(14, 224);
+            this.cancelButton.Location = new System.Drawing.Point(14, 209);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cancelButton.Size = new System.Drawing.Size(100, 30);
@@ -256,7 +258,7 @@ namespace Backsight.Editor.Forms
             // previewButton
             // 
             this.previewButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.previewButton.Location = new System.Drawing.Point(14, 132);
+            this.previewButton.Location = new System.Drawing.Point(14, 117);
             this.previewButton.Name = "previewButton";
             this.previewButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.previewButton.Size = new System.Drawing.Size(100, 30);
@@ -269,7 +271,7 @@ namespace Backsight.Editor.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(700, 277);
+            this.ClientSize = new System.Drawing.Size(713, 259);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "PathForm";

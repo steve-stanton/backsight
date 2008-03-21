@@ -72,6 +72,8 @@ namespace Backsight.Editor.Forms
         /// <param name="leg">The leg that's being edited</param>
         internal AngleForm(StraightLeg leg)
         {
+            InitializeComponent();
+
             m_Radians = leg.StartAngle;
             m_IsClockwise = (m_Radians>=0.0);
             m_Radians = Math.Abs(m_Radians);

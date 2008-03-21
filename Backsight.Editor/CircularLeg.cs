@@ -769,7 +769,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// The central angle for this leg (assuming the
         /// <see cref="IsCulDeSac"/> property is true)
         /// </summary>
-        double CentralAngle
+        internal double CentralAngle
         {
             get { return m_Angle1; }
         }
@@ -778,7 +778,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// The entry angle for this leg (assuming it isn't a cul-de-sac -
         /// see the <see cref="IsCulDeSac"/> property)
         /// </summary>
-        double EntryAngle
+        internal double EntryAngle
         {
             get { return m_Angle1; }
         }
@@ -787,7 +787,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// The exit angle for this leg (assuming it isn't a cul-de-sac -
         /// see the <see cref="IsCulDeSac"/> property)
         /// </summary>
-        double ExitAngle
+        internal double ExitAngle
         {
             get
             {

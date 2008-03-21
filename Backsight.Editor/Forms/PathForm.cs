@@ -585,47 +585,42 @@ LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
 
         private void culDeSacButton_Click(object sender, EventArgs e)
         {
+            // Display cul-de-sac dialog. On OK, replace current selection
+            // (if any) with the result of formatting the dialog.
+            CulDeSacForm dial = new CulDeSacForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                MessageBox.Show(dial.Format());
+                /*
+                CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
+                pEdit->ReplaceSel(dial.Format());
+                 */
+            }
+            dial.Dispose();
 
+            // Put focus back in the data entry box
+            pathTextBox.Focus();
         }
-
-        /*
-void CdPath::OnCuldesac ( void ) {
-
-//	Display cul-de-sac dialog. On OK, replace current selection
-//	(if any) with the result of formatting the dialog.
-
-	CdCuldesac dial;
-	if ( dial.DoModal()==IDOK ) {
-		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-		pEdit->ReplaceSel ( dial.Format() );
-	}
-
-//	Put focus back in the data entry box
-	GetDlgItem(IDC_PATH)->SetFocus();
-}
-*/
 
         private void curveButton_Click(object sender, EventArgs e)
         {
+            // Display curve dialog. On OK, replace current selection
+            // (if any) with the result of formatting the dialog.
 
+            ArcForm dial = new ArcForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                MessageBox.Show(dial.Format());
+                /*
+                CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
+                pEdit->ReplaceSel(dial.Format());
+                 */
+            }
+            dial.Dispose();
+
+            // Put focus back in the data entry box
+            pathTextBox.Focus();
         }
-
-        /*
-void CdPath::OnCurve ( void ) {
-
-//	Display curve dialog. On OK, replace current selection
-//	(if any) with the result of formatting the dialog.
-
-	CdCurve dial;
-	if ( dial.DoModal()==IDOK ) {
-		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-		pEdit->ReplaceSel ( dial.Format() );
-	}
-
-//	Put focus back in the data entry box
-	GetDlgItem(IDC_PATH)->SetFocus();
-}
-*/
 
         private void previewButton_Click(object sender, EventArgs e)
         {
