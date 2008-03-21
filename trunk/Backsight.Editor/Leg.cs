@@ -111,7 +111,7 @@ namespace Backsight.Editor
                 return true;
         }
 
-        protected bool IsDeflection
+        internal bool IsDeflection
         {
             get { return (m_Switches != null && (m_Switches[0] & LegItemFlag.Deflection) != 0); }
         }

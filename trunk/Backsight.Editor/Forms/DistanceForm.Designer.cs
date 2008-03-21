@@ -276,7 +276,6 @@ namespace Backsight.Editor.Forms
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 30);
             this.okButton.TabIndex = 6;
-            this.okButton.TabStop = false;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);

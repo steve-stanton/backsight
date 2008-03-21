@@ -61,6 +61,12 @@
     <Compile Include="Forms\AdjustmentForm.Designer.cs">
       <DependentUpon>AdjustmentForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AngleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AngleForm.Designer.cs">
+      <DependentUpon>AngleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DashPattern.cs" />
     <Compile Include="EditingController.cs" />
     <Compile Include="EditingIndex.cs" />
@@ -554,6 +560,10 @@
     <EmbeddedResource Include="Forms\AdjustmentForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AdjustmentForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AngleForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AngleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AttachPointForm.resx">
       <SubType>Designer</SubType>
