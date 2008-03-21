@@ -565,25 +565,23 @@ LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
 
         private void angleButton_Click(object sender, EventArgs e)
         {
+            // Display angle dialog. On OK, replace current selection
+            // (if any) with the result of formatting the dialog.
 
+            AngleForm dial = new AngleForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                MessageBox.Show(dial.Format());
+                /*
+		            CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
+		            pEdit->ReplaceSel ( dial.Format() );
+                 */
+            }
+            dial.Dispose();
+
+            // Put focus back in the data entry box
+            pathTextBox.Focus();
         }
-
-        /*
-void CdPath::OnAngle ( void ) {
-
-//	Display angle dialog. On OK, replace current selection
-//	(if any) with the result of formatting the dialog.
-
-	CdAngle dial;
-	if ( dial.DoModal()==IDOK ) {
-		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-		pEdit->ReplaceSel ( dial.Format() );
-	}
-
-//	Put focus back in the data entry box
-	GetDlgItem(IDC_PATH)->SetFocus();
-}
-*/
 
         private void culDeSacButton_Click(object sender, EventArgs e)
         {
