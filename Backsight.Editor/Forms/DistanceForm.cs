@@ -255,18 +255,6 @@ namespace Backsight.Editor.Forms
             return result;
         }
 
-        /// <summary>
-        /// Formats JUST the default units.
-        /// </summary>
-        /// <returns></returns>
-        string FormatUnits()
-        {
-            if (m_Unit == null)
-                return String.Empty;
-            else
-                return String.Format("{0}... ", m_Unit.Abbreviation);
-        }
-
         private void DistanceForm_Shown(object sender, EventArgs e)
         {
             // Display current data entry units.

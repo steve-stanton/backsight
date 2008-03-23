@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// <summary>
         /// EndOfCurve
         /// </summary>
-		Ec = 70,
+		EC = 70,
 		
         /// <summary>
         /// Miss-connect (no line)
