@@ -90,6 +90,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         AdjustmentForm m_Adjustment;
 
+        /// <summary>
+        /// The current data entry units
+        /// </summary>
+        DistanceUnit m_Units;
+
         #endregion
 
         #region Constructors
@@ -118,6 +123,7 @@ namespace Backsight.Editor.Forms
 	        m_Rotation		= 0.0;
 	        m_ScaleFactor	= 0.0;
 	        m_Adjustment	= null;
+            m_Units         = null;
         }
 
         private void PathForm_Shown(object sender, EventArgs e)
@@ -133,42 +139,28 @@ namespace Backsight.Editor.Forms
             ShowInput(op);
 
             // Display the current default units.
-            //defaultUnitsLabel.Text = 
+            m_Units = CadastralMapModel.Current.EntryUnit;
+            if (m_Units == null)
+                defaultUnitsLabel.Text = String.Empty;
+            else
+                defaultUnitsLabel.Text = String.Format("{0}... ", m_Units.Abbreviation);
+
+            // Disable the "Preview" & "OK" buttons. They are only valid
+            // after the from- and to-points have been entered, and after
+            // something has been entered for the path.
+            this.NoPreview();
+
+            // If we already have a from and a to point, fill them
+            // in and start in the data entry field.
+            if (m_From!=null && m_To!=null)
+            {
+                m_Focus = fromTextBox;
+                OnSelectPoint(m_From);
+
+                m_Focus = toTextBox;
+                OnSelectPoint(m_To);
+            }
         }
-
-        /*
-BOOL CdPath::OnInitDialog() 
-{
-	CdDistance dist;
-	CStatic* pText = (CStatic*)GetDlgItem(IDC_UNITS);
-	pText->SetWindowText(dist.FormatUnits());
-
-//	Hold current entry units in a local static variable, in case
-//	the above is erased.
-	this->GetUnits();
-
-//	Disable the "Preview" & "OK" buttons. They are only valid
-//	after the from- and to-points have been entered, and after
-//	something has been entered for the path.
-
-	this->NoPreview();
-
-	// If we already have a from and a to point, fill them
-	// in and start in the data entry field.
-	if ( m_pFrom && m_pTo ) {
-
-		m_Focus = IDC_FROM;
-		OnSelectPoint(m_pFrom);
-
-		m_Focus = IDC_TO;
-		OnSelectPoint(m_pTo);
-
-		return FALSE;
-	}
-	else
-		return TRUE;
-}
-*/
 
         /// <summary>
         /// Saves the path. This method is called from <see cref="AdjustmentForm"/>
@@ -248,79 +240,57 @@ void CdPath::Finish ( void ) {
         /// <param name="point">The point that has been selected</param>
         internal void OnSelectPoint(PointFeature point)
         {
+            // Return if point is not defined.
+            if (point==null)
+                return;
+
+            SetColor(point, null);
+
+            // Handle the pointing, depending on what field we were last in.
+            if (Object.ReferenceEquals(m_Focus, fromTextBox))
+            {
+                // Ensure that any previously selected backsight reverts
+                // to its normal color and remember the new point.
+                if (!Object.ReferenceEquals(point, m_From))
+                {
+                    SetNormalColor(m_From);
+                    m_From = point;
+                }
+
+                // Remember that the user pointed.
+                m_FromPointed = true;
+
+                // Display any point key
+                fromTextBox.Text = m_From.FormattedKey;
+
+                // See if preview button can be enabled.
+                CheckPreview();
+
+                // Move focus to the to-point.
+                toTextBox.Focus();
+            }
+            else if (Object.ReferenceEquals(m_Focus, toTextBox))
+            {
+                // Save the to point, and remember that the user pointed.
+                if (!Object.ReferenceEquals(point, m_To))
+                {
+                    SetNormalColor(m_To);
+                    m_To = point;
+                }
+
+                m_ToPointed = true;
+
+                // Display any point key
+                toTextBox.Text = m_To.FormattedKey;
+
+                // See if preview button can be enabled.
+                CheckPreview();
+
+                // Move focus to the data field, making sure that nothing
+                // is initially selected.
+                GotoPath();
+            }
         }
-
-        /*
-// React to selection of a point on the map.
-
-void CdPath::OnSelectPoint ( CePoint* pPoint ) {
-
-//	Return if point is not defined.
-	if ( !pPoint ) return;
-
-//	Set colour
-	SetColour(pPoint);
-
-//	Handle the pointing, depending on what field we were
-//	last in.
-
-	switch ( m_Focus ) {
-
-	case IDC_FROM: {
-
-//		Ensure that any previously selected backsight reverts
-//		to its normal colour and remember the new point.
-		if ( pPoint!=m_pFrom ) {
-			SetNormalColour(m_pFrom);
-			m_pFrom = pPoint;
-		}
-
-//		Remember that the user pointed.
-		m_FromPointed = TRUE;
-
-//		Display it.
-		GetDlgItem(IDC_FROM)->SetWindowText(m_pFrom->FormatKey());
-
-//		See if preview button can be enabled.
-		CheckPreview();
-
-//		Move focus to the to-point.
-		GetDlgItem(IDC_TO)->SetFocus();
-
-		return;
-	}
-
-	case IDC_TO: {
-
-//		Save the from point, and remember that the user pointer.
-		if ( pPoint!=m_pTo ) {
-			SetNormalColour(m_pTo);
-			m_pTo= pPoint;
-		}
-
-		m_ToPointed = TRUE;
-
-//		Display it.
-		GetDlgItem(IDC_TO)->SetWindowText(m_pTo->FormatKey());
-
-//		See if preview button can be enabled.
-		CheckPreview();
-
-//		Move focus to the data field, making sure that nothing
-//		is initially selected.
-		this->GotoPath();
-
-		return;
-	}
-
-	default:
-
-		return;
-
-	} // end switch
-
-} // end of OnSelectPoint
-        */
 
         /// <summary>
         /// Ensures a point is drawn in its normal color.
@@ -624,33 +594,19 @@ LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
 
         private void previewButton_Click(object sender, EventArgs e)
         {
-
+            // If the entered path parses ok, do the adjustment
+            if (ParsePath())
+                Adjust();
         }
-        /*
-void CdPath::OnPreview ( void ) {
-
-//	Parse the entered path
-	if ( !this->ParsePath() ) return;
-
-//	Adjust the path.
-	this->Adjust();
-
-} // end of OnPreview
-*/
 
         private void endCurveButton_Click(object sender, EventArgs e)
         {
+            // Stick an /EC at the end of the edit box.
+            pathTextBox.Text += ") ";
 
+            //CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
+            //pEdit->ReplaceSel(") ");
         }
-
-        /*
-void CdPath::OnEC ( void ) {
-
-//	Stick an /EC at the end of the edit box.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-	pEdit->ReplaceSel ( ") " );
-}
-*/
 
         private void pathTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -673,239 +629,193 @@ void CdPath::OnChangePath ( void ) {
 //	something defined for the path.
 	this->CheckPreview();
 }
-
-void CdPath::CheckPreview ( void ) const {
-
-	if ( m_pTo && m_pFrom && !IsFieldEmpty(IDC_PATH) ) {
-		TurnOn(GetDlgItem(IDC_PREVIEW));
-//		TurnOn(GetDlgItem(IDOK));
-	}
-	else
-		this->NoPreview();
-}
 */
+        void CheckPreview()
+        {
+            previewButton.Enabled = (m_To != null &&
+                                     m_From != null &&
+                                     pathTextBox.Text.Trim().Length > 0);
+        }
+
         void NoPreview()
         {
             previewButton.Enabled = false;
         }
-        /*
-//	Set focus to the path field, ensuring that nothing is
-//	selected when the focus gets there.
 
-void CdPath::GotoPath ( void ) const {
+        /// <summary>
+        /// Sets focus to the path field, ensuring that nothing is
+        /// selected when the focus gets there.
+        /// </summary>
+        void GotoPath()
+        {
+            // Set selection to the character after any current selection.
+            int nSel = pathTextBox.SelectionLength;
+            if (nSel>0)
+            {
+                int istart = pathTextBox.SelectionStart;
+                pathTextBox.SelectionLength = 0;
+                pathTextBox.SelectionStart = istart + nSel;
+            }
 
-//	Get the current selection.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-	INT4 istart;
-	INT4 iend;
-	pEdit->GetSel(istart,iend);
+            // Move the focus.
+            pathTextBox.Focus();
 
-//	Set selection to the character after any current selection.
-	pEdit->SetSel(iend,iend);
+            // If there's only one line in the path control, scroll
+            // to the end of the line.
+            if (pathTextBox.Lines.Length == 1)
+            {
+                pathTextBox.SelectionLength = 0;
+                pathTextBox.SelectionStart = pathTextBox.Lines[0].Length;
+            }
+        }
 
-//	Move the focus.
-	pEdit->SetFocus();
+        bool ParsePath()
+        {
+            // How many characters have we got (this may include extra junk
+            // on each line of the control).
+            int nchars = pathTextBox.Text.Length;
+            if (nchars < 0)
+                return false;
 
-	// If there's only one line in the path control, scroll
-	// to the end of the line.
-	if ( pEdit->GetLineCount()==1 ) {
+            // Grab the entered path (without any embedded newlines) - not sure
+            // if they're there or not
+            string str = pathTextBox.Text;
+            str = str.Replace(System.Environment.NewLine, " ").Trim();
 
-		// Ensure nothing is selected
-//		pEdit->SetSel(-1,-1);
+            return ParseString(str);
+        }
 
-//		CString dmsg;
-//		dmsg.Format("scroll %d chars",pEdit->LineLength());
-//		AfxMessageBox(dmsg);
+        /// <summary>
+        /// Parses the string that represents the path description.
+        /// </summary>
+        /// <param name="str">The string to parse</param>
+        /// <returns>True if the supplied string is understandable</returns>
+        bool ParseString(string str)
+        {
+            // Initialize list of path items.
+            m_Items = new List<PathItem>();
 
-		// Scroll to the end of the line.
-//		pEdit->LineScroll(1,pEdit->LineLength());
-		pEdit->LineScroll(0,iend);
-	}
+            // Pick out each successive word (delimited by white space).
+            string[] words = str.Split(new char[] { '\t', ' ' });
+            foreach (string w in words)
+            {
+                if (!ParseWord(w))
+                    return false;
+            }
 
-}
+            // Validate the path items
+            return ValidPath();
+        }
 
-LOGICAL CdPath::ParsePath ( void ) {
+        bool ParseWord(string str)
+        {
+            // Return if string is empty (could be empty if this function
+            // has been called recursively from below).
+            str = str.Trim();
+            int nc = str.Length;
+            if (nc == 0)
+                return true;
 
-//	How many characters have we got (this includes extra junk
-//	on each line of the control).
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-	INT4 nchars = pEdit->GetWindowTextLength();
-	if ( nchars<=0 ) return FALSE;
+            // If we have a new default units specification, make it
+            // the default. There should be whitespace after the "..."
+            if (str.Contains("..."))
+            {
+                DistanceUnit unit = GetUnits(str, true);
+                PathItem item = new PathItem(PathItemType.Units, unit, 0.0);
+                AddItem(item);
+                return true;
+            }
 
-//	How many lines have we got (returns 1 if NO text)
-	UINT4 nline = pEdit->GetLineCount();
-	CHARS line[128];
-	CHARS* nl="\n";
-//	string.
+            // If we have a counter-clockwise indicator, just remember it
+            // and parse anything that comes after it.
+            if (nc >= 2 && String.Compare(str.Substring(0, 2), "cc", true) == 0)
+            {
+                AddItem(PathItemType.CounterClockwise);
+                return ParseWord(str.Substring(2));
+            }
 
-//	Allocate one long string for all the text. Add extra chars; one
-//	for trailing null, and one for each line, to account for the
-//	newline chars we stick on.
-	CHARS* str = new CHARS[nchars+nline+1];
-	for ( UINT4 c=0; c<nchars; str[c]='\0', c++ );
+            // If we have a BC, remember it & parse anything that follows.
+            if (str[0] == '(')
+            {
+                AddItem(PathItemType.BC);
+                return ParseWord(str.Substring(1));
+            }
 
-	for ( UINT4 i=0; i<nline; i++ ) {
+            // If we have a EC, remember it & parse anything that follows.
+            if (str[0] == ')')
+            {
+                AddItem(PathItemType.EC);
+                return ParseWord(str.Substring(1));
+            }
 
-//		Get index to the current line. Skip if line is empty.
-		UINT4 index = pEdit->LineIndex(i);
-		UINT4 nc = pEdit->LineLength(index);
-		if ( nc==0 ) continue;
+            // If we have a single slash character (possibly followed by
+            // a digit or a decimal point), record the single slash &
+            // parse anything that follows.
 
-//		Pick out the text and concatenate with complete result.
-		nc = pEdit->GetLine( i, line, sizeof(line)-1 );
-		line[nc] = '\0';
-		nc = StrLength(line);
-		line[nc] = '\0';
-		if ( nc==0 ) continue;
+            if (str[0] == '/')
+            {
+                // Check for a free-standing slash, or a slash that is
+                // followed by a numeric digit or decimal point.
 
-		strcat ( str, line );
-		strcat ( str, nl );
-	}
+                if (nc == 1 || Char.IsDigit(str, 1) || str[1] == '.')
+                {
+                    AddItem(PathItemType.Slash);
+                    return ParseWord(str.Substring(1));
+                }
 
-//	Ignore any trailing white space.
-	UINT4 slen = StrLength(str);
-	str[slen] = '\0';
+                // More than one character, or what follows is not a digit.
+                // So we are dealing with either a miss-connect, or an
+                // omit-point. In either case, there should be whitespace
+                // after that.
 
-//	Create stuff based on the string.
-	LOGICAL ok = this->ParseString(str);
+                if (nc == 2)
+                {
+                    if (str[1] == '-')
+                    {
+                        AddItem(PathItemType.MissConnect);
+                        return true;
+                    }
 
-	delete [] str;
-	return ok;
+                    if (str[1] == '*')
+                    {
+                        AddItem(PathItemType.OmitPoint);
+                        return true;
+                    }
+                }
+                // Allow CADCOR-style data entry
+                else if (nc == 3)
+                {
+                    if (String.Compare(str, "/mc", true) == 0)
+                    {
+                        AddItem(PathItemType.MissConnect);
+                        return true;
+                    }
 
-} // end of ParsePath
+                    if (String.Compare(str, "/op", true) == 0)
+                    {
+                        AddItem(PathItemType.OmitPoint);
+                        return true;
+                    }
+                }
 
-//	Parse the string that represents the path description.
+                string msg = String.Format("Unexpected qualifier '{0}'", str);
+                MessageBox.Show(msg);
+                return false;
+            }
 
-LOGICAL CdPath::ParseString ( CHARS* str ) {
+            // If we have a multiplier, it must be immediately followed
+            // by a numeric (integer) value.
 
-//	Initialize list of path items.
-	delete [] m_Items;
-	m_Items = 0;
-	m_NumAlloc = 0;
-	m_NumItem = 0;
+            if (str[0] == '*')
+            {
+                if (nc == 1)
+                {
+                    MessageBox.Show("Unexpected '*' character");
+                    return false;
+                }
 
-//	Pick out each successive word (delimited by white space).
-
-	CHARS* delims = " \t\n";
-	CHARS* token = strtok ( str, delims );
-
-	for ( ; token; token=strtok(NULL,delims) ) {
-		if ( !ParseWord(token) ) return FALSE;
-	}
-
-//	Validate the path items
-	return ValidPath();
-
-} // end of ParseString
-
-LOGICAL CdPath::ParseWord( CHARS* str ) {
-
-#define WORDMAX 32		// Max size for any word.
-
-	CHARS msg[80];		// Message buffer in case we need it.
-
-//	Return if string is empty (could be empty if this function
-//	has been called recursively from below).
-	UINT4 nc = StrLength(str);
-	if ( nc==0 ) return TRUE;
-
-//	Check for excessively long words.
-	if ( nc>=WORDMAX ) {
-		AfxMessageBox("Path contains un-expectedly long word.");
-		return FALSE;
-	}
-
-//	If we have a new default units specification, make it
-//	the default. There should be whitespace after the "..."
-
-	if ( strstr(str,"...") ) {
-		const CeDistanceUnit* const pUnit = this->GetUnits(str,TRUE);
-		CePathItem item(PAT_UNITS,pUnit);
-		AddItem(item);
-		return TRUE;
-	}
-
-//	If we have a counter-clockwise indicator, just remember it
-//	and parse anything that comes after it.
-	if ( nc>=2 && strnicmp(str,"cc",2)==0 ) {
-		AddItem(PAT_CC);
-		return ParseWord(&str[2]);
-	}
-
-//	If we have a BC, remember it & parse anything that follows.
-	if ( str[0]=='(' ) {
-		AddItem(PAT_BC);
-		return ParseWord(&str[1]);
-	}
-
-//	If we have an EC, remember it & parse anything that follows.
-	if ( str[0]==')' ) {
-		AddItem(PAT_EC);
-		return ParseWord(&str[1]);
-	}
-
-//	If we have a single slash character (possibly followed by
-//	a digit or a decimal point), record the single slash &
-//	parse anything that follows.
-
-	if ( str[0]=='/' ) {
-
-//		Check for a free-standing slash, or a slash that is
-//		followed by a numeric digit or decimal point.
-
-		if ( nc==1 || isdigit(str[1]) || str[1]=='.' ) {
-			AddItem(PAT_SLASH);
-			return ParseWord(&str[1]);
-		}
-
-//		More than one character, or what follows is not a digit.
-//		So we are dealing with either a miss-connect, or an
-//		omit-point. In either case, there should be whitespace
-//		after that.
-
-		if ( nc==2 ) {
-
-			if ( str[1]=='-' ) {
-				AddItem(PAT_MC);
-				return TRUE;
-			}
-
-			if ( str[1]=='*' ) {
-				AddItem(PAT_OP);
-				return TRUE;
-			}
-		}
-
-//		Allow CADCOR-style data entry
-
-		else if ( nc==3 ) {
-				
-			if ( strnicmp(str,"/mc",3)==0 ) {
-				AddItem(PAT_MC);
-				return TRUE;
-			}
-
-			if ( strnicmp(str,"/op",3)==0 ) {
-				AddItem(PAT_OP);
-				return TRUE;
-			}
-		}
-
-		sprintf ( msg, "Unexpected qualifier '%s'", str );
-		AfxMessageBox(msg);
-		return FALSE;
-	}
-
-//	If we have a multiplier, it must be immediately followed
-//	by a numeric (integer) value.
-	if ( str[0]=='*' ) {
-
-		if ( nc==1 ) {
-			AfxMessageBox("Unexpected '*' character");
-			return FALSE;
-		}
-
-//		Pick up the repeat count.
+                // Pick up the repeat count.
+                /*
 		CHARS* pNext;
 		UINT4 repeat = strtol(&str[1],&pNext,10);
 
@@ -921,13 +831,19 @@ LOGICAL CdPath::ParseWord( CHARS* str ) {
 
 //		Continue parsing after the repeat count.
 		return ParseWord(pNext);
-	}
+                 */
+            }
 
-//	If the string contains an embedded qualifier (a "*" or a "/"
-//	character), process the portion of any string prior to the
-//	qualifier. Note that we have just handled the cases where
-//	the qualifier was at the very start of the string.
+            // If the string contains an embedded qualifier (a "*" or a "/"
+            // character), process the portion of any string prior to the
+            // qualifier. Note that we have just handled the cases where
+            // the qualifier was at the very start of the string.
 
+
+            ///////////////////////
+            return false;
+        }
+        /*
 	CHARS* pQual = strpbrk(str,"*"+"/");
 	if ( pQual ) {
 
@@ -1022,165 +938,131 @@ LOGICAL CdPath::ParseWord( CHARS* str ) {
 	}
 
 } // end of ParseWord
+         */
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Repeat the last path item a specific number of times. The
-//			thing to repeat HAS to be of type PAT_VALUE (or
-//			possibly a PAT_MC that has been automatically inserted
-//			by <mf CdPath::AddItem>).
-//
-//	@parm	The number of times the last item should appear (we
-//			will append n-1 copies of the last item).
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Repeats the last path item a specific number of times. The thing to
+        /// repeat HAS to be of type PAT_VALUE (or possibly a PAT_MC that has been
+        /// automatically inserted by <see cref="AddItem"/>).
+        /// </summary>
+        /// <param name="repeat">The number of times the last item should appear (we
+        /// will append n-1 copies of the last item).</param>
+        void AddRepeats(int repeat)
+        {
+            // Confirm that we have something to repeat.
+            if (m_Items.Count == 0)
+            {
+                MessageBox.Show("Nothing to repeat");
+                return;
+            }
 
-void CdPath::AddRepeats ( const UINT4 repeat ) {
+            // If the last item was a PAT_MC, get to the value before that.
+            int prev = m_Items.Count - 1;
+            PathItemType type = m_Items[prev].ItemType;
+            if (type == PathItemType.MissConnect && prev > 0)
+            {
+                prev--;
+                type = m_Items[prev].ItemType;
+            }
 
-//	Confirm that we have something to repeat.
-	if ( m_NumItem==0 ) {
-		AfxMessageBox ( "Nothing to repeat" );
-		return;
-	}
+            // It can only be a PAT_VALUE.
+            if (type != PathItemType.Value)
+            {
+                MessageBox.Show("Unexpected repeat multiplier");
+                return;
+            }
 
-//	If the last item was a PAT_MC, get to the value before that.
-	UINT2 prev = m_NumItem-1;
-	PAT type = m_Items[prev].GetType();
-	if ( type==PAT_MC && prev>0 ) {
-		prev--;
-		type = m_Items[prev].GetType();
-	}
+            // Make copies of the last value.
+            for (int i = 1; i < repeat; i++)
+            {
+                PathItem copy = new PathItem(m_Items[prev]);
+                AddItem(copy);
+            }
+        }
 
-//	It can only be a PAT_VALUE.
-	if (  type != PAT_VALUE ) {
-		AfxMessageBox ( "Unexpected repeat multiplier" );
-		return;
-	}
+        /// <summary>
+        /// Gets or sets the units for distance observations.
+        /// </summary>
+        /// <param name="str">The string containing the units specification. The
+        /// characters up to the first white space character (or "." character) must
+        /// match one of the abbreviations for the desired units. Pass in a null
+        /// pointer (the default) if you just want to get the current default
+        /// units.</param>
+        /// <param name="makedef">True if the units obtained should be regarded as
+        /// the new default. (default was false).</param>
+        /// <returns>The corresponding units.</returns>
+        DistanceUnit GetUnits(string str, bool makedef)
+        {
+            // Get pointer to the enclosing map.
+            CadastralMapModel map = CadastralMapModel.Current;
 
-//	Make copies of the last value.
-	CePathItem copy(m_Items[prev]);
-	for ( UINT4 i=1; i<repeat; i++ )
-		this->AddItem(copy);
+            if (str != null)
+            {
+                // Pick up characters that represent the abbreviation for
+                // the units. Break on any white space or a "." character.
 
-} // end of AddRepeats
+                string abbrev = String.Empty;
+                foreach (char c in str)
+                {
+                    if (Char.IsWhiteSpace(c) || c == '.')
+                        break;
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Get or set the units for distance observations.
-//
-//	@parm	The string containing the units specification. The
-//			characters up to the first white space character (or
-//			"." character) must match one of the abbreviations
-//			for the desired units. Pass in a null pointer (the
-//			default) if you just want to get the current default
-//			units.
-//	@parm	TRUE if the units obtained should be regarded as
-//			the new default. (default is FALSE).
-//
-//	@rdesc	Pointer to the corresponding units.
-//
-/////////////////////////////////////////////////////////////////////////////
+                    abbrev += c;
+                }
 
-const CeDistanceUnit* CdPath::GetUnits ( const CHARS* str
-									   , const LOGICAL makedef ) const {
+                // Try to match the abbreviation to one of the unit
+                // types known to the map.
+                DistanceUnit match = MatchUnits(abbrev);
 
-	static const CeDistanceUnit* pDefault=0;
+                // Issue message if there was no match.
+                if (match == null)
+                {
+                    string msg = String.Format("No units with abbreviation '{0}'", abbrev);
+                    MessageBox.Show(msg);
+                }
 
-//	Get pointer to the enclosing map.
-	CeMap* pMap = CeMap::GetpMap();
+                // If the units should be made the new default, do it so
+                // long as the units were obtained.
+                if (makedef && match != null)
+                    m_Units = match;
 
-	if ( str ) {
+                // Return the units (if any)
+                return match;
+            }
+            else
+            {
+                // If the default was not previously defined, pick up
+                // the map's current default.
+                if (m_Units == null)
+                    m_Units = map.EntryUnit;
 
-//		Pick up characters that represent the abbreviation for
-//		the units. Break on any white space or a "." character.
+                return m_Units;
+            }
+        }
 
-		CHARS abbrev[16];
-		const CHARS* pc = &str[0];
-		for ( UINT4 nc=0; (nc+1)<sizeof(abbrev); pc++, nc++ ) {
-			if ( isspace(*pc) ) break;
-			if ( *pc == '.' ) break;
-			abbrev[nc] = *pc;
-		}
-		abbrev[nc] = '\0';
+        /// <summary>
+        /// Converts a string that represents a distance unit abbreviation into
+        /// a DistanceUnit reference (to one of the objects known to the enclosing map).
+        /// </summary>
+        /// <param name="abbrev">The units abbreviation.</param>
+        /// <returns>The corresponding units (null if the abbreviation was not found).</returns>
+        DistanceUnit MatchUnits(string abbrev)
+        {
+            CadastralMapModel map = CadastralMapModel.Current;
+            return map.GetUnit(abbrev);
+        }
 
-//		Try to match the abbreviation to one of the unit
-//		types known to the map.
-		const CeDistanceUnit* pMatch = this->MatchUnits(abbrev);
+        /// <summary>
+        /// Holds on to an additional path item.
+        /// </summary>
+        /// <param name="item">The item to add.</param>
+        void AddItem(PathItem item)
+        {
+            if (m_Items == null)
+                m_Items = new List<PathItem>();
 
-//		Issue message if there was no match.
-		if ( !pMatch ) {
-			CHARS msg[80];
-			sprintf ( msg, "No units with abbreviation '%s'", abbrev );
-			AfxMessageBox ( msg );
-		}
-
-//		If the units should be made the new default, do it so
-//		long as the units were obtained.
-		if ( makedef && pMatch ) pDefault = pMatch;
-
-//		Return pointer (if any) to the units.
-		return pMatch;
-	}
-	else {
-
-//		If the default was not previously defined, pick up
-//		the map's current default.
-		if ( !pDefault ) pDefault = &(pMap->GetEntryUnit());
-
-		return pDefault;
-	}
-
-} // end of GetUnits
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Convert a string that represents a distance unit
-//			abbreviation into a CeDistanceUnit pointer (one of
-//			the objects known to the enclosing map).
-//
-//	@parm	The units abbreviation.
-//
-//	@rdesc	Pointer to the corresponding units, or NULL if the
-//			abbreviation was not found.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-const CeDistanceUnit* CdPath::MatchUnits ( const CHARS* abbrev ) const {
-
-//	How many characters do we have in the abbreviation?
-	UINT4 nc = StrLength(abbrev);
-
-//	See if the abbreviation represents metric.
-	const CeDistanceUnit* pUnit;
-	const CHARS* pChars;
-	const CeMap* pMap = CeMap::GetpMap();
-
-	pUnit = pMap->GetpUnit(UNIT_METRES);
-	pChars = pUnit->GetAbbrev();
-	if ( StrLength(pChars)==nc && stricmp(abbrev,pChars)==0 ) return pUnit;
-
-//	Try feet
-	pUnit = pMap->GetpUnit(UNIT_FEET);
-	pChars = pUnit->GetAbbrev();
-	if ( StrLength(pChars)==nc && stricmp(abbrev,pChars)==0 ) return pUnit;
-
-//	Try chains
-	pUnit = pMap->GetpUnit(UNIT_CHAINS);
-	pChars = pUnit->GetAbbrev();
-	if ( StrLength(pChars)==nc && stricmp(abbrev,pChars)==0 ) return pUnit;
-
-//	Not a known units abbreviation.
-	return 0;
-
-} // end of FindUnits
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Hold on to an additional path item.
-//
-//	@parm	The item to add.
-//
-/////////////////////////////////////////////////////////////////////////////
+        }
+        /*
 
 void CdPath::AddItem ( const CePathItem& item ) {
 
@@ -1217,28 +1099,20 @@ void CdPath::AddItem ( const CePathItem& item ) {
 	if ( type==PAT_OP ) omit = TRUE;
 
 } // end of AddItem
+        */
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Hold on to an additional path item. Good for items that
-//			do not have an associated value.
-//
-//	@parm	The type of item to add.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Holds on to an additional path item. Good for items that
+        /// do not have an associated value.
+        /// </summary>
+        /// <param name="type">The type of item to add.</param>
+        void AddItem(PathItemType type)
+        {
+            PathItem item = new PathItem(type, null, 0.0);
+            AddItem(item);
+        }
 
-void CdPath::AddItem ( const PAT type ) {
-
-//	Construct an item to add.
-	CePathItem item(type);
-
-//	Add it.
-	AddItem(item);
-
-} // end of AddItem
-
-/////////////////////////////////////////////////////////////////////////////
-//
+        /*
 //	@mfunc	Allocate space for a specific number of path items.
 //
 //	@parm	The number of items to allocate.
@@ -1288,283 +1162,304 @@ LOGICAL CdPath::IsLastItemBC ( void ) const {
 	return ( m_Items[m_NumItem-1].m_Item == PAT_BC );
 
 } // IsLastItemBC
+         */
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Validate path items. Prior to call, the path should
-//			be parsed by making a series of calls to ParseWord.
-//			This generates a set of items that are generated
-//			without consideration to their context. This function
-//			validates the context, elaborating on the meaning of
-//			PAT_ANGLE and PAT_VALUE item codes.
-//
-/////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Validates path items. Prior to call, the path should be parsed by
+        /// making a series of calls to ParseWord. This generates a set of
+        /// items that are generated without consideration to their context.
+        /// This function validates the context, elaborating on the meaning
+        /// of PAT_ANGLE and PAT_VALUE item codes.
+        /// </summary>
+        /// <returns></returns>
+        bool ValidPath()
+        {
+            // The path must contain at least one item.
+            if (m_Items == null || m_Items.Count == 0)
+            {
+                MessageBox.Show("Path has not been specified.");
+                return false;
+            }
 
-LOGICAL CdPath::ValidPath ( void ) {
+            // All PAT_VALUE's outside of a curve definition should have
+            // type PAT_DISTANCE. Within curves, it's a bit more complicated.
 
-//	The path must contain at least one item.
-	if ( m_NumItem==0 ) {
-		AfxMessageBox("Path has not been specified.");
-		return FALSE;
-	}
+            int ibc = 0;        // Index of last BC
+            bool curve = false;	// Not in a curve to start with
 
-//	All PAT_VALUE's outside of a curve definition should have
-//	type PAT_DISTANCE. Within curves, it's a bit more complicated.
+            for (int i = 0; i < m_Items.Count; i++)
+            {
+                PathItem item = m_Items[i];
 
-	UINT2 ibc = 0;			// Index of last BC
-	LOGICAL curve = FALSE;	// Not in a curve to start with
+                switch (item.ItemType)
+                {
+                    case PathItemType.BC:
+                    {
+                        // If we have a BC, confirm that we are not already in
+                        // a curve. Also confirm that there are at least 3 items
+                        // after the BC (enough for an angle, a radius, and an EC).
 
-	for ( UINT2 i=0; i<m_NumItem; i++ ) {
+                        if (curve)
+                        {
+                            MessageBox.Show("Nested curve detected");
+                            return false;
+                        }
+                        curve = true;
 
-		switch ( m_Items[i].m_Item ) {
+                        if ((ibc + 4) > m_Items.Count)
+                        {
+                            MessageBox.Show("BC not followed by angle, radius, and EC");
+                            return false;
+                        }
 
-//		If we have a BC, confirm that we are not already in
-//		a curve. Also confirm that there are at least 3 items
-//		after the BC (enough for an angle, a radius, and an EC).
+                        ibc = i;
+                        break;
+                    }
 
-		case PAT_BC: {
-			if ( curve ) {
-				AfxMessageBox("Nested curve detected");
-				return FALSE;
-			}
-			curve = TRUE;
+                    case PathItemType.EC:
+                    {
+                        // If we have an EC, confirm that we were in a curve.
 
-			if ( (ibc+4) > m_NumItem ) {
-				AfxMessageBox("BC not followed by angle, radius, and EC");
-				return FALSE;
-			}
+                        if (!curve)
+                        {
+                            MessageBox.Show("EC was not preceded by BC");
+                            return false;
+                        }
+                        curve = false;
+                        break;
+                    }
 
-			ibc = i;
-			break;
-		}
+                    case PathItemType.Value:
+                    {
+                        // If not in a curve, change all PAT_VALUE types to
+                        // PAT_DISTANCE types. Inside a curve, PAT_VALUES may
+                        // actually be angles that need to be converted into
+                        // radians.
 
-//		If we have an EC, confirm that we were in a curve.
+                        // All values must point to the data entry units.
+                        if (item.Units==null)
+                        {
+                            MessageBox.Show("Value has no unit of measurement");
+                            return false;
+                        }
 
-		case PAT_EC: {
-			if ( !curve ) {
-				AfxMessageBox("EC was not preceded by BC");
-				return FALSE;
-			}
-			curve = FALSE;
-			break;
-		}
+                        if (!curve)
+                            item.ItemType = PathItemType.Distance;
+                        else
+                        {
+                            // The value immediately after the BC is always an angle.
+                            if (i == (ibc + 1))
+                            {
+                                item.ItemType = PathItemType.BcAngle;
+                                item.Value *= MathConstants.DEGTORAD;
+                            }
+                            else if (i == (ibc + 2))
+                            {
+                                // Could be an angle, or a radius. If the NEXT
+                                // item is a value, we must have an exit angle.
 
-//		If not in a curve, change all PAT_VALUE types to
-//		PAT_DISTANCE types. Inside a curve, PAT_VALUES may
-//		actually be angles that need to be converted into
-//		radians.
+                                if (m_Items[i + 1].ItemType == PathItemType.Value)
+                                {
+                                    item.ItemType = PathItemType.EcAngle;
+                                    item.Value *= MathConstants.DEGTORAD;
+                                }
+                                else
+                                    item.ItemType = PathItemType.Radius;
+                            }
+                            else if (i == (ibc + 3))
+                                item.ItemType = PathItemType.Radius;
+                            else
+                                item.ItemType = PathItemType.Distance;
+                        }
 
-		case PAT_VALUE: {
+                        break;
+                    }
 
-//			All values must point to the data entry units.
-			if ( !m_Items[i].m_pUnit ) {
-				AfxMessageBox("Value has no unit of measurement");
-				return FALSE;
-			}
+                    case PathItemType.Deflection:
+                    case PathItemType.Angle:
+                    {
+                        // Angles inside curve definitions have to be qualified. If
+                        // they appear, they MUST follow immediately after the BC.
+                        // For angles NOT in a curve, you can only have one angle
+                        // at a time.
 
-			if ( !curve )
-				m_Items[i].m_Item = PAT_DISTANCE;
-			else {
+                        if (curve)
+                        {
+                            // Can't have deflections inside a curve.
+                            if (item.ItemType == PathItemType.Deflection)
+                            {
+                                MessageBox.Show("Deflection not allowed within curve definition");
+                                return false;
+                            }
 
-//				The value immediately after the BC is always
-//				an angle.
+                            if (i == (ibc + 1))
+                                item.ItemType = PathItemType.BcAngle;
+                            else if (i == (ibc + 2))
+                                item.ItemType = PathItemType.EcAngle;
+                            else
+                            {
+                                MessageBox.Show("Extraneous angle inside curve definition");
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (i > 0 && m_Items[i-1].ItemType == PathItemType.Angle)
+                            {
+                                MessageBox.Show("More than 1 angle at the end of a straight");
+                                return false;
+                            }
 
-				if ( i==(ibc+1) ) {
-					m_Items[i].m_Item = PAT_BANGLE;
-					m_Items[i].m_Value *= DEGTORAD;
-				}
-				else if ( i==(ibc+2) ) {
+                            // Also, it makes no sense to have an angle right after an EC.
+                            if (i > 0 && m_Items[i - 1].ItemType == PathItemType.EC)
+                            {
+                                MessageBox.Show("Angle after EC makes no sense");
+                                return false;
+                            }
+                        }
 
-//					Could be an angle, or a radius. If the NEXT
-//					item is a value, we must have an exit angle.
+                        break;
+                    }
 
-					if ( m_Items[i+1].m_Item == PAT_VALUE ) {
-						m_Items[i].m_Item = PAT_EANGLE;
-						m_Items[i].m_Value *= DEGTORAD;
-					}
-					else
-						m_Items[i].m_Item = PAT_RADIUS;
+                    case PathItemType.Slash:
+                    {
+                        // A free-standing slash character is only valid within
+                        // a curve definition. It has to appear at a specific
+                        // location in the sequence.
+                        //
+                        // BC -> BCAngle -> Radius -> Slash
+                        // BC -> BCAngle -> Radius -> CCMarker -> Slash
+                        // BC -> BCAngle -> ECAngle -> Radius -> CCMarker -> Slash
+                        //
+                        // In other words, it can come at ibc+3 through ibc+5.
 
-				}
-				else if ( i==(ibc+3) )
-					m_Items[i].m_Item = PAT_RADIUS;
-				else
-					m_Items[i].m_Item = PAT_DISTANCE;
+                        if (!curve)
+                        {
+                            MessageBox.Show("Extraneous '/' character");
+                            return false;
+                        }
 
-			}
-			break;
-		}
+                        if (i < ibc + 3 || i > ibc + 5)
+                        {
+                            MessageBox.Show("Misplaced '/' character");
+                            return false;
+                        }
 
-//		Angles inside curve definitions have to be qualified. If
-//		they appear, they MUST follow immediately after the BC.
-//		For angles NOT in a curve, you can only have one angle
-//		at a time.
+                        break;
+                    }
 
-		case PAT_DEFLECTION:
-		case PAT_ANGLE: {
-			if ( curve ) {
+                    case PathItemType.CounterClockwise:
+                    {
+                        // Counter-clockwise indicator. Similar to PAT_SLASH, it has
+                        // a specific range of valid positions with respect to the BC.
 
-				// Can't have deflections inside a curve.
-				if ( m_Items[i].m_Item == PAT_DEFLECTION ) {
-					AfxMessageBox("Deflection not allowed within curve definition");
-					return FALSE;
-				}
+                        if (!curve)
+                        {
+                            MessageBox.Show("Counter-clockwise indicator detected outside curve definition");
+                            return false;
+                        }
 
-				if ( i==(ibc+1) )
-					m_Items[i].m_Item = PAT_BANGLE;
-				else if ( i==(ibc+2) )
-					m_Items[i].m_Item = PAT_EANGLE;
-				else {
-					AfxMessageBox("Extraneous angle inside curve definition");
-					return FALSE;
-				}
-			}
-			else {
-				if ( i>0 && m_Items[i-1].m_Item == PAT_ANGLE ) {
-					AfxMessageBox("More than 1 angle at the end of a straight");
-					return FALSE;
-				}
+                        if (i < ibc + 3 || i > ibc + 4)
+                        {
+                            MessageBox.Show("Misplaced 'cc' characters");
+                            return false;
+                        }
 
-//				Also, it makes no sense to have an angle right
-//				after an EC.
-				if ( i>0 && m_Items[i-1].m_Item == PAT_EC ) {
-					AfxMessageBox("Angle after EC makes no sense");
-					return FALSE;
-				}
+                        break;
+                    }
 
-			}
-			break;
-		}
+                    case PathItemType.CentralAngle:
+                    {
+                        // A central angle is valid only within a curve definition
+                        // and must be immediately after the BC.
 
-//		A free-standing slash character is only valid within
-//		a curve definition. It has to appear at a specific
-//		location in the sequence.
-//
-//		BC -> BCAngle -> Radius -> Slash
-//		BC -> BCAngle -> Radius -> CCMarker -> Slash
-//		BC -> BCAngle -> ECAngle -> Radius -> CCMarker -> Slash
-//
-//		In other words, it can come at ibc+3 through ibc+5.
+                        if (!curve)
+                        {
+                            MessageBox.Show("Central angle detected outside curve definition");
+                            return false;
+                        }
 
-		case PAT_SLASH: {
-			if ( !curve ) {
-				AfxMessageBox("Extraneous '/' character");
-				return FALSE;
-			}
-			if ( i<ibc+3 || i>ibc+5 ) {
-				AfxMessageBox("Misplaced '/' character");
-				return FALSE;
-			}
-			break;
-		}
+                        if (i != ibc + 1)
+                        {
+                            MessageBox.Show("Central angle does not follow immediately after BC");
+                            return false;
+                        }
 
-//		Counter-clockwise indicator. Similar to PAT_SLASH, it has
-//		a specific range of valid positions with respect to the BC.
+                        break;
+                    }
 
-		case PAT_CC: {
-			if ( !curve ) {
-				AfxMessageBox("Counter-clockwise indicator detected outside curve definition");
-				return FALSE;
-			}
-			if ( i<ibc+3 || i>ibc+4 ) {
-				AfxMessageBox("Misplaced 'cc' characters");
-				return FALSE;
-			}
-			break;
-		}
+                    case PathItemType.MissConnect:
+                    case PathItemType.OmitPoint:
+                    {
+                        // Miss-connections & omit points must always follow on from a PAT_DISTANCE.
 
-//		A central angle is valid only within a curve definition
-//		and must be immediately after the BC.
+                        if (i == 0 || m_Items[i - 1].ItemType != PathItemType.Distance)
+                        {
+                            MessageBox.Show("Miss-Connect or Omit-Point is not preceded by a distance");
+                            return false;
+                        }
 
-		case PAT_CANGLE: {
-			if ( !curve ) {
-				AfxMessageBox("Central angle detected outside curve definition");
-				return FALSE;
-			}
-			if ( i!=ibc+1 ) {
-				AfxMessageBox("Central angle does not follow immediately after BC");
-				return FALSE;
-			}
-			break;
-		}
+                        break;
+                    }
 
+                    case PathItemType.Units:
+                    {
+                        // No checks
+                        break;
+                    }
 
-//		Miss-connections & omit points must always follow on from
-//		a PAT_DISTANCE.
+                    default:
+                    {
+                        // All item types generated via ParseWord should have been
+                        // listed above, even if there is no check. If any got missed,
+                        // drop through to a message, but keep going.
 
-		case PAT_MC:
-		case PAT_OP: {
-			if ( i==0 || m_Items[i-1].m_Item != PAT_DISTANCE ) {
-				AfxMessageBox("Miss-Connect or Omit-Point is not preceded by a distance" );
-				return FALSE;
-			}
-			break;
-		}
+                        string msg = String.Format("PathForm.ValidPath - Unhandled check for {0}", item.ItemType);
+                        MessageBox.Show(msg);
+                        break;
+                    }
 
-//		No checks
+                } // end switch
 
-		case PAT_UNITS:
+            } // next item
 
-			break;
+            // Error if we got to the end, and any curve was not closed.
+            if (curve)
+            {
+                MessageBox.Show("Circular arc does not have an EC");
+                return false;
+            }
 
-//		All item types generated via ParseWord should have been
-//		listed above, even if there is no check. If any got missed,
-//		drop through to a message, but keep going.
+            return true;
+        }
 
-		default: {
+        /// <summary>
+        /// Adjusts a validated path.
+        /// </summary>
+        void Adjust()
+        {
+            // Confirm that the from-point & to-point are both defined (this
+            // should have been checked beforehand).
+            if (m_From==null || m_To==null)
+            {
+                MessageBox.Show("Terminal points have not been defined");
+                return;
+            }
 
-			CHARS msg[80];
-			sprintf ( msg, "CdPath::ValidPath\nUnhandled check (%d)",
-						m_Items[i].m_Item );
-			AfxMessageBox(msg);
+            // Assign leg numbers to each path item.
+            SetLegs();
 
-		}
+            // Get rid of any path previously created.
+            m_Path = null;
 
-		} // end switch
-
-	} // next item
-
-//	Error if we got to the end, and any curve was not closed.
-	if ( curve ) {
-		AfxMessageBox ( "Circular curve does not have an EC" );
-		return FALSE;
-	}
-
-	return TRUE;
-
-} // end of ValidPath
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Adjust a validated path.
-//
-/////////////////////////////////////////////////////////////////////////////
-
+            // Create new path object
+            // ...problem is that cstr will auto-add to current session
+            //m_Path = new PathOperation(m_From, m_To);
+        }
+        /*
 void CdPath::Adjust ( void ) {
 
-//	AfxMessageBox("CdPath::Adjust");
-
-//	Confirm that the from-point & to-point are both defined (this
-//	should have been checked beforehand).
-	if ( !(m_pFrom && m_pTo) ) {
-		AfxMessageBox("Terminal points have not been defined");
-		return;
-	}
-
-//	Assign leg numbers to each path item.
-	SetLegs();
-
-//	Get rid of any path previously created.
-//	CHARS str[80];
-//	sprintf ( str, "Deleting old path at %x", m_pPath );
-//	AfxMessageBox(str);
-	delete m_pPath;
-	m_pPath = 0;
-
-//	Create new path object
 	m_pPath = new CePath(*m_pFrom,*m_pTo);
-//	sprintf( str,"CdPath::Adjust created new path at %x", m_pPath);
-//	AfxMessageBox(str);
 
 //	Create the path.
 	if ( !m_pPath->Create(m_Items, m_NumItem) ) return;
@@ -1592,77 +1487,73 @@ void CdPath::Adjust ( void ) {
 	TurnOff(GetDlgItem(IDC_PREVIEW));
 
 } // end of Adjust
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Associate each path item with a leg sequence number.
-//
-//	@rdesc	The number of legs found.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-UINT2 CdPath::SetLegs ( void ) {
-
-//	AfxMessageBox("CdPath::SetLegs");
-//	CHARS msg[80];
-
-	INT2 nleg = 0;
-
-//	Note that PAT_UNITS may not get a leg number.
-
-	for ( UINT2 i=0; i<m_NumItem; ) {
-
-		PAT type = m_Items[i].m_Item;
-
-		if ( type == PAT_DISTANCE ||
-			 type == PAT_ANGLE ||
-			 type == PAT_DEFLECTION ||
-			 type == PAT_BC ) {
-
-//			If we have a distance or angle item, increment the leg 
-//			sequence number until we hit an angle or a BC. In the case of
-//			an angle, it always comes at the START of a leg.
-
-			if ( type == PAT_DISTANCE ||
-				 type == PAT_ANGLE ||
-				 type == PAT_DEFLECTION ) {
-
-				nleg++;
-				m_Items[i].m_Leg = nleg;
-				for ( i++; i<m_NumItem; i++ ) {
-					if ( m_Items[i].m_Item == PAT_ANGLE ) break;
-					if ( m_Items[i].m_Item == PAT_DEFLECTION ) break;
-					if ( m_Items[i].m_Item == PAT_BC ) break;
-					m_Items[i].m_Leg = nleg;
-				}
-			}
-
-			else {
-
-//				We have a BC, so increment the leg sequence number
-//				& scan until we hit the EC.
-
-				nleg++;
-				for ( ; i<m_NumItem; i++ ) {
-					m_Items[i].m_Leg = -nleg;	// negated
-					if ( m_Items[i].m_Item == PAT_EC ) {
-						i++;
-						break;
-					}
-				}
-			}
-		}
-		else {
-			m_Items[i].m_Leg = nleg;
-			i++;
-		}
-
-	} // next item
-
-	return nleg;
-
-} // end of SetLegs
         */
+
+        /// <summary>
+        /// Associates each path item with a leg sequence number.
+        /// </summary>
+        /// <returns>The number of legs found.</returns>
+        int SetLegs()
+        {
+            int nleg = 0;
+
+            // Note that PathItemType.Units may not get a leg number.
+
+            for (int i = 0; i < m_Items.Count; ) // not i++
+            {
+                PathItemType type = m_Items[i].ItemType;
+
+                if (type == PathItemType.Distance ||
+                    type == PathItemType.Angle ||
+                    type == PathItemType.Deflection ||
+                    type == PathItemType.BC)
+                {
+                    // If we have a distance or angle item, increment the leg 
+                    // sequence number until we hit an angle or a BC. In the case of
+                    // an angle, it always comes at the START of a leg.
+
+                    if (type == PathItemType.Distance ||
+                        type == PathItemType.Angle ||
+                        type == PathItemType.Deflection)
+                    {
+                        nleg++;
+                        m_Items[i].LegNumber = nleg;
+                        for (i++; i < m_Items.Count; i++)
+                        {
+                            if (m_Items[i].ItemType == PathItemType.Angle ||
+                                m_Items[i].ItemType == PathItemType.Deflection ||
+                                m_Items[i].ItemType == PathItemType.BC)
+                                break;
+
+                            m_Items[i].LegNumber = nleg;
+                        }
+                    }
+                    else
+                    {
+                        // We have a BC, so increment the leg sequence number
+                        // & scan until we hit the EC.
+
+                        nleg++;
+                        for (; i < m_Items.Count; i++)
+                        {
+                            m_Items[i].LegNumber = -nleg;	// negated
+                            if (m_Items[i].ItemType == PathItemType.EC)
+                            {
+                                i++;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    m_Items[i].LegNumber = nleg;
+                    i++;
+                }
+            }
+
+            return nleg;
+        }
 
         /// <summary>
         /// Takes action when the adjustment result dialog has been cancelled (user

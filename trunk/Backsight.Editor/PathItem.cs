@@ -78,21 +78,36 @@ namespace Backsight.Editor
             m_Leg = 0;
         }
 
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="copy">The item to copy from</param>
+        internal PathItem(PathItem copy)
+        {
+            m_Item = copy.m_Item;
+            m_Unit = copy.m_Unit;
+            m_Value = copy.m_Value;
+            m_Leg = copy.m_Leg;
+        }
+
         #endregion
 
-        internal uint LegNumber // was GetLeg
+        internal int LegNumber // was GetLeg
         {
-            get { return (uint)Math.Abs(m_Leg); }
+            get { return Math.Abs(m_Leg); }
+            set { m_Leg = value; }
         }
 
         internal PathItemType ItemType // was GetType
         {
             get { return m_Item; }
+            set { m_Item = value; }
         }
 
         internal double Value
         {
             get { return m_Value; }
+            set { m_Value = value; }
         }
 
         internal bool IsDistance
@@ -115,6 +130,15 @@ namespace Backsight.Editor
                 return new Distance(m_Value, m_Unit);
             else
                 return null;
+        }
+
+        /// <summary>
+        /// The type of distance unit in effect for the item (should be defined
+        /// for all items, even if the value is undefined).
+        /// </summary>
+        internal DistanceUnit Units
+        {
+            get { return m_Unit; }
         }
     }
 }

@@ -346,12 +346,12 @@ namespace Backsight.Editor.Operations
         int CountLegs(PathItem[] items)
         {
             // Each path item contains a leg number, arranged sequentially.
-            uint nleg=0;
+            int nleg=0;
 
             foreach (PathItem item in items)
                 nleg = Math.Max(nleg, item.LegNumber);
 
-            return (int)nleg;
+            return nleg;
         }
 
         /// <summary>
@@ -431,7 +431,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Get the leg ID.
-            uint legnum = items[si].LegNumber;
+            int legnum = items[si].LegNumber;
 
             // How many distances have we got?
 	        int ndist = 0;
@@ -491,7 +491,7 @@ namespace Backsight.Editor.Operations
         Leg CreateStraightLeg(PathItem[] items, int si, out int nexti)
         {
             // Get the leg ID.
-            uint legnum = items[si].LegNumber;
+            int legnum = items[si].LegNumber;
 
             // How many distances have we got?
             int ndist = 0;
