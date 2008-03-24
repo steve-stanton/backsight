@@ -224,12 +224,8 @@ void CdPath::Save ( void ) {
         /*
 void CdPath::Finish ( void ) {
 
-//	Revert from & to point to normal colour.
-	this->SetNormalColour(m_pFrom);
-	this->SetNormalColour(m_pTo);
-
 	// Tell the command that's running this dialog that we're
-	// finished (this will delete the memory for the CdPath object).
+	// finished
 	if ( m_pCommand ) m_pCommand->DialFinish(this);
 }
         */
@@ -330,49 +326,13 @@ void CdPath::Finish ( void ) {
         /// <param name="display">The display to draw to</param>
         internal void Render(ISpatialDisplay display)
         {
+            // Draw any currently selected points & any direction.
+            SetColor(m_From, fromTextBox);
+            SetColor(m_To, toTextBox);
+
+            //if (m_pPath && m_DrawPath)
+            //    m_pPath->Draw(m_Rotation, m_ScaleFactor);
         }
-
-        /*
-void CdPath::OnDraw ( const CePoint* const pPoint ) const {
-
-	if ( !pPoint )
-		this->OnDrawAll();
-	else {
-		if ( pPoint==m_pFrom ) this->SetColour(m_pFrom,IDC_FROM);
-		if ( pPoint==m_pTo ) this->SetColour(m_pTo,IDC_TO);
-	}
-}
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Handle any redrawing. This just ensures that points
-//	are drawn in the right colour.
-//
-//	@parm TRUE to draw. FALSE to erase.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void CdPath::OnDrawAll ( const LOGICAL draw ) const {
-
-//	There's not much to draw, so just do everything.
-
-//	Draw any currently selected points & any direction.
-
-	if ( draw ) {
-		SetColour(m_pFrom,IDC_FROM);
-		SetColour(m_pTo,IDC_TO);
-		if ( m_pPath && m_DrawPath )
-			m_pPath->Draw(m_Rotation,m_ScaleFactor);
-	}
-	else {
-		SetNormalColour(m_pFrom);
-		SetNormalColour(m_pTo);
-	}
-
-	return;
-
-} // end of OnDraw
-
-         */
 
         private void fromTextBox_Enter(object sender, EventArgs e)
         {
@@ -417,121 +377,85 @@ void CdPath::OnDrawAll ( const LOGICAL draw ) const {
 
         private void fromTextBox_Leave(object sender, EventArgs e)
         {
+            // Just return if the user specified the field by pointing.
+            if (m_FromPointed)
+                return;
 
+            // Return if the field is empty.
+            string str = fromTextBox.Text.Trim();
+            if (str.Length == 0)
+                return;
+
+            // Parse the ID value.
+            uint idnum;
+            if (!UInt32.TryParse(str, out idnum))
+            {
+                MessageBox.Show("Invalid point ID");
+                fromTextBox.Focus();
+                return;
+            }
+
+            // Ask the map to locate the specified point.
+            CadastralMapModel map = CadastralMapModel.Current;
+            m_From = new FindPointByIdQuery(map.Index, idnum.ToString()).Result;
+            if (m_From == null)
+            {
+                MessageBox.Show("No point with specified key.");
+                fromTextBox.Focus();
+                return;
+            }
+
+            // Display the point in the correct color.
+            SetColor(m_From, fromTextBox);
+            CheckPreview();
         }
-
-        /*
-void CdPath::OnKillfocusFrom ( void ) {
-
-//	Just return if the user specified the field by pointing.
-	if ( m_FromPointed ) return;
-
-//	Return if the field is empty.
-	if ( IsFieldEmpty(IDC_FROM) ) return;
-
-//	Get address of the edit box.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_FROM);
-
-//	Parse the ID value.
-	UINT4 idnum;
-	if ( !ReadUINT4(pEdit,idnum) ) {
-		AfxMessageBox("Invalid point ID");
-		pEdit->SetFocus();
-		return;
-	}
-
-//	Ask the map to locate the address of the specified point.
-	const CeKey key(idnum);
-	m_pFrom = CeMap::GetpMap()->GetpPoint(key);
-	if ( !m_pFrom ) {
-		AfxMessageBox("No point with specified key.");
-		pEdit->SetFocus();
-		return;
-	}
-
-//	Display the point in the correct colour.
-	this->SetColour(m_pFrom);
-	this->CheckPreview();
-
-} // end of OnKillfocusFrom
-*/
 
         private void toTextBox_TextChanged(object sender, EventArgs e)
         {
-
+            // If the field is now empty, allow the user to type in an ID.
+            if (toTextBox.Text.Trim().Length == 0)
+            {
+                SetNormalColor(m_To);
+                m_To = null;
+                m_ToPointed = false;
+                NoPreview();
+            }
         }
-
-        /*
-void CdPath::OnChangeTo ( void ) {
-
-//	If the field is now empty, allow the user to type in an ID.
-	if ( IsFieldEmpty(IDC_TO) ) {
-		SetNormalColour(m_pTo);
-		m_pTo = 0;
-		m_ToPointed = FALSE;
-		NoPreview();
-	}
-}
-*/
 
         private void toTextBox_Leave(object sender, EventArgs e)
         {
+            // Just return if the user specified the field by pointing.
+            if (m_ToPointed)
+                return;
 
+            // Return if the field is empty.
+            string str = toTextBox.Text.Trim();
+            if (str.Length == 0)
+                return;
+
+            // Parse the ID value.
+            uint idnum;
+            if (!UInt32.TryParse(str, out idnum))
+            {
+                MessageBox.Show("Invalid point ID");
+                fromTextBox.Focus();
+                return;
+            }
+
+            // Ask the map to locate the specified point.
+            CadastralMapModel map = CadastralMapModel.Current;
+            m_To = new FindPointByIdQuery(map.Index, idnum.ToString()).Result;
+            if (m_To == null)
+            {
+                MessageBox.Show("No point with specified key.");
+                toTextBox.Focus();
+                return;
+            }
+
+            // Display the point in the correct color.
+            SetColor(m_To, toTextBox);
+            CheckPreview();
         }
-
-        /*
-void CdPath::OnKillfocusTo ( void ) {
-
-//	Just return if the user specified the field by pointing.
-	if ( m_ToPointed ) return;
-
-//	Return if the field is empty.
-	if ( IsFieldEmpty(IDC_TO) ) return;
-
-//	Get address of the edit box.
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_TO);
-
-//	Parse the ID value.
-	UINT4 idnum;
-	if ( !ReadUINT4(pEdit,idnum) ) {
-		AfxMessageBox("Invalid point ID");
-		pEdit->SetFocus();
-		return;
-	}
-
-//	Ask the map to locate the address of the specified point.
-	const CeKey key(idnum);
-	m_pTo = CeMap::GetpMap()->GetpPoint(key);
-	if ( !m_pTo ) {
-		AfxMessageBox("No point with specified key.");
-		pEdit->SetFocus();
-		return;
-	}
-
-//	Display the point in the correct colour.
-	this->SetColour(m_pTo);
-	this->CheckPreview();
-
-} // end of OnKillfocusTo
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc Check if a field is empty. If it contains white space characters,
-//	it is considered to be empty.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
-
-//	Say the field is empty if the field ID is unknown.
-	CWnd* pWnd = GetDlgItem(idd);
-	if ( !pWnd ) return TRUE;
-
-//	See if field is empty.
-	return ::IsFieldEmpty(pWnd);
-
-} // end of IsFieldEmpty
-*/
 
         private void angleButton_Click(object sender, EventArgs e)
         {
@@ -610,26 +534,23 @@ LOGICAL CdPath::IsFieldEmpty ( const UINT idd ) const {
 
         private void pathTextBox_TextChanged(object sender, EventArgs e)
         {
+            // If we previously had an adjustment dialog, cancel it.
+            // This should also end up calling this->OnDestroyAdj
 
+            if (m_Adjustment != null)
+            {
+                m_Adjustment.Dispose();
+                m_Adjustment = null;
+            }
+
+            // Delete any path object that remains.
+            //m_pPath = 0;
+
+            // The preview button should be enabled only if there is
+            // something defined for the path.
+            CheckPreview();
         }
 
-        /*
-void CdPath::OnChangePath ( void ) {
-
-//	If we previously had an adjustment dialog, cancel it.
-//	This will also end up calling this->OnDestroyAdj, which
-//	means the path will be erased.
-	if ( m_pAdjustment ) m_pAdjustment->OnCancel();
-
-//	Delete any path object that remains.
-	delete m_pPath;
-	m_pPath = 0;
-
-//	The preview button should be enabled only if there is
-//	something defined for the path.
-	this->CheckPreview();
-}
-*/
         void CheckPreview()
         {
             previewButton.Enabled = (m_To != null &&
@@ -814,24 +735,32 @@ void CdPath::OnChangePath ( void ) {
                     return false;
                 }
 
-                // Pick up the repeat count.
-                /*
-		CHARS* pNext;
-		UINT4 repeat = strtol(&str[1],&pNext,10);
+                // Pick up the repeat count (not sure if the digits need to be
+                // followed by white space, or whether non-numeric digits are valid,
+                // so pick up only the digits).
+                string num = GetIntDigits(str.Substring(1));
 
-//		Error if repeat count is less than 2.
-		if ( repeat<2 || pNext==&str[1] ) {
-			sprintf ( msg, "Unexpected repeat count in '%s'", str );
-			AfxMessageBox ( msg );
-			return FALSE;
-		}
+                // Error if repeat count is less than 2.
+                int repeat;
+                if (!Int32.TryParse(num, out repeat) || repeat < 2)
+                {
+                    string msg = String.Format("Unexpected repeat count in '{0}'", str);
+                    MessageBox.Show(msg);
+                    return false;
+                }
 
-//		Duplicate the last item using the repeat count.
-		AddRepeats(repeat);
+                if (repeat < 2)
+                {
+                    string msg = String.Format("Unexpected repeat count in '{0}'", str);
+                    MessageBox.Show(msg);
+                    return false;
+                }
 
-//		Continue parsing after the repeat count.
-		return ParseWord(pNext);
-                 */
+                // Duplicate the last item using the repeat count.
+                AddRepeats(repeat);
+
+                // Continue parsing after the repeat count.
+                return ParseWord(str.Substring(1+num.Length));
             }
 
             // If the string contains an embedded qualifier (a "*" or a "/"
@@ -839,106 +768,152 @@ void CdPath::OnChangePath ( void ) {
             // qualifier. Note that we have just handled the cases where
             // the qualifier was at the very start of the string.
 
+            int starIndex = str.IndexOf('*');
+            int slashIndex = str.IndexOf('/');
 
-            ///////////////////////
-            return false;
+            if (starIndex >= 0 || slashIndex >= 0)
+            {
+                int qualIndex = starIndex;
+                if (qualIndex < 0 || qualIndex > slashIndex)
+                    qualIndex = slashIndex;
+
+                // Process the stuff prior to the qualifier.
+                string copy = str.Substring(0, qualIndex);
+                if (!ParseWord(copy))
+                    return false;
+
+                // Process the stuff, starting with the qualifier character
+                return ParseWord(str.Substring(qualIndex));
+            }
+
+            // Process this string. We should have either a value or an angle.
+            if (str.IndexOf('-') >= 0 || IsLastItemBC())
+            {
+                // If the string contains a "c" character, it's a central
+                // angle; process the string only as far as that.
+                PathItemType type = PathItemType.Angle;
+
+                int caIndex = str.ToUpper().IndexOf('C');
+                if (caIndex>=0)
+                {
+                    str = str.Substring(0, caIndex);
+                    type = PathItemType.CentralAngle;
+                }
+                else
+                {
+                    // Check if it's a deflection (if so, strip out the "d").
+                    int dIndex = str.ToUpper().IndexOf('D');
+                    if (dIndex >= 0)
+                    {
+                        str = str.Substring(0, dIndex) + str.Substring(dIndex + 1);
+                        type = PathItemType.Deflection;
+                    }
+                }
+
+                // Try to parse an angular value into radians.
+                double radval;
+                if (RadianValue.TryParse(str, out radval))
+                {
+                    PathItem item = new PathItem(type, null, radval);
+                    AddItem(item);
+                    return true;
+                }
+
+                // Bad angle.
+                string msg = String.Format("Malformed angle '{0}'", str);
+                MessageBox.Show(msg);
+                return false;
+            }
+            else
+            {
+                // Get the current distance units.
+                DistanceUnit unit = GetUnits(null, false);
+
+                // Grab characters that look like a floating point number
+                string num = GetDoubleDigits(str);
+                double val;
+                if (!Double.TryParse(num, out val))
+                {
+                    string msg = String.Format("Malformed value '{0}'", str);
+                    MessageBox.Show(msg);
+                    return false;
+                }
+
+                // If we didn't get right to the end, we may have distance units,
+                // or the ")" character indicating an EC.
+                if (num.Length < str.Length && str[num.Length] != ')')
+                {
+                    unit = GetUnits(str.Substring(num.Length), false);
+                    if (unit == null)
+                    {
+                        string msg = String.Format("Malformed value '{0}'", str);
+                        MessageBox.Show(msg);
+                        return false;
+                    }
+                }
+
+                PathItem item = new PathItem(PathItemType.Value, unit, val);
+                AddItem(item);
+
+                if (str[num.Length] == ')')
+                    return ParseWord(str.Substring(num.Length));
+                else
+                    return true;
+            }
         }
-        /*
-	CHARS* pQual = strpbrk(str,"*"+"/");
-	if ( pQual ) {
 
-//		Make a copy of the stuff prior to the qualifier.
-		CHARS copy[WORDMAX];
-		const CHARS* pStr = str;
-		CHARS* pCopy = copy;
-		for ( ; pStr!=pQual; pStr++, pCopy++ )
-			*pCopy = *pStr;
+        /// <summary>
+        /// Returns the numeric digits (if any) at the start of a string
+        /// </summary>
+        /// <param name="str">The string that should be starting with some digits (e.g. 1234abc)</param>
+        /// <returns>The leading numeric digits (blank if the first character in the supplied
+        /// string is not a digit)</returns>
+        string GetIntDigits(string str)
+        {
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (!Char.IsDigit(str, i))
+                {
+                    if (i == 0)
+                        return String.Empty;
+                    else
+                        return str.Substring(0, i);
+                }
+            }
 
-//		Remember to null-terminate the copy.
-		*pCopy = '\0';
+            // The entire string consists of numeric digits (or it's empty)
+            return str;
+        }
 
-//		Process the copy.
-		if ( !ParseWord(copy) ) return FALSE;
+        /// <summary>
+        /// Returns a portion of a string that contains numeric characters
+        /// </summary>
+        /// <param name="s">The string that starts with a numeric substring</param>
+        /// <returns>The numeric string starting at the supplied index (a
+        /// blank string if the character at that position is not a number,
+        /// a period, or a minus sign).</returns>
+        /// <remarks>This may not handle i18n (e.g. decimal places may
+        /// actually be commas).</remarks>
+        string GetDoubleDigits(string s)
+        {
+            int nChar = 0;
 
-//		Process the qualifier.
-		return ParseWord(pQual);
-	}
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = s[i];
 
-//	Process this string. We should have either a value or
-//	an angle.
+                // Allow '-' character only at the start
+                if ((c == '-' && i == 0) || c == '.' || Char.IsNumber(c))
+                    nChar++;
+                else
+                    break;
+            }
 
-	if ( strchr(str,'-') || IsLastItemBC() ) {
+            if (nChar == 0)
+                return String.Empty;
 
-//		If the string contains a "c" character, it's a central
-//		angle; end the string there.
-
-		PAT type = PAT_ANGLE;
-		CHARS* pCA = strpbrk(str,"cC");
-		if ( pCA ) {
-			*pCA = '\0';
-			type = PAT_CANGLE;
-		}
-		else {
-			
-			// Check if it's a deflection (if so, strip out the "d").
-			CString dirstr(str);
-			dirstr.MakeUpper();
-			INT4 dindex = dirstr.Find('D');
-			if ( dindex>=0 ) {
-				CString temp(dirstr);
-				dirstr = temp.Left(dindex) + temp.Mid(dindex+1);
-				type = PAT_DEFLECTION;
-				strcpy(str,(LPCTSTR)dirstr);
-			}
-		}
-
-
-//		Try to parse an angular value into radians.
-		FLOAT8 radval;
-		if ( StrRad(radval,str) ) {
-			CePathItem item(type,0,radval);
-			AddItem(item);
-			return TRUE;
-		}
-
-//		Bad angle.
-		sprintf ( msg, "Malformed angle '%s'", str );
-		AfxMessageBox(msg);
-		return FALSE;
-	}
-	else {
-
-//		Get the current distance units.
-		const CeDistanceUnit* pUnit = GetUnits();
-
-//		Try to parse a floating point value.
-		CHARS* pNext;
-		FLOAT8 val = strtod(str,&pNext);
-
-//		If the scan stopped prior to the terminating null,
-//		we may have distance units, or the ")" character
-//		indicating an EC.
-
-		if ( *pNext && *pNext!=')' ) {
-			pUnit = GetUnits(pNext);
-			if ( !pUnit ) {
-				sprintf ( msg, "Malformed value '%s'", str );
-				AfxMessageBox(msg);
-				return FALSE;
-			}
-		}
-
-		CePathItem item(PAT_VALUE,pUnit,val);
-		AddItem(item);
-
-		if ( *pNext==')' )
-			return ParseWord(pNext);
-		else
-			return TRUE;
-	}
-
-} // end of ParseWord
-         */
+            return s.Substring(0, nChar);
+        }
 
         /// <summary>
         /// Repeats the last path item a specific number of times. The thing to
@@ -1148,21 +1123,20 @@ UINT2 CdPath::SetSize ( const UINT2 newsize ) {
 	return m_NumAlloc;
 
 } // end of SetSize
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Check if the last path item is a BC.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-LOGICAL CdPath::IsLastItemBC ( void ) const {
-
-	if ( m_NumItem==0 ) return FALSE;
-
-	return ( m_Items[m_NumItem-1].m_Item == PAT_BC );
-
-} // IsLastItemBC
          */
+
+        /// <summary>
+        /// Checks if the last path item is a BC.
+        /// </summary>
+        /// <returns>True if the last parsed item represents the BC of a circular arc</returns>
+        bool IsLastItemBC()
+        {
+            if (m_Items.Count == 0)
+                return false;
+
+            PathItem lastItem = m_Items[m_Items.Count - 1];
+            return (lastItem.ItemType == PathItemType.BC);
+        }
 
         /// <summary>
         /// Validates path items. Prior to call, the path should be parsed by
