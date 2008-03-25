@@ -216,7 +216,10 @@
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GetControlUI.cs" />
+    <Compile Include="ICircularLeg.cs" />
+    <Compile Include="ILeg.cs" />
     <Compile Include="IntersectUI.cs" />
+    <Compile Include="IStraightLeg.cs" />
     <Compile Include="NewCircleUI.cs" />
     <Compile Include="NewCircularArcUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
