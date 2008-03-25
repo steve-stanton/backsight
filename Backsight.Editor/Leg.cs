@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// and <see cref="CircularLeg"/>.
     /// </summary>
     [Serializable]
-    abstract class Leg
+    abstract class Leg : ILeg
     {
         #region Class data
 
@@ -84,8 +84,8 @@ namespace Backsight.Editor
 
         #endregion
 
-        abstract internal Circle Circle { get; }
-        abstract internal ILength Length { get; }
+        abstract public Circle Circle { get; } // ILeg
+        abstract public ILength Length { get; } // ILeg
         abstract internal IPosition Center { get; }
         abstract internal string DataString { get; }
         abstract internal void Project (ref IPosition pos, ref double bearing, double sfac);
@@ -98,12 +98,12 @@ namespace Backsight.Editor
         abstract internal bool RollforwardFace (ref IPointGeometry insert, PathOperation op, ExtraLeg face,
                                                     IPosition spos, IPosition epos);
 
-        internal int Count
+        public int Count // ILeg
         {
             get { return m_Distances.Length; }
         }
 
-        internal bool HasEndPoint(int index)
+        public bool HasEndPoint(int index) // ILeg
         {
             if (index >= Count || (m_Switches[index] & LegItemFlag.OmitPoint) != 0)
                 return false;
@@ -169,7 +169,7 @@ namespace Backsight.Editor
         /// Gets the total observed length of this leg
         /// </summary>
         /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        internal double GetTotal()
+        public double GetTotal() // ILeg
         {
             double total = 0.0;
 
@@ -186,7 +186,7 @@ namespace Backsight.Editor
         /// <param name="index">Index of the required span.</param>
         /// <param name="sdist">Distance to the start of the span.</param>
         /// <param name="edist">Distance to the end of the span.</param>
-        internal void GetDistances(int index, out double sdist, out double edist)
+        public void GetDistances(int index, out double sdist, out double edist) // ILeg
         {
             // Confirm required index is in range.
             if (index >= m_Distances.Length)
@@ -567,7 +567,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="index">The index of the span in question.</param>
         /// <returns>True if line feature will be produced.</returns>
-        internal bool HasLine(int index)
+        public bool HasLine(int index) // ILeg
         {
             // No feature if the span index is out of range.
             if (index >= m_Distances.Length)

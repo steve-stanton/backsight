@@ -18,6 +18,7 @@ using System.Text;
 using System.Drawing;
 
 using Backsight.Editor.Operations;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -26,7 +27,7 @@ namespace Backsight.Editor
     /// A straight leg in a connection path.
     /// </summary>
     [Serializable]
-    class StraightLeg : Leg
+    class StraightLeg : Leg, IStraightLeg
     {
         #region Class data
 
@@ -60,7 +61,7 @@ namespace Backsight.Editor
             set { m_StartAngle = value; }
         }
 
-        internal override Circle Circle
+        public override Circle Circle // ILeg
         {
             get { return null; }
         }
@@ -73,7 +74,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total observed length of this leg
         /// </summary>
-        internal override ILength Length
+        public override ILength Length // ILeg
         {
             get { return new Length(GetTotal()); }
         }
@@ -198,8 +199,8 @@ namespace Backsight.Editor
                 // adjusted start and end positions, among other things).
                 span.Get(i);
 
-                // Get the span to save itself.
-                Feature feat = span.Save(op, null, null, null);
+                // Save the span
+                Feature feat = SaveSpan(span, op, null, null, null);
                 SetFeature(i, feat);
             }
 
@@ -249,7 +250,7 @@ namespace Backsight.Editor
                 if (IsNewSpan(i))
                 {
                     bool isLast = (i==(nspan-1) && op.IsLastLeg(this));
-                    LineFeature newLine = span.SaveInsert(i, op, isLast);
+                    LineFeature newLine = SaveInsert(span, i, op, isLast);
                     AddNewSpan(i, newLine);
                     insert = newLine.EndPoint;
                 }
@@ -258,10 +259,10 @@ namespace Backsight.Editor
                     // See if the span previously had a saved feature.
                     Feature old = GetFeature(i);
                     if (old!=null)
-                        span.Save(op, insert, old, veryEnd);
+                        SaveSpan(span, op, insert, old, veryEnd);
                     else
                     {
-                        Feature feat = span.Save(op, insert, null, veryEnd);
+                        Feature feat = SaveSpan(span, op, insert, null, veryEnd);
                         SetFeature(i, feat);
                     }
 
@@ -273,6 +274,153 @@ namespace Backsight.Editor
             // Return the end position of the last span.
             terminal = span.End;
             return true;
+        }
+
+        /// <summary>
+        /// Saves a span in the map.
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="op">The editing operation this span is part of</param>
+        /// <param name="insert">Reference to a new point that was inserted just before
+        /// this span. Defined only during rollforward.</param>
+        /// <param name="old">Pointer to the feature that was previously associated with
+        /// this span. This will be not null when the span is being saved as part of
+        /// rollforward processing.</param>
+        /// <param name="veryEnd">The location at the very end of the connection path
+        /// that this span is part of.</param>
+        /// <returns>The feature (if any) that represents the span. If the span has a line,
+        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
+        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
+        /// meaning that there is no line & no terminal point.</returns>
+        internal Feature SaveSpan(StraightSpan span, Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
+        {
+            // Get map info.
+            CadastralMapModel map = CadastralMapModel.Current;
+
+            // Reference to the created feature (if any).
+            Feature feat = null;
+
+            // Make sure the start and end points have been rounded to
+            // the internal resolution.
+            IPointGeometry sloc = PointGeometry.Create(span.Start);
+            IPointGeometry eloc = PointGeometry.Create(span.End);
+
+            // If the span was previously associated with a feature, just
+            // move it. If the feature is a line, we want to move the
+            // location at the end (except in a case where a new line
+            // has just been inserted prior to it, in which case we
+            // need to change the start location so that it matches
+            // the end of the new guy).
+
+            if (old!=null)
+            {
+                if (span.HasLine) // Feature should therefore be a line
+                {
+                    LineFeature line = (old as LineFeature);
+                    if (line==null)
+                        throw new Exception("StraightSpan.Save - Mismatched line");
+
+                    if (insert!=null)
+                    {
+                        line.ChangeEnds(insert, line.EndPoint);
+                        if (!line.EndPoint.IsCoincident(veryEnd))
+                            line.EndPoint.Move(eloc);
+                    }
+                    else
+                    {
+                        if (line.EndPoint.IsCoincident(veryEnd))
+                            line.StartPoint.Move(sloc);
+                        else
+                        {
+                            line.StartPoint.Move(sloc);
+                            line.EndPoint.Move(eloc);
+                        }
+                    }
+                }
+                else if (span.HasEndPoint) // Feature should be a point
+                {
+                    PointFeature point = (old as PointFeature);
+                    if (point==null)
+                        throw new Exception("StraightSpan.Save - Mismatched point");
+
+                    if (!point.IsCoincident(veryEnd))
+                        point.Move(eloc);
+                }
+            }
+            else
+            {
+                // If we have an end point, add it. If it creates something
+                // new, assign an ID to it.
+                if (span.HasEndPoint)
+                {
+                    feat = map.EnsurePointExists(eloc, op);
+                    if (Object.ReferenceEquals(feat.Creator, op) && feat.Id==null)
+                        feat.SetNextId();
+                }
+
+                // Add a line if we have one.
+                if (span.HasLine)
+                {
+                    PointFeature ps = map.EnsurePointExists(sloc, op);
+                    PointFeature pe = map.EnsurePointExists(eloc, op);
+                    feat = map.AddLine(ps, pe, map.DefaultLineType, op);
+                }
+            }
+
+            return feat;
+        }
+        /// <summary>
+        /// Saves a newly inserted span.
+        /// </summary>
+        /// <param name="index">The index of the new span.</param>
+        /// <param name="creator">The operation that the new span should be referred to.</param>
+        /// <param name="isLast">Is the new span going to be the very last span in the last
+        /// leg of a connection path?</param>
+        /// <returns>The line that was created.</returns>
+        LineFeature SaveInsert(StraightSpan span, int index, PathOperation creator, bool isLast)
+        {
+            // Get the end positions for the new span.
+            span.Get(index);
+
+            // Make sure the start and end points have been rounded to
+            // the internal resolution.
+            IPointGeometry sloc = PointGeometry.Create(span.Start);
+            IPointGeometry eloc = PointGeometry.Create(span.End);
+
+            // Get the location at the start of the span (in most cases,
+            // it should be there already -- the only exception is a
+            // case where the point was omitted).
+            CadastralMapModel map = CadastralMapModel.Current;
+            PointFeature pS = map.EnsurePointExists(sloc, creator);
+
+            // If the insert is going to be the very last span in the
+            // enclosing connection path, just pick up the terminal
+            // location of the path.
+            PointFeature pE = null;
+
+            if (isLast)
+            {
+                // Pick up the end of the path.
+                pE = creator.EndPoint;
+
+                // And ensure there has been no roundoff in the end position.
+                eloc = pE;
+            }
+            else
+            {
+                // Add a point at the end of the span. Do NOT attempt to re-use any existing
+                // point that happens to fall there. If you did, we could be re-using a location
+                // that comes later in the connection path (i.e. it may later be moved again!).
+                pE = map.AddPoint(eloc, map.DefaultPointType, creator);
+                span.HasEndPoint = true;
+
+                // Assign the next available ID to the point
+                pE.SetNextId();
+            }
+
+            // Add a line.
+            span.HasLine = true;
+            return map.AddLine(pS, pE, map.DefaultLineType, creator);
         }
 
         /*
