@@ -87,7 +87,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The initial bearing (e.g. if the previous leg was also
         /// a straight leg from A to B, the bearing is from A through B).</param>
         /// <param name="sfac">Scaling factor to apply. Default=1.0</param>
-        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
+        public override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
@@ -112,12 +112,13 @@ namespace Backsight.Editor
         /// <summary>
         /// Draws this leg
         /// </summary>
+        /// <param name="display">The display to draw to</param>
         /// <param name="pos">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
+        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
@@ -135,7 +136,7 @@ namespace Backsight.Editor
             for (int i = 0; i < this.Count; i++)
             {
                 span.Get(i);
-                span.Draw();
+                span.Render(display);
             }
 
             // Return the end position of the last span.

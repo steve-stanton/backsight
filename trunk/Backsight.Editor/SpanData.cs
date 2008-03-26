@@ -28,7 +28,7 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The observed distances for the span. May be null when dealing
+        /// The observed distance for the span. May be null when dealing
         /// with a cul-de-sac that was specified with center point and central angle).
         /// </summary>
         Distance m_Distance;
@@ -87,6 +87,101 @@ namespace Backsight.Editor
         {
             get { return m_Switches; }
             set { m_Switches = value; }
+        }
+
+        /// <summary>
+        /// Sets flag bit(s)
+        /// </summary>
+        /// <param name="flag">The flag bit(s) to set</param>
+        /// <param name="setting">True to set, false to clear</param>
+        void SetFlag(LegItemFlag flag, bool setting)
+        {
+            if (setting)
+                m_Switches |= flag;
+            else
+                m_Switches &= (~flag);
+        }
+
+        /// <summary>
+        /// Does this span involve the creation of a line feature?
+        /// </summary>
+        internal bool HasLine
+        {
+            get
+            {
+                if ((m_Switches & LegItemFlag.MissConnect)!=0 || IsOmitPoint)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
+        /// <summary>
+        /// Does this span involve the creation of a terminating point feature?
+        /// </summary>
+        internal bool HasEndPoint
+        {
+            get { return !IsOmitPoint; }
+        }
+
+        /// <summary>
+        /// Is this span marked as a miss-connect (meaning that a line should not be
+        /// added to the map).
+        /// </summary>
+        internal bool IsMissConnect
+        {
+            get { return (m_Switches & LegItemFlag.MissConnect)!=0; }
+            set { SetFlag(LegItemFlag.MissConnect, value); }
+        }
+
+        /// <summary>
+        /// Should the end point for this span be omitted (determined via
+        /// the relevant flag bit in the <see cref="Flags"/> property).
+        /// </summary>
+        internal bool IsOmitPoint
+        {
+            get { return (m_Switches & LegItemFlag.OmitPoint)!=0; }
+        }
+
+        /// <summary>
+        /// Does this span appear at the start of a deflection (determined via
+        /// the relevant flag bit in the <see cref="Flags"/> property).
+        /// This can be true ONLY for the first span in a straight leg.
+        /// </summary>
+        internal bool IsDeflection
+        {
+            get { return (m_Switches & LegItemFlag.Deflection)!=0; }
+            set { SetFlag(LegItemFlag.Deflection, value); }
+        }
+
+        /// <summary>
+        /// The leg this span is part of is staggered, and this span represents the first face. 
+        /// This switch will be set ONLY for the first span in a leg.
+        /// </summary>
+        internal bool IsFace1
+        {
+            get { return (m_Switches & LegItemFlag.Face1)!=0; }
+            set { SetFlag(LegItemFlag.Face1, value); }
+        }
+
+        /// <summary>
+        /// The leg this span is part of is staggered, and this span represents the second face. 
+        /// This switch will be set ONLY for the first span in a leg.
+        /// </summary>
+        internal bool IsFace2
+        {
+            get { return (m_Switches & LegItemFlag.Face2)!=0; }
+            set { SetFlag(LegItemFlag.Face2, value); }
+        }
+
+        /// <summary>
+        /// Is this span regarded as a miss-connect that should be replaced with a
+        /// new line upon rollforward?
+        /// </summary>
+        internal bool IsNewSpan
+        {
+            get { return ((m_Switches & LegItemFlag.NewLine)!=0); }
+            set { SetFlag(LegItemFlag.NewLine, value); }
         }
     }
 }

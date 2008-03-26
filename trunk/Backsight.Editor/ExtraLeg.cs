@@ -103,7 +103,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
-        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
+        public override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Do nothing. Projecting to the end is done when the
             // base leg is processed. Extra legs are based on those
@@ -113,12 +113,13 @@ namespace Backsight.Editor
         /// <summary>
         /// Draws this leg
         /// </summary>
+        /// <param name="display">The display to draw to</param>
         /// <param name="pos">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
+        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
         {
             // Do nothing.
         }

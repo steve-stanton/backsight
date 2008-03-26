@@ -68,22 +68,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The path created from the items.
         /// </summary>
-        PathOperation m_Path;
+        PathData m_PathData;
 
         /// <summary>
         /// True if the path has been drawn.
         /// </summary>
         bool m_DrawPath;
-
-        /// <summary>
-        /// Rotation for path (in radians)
-        /// </summary>
-        double m_Rotation;
-
-        /// <summary>
-        /// Scaling to apply to path distances
-        /// </summary>
-        double m_ScaleFactor;
 
         /// <summary>
         /// Current dialog for closure info.
@@ -118,10 +108,8 @@ namespace Backsight.Editor.Forms
 	        m_FromPointed	= false;
 	        m_ToPointed		= false;
 	        m_Items			= null;
-	        m_Path			= null;
+	        m_PathData		= null;
 	        m_DrawPath		= false;
-	        m_Rotation		= 0.0;
-	        m_ScaleFactor	= 0.0;
 	        m_Adjustment	= null;
             m_Units         = null;
         }
@@ -168,44 +156,32 @@ namespace Backsight.Editor.Forms
         /// </summary>
         internal void Save()
         {
+            // There SHOULD be a path to save.
+            if (m_PathData==null)
+            {
+                MessageBox.Show("PathForm.Save -- nothing to save");
+                return;
+            }
+
+            // Ensure adjustment dialog has been destroyed.
+            OnDestroyAdj();
+
+            // Execute the edit
+            PathOperation op = null;
+
+            try
+            {
+                op = new PathOperation(m_PathData);
+                op.Execute();
+                Finish();
+            }
+
+            catch (Exception ex)
+            {
+                Session.CurrentSession.Remove(op);
+                MessageBox.Show(ex.Message);
+            }
         }
-        /*
-void CdPath::Save ( void ) {
-
-//	There SHOULD be a path to save.
-	if ( !m_pPath ) {
-		AfxMessageBox ( "CdPath::Save -- nothing to save" );
-		return;
-	}
-
-	// Ensure adjustment dialog has been destroyed.
-	OnDestroyAdj();
-
-//	Create persistent path.
-	CeMap* pMap = CeMap::GetpMap();
-	CePath* pSave = new ( os_database::of(pMap),
-						  os_ts<CePath>::get() )
-						  CePath(*m_pPath);
-
-//	Tell map a save is starting.
-	pMap->SaveOp(pSave);
-
-//	Execute the operation.
-	LOGICAL ok = pSave->Execute();
-
-//	Tell the map the save has finished.
-	pMap->SaveOp(pSave,ok);
-
-//	If something went wrong, get rid of the persistent path.
-	if ( !ok ) {
-		delete pSave;
-		return;
-	}
-
-	Finish();
-	
-} // end of Save
-        */
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
@@ -221,14 +197,14 @@ void CdPath::Save ( void ) {
                 m_Command.DialAbort(this);
         }
 
-        /*
-void CdPath::Finish ( void ) {
-
-	// Tell the command that's running this dialog that we're
-	// finished
-	if ( m_pCommand ) m_pCommand->DialFinish(this);
-}
-        */
+        /// <summary>
+        /// Tells the command that's running this dialog that we're finished
+        /// </summary>
+        void Finish()
+        {
+            if (m_Command!=null)
+                m_Command.DialFinish(this);
+        }
 
         /// <summary>
         /// Performs processing upon selection of a new point (indicated by pointing at the map)
@@ -330,8 +306,8 @@ void CdPath::Finish ( void ) {
             SetColor(m_From, fromTextBox);
             SetColor(m_To, toTextBox);
 
-            //if (m_pPath && m_DrawPath)
-            //    m_pPath->Draw(m_Rotation, m_ScaleFactor);
+            if (m_PathData!=null && m_DrawPath)
+                m_PathData.Render(display);
         }
 
         private void fromTextBox_Enter(object sender, EventArgs e)
@@ -543,8 +519,8 @@ void CdPath::Finish ( void ) {
                 m_Adjustment = null;
             }
 
-            // Delete any path object that remains.
-            //m_pPath = 0;
+            // Ignore any path data that remains.
+            m_PathData = null;
 
             // The preview button should be enabled only if there is
             // something defined for the path.
@@ -1424,44 +1400,45 @@ UINT2 CdPath::SetSize ( const UINT2 newsize ) {
             SetLegs();
 
             // Get rid of any path previously created.
-            m_Path = null;
+            m_PathData = null;
 
-            // Create new path object
-            // ...problem is that cstr will auto-add to current session
-            //m_Path = new PathOperation(m_From, m_To);
+            try
+            {
+                // Create new path data
+                PathData pd = new PathData(m_From, m_To);
+                pd.Create(m_Items.ToArray());
+                m_PathData = pd;
+
+                // Adjust the path
+
+                double de;				// Misclosure in eastings
+                double dn;				// Misclosure in northings
+                double prec;			// Precision
+                double length;			// Total observed length
+                double rotation;		// Rotation for adjustment
+                double sfac;			// Adjustment scaling factor
+
+                m_PathData.Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
+
+                // Draw the path with the adjustment info
+                m_DrawPath = true;
+                m_PathData.Render(m_Command.ActiveDisplay);
+
+                // Display the numeric results.
+                m_Adjustment = new AdjustmentForm(dn, de, prec, length, this);
+                m_Adjustment.Show();
+
+                // Disable the preview button (it will be re-enabled when
+                // the adjustment dialog is destroyed).
+                previewButton.Enabled = false;
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
         }
-        /*
-void CdPath::Adjust ( void ) {
-
-	m_pPath = new CePath(*m_pFrom,*m_pTo);
-
-//	Create the path.
-	if ( !m_pPath->Create(m_Items, m_NumItem) ) return;
-
-//	Adjust the path
-
-	FLOAT8 de;				// Misclosure in eastings
-	FLOAT8 dn;				// Misclosure in northings
-	FLOAT8 prec;			// Precision
-	FLOAT8 length;			// Total observed length
-
-	m_pPath->Adjust(dn,de,prec,length,
-		m_Rotation,m_ScaleFactor);
-
-//	Draw the path with the adjustment info
-	m_DrawPath = TRUE;
-	m_pPath->Draw(m_Rotation,m_ScaleFactor);
-
-//	Display the numeric results.
-	m_pAdjustment = new CdAdjustment(dn,de,prec,length,this);
-	m_pAdjustment->Create(IDD_ADJUSTMENT);
-
-//	Disable the preview button (it will be re-enabled when
-//	the adjustment dialog is destroyed).
-	TurnOff(GetDlgItem(IDC_PREVIEW));
-
-} // end of Adjust
-        */
 
         /// <summary>
         /// Associates each path item with a leg sequence number.
@@ -1542,9 +1519,6 @@ void CdPath::Adjust ( void ) {
 void CdPath::OnDestroyAdj ( void ) {
 
 //	Remember not to draw the path.
-	if ( m_pPath )
-		m_pPath->Erase(m_Rotation,m_ScaleFactor);
-
 	m_DrawPath = FALSE;
 
 //	Get rid of the dialog object.
