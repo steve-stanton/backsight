@@ -28,6 +28,6 @@ ENTITY=Public Walk and Public Lane Line             COL=Firebrick
 ENTITY=Public Walk and Street Line                  COL=Firebrick
 ENTITY=Public Walk Line                             COL=Firebrick
 ENTITY=Street Closing Line                          COL=Firebrick
-ENTITY=Street Line                                  COL=Firebrick WT=1.0
+ENTITY=Street Line                                  COL=Firebrick WT=0.5
 ENTITY=Water Body                                   COL=Blue
 ENTITY=Water Body - Ownership                       COL=Blue-Violet
