@@ -66,6 +66,11 @@ namespace Backsight.Editor.Forms
         List<PathItem> m_Items;
 
         /// <summary>
+        /// Does the last parsed item signify an omitted point?
+        /// </summary>
+        bool m_Omit;
+
+        /// <summary>
         /// The path created from the items.
         /// </summary>
         PathData m_PathData;
@@ -108,6 +113,7 @@ namespace Backsight.Editor.Forms
 	        m_FromPointed	= false;
 	        m_ToPointed		= false;
 	        m_Items			= null;
+            m_Omit          = false;
 	        m_PathData		= null;
 	        m_DrawPath		= false;
 	        m_Adjustment	= null;
@@ -233,7 +239,7 @@ namespace Backsight.Editor.Forms
                 m_FromPointed = true;
 
                 // Display any point key
-                fromTextBox.Text = m_From.FormattedKey;
+                fromTextBox.Text = GetPointString(m_From);
 
                 // See if preview button can be enabled.
                 CheckPreview();
@@ -253,7 +259,7 @@ namespace Backsight.Editor.Forms
                 m_ToPointed = true;
 
                 // Display any point key
-                toTextBox.Text = m_To.FormattedKey;
+                toTextBox.Text = GetPointString(m_To);
 
                 // See if preview button can be enabled.
                 CheckPreview();
@@ -327,13 +333,7 @@ namespace Backsight.Editor.Forms
 
             DistanceForm dial = new DistanceForm();
             if (dial.ShowDialog() == DialogResult.OK)
-            {
-                MessageBox.Show(dial.Format());
-                /*
-		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-		pEdit->ReplaceSel ( dial.Format() );
-                 */
-            }
+                ReplaceSel(dial.Format());
 
             // Put focus back in the data entry box
             pathTextBox.Focus();
@@ -440,13 +440,8 @@ namespace Backsight.Editor.Forms
 
             AngleForm dial = new AngleForm();
             if (dial.ShowDialog() == DialogResult.OK)
-            {
-                MessageBox.Show(dial.Format());
-                /*
-		            CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-		            pEdit->ReplaceSel ( dial.Format() );
-                 */
-            }
+                ReplaceSel(dial.Format());
+
             dial.Dispose();
 
             // Put focus back in the data entry box
@@ -459,17 +454,19 @@ namespace Backsight.Editor.Forms
             // (if any) with the result of formatting the dialog.
             CulDeSacForm dial = new CulDeSacForm();
             if (dial.ShowDialog() == DialogResult.OK)
-            {
-                MessageBox.Show(dial.Format());
-                /*
-                CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-                pEdit->ReplaceSel(dial.Format());
-                 */
-            }
+                ReplaceSel(dial.Format());
+
             dial.Dispose();
 
             // Put focus back in the data entry box
             pathTextBox.Focus();
+        }
+
+        void ReplaceSel(string s)
+        {
+            // This is meant to do the same as the MFC CEdit::ReplaceSel method...
+            Clipboard.SetText(s);
+            pathTextBox.Paste();
         }
 
         private void curveButton_Click(object sender, EventArgs e)
@@ -479,13 +476,8 @@ namespace Backsight.Editor.Forms
 
             ArcForm dial = new ArcForm();
             if (dial.ShowDialog() == DialogResult.OK)
-            {
-                MessageBox.Show(dial.Format());
-                /*
-                CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-                pEdit->ReplaceSel(dial.Format());
-                 */
-            }
+                ReplaceSel(dial.Format());
+
             dial.Dispose();
 
             // Put focus back in the data entry box
@@ -502,10 +494,7 @@ namespace Backsight.Editor.Forms
         private void endCurveButton_Click(object sender, EventArgs e)
         {
             // Stick an /EC at the end of the edit box.
-            pathTextBox.Text += ") ";
-
-            //CEdit* pEdit = (CEdit*)GetDlgItem(IDC_PATH);
-            //pEdit->ReplaceSel(") ");
+            ReplaceSel(") ");
         }
 
         private void pathTextBox_TextChanged(object sender, EventArgs e)
@@ -831,7 +820,7 @@ namespace Backsight.Editor.Forms
                 PathItem item = new PathItem(PathItemType.Value, unit, val);
                 AddItem(item);
 
-                if (str[num.Length] == ')')
+                if (str.Length>num.Length && str[num.Length] == ')')
                     return ParseWord(str.Substring(num.Length));
                 else
                     return true;
@@ -1012,45 +1001,34 @@ namespace Backsight.Editor.Forms
             if (m_Items == null)
                 m_Items = new List<PathItem>();
 
+            // If no items have been added, ensure omitted flag has been
+            // freshly initialized.
+            if (m_Items.Count == 0)
+                m_Omit = false;
+
+            // Ignore an attempt to add 2 miss-connects in a row (ValidPath
+            // will complain).
+            PathItemType type = item.ItemType;
+            if (m_Items.Count > 0 &&
+                type == PathItemType.MissConnect &&
+                m_Items[m_Items.Count - 1].ItemType == PathItemType.MissConnect)
+                return;
+
+            // Add the supplied item into the list.
+            m_Items.Add(item);
+
+            // If we have just appended a PAT_VALUE, append an additional
+            // miss-connect item if we previously omitted a point.
+            if (m_Omit && type == PathItemType.Value)
+            {
+                m_Omit = false;
+                AddItem(PathItemType.MissConnect);
+            }
+
+            // Remember whether we just omitted a point.
+            if (type == PathItemType.OmitPoint)
+                m_Omit = true;
         }
-        /*
-
-void CdPath::AddItem ( const CePathItem& item ) {
-
-	static LOGICAL omit=FALSE;	// True if point previously omitted.
-
-//	If no items have been added, ensure local static has been
-//	freshly initialized.
-	if ( m_NumItem==0 ) omit=FALSE;
-
-//	Ignore an attempt to add 2 miss-connects in a row (ValidPath
-//	will complain).
-
-	PAT type = item.GetType();
-
-	if ( m_NumItem>0 &&
-		 type==PAT_MC &&
-		 m_Items[m_NumItem-1].GetType()==PAT_MC ) return;
-
-//	Ensure array is big enough. If not, allocate some more.
-	if ( m_NumItem+1 > m_NumAlloc ) this->SetSize(m_NumAlloc+32);
-
-//	Copy the supplied item into the list.
-	m_Items[m_NumItem] = item;
-	m_NumItem++;
-
-//	If we have just appended a PAT_VALUE, append an additional
-//	miss-connect item if we previously omitted a point.
-	if ( omit && type==PAT_VALUE ) {
-		omit = FALSE;
-		AddItem(PAT_MC);
-	}
-
-//	Remember whether we just omitted a point.
-	if ( type==PAT_OP ) omit = TRUE;
-
-} // end of AddItem
-        */
 
         /// <summary>
         /// Holds on to an additional path item. Good for items that
@@ -1547,6 +1525,17 @@ void CdPath::OnDestroyAdj ( void ) {
 
             // Display the data entry string (this takes care of word wrap).
             pathTextBox.Text = str;
+        }
+
+        /// <summary>
+        /// Obtains the ID string for a selected point
+        /// </summary>
+        /// <param name="p">The point of interest</param>
+        /// <returns>The ID string to display</returns>
+        internal static string GetPointString(PointFeature p)
+        {
+            string s = p.FormattedKey;
+            return (s.Length == 0 ? p.DataId : s);
         }
     }
 }

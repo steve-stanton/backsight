@@ -46,10 +46,9 @@ namespace Backsight.Editor.Forms
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(17, 226);
+            this.cancelButton.Location = new System.Drawing.Point(17, 214);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cancelButton.Size = new System.Drawing.Size(100, 30);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Reject";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -58,10 +57,9 @@ namespace Backsight.Editor.Forms
             // okButton
             // 
             this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.okButton.Location = new System.Drawing.Point(124, 226);
+            this.okButton.Location = new System.Drawing.Point(124, 214);
             this.okButton.Name = "okButton";
-            this.okButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.okButton.Size = new System.Drawing.Size(100, 30);
+            this.okButton.Size = new System.Drawing.Size(100, 25);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -193,7 +191,7 @@ namespace Backsight.Editor.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(254, 268);
+            this.ClientSize = new System.Drawing.Size(254, 257);
             this.Controls.Add(this.precisionLabel);
             this.Controls.Add(this.deltaEastingLabel);
             this.Controls.Add(this.deltaNorthingLabel);

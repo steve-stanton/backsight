@@ -83,7 +83,7 @@ namespace Backsight.Editor.Forms
             // 
             this.okButton.Location = new System.Drawing.Point(162, 147);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 30);
+            this.okButton.Size = new System.Drawing.Size(100, 25);
             this.okButton.TabIndex = 8;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -93,7 +93,7 @@ namespace Backsight.Editor.Forms
             // 
             this.cancelButton.Location = new System.Drawing.Point(36, 147);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 30);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 7;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -105,7 +105,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(329, 208);
+            this.ClientSize = new System.Drawing.Size(329, 199);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.deflectionCheckBox);

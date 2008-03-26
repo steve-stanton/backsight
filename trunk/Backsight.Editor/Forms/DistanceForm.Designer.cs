@@ -263,7 +263,7 @@ namespace Backsight.Editor.Forms
             // 
             this.cancelButton.Location = new System.Drawing.Point(90, 260);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 30);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 5;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -274,7 +274,7 @@ namespace Backsight.Editor.Forms
             // 
             this.okButton.Location = new System.Drawing.Point(216, 260);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 30);
+            this.okButton.Size = new System.Drawing.Size(100, 25);
             this.okButton.TabIndex = 6;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
