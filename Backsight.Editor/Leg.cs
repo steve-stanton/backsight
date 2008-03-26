@@ -35,33 +35,14 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The data that defines each span on this leg.
+        /// The data that defines each span on this leg (should always contain at least
+        /// one element).
         /// </summary>
         SpanData[] m_Spans;
-
-        /// <summary>
-        /// The features that correspond to each observed distance. This can
-        /// be a <c>LineFeature</c>, <c>PointFeature</c>, or <c>null</c>.
-        /// Contains Max(1, m_Distances.Length) elements.
-        /// </summary>
-        Feature[] m_Creations;
-
-        /// <summary>
-        /// Array of switches on each span (one for each observed distance).
-        /// Null if there aren't any switches.
-        /// </summary>
-        LegItemFlag[] m_Switches;
 
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>Leg</c> with everything set to null.
-        /// </summary>
-        protected Leg()
-        {
-        }
 
         protected Leg(int nspan)
         {
@@ -75,8 +56,19 @@ namespace Backsight.Editor
         abstract public ILength Length { get; } // ILeg
         abstract internal IPosition Center { get; }
         abstract internal string DataString { get; }
-        abstract internal void Project (ref IPosition pos, ref double bearing, double sfac);
-        abstract internal void Draw (ref IPosition terminal, ref double bearing, double sfac);
+        abstract public void Project (ref IPosition pos, ref double bearing, double sfac); // ILeg
+
+        /// <summary>
+        /// Draws this leg
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="pos">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated
+        /// for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac); // ILeg
+
         abstract internal void Draw (bool preview);
         abstract internal void Save (PathOperation op, ref IPosition terminal, ref double bearing, double sfac);
         abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
@@ -103,15 +95,17 @@ namespace Backsight.Editor
 
         public bool HasEndPoint(int index) // ILeg
         {
-            if (index >= Count || (m_Switches[index] & LegItemFlag.OmitPoint) != 0)
+            SpanData sd = GetSpanData(index);
+
+            if (sd==null)
                 return false;
             else
-                return true;
+                return sd.HasEndPoint;
         }
 
         internal bool IsDeflection
         {
-            get { return (m_Switches != null && (m_Switches[0] & LegItemFlag.Deflection) != 0); }
+            get { return m_Spans[0].IsDeflection; }
         }
 
         bool IsCurve
@@ -128,13 +122,10 @@ namespace Backsight.Editor
         {
             get
             {
-                if (m_Switches == null)
-                    return 0;
-
-                if ((m_Switches[0] & LegItemFlag.Face1) != 0)
+                if (m_Spans[0].IsFace1)
                     return 1;
 
-                if ((m_Switches[0] & LegItemFlag.Face2) != 0)
+                if (m_Spans[0].IsFace2)
                     return 2;
 
                 return 0;
@@ -469,21 +460,21 @@ namespace Backsight.Editor
         /// <returns>The point object at the start (may be null).</returns>
         PointFeature GetStartPoint(Operation op)
         {
-            if (m_Creations==null)
-                return null;
-
             // If the first feature for this leg is a point, that's the thing we want.
-            Feature feat = m_Creations[0];
+            Feature feat = m_Spans[0].CreatedFeature;
             PointFeature point = (feat as PointFeature);
             if (point!=null)
                 return point;
 
-            // Otherwise the first feature should be a CeArc object, so
+            // Otherwise the first feature should be a line, so
             // we want IT'S start point (either active or inactive).
             LineFeature line = (feat as LineFeature);
-            point = line.StartPoint;
-            if (Object.ReferenceEquals(point.Creator, op))
-                return point;
+            if (line!=null)
+            {
+                point = line.StartPoint;
+                if (Object.ReferenceEquals(point.Creator, op))
+                    return point;
+            }
 
             return null;
         }
@@ -516,14 +507,7 @@ namespace Backsight.Editor
         /// <param name="set">Mark as deflection? Default=true.</param>
         protected void SetDeflection(bool set)
         {
-            // Return if there are no observed spans.
-            if (m_Switches==null)
-                return;
-
-            if (set)
-                m_Switches[0] |= LegItemFlag.Deflection;
-            else
-                m_Switches[0] &= (~LegItemFlag.Deflection);
+            m_Spans[0].IsDeflection = set;
         }
 
         /// <summary>
@@ -534,14 +518,11 @@ namespace Backsight.Editor
         public bool HasLine(int index) // ILeg
         {
             // No feature if the span index is out of range.
-            if (index >= NumSpan)
-                return false;
-
-            LegItemFlag swt = m_Switches[index];
-            if ((swt & LegItemFlag.MissConnect)!=0 || (swt & LegItemFlag.OmitPoint)!=0)
+            SpanData sd = GetSpanData(index);
+            if (sd==null)
                 return false;
             else
-                return true;
+                return sd.HasLine;
         }
         /*
 //	@mfunc	Create a transient CeMiscText object that represents
@@ -798,10 +779,12 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>True if new span.</returns>
         internal bool IsNewSpan(int index)
         {
-            if (NumSpan==0)
-                return false;
+            SpanData sd = GetSpanData(index);
 
-            return ((m_Switches[index] & LegItemFlag.NewLine)!=0);
+            if (sd==null)
+                return false;
+            else
+                return sd.IsNewSpan;            
         }
 
         /// <summary>
@@ -811,12 +794,14 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="newspan">The line to refer to.</param>
         protected void AddNewSpan(int index, LineFeature newspan)
         {
-            Debug.Assert(IsNewSpan(index));
+            SpanData sd = GetSpanData(index);
+            Debug.Assert(sd!=null);
+            Debug.Assert(sd.IsNewSpan);
 
             // Point to the new line, and clear the flags that denote a new span.
             SetFeature(index, newspan);
-            m_Switches[index] &= (~LegItemFlag.NewLine);
-            m_Switches[index] &= (~LegItemFlag.MissConnect);
+            sd.IsNewSpan = false;
+            sd.IsMissConnect = false;
         }
 
         /// <summary>
@@ -825,11 +810,9 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>The first line (null if no lines were created).</returns>
         internal LineFeature GetFirstLine()
         {
-            int nSpan = Math.Max(1, NumSpan);
-
-            for (int i=0; i<nSpan; i++)
+            foreach (SpanData sd in m_Spans)
             {
-                LineFeature line = (m_Creations[i] as LineFeature);
+                LineFeature line = (sd.CreatedFeature as LineFeature);
                 if (line!=null)
                     return line;
             }
@@ -843,11 +826,9 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>The last line (null if no lines were created).</returns>
         internal LineFeature GetLastLine()
         {
-            int nSpan = Math.Max(1, NumSpan);
-
-            for (int i=(nSpan-1); i>=0; i--)
+            for (int i=(m_Spans.Length-1); i>=0; i--)
             {
-                LineFeature line = (m_Creations[i] as LineFeature);
+                LineFeature line = (m_Spans[i].CreatedFeature as LineFeature);
                 if (line!=null)
                     return line;
             }
@@ -890,9 +871,9 @@ void CeLeg::MakeText ( const CeVertex& bs
         internal void SetStaggered(int face)
         {
             if (face==1)
-                m_Switches[0] |= LegItemFlag.Face1;
+                m_Spans[0].IsFace1 = true;
             else if (face==2)
-                m_Switches[0] |= LegItemFlag.Face2;
+                m_Spans[0].IsFace2 = true;
         }
 
         /// <summary>
@@ -1126,9 +1107,8 @@ void CeLeg::MakeText ( const CeVertex& bs
                 line.IsVoid = true;
 
                 // And remember the line!
-                Debug.Assert(m_Creations!=null);
-                Debug.Assert(m_Creations[i]==null);
-                m_Creations[i] = line;
+                Debug.Assert(m_Spans[i].CreatedFeature==null);
+                m_Spans[i].CreatedFeature = line;
             }
 
             return true;
@@ -1186,7 +1166,7 @@ void CeLeg::MakeText ( const CeVertex& bs
                 Debug.Assert(isEndDefined);
 
                 // Get the line feature that was added.
-                ArcFeature arc = (m_Creations[i] as ArcFeature);
+                ArcFeature arc = (m_Spans[i].CreatedFeature as ArcFeature);
                 Debug.Assert(arc!=null);
 
                 // If the arc is now on a different circle, change it.
@@ -1199,6 +1179,20 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Gets the data defining the span at the specified array index.
+        /// </summary>
+        /// <param name="index">The array index of the desired span</param>
+        /// <returns>The corresponding span data (null if specified array index was
+        /// out of bounds)</returns>
+        SpanData GetSpanData(int index)
+        {
+            if (index<0 || index>=m_Spans.Length)
+                return null;
+            else
+                return m_Spans[index];
         }
     }
 }

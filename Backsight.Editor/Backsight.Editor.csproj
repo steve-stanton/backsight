@@ -220,6 +220,7 @@
     <Compile Include="ILeg.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
+    <Compile Include="PathData.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
     <Compile Include="NewCircularArcUI.cs" />

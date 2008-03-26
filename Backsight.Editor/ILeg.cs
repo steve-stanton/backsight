@@ -69,5 +69,27 @@ namespace Backsight.Editor
         /// <see cref="CircularLeg"/>.
         /// </summary>
         Circle Circle { get; }
+
+        /// <summary>
+        /// Given the position of the start of this leg, along with an initial bearing,
+        /// project the end of the leg, along with an exit bearing.
+        /// </summary>
+        /// <param name="pos">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg.
+        /// Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
+        void Project(ref IPosition pos, ref double bearing, double sfac);
+
+        /// <summary>
+        /// Draws this leg
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="pos">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated
+        /// for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        void Render(ISpatialDisplay display, ref IPosition terminal, ref double bearing, double sfac);
     }
 }

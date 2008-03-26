@@ -182,10 +182,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Draws this span (if visible).
         /// </summary>
-        internal void Draw()
+        /// <param name="draw">The display to draw to</param>
+        internal void Render(ISpatialDisplay draw)
         {
             EditingController ec = EditingController.Current;
-            ISpatialDisplay draw = ec.ActiveDisplay;
             IDrawStyle style = ec.Style(Color.Magenta);
             IPosition[] line = new IPosition[] { m_Start, m_End };
 

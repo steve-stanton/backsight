@@ -149,7 +149,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for
         /// this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
-        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
+        public override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Get circle info
             IPosition center, ec;
@@ -271,12 +271,13 @@ namespace Backsight.Editor
         /// <summary>
         /// Draws this leg
         /// </summary>
+        /// <param name="display">The display to draw to</param>
         /// <param name="pos">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Draw(ref IPosition pos, ref double bearing, double sfac)
+        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
         {
             //	Create an undefined circular span
             CircularSpan span = new CircularSpan(this, pos, bearing, sfac);
@@ -289,14 +290,14 @@ namespace Backsight.Editor
             if (nspan==0)
             {
                 span.Get(0);
-                span.Draw();
+                span.Render(display);
             }
             else
             {
                 for (int i = 0; i < nspan; i++)
                 {
                     span.Get(i);
-                    span.Draw();
+                    span.Render(display);
                 }
             }
 
