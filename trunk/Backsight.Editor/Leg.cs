@@ -35,10 +35,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The observed distances for this leg. May be empty (for cul-de-sacs
-        /// that have no observed spans)
+        /// The data that defines each span on this leg.
         /// </summary>
-        Distance[] m_Distances;
+        SpanData[] m_Spans;
 
         /// <summary>
         /// The features that correspond to each observed distance. This can
@@ -66,20 +65,8 @@ namespace Backsight.Editor
 
         protected Leg(int nspan)
         {
-            // Allocate an array of feature pointers (always at least ONE).
-            // And an array for switches. And distances.
-            if (nspan == 0)
-            {
-                m_Distances = null;
-                m_Creations = new Feature[1];
-                m_Switches = null;
-            }
-            else
-            {
-                m_Distances = new Distance[nspan];
-                m_Creations = new Feature[nspan];
-                m_Switches = new LegItemFlag[nspan];
-            }
+            // Allocate an array of spans (always at least ONE).
+            m_Spans = new SpanData[Math.Max(1, nspan)];
         }
 
         #endregion
@@ -98,9 +85,20 @@ namespace Backsight.Editor
         abstract internal bool RollforwardFace (ref IPointGeometry insert, PathOperation op, ExtraLeg face,
                                                     IPosition spos, IPosition epos);
 
+        /// <summary>
+        /// The number of observed distances (may be 0 when dealing with cul-de-sacs
+        /// that are defined in terms on a center point and central angle).
+        /// </summary>
         public int Count // ILeg
         {
-            get { return m_Distances.Length; }
+            get
+            {
+                if (NumSpan==1)
+                    return (m_Spans[0].ObservedDistance==null ? 0 : 1);
+                else
+                    return NumSpan;
+            }
+            //get { return m_Distances.Length; }
         }
 
         public bool HasEndPoint(int index) // ILeg
@@ -147,21 +145,21 @@ namespace Backsight.Editor
         /// Sets the distance of a specific span in this leg.
         /// </summary>
         /// <param name="distance">The distance to assign.</param>
-        /// <param name="index">The index of the distance [0,m_NumSpan-1]</param>
+        /// <param name="index">The index of the distance [0,NumSpan-1]</param>
         /// <param name="qualifier"></param>
         /// <returns>True if index was valid.</returns>
         internal bool SetDistance(Distance distance, int index, LegItemFlag qualifier)
         {
             // Return if index is out of range.
-            if (index<0 || index>=m_Distances.Length)
+            if (index<0 || index>=NumSpan)
                 return false;
 
             // Remember any qualifier.
             if (qualifier != 0)
-                m_Switches[index] |= qualifier;
+                m_Spans[index].Flags |= qualifier;
 
             // Assign the distance
-            m_Distances[index] = distance;
+            m_Spans[index].ObservedDistance = distance;
             return true;
         }
 
@@ -173,8 +171,12 @@ namespace Backsight.Editor
         {
             double total = 0.0;
 
-            foreach(Distance d in m_Distances)
-                total += d.Meters;
+            foreach (SpanData sd in m_Spans)
+            {
+                Distance d = sd.ObservedDistance;
+                if (d!=null)
+                    total += d.Meters;
+            }
 
             return total;
         }
@@ -189,7 +191,7 @@ namespace Backsight.Editor
         public void GetDistances(int index, out double sdist, out double edist) // ILeg
         {
             // Confirm required index is in range.
-            if (index >= m_Distances.Length)
+            if (index >= NumSpan)
                 throw new IndexOutOfRangeException("Leg.GetDistances -- bad index");
 
             sdist = edist = 0.0;
@@ -203,7 +205,7 @@ namespace Backsight.Editor
                 if (i == index)
                     sdist = total;
 
-                total += m_Distances[i].Meters;
+                total += m_Spans[i].ObservedDistance.Meters;
 
                 if (i == index)
                     edist = total;
@@ -221,18 +223,10 @@ namespace Backsight.Editor
         {
             // Confirm the index is valid. For cul-de-sacs with no observed
             // spans, we only have one valid index.
-            if (m_Distances.Length>0 && index>=m_Distances.Length)
+            if (index<0 || index>=NumSpan)
                 throw new IndexOutOfRangeException("Leg.SetFeature - Bad index");
 
-            // The array of feature references should already be defined.
-            if (m_Creations==null)
-                throw new Exception("Leg.SetFeature - No feature list");
-
-            if (m_Distances.Length == 0)
-                m_Creations[0] = feat;
-            else
-                m_Creations[index] = feat;
-
+            m_Spans[index].CreatedFeature = feat;
         }
 
         /// <summary>
@@ -242,19 +236,11 @@ namespace Backsight.Editor
         /// <returns>The associated feature (if any).</returns>
         protected Feature GetFeature(int index)
         {
-            // Confirm the index is valid. For cul-de-sacs with no observed
-            // spans, we only have one valid index.
-            if (m_Distances.Length > 0 && index >= m_Distances.Length)
+            // Confirm the index is valid.
+            if (index<0 || index>=NumSpan)
                 throw new IndexOutOfRangeException("Leg.GetFeature - Bad index");
 
-            // The array of feature references should already be defined.
-            if (m_Creations == null)
-                throw new Exception("Leg.GetFeature - No feature list");
-
-            if (m_Distances.Length == 0)
-                return m_Creations[0];
-            else
-                return m_Creations[index];
+            return m_Spans[index].CreatedFeature;
         }
 
         /// <summary>
@@ -265,17 +251,9 @@ namespace Backsight.Editor
         /// <returns></returns>
         internal bool OnRollback(Operation op)
         {
-            // Return if there are no creations.
-            if (m_Creations==null)
-                return true;
-
-            // If there were no observed spans, we must be dealing with
-            // a cul-de-sac, in which case we should know about ONE feature.
-            int nspan = Math.Max(1, m_Distances.Length);
-
             // Go through each span, de-activating every feature that
             // was created by the specified operation.
-            for (int i = 0; i < nspan; i++)
+            for (int i = 0; i < NumSpan; i++)
             {
                 // What sort of feature (if any) represents the span. If
                 // it's null, just skip the span. If it's a point created
@@ -284,7 +262,7 @@ namespace Backsight.Editor
                 // as well as the two end points (so long as they were
                 // created by the specified op).
 
-                Feature feat = m_Creations[i];
+                Feature feat = m_Spans[i].CreatedFeature;
                 if (feat != null)
                     throw new NotImplementedException();
                     //feat.OnRollback(op);
@@ -299,20 +277,10 @@ namespace Backsight.Editor
         /// <param name="op">The operation that created the leg.</param>
         void Intersect(Operation op)
         {
-            // Return if there are no creations.
-            if (m_Creations==null)
-                return;
-
-            // If there were no observed spans, we must be dealing with
-            // a cul-de-sac, in which case we should know about ONE feature
-            // (unless it was a mis-connect).
-            int nspan = Math.Max(1, m_Distances.Length);
-
-            // Go through each span, intersecting every feature that
-            // was created.
-            for (int i = 0; i < nspan; i++)
+            // Go through each span, intersecting every feature that was created.
+            foreach (SpanData sd in m_Spans)
             {
-                Feature feat = m_Creations[i];
+                Feature feat = sd.CreatedFeature;
                 if (feat != null)
                     feat.IsMoved = true;
             }
@@ -328,15 +296,14 @@ namespace Backsight.Editor
         /// <returns>Reference to the distance (null if not found).</returns>
         internal Distance GetDistance(Feature feat)
         {
-            Distance dist = null;
-
-            for (int i = 0; i < m_Distances.Length && dist == null; i++)
+            foreach (SpanData sd in m_Spans)
             {
-                if (Object.ReferenceEquals(m_Creations[i], feat))
-                    dist = m_Distances[i];
+                Feature f = sd.CreatedFeature;
+                if (Object.ReferenceEquals(f, feat))
+                    return sd.ObservedDistance;
             }
 
-            return dist;
+            return null;
         }
 
         /// <summary>
@@ -359,21 +326,20 @@ namespace Backsight.Editor
         /// appended to, so you may want to clear the list prior to call.</param>
         internal void GetFeatures(Operation op, List<Feature> flist)
         {
-            // Append the features representing this leg.
-            int nspan = Math.Max(1, m_Distances.Length);
-
-            for (int i = 0; i < nspan; i++)
+            foreach (SpanData sd in m_Spans)
             {
-                if (m_Creations[i] != null)
+                Feature f = sd.CreatedFeature;
+
+                if (f != null)
                 {
                     // Append to the return list.
-                    flist.Add(m_Creations[i]);
+                    flist.Add(f);
 
                     // If the feature is a line, also process any point
                     // feature at the end. If it's a circular arc, add
                     // the circle centre point if it isn't already in
                     // the list.
-                    LineFeature line = (m_Creations[i] as LineFeature);
+                    LineFeature line = (f as LineFeature);
                     if (line!=null)
                     {
         				// Include inactive points.
@@ -387,7 +353,6 @@ namespace Backsight.Editor
                             point = arc.Circle.CenterPoint;
                             if (Object.ReferenceEquals(point.Creator, op) && !flist.Contains(point))
                                 flist.Add(point);
-
                         }
                     }
                 }
@@ -403,17 +368,21 @@ namespace Backsight.Editor
         /// <param name="distances">The list of Distance objects to load.</param>
         internal void GetSpans(List<Distance> distances)
         {
-            if (m_Distances.Length == 0)
+            foreach (SpanData sd in m_Spans)
             {
-                // If this is a cul-de-sac that had no observed spans, get the
-                // circular leg to define the distance (in meters on the ground).
-                DistanceUnit mUnit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Meters);
-                distances.Add(new Distance(this.Length.Meters, mUnit));
-            }
-            else
-            {
-                // Otherwise copy over the distances as they were entered.
-                distances.AddRange(m_Distances);
+                Distance d = sd.ObservedDistance;
+                if (d == null)
+                {
+                    Debug.Assert(this is CircularLeg);
+                    Debug.Assert(m_Spans.Length == 1);
+
+                    // If this is a cul-de-sac that had no observed spans, get the
+                    // circular leg to define the distance (in meters on the ground).
+                    DistanceUnit mUnit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Meters);
+                    distances.Add(new Distance(this.Length.Meters, mUnit));
+                }
+                else
+                    distances.Add(d);
             }
         }
 
@@ -440,20 +409,19 @@ namespace Backsight.Editor
             // to also search for inactive points.
             //LOGICAL onlyActive = feature.IsActive();
 
-            int nspan = Math.Max(1, m_Distances.Length);
-
-            for (int i=0; i<nspan; i++)
+            foreach (SpanData sd in m_Spans)
             {
                 // Skip if this was a null span.
-                if (m_Creations[i]==null)
+                Feature f = sd.CreatedFeature;
+                if (f==null)
                     continue;
 
                 // Return if we have a match.
-                if (Object.ReferenceEquals(m_Creations[i], feature))
+                if (Object.ReferenceEquals(f, feature))
                     return true;
 
                 // If the feature is a line, also check any point feature at the end.
-                LineFeature line = (m_Creations[i] as LineFeature);
+                LineFeature line = (f as LineFeature);
                 if (line==null)
                     continue;
 
@@ -478,12 +446,8 @@ namespace Backsight.Editor
         /// <returns>The point object at the end (could conceivably be null).</returns>
         PointFeature GetEndPoint(Operation op)
         {
-            if (m_Creations==null)
-                return null;
-
             // If the very last feature for this leg is a point, that's the thing we want.
-            int nspan = Math.Max(1, m_Distances.Length);
-            Feature feat = m_Creations[nspan-1];
+            Feature feat = m_Spans[NumSpan - 1].CreatedFeature;
             PointFeature point = (feat as PointFeature);
             if (point!=null)
                 return point;
@@ -570,7 +534,7 @@ namespace Backsight.Editor
         public bool HasLine(int index) // ILeg
         {
             // No feature if the span index is out of range.
-            if (index >= m_Distances.Length)
+            if (index >= NumSpan)
                 return false;
 
             LegItemFlag swt = m_Switches[index];
@@ -710,50 +674,38 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// occurs, but it will get marked to happen).</param>
         void InsertAt(int index, Distance newdist, bool wantLine)
         {
-            // Expand the array of distances, as well as the arrays
-            // for creations and switches.
-            int numSpan = m_Distances.Length;
-            Distance[] newd = new Distance[numSpan+1];
-            Feature[] newf = new Feature[numSpan+1];
-            LegItemFlag[] news = new LegItemFlag[numSpan+1];
+            // Expand the array of span data
+            int numSpan = NumSpan;
+            SpanData[] newSpans = new SpanData[numSpan + 1];
 
             // Copy over stuff prior to the new distance
             for (int i=0; i<index; i++)
-            {
-                newd[i] = m_Distances[i];
-                newf[i] = m_Creations[i];
-                news[i] = m_Switches[i];
-            }
+                newSpans[i] = m_Spans[i];
 
             // Stick in the new guy with miss-connect flag
-            newd[index] = newdist;
-            newf[index] = null;
-            news[index] = LegItemFlag.MissConnect;
+            SpanData extraSpan = new SpanData();
+            extraSpan.ObservedDistance = newdist;
+            extraSpan.Flags = LegItemFlag.MissConnect;
+            newSpans[index] = extraSpan;
 
             // If a line is required, flag it for creation when rollforward runs (we can't do
             // it right now, since the end positions are currently coincident).
             if (wantLine)
-                news[index] |= LegItemFlag.NewLine;
+                extraSpan.Flags |= LegItemFlag.NewLine;
 
             // Copy over the rest.
             for (int i=index; i<numSpan; i++)
-            {
-                newd[i+1] = m_Distances[i];
-                newf[i+1] = m_Creations[i];
-                news[i+1] = m_Switches[i];
-            }
+                newSpans[i + 1] = m_Spans[i];
 
             // Replace original arrays with the new ones
-            m_Distances = newd;
-            m_Creations = newf;
-            m_Switches = news;
+            m_Spans = newSpans;
 
             // If we inserted at the very start, ensure that any
             // deflection angle switch is still with the very first span.
-            if (index==0 && (m_Switches[1] & LegItemFlag.Deflection)!=0)
+            if (index==0 && (m_Spans[1].Flags & LegItemFlag.Deflection)!=0)
             {
-                m_Switches[0] |= LegItemFlag.Deflection;
-                m_Switches[1] &= (~LegItemFlag.Deflection);
+                m_Spans[0].Flags |= LegItemFlag.Deflection;
+                m_Spans[1].Flags &= (~LegItemFlag.Deflection);
             }
         }
 
@@ -764,9 +716,10 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>The index of the distance (-1 if not found).</returns>
         int GetIndex(Distance dist)
         {
-            for (int i=0; i<m_Distances.Length; i++)
+            for (int i=0; i<m_Spans.Length; i++)
             {
-                if (Object.ReferenceEquals(m_Distances[i], dist))
+                Distance d = m_Spans[i].ObservedDistance;
+                if (Object.ReferenceEquals(d, dist))
                     return i;
             }
 
@@ -780,9 +733,10 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>The index of the feature (-1 if not found).</returns>
         int GetIndex(Feature feat)
         {
-            for (int i=0; i<m_Distances.Length; i++)
+            for (int i=0; i<m_Spans.Length; i++)
             {
-                if (Object.ReferenceEquals(m_Creations[i], feat))
+                Feature f = m_Spans[i].CreatedFeature;
+                if (Object.ReferenceEquals(f, feat))
                     return i;
             }
 
@@ -791,11 +745,11 @@ void CeLeg::MakeText ( const CeVertex& bs
 
         /// <summary>
         /// The number of spans in this leg is the number of elements in the
-        /// <see cref="m_Distances"/> array.
+        /// <see cref="m_Spans"/> array.
         /// </summary>
         int NumSpan
         {
-            get { return m_Distances.Length; }
+            get { return m_Spans.Length; }
         }
 
         /// <summary>
@@ -814,39 +768,25 @@ void CeLeg::MakeText ( const CeVertex& bs
 
             // Transfer stuff to the new leg.
             for (int iSrc=index, iDst=0; iSrc<NumSpan; iSrc++, iDst++)
-            {
-                to.m_Distances[iDst] = m_Distances[iSrc];
-                to.m_Creations[iDst] = m_Creations[iSrc];
-                to.m_Switches[iDst] = m_Switches[iSrc];
-            }
+                to.m_Spans[iDst] = m_Spans[iSrc];
 
             // Check for special case where the entire leg has been
             // copied (this isn't really expected to happen).
             if (index==0)
             {
-                m_Distances = null;
-                m_Creations = null;
-                m_Switches = null;
+                m_Spans = null;
                 return true;
             }
 
             int numSpan = index;
-            Distance[] newd = new Distance[numSpan];
-            Feature[] newf = new Feature[numSpan];
-            LegItemFlag[] news = new LegItemFlag[numSpan];
+            SpanData[] newSpans = new SpanData[numSpan];
 
             // Copy over the initial stuff.
             for (int i=0; i<numSpan; i++)
-            {
-                newd[i] = m_Distances[i];
-                newf[i] = m_Creations[i];
-                news[i] = m_Switches[i];
-            }
+                newSpans[i] = m_Spans[i];
 
-            // Replace the original arrays with the new ones.
-            m_Distances = newd;
-            m_Creations = newf;
-            m_Switches = news;
+            // Replace the original array with the new one.
+            m_Spans = newSpans;
 
             return true;
         }
@@ -926,15 +866,19 @@ void CeLeg::MakeText ( const CeVertex& bs
                 return;
 
             // Format each distance.
-            for (int i=0; i<NumSpan; i++)
+            foreach (SpanData sd in m_Spans)
             {
-                str.Append(m_Distances[i].Format());
+                Distance d = sd.ObservedDistance;
+                if (d == null)
+                    continue;
+
+                str.Append(d.Format());
                 str.Append(" ");
 
-                if ((m_Switches[i] & LegItemFlag.MissConnect)!=0)
+                if ((sd.Flags & LegItemFlag.MissConnect)!=0)
                     str.Append("/- ");
 
-                if ((m_Switches[i] & LegItemFlag.OmitPoint)!=0)
+                if ((sd.Flags & LegItemFlag.OmitPoint)!=0)
                     str.Append("/* ");
             }
         }
@@ -988,10 +932,14 @@ void CeLeg::MakeText ( const CeVertex& bs
             CadastralMapModel map = CadastralMapModel.Current;
 
 	        // Add non-topological arcs for each observed distance.
-            for (int i=0; i<NumSpan; i++, start=end)
+            //for (int i=0; i<NumSpan; i++, start=end)
+            for (int i = 0; i < NumSpan; i++, start = end)
             {
+                Distance d = m_Spans[i].ObservedDistance;
+                Debug.Assert(d != null);
+
                 // Update the observed length.
-                totobs += m_Distances[i].Meters;
+                totobs += d.Meters;
 
                 // Apply factor to get us to the end of the leg.
                 double elen = totobs * factor;
@@ -1029,9 +977,11 @@ void CeLeg::MakeText ( const CeVertex& bs
                 line.IsVoid = true;
 
                 // And remember the line!
-                Debug.Assert(m_Creations!=null);
-                Debug.Assert(m_Creations[i]==null);
-                m_Creations[i] = line;
+                //Debug.Assert(m_Creations!=null);
+                //Debug.Assert(m_Creations[i]==null);
+                //m_Creations[i] = line;
+                Debug.Assert(m_Spans[i].CreatedFeature == null);
+                m_Spans[i].CreatedFeature = line;
             }
 
             return true;
@@ -1076,7 +1026,9 @@ void CeLeg::MakeText ( const CeVertex& bs
             for (int i=0; i<(NumSpan-1); i++)
             {
                 // Update the observed length.
-                totobs += m_Distances[i].Meters;
+                Distance d = m_Spans[i].ObservedDistance;
+                Debug.Assert(d != null);
+                totobs += d.Meters;
 
                 // Apply factor to get us to the end of the leg.
                 double elen = totobs * factor;
@@ -1086,8 +1038,8 @@ void CeLeg::MakeText ( const CeVertex& bs
 
                 // Get the line feature that was added and move
                 // the location at the end of it.
-                LineFeature line = (m_Creations[i] as LineFeature);
-                Debug.Assert(line!=null);
+                LineFeature line = (m_Spans[i].CreatedFeature as LineFeature);
+                Debug.Assert(line != null);
                 line.EndPoint.Move(pos);
             }
 
@@ -1135,7 +1087,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             for (int i=0; i<NumSpan; i++, start=end)
             {
                 // Update the observed length.
-                totobs += m_Distances[i].Meters;
+                totobs += m_Spans[i].ObservedDistance.Meters;
 
                 // Apply factor to get us to the end of the leg.
                 double elen = totobs * factor;
@@ -1224,7 +1176,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             for (int i=0; i<NumSpan; i++, start=end)
             {
                 // Update the observed length.
-                totobs += m_Distances[i].Meters;
+                totobs += m_Spans[i].ObservedDistance.Meters;
 
                 // Apply factor to get us to the end of the leg.
                 double elen = totobs * factor;
