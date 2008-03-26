@@ -215,7 +215,7 @@ namespace Backsight.Editor.Forms
             SetColor();
 
             // Display the point's ID.
-            pointTextBox.Text = point.FormattedKey;
+            pointTextBox.Text = PathForm.GetPointString(point);
 
             // Tell the command that's running this dialog to move on.
             if (movenext)

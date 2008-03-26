@@ -44,7 +44,7 @@ namespace Backsight.Editor.Forms
             // 
             this.okButton.Location = new System.Drawing.Point(156, 228);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 30);
+            this.okButton.Size = new System.Drawing.Size(100, 25);
             this.okButton.TabIndex = 13;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -54,7 +54,7 @@ namespace Backsight.Editor.Forms
             // 
             this.cancelButton.Location = new System.Drawing.Point(40, 228);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 30);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 12;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -132,7 +132,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 286);
+            this.ClientSize = new System.Drawing.Size(300, 274);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
@@ -142,7 +142,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.angleTextBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CulDeSacForm";
             this.Text = "Cul de sac";
             this.TopMost = true;

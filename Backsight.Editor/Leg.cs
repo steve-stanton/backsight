@@ -48,6 +48,8 @@ namespace Backsight.Editor
         {
             // Allocate an array of spans (always at least ONE).
             m_Spans = new SpanData[Math.Max(1, nspan)];
+            for (int i = 0; i < m_Spans.Length; i++)
+                m_Spans[i] = new SpanData();
         }
 
         #endregion

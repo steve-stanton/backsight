@@ -312,8 +312,12 @@ namespace Backsight.Editor
         /// </summary>
         void StopFrom()
         {
-            m_From = m_DialFrom.Point;
-            m_DialFrom = null;
+            if (m_DialFrom != null)
+            {
+                m_From = m_DialFrom.Point;
+                m_DialFrom.Dispose();
+                m_DialFrom = null;
+            }
 
             if (m_From!=null)
                 m_From.Draw(ActiveDisplay, Color.DarkBlue);
@@ -334,8 +338,12 @@ namespace Backsight.Editor
         /// </summary>
         void StopTo()
         {
-            m_To = m_DialTo.Point;
-            m_DialTo = null;
+            if (m_DialTo != null)
+            {
+                m_To = m_DialTo.Point;
+                m_DialTo.Dispose();
+                m_DialTo = null;
+            }
 
             if (m_To!=null)
                 m_To.Draw(ActiveDisplay, Color.LightBlue);

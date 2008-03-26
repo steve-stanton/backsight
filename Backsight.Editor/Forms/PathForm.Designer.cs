@@ -86,7 +86,7 @@ namespace Backsight.Editor.Forms
             this.endCurveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.endCurveButton.Location = new System.Drawing.Point(139, 209);
             this.endCurveButton.Name = "endCurveButton";
-            this.endCurveButton.Size = new System.Drawing.Size(100, 30);
+            this.endCurveButton.Size = new System.Drawing.Size(100, 25);
             this.endCurveButton.TabIndex = 9;
             this.endCurveButton.Text = "&End Curve";
             this.endCurveButton.UseVisualStyleBackColor = true;
@@ -97,8 +97,7 @@ namespace Backsight.Editor.Forms
             this.culDeSacButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.culDeSacButton.Location = new System.Drawing.Point(139, 164);
             this.culDeSacButton.Name = "culDeSacButton";
-            this.culDeSacButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.culDeSacButton.Size = new System.Drawing.Size(100, 30);
+            this.culDeSacButton.Size = new System.Drawing.Size(100, 25);
             this.culDeSacButton.TabIndex = 8;
             this.culDeSacButton.Text = "Cul de &sac...";
             this.culDeSacButton.UseVisualStyleBackColor = true;
@@ -109,8 +108,7 @@ namespace Backsight.Editor.Forms
             this.angleButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.angleButton.Location = new System.Drawing.Point(15, 164);
             this.angleButton.Name = "angleButton";
-            this.angleButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.angleButton.Size = new System.Drawing.Size(100, 30);
+            this.angleButton.Size = new System.Drawing.Size(100, 25);
             this.angleButton.TabIndex = 7;
             this.angleButton.Text = "&Angle...";
             this.angleButton.UseVisualStyleBackColor = true;
@@ -121,8 +119,7 @@ namespace Backsight.Editor.Forms
             this.curveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.curveButton.Location = new System.Drawing.Point(139, 117);
             this.curveButton.Name = "curveButton";
-            this.curveButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.curveButton.Size = new System.Drawing.Size(100, 30);
+            this.curveButton.Size = new System.Drawing.Size(100, 25);
             this.curveButton.TabIndex = 6;
             this.curveButton.Text = "&Curve...";
             this.curveButton.UseVisualStyleBackColor = true;
@@ -133,8 +130,7 @@ namespace Backsight.Editor.Forms
             this.distanceButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.distanceButton.Location = new System.Drawing.Point(15, 117);
             this.distanceButton.Name = "distanceButton";
-            this.distanceButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.distanceButton.Size = new System.Drawing.Size(100, 30);
+            this.distanceButton.Size = new System.Drawing.Size(100, 25);
             this.distanceButton.TabIndex = 5;
             this.distanceButton.Text = "&Distance...";
             this.distanceButton.UseVisualStyleBackColor = true;
@@ -232,9 +228,9 @@ namespace Backsight.Editor.Forms
             // 
             // pathTextBox
             // 
-            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.pathTextBox.Location = new System.Drawing.Point(6, 3);
             this.pathTextBox.Multiline = true;
             this.pathTextBox.Name = "pathTextBox";
@@ -248,7 +244,7 @@ namespace Backsight.Editor.Forms
             this.cancelButton.Location = new System.Drawing.Point(14, 209);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cancelButton.Size = new System.Drawing.Size(100, 30);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -261,7 +257,7 @@ namespace Backsight.Editor.Forms
             this.previewButton.Location = new System.Drawing.Point(14, 117);
             this.previewButton.Name = "previewButton";
             this.previewButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.previewButton.Size = new System.Drawing.Size(100, 30);
+            this.previewButton.Size = new System.Drawing.Size(100, 25);
             this.previewButton.TabIndex = 0;
             this.previewButton.Text = "&Preview";
             this.previewButton.UseVisualStyleBackColor = true;

@@ -70,9 +70,9 @@ namespace Backsight.Editor.Forms
             this.groupBox1.Controls.Add(this.counterClockwiseRadioButton);
             this.groupBox1.Controls.Add(this.clockwiseRadioButton);
             this.groupBox1.Location = new System.Drawing.Point(26, 132);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(319, 123);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
@@ -82,7 +82,7 @@ namespace Backsight.Editor.Forms
             // 
             this.counterClockwiseRadioButton.AutoSize = true;
             this.counterClockwiseRadioButton.Location = new System.Drawing.Point(33, 73);
-            this.counterClockwiseRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.counterClockwiseRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.counterClockwiseRadioButton.Name = "counterClockwiseRadioButton";
             this.counterClockwiseRadioButton.Size = new System.Drawing.Size(135, 20);
             this.counterClockwiseRadioButton.TabIndex = 11;
@@ -94,7 +94,7 @@ namespace Backsight.Editor.Forms
             // 
             this.clockwiseRadioButton.AutoSize = true;
             this.clockwiseRadioButton.Location = new System.Drawing.Point(33, 41);
-            this.clockwiseRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.clockwiseRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.clockwiseRadioButton.Name = "clockwiseRadioButton";
             this.clockwiseRadioButton.Size = new System.Drawing.Size(87, 20);
             this.clockwiseRadioButton.TabIndex = 10;
@@ -105,17 +105,17 @@ namespace Backsight.Editor.Forms
             // radiusTextBox
             // 
             this.radiusTextBox.Location = new System.Drawing.Point(164, 87);
-            this.radiusTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radiusTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.radiusTextBox.Name = "radiusTextBox";
             this.radiusTextBox.Size = new System.Drawing.Size(99, 22);
             this.radiusTextBox.TabIndex = 19;
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(197, 280);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.okButton.Location = new System.Drawing.Point(189, 280);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(133, 37);
+            this.okButton.Size = new System.Drawing.Size(100, 25);
             this.okButton.TabIndex = 21;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -123,10 +123,10 @@ namespace Backsight.Editor.Forms
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(42, 280);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cancelButton.Location = new System.Drawing.Point(72, 280);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(133, 37);
+            this.cancelButton.Size = new System.Drawing.Size(100, 25);
             this.cancelButton.TabIndex = 20;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -136,7 +136,7 @@ namespace Backsight.Editor.Forms
             // bcAngleTextBox
             // 
             this.bcAngleTextBox.Location = new System.Drawing.Point(164, 27);
-            this.bcAngleTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bcAngleTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.bcAngleTextBox.Name = "bcAngleTextBox";
             this.bcAngleTextBox.Size = new System.Drawing.Size(99, 22);
             this.bcAngleTextBox.TabIndex = 18;
@@ -176,7 +176,7 @@ namespace Backsight.Editor.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(381, 343);
+            this.ClientSize = new System.Drawing.Size(381, 327);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.ecAngleTextBox);
@@ -189,7 +189,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.bcAngleTextBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ArcForm";
             this.Text = "Circular Arc";
             this.TopMost = true;
