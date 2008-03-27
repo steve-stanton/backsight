@@ -193,7 +193,7 @@ namespace Backsight.Editor
             double total = 0.0;
 
             // Accumulate the distance to the required span.
-            for (int i = 0; i < index; i++)
+            for (int i = 0; i <= index; i++)
             {
                 if (i == index)
                     sdist = total;
