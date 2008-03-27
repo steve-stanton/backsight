@@ -1041,44 +1041,6 @@ namespace Backsight.Editor.Forms
             AddItem(item);
         }
 
-        /*
-//	@mfunc	Allocate space for a specific number of path items.
-//
-//	@parm	The number of items to allocate.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-UINT2 CdPath::SetSize ( const UINT2 newsize ) {
-
-	UINT2 size;			// The size actually set
-
-	if ( newsize==0 )
-		size = max(1,m_NumItem);		// always get at least 1
-	else if ( newsize>m_NumAlloc )
-		size = newsize;					// increase
-	else
-		size = max(newsize,m_NumItem);	// decrease, but not too low
-
-//	Return if the new size is identical to the current size
-	if ( size == m_NumAlloc ) return size;
-
-//	Allocate new array
-	m_NumAlloc = size;
-	CePathItem* newlist = new CePathItem[m_NumAlloc];
-
-//	Copy what we have, delete the original, and then point
-//	to the copy.
-	if ( m_Items ) {
-	  memcpy ( &newlist[0], &m_Items[0],
-					m_NumItem*sizeof(CePathItem) );
-	  delete [] m_Items;
-	}
-	m_Items = newlist;
-	return m_NumAlloc;
-
-} // end of SetSize
-         */
-
         /// <summary>
         /// Checks if the last path item is a BC.
         /// </summary>
@@ -1492,22 +1454,19 @@ UINT2 CdPath::SetSize ( const UINT2 newsize ) {
         /// </summary>
         internal void OnDestroyAdj()
         {
+            // Remember not to draw the path.
+            m_DrawPath = false;
+
+            // Get rid of the dialog object.
+            if (m_Adjustment!=null)
+            {
+                m_Adjustment.Dispose();
+                m_Adjustment = null;
+            }
+
+            // Re-enable the Preview button.
+            previewButton.Enabled = true;
         }
-        /*
-void CdPath::OnDestroyAdj ( void ) {
-
-//	Remember not to draw the path.
-	m_DrawPath = FALSE;
-
-//	Get rid of the dialog object.
-	delete m_pAdjustment;
-	m_pAdjustment = 0;
-
-//	Re-enable the Preview button.
-	TurnOn(GetDlgItem(IDC_PREVIEW));
-
-} // end of OnDestroyAdj
-        */
 
         /// <summary>
         /// Fills the data entry field with the stuff that was entered for

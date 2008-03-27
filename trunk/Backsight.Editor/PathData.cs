@@ -455,7 +455,8 @@ namespace Backsight.Editor
         internal bool Adjust(out double dN, out double dE, out double precision, out double length,
                     out double rotation, out double sfac)
         {
-            dN = dE = precision = length = rotation = sfac = 0.0;
+            dN = dE = precision = length = rotation = 0.0;
+            sfac = 1.0;
 
             // Initialize position to the start of the path, corresponding to the initial
             // un-adjusted end point.
