@@ -16,6 +16,7 @@
 using System;
 using System.Drawing;
 using System.Text;
+using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
@@ -711,8 +712,9 @@ namespace Backsight.Editor
                 // Add a line if we have one.
                 if (span.HasLine)
                 {
+                    Debug.Assert(span.HasEndPoint);
                     PointFeature ps = map.EnsurePointExists(sloc, op);
-                    PointFeature pe = map.EnsurePointExists(eloc, op);
+                    PointFeature pe = (PointFeature)feat;
                     feat = map.AddCircularArc(m_Circle, ps, pe, IsClockwise, map.DefaultLineType, op);
                 }
             }

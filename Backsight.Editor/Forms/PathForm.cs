@@ -1466,6 +1466,9 @@ namespace Backsight.Editor.Forms
 
             // Re-enable the Preview button.
             previewButton.Enabled = true;
+
+            // Ensure any preview stuff gets erased
+            m_Command.ErasePainting();
         }
 
         /// <summary>

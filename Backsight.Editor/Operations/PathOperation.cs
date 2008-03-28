@@ -150,9 +150,10 @@ namespace Backsight.Editor.Operations
             if (m_To != null)
                 m_To.CutOp(this);
 
-            // Ask each leg to rollback.
-            foreach (Leg leg in m_Legs)
-                leg.OnRollback(this);
+            // Mark all created features
+            Feature[] features = this.Features;
+            foreach (Feature f in features)
+                f.Undo();
 
             return true;
         }
@@ -166,6 +167,8 @@ namespace Backsight.Editor.Operations
         	// Return if this operation has not been marked as changed.
             if (!IsChanged)
                 return base.OnRollforward();
+
+            throw new NotImplementedException("PathOperation.Rollforward");
 
             // If a line was originally attached to the start point (but
             // is now preceded by one or more inserts), alter the start
@@ -299,11 +302,13 @@ namespace Backsight.Editor.Operations
         /// <param name="preview">True if the path should be drawn in preview 
         /// mode (i.e. in the normal construction colour, with miss-connects
         /// shown as dotted lines).</param>
+        /*
         void Draw(bool preview)
         {
             foreach (Leg leg in m_Legs)
                 leg.Draw(preview);
         }
+        */
 
         /// <summary>
         /// Executes this operation. This attaches persistent features to the path.
@@ -322,7 +327,7 @@ namespace Backsight.Editor.Operations
             // is basically the same as the Draw() logic ...
 
             // Initialize position to the start of the path.
-            IPosition gotend = new Position(m_From);
+            IPosition gotend = m_From;
 
             // Initial bearing is whatever the desired rotation is.
             double bearing = rotation;

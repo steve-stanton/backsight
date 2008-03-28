@@ -16,6 +16,7 @@
 using System;
 using System.Text;
 using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
@@ -193,6 +194,9 @@ namespace Backsight.Editor
             // Create a straight span
             StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
 
+            // The last point is initially the start of the path
+            PointFeature lastPoint = op.StartPoint;
+
             int nspan = this.Count;
             for (int i = 0; i < nspan; i++)
             {
@@ -201,8 +205,14 @@ namespace Backsight.Editor
                 span.Get(i);
 
                 // Save the span
-                Feature feat = SaveSpan(span, op, null, null, null);
+                Feature feat = SaveSpan(lastPoint, span, op, null, null, null);
                 SetFeature(i, feat);
+
+                // Remember the last point
+                if (feat is LineFeature)
+                    lastPoint = (feat as LineFeature).EndPoint;
+                else
+                    lastPoint = (feat as PointFeature);
             }
 
             // Return the end position of the last span.
@@ -247,6 +257,20 @@ namespace Backsight.Editor
                 // adjusted start and end positions, among other things).
                 span.Get(i);
 
+                // Try to obtain the point that should already exist at the start of the span
+                PointFeature startPoint;
+                if (i==0)
+                    startPoint = op.StartPoint;
+                else
+                {
+                    Feature prevFeature = GetFeature(i-1);
+
+                    if (prevFeature is LineFeature)
+                        startPoint = (prevFeature as LineFeature).EndPoint;
+                    else
+                        startPoint = (prevFeature as PointFeature);
+                }
+
                 // If we've got a newly inserted span
                 if (IsNewSpan(i))
                 {
@@ -260,10 +284,10 @@ namespace Backsight.Editor
                     // See if the span previously had a saved feature.
                     Feature old = GetFeature(i);
                     if (old!=null)
-                        SaveSpan(span, op, insert, old, veryEnd);
+                        SaveSpan(startPoint, span, op, insert, old, veryEnd);
                     else
                     {
-                        Feature feat = SaveSpan(span, op, insert, null, veryEnd);
+                        Feature feat = SaveSpan(startPoint, span, op, insert, null, veryEnd);
                         SetFeature(i, feat);
                     }
 
@@ -280,7 +304,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves a span in the map.
         /// </summary>
-        /// <param name="span"></param>
+        /// <param name="startPoint">The point that should exist at the start of the span (if known)</param>
+        /// <param name="span">The span to save</param>
         /// <param name="op">The editing operation this span is part of</param>
         /// <param name="insert">Reference to a new point that was inserted just before
         /// this span. Defined only during rollforward.</param>
@@ -293,7 +318,8 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        internal Feature SaveSpan(StraightSpan span, Operation op, PointFeature insert, Feature old, PointFeature veryEnd)
+        internal Feature SaveSpan(PointFeature startPoint, StraightSpan span, Operation op,
+                                    PointFeature insert, Feature old, PointFeature veryEnd)
         {
             // Get map info.
             CadastralMapModel map = CadastralMapModel.Current;
@@ -362,14 +388,16 @@ namespace Backsight.Editor
                 // Add a line if we have one.
                 if (span.HasLine)
                 {
-                    PointFeature ps = map.EnsurePointExists(sloc, op);
-                    PointFeature pe = map.EnsurePointExists(eloc, op);
+                    Debug.Assert(span.HasEndPoint);
+                    PointFeature ps = (startPoint==null ? map.EnsurePointExists(sloc, op) : startPoint);
+                    PointFeature pe = (PointFeature)feat;
                     feat = map.AddLine(ps, pe, map.DefaultLineType, op);
                 }
             }
 
             return feat;
         }
+
         /// <summary>
         /// Saves a newly inserted span.
         /// </summary>

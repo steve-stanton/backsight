@@ -242,6 +242,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that this leg relates to.</param>
         /// <returns></returns>
+        /*
         internal bool OnRollback(Operation op)
         {
             // Go through each span, de-activating every feature that
@@ -257,12 +258,14 @@ namespace Backsight.Editor
 
                 Feature feat = m_Spans[i].CreatedFeature;
                 if (feat != null)
-                    throw new NotImplementedException();
-                    //feat.OnRollback(op);
+                {
+                    feat.OnRollback(op);
+                }
             }
 
             return true;
         }
+        */
 
         /// <summary>
         /// Handles any intersections created along this leg.
