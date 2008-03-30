@@ -194,8 +194,8 @@ namespace Backsight.Editor
             // Create a straight span
             StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
 
-            // The last point is initially the start of the path
-            PointFeature lastPoint = op.StartPoint;
+            // The last point is initially the supplied terminal
+            PointFeature lastPoint = (terminal as PointFeature);
 
             int nspan = this.Count;
             for (int i = 0; i < nspan; i++)
@@ -216,7 +216,7 @@ namespace Backsight.Editor
             }
 
             // Return the end position of the last span.
-            terminal = span.End;
+            terminal = (lastPoint == null ? span.End : lastPoint);
         }
 
         /// <summary>

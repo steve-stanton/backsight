@@ -739,7 +739,7 @@ namespace Backsight.Editor.Forms
             if (starIndex >= 0 || slashIndex >= 0)
             {
                 int qualIndex = starIndex;
-                if (qualIndex < 0 || qualIndex > slashIndex)
+                if (qualIndex < 0 || (slashIndex>=0 && qualIndex > slashIndex))
                     qualIndex = slashIndex;
 
                 // Process the stuff prior to the qualifier.
