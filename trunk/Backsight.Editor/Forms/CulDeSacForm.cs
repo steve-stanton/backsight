@@ -234,7 +234,7 @@ namespace Backsight.Editor.Forms
             if (!m_IsDefined)
                 return String.Empty;
 
-            string result = String.Format("{0}ca {1}",
+            string result = String.Format("({0}ca {1}",
                 RadianValue.AsShortString(m_Radians), m_Radius.Format());
 
             if (m_IsClockwise)

@@ -395,11 +395,22 @@ namespace Backsight.Editor
             int nspan = Math.Max(1, this.Count);
             PointFeature noInsert = null;
 
+            // The last point is initially the start of the path
+            PointFeature lastPoint = (terminal as PointFeature);
+
             for (int i = 0; i < nspan; i++)
-                SaveSpan(ref noInsert, op, span, i);
+            {
+                Feature feat = SaveSpan(lastPoint, ref noInsert, op, span, i);
+
+                // Remember the last point
+                if (feat is LineFeature)
+                    lastPoint = (feat as LineFeature).EndPoint;
+                else
+                    lastPoint = (feat as PointFeature);
+            }
 
             // Update BC info to refer to the EC.
-            terminal = span.EC;
+            terminal = (lastPoint == null ? span.EC : lastPoint);
             bearing = span.ExitBearing;
         }
 
@@ -501,7 +512,23 @@ namespace Backsight.Editor
             int nspan = Math.Max(1, this.Count);
 
             for (int i = 0; i < nspan; i++)
-                SaveSpan(ref insert, op, span, i);
+            {
+                // Try to obtain the point that should already exist at the start of the span
+                PointFeature startPoint;
+                if (i == 0)
+                    startPoint = op.StartPoint;
+                else
+                {
+                    Feature prevFeature = GetFeature(i - 1);
+
+                    if (prevFeature is LineFeature)
+                        startPoint = (prevFeature as LineFeature).EndPoint;
+                    else
+                        startPoint = (prevFeature as PointFeature);
+                }
+
+                SaveSpan(startPoint, ref insert, op, span, i);
+            }
 
             // Update BC info to refer to the EC.
             terminal = span.EC;
@@ -512,13 +539,18 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves a specific span of this leg.
         /// </summary>
+        /// <param name="startPoint">The point that should exist at the start of the span (if known)</param>
         /// <param name="insert">The point of the end of any new insert that
         /// immediately precedes this span. This will be updated if this span is
         /// also a new insert (if not, it will be returned as a null value).</param>
         /// <param name="op">The connection path that this leg is part of.</param>
         /// <param name="span">The span for the leg.</param>
         /// <param name="index">The index of the span to save.</param>
-        void SaveSpan(ref PointFeature insert, PathOperation op, CircularSpan span, int index)
+        /// <returns>The feature (if any) that represents the span. If the span has a line,
+        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
+        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
+        /// meaning that there is no line & no terminal point.</returns>
+        Feature SaveSpan(PointFeature startPoint, ref PointFeature insert, PathOperation op, CircularSpan span, int index)
         {
             // The very end of a connection path should never be moved.
             PointFeature veryEnd = op.EndPoint;
@@ -537,6 +569,8 @@ namespace Backsight.Editor
 
                 // Remember the last insert position.
                 insert = newLine.EndPoint;
+
+                return newLine;
             }
             else
             {
@@ -547,7 +581,7 @@ namespace Backsight.Editor
                 Feature old = GetFeature(index);
 
                 // Save the span.
-                Feature feat = SaveSpan(insert, op, span, old, veryEnd);
+                Feature feat = SaveSpan(startPoint, insert, op, span, old, veryEnd);
 
                 // If the saved span is different from what we had before,
                 // tell the base class about it.
@@ -556,6 +590,8 @@ namespace Backsight.Editor
 
                 // That wasn't an insert.
                 insert = null;
+
+                return feat;
             }
         }
 
@@ -621,6 +657,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves a span in the map.
         /// </summary>
+        /// <param name="startPoint">The point that should exist at the start of the span (if known)</param>
         /// <param name="insert">Reference to a new point that was inserted just before
         /// the span. Defined only during rollforward.</param>
         /// <param name="op">The editing operation this leg is part of</param>
@@ -634,7 +671,7 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        Feature SaveSpan(PointFeature insert, PathOperation op, CircularSpan span, Feature old, PointFeature veryEnd)
+        Feature SaveSpan(PointFeature startPoint, PointFeature insert, PathOperation op, CircularSpan span, Feature old, PointFeature veryEnd)
         {
             // The circle on which the span is based should already be defined
             // (see the call that CircularLeg.Save makes to AddCircle).
@@ -713,17 +750,14 @@ namespace Backsight.Editor
                 if (span.HasLine)
                 {
                     Debug.Assert(span.HasEndPoint);
-                    PointFeature ps = map.EnsurePointExists(sloc, op);
+                    PointFeature ps = (startPoint == null ? map.EnsurePointExists(sloc, op) : startPoint);
                     PointFeature pe = (PointFeature)feat;
                     feat = map.AddCircularArc(m_Circle, ps, pe, IsClockwise, map.DefaultLineType, op);
                 }
             }
 
             return feat;
-        }
-        
-
-
+        }        
 /*
 //	@mfunc	Draw any angles for this leg.
 //
