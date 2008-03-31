@@ -14,9 +14,10 @@
 /// </remarks>
 
 using System;
-using System.Drawing;
 using System.Text;
+using System.Drawing;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
@@ -340,12 +341,14 @@ namespace Backsight.Editor
         /// Saves features for this leg.
         /// </summary>
         /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="createdPoints">Newly created point features</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override void Save(PathOperation op, List<PointFeature> createdPoints,
+                                    ref IPosition terminal, ref double bearing, double sfac)
         {
             // Create an undefined circular span
             CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
@@ -353,7 +356,7 @@ namespace Backsight.Editor
             // If this leg already has an associated circle, move it. Otherwise
             // add a circle to the map that corresponds to this leg.
             if (m_Circle == null)
-                m_Circle = AddCircle(op, span);
+                m_Circle = AddCircle(op, createdPoints, span);
             else
             {
                 // Get the center point associated with the current op. If there
@@ -386,7 +389,7 @@ namespace Backsight.Editor
                     m_Circle = null;
 
                     // Add a new circle.
-                    m_Circle = AddCircle(op, span);
+                    m_Circle = AddCircle(op, createdPoints, span);
                 }
             }
 
@@ -395,22 +398,13 @@ namespace Backsight.Editor
             int nspan = Math.Max(1, this.Count);
             PointFeature noInsert = null;
 
-            // The last point is initially the start of the path
-            PointFeature lastPoint = (terminal as PointFeature);
-
             for (int i = 0; i < nspan; i++)
             {
-                Feature feat = SaveSpan(lastPoint, ref noInsert, op, span, i);
-
-                // Remember the last point
-                if (feat is LineFeature)
-                    lastPoint = (feat as LineFeature).EndPoint;
-                else
-                    lastPoint = (feat as PointFeature);
+                Feature feat = SaveSpan(ref noInsert, op, createdPoints, span, i);
             }
 
             // Update BC info to refer to the EC.
-            terminal = (lastPoint == null ? span.EC : lastPoint);
+            terminal = span.EC;
             bearing = span.ExitBearing;
         }
 
@@ -418,9 +412,10 @@ namespace Backsight.Editor
         /// Adds a circle to the map, suitable for this leg. Called by <see cref="CircularLeg.Save"/>.
         /// </summary>
         /// <param name="creator">The edit operation containing the leg</param>
+        /// <param name="createdPoints">Newly created point features</param>
         /// <param name="span">The span that's being saved</param>
         /// <returns>The circle for the span (may be a circle that previously existed)</returns>
-        Circle AddCircle(Operation creator, CircularSpan span)
+        Circle AddCircle(PathOperation creator, List<PointFeature> createdPoints, CircularSpan span)
         {
             // If a circle was previously created, just return that.
             if (m_Circle!=null)
@@ -428,9 +423,8 @@ namespace Backsight.Editor
 
             // Add the circle (checks if it's already there).
             // This will cross-reference the center point to the circle.
-            CadastralMapModel map = CadastralMapModel.Current;
-            PointFeature centerPoint = map.EnsurePointExists(span.Center, creator);
-            m_Circle = map.AddCircle(centerPoint, new Length(span.ScaledRadius));
+            PointFeature centerPoint = creator.EnsurePointExists(span.Center, createdPoints);
+            m_Circle = creator.MapModel.AddCircle(centerPoint, new Length(span.ScaledRadius));
             return m_Circle;
         }
 
@@ -455,10 +449,13 @@ namespace Backsight.Editor
             // Create an undefined circular span
             CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
 
+            // Create list for holding any newly created points
+            List<PointFeature> createdPoints = new List<PointFeature>();
+
             // If this leg already has an associated circle, move it. Otherwise
             // add a circle to the map that corresponds to this leg.
             if (m_Circle == null)
-                m_Circle = AddCircle(op, span);
+                m_Circle = AddCircle(op, createdPoints, span);
             else
             {
                 // Get the centre point associated with the current op. If there
@@ -503,7 +500,7 @@ namespace Backsight.Editor
                     m_Circle = null;
 
                     // Add a new circle.
-                    m_Circle = AddCircle(op, span);
+                    m_Circle = AddCircle(op, createdPoints, span);
                 }
             }
 
@@ -513,21 +510,7 @@ namespace Backsight.Editor
 
             for (int i = 0; i < nspan; i++)
             {
-                // Try to obtain the point that should already exist at the start of the span
-                PointFeature startPoint;
-                if (i == 0)
-                    startPoint = op.StartPoint;
-                else
-                {
-                    Feature prevFeature = GetFeature(i - 1);
-
-                    if (prevFeature is LineFeature)
-                        startPoint = (prevFeature as LineFeature).EndPoint;
-                    else
-                        startPoint = (prevFeature as PointFeature);
-                }
-
-                SaveSpan(startPoint, ref insert, op, span, i);
+                SaveSpan(ref insert, op, createdPoints, span, i);
             }
 
             // Update BC info to refer to the EC.
@@ -539,18 +522,19 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves a specific span of this leg.
         /// </summary>
-        /// <param name="startPoint">The point that should exist at the start of the span (if known)</param>
         /// <param name="insert">The point of the end of any new insert that
         /// immediately precedes this span. This will be updated if this span is
         /// also a new insert (if not, it will be returned as a null value).</param>
         /// <param name="op">The connection path that this leg is part of.</param>
+        /// <param name="createdPoints">Newly created point features</param>
         /// <param name="span">The span for the leg.</param>
         /// <param name="index">The index of the span to save.</param>
         /// <returns>The feature (if any) that represents the span. If the span has a line,
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        Feature SaveSpan(PointFeature startPoint, ref PointFeature insert, PathOperation op, CircularSpan span, int index)
+        Feature SaveSpan(ref PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
+                            CircularSpan span, int index)
         {
             // The very end of a connection path should never be moved.
             PointFeature veryEnd = op.EndPoint;
@@ -581,7 +565,7 @@ namespace Backsight.Editor
                 Feature old = GetFeature(index);
 
                 // Save the span.
-                Feature feat = SaveSpan(startPoint, insert, op, span, old, veryEnd);
+                Feature feat = SaveSpan(insert, op, createdPoints, span, old, veryEnd);
 
                 // If the saved span is different from what we had before,
                 // tell the base class about it.
@@ -657,10 +641,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves a span in the map.
         /// </summary>
-        /// <param name="startPoint">The point that should exist at the start of the span (if known)</param>
         /// <param name="insert">Reference to a new point that was inserted just before
         /// the span. Defined only during rollforward.</param>
         /// <param name="op">The editing operation this leg is part of</param>
+        /// <param name="createdPoints">Newly created point features</param>
         /// <param name="span">The span for the leg.</param>
         /// <param name="old">Pointer to the feature that was previously associated with
         /// the span. This will be not null when the span is being saved as part of
@@ -671,7 +655,8 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        Feature SaveSpan(PointFeature startPoint, PointFeature insert, PathOperation op, CircularSpan span, Feature old, PointFeature veryEnd)
+        Feature SaveSpan(PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
+                            CircularSpan span, Feature old, PointFeature veryEnd)
         {
             // The circle on which the span is based should already be defined
             // (see the call that CircularLeg.Save makes to AddCircle).
@@ -679,7 +664,7 @@ namespace Backsight.Editor
                 throw new Exception("CircularLeg.SaveSpan -- Circle has not been defined");
 
             // Get map info.
-            CadastralMapModel map = CadastralMapModel.Current;
+            CadastralMapModel map = op.MapModel;
 
             // Reference to the created feature (if any).
             Feature feat = null;
@@ -740,17 +725,13 @@ namespace Backsight.Editor
                 // If we have an end point, add it. If it creates something
                 // new, assign an ID to it.
                 if (span.HasEndPoint)
-                {
-                    feat = map.EnsurePointExists(eloc, op);
-                    if (Object.ReferenceEquals(feat.Creator, op) && feat.Id==null)
-                        feat.SetNextId();
-                }
+                    feat = op.EnsurePointExists(eloc, createdPoints);
 
                 // Add a line if we have one.
                 if (span.HasLine)
                 {
                     Debug.Assert(span.HasEndPoint);
-                    PointFeature ps = (startPoint == null ? map.EnsurePointExists(sloc, op) : startPoint);
+                    PointFeature ps = op.EnsurePointExists(sloc, createdPoints);
                     PointFeature pe = (PointFeature)feat;
                     feat = map.AddCircularArc(m_Circle, ps, pe, IsClockwise, map.DefaultLineType, op);
                 }

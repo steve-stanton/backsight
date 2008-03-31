@@ -19,6 +19,8 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Text;
 
+using Backsight.Geometry;
+
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="24-JAN-1998" was="CePath" />
@@ -332,12 +334,54 @@ namespace Backsight.Editor.Operations
             // Initial bearing is whatever the desired rotation is.
             double bearing = rotation;
 
+            // Create a list for holding newly created points
+            List<PointFeature> createdPoints = new List<PointFeature>(100);
+
             // Go through each leg, asking them to make features.
             foreach (Leg leg in m_Legs)
-                leg.Save(this, ref gotend, ref bearing, sfac);
+                leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
 
             // Peform standard completion steps
             Complete();
+        }
+
+        /// <summary>
+        /// Ensures a point feature exists at a specific location in the map model.
+        /// </summary>
+        /// <param name="p">The position where a point feature is required</param>
+        /// <param name="extraPoints">Any extra points that should be considered. This should be
+        /// loaded with any points that have been freshly created by this editing operation (since
+        /// these new points will not exist in the map model until the edit commits)</param>
+        /// <returns>The point feature at the specified position (may be a new point)</returns>
+        internal PointFeature EnsurePointExists(IPosition p, List<PointFeature> extraPoints)
+        {
+            // First check for the obvious
+            if (p is PointFeature)
+                return (p as PointFeature);
+
+            // Ensure the supplied position has been rounded to internal resolution
+            IPointGeometry pg = PointGeometry.Create(p);
+
+            // First check the list of extra points
+            foreach (PointFeature x in extraPoints)
+            {
+                if (x.IsCoincident(pg))
+                    return x;
+            }
+
+            // Get the map model to create an extra point if necessary
+            PointFeature result = MapModel.EnsurePointExists(pg, this);
+
+            // If the points was freshly created, assign an ID and add to the list of extra points
+            if (Object.ReferenceEquals(result.Creator, this))
+            {
+                if (result.Id==null)
+                    result.SetNextId();
+
+                extraPoints.Add(result);
+            }
+
+            return result;
         }
 
         /// <summary>
