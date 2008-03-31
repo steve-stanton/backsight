@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
 
@@ -139,12 +140,14 @@ namespace Backsight.Editor
         /// Saves features for this leg.
         /// </summary>
         /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to
-        /// be the position for the end of the leg.</param>
+        /// <param name="createdPoints">Newly created point features</param>
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(PathOperation op, ref IPosition terminal, ref double bearing, double sfac)
+        internal override void Save(PathOperation op, List<PointFeature> createdPoints,
+                                    ref IPosition terminal, ref double bearing, double sfac)
         {
         }
 

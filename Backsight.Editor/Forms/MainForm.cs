@@ -1084,7 +1084,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsPointConnectionPathEnabled()
         {
-            return !m_Controller.IsCommandRunning;
+            return (!m_Controller.IsCommandRunning && ArePointsDrawn);
         }
 
         private void PointConnectionPath(IUserAction action)

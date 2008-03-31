@@ -130,6 +130,9 @@ namespace Backsight.Editor
         /// <returns>True if command started ok.</returns>
         internal override bool Run()
         {
+            // Ensure nothing is currently selected (highlighted)
+            Controller.ClearSelection();
+
             if (!StartUpdate())
                 StartFrom();
 
@@ -166,6 +169,11 @@ namespace Backsight.Editor
             if (m_DialUp!=null)
                 m_DialUp.Render(display);
 
+            if (m_From!=null)
+                m_From.Draw(display, Color.DarkBlue);
+
+            if (m_To!=null)
+                m_To.Draw(display, Color.LightBlue);
         }
 
         /// <summary>
