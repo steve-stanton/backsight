@@ -640,20 +640,27 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(action.Title);
         }
 
+        /// <summary>
+        /// Is the File - Coordinate System command enabled?
+        /// </summary>
+        /// <returns>True (always)</returns>
         private bool IsFileCoordinateSystemEnabled()
         {
             return true;
         }
 
+        /// <summary>
+        /// Displays the dialog the lets the user review the coordinate system of the
+        /// current map model.
+        /// </summary>
+        /// <param name="action">The action that initiated this call</param>
         private void FileCoordinateSystem(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CoordSystemForm dial = new CoordSystemForm();
+            dial.ShowDialog();
+            dial.Dispose();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         private bool IsFileCheckEnabled()
         {
             return (HasMap && !m_Controller.IsChecking);
