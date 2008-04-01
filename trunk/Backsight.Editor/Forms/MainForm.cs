@@ -1510,14 +1510,45 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         #region Text menu
 
+        /// <summary>
+        /// Checks whether the Text - Add Miscellaneous Text command is currently enabled.
+        /// </summary>
+        /// <returns>True if an editing command is not running</returns>
         private bool IsTextAddMiscellaneousTextEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
+        /// <summary>
+        /// Starts the Text - Add Miscellaneous Text command. This involves an initial
+        /// check to confirm that text is currently drawn (if not, the user will be told
+        /// and the command will not be started).
+        /// </summary>
+        /// <param name="action">The action that initiated this call</param>
         private void TextAddMiscellaneousText(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Confirm that text is currently displayed
+            if (!IsTextDrawn)
+            {
+                MessageBox.Show("Text is not currently displayed. Use Edit-Preferences to change the scale at which text will be drawn");
+                return;
+            }
+
+            CommandUI cmd = new NewTextUI(this, action);
+            m_Controller.StartCommand(cmd);
+        }
+
+        /// <summary>
+        /// Are text labels currently drawn to the active display?
+        /// </summary>
+        bool IsTextDrawn
+        {
+            get
+            {
+                CadastralMapModel cmm = m_Controller.CadastralMapModel;
+                ISpatialDisplay display = m_Controller.ActiveDisplay;
+                return (display!=null && display.MapScale <= cmm.ShowLabelScale);
+            }
         }
 
         private bool IsTextAddPolygonLabelsEnabled()
