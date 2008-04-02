@@ -131,7 +131,7 @@ namespace Backsight.Editor
         bool m_AutoNumber;
 
         /// <summary>
-        /// Scale denominator at which labels will start to be drawn.
+        /// Scale denominator at which labels (text) will start to be drawn.
         /// </summary>
         double m_ShowLabelScale;
 
@@ -373,18 +373,27 @@ namespace Backsight.Editor
             set { m_AreIntersectionsDrawn = value; }
         }
 
+        /// <summary>
+        /// Scale denominator at which labels (text) will start to be drawn.
+        /// </summary>
         internal double ShowLabelScale
         {
             get { return m_ShowLabelScale; }
             set { m_ShowLabelScale = value; }
         }
 
+        /// <summary>
+        /// Default rotation angle for text (in radians).
+        /// </summary>
         internal double DefaultTextRotation
         {
             get { return m_Rotation; }
             set { m_Rotation = value; }
         }
 
+        /// <summary>
+        /// The nominal map scale, for use in converting the size of fonts.
+        /// </summary>
         internal uint NominalMapScale
         {
             get { return m_MapScale; }
