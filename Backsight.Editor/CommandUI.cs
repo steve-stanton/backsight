@@ -257,7 +257,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Ensures cursor is the "normal" arrow cursor.
         /// </summary>
-        void SetNormalCursor()
+        protected void SetNormalCursor()
         {
             Cursor.Current = Cursors.Default;
         }

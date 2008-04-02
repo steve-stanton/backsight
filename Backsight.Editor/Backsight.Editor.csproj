@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddLabelUI.cs" />
     <Compile Include="AngleDirection.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttachPointUI.cs" />
@@ -206,6 +207,12 @@
     </Compile>
     <Compile Include="Forms\NewLineContextMenu.designer.cs">
       <DependentUpon>NewLineContextMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewTextForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewTextForm.Designer.cs">
+      <DependentUpon>NewTextForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\PathForm.cs">
       <SubType>Form</SubType>
