@@ -132,7 +132,7 @@ namespace Backsight.Editor
             SetNormalCursor();
 
             // Display dialog to get info.
-            NewTextForm dial = new NewTextForm();
+            NewTextForm dial = new NewTextForm(null);
             if (dial.ShowDialog() != DialogResult.OK)
             {
                 dial.Dispose();
@@ -141,7 +141,7 @@ namespace Backsight.Editor
             }
 
             // Pick up the entered text and its entity type
-            m_NewText = dial.GetText();
+            m_NewText = dial.EnteredText;
             IEntity ent = dial.EntityType;
 
             // All done with dialog
