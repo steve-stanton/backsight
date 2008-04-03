@@ -772,6 +772,10 @@
       <DependentUpon>NewPointForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewTextForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewTextForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\NtxImportForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NtxImportForm.cs</DependentUpon>
