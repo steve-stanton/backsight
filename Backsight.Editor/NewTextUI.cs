@@ -15,6 +15,7 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 using Backsight.Editor.Forms;
 using Backsight.Forms;
@@ -111,16 +112,6 @@ namespace Backsight.Editor
             get { return false; }
         }
 
-        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        internal override bool Update(TextFeature label)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         /// <summary>
         /// Gets the information relating to a single new item of text. It gets re-called
         /// after each piece of text has been positioned.
@@ -170,110 +161,106 @@ namespace Backsight.Editor
             SetCommandCursor();
             return true;
         }
-        /*		
-//	@mfunc	Handle mouse-move.
-//
-//	@parm	The new position of the mouse, in logical units.
-//
-//////////////////////////////////////////////////////////////////////
 
-void CuiNewText::MouseMove ( const CPoint& lpt ) {
+        /// <summary>
+        /// Handles mouse-move.
+        /// </summary>
+        /// <param name="p">The new position of the mouse</param>
+        internal override void MouseMove(IPosition p)
+        {
+            // If we previously drew a text outline, erase it now.
+            EraseRect();
 
-	// If we previously drew a text outline, erase it now.
-	EraseRect();
+            // Draw a rectangle representing the outline of the text.
+            DrawRect(p);
+        }
 
-	// Get the position in ground units.
-	CeVertex pos;
-	GetpWnd()->LPToGround(lpt,&pos);
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>True (always), indicating that something was done.</returns>
+        internal override bool LButtonDown(IPosition p)
+        {
+            // Erase any text outline.
+            EraseRect();
 
-	// Draw a rectangle representing the outline of the text.
-	DrawRect(pos);
+            // Add a new label.
+            TextFeature label = AddNewLabel(p, null);
 
-} // end of MouseMove
+            // Draw it.
+            if (label!=null)
+                label.Draw(ActiveDisplay, Color.Black);
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	React to selection of the OK button in the dialog.
-//
-//	@parm	The dialog window (needed because of definition of
-//			pure virtual in CuiCommand). Not used.
-//
-//////////////////////////////////////////////////////////////////////
+            // Tell the base class.
+            OnLabelAdd();
 
-LOGICAL CuiNewText::DialFinish ( CWnd* pWnd ) {
+            // Get the info for the next piece of text.
+            GetLabelInfo();
 
-	// Ensure any text outline has been erased.
-	EraseRect();
+            return true;
+        }
 
-	// Get the base class to finish up.
-	return FinishCommand();
+        /// <summary>
+        /// Creates any applicable context menu
+        /// </summary>
+        /// <returns>The context menu for this command.</returns>
+        internal override ContextMenuStrip CreateContextMenu()
+        {
+            return new NewTextContextMenu(this);
+        }
 
-} // end of DialFinish
+        /// <summary>
+        /// Handles the context menu "Horizontal" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void ToggleHorizontal(IUserAction action)
+        {
+            // Toggle the horizontal text option.
+            m_IsHorizontal = !m_IsHorizontal;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Handle left mouse click.
-//
-//	@parm	The position where the left-click occurred, in logical
-//			units.
-//
-//////////////////////////////////////////////////////////////////////
+            // If text is currently horizontal, revert to any rotation
+            // angle that applies when the command was constructed.
 
-void CuiNewText::LButtonDown ( const CPoint& lpt ) {
+            double rot = m_Rotation;
+            if (m_IsHorizontal)
+                rot = 0.0;
 
-	// Erase any text outline.
-	EraseRect();
+            SetRotation(rot);
+        }
 
-	// Add a new label.
-	CeVertex pos;
-	GetpWnd()->LPToGround(lpt,&pos);
-	CeLabel* pLabel = AddNewLabel(pos);
+        /// <summary>
+        /// Is the "Horizontal" menuitem checked in this UI's context menu?
+        /// </summary>
+        internal bool IsHorizontalChecked
+        {
+            get { return m_IsHorizontal; }
+        }
 
-	// Draw it.
-	if ( pLabel ) GetpWnd()->Draw(pLabel,COL_BLACK);
+        /// <summary>
+        /// Is the "Horizontal" menuitem enabled in this UI's context menu?
+        /// </summary>
+        internal bool IsHorizontalEnabled
+        {
+            get { return (Math.Abs(m_Rotation) > MathConstants.TINY); }
+        }
 
-	// Tell the base class.
-	OnLabelAdd();
+        internal void SetSizeFactor(IUserAction action)
+        {
+            TextSizeAction tsa = (TextSizeAction)action;
+        }
 
-	// Get the info for the next piece of text.
-	GetLabelInfo();
+        /// <summary>
+        /// Handles the context menu "Cancel" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void Cancel(IUserAction action)
+        {
+            DialFinish(null);
+        }
 
-} // end of LButtonDown					   } 
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Handle right mouse click.
-//
-//	@parm	The position where the right-click occurred, in
-//			logical units.
-//
-//	@rdesc	TRUE (always)
-//
-//////////////////////////////////////////////////////////////////////
-
+        /*
 LOGICAL CuiNewText::RButtonDown ( const CPoint& lpt ) {
-
-	// Display sub-menu shown while adding new labels, routing
-	// any WM_COMMAND messages back to the window of the session.
-
-	CMenu menu;
-	menu.LoadMenu(IDR_CURSOR_MENU);
-
-	// Get the sub-menu.
-	CMenu* pMenu = menu.GetSubMenu(7);
-	if ( !pMenu ) return FALSE;
-
-	// Convert logical units into screen coordinates.
-	CPoint point;
-	LPToScreen(lpt,point);
-
-	// Set or clear horizontal text option, depending on what
-	// the current rotation is.
-
-	if ( m_IsHorizontal )
-		pMenu->CheckMenuItem(ID_HORIZONTAL,MF_CHECKED|MF_BYCOMMAND);
-	else
-		pMenu->CheckMenuItem(ID_HORIZONTAL,MF_UNCHECKED|MF_BYCOMMAND);
 
 	// If there was no rotation to start with, disable the option.
 	if ( fabs(m_Rotation)<TINY )
@@ -305,11 +292,6 @@ LOGICAL CuiNewText::RButtonDown ( const CPoint& lpt ) {
 LOGICAL CuiNewText::Dispatch ( const INT4 id ) {
 
 	switch ( id ) {
-
-	case ID_FINISH: {
-		DialFinish(0);
-		return TRUE;
-	}
 	
 	case ID_HORIZONTAL: {
 
@@ -351,20 +333,21 @@ INT4 CuiNewText::GetCursorId ( void ) const {
 
 	return IDC_REVERSE_ARROW;
 }
+*/
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Create a new item of text in the map.
-//
-//	@parm	Reference position for the text.
-//	@parm	An old label that's being replaced. Should always
-//			be NULL. Default=NULL. This appears only because
-//			of the pure virtual definition in CuiAddLabel.
-//
-//	@rdesc	Pointer to the CeLabel feature that was added.
-//
-//////////////////////////////////////////////////////////////////////
-
+        /// <summary>
+        /// Creates a new item of text in the map.
+        /// </summary>
+        /// <param name="posn">Reference position for the text.</param>
+        /// <param name="oldLabel">An old label that's being replaced. Should always
+        /// be NULL. Default=NULL. This appears only because of the abstract definition
+        /// in AddLabelUI.</param>
+        /// <returns>The feature that was added.</returns>
+        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        {
+            throw new Exception("NewTextUI.AddNewLabel");
+        }
+        /*
 CeLabel* CuiNewText::AddNewLabel ( const CeVertex& posn
 								 , CeLabel* pOldLabel ) {
 
@@ -399,66 +382,58 @@ CeLabel* CuiNewText::AddNewLabel ( const CeVertex& posn
 	return pSave->GetpLabel();
 
 } // end of AddNewLabel
+        */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Update a previously added item of text.
-//
-//	@parm	The previously added text.
-//
-//	@rdesc	TRUE if an update was made.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Update a previously added item of text.
+        /// </summary>
+        /// <param name="label">The previously added text.</param>
+        /// <returns>TRUE if an update was made.</returns>
+        internal override bool Update(TextFeature label)
+        {
+            // The label MUST be miscellaneous text.
+            MiscText text = (label.TextGeometry as MiscText);
+            if (text==null)
+                throw new Exception("Can only update miscellaneous text.");
 
-#include "CeMiscText.h"
+            // Display dialog to get info.
+            NewTextForm dial = new NewTextForm(label);
+            if (dial.ShowDialog() != DialogResult.OK)
+            {
+                dial.Dispose();
+                return false;
+            }
 
-LOGICAL CuiNewText::Update ( CeLabel& label ) {
+            // Confirm that the entity type has been specified.
+            IEntity ent = dial.EntityType;
+            if (ent==null)
+            {
+                MessageBox.Show("Text type must be specified.");
+                return false;
+            }
 
-	// The label MUST be miscellaneous text.
-	CeMiscText* pText =
-		dynamic_cast<CeMiscText*>(label.GetpText());
-	if ( !pText ) {
-		ShowMessage("Can only update miscellaneous text.");
-		return FALSE;
-	}
+            // Confirm that the new text is defined.
+            m_NewText = dial.EnteredText.Trim();
+            if (m_NewText.Length==0)
+            {
+                MessageBox.Show("You cannot delete text this way.");
+                return false;
+            }
 
-	// Display dialog to get info.
-	CdNewText dial(&label);
-	if ( dial.DoModal()!=IDOK ) return FALSE;
+            // Erase the current text.
+            //pText->Erase();
 
-	// Confirm that the entity type has been specified.
-	const CeEntity* const pEnt = dial.GetpEntity();
-	if ( !pEnt ) {
-		ShowMessage("Text type must be specified.");
-		return FALSE;
-	}
+            // Set the new text (this removes the old text from the
+            // spatial index, changes the text, and re-indexes).
+            text.SetText(label, m_NewText);
 
-	// Confirm that the new text is defined.
-	m_NewText = dial.GetText();
-	m_NewText.TrimLeft();
-	m_NewText.TrimRight();
+            // Change the text's entity type.
+            if (ent.Id != label.EntityType.Id)
+                label.EntityType = ent;
 
-	if ( m_NewText.IsEmpty() ) {
-		ShowMessage("You cannot delete text this way.");
-		return FALSE;
-	}
-
-	// Erase the current text.
-	pText->Erase();
-
-	// And set the new text (this removes the old text from the
-	// spatial index, changes the text, and re-indexes).
-	pText->SetText(m_NewText);
-
-	// Change the text's entity type.
-	if ( label.GetpEntity()!=pEnt ) label.SetEntity(*pEnt);
-
-	// Redraw the text.
-	pText->Draw(COL_BLACK);
-
-	return TRUE;
-
-} // end of Update
-         */
+            // Redraw the text.
+            label.Draw(ActiveDisplay, Color.Black);
+            return true;
+        }
     }
 }

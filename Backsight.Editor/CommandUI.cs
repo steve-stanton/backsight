@@ -140,7 +140,6 @@ namespace Backsight.Editor
 
         abstract internal void LButtonUp(IPosition p);
         abstract internal void LButtonDblClick(IPosition p);
-        abstract internal bool RButtonDown(IPosition p);
         abstract internal void DialAbort(Control wnd);
         abstract internal bool DialFinish(Control wnd);
 
@@ -154,7 +153,7 @@ namespace Backsight.Editor
         //abstract internal bool Dispatch(int id);
 
         /// <summary>
-        /// Creates any applioable context menu
+        /// Creates any applicable context menu
         /// </summary>
         /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
         abstract internal ContextMenuStrip CreateContextMenu();

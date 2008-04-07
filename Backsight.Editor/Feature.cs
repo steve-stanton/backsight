@@ -256,6 +256,13 @@ namespace Backsight.Editor
         public IEntity EntityType
         {
             get { return m_What; }
+            set
+            {
+                if (value==null)
+                    throw new ArgumentNullException();
+
+                m_What = MapModel.GetRegisteredEntityType(value);
+            }
         }
 
         /// <summary>

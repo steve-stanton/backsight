@@ -111,9 +111,9 @@ namespace Backsight.Editor
                 return;
 
             // Draw the outline of the label.
-            IPosition[] corners = GetCorners(refpos);
-            IDrawStyle style = new DrawStyle();
-            style.Render(ActiveDisplay, corners);
+            IPosition[] outline = GetOutline(refpos);
+            IDrawStyle style = new DrawStyle(); // black
+            style.Render(ActiveDisplay, outline);
 
             // If doing auto-angle stuff, draw an additional line
             // at the position used to search for candidate lines
@@ -142,7 +142,7 @@ namespace Backsight.Editor
         /// <param name="refpos">The reference position for the label.</param>
         /// <returns>Array of 5 positions. The first and last positions refer to the top-left corner
         /// of the first character of the text string. The rest appear in clockwise order.</returns>
-        protected IPosition[] GetCorners(IPosition refpos)
+        protected IPosition[] GetOutline(IPosition refpos) // was GetCorners, which returned only 4 positions
         {
             IPosition[] result = new IPosition[5];
             result[0] = refpos;
@@ -390,6 +390,17 @@ protected LOGICAL CuiAddLabel::SetSizeId ( const INT4 id ) {
                 ISpatialDisplay display = ActiveDisplay;
                 return (display!=null && display.MapScale <= cmm.ShowLabelScale);
             }
+        }
+
+        /// <summary>
+        /// Reacts to action that concludes the command dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window where the action originated (not used)</param>
+        /// <returns>True if command finished ok. This implementation returns the
+        /// result of a call to <see cref="FinishCommand"/>.</returns>
+        internal override bool DialFinish(Control wnd)
+        {
+            return FinishCommand();
         }
     }
 }
