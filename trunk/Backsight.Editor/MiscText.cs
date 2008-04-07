@@ -26,7 +26,7 @@ namespace Backsight.Editor
     {
         #region Class data
 
-        private readonly string m_Text;
+        private string m_Text;
 
         #endregion
 
@@ -56,25 +56,24 @@ namespace Backsight.Editor
         public override string Text
         {
             get { return m_Text; }
+        }
 
-            /*
-            set
-            {
-	            // If we already have some text, remove it from the spatial
-	            // index, and then get rid of the string.
-            	if (!String.IsNullOrEmpty(m_Text))
-                {
-                    TextGeometry.RemoveIndex();
-                    m_Text = null;
-                }
+        internal void SetText(string s)
+        {
+            m_Text = s;
+        }
 
-                if (value!=null && value.Length>0)
-                {
-                    m_Text = value;
-                    TextGeometry.AddIndex();
-                }
-            }
-             */
+        /// <summary>
+        /// Changes the text for this object
+        /// </summary>
+        /// <param name="s">The new value for this geometry</param>
+        internal void SetText(TextFeature label, string s)
+        {
+            CadastralMapModel map = label.MapModel;
+            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
+            index.Remove(label);
+            m_Text = s;
+            index.Add(label);
         }
 
         /// <summary>

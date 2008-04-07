@@ -134,16 +134,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Handles right mouse click.
-        /// </summary>
-        /// <param name="p">The position where the right-click occurred.</param>
-        /// <returns>True if handled.</returns>
-        internal override bool RButtonDown(IPosition p)
-        {
-            return false;
-        }
-
-        /// <summary>
         /// Aborts this command by calling <see cref="CommandUI.AbortCommand"/>.
         /// </summary>
         /// <param name="wnd">The currently active control (not used)</param>
@@ -183,7 +173,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates any applioable context menu
+        /// Creates any applicable context menu
         /// </summary>
         /// <returns>Null (always), indicating that this command does not utilize a context menu.</returns>
         internal override ContextMenuStrip CreateContextMenu()

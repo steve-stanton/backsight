@@ -98,7 +98,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(482, 229);
+            this.ClientSize = new System.Drawing.Size(482, 219);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.entityTypeComboBox);
