@@ -115,6 +115,21 @@ namespace Backsight.Forms
             m_DoAction(this);
         }
 
-        public string Title { get { return m_Elements.Title; } }
+        /// <summary>
+        /// The text associated with the first element of the array returned by
+        /// the <see cref="Items"/> property.
+        /// </summary>
+        public string Title
+        {
+            get { return m_Elements.Title; }
+        }
+
+        /// <summary>
+        /// The UI elements relating to the action
+        /// </summary>
+        public ToolStripItem[] Items
+        {
+            get { return m_Elements.Items; }
+        }
     }
 }

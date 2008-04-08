@@ -31,7 +31,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The magnification factor (as a percentage of normal size)
         /// </summary>
-        readonly int m_SizeFactor;
+        readonly uint m_SizeFactor;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Backsight.Editor.Forms
         /// <param name="item">The associated UI element (not null)</param>
         /// <param name="doAction">Delegate that should be called to perform the action (not null)</param>
         /// <param name="sizeFactor">The magnification factor (as a percentage of normal size)</param>
-        internal TextSizeAction(ToolStripItem item, DoAction doAction, int sizeFactor)
+        internal TextSizeAction(ToolStripItem item, DoAction doAction, uint sizeFactor)
             : base(item, doAction)
         {
             m_SizeFactor = sizeFactor;
@@ -54,7 +54,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The magnification factor (as a percentage of normal size)
         /// </summary>
-        internal int SizeFactor
+        internal uint SizeFactor
         {
             get { return m_SizeFactor; }
         }

@@ -31,9 +31,10 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
-        /// A multiplying factor to apply to the text height 
+        /// A multiplying factor to apply to the text height (expressed as a percentage)
         /// </summary>
-        static double s_SizeFactor = 1.0;
+        //static double s_SizeFactor = 1.0;
+        static uint s_SizeFactor = 100;
 
         #endregion
 
@@ -291,59 +292,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Returns the command ID that corresponds to the current size factor
-        /// applied to text dimensions.
+        /// Defines the <see cref="SizeFactor"/> property using the factor in the
+        /// supplied action (which is expected to be an instance of <see cref="TextSizeAction"/>).
         /// </summary>
-        /// <returns>The command ID corresponding to the size factor.</returns>
-        protected int GetSizeId()
+        /// <remarks>This method is used by the context menus created by derived command
+        /// classes (e.g. <see cref="NewTextContextMenu"/>)</remarks>
+        /// <param name="action">The action for defining a new size factor</param>
+        internal void SetSizeFactor(IUserAction action)
         {
-            throw new NotImplementedException("AddLabelUI.GetSizeId");
+            TextSizeAction tsa = (TextSizeAction)action;
+            SetTextSize(tsa.SizeFactor);
         }
-        /*
-protected INT4 CuiAddLabel::GetSizeId ( void ) const {
-
-	if ( fabs(m_SizeFactor-5.00)<TINY ) return ID_TEXT_500;
-	if ( fabs(m_SizeFactor-2.00)<TINY ) return ID_TEXT_200;
-	if ( fabs(m_SizeFactor-1.50)<TINY ) return ID_TEXT_150;
-	if ( fabs(m_SizeFactor-1.00)<TINY ) return ID_TEXT_100;
-	if ( fabs(m_SizeFactor-0.75)<TINY ) return ID_TEXT_75;
-	if ( fabs(m_SizeFactor-0.50)<TINY ) return ID_TEXT_50;
-	if ( fabs(m_SizeFactor-0.25)<TINY ) return ID_TEXT_25;
-
-	return 0;
-
-} // end of GetSizeId
-        */
 
         /// <summary>
-        /// Defines the command ID that corresponds to the current size factor
-        /// applied to text dimensions.
+        /// The multiplying factor to apply to the text height (expressed as a percentage)
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        protected bool SetSizeId(int id)
+        internal uint SizeFactor
         {
-            throw new NotImplementedException("AddLabelUI.SetSizeId");
+            get { return s_SizeFactor; }
         }
-
-        /*
-protected LOGICAL CuiAddLabel::SetSizeId ( const INT4 id ) {
-
-	switch ( id ) {
-
-	case ID_TEXT_500:	SetTextSize(500);	return TRUE;
-	case ID_TEXT_200:	SetTextSize(200);	return TRUE;
-	case ID_TEXT_150:	SetTextSize(150);	return TRUE;
-	case ID_TEXT_100:	SetTextSize(100);	return TRUE;
-	case ID_TEXT_75:	SetTextSize(75);	return TRUE;
-	case ID_TEXT_50:	SetTextSize(50);	return TRUE;
-	case ID_TEXT_25:	SetTextSize(25);	return TRUE;
-	}
-
-	return FALSE;
-
-} // end of SetSizeId
-        */
 
         /// <summary>
         /// Adjusts text size.
@@ -357,7 +324,8 @@ protected LOGICAL CuiAddLabel::SetSizeId ( const INT4 id ) {
             // Remember the new height factor.
             // A factor is used so that the same factor can be remembered
             // for each label that's added during a single editing command.
-            s_SizeFactor = (double)pc / 100.0;
+            //s_SizeFactor = (double)pc / 100.0;
+            s_SizeFactor = pc;
 
             // Redraw the rectangle at the last position.
             DrawRect(m_LastPos);
@@ -368,7 +336,7 @@ protected LOGICAL CuiAddLabel::SetSizeId ( const INT4 id ) {
         /// </summary>
         protected double Width
         {
-            get { return (m_Width * s_SizeFactor); }
+            get { return (m_Width * (double)s_SizeFactor/100.0); }
         }
 
         /// <summary>
@@ -376,7 +344,7 @@ protected LOGICAL CuiAddLabel::SetSizeId ( const INT4 id ) {
         /// </summary>
         protected double Height
         {
-            get { return (m_Height * s_SizeFactor); }
+            get { return (m_Height * (double)s_SizeFactor/100.0); }
         }
 
         /// <summary>

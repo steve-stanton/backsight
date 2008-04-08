@@ -20,6 +20,7 @@ using System.Drawing;
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Environment;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -238,16 +239,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Is the "Horizontal" menuitem enabled in this UI's context menu?
+        /// Is the "Horizontal" menuitem enabled in this UI's context menu (true if the
+        /// default rotation angle at the start of this command was non-horizontal).
         /// </summary>
         internal bool IsHorizontalEnabled
         {
             get { return (Math.Abs(m_Rotation) > MathConstants.TINY); }
-        }
-
-        internal void SetSizeFactor(IUserAction action)
-        {
-            TextSizeAction tsa = (TextSizeAction)action;
         }
 
         /// <summary>
@@ -259,81 +256,13 @@ namespace Backsight.Editor
             DialFinish(null);
         }
 
-        /*
-LOGICAL CuiNewText::RButtonDown ( const CPoint& lpt ) {
-
-	// If there was no rotation to start with, disable the option.
-	if ( fabs(m_Rotation)<TINY )
-		pMenu->EnableMenuItem(ID_HORIZONTAL,MF_GRAYED|MF_BYCOMMAND);
-
-	// And the current size factor.
-	INT4 id = GetSizeId();
-	if ( id ) pMenu->CheckMenuItem(id,MF_CHECKED|MF_BYCOMMAND);
-
-	pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,
-						  point.x,point.y,GetpWnd());
-
-	return TRUE;
-
-} // end of RButtonDown
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Receive a sub-command. These actually get sent down
-//			via the view class, which is reacting to the handling
-//			of <mf CuiNewText::RButtonDown>.
-//
-//	@parm	The ID of the sub-command.
-//
-//	@rdesc	TRUE if sub-command was dispatched.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CuiNewText::Dispatch ( const INT4 id ) {
-
-	switch ( id ) {
-	
-	case ID_HORIZONTAL: {
-
-		// Toggle the horizontal text option.
-		m_IsHorizontal = !m_IsHorizontal;
-
-		// If text is currently horizontal, revert to any rotation
-		// angle that applies when the command was constructed.
-
-		FLOAT8 rot = m_Rotation;
-		if ( m_IsHorizontal ) rot = 0.0;
-		SetRotation(rot);
-
-		return TRUE;
-	}
-
-	case ID_TEXT_500:
-	case ID_TEXT_200:
-	case ID_TEXT_150:
-	case ID_TEXT_100:
-	case ID_TEXT_75:
-	case ID_TEXT_50:
-	case ID_TEXT_25: { return SetSizeId(id); }
-
-	} // end switch
-
-	AfxMessageBox("CuiNewText::Dispatch\nUnexpected sub-command");
-	return FALSE;
-
-} // end of Dispatch
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the ID of the cursor for this command.
-//
-//////////////////////////////////////////////////////////////////////
-
-INT4 CuiNewText::GetCursorId ( void ) const {
-
-	return IDC_REVERSE_ARROW;
-}
-*/
+        /// <summary>
+        /// Ensures the command cursor is shown (the reverse arrow cursor).
+        /// </summary>
+        internal override void SetCommandCursor()
+        {
+            ActiveDisplay.MapPanel.Cursor = EditorResources.ReverseArrowCursor;
+        }
 
         /// <summary>
         /// Creates a new item of text in the map.
@@ -342,47 +271,27 @@ INT4 CuiNewText::GetCursorId ( void ) const {
         /// <param name="oldLabel">An old label that's being replaced. Should always
         /// be NULL. Default=NULL. This appears only because of the abstract definition
         /// in AddLabelUI.</param>
-        /// <returns>The feature that was added.</returns>
+        /// <returns>The feature that was added (null if something went wrong)</returns>
         internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
         {
-            throw new Exception("NewTextUI.AddNewLabel");
+            // Execute the edit
+            NewTextOperation op = null;
+
+            try
+            {
+                op = new NewTextOperation();
+                op.Execute(m_NewText, posn, Height, Entity);
+                return op.Text;
+            }
+
+            catch (Exception ex)
+            {
+                Session.CurrentSession.Remove(op);
+                MessageBox.Show(ex.Message);
+            }
+
+            return null;
         }
-        /*
-CeLabel* CuiNewText::AddNewLabel ( const CeVertex& posn
-								 , CeLabel* pOldLabel ) {
-
-	CeMap* pMap = CeMap::GetpMap();
-
-	// Create an undefined persistent operation.
-	CeNewLabel* pSave = new ( os_database::of(pMap),
-							  os_ts<CeNewLabel>::get() )
-							  CeNewLabel();
-
-	// Tell map a save is starting.
-	pMap->SaveOp(pSave);
-
-	// Execute the operation
-	LOGICAL ok = pSave->Execute	((LPCTSTR)m_NewText
-								,posn
-								,(FLOAT4)GetHeight()
-								,GetEntity());
-
-	// Tell map the save has finished.
-	pMap->SaveOp(pSave,ok);
-
-	// If things failed, delete persistent memory for the op.
-	if ( !ok ) {
-		delete pSave;
-		return 0;
-	}
-
-	// Remember that the map has been changed.
-	SetChanged();
-
-	return pSave->GetpLabel();
-
-} // end of AddNewLabel
-        */
 
         /// <summary>
         /// Update a previously added item of text.
