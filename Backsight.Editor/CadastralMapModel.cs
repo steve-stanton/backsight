@@ -1408,5 +1408,172 @@ namespace Backsight.Editor
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Adds a new miscellaneous text label. 
+        /// </summary>
+        /// <param name="s">The text string.</param>
+        /// <param name="ent">The entity type for the string.</param>
+        /// <param name="vtx">The position of the top-left corner of the first character of the text.</param>
+        /// <param name="height">The height of the text, in meteres on the ground (default=0.0,
+        /// meaning use the default height for annotation).</param>
+        /// <param name="spacing">The spacing of each character, in meters on the ground (default=0.0
+        /// meaning use the default spacing for the default font).</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the
+        /// horizontal (default=0.0).</param>
+        /// <returns>The newly created text</returns>
+        internal TextFeature AddMiscText(string s, IEntity ent, IPosition vtx, double height,
+                                            double spacing, double rotation)
+        {
+            // Create the "geometry"
+            IPointGeometry topLeft = PointGeometry.Create(vtx);
+            MiscText text = new MiscText(s, topLeft, (float)height, (float)spacing, (float)rotation);
+
+            // If an entity type has not been given, get the default entity type for text.
+            IEntity newEnt = ent;
+            if (newEnt==null)
+                newEnt = DefaultTextType;
+
+            if (newEnt==null)
+                throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
+
+            return null;
+        }
+        /*
+	const CeEntity* pNewEnt = pEnt;
+	if ( !pNewEnt ) pNewEnt = this->GetpEntity(ANNOTATION);
+	if ( !pNewEnt ) ShowMessage("CeMap::AddMiscLabel\nUnspecified entity type.");
+
+//	Do standard stuff for adding a label.
+	CeLabel* pLabel = AddLabel(*pText,pNewEnt,0,height,spacing,rotation,0);
+
+	return pLabel;
+
+} // end of AddMiscLabel
+         */
+
+        /*
+//	@attr	private
+//
+//	@mfunc	Generic processing for adding a label.
+//			Does NOT spatially index the label.
+//
+//	@parm	The text for the label.
+//	@parm	The entity type for the label.
+//	@parm	The persistent subtheme to add the label to. Specify
+//			zero to add the label on the current editing theme.
+//	@parm	The height of the text, in metres on the ground (0.0
+//			means use default).
+//	@parm	The spacing of each character, in metres on the ground
+//			(0.0 means use default).
+//	@parm	The clockwise rotation of the text, in radians from
+//			the horizontal.
+//	@parm	The enclosing polygon (if the label is topological, and
+//			if you actually know the polygon). If you're adding
+//			CeFeatureText that refers to the area of an enclosed
+//			polygon, it's better to supply this when the label is
+//			created. Otherwise the spatial index will be initially
+//			populated with the default "unknown" text.
+CeLabel* CeMap::AddLabel ( CeText& text
+						 , const CeEntity* const pEnt
+						 , const CeSubTheme* const pSub
+						 , const FLOAT4 height
+						 , const FLOAT4 spacing
+						 , const FLOAT4 rotation
+						 , CePolygon* pEnc ) {
+
+	// Create the new label.
+
+	CeLabel* pLabel;
+
+	if ( pSub ) {
+		pLabel = new ( os_database::of(this)
+					 , os_ts<CeSubLabel>::get() )
+					   CeSubLabel(text,pEnt,*pSub);
+	}
+	else {
+		pLabel = new ( os_database::of(this)
+					 , os_ts<CeLabel>::get() )
+					   CeLabel(text,pEnt);
+	}
+
+//	Cross-reference the text to the label.
+	text.AddObject(*pLabel);
+
+//	Define the text metrics.
+	text.SetSpacing(spacing);
+	text.SetRotation(rotation);
+
+//	If a height has been explicitly given, use that. If
+//	no height, but we have a default font, use the height
+//	of that font. Otherwise fall back on the height of
+//	line annotations.
+
+	if ( height<TINY ) {
+
+//		If we can, use default font (and height). Otherwise
+//		the text gets the height of line annotation, but
+//		does NOT get a font.
+
+		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
+		{
+			text.SetHeight(((CeEntity*)pEnt)->GetpFont()->GetHeight());
+			text.SetFont(*(((CeEntity*)pEnt)->GetpFont()));
+		}
+		else if ( m_pFont ) {
+			text.SetHeight(m_pFont->GetHeight());
+			text.SetFont(*m_pFont);
+		}
+		else
+			text.SetHeight(FLOAT4(m_LineAnnoHeight));
+	}
+	else {
+
+//		If we have a default font, initialize with that.
+		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
+			text.SetFont(*(((CeEntity*)pEnt)->GetpFont()));
+		else if ( m_pFont ) text.SetFont(*m_pFont);
+
+//		Use the height supplied. If this height is not
+//		consistent with the font (if any), this may cause
+//		a new font to be added to the map.
+		text.SetHeight(height);
+
+	}
+
+//	If an enclosing polygon has been supplied, it must be a topological
+//	label. It could also be feature text representing the area of the
+//	enclosed polygon, so set it before adding to the spatial index.
+	if ( pEnc ) {
+		pLabel->SetTopology(TRUE);
+		pEnc->ClaimLabel(*pLabel);
+	}
+
+	// 21-OCT-99: DON'T spatially index it. In addition to the
+	// above? key text is problematic, since it's possible that
+	// the text has been associated with a label that has not
+	// yet had it's ID assigned. Even if it had been assigned,
+	// CeKeyText::GetText ends up being called, which is more
+	// long-winded (and bug prone) than a technique that does
+	// the indexing using a completed label.
+
+	// If we have just added a label for feature text, and that text
+	// does not know about the feature it refers to, it must be referring
+	// to the label that we just created. Set it now, otherwise when we
+	// go to add it into the spatial index, we could get an error message.
+	// CeFeatureText* pFtext = dynamic_cast<CeFeatureText*>(&text);
+	// if ( pFtext && !pFtext->GetpFeature() )
+	//	 pFtext->SetFeature(pLabel);
+
+	// Add the text to the spatial index.
+	// m_Space.Add(&text);
+
+//	Append the label to the map.
+	m_Labels.AddTail(pLabel);
+
+	return pLabel;
+
+} // end of AddLabel
+         */
     }
 }

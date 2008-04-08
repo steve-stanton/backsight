@@ -241,6 +241,7 @@
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="NewTextUI.cs" />
+    <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
@@ -1006,6 +1007,7 @@
     <Content Include="Resources\LayerIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />
+    <Content Include="Resources\ReverseArrowCursor.cur" />
     <Content Include="Resources\TableDefinitionIcon.ico" />
     <Content Include="Resources\TemplateIcon.ico" />
     <Content Include="Resources\ThemeIcon.ico" />

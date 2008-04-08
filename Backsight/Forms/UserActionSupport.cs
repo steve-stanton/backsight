@@ -24,6 +24,9 @@ namespace Backsight.Forms
     {
         #region Class data
 
+        /// <summary>
+        /// The UI elements relating to the action
+        /// </summary>
         private readonly ToolStripItem[] m_Items;
 
         #endregion
@@ -53,6 +56,10 @@ namespace Backsight.Forms
 
         #endregion
 
+        /// <summary>
+        /// The text associated with the first element of the array returned by
+        /// the <see cref="Items"/> property.
+        /// </summary>
         internal string Title
         {
             get { return m_Items[0].Text; }
@@ -84,6 +91,14 @@ namespace Backsight.Forms
                 foreach (ToolStripItem item in m_Items)
                     item.Enabled = value;
             }
+        }
+
+        /// <summary>
+        /// The UI elements relating to the action
+        /// </summary>
+        internal ToolStripItem[] Items
+        {
+            get { return m_Items; }
         }
 
         internal void SetHandler(EventHandler handler)

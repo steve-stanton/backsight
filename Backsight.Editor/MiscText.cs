@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// A miscellaneous text object
     /// </summary>
     [Serializable]
-    public class MiscText : TextGeometry
+    class MiscText : TextGeometry
     {
         #region Class data
 
@@ -41,8 +41,8 @@ namespace Backsight.Editor
         /// use the default height for annotation).</param>
         /// <param name="spacing">The spacing of each character, in meters on the ground (default=0.0 meaning
         /// use the default spacing for the default font).</param>
-        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal (default=0.0).
-        public MiscText(string text, IPointGeometry topLeft, float height, float spacing, float rotation)
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal (default=0.0).</param>
+        internal MiscText(string text, IPointGeometry topLeft, float height, float spacing, float rotation)
             : base(topLeft, height, spacing, rotation)
         {
             m_Text = text;

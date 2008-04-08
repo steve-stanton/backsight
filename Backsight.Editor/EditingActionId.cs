@@ -39,7 +39,7 @@ namespace Backsight.Editor
         DistIntersect       =13,
         DirDistIntersect    =14,
         NewPoint            =15,
-        NewLabel            =16,
+        NewText             =16,
         MoveLabel           =17,
         Deletion            =18,
         Update              =19,  
