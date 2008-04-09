@@ -215,6 +215,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.nameTextBox);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "LayerForm";
             this.Text = "Layer Definition";
             this.Shown += new System.EventHandler(this.LayerForm_Shown);

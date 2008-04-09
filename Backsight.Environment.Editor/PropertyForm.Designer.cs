@@ -121,6 +121,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "PropertyForm";
             this.Text = "Backsight Property";
             this.Shown += new System.EventHandler(this.PropertyForm_Shown);

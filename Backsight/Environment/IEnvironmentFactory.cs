@@ -34,6 +34,12 @@ namespace Backsight.Environment
         IEditEntity CreateEntity();
 
         /// <summary>
+        /// Creates a new font definition
+        /// </summary>
+        /// <returns>The newly created font definition</returns>
+        IEditFont CreateFont();
+
+        /// <summary>
         /// Creates a new ID group
         /// </summary>
         /// <returns>The newly created ID group</returns>

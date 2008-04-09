@@ -64,6 +64,12 @@
     <Compile Include="EntityForm.Designer.cs">
       <DependentUpon>EntityForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FontForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FontForm.Designer.cs">
+      <DependentUpon>FontForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="IdFormatForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +111,10 @@
     <EmbeddedResource Include="EntityForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>EntityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FontForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FontForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IdFormatForm.resx">
       <DependentUpon>IdFormatForm.cs</DependentUpon>

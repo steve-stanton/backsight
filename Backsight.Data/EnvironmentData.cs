@@ -106,6 +106,13 @@ namespace Backsight.Data
             return row;
         }
 
+        public IEditFont CreateFont()
+        {
+            EnvData.FontRow row = EnvData.FontRow.CreateFontRow(m_Data);
+            row.FontId = ReserveId();
+            return row;
+        }
+
         public IEditIdGroup CreateIdGroup()
         {
             EnvData.IdGroupRow row = EnvData.IdGroupRow.CreateIdGroupRow(m_Data);
@@ -164,6 +171,11 @@ namespace Backsight.Data
         public IEntity[] EntityTypes
         {
             get { return (IEntity[])m_Data.Entity.Select(); }
+        }
+
+        public IFont[] Fonts
+        {
+            get { return (IFont[])m_Data.Font.Select(); }
         }
 
         public IIdGroup[] IdGroups

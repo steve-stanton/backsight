@@ -208,6 +208,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.lblStatic2);
             this.Controls.Add(this.entityNameTextBox);
             this.Controls.Add(this.grpStatic3);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EntityForm";
             this.Text = "Entity Type";
             this.Shown += new System.EventHandler(this.EntityForm_Shown);
