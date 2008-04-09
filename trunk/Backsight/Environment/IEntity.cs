@@ -31,13 +31,45 @@ namespace Backsight.Environment
     /// </summary>
     public interface IEntity : IEnvironmentItem
     {
+        /// <summary>
+        /// The user-perceived name for the entity type - what it signifies in the
+        /// real world (e.g. "Road", "River")
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Can this entity type be associated with a point feature?
+        /// </summary>
         bool IsPointValid { get; }
+
+        /// <summary>
+        /// Can this entity type be associated with a line feature?
+        /// </summary>
         bool IsLineValid { get; }
+
+        /// <summary>
+        /// Can this entity type be associated with a polygon label?
+        /// </summary>
         bool IsPolygonValid { get; }
+
         bool IsPolygonBoundaryValid { get; }
+
+        /// <summary>
+        /// Can this entity type be associated with miscellaneous text?
+        /// Note that while a polygon label is represented by an item of text, it is
+        /// <b>not</b> regarded as "miscellaneous".
+        /// </summary>
         bool IsTextValid { get; }
+
+        /// <summary>
+        /// Checks whether this entity type can be associated with the supplied spatial data type.
+        /// This should end up calling an implementation of an <c>Is*Valid</c> property.
+        /// </summary>
+        /// <param name="t">The type of data to check (could conceivably be a combination
+        /// of types)</param>
+        /// <returns>True if this entity type can be associated with the spatial data type</returns>
         bool IsValid(SpatialType t);
+
         IIdGroup IdGroup { get; }
         ILayer Layer { get; }
     }

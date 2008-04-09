@@ -82,7 +82,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         internal IEntity EntityType
         {
-            get { return null; }
+            get { return m_Entity; }
         }
 
         private void NewTextForm_Shown(object sender, EventArgs e)

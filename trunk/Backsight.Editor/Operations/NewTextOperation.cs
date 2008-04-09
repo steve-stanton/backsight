@@ -280,10 +280,12 @@ LOGICAL CeNewLabel::Execute	( const CeVertex& vtx
         internal void Execute(string trim, IPosition position, double ght, IEntity ent)
         {
             // Add the label.
-            m_NewText = CadastralMapModel.Current.AddMiscText(trim, ent, position, ght, 0.0, 0.0);
+            m_NewText = CadastralMapModel.Current.AddMiscText(this, trim, ent, position, ght, 0.0, 0.0);
 
             // The trim is always non-topological.
             m_NewText.SetTopology(false);
+
+            Complete();
         }
 
 /*

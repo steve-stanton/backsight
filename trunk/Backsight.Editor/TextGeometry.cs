@@ -102,6 +102,7 @@ namespace Backsight.Editor
         public IAngle Rotation
         {
             get { return m_Rotation; }
+            set { m_Rotation = value; }
         }
 
         /// <summary>

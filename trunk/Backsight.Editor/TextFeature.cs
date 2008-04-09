@@ -76,7 +76,7 @@ namespace Backsight.Editor
         /// </param>
         public TextFeature(TextGeometry text, IEntity ent, Operation creator) : base(ent, creator)
         {
-            m_Geom = (TextGeometry)text;
+            m_Geom = text;
             m_Container = null;
         }
 

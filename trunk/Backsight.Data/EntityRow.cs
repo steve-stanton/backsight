@@ -90,16 +90,16 @@ namespace Backsight.Data
 
             public bool IsTextValid
             {
-                get { return (IsText==YES); }
+                get { return (IsText==YES && IsPolygon==NO); }
                 set { IsText = AsString(value); }
             }
 
             public bool IsValid(SpatialType t)
             {
-                return ((t & SpatialType.Point)!=0 && IsPoint==YES ||
-                        (t & SpatialType.Line) !=0 && IsLine==YES ||
-                        (t & SpatialType.Text) !=0 && IsText==YES ||
-                        (t & SpatialType.Polygon)!=0 && IsPolygon==YES);
+                return (((t & SpatialType.Point)!=0 && IsPointValid) ||
+                        ((t & SpatialType.Line) !=0 && IsLineValid) ||
+                        ((t & SpatialType.Text) !=0 && IsTextValid) ||
+                        ((t & SpatialType.Polygon)!=0 && IsPolygonValid));
             }
 
             public IIdGroup IdGroup

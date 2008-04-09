@@ -23,7 +23,7 @@ namespace Backsight.Forms
     /// Some sort of action that the user can initiate. This provides a simple way to group
     /// a menuitem and an associated toolbar button so that their UI state (enabled or disabled)
     /// will always be presented consistently.
-    /// 
+    /// <para/>
     /// This is meant to provide functionality that is comparable to the technique that
     /// was formerly available in old versions of Visual Studio (where multiple UI elements
     /// could be mapped to a single command ID, which could then be associated with specific
@@ -85,8 +85,8 @@ namespace Backsight.Forms
         /// <param name="isActionEnabled">Delegate that can be used to determine if the action should be enabled (null means the
         /// action will always be enabled)</param>
         /// <param name="doAction">Delegate that should be called to perform the action (not null)</param>
-        /// <exception cref="ArgumentNullException">If doAction is null, or the associated UI elements are empty
-        /// or null</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="doAction"/> is null, or the associated
+        /// UI elements are empty or null</exception>
         public UserAction(ToolStripItem[] items, IsActionEnabled isActionEnabled, DoAction doAction)
         {
             if (doAction==null)
@@ -102,34 +102,37 @@ namespace Backsight.Forms
 
         #endregion
 
+        /// <summary>
+        /// Enables or disables associated UI elements, depending on the result of a call
+        /// to the <see cref="IsActionEnabled"/> delegate.
+        /// </summary>
         public void Update()
         {
             m_Elements.Enabled = (m_IsActionEnabled==null ? true : m_IsActionEnabled());
         }
 
-        private void Do(object sender, EventArgs e)
+        /// <summary>
+        /// Event handler delegate used to forward an action to the <see cref="DoAction"/> delegate.
+        /// All UI elements supplied to <c>UserAction</c> constructors will be automatically wired
+        /// to call this method.
+        /// </summary>
+        /// <param name="sender">The thing initiating the action (presumably the UI element). Not used.</param>
+        /// <param name="e">Any event arguments. Not used.</param>
+        /// <remarks>I've never had occasion to use the <c>EventArgs</c>, so they don't get passed on
+        /// (keeps the code a bit tidier). If you ever have a real need for them, you could either
+        /// modify this class so that the EventArgs could be attached to a UserAction. Or derive
+        /// a new class and override this method.</remarks>
+        public virtual void Do(object sender, EventArgs e)
         {
-            // I've never had occasion to use the EventArgs, so don't bother passing them on (keeps
-            // the code a bit tidier). If you ever have a real need for them, it would probably be
-            // best to modify this class so that the EventArgs could be attached to a UserAction.
             m_DoAction(this);
         }
 
         /// <summary>
-        /// The text associated with the first element of the array returned by
-        /// the <see cref="Items"/> property.
+        /// The user-perceived title of this action
         /// </summary>
         public string Title
         {
             get { return m_Elements.Title; }
-        }
-
-        /// <summary>
-        /// The UI elements relating to the action
-        /// </summary>
-        public ToolStripItem[] Items
-        {
-            get { return m_Elements.Items; }
         }
     }
 }
