@@ -18,6 +18,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Environment;
+using Backsight.Data;
+//using System.Xml.Schema;
+//using System.Xml;
+//using System.Xml.Serialization;
 
 namespace Backsight.Editor.Operations
 {
@@ -26,7 +30,8 @@ namespace Backsight.Editor.Operations
     /// Operation to attach a point to a line.
     /// </summary>
     [Serializable]
-    class AttachPointOperation : Operation
+    //[XmlSchemaProvider(GetXmlSchema)]
+    class AttachPointOperation : Operation //, IXmlSerializable
     {
         /// <summary>
         /// The max value stored for <c>m_PositionRatio</c>
@@ -194,6 +199,8 @@ namespace Backsight.Editor.Operations
             // If necessary, assign the new point the next available ID.
             m_Point.SetNextId();
 
+            //WriteXml(); // TEST
+
             // Peform standard completion steps
             Complete();
         }
@@ -205,5 +212,57 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Point; }
         }
+
+        /*
+        internal void WriteXml()
+        {
+            AttachPoint edit = new AttachPoint();
+            edit.EditSequence = EditSequence;
+            edit.Line = m_Line;
+            edit.PositionRatio = m_PositionRatio;
+            edit.Point = m_Point;
+            MapModel.WriteEdit(edit);
+        }
+
+        private const string ns = "http://www.backsight.org";
+
+        public static XmlQualifiedName GetXmlSchema(XmlSchemaSet xs)
+        {
+            // This method is called by the framework to get the schema for this type.
+            // We return an existing schema from disk.
+
+            XmlSerializer schemaSerializer = new XmlSerializer(typeof(XmlSchema));
+            string xsdPath = null;
+            // NOTE: replace the string with your own path.
+            xsdPath = System.Web.HttpContext.Current.Server.MapPath("EditingSchema.xsd");
+            XmlSchema s = (XmlSchema)schemaSerializer.Deserialize(
+                new XmlTextReader(xsdPath), null);
+            xs.XmlResolver = new XmlUrlResolver();
+            xs.Add(s);
+
+            return new XmlQualifiedName("attachPoint", ns);
+        }
+
+
+        #region IXmlSerializable Members
+
+        public XmlSchema GetSchema()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            //writer.WriteAttributeString("positionRatio"
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+         */
     }
 }

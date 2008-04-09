@@ -44,4 +44,15 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="attachPoint">
+    <xs:complexContent>
+      <xs:extension base="mstns:operation">
+        <xs:sequence>
+          <xs:element name="line" type="mstns:dataHandle" minOccurs="1" maxOccurs="1" nillable="false" />
+          <xs:element name="point" type="mstns:dataHandle" maxOccurs="1" minOccurs="1" nillable="false" />
+        </xs:sequence>
+        <xs:attribute name="positionRatio" type="xs:unsignedInt" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 </xs:schema>
