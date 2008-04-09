@@ -30,12 +30,12 @@ namespace Backsight.Environment.Editor
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.propertyGrid = new System.Windows.Forms.DataGridView();
+            this.dgcName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.closeButton = new System.Windows.Forms.Button();
             this.updateButton = new System.Windows.Forms.Button();
             this.newButton = new System.Windows.Forms.Button();
             this.deleteButton = new System.Windows.Forms.Button();
-            this.closeButton = new System.Windows.Forms.Button();
-            this.dgcName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -81,6 +81,36 @@ namespace Backsight.Environment.Editor
             this.propertyGrid.TabIndex = 0;
             this.propertyGrid.DoubleClick += new System.EventHandler(this.propertyGrid_DoubleClick);
             // 
+            // dgcName
+            // 
+            this.dgcName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgcName.DataPropertyName = "Name";
+            this.dgcName.FillWeight = 30F;
+            this.dgcName.HeaderText = "Property";
+            this.dgcName.Name = "dgcName";
+            this.dgcName.ReadOnly = true;
+            // 
+            // dgcValue
+            // 
+            this.dgcValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgcValue.DataPropertyName = "Value";
+            this.dgcValue.FillWeight = 70F;
+            this.dgcValue.HeaderText = "Value";
+            this.dgcValue.Name = "dgcValue";
+            this.dgcValue.ReadOnly = true;
+            // 
+            // closeButton
+            // 
+            this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.closeButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeButton.Location = new System.Drawing.Point(18, 311);
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(75, 23);
+            this.closeButton.TabIndex = 13;
+            this.closeButton.Text = "&Close";
+            this.closeButton.UseVisualStyleBackColor = true;
+            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
+            // 
             // updateButton
             // 
             this.updateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -117,36 +147,6 @@ namespace Backsight.Environment.Editor
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
-            // closeButton
-            // 
-            this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.closeButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.closeButton.Location = new System.Drawing.Point(18, 311);
-            this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(75, 23);
-            this.closeButton.TabIndex = 13;
-            this.closeButton.Text = "&Close";
-            this.closeButton.UseVisualStyleBackColor = true;
-            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
-            // 
-            // dgcName
-            // 
-            this.dgcName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgcName.DataPropertyName = "Name";
-            this.dgcName.FillWeight = 30F;
-            this.dgcName.HeaderText = "Property";
-            this.dgcName.Name = "dgcName";
-            this.dgcName.ReadOnly = true;
-            // 
-            // dgcValue
-            // 
-            this.dgcValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgcValue.DataPropertyName = "Value";
-            this.dgcValue.FillWeight = 70F;
-            this.dgcValue.HeaderText = "Value";
-            this.dgcValue.Name = "dgcValue";
-            this.dgcValue.ReadOnly = true;
-            // 
             // PropertyListForm
             // 
             this.AcceptButton = this.closeButton;
@@ -154,6 +154,7 @@ namespace Backsight.Environment.Editor
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(538, 358);
             this.Controls.Add(this.splitContainer1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "PropertyListForm";
             this.Text = "Properties";
             this.Shown += new System.EventHandler(this.PropertyListForm_Shown);

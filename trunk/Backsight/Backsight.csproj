@@ -48,6 +48,7 @@
     <Compile Include="Environment\EnvironmentContainer.cs" />
     <Compile Include="Environment\IEditControl.cs" />
     <Compile Include="Environment\IEditEntity.cs" />
+    <Compile Include="Environment\IEditFont.cs" />
     <Compile Include="Environment\IEditIdGroup.cs" />
     <Compile Include="Environment\IEditLayer.cs" />
     <Compile Include="Environment\IEditTheme.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Environment\IEnvironmentContainer.cs" />
     <Compile Include="Environment\IEnvironmentFactory.cs" />
     <Compile Include="Environment\IEnvironmentItem.cs" />
+    <Compile Include="Environment\IFont.cs" />
     <Compile Include="Environment\IIdGroup.cs" />
     <Compile Include="Environment\ILayer.cs" />
     <Compile Include="Environment\IProperty.cs" />

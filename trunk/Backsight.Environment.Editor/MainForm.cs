@@ -306,6 +306,8 @@ namespace Backsight.Environment.Editor
             Form dial = null;
             if (m_CurrentType == ItemType.Entity)
                 dial = new EntityForm();
+            else if (m_CurrentType == ItemType.Font)
+                dial = new FontForm();
             else if (m_CurrentType == ItemType.IdGroup)
                 dial = new IdGroupForm();
             else if (m_CurrentType == ItemType.Layer)
@@ -351,6 +353,8 @@ namespace Backsight.Environment.Editor
 
             if (m_CurrentType == ItemType.Entity)
                 dial = new EntityForm((IEditEntity)item);
+            else if (m_CurrentType == ItemType.Font)
+                dial = new FontForm((IEditFont)item);
             else if (m_CurrentType == ItemType.IdGroup)
                 dial = new IdGroupForm((IEditIdGroup)item);
             else if (m_CurrentType == ItemType.Layer)
@@ -405,6 +409,13 @@ namespace Backsight.Environment.Editor
                     break;
                 }
 
+                case ItemType.Font:
+                {
+                    typeName = "font";
+                    RefreshList(m_CurrentType, m_Data.Fonts);
+                    break;
+                }
+
                 case ItemType.IdGroup:
                 {
                     typeName = "ID group";
@@ -443,6 +454,11 @@ namespace Backsight.Environment.Editor
         private void viewEntityTypesMenuItem_Click(object sender, EventArgs e)
         {
             RefreshList(ItemType.Entity);
+        }
+
+        private void viewFontsMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshList(ItemType.Font);
         }
 
         private void viewIdGroupsMenuItem_Click(object sender, EventArgs e)

@@ -189,6 +189,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.formatButton);
             this.Controls.Add(this.groupNameTextBox);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "IdGroupForm";
             this.Text = "ID Group Definition";
             this.Shown += new System.EventHandler(this.IdGroupForm_Shown);

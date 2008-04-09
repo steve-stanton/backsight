@@ -97,6 +97,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.listBox);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "ChecklistForm";
             this.Text = "Select desired item(s)";
             this.Load += new System.EventHandler(this.ChecklistForm_Load);

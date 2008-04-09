@@ -163,6 +163,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.nameTextBox);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "ThemeForm";
             this.Text = "Theme Definition";
             this.Shown += new System.EventHandler(this.ThemeForm_Shown);
