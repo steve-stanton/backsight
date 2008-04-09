@@ -19,12 +19,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
+//using System.Xml.Serialization;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
 using Backsight.Environment;
 using Backsight.Editor.Properties;
 using Backsight.Geometry;
+//using Backsight.Data;
+//using Backsight.Data.Xml;
 
 namespace Backsight.Editor
 {
@@ -667,6 +670,26 @@ namespace Backsight.Editor
                 formatter.Serialize(fs, this);
             }
         }
+
+        /// <summary>
+        /// Exports edit details to an XML file that sits alongside the file holding
+        /// this map model.
+        /// </summary>
+        /// <param name="e">The edit to export</param>
+        //internal void WriteEdit(Edit e)
+        //{
+        //    string fullSpec = m_ModelFileName.Name;
+        //    string dir = Path.GetDirectoryName(fullSpec);
+        //    string name = Path.GetFileNameWithoutExtension(fullSpec);
+        //    string outputName = String.Format("{0}-{1}.xml", name, e.EditSequence);
+        //    string outputSpec = Path.Combine(dir, outputName);
+
+        //    XmlSerializer xs = new XmlSerializer(e.GetType());
+        //    using (StreamWriter sw = File.CreateText(outputSpec))
+        //    {
+        //        xs.Serialize(sw, e);
+        //    }
+        //}
 
         public void Close()
         {

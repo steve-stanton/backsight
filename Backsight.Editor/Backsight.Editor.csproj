@@ -52,6 +52,7 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
+    <Compile Include="DataHandle.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
@@ -237,7 +238,9 @@
     </Compile>
     <Compile Include="GetControlUI.cs" />
     <Compile Include="ICircularLeg.cs" />
+    <Compile Include="IInternalIdFactory.cs" />
     <Compile Include="ILeg.cs" />
+    <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="NewTextUI.cs" />
@@ -267,7 +270,6 @@
     <Compile Include="ConnectionFinder.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CoordinateSystem.cs" />
-    <Compile Include="DataHandle.cs" />
     <Compile Include="DataStub.cs" />
     <Compile Include="DeflectionDirection.cs" />
     <Compile Include="DeletionUI.cs" />
@@ -457,9 +459,7 @@
     </Compile>
     <Compile Include="ICoordinateSystem.cs" />
     <Compile Include="IFeatureDependent.cs" />
-    <Compile Include="IInternalIdFactory.cs" />
     <Compile Include="IIntersectable.cs" />
-    <Compile Include="InternalIdValue.cs" />
     <Compile Include="Intersection.cs" />
     <Compile Include="IntersectionFlag.cs" />
     <Compile Include="IntersectionHelper.cs" />

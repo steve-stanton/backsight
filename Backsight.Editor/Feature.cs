@@ -22,6 +22,7 @@ using System.Drawing.Drawing2D;
 
 using Backsight.Environment;
 using Backsight.Forms;
+using Backsight.Data;
 
 namespace Backsight.Editor
 {
