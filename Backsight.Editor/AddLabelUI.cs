@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Environment;
+using System.Drawing;
 
 namespace Backsight.Editor
 {

@@ -42,11 +42,16 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="item">The associated UI element (not null)</param>
         /// <param name="doAction">Delegate that should be called to perform the action (not null)</param>
-        /// <param name="sizeFactor">The magnification factor (as a percentage of normal size)</param>
-        internal TextSizeAction(ToolStripItem item, DoAction doAction, uint sizeFactor)
+        /// <param name="sizeFactor">The magnification factor associated with the UI element (as a percentage
+        /// of normal size)</param>
+        /// <param name="defaultSizeFactor">The current default magnification factor (this will be compared
+        /// with the supplied <paramref name="sizeFactor"/> to see whether a checkmark should be set alongside
+        /// the supplied UI element)</param>
+        internal TextSizeAction(ToolStripMenuItem item, DoAction doAction, uint sizeFactor, uint defaultSizeFactor)
             : base(item, doAction)
         {
             m_SizeFactor = sizeFactor;
+            item.Checked = (sizeFactor==defaultSizeFactor);
         }
 
         #endregion

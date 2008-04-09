@@ -39,35 +39,19 @@ namespace Backsight.Editor.Forms
 
             new UserAction(ctxHorizontal, ui.ToggleHorizontal);
 
-            // Wrap the size factor menuitems in an array so that we can more
-            // easily set the checkmark below.
-            TextSizeAction[] sizeActions = new TextSizeAction[]
-            {
-                new TextSizeAction(ctx500, ui.SetSizeFactor, 500),
-                new TextSizeAction(ctx200, ui.SetSizeFactor, 200),
-                new TextSizeAction(ctx150, ui.SetSizeFactor, 150),
-                new TextSizeAction(ctx100, ui.SetSizeFactor, 100),
-                new TextSizeAction(ctx75, ui.SetSizeFactor, 75),
-                new TextSizeAction(ctx50, ui.SetSizeFactor, 50),
-                new TextSizeAction(ctx25, ui.SetSizeFactor, 25),
-            };
+            uint sizeFactor = ui.SizeFactor;
+            new TextSizeAction(ctx500, ui.SetSizeFactor, 500, sizeFactor);
+            new TextSizeAction(ctx200, ui.SetSizeFactor, 200, sizeFactor);
+            new TextSizeAction(ctx150, ui.SetSizeFactor, 150, sizeFactor);
+            new TextSizeAction(ctx100, ui.SetSizeFactor, 100, sizeFactor);
+            new TextSizeAction(ctx75, ui.SetSizeFactor, 75, sizeFactor);
+            new TextSizeAction(ctx50, ui.SetSizeFactor, 50, sizeFactor);
+            new TextSizeAction(ctx25, ui.SetSizeFactor, 25, sizeFactor);
 
             new UserAction(ctxCancel, ui.Cancel);
 
             ctxHorizontal.Checked = ui.IsHorizontalChecked;
             ctxHorizontal.Enabled = ui.IsHorizontalEnabled;
-
-            uint sizeFactor = ui.SizeFactor;
-            foreach (TextSizeAction tsa in sizeActions)
-            {
-                if (tsa.SizeFactor == sizeFactor)
-                {
-                    ToolStripItem[] items = tsa.Items;
-                    Debug.Assert(items.Length==1);
-                    (items[0] as ToolStripMenuItem).Checked = true;
-                    break;
-                }
-            }
         }
 
         #endregion

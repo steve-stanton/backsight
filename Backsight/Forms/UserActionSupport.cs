@@ -93,14 +93,6 @@ namespace Backsight.Forms
             }
         }
 
-        /// <summary>
-        /// The UI elements relating to the action
-        /// </summary>
-        internal ToolStripItem[] Items
-        {
-            get { return m_Items; }
-        }
-
         internal void SetHandler(EventHandler handler)
         {
             foreach (ToolStripItem item in m_Items)
