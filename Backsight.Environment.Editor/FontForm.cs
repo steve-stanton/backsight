@@ -47,15 +47,11 @@ namespace Backsight.Environment.Editor
             fontFamilyComboBox.DataSource = fams;
             fontFamilyComboBox.DisplayMember = "Name";
 
-            fontFamilyComboBox.SelectedIndex = 0;
-            fontStyleComboBox.SelectedIndex = 0;
-            sizeComboBox.SelectedIndex = 0;
+            fontFamilyComboBox.SelectedItem = null;
+            fontStyleComboBox.SelectedItem = null;
+            sizeComboBox.SelectedItem = null;
 
-            fontFamilyComboBox.Text = fontFamilyComboBox.SelectedText;
-            fontStyleComboBox.Text = fontStyleComboBox.SelectedText;
-            sizeComboBox.Text = sizeComboBox.SelectedText;
-
-            if (m_Edit.Id!=0)
+            if (!String.IsNullOrEmpty(m_Edit.TypeFace))
             {
                 fontFamilyComboBox.SelectedItem = Array.Find<FontFamily>(fams,
                     delegate(FontFamily ff) { return ff.Name==m_Edit.TypeFace; });
@@ -81,10 +77,6 @@ namespace Backsight.Environment.Editor
                     sizeComboBox.Text = s;
                 }
             }
-
-            fontFamilyComboBox.Text = fontFamilyComboBox.SelectedText;
-            fontStyleComboBox.Text = fontStyleComboBox.SelectedText;
-            sizeComboBox.Text = sizeComboBox.SelectedText;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -96,7 +88,45 @@ namespace Backsight.Environment.Editor
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            m_Edit.TypeFace = fontFamilyComboBox.Text;
+            // Confirm font is defined
+            string familyName = fontFamilyComboBox.Text;
+            if (String.IsNullOrEmpty(familyName))
+            {
+                MessageBox.Show("You must specify a font");
+                fontFamilyComboBox.Focus();
+                return;
+            }
+
+            // If the style or size is unspecified, use the first item
+            string fontStyle = fontStyleComboBox.Text;
+            if (String.IsNullOrEmpty(fontStyle))
+                fontStyle = fontStyleComboBox.Items[0].ToString();
+
+            string sizeString = sizeComboBox.Text;
+            if (String.IsNullOrEmpty(sizeString))
+                sizeString = sizeComboBox.Items[0].ToString();
+
+            // Confirm the text for the font family agrees with one of the
+            // installed fonts
+            FontFamily[] fams = FontFamily.Families;
+            FontFamily fam = Array.Find<FontFamily>(fams, delegate(FontFamily ff)
+                                { return String.Compare(familyName, ff.Name, true)==0; });
+            if (fam == null)
+            {
+                MessageBox.Show("Cannot locate entered font name");
+                fontFamilyComboBox.Focus();
+                return;
+            }
+
+            float size;
+            if (!Single.TryParse(sizeString, out size))
+            {
+                MessageBox.Show("Cannot parse font size");
+                sizeComboBox.Focus();
+                return;
+            }
+
+            m_Edit.TypeFace = fam.Name;
 
             string fs = fontStyleComboBox.Text;
             if (fs == "Regular")
@@ -108,12 +138,6 @@ namespace Backsight.Environment.Editor
             else if (fs == "Bold Italic")
                 m_Edit.Modifiers = (FontStyle.Bold | FontStyle.Italic);
 
-            float size;
-            if (!Single.TryParse(sizeComboBox.Text, out size))
-            {
-                MessageBox.Show("Cannot parse font size");
-                return;
-            }
             m_Edit.PointSize = size;
 
             m_Edit.FinishEdit();

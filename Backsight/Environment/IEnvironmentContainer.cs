@@ -75,6 +75,11 @@ namespace Backsight.Environment
         IEntity[] EntityTypes { get; }
 
         /// <summary>
+        /// All defined font descriptions
+        /// </summary>
+        IFont[] Fonts { get; }
+
+        /// <summary>
         /// All defined ID groups
         /// </summary>
         IIdGroup[] IdGroups { get; }

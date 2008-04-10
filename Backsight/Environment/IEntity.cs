@@ -72,5 +72,6 @@ namespace Backsight.Environment
 
         IIdGroup IdGroup { get; }
         ILayer Layer { get; }
+        IFont Font { get; }
     }
 }

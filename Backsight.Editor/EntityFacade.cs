@@ -79,5 +79,10 @@ namespace Backsight.Editor
         {
             get { return (this.Data==null ? null : this.Data.Layer); }
         }
+
+        public IFont Font
+        {
+            get { return (this.Data == null ? null : this.Data.Font); }
+        }
     }
 }
