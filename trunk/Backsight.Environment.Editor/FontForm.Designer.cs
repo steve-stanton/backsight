@@ -41,8 +41,7 @@ namespace Backsight.Environment.Editor
             // 
             // cancelButton
             // 
-            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(433, 63);
+            this.cancelButton.Location = new System.Drawing.Point(430, 63);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 21;
@@ -52,11 +51,10 @@ namespace Backsight.Environment.Editor
             // 
             // okButton
             // 
-            this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(433, 34);
+            this.okButton.Location = new System.Drawing.Point(430, 34);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 20;
+            this.okButton.TabIndex = 3;
             this.okButton.Text = "OK";
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
@@ -72,15 +70,19 @@ namespace Backsight.Environment.Editor
             // 
             // fontFamilyComboBox
             // 
+            this.fontFamilyComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.fontFamilyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.fontFamilyComboBox.FormattingEnabled = true;
             this.fontFamilyComboBox.Location = new System.Drawing.Point(21, 34);
             this.fontFamilyComboBox.Name = "fontFamilyComboBox";
-            this.fontFamilyComboBox.Size = new System.Drawing.Size(173, 137);
-            this.fontFamilyComboBox.TabIndex = 25;
+            this.fontFamilyComboBox.Size = new System.Drawing.Size(173, 258);
+            this.fontFamilyComboBox.TabIndex = 0;
             // 
             // fontStyleComboBox
             // 
+            this.fontStyleComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.fontStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.fontStyleComboBox.FormattingEnabled = true;
             this.fontStyleComboBox.Items.AddRange(new object[] {
@@ -90,8 +92,8 @@ namespace Backsight.Environment.Editor
             "Bold Italic"});
             this.fontStyleComboBox.Location = new System.Drawing.Point(210, 34);
             this.fontStyleComboBox.Name = "fontStyleComboBox";
-            this.fontStyleComboBox.Size = new System.Drawing.Size(98, 137);
-            this.fontStyleComboBox.TabIndex = 26;
+            this.fontStyleComboBox.Size = new System.Drawing.Size(98, 258);
+            this.fontStyleComboBox.TabIndex = 1;
             // 
             // label2
             // 
@@ -105,6 +107,8 @@ namespace Backsight.Environment.Editor
             // 
             // sizeComboBox
             // 
+            this.sizeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.sizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.sizeComboBox.FormattingEnabled = true;
             this.sizeComboBox.Items.AddRange(new object[] {
@@ -126,8 +130,8 @@ namespace Backsight.Environment.Editor
             "72"});
             this.sizeComboBox.Location = new System.Drawing.Point(320, 34);
             this.sizeComboBox.Name = "sizeComboBox";
-            this.sizeComboBox.Size = new System.Drawing.Size(87, 137);
-            this.sizeComboBox.TabIndex = 28;
+            this.sizeComboBox.Size = new System.Drawing.Size(87, 258);
+            this.sizeComboBox.TabIndex = 2;
             // 
             // label3
             // 
@@ -143,7 +147,7 @@ namespace Backsight.Environment.Editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(529, 186);
+            this.ClientSize = new System.Drawing.Size(522, 320);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.sizeComboBox);
             this.Controls.Add(this.label2);
@@ -152,7 +156,7 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "FontForm";
             this.Text = "Font";
             this.Shown += new System.EventHandler(this.FontForm_Shown);

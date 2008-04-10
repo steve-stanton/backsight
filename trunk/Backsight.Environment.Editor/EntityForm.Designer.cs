@@ -57,6 +57,8 @@ namespace Backsight.Environment.Editor
             this.textCheckbox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.layerComboBox = new System.Windows.Forms.ComboBox();
+            this.fontLabel = new System.Windows.Forms.Label();
+            this.fontComboBox = new System.Windows.Forms.ComboBox();
             this.grpStatic3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,7 +73,7 @@ namespace Backsight.Environment.Editor
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(416, 247);
+            this.cancelButton.Location = new System.Drawing.Point(185, 315);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 19;
@@ -82,7 +84,7 @@ namespace Backsight.Environment.Editor
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(416, 215);
+            this.okButton.Location = new System.Drawing.Point(276, 315);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 18;
@@ -117,14 +119,16 @@ namespace Backsight.Environment.Editor
             // 
             // grpStatic3
             // 
+            this.grpStatic3.Controls.Add(this.fontComboBox);
+            this.grpStatic3.Controls.Add(this.fontLabel);
             this.grpStatic3.Controls.Add(this.boundaryCheckbox);
             this.grpStatic3.Controls.Add(this.labelCheckbox);
             this.grpStatic3.Controls.Add(this.lineCheckbox);
             this.grpStatic3.Controls.Add(this.pointCheckbox);
             this.grpStatic3.Controls.Add(this.textCheckbox);
-            this.grpStatic3.Location = new System.Drawing.Point(120, 163);
+            this.grpStatic3.Location = new System.Drawing.Point(15, 163);
             this.grpStatic3.Name = "grpStatic3";
-            this.grpStatic3.Size = new System.Drawing.Size(242, 117);
+            this.grpStatic3.Size = new System.Drawing.Size(485, 125);
             this.grpStatic3.TabIndex = 22;
             this.grpStatic3.TabStop = false;
             this.grpStatic3.Text = "Valid Geometric Types";
@@ -193,12 +197,31 @@ namespace Backsight.Environment.Editor
             this.layerComboBox.Size = new System.Drawing.Size(380, 21);
             this.layerComboBox.TabIndex = 25;
             // 
+            // fontLabel
+            // 
+            this.fontLabel.AutoSize = true;
+            this.fontLabel.Enabled = false;
+            this.fontLabel.Location = new System.Drawing.Point(240, 86);
+            this.fontLabel.Name = "fontLabel";
+            this.fontLabel.Size = new System.Drawing.Size(28, 13);
+            this.fontLabel.TabIndex = 15;
+            this.fontLabel.Text = "Font";
+            // 
+            // fontComboBox
+            // 
+            this.fontComboBox.Enabled = false;
+            this.fontComboBox.FormattingEnabled = true;
+            this.fontComboBox.Location = new System.Drawing.Point(274, 83);
+            this.fontComboBox.Name = "fontComboBox";
+            this.fontComboBox.Size = new System.Drawing.Size(192, 21);
+            this.fontComboBox.TabIndex = 16;
+            // 
             // EntityForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(528, 311);
+            this.ClientSize = new System.Drawing.Size(528, 362);
             this.Controls.Add(this.layerComboBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.idGroupComboBox);
@@ -213,6 +236,7 @@ namespace Backsight.Environment.Editor
             this.Text = "Entity Type";
             this.Shown += new System.EventHandler(this.EntityForm_Shown);
             this.grpStatic3.ResumeLayout(false);
+            this.grpStatic3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -234,5 +258,7 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.CheckBox textCheckbox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox layerComboBox;
+        private System.Windows.Forms.ComboBox fontComboBox;
+        private System.Windows.Forms.Label fontLabel;
     }
 }

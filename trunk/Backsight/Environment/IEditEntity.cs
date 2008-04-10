@@ -31,5 +31,6 @@ namespace Backsight.Environment
         new bool IsTextValid { get; set; }
         new IIdGroup IdGroup { get; set; }
         new ILayer Layer { get; set; }
+        new IFont Font { get; set; }
     }
 }

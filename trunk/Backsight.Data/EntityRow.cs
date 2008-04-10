@@ -113,6 +113,12 @@ namespace Backsight.Data
                 get { return (LayerId==0 ? null : this.LayerRow); }
                 set { LayerId = (value==null ? 0 : value.Id); }
             }
+
+            public IFont Font
+            {
+                get { return (FontId == 0 ? null : this.FontRow); }
+                set { FontId = (value == null ? 0 : value.Id); }
+            }
         }
     }
 }

@@ -45,6 +45,7 @@ namespace Backsight.Environment.Editor
             IEnvironmentContainer ec = EnvironmentContainer.Current;
             idGroupComboBox.Items.AddRange(ec.IdGroups);
             layerComboBox.Items.AddRange(ec.Layers);
+            fontComboBox.Items.AddRange(ec.Fonts);
 
             IIdGroup g = m_Edit.IdGroup;
             if (g!=null)
@@ -53,6 +54,10 @@ namespace Backsight.Environment.Editor
             ILayer layer = m_Edit.Layer;
             if (layer!=null)
                 layerComboBox.SelectedItem = layer;
+
+            IFont font = m_Edit.Font;
+            if (font != null)
+                fontComboBox.SelectedItem = font;
 
             entityNameTextBox.Text = m_Edit.Name;
             pointCheckbox.Checked = m_Edit.IsPointValid;
@@ -89,6 +94,7 @@ namespace Backsight.Environment.Editor
             m_Edit.IsPolygonValid = labelCheckbox.Checked;
             m_Edit.IdGroup = (IIdGroup)idGroupComboBox.SelectedItem;
             m_Edit.Layer = (ILayer)layerComboBox.SelectedItem;
+            m_Edit.Font = (IFont)fontComboBox.SelectedItem;
 
             m_Edit.FinishEdit();
             this.DialogResult = DialogResult.OK;
@@ -100,6 +106,12 @@ namespace Backsight.Environment.Editor
             labelCheckbox.Enabled = textCheckbox.Checked;
             if (!labelCheckbox.Enabled)
                 labelCheckbox.Checked = false;
+
+            fontLabel.Enabled = textCheckbox.Checked;
+            fontComboBox.Enabled = textCheckbox.Checked;
+
+            if (!fontComboBox.Enabled)
+                fontComboBox.SelectedItem = null;
         }
 
         private void lineCheckbox_CheckedChanged(object sender, EventArgs e)
