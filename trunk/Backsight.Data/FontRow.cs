@@ -29,19 +29,22 @@ namespace Backsight.Data
             /// A user-perceived title for this font.
             /// </summary>
             /// <returns>The type face (font family name), its points size, and
-            /// any modifiers. The result could be supplied to the <c>Font</c>
-            /// constructor that accepts a font title.</returns>
+            /// any modifiers.</returns>
             public override string ToString()
             {
+                if (String.IsNullOrEmpty(TypeFace))
+                    return String.Empty;
+
                 StringBuilder sb = new StringBuilder(100);
 
                 sb.AppendFormat("{0} - {1}", TypeFace, PointSize);
+
                 if (IsBold==YES)
                     sb.Append(" Bold");
                 if (IsItalic == YES)
                     sb.Append(" Italic");
-
-                // Underline was formerly ignored, so that's the way it stays
+                if (IsUnderline==YES)
+                    sb.Append(" Underlined");
 
                 return sb.ToString();
             }
