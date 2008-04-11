@@ -57,6 +57,7 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
+    <Compile Include="FontFacade.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
       <SubType>Form</SubType>
     </Compile>

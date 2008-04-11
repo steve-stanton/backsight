@@ -15,11 +15,11 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Environment;
-using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -223,47 +223,20 @@ namespace Backsight.Editor
                 return false;
             }
 
-            // Get the font for the entity type (it SHOULD be defined).
-            throw new NotImplementedException("AddLabelUI.SetDimensions");
+            // Get the size of the text
+            Size size = TextGeometry.GetDisplaySize(str, m_Entity);
+
+            // Remember the width and height of the text, in ground units (if
+            // we stored logical units, the meaning of the values might change
+            // if the scale changed during label positioning).
+            ISpatialDisplay display = ActiveDisplay;
+            m_Width = display.DisplayToLength((float)size.Width);
+            m_Height = display.DisplayToLength((float)size.Height);
+
+            // Reset the position of the last text outline that was drawn.
+            m_LastPos = null;
+            return true;
         }
-        /*
-	const CeFont* const pCeFont = m_pEntity->GetpFont();
-	if ( !pCeFont ) {
-		AfxMessageBox("CuiAddLabel::GetLabelInfo\nText type has undefined font");
-		DialFinish(0);
-		return FALSE;
-	}
-
-	// Define the MFC font object, assuming horizontal.
-	CFont font;
-	LOGFONT logfont;
-	pCeFont->SetLogFont(logfont);
-	font.CreateFontIndirect(&logfont);
-
-	// Get the dimensions of the annotation, in logical units.
-	CeDraw* pDraw = GetpWnd();
-	CClientDC dc(pDraw);
-	dc.SetTextAlign(TA_TOP|TA_LEFT);
-	dc.SelectObject((CFont*)&font);
-	CSize size = dc.GetTextExtent(str);
-
-	// All done with the font object.
-	dc.SelectObject((CFont*)0);
-	font.DeleteObject();
-
-	// Remember the width and height of the text, in ground units (if
-	// we stored logical units, the meaning of the values might change
-	// if the scale changed during label positioning).
-	m_Width  = pDraw->LPToLength(FLOAT8(size.cx));
-	m_Height = pDraw->LPToLength(FLOAT8(size.cy));
-
-	// Reset the position of the last text outline that was drawn.
-	m_LastPos.Reset();
-
-	return TRUE;
-
-} // end of SetDimensions
-        */
 
         /// <summary>
         /// Resets info when derived class has just added a label.
@@ -370,6 +343,25 @@ namespace Backsight.Editor
         internal override bool DialFinish(Control wnd)
         {
             return FinishCommand();
+        }
+
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Do any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
+        internal override void Paint(PointFeature point)
+        {
+            DrawRect(m_LastPos);
         }
     }
 }

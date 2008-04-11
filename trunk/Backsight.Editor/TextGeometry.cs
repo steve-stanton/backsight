@@ -16,6 +16,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -34,8 +35,7 @@ namespace Backsight.Editor
         /// CadastralMapModel object maintains a list of all the fonts that have been used
         /// by text that appears within the map.
         /// </summary>
-        [NonSerialized] // for now
-        //private ISimpleFont m_Font;
+        private IFont m_Font;
 
         /// <summary>
         /// The average width of characters in the text, in meters on the ground (this
@@ -63,8 +63,9 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        protected TextGeometry(IPointGeometry pos, float height, float spacing, float rotation)
+        protected TextGeometry(IPointGeometry pos, IFont font, float height, float spacing, float rotation)
         {
+            m_Font = font;
             m_Position = pos;
             m_Height = height;
             m_Width = spacing;
@@ -118,12 +119,11 @@ namespace Backsight.Editor
         /// <summary>
         /// The text style
         /// </summary>
-        /*
-        internal ISimpleFont Font
+        internal IFont Font
         {
-
+            get { return m_Font; }
+            set { m_Font = value; }
         }
-        */
 
         public ILength Distance(IPosition point)
         {
@@ -245,8 +245,13 @@ namespace Backsight.Editor
             // reckons angles anti-clockwise.
             //int rotation = -(int)((m_Rotation + extraRotation) * Constants.RADTODEG * 10.0);
 
-            Font f = new Font(FontFamily.GenericSansSerif, heightInPixels, GraphicsUnit.Pixel);
-            return f;
+            if (m_Font==null)
+                return new Font(FontFamily.GenericSansSerif, (float)heightInPixels, FontStyle.Regular, GraphicsUnit.Pixel);
+            else
+                return new Font(m_Font.TypeFace, (float)heightInPixels, m_Font.Modifiers, GraphicsUnit.Pixel);
+
+            //Font f = new Font(FontFamily.GenericSansSerif, heightInPixels, GraphicsUnit.Pixel);
+            //return f;
             /*
             string familyName = (m_Font==null ? "Arial" : m_Font.Name);
             Font f = new Font(familyName, heightInPixels, GraphicsUnit.Pixel);
@@ -318,6 +323,45 @@ namespace Backsight.Editor
                 else
                     return v + Constants.PIDIV2;
             }
+        }
+
+        /// <summary>
+        /// Gets the size of the supplied text (when drawn horizontally)
+        /// </summary>
+        /// <param name="text">The text to obtain size for</param>
+        /// <param name="ent">The entity type for the text</param>
+        /// <returns>The size of the text when rendered on screen</returns>
+        internal static Size GetDisplaySize(string text, IEntity ent)
+        {
+            IFont fontInfo = (ent==null ? null : ent.Font);
+            Font font = GetDisplayFont(fontInfo);
+            return GetDisplaySize(text, font);
+        }
+
+        /// <summary>
+        /// Obtains a graphics font that corresponds to the supplied font info
+        /// </summary>
+        /// <returns>The .NET font</returns>
+        internal static Font GetDisplayFont(IFont fontInfo)
+        {
+            if (fontInfo==null)
+                return new Font(FontFamily.GenericSansSerif, 8.0F);
+            else
+                return new Font(fontInfo.TypeFace, fontInfo.PointSize, fontInfo.Modifiers);
+        }
+
+        /// <summary>
+        /// Gets the size of the supplied text (when drawn horizontally)
+        /// </summary>
+        /// <param name="text">The text to obtain size for</param>
+        /// <param name="font">The font that will be used to render the text</param>
+        /// <returns>The size of the text when rendered on screen</returns>
+        internal static Size GetDisplaySize(string text, Font font)
+        {
+            // Get the dimensions of the annotation, in pixels
+            Size proposedSize = new Size(int.MaxValue, int.MaxValue);
+            return TextRenderer.MeasureText(text, font, proposedSize,
+                (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
         }
     }
 }
