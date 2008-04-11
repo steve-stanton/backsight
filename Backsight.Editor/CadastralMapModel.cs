@@ -217,6 +217,12 @@ namespace Backsight.Editor
         List<LayerFacade> m_Layers;
 
         /// <summary>
+        /// Fonts that have been utilized by the map (stubs that front information
+        /// obtained from the environment database).
+        /// </summary>
+        List<FontFacade> m_Fonts;
+
+        /// <summary>
         /// The ID ranges associated with this map.
         /// </summary>
         readonly List<IdRange> m_IdRanges;
@@ -284,6 +290,7 @@ namespace Backsight.Editor
             m_Sessions = new List<Session>();
             m_Entities = new List<MapEntity>();
             m_Layers = new List<LayerFacade>();
+            m_Fonts = new List<FontFacade>();
             m_IdRanges = new List<IdRange>();
             m_DefaultPointType = null;
             m_DefaultLineType = null;
@@ -631,6 +638,17 @@ namespace Backsight.Editor
             return f;
         }
 
+        FontFacade GetRegisteredFont(IFont font)
+        {
+            FontFacade f = m_Fonts.Find(delegate(FontFacade ff) { return ff.Id==font.Id; });
+            if (f==null)
+            {
+                f = new FontFacade(font);
+                m_Fonts.Add(f);
+            }
+            return f;
+        }
+
         internal MapEntity GetRegisteredEntityType(IEntity entity)
         {
             if (entity==null)
@@ -785,6 +803,9 @@ namespace Backsight.Editor
 
             foreach (LayerFacade f in m_Layers)
                 f.Data = EnvironmentItemFacade<ILayer>.FindById(ec.Layers, f.Id);
+
+            foreach (FontFacade f in m_Fonts)
+                f.Data = EnvironmentItemFacade<IFont>.FindById(ec.Fonts, f.Id);
         }
 
         public ISpatialSystem SpatialSystem
@@ -1451,7 +1472,7 @@ namespace Backsight.Editor
         {
             // Create the "geometry"
             IPointGeometry topLeft = PointGeometry.Create(vtx);
-            MiscText text = new MiscText(s, topLeft, (float)height, (float)spacing, (float)rotation);
+            MiscText text = new MiscText(s, topLeft, ent.Font, (float)height, (float)spacing, (float)rotation);
 
             // If an entity type has not been given, get the default entity type for text.
             IEntity newEnt = ent;

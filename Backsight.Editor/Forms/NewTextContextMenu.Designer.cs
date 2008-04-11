@@ -44,66 +44,66 @@ namespace Backsight.Editor.Forms
             // ctxHorizontal
             // 
             this.ctxHorizontal.Name = "ctxHorizontal";
-            this.ctxHorizontal.Size = new System.Drawing.Size(121, 22);
+            this.ctxHorizontal.Size = new System.Drawing.Size(146, 22);
             this.ctxHorizontal.Text = "Horizontal";
             this.ctxHorizontal.ToolTipText = "Make text horizontal";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(118, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
             // 
             // ctx500
             // 
             this.ctx500.Name = "ctx500";
-            this.ctx500.Size = new System.Drawing.Size(121, 22);
+            this.ctx500.Size = new System.Drawing.Size(146, 22);
             this.ctx500.Text = "500%";
             // 
             // ctx200
             // 
             this.ctx200.Name = "ctx200";
-            this.ctx200.Size = new System.Drawing.Size(121, 22);
+            this.ctx200.Size = new System.Drawing.Size(146, 22);
             this.ctx200.Text = "200%";
             // 
             // ctx150
             // 
             this.ctx150.Name = "ctx150";
-            this.ctx150.Size = new System.Drawing.Size(121, 22);
+            this.ctx150.Size = new System.Drawing.Size(146, 22);
             this.ctx150.Text = "150%";
             // 
             // ctx100
             // 
             this.ctx100.Name = "ctx100";
-            this.ctx100.Size = new System.Drawing.Size(121, 22);
+            this.ctx100.Size = new System.Drawing.Size(146, 22);
             this.ctx100.Text = "100%";
             // 
             // ctx75
             // 
             this.ctx75.Name = "ctx75";
-            this.ctx75.Size = new System.Drawing.Size(121, 22);
+            this.ctx75.Size = new System.Drawing.Size(146, 22);
             this.ctx75.Text = "75%";
             // 
             // ctx50
             // 
             this.ctx50.Name = "ctx50";
-            this.ctx50.Size = new System.Drawing.Size(121, 22);
+            this.ctx50.Size = new System.Drawing.Size(146, 22);
             this.ctx50.Text = "50%";
             // 
             // ctx25
             // 
             this.ctx25.Name = "ctx25";
-            this.ctx25.Size = new System.Drawing.Size(121, 22);
+            this.ctx25.Size = new System.Drawing.Size(146, 22);
             this.ctx25.Text = "25%";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(118, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(143, 6);
             // 
             // ctxCancel
             // 
             this.ctxCancel.Name = "ctxCancel";
-            this.ctxCancel.Size = new System.Drawing.Size(121, 22);
+            this.ctxCancel.Size = new System.Drawing.Size(146, 22);
             this.ctxCancel.Text = "Cancel";
             // 
             // NewTextContextMenu
@@ -120,8 +120,9 @@ namespace Backsight.Editor.Forms
             this.ctx25,
             this.toolStripSeparator2,
             this.ctxCancel});
+            this.ShowCheckMargin = true;
             this.ShowImageMargin = false;
-            this.Size = new System.Drawing.Size(122, 214);
+            this.Size = new System.Drawing.Size(147, 214);
             this.ResumeLayout(false);
 
         }
