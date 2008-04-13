@@ -73,5 +73,25 @@ namespace Backsight.Editor
                 return c;
             }
         }
+
+        internal static Cursor Point1Cursor
+        {
+            get
+            {
+                Cursor c = new Cursor(new MemoryStream(Resources.Point1Cursor));
+                c.Tag = "Point1Cursor";
+                return c;
+            }
+        }
+
+        internal static Cursor Point2Cursor
+        {
+            get
+            {
+                Cursor c = new Cursor(new MemoryStream(Resources.Point2Cursor));
+                c.Tag = "Point2Cursor";
+                return c;
+            }
+        }
     }
 }

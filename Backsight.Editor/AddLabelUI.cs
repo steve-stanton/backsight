@@ -223,8 +223,27 @@ namespace Backsight.Editor
                 return false;
             }
 
+            // The entity type provides the height of the text (in point units)
+            IFont fontInfo = m_Entity.Font;
+            float fontSize = (fontInfo==null ? 10.0F : fontInfo.PointSize);
+
+            // Figure out the ground height at the map's nominal scale
+            uint nominalScale = CadastralMapModel.Current.NominalMapScale;
+            double ht = (double)fontSize * (double)nominalScale * MathConstants.POINTSIZE_TO_METERS;
+
+            // Convert into pixels on the active display
+            float htPixels = ActiveDisplay.LengthToDisplay(ht);
+
+            Font font;
+            if (fontInfo == null)
+                font = new Font(FontFamily.GenericSansSerif, htPixels, FontStyle.Regular, GraphicsUnit.Pixel);
+            else
+                font = new Font(fontInfo.TypeFace, htPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
+
             // Get the size of the text
-            Size size = TextGeometry.GetDisplaySize(str, m_Entity);
+            Size proposedSize = new Size(int.MaxValue, int.MaxValue);
+            Size size = TextRenderer.MeasureText(str, font, proposedSize,
+                (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
 
             // Remember the width and height of the text, in ground units (if
             // we stored logical units, the meaning of the values might change
@@ -244,6 +263,12 @@ namespace Backsight.Editor
         protected void OnLabelAdd()
         {
             m_LastPos = null;
+
+            // Ensure the newly added label is part of the display buffer (this
+            // normally gets called only when a command completes - however, the
+            // commands for adding text may perform several editing operations
+            // before completing).
+            Controller.RefreshAllDisplays();
         }
 
         /// <summary>
