@@ -283,15 +283,23 @@ namespace Backsight.Editor.Forms
             AddAction(ctxLineProperties, null, ShowProperties);
 
             // Text menu...
-            AddAction(new ToolStripItem[] { mnuTextAddMiscellaneousText
-                                          , ctxTextAddMiscellaneousText }, IsTextAddMiscellaneousTextEnabled, TextAddMiscellaneousText);
-            AddAction(new ToolStripItem[] { mnuTextAddPolygonLabels
-                                          , ctxTextAddPolygonLabels
-                                          , toolTextAddPolygonLabels }, IsTextAddPolygonLabelsEnabled, TextAddPolygonLabels);
+            AddEdit(
+                EditingActionId.NewText,
+                new ToolStripItem[] { mnuTextAddMiscellaneousText, ctxTextAddMiscellaneousText },
+                IsTextAddMiscellaneousTextEnabled,
+                TextAddMiscellaneousText);
+            AddEdit(
+                EditingActionId.NewText,
+                new ToolStripItem[] { mnuTextAddPolygonLabels, ctxTextAddPolygonLabels, toolTextAddPolygonLabels },
+                IsTextAddPolygonLabelsEnabled,
+                TextAddPolygonLabels);
             AddAction(new ToolStripItem[] { mnuTextMove
                                           , ctxTextMove }, IsTextMoveEnabled, TextMove);
-            AddAction(new ToolStripItem[] { mnuTextDefaultRotationAngle
-                                          , toolTextDefaultRotationAngle }, IsTextDefaultRotationAngleEnabled, TextDefaultRotationAngle);
+            AddEdit(
+                EditingActionId.SetLabelRotation,
+                new ToolStripItem[] { mnuTextDefaultRotationAngle, toolTextDefaultRotationAngle },
+                IsTextDefaultRotationAngleEnabled,
+                TextDefaultRotationAngle);
             AddAction(ctxTextProperties, null, ShowProperties);
 
             // Polygon menu (only part of context menu)...
@@ -1573,13 +1581,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsTextDefaultRotationAngleEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void TextDefaultRotationAngle(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            CommandUI cmd = new TextRotationUI(this, action);
+            m_Controller.StartCommand(cmd);
         }
+
         #endregion
 
         #region Polygon menu

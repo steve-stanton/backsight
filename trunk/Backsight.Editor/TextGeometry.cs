@@ -200,14 +200,13 @@ namespace Backsight.Editor
 
         public Font CreateFont(ISpatialDisplay display)
         {
-            double ght = (double)this.Height;
+            double ght = (double)m_Height;
             float dht = display.LengthToDisplay(ght);
             int ht = (int)dht;
             if (ht<=0)
                 return null;
 
-            Font f = this.CreateFont(ht, 0.0);
-            return f;
+            return CreateFont(ht, 0.0);
         }
 
         /// <summary>
@@ -330,7 +329,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="text">The text to obtain size for</param>
         /// <param name="ent">The entity type for the text</param>
-        /// <returns>The size of the text when rendered on screen</returns>
+        /// <returns>The size of the text when rendered on screen (in pixels)</returns>
         internal static Size GetDisplaySize(string text, IEntity ent)
         {
             IFont fontInfo = (ent==null ? null : ent.Font);
@@ -345,7 +344,7 @@ namespace Backsight.Editor
         internal static Font GetDisplayFont(IFont fontInfo)
         {
             if (fontInfo==null)
-                return new Font(FontFamily.GenericSansSerif, 8.0F);
+                return new Font(FontFamily.GenericSansSerif, 10.0F);
             else
                 return new Font(fontInfo.TypeFace, fontInfo.PointSize, fontInfo.Modifiers);
         }

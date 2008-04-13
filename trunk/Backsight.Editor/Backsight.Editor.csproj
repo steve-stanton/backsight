@@ -204,6 +204,12 @@
     <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewLabelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewLabelForm.Designer.cs">
+      <DependentUpon>NewLabelForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewLineContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -246,6 +252,7 @@
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
+    <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
@@ -492,6 +499,7 @@
       <DependentUpon>TestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TextCheck.cs" />
+    <Compile Include="TextRotationUI.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
@@ -773,6 +781,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewLabelForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewLabelForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewLineContextMenu.resx">
       <DependentUpon>NewLineContextMenu.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -1007,6 +1019,8 @@
     <Content Include="Resources\FieldDefinitionIcon.ico" />
     <Content Include="Resources\LayerIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
+    <Content Include="Resources\Point1Cursor.cur" />
+    <Content Include="Resources\Point2Cursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />
     <Content Include="Resources\ReverseArrowCursor.cur" />
     <Content Include="Resources\TableDefinitionIcon.ico" />

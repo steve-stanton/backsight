@@ -250,4 +250,10 @@
   <data name="ReverseArrowCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ReverseArrowCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Point1Cursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Point1Cursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Point2Cursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Point2Cursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

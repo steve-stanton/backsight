@@ -39,5 +39,10 @@ namespace Backsight
         /// Multiplier to convert from decimal degrees to radians.
         /// </summary>
         public const double DEGTORAD = PIMUL2/360.0;
+
+        /// <summary>
+        /// Multiplier to convert font pointsize (1/72 inch) to meters
+        /// </summary>
+        public const double POINTSIZE_TO_METERS = 0.000352778;
     }
 }
