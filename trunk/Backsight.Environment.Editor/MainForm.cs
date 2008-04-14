@@ -312,6 +312,8 @@ namespace Backsight.Environment.Editor
                 dial = new IdGroupForm();
             else if (m_CurrentType == ItemType.Layer)
                 dial = new LayerForm();
+            else if (m_CurrentType == ItemType.Schema)
+                dial = new TableForm();
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm();
 
@@ -359,6 +361,8 @@ namespace Backsight.Environment.Editor
                 dial = new IdGroupForm((IEditIdGroup)item);
             else if (m_CurrentType == ItemType.Layer)
                 dial = new LayerForm((IEditLayer)item);
+            else if (m_CurrentType == ItemType.Schema)
+                dial = new TableForm((IEditTable)item);
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm((IEditTheme)item);
 
@@ -430,6 +434,13 @@ namespace Backsight.Environment.Editor
                     break;
                 }
 
+                case ItemType.Schema:
+                {
+                    typeName = "table";
+                    RefreshList(m_CurrentType, m_Data.Tables);
+                    break;
+                }
+
                 case ItemType.Theme:
                 {
                     typeName = "theme";
@@ -469,6 +480,11 @@ namespace Backsight.Environment.Editor
         private void viewLayersMenuItem_Click(object sender, EventArgs e)
         {
             RefreshList(ItemType.Layer);
+        }
+
+        private void viewTablesMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshList(ItemType.Schema);
         }
 
         private void viewThemesMenuItem_Click(object sender, EventArgs e)

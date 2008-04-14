@@ -98,5 +98,10 @@ namespace Backsight.Environment
         /// All defined Backsight properties
         /// </summary>
         IProperty[] Properties { get; }
+
+        /// <summary>
+        /// All database tables associated with the Backsight environment
+        /// </summary>
+        ITable[] Tables { get; }
     }
 }

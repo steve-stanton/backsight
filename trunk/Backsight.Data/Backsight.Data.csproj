@@ -72,6 +72,7 @@
     <Compile Include="PropertyRow.cs" />
     <Compile Include="SchemaDataTable.cs" />
     <Compile Include="SchemaFieldDataTable.cs" />
+    <Compile Include="SchemaRow.cs" />
     <Compile Include="SchemaTemplateDataTable.cs" />
     <Compile Include="SysIdDataTable.cs" />
     <Compile Include="SysIdRow.cs" />

@@ -46,6 +46,12 @@ namespace Backsight.Environment
         IEditIdGroup CreateIdGroup();
 
         /// <summary>
+        /// Creates a new association with a database table
+        /// </summary>
+        /// <returns>The newly created table association</returns>
+        IEditTable CreateTableAssociation();
+
+        /// <summary>
         /// Creates a new theme
         /// </summary>
         /// <returns>The newly created theme</returns>

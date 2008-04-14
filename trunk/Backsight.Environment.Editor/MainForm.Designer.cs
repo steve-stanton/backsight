@@ -54,6 +54,7 @@ namespace Backsight.Environment.Editor
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntityTypesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewFontsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewIdGroupsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewLayersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewThemesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,7 +69,7 @@ namespace Backsight.Environment.Editor
             this.newButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.viewFontsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewTablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -158,6 +159,7 @@ namespace Backsight.Environment.Editor
             this.viewFontsMenuItem,
             this.viewIdGroupsMenuItem,
             this.viewLayersMenuItem,
+            this.viewTablesMenuItem,
             this.viewThemesMenuItem,
             this.toolStripSeparator3,
             this.viewPropertiesMenuItem});
@@ -171,6 +173,13 @@ namespace Backsight.Environment.Editor
             this.viewEntityTypesMenuItem.Size = new System.Drawing.Size(152, 22);
             this.viewEntityTypesMenuItem.Text = "&Entity Types";
             this.viewEntityTypesMenuItem.Click += new System.EventHandler(this.viewEntityTypesMenuItem_Click);
+            // 
+            // viewFontsMenuItem
+            // 
+            this.viewFontsMenuItem.Name = "viewFontsMenuItem";
+            this.viewFontsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewFontsMenuItem.Text = "&Fonts";
+            this.viewFontsMenuItem.Click += new System.EventHandler(this.viewFontsMenuItem_Click);
             // 
             // viewIdGroupsMenuItem
             // 
@@ -318,12 +327,12 @@ namespace Backsight.Environment.Editor
             this.splitContainer2.SplitterDistance = 442;
             this.splitContainer2.TabIndex = 0;
             // 
-            // viewFontsMenuItem
+            // viewTablesMenuItem
             // 
-            this.viewFontsMenuItem.Name = "viewFontsMenuItem";
-            this.viewFontsMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.viewFontsMenuItem.Text = "&Fonts";
-            this.viewFontsMenuItem.Click += new System.EventHandler(this.viewFontsMenuItem_Click);
+            this.viewTablesMenuItem.Name = "viewTablesMenuItem";
+            this.viewTablesMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewTablesMenuItem.Text = "T&ables";
+            this.viewTablesMenuItem.Click += new System.EventHandler(this.viewTablesMenuItem_Click);
             // 
             // MainForm
             // 
@@ -379,6 +388,7 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripMenuItem viewPropertiesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem viewFontsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewTablesMenuItem;
     }
 }
 
