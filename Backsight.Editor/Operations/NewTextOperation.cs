@@ -273,14 +273,16 @@ LOGICAL CeNewLabel::Execute	( const CeVertex& vtx
         /// non-topological trim.
         /// </summary>
         /// <param name="trim">The text of the label.</param>
-        /// <param name="position">The reference position for the label.</param>
-        /// <param name="ght">The height of the new label, in meters on the ground. Specify 0 to
-        /// use the default height for the specified entity type.</param>
         /// <param name="ent">The entity type to assign to the new label (default was null)</param>
-        internal void Execute(string trim, IPosition position, double ght, IEntity ent)
+        /// <param name="position">The reference position for the label.</param>
+        /// <param name="ght">The height of the new label, in meters on the ground.</param>
+        /// <param name="gwd">The width of the new label, in meters on the ground.</param>
+        /// <param name="rot">The clockwise rotation of the text, in radians from the horizontal.</param>
+        internal void Execute(string trim, IEntity ent, IPosition position, double ght, double gwd, double rot)
         {
             // Add the label.
-            m_NewText = CadastralMapModel.Current.AddMiscText(this, trim, ent, position, ght, 0.0, 0.0);
+            CadastralMapModel cmm = MapModel;
+            m_NewText = cmm.AddMiscText(this, trim, ent, position, ght, gwd, rot);
 
             // The trim is always non-topological.
             m_NewText.SetTopology(false);

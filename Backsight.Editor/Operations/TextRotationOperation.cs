@@ -25,49 +25,117 @@ namespace Backsight.Editor.Operations
     class TextRotationOperation : Operation
     {
         #region Class Data
+
+        /// <summary>
+        /// The new default rotation (as a clockwise rotation from horizontal axis (+X), in radians)
+        /// </summary>
+        double m_Rotation;
+
+        /// <summary>
+        /// The previous rotation (used for undo)
+        /// </summary>
+        double m_PrevRotation;
+
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>TextRotationOperation</c> with everything set to zero.
+        /// </summary>
+        internal TextRotationOperation()
+        {
+            m_Rotation = m_PrevRotation = 0.0;
+        }
+
         #endregion
 
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
         public override string Name
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return "Set rotation angle for text"; }
         }
 
+        /// <summary>
+        /// Finds the observed length of a line that was created by this operation.
+        /// </summary>
+        /// <param name="line">The line to find</param>
+        /// <returns>The observed length of the line (null if this operation doesn't
+        /// reference the specified line)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
+        /// <summary>
+        /// The features created by this editing operation.
+        /// </summary>
         internal override Feature[] Features
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return new Feature[0]; }
         }
 
+        /// <summary>
+        /// The unique identifier for this edit.
+        /// </summary>
         internal override EditingActionId EditId
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
 
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
-            throw new Exception("The method or operation is not implemented.");
+            MapModel.DefaultTextRotation = m_PrevRotation;
+            return true;
         }
 
+        /// <summary>
+        /// Rollforward this edit in response to some sort of update.
+        /// </summary>
+        /// <returns>True if operation has been re-executed successfully</returns>
         internal override bool Rollforward()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Rollforward the base class.
+            return base.OnRollforward();
         }
 
+        /// <summary>
+        /// Adds references to existing features referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
         public override void AddReferences()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Do nothing
         }
 
+        /// <summary>
+        /// Executes this edit
+        /// </summary>
+        /// <param name="p1">The first point to be used in orienting the labels.</param>
+        /// <param name="p2">The second point to be used in orienting the labels.</param>
         internal void Execute(IPosition p1, IPosition p2)
         {
-            throw new Exception("The method or operation is not implemented.");
+            m_PrevRotation = MapModel.DefaultTextRotation;
+
+            double dx = p2.X - p1.X;
+            double dy = p2.Y - p1.Y;
+            m_Rotation = Math.Atan2(dx, dy);
+
+            // Text should always read right-to-left
+            if (m_Rotation< 0.0)
+                m_Rotation += MathConstants.PI;
+
+            m_Rotation -= MathConstants.PIDIV2;
+            if (m_Rotation < 0.0)
+                m_Rotation += MathConstants.PIMUL2;
+
+            MapModel.DefaultTextRotation = m_Rotation;
         }
     }
 }

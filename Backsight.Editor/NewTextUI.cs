@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// <summary>
     /// User interface for adding a new item of miscellaneous text.
     /// </summary>
-    class NewTextUI : AddLabelUI, IDisposable
+    class NewTextUI : AddLabelUI
     {
         #region Class data
 
@@ -66,20 +66,6 @@ namespace Backsight.Editor
 	        // we can restore it when the command finishes.
         	m_Rotation = CadastralMapModel.Current.DefaultTextRotation;
 	        m_IsHorizontal = (Math.Abs(m_Rotation) < MathConstants.TINY);
-        }
-
-        #endregion
-
-        #region IDisposable Members
-
-        void IDisposable.Dispose()
-        {
-	        // If a rotation angle was defined when the command started,
-	        // ensure it is still the map's default.
-            // TODO: SS20080402 - I think this should be done elsewhere
-
-	        if ( Math.Abs(m_Rotation) > MathConstants.TINY )
-                CadastralMapModel.Current.DefaultTextRotation = m_Rotation;
         }
 
         #endregion
@@ -174,6 +160,15 @@ namespace Backsight.Editor
 
             // Draw a rectangle representing the outline of the text.
             DrawRect(p);
+        }
+
+        /// <summary>
+        /// Restores the default text rotation that was defined when this command was started.
+        /// </summary>
+        internal override void RestoreTextRotation()
+        {
+            if (Math.Abs(m_Rotation) > MathConstants.TINY)
+                CadastralMapModel.Current.DefaultTextRotation = m_Rotation;
         }
 
         /// <summary>
@@ -280,7 +275,7 @@ namespace Backsight.Editor
             try
             {
                 op = new NewTextOperation();
-                op.Execute(m_NewText, posn, Height, Entity);
+                op.Execute(m_NewText, Entity, posn, Height, Width, Rotation);
                 return op.Text;
             }
 

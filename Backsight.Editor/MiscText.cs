@@ -40,13 +40,11 @@ namespace Backsight.Editor
         /// <param name="text">The text.</param>
         /// <param name="font">Information about the font for the text.</param>
         /// <param name="topLeft">The position of the top-left corner of the first character of the text.</param>
-        /// <param name="height">The height of the text, in meters on the ground (default =0.0, meaning
-        /// use the default height for annotation).</param>
-        /// <param name="spacing">The spacing of each character, in meters on the ground (default=0.0 meaning
-        /// use the default spacing for the default font).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal (default=0.0).</param>
-        internal MiscText(string text, IPointGeometry topLeft, IFont font, float height, float spacing, float rotation)
-            : base(topLeft, font, height, spacing, rotation)
+        internal MiscText(string text, IPointGeometry topLeft, IFont font, double height, double width, float rotation)
+            : base(topLeft, font, height, width, rotation)
         {
             m_Text = text;
         }
