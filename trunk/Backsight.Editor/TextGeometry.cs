@@ -33,14 +33,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The text style (defines the type-face and the height of the text). The enclosing
         /// CadastralMapModel object maintains a list of all the fonts that have been used
-        /// by text that appears within the map.
+        /// by text that appears within the map. If null, the system's default font will be used.
         /// </summary>
         private IFont m_Font;
 
         /// <summary>
-        /// The average width of characters in the text, in meters on the ground (this
-        /// will be zero if there's only one character in the text -- should perhaps
-        /// change this so that it's worked out once and for all).
+        /// The total width of the text, in meters on the ground.
         /// </summary>
         private float m_Width;
         
@@ -63,12 +61,12 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        protected TextGeometry(IPointGeometry pos, IFont font, float height, float spacing, float rotation)
+        protected TextGeometry(IPointGeometry pos, IFont font, double height, double width, float rotation)
         {
             m_Font = font;
             m_Position = pos;
-            m_Height = height;
-            m_Width = spacing;
+            m_Height = (float)height;
+            m_Width = (float)width;
             m_Rotation = new RadianValue((double)rotation);
         }
 
@@ -91,11 +89,13 @@ namespace Backsight.Editor
         /// <summary>
         /// The spacing between each character in this text object (in meters on the ground)
         /// </summary>
+        /*
         internal float Spacing
         {
             get { return m_Width; }
             set { m_Width = value; }            
         }
+        */
 
         /// <summary>
         /// Clockwise rotation from horizontal
@@ -157,9 +157,10 @@ namespace Backsight.Editor
             {
                 // The following may not hack it... (the original implementation was rather more involved)
                 string text = this.Text;
-                double ght = (double)this.Height;
-                double gwd;
+                double ght = (double)m_Height;
+                double gwd = (double)m_Width;
 
+                /*
                 if (m_Width > Constants.TINY)
                 {
                     gwd = (double)text.Length * (double)m_Width;
@@ -178,7 +179,7 @@ namespace Backsight.Editor
 
                     gwd = ght * ((double)size.Width / (double)size.Height);
                 }
-
+                */
                 double topToBottomBearing = this.VBearing + Constants.PI;
 
                 IPosition[] result = new IPosition[5];
@@ -244,13 +245,9 @@ namespace Backsight.Editor
             // reckons angles anti-clockwise.
             //int rotation = -(int)((m_Rotation + extraRotation) * Constants.RADTODEG * 10.0);
 
-            if (m_Font==null)
-                return new Font(FontFamily.GenericSansSerif, (float)heightInPixels, FontStyle.Regular, GraphicsUnit.Pixel);
-            else
-                return new Font(m_Font.TypeFace, (float)heightInPixels, m_Font.Modifiers, GraphicsUnit.Pixel);
+            IFont fontInfo = (m_Font==null ? FontInfo.Default : m_Font);
+            return new Font(fontInfo.TypeFace, (float)heightInPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
 
-            //Font f = new Font(FontFamily.GenericSansSerif, heightInPixels, GraphicsUnit.Pixel);
-            //return f;
             /*
             string familyName = (m_Font==null ? "Arial" : m_Font.Name);
             Font f = new Font(familyName, heightInPixels, GraphicsUnit.Pixel);
@@ -330,37 +327,15 @@ namespace Backsight.Editor
         /// <param name="text">The text to obtain size for</param>
         /// <param name="ent">The entity type for the text</param>
         /// <returns>The size of the text when rendered on screen (in pixels)</returns>
-        internal static Size GetDisplaySize(string text, IEntity ent)
-        {
-            IFont fontInfo = (ent==null ? null : ent.Font);
-            Font font = GetDisplayFont(fontInfo);
-            return GetDisplaySize(text, font);
-        }
-
-        /// <summary>
-        /// Obtains a graphics font that corresponds to the supplied font info
-        /// </summary>
-        /// <returns>The .NET font</returns>
-        internal static Font GetDisplayFont(IFont fontInfo)
-        {
-            if (fontInfo==null)
-                return new Font(FontFamily.GenericSansSerif, 10.0F);
-            else
-                return new Font(fontInfo.TypeFace, fontInfo.PointSize, fontInfo.Modifiers);
-        }
-
-        /// <summary>
-        /// Gets the size of the supplied text (when drawn horizontally)
-        /// </summary>
-        /// <param name="text">The text to obtain size for</param>
-        /// <param name="font">The font that will be used to render the text</param>
-        /// <returns>The size of the text when rendered on screen</returns>
-        internal static Size GetDisplaySize(string text, Font font)
-        {
-            // Get the dimensions of the annotation, in pixels
-            Size proposedSize = new Size(int.MaxValue, int.MaxValue);
-            return TextRenderer.MeasureText(text, font, proposedSize,
-                (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
-        }
+        //internal static Size GetDisplaySize(string text, IEntity ent)
+        //{
+        //    IFont fontInfo = (ent==null ? null : ent.Font);
+        //    if (fontInfo==null)
+        //        fontInfo = FontInfo.Default;
+        //    Font font = new Font(fontInfo.TypeFace, fontInfo.PointSize, fontInfo.Modifiers);
+        //    Size proposedSize = new Size(int.MaxValue, int.MaxValue);
+        //    return TextRenderer.MeasureText(text, font, proposedSize,
+        //        (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
+        //}
     }
 }

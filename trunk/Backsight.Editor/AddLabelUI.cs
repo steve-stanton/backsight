@@ -225,20 +225,17 @@ namespace Backsight.Editor
 
             // The entity type provides the height of the text (in point units)
             IFont fontInfo = m_Entity.Font;
-            float fontSize = (fontInfo==null ? 10.0F : fontInfo.PointSize);
+            if (fontInfo==null)
+                fontInfo = FontInfo.Default;
 
             // Figure out the ground height at the map's nominal scale
+            float fontSize = fontInfo.PointSize;
             uint nominalScale = CadastralMapModel.Current.NominalMapScale;
             double ht = (double)fontSize * (double)nominalScale * MathConstants.POINTSIZE_TO_METERS;
 
             // Convert into pixels on the active display
             float htPixels = ActiveDisplay.LengthToDisplay(ht);
-
-            Font font;
-            if (fontInfo == null)
-                font = new Font(FontFamily.GenericSansSerif, htPixels, FontStyle.Regular, GraphicsUnit.Pixel);
-            else
-                font = new Font(fontInfo.TypeFace, htPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
+            Font font = new Font(fontInfo.TypeFace, htPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
 
             // Get the size of the text
             Size proposedSize = new Size(int.MaxValue, int.MaxValue);
@@ -269,6 +266,14 @@ namespace Backsight.Editor
             // commands for adding text may perform several editing operations
             // before completing).
             Controller.RefreshAllDisplays();
+        }
+
+        /// <summary>
+        /// The rotation of the text, in radians clockwise from the horizontal (+x) axis 
+        /// </summary>
+        protected double Rotation
+        {
+            get { return m_Rotation; }
         }
 
         /// <summary>
@@ -367,7 +372,16 @@ namespace Backsight.Editor
         /// result of a call to <see cref="FinishCommand"/>.</returns>
         internal override bool DialFinish(Control wnd)
         {
+            RestoreTextRotation();
             return FinishCommand();
+        }
+
+        /// <summary>
+        /// Restores the default text rotation that was defined when this command was started.
+        /// This implementation does nothing. The <see cref="NewTextUI"/> class overrides.
+        /// </summary>
+        internal virtual void RestoreTextRotation()
+        {
         }
 
         /// <summary>

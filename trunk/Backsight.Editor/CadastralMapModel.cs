@@ -1460,19 +1460,17 @@ namespace Backsight.Editor
         /// <param name="s">The text string.</param>
         /// <param name="ent">The entity type for the string.</param>
         /// <param name="vtx">The position of the top-left corner of the first character of the text.</param>
-        /// <param name="height">The height of the text, in meteres on the ground (default=0.0,
-        /// meaning use the default height for annotation).</param>
-        /// <param name="spacing">The spacing of each character, in meters on the ground (default=0.0
-        /// meaning use the default spacing for the default font).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the
         /// horizontal (default=0.0).</param>
         /// <returns>The newly created text</returns>
         internal TextFeature AddMiscText(Operation creator, string s, IEntity ent, IPosition vtx, double height,
-                                            double spacing, double rotation)
+                                            double width, double rotation)
         {
             // Create the "geometry"
             IPointGeometry topLeft = PointGeometry.Create(vtx);
-            MiscText text = new MiscText(s, topLeft, ent.Font, (float)height, (float)spacing, (float)rotation);
+            MiscText text = new MiscText(s, topLeft, ent.Font, height, width, (float)rotation);
 
             // If an entity type has not been given, get the default entity type for text.
             IEntity newEnt = ent;
@@ -1483,7 +1481,7 @@ namespace Backsight.Editor
                 throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
 
             // Do standard stuff for adding a label.
-            return AddLabel(creator, text, newEnt, height, spacing, rotation, null);
+            return AddLabel(creator, text, newEnt, null);
         }
 
         /// <summary>
@@ -1492,19 +1490,12 @@ namespace Backsight.Editor
         /// <param name="creator">The editing operation creating the text</param>
         /// <param name="text">The text for the label.</param>
         /// <param name="ent">The entity type for the label.</param>
-        /// <param name="height">The height of the text, in meteres on the ground (default=0.0,
-        /// meaning use the default height for annotation).</param>
-        /// <param name="spacing">The spacing of each character, in meters on the ground (default=0.0
-        /// meaning use the default spacing for the default font).</param>
-        /// <param name="rotation">The clockwise rotation of the text, in radians from the
-        /// horizontal (default=0.0).</param>
         /// <param name="enc">The enclosing polygon (if the label is topological, and if you actually
         /// know the polygon). If you're adding CeFeatureText that refers to the area of an enclosed
         /// polygon, it's better to supply this when the label is created. Otherwise the spatial index
         /// will be initially populated with the default "unknown" text.</param>
         /// <returns>The newly created text feature</returns>
-        TextFeature AddLabel(Operation creator, TextGeometry text, IEntity ent, double height,
-                                double spacing, double rotation, Polygon enc)
+        TextFeature AddLabel(Operation creator, TextGeometry text, IEntity ent, Polygon enc)
         {
             // Create the new label.
             TextFeature label = new TextFeature(text, ent, creator);
@@ -1513,18 +1504,18 @@ namespace Backsight.Editor
             //text.AddObject(*pLabel);
 
             // Define the text metrics.
-            text.Spacing = (float)spacing;
-            text.Rotation = new RadianValue(rotation);
+            //text.Spacing = (float)spacing;
+            //text.Rotation = new RadianValue(rotation);
 
             // If a height has been explicitly given, use that. If no height, but we have a
             // default font, use the height of that font. Otherwise fall back on the height
             // of line annotations.
-            if (height < MathConstants.TINY)
-            {
+            //if (height < MathConstants.TINY)
+            //{
                 // If we can, use default font (and height). Otherwise
                 // the text gets the height of line annotation, but
                 // does NOT get a font.
-                text.Height = (float)m_Annotation.Height;
+                //text.Height = (float)m_Annotation.Height;
 
                 /*
 		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
@@ -1539,10 +1530,10 @@ namespace Backsight.Editor
 		else
 			text.SetHeight(FLOAT4(m_LineAnnoHeight));
                  */
-            }
-            else
-            {
-                text.Height = (float)m_Annotation.Height; // FOR NOW
+            //}
+            //else
+            //{
+                //text.Height = (float)m_Annotation.Height; // FOR NOW
                 /*
 //		If we have a default font, initialize with that.
 		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
@@ -1554,7 +1545,7 @@ namespace Backsight.Editor
 //		a new font to be added to the map.
 		text.SetHeight(height);
                  */
-            }
+            //}
 
             // If an enclosing polygon has been supplied, it must be a topological
             // label. It could also be feature text representing the area of the

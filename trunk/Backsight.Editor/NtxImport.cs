@@ -509,7 +509,8 @@ namespace Backsight.Editor
                 */
                 // Add a miscellaneous text label.
             IFont font = null;
-            MiscText mt = new MiscText(text, topleft, font, height, spacing, rotation);
+            double width = (double)text.Length * charwidth;
+            MiscText mt = new MiscText(text, topleft, font, height, width, rotation);
             TextFeature t = new TextFeature(mt, entity, creator);
 
             if (name.IsLabel)
