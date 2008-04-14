@@ -127,6 +127,13 @@ namespace Backsight.Data
             return row;
         }
 
+        public IEditTable CreateTableAssociation()
+        {
+            EnvData.SchemaRow row = EnvData.SchemaRow.CreateSchemaRow(m_Data);
+            row.SchemaId = ReserveId();
+            return row;
+        }
+
         public IEditTheme CreateTheme()
         {
             EnvData.ThemeRow row = EnvData.ThemeRow.CreateThemeRow(m_Data);
@@ -198,6 +205,10 @@ namespace Backsight.Data
             get { return (IProperty[])m_Data.Property.Select(); }
         }
 
+        public ITable[] Tables
+        {
+            get { return (ITable[])m_Data.Schema.Select(); }
+        }
         /*
         T[] Copy<T, F>(F[] rows) where F : T
         {

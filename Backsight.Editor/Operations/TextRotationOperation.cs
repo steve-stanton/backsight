@@ -82,7 +82,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override EditingActionId EditId
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return EditingActionId.SetLabelRotation; }
         }
 
         /// <summary>

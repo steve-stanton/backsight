@@ -51,6 +51,7 @@
     <Compile Include="Environment\IEditFont.cs" />
     <Compile Include="Environment\IEditIdGroup.cs" />
     <Compile Include="Environment\IEditLayer.cs" />
+    <Compile Include="Environment\IEditTable.cs" />
     <Compile Include="Environment\IEditTheme.cs" />
     <Compile Include="Environment\IEntity.cs" />
     <Compile Include="Environment\IEnvironmentContainer.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Environment\IIdGroup.cs" />
     <Compile Include="Environment\ILayer.cs" />
     <Compile Include="Environment\IProperty.cs" />
+    <Compile Include="Environment\ITable.cs" />
     <Compile Include="Environment\ItemType.cs" />
     <Compile Include="Environment\ITheme.cs" />
     <Compile Include="Forms\AdhocPropertyList.cs" />

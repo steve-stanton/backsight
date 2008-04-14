@@ -15,9 +15,9 @@
 
 using System;
 using System.Drawing;
+using System.Text;
 
 using Backsight.Environment;
-using System.Text;
 
 namespace Backsight.Data
 {
