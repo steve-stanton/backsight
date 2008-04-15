@@ -62,9 +62,9 @@ namespace Backsight.Environment.Editor
             // 
             // tableComboBox
             // 
-            this.tableComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tableComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.tableComboBox.FormattingEnabled = true;
             this.tableComboBox.Location = new System.Drawing.Point(17, 58);
@@ -87,6 +87,7 @@ namespace Backsight.Environment.Editor
             // alreadyAddedLabel
             // 
             this.alreadyAddedLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.alreadyAddedLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.alreadyAddedLabel.Location = new System.Drawing.Point(4, 329);
             this.alreadyAddedLabel.Name = "alreadyAddedLabel";
             this.alreadyAddedLabel.Size = new System.Drawing.Size(354, 16);
