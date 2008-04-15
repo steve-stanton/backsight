@@ -103,5 +103,10 @@ namespace Backsight.Environment
         /// All database tables associated with the Backsight environment
         /// </summary>
         ITable[] Tables { get; }
+
+        /// <summary>
+        /// All defined text formatting templates
+        /// </summary>
+        ITemplate[] Templates { get; }
     }
 }

@@ -22,10 +22,10 @@ using System.Diagnostics;
 
 using Microsoft.SqlServer.Management.Common;
 using Smo=Microsoft.SqlServer.Management.Smo;
+using Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
 using Backsight.Environment;
-using Microsoft.SqlServer.Management.Smo;
 
 namespace Backsight.SqlServer
 {
@@ -473,6 +473,35 @@ namespace Backsight.SqlServer
                 names.Add(t.Name);
 
             return names.ToArray();
+        }
+
+        /// <summary>
+        /// Returns the names of all Backsight system tables
+        /// </summary>
+        /// <returns>The tables associated with an instance of <see cref="BacksightDataSet"/></returns>
+        public string[] GetSystemTableNames()
+        {
+            BacksightDataSet ds = new BacksightDataSet();
+            DataTableCollection dtc = ds.Tables;
+            List<string> result = new List<string>(dtc.Count);
+            foreach (DataTable dt in dtc)
+                result.Add(dt.TableName);
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Returns the names of all user-defined tables (excluding Backsight system tables,
+        /// and database catalogs)
+        /// </summary>
+        /// <returns>The user-defined tables in the database</returns>
+        public string[] GetUserTables()
+        {
+            string[] sysTables = GetSystemTableNames();
+            string[] allTables = GetTableNames();
+
+            return Array.FindAll<string>(allTables, delegate(string s)
+                { return Array.IndexOf<string>(sysTables, s)<0; });
         }
 
         /// <summary>

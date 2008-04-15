@@ -78,6 +78,7 @@
     <Compile Include="SysIdRow.cs" />
     <Compile Include="SysIdTableAdapter.cs" />
     <Compile Include="TemplateDataTable.cs" />
+    <Compile Include="TemplateRow.cs" />
     <Compile Include="ThemeDataTable.cs" />
     <Compile Include="ThemeRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

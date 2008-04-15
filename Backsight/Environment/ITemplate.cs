@@ -17,20 +17,22 @@ using System;
 
 namespace Backsight.Environment
 {
-    /// <written by="Steve Stanton" on="14-APR-2008" />
+    /// <written by="Steve Stanton" on="15-APR-2008" />
     /// <summary>
-    /// A database table that has been associated with the Backsight environment
+    /// A template describing how to form a text string out of information that appears in
+    /// a database table.
     /// </summary>
-    public interface ITable : IEnvironmentItem
+    public interface ITemplate : IEnvironmentItem
     {
         /// <summary>
-        /// The name of the database table (possibly decorated with schema name)
+        /// The database table the template applies to (the table may be associated with
+        /// several templates).
         /// </summary>
-        string TableName { get; }
+        //ITable Table { get; }
 
         /// <summary>
-        /// Any text formatting templates associated with the table (may be an empty array)
+        /// The format that defines the template
         /// </summary>
-        ITemplate[] Templates { get; }
+        string Format { get; }
     }
 }
