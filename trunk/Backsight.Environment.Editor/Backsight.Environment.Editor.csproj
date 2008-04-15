@@ -149,6 +149,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>TableForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TemplateForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TemplateForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ThemeForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ThemeForm.cs</DependentUpon>
