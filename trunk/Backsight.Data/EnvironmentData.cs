@@ -134,6 +134,13 @@ namespace Backsight.Data
             return row;
         }
 
+        public IEditTemplate CreateTemplate()
+        {
+            EnvData.TemplateRow row = EnvData.TemplateRow.CreateTemplateRow(m_Data);
+            row.TemplateId = ReserveId();
+            return row;
+        }
+
         public IEditTheme CreateTheme()
         {
             EnvData.ThemeRow row = EnvData.ThemeRow.CreateThemeRow(m_Data);
@@ -195,6 +202,16 @@ namespace Backsight.Data
             get { return (ILayer[])m_Data.Layer.Select(); }
         }
 
+        public ITable[] Tables
+        {
+            get { return (ITable[])m_Data.Schema.Select(); }
+        }
+
+        public ITemplate[] Templates
+        {
+            get { return (ITemplate[])m_Data.Template.Select(); }
+        }
+
         public ITheme[] Themes
         {
             get { return (ITheme[])m_Data.Theme.Select(); }
@@ -203,11 +220,6 @@ namespace Backsight.Data
         public IProperty[] Properties
         {
             get { return (IProperty[])m_Data.Property.Select(); }
-        }
-
-        public ITable[] Tables
-        {
-            get { return (ITable[])m_Data.Schema.Select(); }
         }
         /*
         T[] Copy<T, F>(F[] rows) where F : T

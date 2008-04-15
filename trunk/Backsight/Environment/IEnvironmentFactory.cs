@@ -52,6 +52,12 @@ namespace Backsight.Environment
         IEditTable CreateTableAssociation();
 
         /// <summary>
+        /// Creates a new text formatting template
+        /// </summary>
+        /// <returns>The newly created text template</returns>
+        IEditTemplate CreateTemplate();
+
+        /// <summary>
         /// Creates a new theme
         /// </summary>
         /// <returns>The newly created theme</returns>

@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Collections.Generic;
 
 using Backsight.Environment;
 
@@ -22,16 +21,17 @@ namespace Backsight.Data
 {
     public partial class BacksightDataSet
     {
-        partial class SchemaRow : IEditTable
+        partial class TemplateRow : IEditTemplate
         {
-            public override string ToString()
+            public string Format
             {
-                return TableName;
+                get { return TemplateFormat; }
+                set { TemplateFormat = value; }
             }
 
             public int Id
             {
-                get { return SchemaId; }
+                get { return TemplateId; }
             }
 
             public void FinishEdit()
@@ -39,38 +39,21 @@ namespace Backsight.Data
                 if (IsAdded(this))
                     this.EndEdit();
                 else
-                    this.tableSchema.AddSchemaRow(this);
+                    this.tableTemplate.AddTemplateRow(this);
             }
 
-            public static SchemaRow CreateSchemaRow(BacksightDataSet ds)
+            public static TemplateRow CreateTemplateRow(BacksightDataSet ds)
             {
-                SchemaRow result = ds.Schema.NewSchemaRow();
+                TemplateRow result = ds.Template.NewTemplateRow();
                 result.SetDefaultValues();
                 return result;
             }
 
             internal void SetDefaultValues()
             {
-                SchemaId = 0;
+                TemplateId = 0;
                 Name = String.Empty;
-                TableName = String.Empty;
-            }
-
-            /// <summary>
-            /// Any text formatting templates associated with this table (may be an empty array)
-            /// </summary>
-            public ITemplate[] Templates
-            {
-                get
-                {
-                    SchemaTemplateRow[] temps = GetSchemaTemplateRows();
-                    List<ITemplate> result = new List<ITemplate>(temps.Length);
-
-                    foreach (SchemaTemplateRow t in temps)
-                        result.Add(t.TemplateRow);
-
-                    return result.ToArray();
-                }
+                TemplateFormat = String.Empty;
             }
         }
     }

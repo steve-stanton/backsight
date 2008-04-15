@@ -316,6 +316,8 @@ namespace Backsight.Environment.Editor
                 dial = new TableForm();
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm();
+            else if (m_CurrentType == ItemType.Template)
+                dial = new TemplateForm();
 
             if (dial==null)
             {
@@ -365,6 +367,8 @@ namespace Backsight.Environment.Editor
                 dial = new TableForm((IEditTable)item);
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm((IEditTheme)item);
+            else if (m_CurrentType == ItemType.Template)
+                dial = new TemplateForm((IEditTemplate)item);
 
             if (dial==null)
             {
@@ -441,6 +445,13 @@ namespace Backsight.Environment.Editor
                     break;
                 }
 
+                case ItemType.Template:
+                {
+                    typeName = "template";
+                    RefreshList(m_CurrentType, m_Data.Templates);
+                    break;
+                }
+
                 case ItemType.Theme:
                 {
                     typeName = "theme";
@@ -487,6 +498,11 @@ namespace Backsight.Environment.Editor
             RefreshList(ItemType.Schema);
         }
 
+        private void viewTemplateMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshList(ItemType.Template);
+        }
+
         private void viewThemesMenuItem_Click(object sender, EventArgs e)
         {
             RefreshList(ItemType.Theme);
@@ -504,6 +520,9 @@ namespace Backsight.Environment.Editor
 
             listBox.Items.Clear();
             listBox.Items.AddRange(items);
+
+            // The Update button isn't relevant when dealing with associated tables
+            updateButton.Enabled = (itemType != ItemType.Schema);
 
             // If the first item is blank, remove it (all "real" items should have
             // a defined name, blanks refer to rows that exist only to accommodate

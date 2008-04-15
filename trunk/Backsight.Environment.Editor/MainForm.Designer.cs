@@ -57,6 +57,7 @@ namespace Backsight.Environment.Editor
             this.viewFontsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewIdGroupsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewLayersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewTablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewThemesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.viewPropertiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,7 +70,7 @@ namespace Backsight.Environment.Editor
             this.newButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.viewTablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewTemplatesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -102,14 +103,14 @@ namespace Backsight.Environment.Editor
             this.toolStripSeparator1,
             this.fileExitMenuItem});
             this.fileMenu.Name = "fileMenu";
-            this.fileMenu.Size = new System.Drawing.Size(35, 20);
+            this.fileMenu.Size = new System.Drawing.Size(40, 20);
             this.fileMenu.Text = "&File";
             // 
             // fileOpenMenuItem
             // 
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
             this.fileOpenMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.fileOpenMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileOpenMenuItem.Text = "&Open";
             this.fileOpenMenuItem.Click += new System.EventHandler(this.fileOpenMenuItem_Click);
             // 
@@ -117,38 +118,38 @@ namespace Backsight.Environment.Editor
             // 
             this.fileSaveMenuItem.Name = "fileSaveMenuItem";
             this.fileSaveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.fileSaveMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.fileSaveMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileSaveMenuItem.Text = "&Save";
             this.fileSaveMenuItem.Click += new System.EventHandler(this.fileSaveMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(133, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(161, 6);
             // 
             // fileExportMenuItem
             // 
             this.fileExportMenuItem.Name = "fileExportMenuItem";
-            this.fileExportMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.fileExportMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileExportMenuItem.Text = "Export...";
             this.fileExportMenuItem.Click += new System.EventHandler(this.fileExportMenuItem_Click);
             // 
             // fileImportMenuItem
             // 
             this.fileImportMenuItem.Name = "fileImportMenuItem";
-            this.fileImportMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.fileImportMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileImportMenuItem.Text = "Import...";
             this.fileImportMenuItem.Click += new System.EventHandler(this.fileImportMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
             // 
             // fileExitMenuItem
             // 
             this.fileExitMenuItem.Name = "fileExitMenuItem";
-            this.fileExitMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.fileExitMenuItem.Size = new System.Drawing.Size(164, 22);
             this.fileExitMenuItem.Text = "E&xit";
             this.fileExitMenuItem.Click += new System.EventHandler(this.fileExitMenuItem_Click);
             // 
@@ -160,57 +161,65 @@ namespace Backsight.Environment.Editor
             this.viewIdGroupsMenuItem,
             this.viewLayersMenuItem,
             this.viewTablesMenuItem,
+            this.viewTemplatesMenuItem,
             this.viewThemesMenuItem,
             this.toolStripSeparator3,
             this.viewPropertiesMenuItem});
             this.viewMenu.Name = "viewMenu";
-            this.viewMenu.Size = new System.Drawing.Size(42, 20);
+            this.viewMenu.Size = new System.Drawing.Size(48, 20);
             this.viewMenu.Text = "&View";
             // 
             // viewEntityTypesMenuItem
             // 
             this.viewEntityTypesMenuItem.Name = "viewEntityTypesMenuItem";
-            this.viewEntityTypesMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewEntityTypesMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewEntityTypesMenuItem.Text = "&Entity Types";
             this.viewEntityTypesMenuItem.Click += new System.EventHandler(this.viewEntityTypesMenuItem_Click);
             // 
             // viewFontsMenuItem
             // 
             this.viewFontsMenuItem.Name = "viewFontsMenuItem";
-            this.viewFontsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewFontsMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewFontsMenuItem.Text = "&Fonts";
             this.viewFontsMenuItem.Click += new System.EventHandler(this.viewFontsMenuItem_Click);
             // 
             // viewIdGroupsMenuItem
             // 
             this.viewIdGroupsMenuItem.Name = "viewIdGroupsMenuItem";
-            this.viewIdGroupsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewIdGroupsMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewIdGroupsMenuItem.Text = "ID &Groups";
             this.viewIdGroupsMenuItem.Click += new System.EventHandler(this.viewIdGroupsMenuItem_Click);
             // 
             // viewLayersMenuItem
             // 
             this.viewLayersMenuItem.Name = "viewLayersMenuItem";
-            this.viewLayersMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewLayersMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewLayersMenuItem.Text = "Layers";
             this.viewLayersMenuItem.Click += new System.EventHandler(this.viewLayersMenuItem_Click);
+            // 
+            // viewTablesMenuItem
+            // 
+            this.viewTablesMenuItem.Name = "viewTablesMenuItem";
+            this.viewTablesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewTablesMenuItem.Text = "T&ables";
+            this.viewTablesMenuItem.Click += new System.EventHandler(this.viewTablesMenuItem_Click);
             // 
             // viewThemesMenuItem
             // 
             this.viewThemesMenuItem.Name = "viewThemesMenuItem";
-            this.viewThemesMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewThemesMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewThemesMenuItem.Text = "&Themes";
             this.viewThemesMenuItem.Click += new System.EventHandler(this.viewThemesMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(156, 6);
             // 
             // viewPropertiesMenuItem
             // 
             this.viewPropertiesMenuItem.Name = "viewPropertiesMenuItem";
-            this.viewPropertiesMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewPropertiesMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewPropertiesMenuItem.Text = "&Properties...";
             this.viewPropertiesMenuItem.Click += new System.EventHandler(this.viewPropertiesMenuItem_Click);
             // 
@@ -219,13 +228,13 @@ namespace Backsight.Environment.Editor
             this.helpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpAboutMenuItem});
             this.helpMenu.Name = "helpMenu";
-            this.helpMenu.Size = new System.Drawing.Size(41, 20);
+            this.helpMenu.Size = new System.Drawing.Size(45, 20);
             this.helpMenu.Text = "&Help";
             // 
             // helpAboutMenuItem
             // 
             this.helpAboutMenuItem.Name = "helpAboutMenuItem";
-            this.helpAboutMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.helpAboutMenuItem.Size = new System.Drawing.Size(256, 22);
             this.helpAboutMenuItem.Text = "&About the Environment Editor";
             // 
             // listBox
@@ -327,12 +336,11 @@ namespace Backsight.Environment.Editor
             this.splitContainer2.SplitterDistance = 442;
             this.splitContainer2.TabIndex = 0;
             // 
-            // viewTablesMenuItem
+            // viewTemplatesMenuItem
             // 
-            this.viewTablesMenuItem.Name = "viewTablesMenuItem";
-            this.viewTablesMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.viewTablesMenuItem.Text = "T&ables";
-            this.viewTablesMenuItem.Click += new System.EventHandler(this.viewTablesMenuItem_Click);
+            this.viewTemplatesMenuItem.Name = "viewTemplatesMenuItem";
+            this.viewTemplatesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewTemplatesMenuItem.Text = "Te&mplates";
             // 
             // MainForm
             // 
@@ -389,6 +397,7 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem viewFontsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewTablesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewTemplatesMenuItem;
     }
 }
 
