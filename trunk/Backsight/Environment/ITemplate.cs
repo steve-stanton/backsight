@@ -31,6 +31,16 @@ namespace Backsight.Environment
         //ITable Table { get; }
 
         /// <summary>
+        /// Is this a new item (not yet saved in the database)?
+        /// </summary>
+        bool IsNew { get; }
+
+        /// <summary>
+        /// A name for the template
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// The format that defines the template
         /// </summary>
         string Format { get; }

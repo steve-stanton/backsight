@@ -30,6 +30,11 @@ namespace Backsight.Environment
         //new ITable Table { get; set; }
 
         /// <summary>
+        /// A name for the template
+        /// </summary>
+        new string Name { get; set; }
+
+        /// <summary>
         /// The format that defines the template
         /// </summary>
         new string Format { get; set; }

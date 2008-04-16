@@ -96,6 +96,7 @@ namespace Backsight.Environment.Editor
             this.tableComboBox.Name = "tableComboBox";
             this.tableComboBox.Size = new System.Drawing.Size(285, 24);
             this.tableComboBox.TabIndex = 27;
+            this.tableComboBox.SelectedValueChanged += new System.EventHandler(this.tableComboBox_SelectedValueChanged);
             // 
             // fieldsListBox
             // 
@@ -106,6 +107,7 @@ namespace Backsight.Environment.Editor
             this.fieldsListBox.Name = "fieldsListBox";
             this.fieldsListBox.Size = new System.Drawing.Size(206, 212);
             this.fieldsListBox.TabIndex = 28;
+            this.fieldsListBox.DoubleClick += new System.EventHandler(this.fieldsListBox_DoubleClick);
             // 
             // label3
             // 
@@ -134,6 +136,7 @@ namespace Backsight.Environment.Editor
             this.selectButton.TabIndex = 31;
             this.selectButton.Text = "-->";
             this.selectButton.UseVisualStyleBackColor = true;
+            this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
             // formatTextBox
             // 
@@ -159,9 +162,10 @@ namespace Backsight.Environment.Editor
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "TemplateForm";
             this.Text = "Text Template Definition";
+            this.Shown += new System.EventHandler(this.TemplateForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
