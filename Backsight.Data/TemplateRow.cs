@@ -34,6 +34,11 @@ namespace Backsight.Data
                 get { return TemplateId; }
             }
 
+            public bool IsNew
+            {
+                get { return !IsAdded(this); }
+            }
+
             public void FinishEdit()
             {
                 if (IsAdded(this))
@@ -42,7 +47,7 @@ namespace Backsight.Data
                     this.tableTemplate.AddTemplateRow(this);
             }
 
-            public static TemplateRow CreateTemplateRow(BacksightDataSet ds)
+            internal static TemplateRow CreateTemplateRow(BacksightDataSet ds)
             {
                 TemplateRow result = ds.Template.NewTemplateRow();
                 result.SetDefaultValues();

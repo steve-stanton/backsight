@@ -543,5 +543,15 @@ namespace Backsight.SqlServer
             csb.InitialCatalog = "Backsight";
             return csb.ConnectionString;
         }
+
+        /// <summary>
+        /// Attempts to locate a database table with the supplied name
+        /// </summary>
+        /// <param name="tableName">The name of the table to find</param>
+        /// <returns>The corresponding table (null if not found)</returns>
+        public Smo.Table FindTableByName(string tableName)
+        {
+            return m_Database.Tables[tableName];
+        }
     }
 }
