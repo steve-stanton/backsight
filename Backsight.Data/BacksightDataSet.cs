@@ -48,6 +48,8 @@ namespace Backsight.Data
                     AdapterFactory.Create<PropertyTableAdapter>().Update(this.Property);
                     AdapterFactory.Create<SchemaTableAdapter>().Update(this.Schema);
                     AdapterFactory.Create<TemplateTableAdapter>().Update(this.Template);
+                    AdapterFactory.Create<SchemaTemplateTableAdapter>().Update(this.SchemaTemplate);
+                    AdapterFactory.Create<EntitySchemaTableAdapter>().Update(this.EntitySchema);
                 });
             }
 
@@ -70,6 +72,8 @@ namespace Backsight.Data
                 PropertyTableAdapter prop = new PropertyTableAdapter();
                 SchemaTableAdapter schema = new SchemaTableAdapter();
                 TemplateTableAdapter template = new TemplateTableAdapter();
+                SchemaTemplateTableAdapter schemaTemplate = new SchemaTemplateTableAdapter();
+                EntitySchemaTableAdapter entitySchema = new EntitySchemaTableAdapter();
 
                 font.Connection =
                 idGroup.Connection =
@@ -79,7 +83,9 @@ namespace Backsight.Data
                 sysid.Connection =
                 prop.Connection =
                 schema.Connection =
-                template.Connection = ic.Value;
+                template.Connection =
+                schemaTemplate.Connection =
+                entitySchema.Connection = ic.Value;
 
                 font.Fill(this.Font);
                 idGroup.Fill(this.IdGroup);
@@ -90,6 +96,8 @@ namespace Backsight.Data
                 prop.Fill(this.Property);
                 schema.Fill(this.Schema);
                 template.Fill(this.Template);
+                schemaTemplate.Fill(this.SchemaTemplate);
+                entitySchema.Fill(this.EntitySchema);
             }
         }
 

@@ -27,7 +27,7 @@ namespace Backsight.Environment
         /// The database table the template applies to (the table may be associated with
         /// several templates).
         /// </summary>
-        //new ITable Table { get; set; }
+        new ITable Schema { get; set; }
 
         /// <summary>
         /// A name for the template

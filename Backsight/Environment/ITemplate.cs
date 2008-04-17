@@ -28,7 +28,7 @@ namespace Backsight.Environment
         /// The database table the template applies to (the table may be associated with
         /// several templates).
         /// </summary>
-        //ITable Table { get; }
+        ITable Schema { get; }
 
         /// <summary>
         /// Is this a new item (not yet saved in the database)?

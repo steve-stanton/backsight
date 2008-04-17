@@ -6701,7 +6701,7 @@ namespace Backsight.Data {
                 this.columnName.AllowDBNull = false;
                 this.columnName.MaxLength = 80;
                 this.columnTemplateFormat.AllowDBNull = false;
-                this.columnTemplateFormat.MaxLength = 64;
+                this.columnTemplateFormat.MaxLength = 500;
             }
             
             [System.Diagnostics.DebuggerNonUserCodeAttribute()]
