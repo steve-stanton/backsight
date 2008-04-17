@@ -15,11 +15,11 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Smo = Microsoft.SqlServer.Management.Smo;
 
 using Backsight.SqlServer;
-using System.Collections.Generic;
 
 
 namespace Backsight.Environment.Editor
