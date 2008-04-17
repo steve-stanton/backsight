@@ -65,7 +65,9 @@ namespace Backsight.Environment.Editor
 
         private void TemplateForm_Shown(object sender, EventArgs e)
         {
-            // Load the schema combo (without the <none> item).
+            // Load the schema combo (without the <none> item). Note that
+            // this will end up calling tableComboBox_SelectedValueChanged,
+            // which will set m_Table to be the first table in the array.
             IEnvironmentContainer ec = EnvironmentContainer.Current;
             ITable[] tables = ec.Tables;
             tableComboBox.DataSource = tables;
@@ -77,7 +79,7 @@ namespace Backsight.Environment.Editor
             // ok in the longer run, the database structure should be revised
             // to match).
 
-            m_Table = FindTable();
+            m_Table = m_Edit.Schema;
             if (m_Table == null)
             {
                 fieldsListBox.Enabled = false;
@@ -90,6 +92,7 @@ namespace Backsight.Environment.Editor
                 if (tables.Length>0)
                     tableComboBox.SelectedItem = tables[0];
 
+                nameTextBox.Focus();
                 return;
             }
 
@@ -99,46 +102,23 @@ namespace Backsight.Environment.Editor
             // Display the name of the item.
             nameTextBox.Text = m_Edit.Name;
 
-            // Display the current format.
-            formatTextBox.Text = m_Edit.Format;
-
             // If the schema is defined (it should be), select it. Then
             // load the list of fields, and select those that the template
             // already uses.
             if (m_Table != null)
             {
+                //MessageBox.Show(m_Table.TableName);
                 tableComboBox.SelectedItem = m_Table;
                 ListFields();
             }
             else
                 MessageBox.Show("Template does not have an associated table");
 
+            // Display the current format.
+            formatTextBox.Text = m_Edit.Format;
+
             // Set focus on the OK button.
             okButton.Focus();
-        }
-
-        /// <summary>
-        /// Tries to locate the table associated with the template that's being edited
-        /// </summary>
-        /// <returns>The corresponding table (null if the template is new, or the table
-        /// could not be found)</returns>
-        ITable FindTable()
-        {
-            return m_Edit.Schema;
-            /*
-            if (m_Edit.IsNew)
-                return null;
-
-            ITable[] tables = (ITable[])tableComboBox.DataSource;
-
-            return Array.Find<ITable>(tables, delegate(ITable t)
-            {
-                ITemplate[] tableTemplates = t.Templates;
-                ITemplate foundTemplate = Array.Find<ITemplate>(tableTemplates, delegate(ITemplate temp)
-                                    { return temp.Id == m_Edit.Id; });
-                return (foundTemplate != null);
-            });
-             */
         }
 
         void ListFields()

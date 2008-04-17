@@ -78,7 +78,7 @@ namespace Backsight.Environment.Editor
             this.nameTextBox.Location = new System.Drawing.Point(142, 26);
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(285, 22);
-            this.nameTextBox.TabIndex = 25;
+            this.nameTextBox.TabIndex = 0;
             // 
             // label2
             // 
@@ -95,7 +95,7 @@ namespace Backsight.Environment.Editor
             this.tableComboBox.Location = new System.Drawing.Point(142, 63);
             this.tableComboBox.Name = "tableComboBox";
             this.tableComboBox.Size = new System.Drawing.Size(285, 24);
-            this.tableComboBox.TabIndex = 27;
+            this.tableComboBox.TabIndex = 1;
             this.tableComboBox.SelectedValueChanged += new System.EventHandler(this.tableComboBox_SelectedValueChanged);
             // 
             // fieldsListBox
@@ -106,7 +106,7 @@ namespace Backsight.Environment.Editor
             this.fieldsListBox.Location = new System.Drawing.Point(36, 138);
             this.fieldsListBox.Name = "fieldsListBox";
             this.fieldsListBox.Size = new System.Drawing.Size(206, 212);
-            this.fieldsListBox.TabIndex = 28;
+            this.fieldsListBox.TabIndex = 2;
             this.fieldsListBox.DoubleClick += new System.EventHandler(this.fieldsListBox_DoubleClick);
             // 
             // label3
@@ -126,7 +126,7 @@ namespace Backsight.Environment.Editor
             this.label4.Size = new System.Drawing.Size(242, 84);
             this.label4.TabIndex = 30;
             this.label4.Text = "Specify the text template. To append fields, select the field and then click the " +
-    "arrow button (or just double-click the field).";
+                "arrow button (or just double-click the field).";
             // 
             // selectButton
             // 
@@ -134,6 +134,7 @@ namespace Backsight.Environment.Editor
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(31, 32);
             this.selectButton.TabIndex = 31;
+            this.selectButton.TabStop = false;
             this.selectButton.Text = "-->";
             this.selectButton.UseVisualStyleBackColor = true;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
@@ -144,11 +145,12 @@ namespace Backsight.Environment.Editor
             this.formatTextBox.Location = new System.Drawing.Point(316, 138);
             this.formatTextBox.Name = "formatTextBox";
             this.formatTextBox.Size = new System.Drawing.Size(239, 77);
-            this.formatTextBox.TabIndex = 33;
+            this.formatTextBox.TabIndex = 3;
             this.formatTextBox.Text = "";
             // 
             // TemplateForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
