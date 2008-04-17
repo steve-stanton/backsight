@@ -38,31 +38,31 @@ namespace Backsight.Environment.Editor
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.selectButton = new System.Windows.Forms.Button();
-            this.formatTextBox = new System.Windows.Forms.TextBox();
+            this.formatTextBox = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // cancelButton
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(316, 268);
+            this.cancelButton.Location = new System.Drawing.Point(316, 317);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(100, 28);
             this.cancelButton.TabIndex = 23;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // okButton
             // 
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(440, 268);
+            this.okButton.Location = new System.Drawing.Point(440, 317);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 28);
             this.okButton.TabIndex = 22;
             this.okButton.Text = "OK";
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // label1
             // 
@@ -121,12 +121,12 @@ namespace Backsight.Environment.Editor
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(313, 180);
+            this.label4.Location = new System.Drawing.Point(313, 229);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(242, 84);
             this.label4.TabIndex = 30;
             this.label4.Text = "Specify the text template. To append fields, select the field and then click the " +
-                "arrow button (or just double-click the field).";
+    "arrow button (or just double-click the field).";
             // 
             // selectButton
             // 
@@ -140,15 +140,18 @@ namespace Backsight.Environment.Editor
             // 
             // formatTextBox
             // 
-            this.formatTextBox.Location = new System.Drawing.Point(316, 149);
+            this.formatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.formatTextBox.Location = new System.Drawing.Point(316, 138);
             this.formatTextBox.Name = "formatTextBox";
-            this.formatTextBox.Size = new System.Drawing.Size(224, 22);
-            this.formatTextBox.TabIndex = 32;
+            this.formatTextBox.Size = new System.Drawing.Size(239, 77);
+            this.formatTextBox.TabIndex = 33;
+            this.formatTextBox.Text = "";
             // 
             // TemplateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(595, 385);
             this.Controls.Add(this.formatTextBox);
             this.Controls.Add(this.selectButton);
@@ -183,6 +186,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button selectButton;
-        private System.Windows.Forms.TextBox formatTextBox;
+        private System.Windows.Forms.RichTextBox formatTextBox;
     }
 }

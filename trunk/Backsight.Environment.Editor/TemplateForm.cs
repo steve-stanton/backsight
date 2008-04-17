@@ -77,17 +77,7 @@ namespace Backsight.Environment.Editor
             // ok in the longer run, the database structure should be revised
             // to match).
 
-            if (m_Edit.Id != 0)
-            {
-                m_Table = Array.Find<ITable>(tables, delegate(ITable t)
-                {
-                    ITemplate[] tableTemplates = t.Templates;
-                    ITemplate foundTemplate = Array.Find<ITemplate>(tableTemplates, delegate(ITemplate temp)
-                                        { return temp.Id == m_Edit.Id; });
-                    return (foundTemplate != null);
-                });
-            }
-
+            m_Table = FindTable();
             if (m_Table == null)
             {
                 fieldsListBox.Enabled = false;
@@ -97,8 +87,8 @@ namespace Backsight.Environment.Editor
             // Return if we're creating a new template
             if (m_Edit.IsNew)
             {
-                //if (tables.Length>0)
-                //    tableComboBox.SelectedItem = tables[0];
+                if (tables.Length>0)
+                    tableComboBox.SelectedItem = tables[0];
 
                 return;
             }
@@ -125,6 +115,30 @@ namespace Backsight.Environment.Editor
 
             // Set focus on the OK button.
             okButton.Focus();
+        }
+
+        /// <summary>
+        /// Tries to locate the table associated with the template that's being edited
+        /// </summary>
+        /// <returns>The corresponding table (null if the template is new, or the table
+        /// could not be found)</returns>
+        ITable FindTable()
+        {
+            return m_Edit.Schema;
+            /*
+            if (m_Edit.IsNew)
+                return null;
+
+            ITable[] tables = (ITable[])tableComboBox.DataSource;
+
+            return Array.Find<ITable>(tables, delegate(ITable t)
+            {
+                ITemplate[] tableTemplates = t.Templates;
+                ITemplate foundTemplate = Array.Find<ITemplate>(tableTemplates, delegate(ITemplate temp)
+                                    { return temp.Id == m_Edit.Id; });
+                return (foundTemplate != null);
+            });
+             */
         }
 
         void ListFields()
@@ -174,9 +188,20 @@ namespace Backsight.Environment.Editor
                 return;
             }
 
+            // Ensure thew format is defined
+            string fmt = formatTextBox.Text.TrimEnd();
+            if (fmt.Length==0)
+            {
+                MessageBox.Show("The text formatting instructions have not been specified");
+                formatTextBox.Focus();
+                return;
+            }
+
             m_Edit.Name = name;
-            //m_Table.Templates.
+            m_Edit.Format = fmt;
+            m_Edit.Schema = m_Table;
             m_Edit.FinishEdit();
+
             this.DialogResult = DialogResult.OK;
             Close();
         }
@@ -193,42 +218,14 @@ namespace Backsight.Environment.Editor
 
         void OnSelect()
         {
+            // Get the ID of the selected field.
+            Smo.Column col = (fieldsListBox.SelectedItem as Smo.Column);
+            if (col==null)
+                return;
+
+            // Append the column name to the format
+            formatTextBox.Text += String.Format("[{0}]", col.Name);
         }
-
-        /*
-void CdTemplate::OnSelect() 
-{
-	// Get the ID of the selected field.
-	CListBox* pList = (CListBox*)GetDlgItem(IDC_AVAILABLE);
-	int index = pList->GetCurSel();
-	if ( index==LB_ERR ) return;
-	CbField* pField = (CbField*)pList->GetItemDataPtr(index);
-
-	// Get the sequence of the field within the schema.
-	UINT4 sid = m_Edit.GetSchemaId();
-	CbSchema* pSchema = m_Data.FindSchema(sid);
-	if ( !pSchema ) return;
-	INT4 fseq = pSchema->GetSequence(pField);
-
-	// Append the field to the edit control.
-	CEdit* pFormat = (CEdit*)GetDlgItem(IDC_FORMAT);
-	CString format;
-	pFormat->GetWindowText(format);
-
-	// Trim off any trailing white space.
-	format.TrimRight();
-
-	// Append a blank and the new field.
-	CString fstr;
-	fstr.Format(" %%%d",fseq);
-	format += fstr;
-	pFormat->SetWindowText(format);
-
-	// And append to the template object as well.
-	m_Edit.SetFormat(format);
-	m_Edit.AttachField(pField->GetId());
-}
-         */
 
         private void tableComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
@@ -237,27 +234,15 @@ void CdTemplate::OnSelect()
 
             // And list the fields
             ListFields();
+
+            // Clear out the current format and ensure the control is enabled.
+            formatTextBox.Text = String.Empty;
+            formatTextBox.Enabled = true;
         }
 
         /*
     void CdTemplate::OnSelchangeSchemas() 
     {
-        CComboBox* pCombo = (CComboBox*)GetDlgItem(IDC_SCHEMAS);
-        int index = pCombo->GetCurSel();
-        if ( index==LB_ERR ) return;
-        CbSchema* pSchema = (CbSchema*)pCombo->GetItemDataPtr(index);
-        if ( !pSchema ) return;
-
-        // Display the fields for the selected schema.
-        ListFields(*pSchema);
-
-        // Clear out the current format and ensure the control
-        // is enabled.
-        CString str;
-        CEdit* pEdit = (CEdit*)GetDlgItem(IDC_FORMAT);
-        pEdit->SetWindowText(str);
-        pEdit->EnableWindow(TRUE);
-
         // Fix the template object to refer to the new schema (with
         // no fields selected so far).
         m_Edit.SetSchemaId(pSchema->GetId());

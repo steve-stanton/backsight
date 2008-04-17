@@ -23,6 +23,11 @@ namespace Backsight.Data
     {
         partial class TemplateRow : IEditTemplate
         {
+            public override string ToString()
+            {
+                return Name;
+            }
+
             public string Format
             {
                 get { return TemplateFormat; }
@@ -37,6 +42,53 @@ namespace Backsight.Data
             public bool IsNew
             {
                 get { return !IsAdded(this); }
+            }
+
+            /// <summary>
+            /// The database table the template applies to (the table may be associated with
+            /// several templates).
+            /// </summary>
+            public ITable Schema
+            {
+                get
+                {
+                    BacksightDataSet ds = GetDataSet(this);
+                    ITable[] tables = (ITable[])ds.Schema.Select();
+
+                    return Array.Find<ITable>(tables, delegate(ITable t)
+                    {
+                        ITemplate[] tableTemplates = t.Templates;
+                        ITemplate foundTemplate = Array.Find<ITemplate>(tableTemplates, delegate(ITemplate temp)
+                                            { return temp.Id == this.TemplateId; });
+                        return (foundTemplate != null);
+                    });
+                }
+
+                set
+                {
+                    if (value==null)
+                        throw new ArgumentNullException("Attempt to assign null table to template");
+
+                    // If this template was previously associated with a table, we'll just
+                    // update the association. Otherwise 
+                    ITable oldTable = this.Schema;
+                    SchemaTemplateDataTable tab = GetDataSet(this).SchemaTemplate;
+                    SchemaTemplateRow row = null;
+                    if (oldTable != null)
+                        row = tab.FindBySchemaIdTemplateId(oldTable.Id, this.TemplateId);
+
+                    if (row == null)
+                    {
+                        row = tab.NewSchemaTemplateRow();
+                        row.SchemaId = value.Id;
+                        row.TemplateId = this.TemplateId;
+                        tab.AddSchemaTemplateRow(row);
+                    }
+                    else
+                    {
+                        row.SchemaId = value.Id;
+                    }
+                }
             }
 
             public void FinishEdit()
