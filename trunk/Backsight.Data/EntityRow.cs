@@ -102,6 +102,52 @@ namespace Backsight.Data
                         ((t & SpatialType.Polygon)!=0 && IsPolygonValid));
             }
 
+            /// <summary>
+            /// The table(s) that are usually associated with this entity type.
+            /// </summary>
+            public ITable[] DefaultTables
+            {
+                get
+                {
+                    // Grab the rows that associate this entity type with schemas (tables)
+                    BacksightDataSet ds = GetDataSet(this);
+                    EntitySchemaRow[] entSchemas = ds.EntitySchema.FindByEntityId(this.EntityId);
+
+                    // Cover easy case where there isn't anything
+                    if (entSchemas.Length == 0)
+                        return new ITable[0];
+
+                    // Pick out those tables that are part of the association
+                    ITable[] tables = (ITable[])ds.Schema.Select();
+                    return Array.FindAll<ITable>(tables, delegate(ITable t)
+                    {
+                        EntitySchemaRow result = Array.Find<EntitySchemaRow>(entSchemas,
+                            delegate(EntitySchemaRow esr) { return esr.SchemaId == t.Id; });
+                        return (result != null);
+                    });
+                }
+
+                set
+                {
+                    // Grab the current entity type -> schema (table) associations
+                    BacksightDataSet ds = GetDataSet(this);
+                    EntitySchemaRow[] entSchemas = ds.EntitySchema.FindByEntityId(this.EntityId);
+
+                    // Remove any associations that no longer apply
+                    foreach (EntitySchemaRow row in entSchemas)
+                    {
+                        //bool found = false;
+                        //foreach (ITable t in value)
+                        //{
+                        //    if (
+                        //}
+                    }
+
+                    // Insert new associations
+
+                }
+            }
+
             public IIdGroup IdGroup
             {
                 get { return (GroupId==0 ? null : this.IdGroupRow); }

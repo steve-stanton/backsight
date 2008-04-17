@@ -35,6 +35,18 @@ namespace Backsight.Data
                     };
                 }
             }
+
+            /// <summary>
+            /// Locates rows that refer to a specific entity type
+            /// </summary>
+            /// <param name="entId">The ID of the entity type to look for</param>
+            /// <returns>The rows that match the specified entity type ID</returns>
+            internal EntitySchemaRow[] FindByEntityId(int entId)
+            {
+                BacksightDataSet ds = (BacksightDataSet)this.DataSet;
+                string query = String.Format("{0}={1}", columnEntityId.ColumnName, entId);
+                return (EntitySchemaRow[])Select(query);
+            }
         }
     }
 }
