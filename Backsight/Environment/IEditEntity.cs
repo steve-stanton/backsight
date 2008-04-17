@@ -32,5 +32,10 @@ namespace Backsight.Environment
         new IIdGroup IdGroup { get; set; }
         new ILayer Layer { get; set; }
         new IFont Font { get; set; }
+
+        /// <summary>
+        /// The table(s) that are usually associated with this entity type.
+        /// </summary>
+        new ITable[] DefaultTables { get; set; }
     }
 }

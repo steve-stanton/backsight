@@ -70,6 +70,14 @@ namespace Backsight.Editor
             return (this.Data==null ? false : this.Data.IsValid(t));
         }
 
+        /// <summary>
+        /// The table(s) that are usually associated with this entity type.
+        /// </summary>
+        public ITable[] DefaultTables
+        {
+            get { return (this.Data == null ? null : this.Data.DefaultTables); }
+        }
+
         public IIdGroup IdGroup
         {
             get { return (this.Data==null ? null : this.Data.IdGroup); }

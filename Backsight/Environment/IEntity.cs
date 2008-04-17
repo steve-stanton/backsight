@@ -70,6 +70,11 @@ namespace Backsight.Environment
         /// <returns>True if this entity type can be associated with the spatial data type</returns>
         bool IsValid(SpatialType t);
 
+        /// <summary>
+        /// The table(s) that are usually associated with this entity type.
+        /// </summary>
+        ITable[] DefaultTables { get; }
+
         IIdGroup IdGroup { get; }
         ILayer Layer { get; }
         IFont Font { get; }

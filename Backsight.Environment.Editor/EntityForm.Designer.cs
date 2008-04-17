@@ -50,6 +50,8 @@ namespace Backsight.Environment.Editor
             this.lblStatic2 = new System.Windows.Forms.Label();
             this.entityNameTextBox = new System.Windows.Forms.TextBox();
             this.grpStatic3 = new System.Windows.Forms.GroupBox();
+            this.fontComboBox = new System.Windows.Forms.ComboBox();
+            this.fontLabel = new System.Windows.Forms.Label();
             this.boundaryCheckbox = new System.Windows.Forms.CheckBox();
             this.labelCheckbox = new System.Windows.Forms.CheckBox();
             this.lineCheckbox = new System.Windows.Forms.CheckBox();
@@ -57,8 +59,7 @@ namespace Backsight.Environment.Editor
             this.textCheckbox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.layerComboBox = new System.Windows.Forms.ComboBox();
-            this.fontLabel = new System.Windows.Forms.Label();
-            this.fontComboBox = new System.Windows.Forms.ComboBox();
+            this.tablesButton = new System.Windows.Forms.Button();
             this.grpStatic3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +74,7 @@ namespace Backsight.Environment.Editor
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(185, 315);
+            this.cancelButton.Location = new System.Drawing.Point(334, 313);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 19;
@@ -84,7 +85,7 @@ namespace Backsight.Environment.Editor
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(276, 315);
+            this.okButton.Location = new System.Drawing.Point(425, 313);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 18;
@@ -132,6 +133,25 @@ namespace Backsight.Environment.Editor
             this.grpStatic3.TabIndex = 22;
             this.grpStatic3.TabStop = false;
             this.grpStatic3.Text = "Valid Geometric Types";
+            // 
+            // fontComboBox
+            // 
+            this.fontComboBox.Enabled = false;
+            this.fontComboBox.FormattingEnabled = true;
+            this.fontComboBox.Location = new System.Drawing.Point(274, 83);
+            this.fontComboBox.Name = "fontComboBox";
+            this.fontComboBox.Size = new System.Drawing.Size(192, 21);
+            this.fontComboBox.TabIndex = 16;
+            // 
+            // fontLabel
+            // 
+            this.fontLabel.AutoSize = true;
+            this.fontLabel.Enabled = false;
+            this.fontLabel.Location = new System.Drawing.Point(240, 86);
+            this.fontLabel.Name = "fontLabel";
+            this.fontLabel.Size = new System.Drawing.Size(28, 13);
+            this.fontLabel.TabIndex = 15;
+            this.fontLabel.Text = "Font";
             // 
             // boundaryCheckbox
             // 
@@ -197,31 +217,24 @@ namespace Backsight.Environment.Editor
             this.layerComboBox.Size = new System.Drawing.Size(380, 21);
             this.layerComboBox.TabIndex = 25;
             // 
-            // fontLabel
+            // tablesButton
             // 
-            this.fontLabel.AutoSize = true;
-            this.fontLabel.Enabled = false;
-            this.fontLabel.Location = new System.Drawing.Point(240, 86);
-            this.fontLabel.Name = "fontLabel";
-            this.fontLabel.Size = new System.Drawing.Size(28, 13);
-            this.fontLabel.TabIndex = 15;
-            this.fontLabel.Text = "Font";
-            // 
-            // fontComboBox
-            // 
-            this.fontComboBox.Enabled = false;
-            this.fontComboBox.FormattingEnabled = true;
-            this.fontComboBox.Location = new System.Drawing.Point(274, 83);
-            this.fontComboBox.Name = "fontComboBox";
-            this.fontComboBox.Size = new System.Drawing.Size(192, 21);
-            this.fontComboBox.TabIndex = 16;
+            this.tablesButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.tablesButton.Location = new System.Drawing.Point(15, 313);
+            this.tablesButton.Name = "tablesButton";
+            this.tablesButton.Size = new System.Drawing.Size(75, 23);
+            this.tablesButton.TabIndex = 26;
+            this.tablesButton.TabStop = false;
+            this.tablesButton.Text = "Tables ...";
+            this.tablesButton.Click += new System.EventHandler(this.tablesButton_Click);
             // 
             // EntityForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(528, 362);
+            this.ClientSize = new System.Drawing.Size(523, 362);
+            this.Controls.Add(this.tablesButton);
             this.Controls.Add(this.layerComboBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.idGroupComboBox);
@@ -260,5 +273,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ComboBox layerComboBox;
         private System.Windows.Forms.ComboBox fontComboBox;
         private System.Windows.Forms.Label fontLabel;
+        private System.Windows.Forms.Button tablesButton;
     }
 }

@@ -120,5 +120,17 @@ namespace Backsight.Environment.Editor
             if (!boundaryCheckbox.Enabled)
                 boundaryCheckbox.Checked = false;
         }
+
+        private void tablesButton_Click(object sender, EventArgs e)
+        {
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            ITable[] tables = ec.Tables;
+            ITable[] entTables = m_Edit.DefaultTables;
+            ChecklistForm<ITable> dial = new ChecklistForm<ITable>(tables, entTables);
+            //if (dial.ShowDialog() == DialogResult.OK)
+            //    m_Edit.E
+
+            dial.Dispose();
+        }
     }
 }
