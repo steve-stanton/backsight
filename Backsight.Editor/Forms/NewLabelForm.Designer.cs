@@ -33,12 +33,12 @@ namespace Backsight.Editor.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.schemaComboBox = new Backsight.Editor.Forms.SchemaComboBox();
             this.allSchemasCheckBox = new System.Windows.Forms.CheckBox();
             this.noAttributesCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.defaultAnnotationCheckBox = new System.Windows.Forms.CheckBox();
             this.annotationTemplateComboBox = new System.Windows.Forms.ComboBox();
-            this.schemaComboBox = new Backsight.Editor.Forms.SchemaComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -52,6 +52,7 @@ namespace Backsight.Editor.Forms
             this.okButton.TabIndex = 3;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // cancelButton
             // 
@@ -63,6 +64,7 @@ namespace Backsight.Editor.Forms
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // label1
             // 
@@ -81,6 +83,7 @@ namespace Backsight.Editor.Forms
             this.entityTypeComboBox.Name = "entityTypeComboBox";
             this.entityTypeComboBox.Size = new System.Drawing.Size(226, 24);
             this.entityTypeComboBox.TabIndex = 0;
+            this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
             // 
             // groupBox1
             // 
@@ -94,6 +97,16 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "What sort of Attributes?";
             // 
+            // schemaComboBox
+            // 
+            this.schemaComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.schemaComboBox.FormattingEnabled = true;
+            this.schemaComboBox.Location = new System.Drawing.Point(13, 27);
+            this.schemaComboBox.Name = "schemaComboBox";
+            this.schemaComboBox.Size = new System.Drawing.Size(363, 24);
+            this.schemaComboBox.TabIndex = 3;
+            this.schemaComboBox.SelectedValueChanged += new System.EventHandler(this.schemaComboBox_SelectedValueChanged);
+            // 
             // allSchemasCheckBox
             // 
             this.allSchemasCheckBox.AutoSize = true;
@@ -104,6 +117,7 @@ namespace Backsight.Editor.Forms
             this.allSchemasCheckBox.TabStop = false;
             this.allSchemasCheckBox.Text = "List &all choices";
             this.allSchemasCheckBox.UseVisualStyleBackColor = true;
+            this.allSchemasCheckBox.CheckedChanged += new System.EventHandler(this.allSchemasCheckBox_CheckedChanged);
             // 
             // noAttributesCheckBox
             // 
@@ -115,6 +129,7 @@ namespace Backsight.Editor.Forms
             this.noAttributesCheckBox.TabStop = false;
             this.noAttributesCheckBox.Text = "&Don\'t have attributes";
             this.noAttributesCheckBox.UseVisualStyleBackColor = true;
+            this.noAttributesCheckBox.CheckedChanged += new System.EventHandler(this.noAttributesCheckBox_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -137,6 +152,7 @@ namespace Backsight.Editor.Forms
             this.defaultAnnotationCheckBox.TabStop = false;
             this.defaultAnnotationCheckBox.Text = "Use &ID";
             this.defaultAnnotationCheckBox.UseVisualStyleBackColor = true;
+            this.defaultAnnotationCheckBox.CheckedChanged += new System.EventHandler(this.defaultAnnotationCheckBox_CheckedChanged);
             // 
             // annotationTemplateComboBox
             // 
@@ -145,15 +161,7 @@ namespace Backsight.Editor.Forms
             this.annotationTemplateComboBox.Name = "annotationTemplateComboBox";
             this.annotationTemplateComboBox.Size = new System.Drawing.Size(363, 24);
             this.annotationTemplateComboBox.TabIndex = 2;
-            // 
-            // schemaComboBox
-            // 
-            this.schemaComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.schemaComboBox.FormattingEnabled = true;
-            this.schemaComboBox.Location = new System.Drawing.Point(13, 27);
-            this.schemaComboBox.Name = "schemaComboBox";
-            this.schemaComboBox.Size = new System.Drawing.Size(363, 24);
-            this.schemaComboBox.TabIndex = 3;
+            this.annotationTemplateComboBox.SelectedValueChanged += new System.EventHandler(this.annotationTemplateComboBox_SelectedValueChanged);
             // 
             // NewLabelForm
             // 
@@ -171,6 +179,7 @@ namespace Backsight.Editor.Forms
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewLabelForm";
             this.Text = "Add polygon labels";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.NewLabelForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

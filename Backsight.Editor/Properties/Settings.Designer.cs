@@ -130,5 +130,29 @@ namespace Backsight.Editor.Properties {
                 this["NtxImportFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoPosition {
+            get {
+                return ((bool)(this["AutoPosition"]));
+            }
+            set {
+                this["AutoPosition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoAngle {
+            get {
+                return ((bool)(this["AutoAngle"]));
+            }
+            set {
+                this["AutoAngle"] = value;
+            }
+        }
     }
 }
