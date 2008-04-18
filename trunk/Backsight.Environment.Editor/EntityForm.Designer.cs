@@ -73,7 +73,6 @@ namespace Backsight.Environment.Editor
             // 
             // cancelButton
             // 
-            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(334, 313);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
@@ -84,7 +83,6 @@ namespace Backsight.Environment.Editor
             // 
             // okButton
             // 
-            this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(425, 313);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
@@ -219,7 +217,6 @@ namespace Backsight.Environment.Editor
             // 
             // tablesButton
             // 
-            this.tablesButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.tablesButton.Location = new System.Drawing.Point(15, 313);
             this.tablesButton.Name = "tablesButton";
             this.tablesButton.Size = new System.Drawing.Size(75, 23);

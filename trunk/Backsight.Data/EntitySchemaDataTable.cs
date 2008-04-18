@@ -47,6 +47,21 @@ namespace Backsight.Data
                 string query = String.Format("{0}={1}", columnEntityId.ColumnName, entId);
                 return (EntitySchemaRow[])Select(query);
             }
+
+            /// <summary>
+            /// Creates a new row in the <c>EntitySchema</c> table
+            /// </summary>
+            /// <param name="entityId">The ID of the entity type</param>
+            /// <param name="schemaId">The ID of an associated table</param>
+            /// <returns>The row inserted into this table</returns>
+            internal EntitySchemaRow AddEntitySchemaRow(int entityId, int schemaId)
+            {
+                EntitySchemaRow result = NewEntitySchemaRow();
+                result.EntityId = entityId;
+                result.SchemaId = schemaId;
+                AddEntitySchemaRow(result);
+                return result;
+            }
         }
     }
 }

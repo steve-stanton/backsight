@@ -20,7 +20,16 @@ namespace Backsight.Environment.Editor
 {
     public partial class EntityForm : Form
     {
+        /// <summary>
+        /// The entity type that's being edited
+        /// </summary>
         private readonly IEditEntity m_Edit;
+
+        /// <summary>
+        /// The tables (if any) that are associated with the entity type (null if
+        /// the list hasn't been edited).
+        /// </summary>
+        private ITable[] m_DefaultTables;
 
         internal EntityForm() : this(null)
         {
@@ -31,6 +40,8 @@ namespace Backsight.Environment.Editor
             InitializeComponent();
 
             m_Edit = edit;
+            m_DefaultTables = null;
+
             if (m_Edit==null)
             {
                 IEnvironmentFactory f = EnvironmentContainer.Factory;
@@ -96,6 +107,9 @@ namespace Backsight.Environment.Editor
             m_Edit.Layer = (ILayer)layerComboBox.SelectedItem;
             m_Edit.Font = (IFont)fontComboBox.SelectedItem;
 
+            if (m_DefaultTables!=null)
+                m_Edit.DefaultTables = m_DefaultTables;
+
             m_Edit.FinishEdit();
             this.DialogResult = DialogResult.OK;
             Close();
@@ -123,12 +137,17 @@ namespace Backsight.Environment.Editor
 
         private void tablesButton_Click(object sender, EventArgs e)
         {
+            // If this is the first time the button has been clicked, load up current associations
+            if (m_DefaultTables==null)
+                m_DefaultTables = m_Edit.DefaultTables;
+
+            // Grab the complete table list
             IEnvironmentContainer ec = EnvironmentContainer.Current;
             ITable[] tables = ec.Tables;
-            ITable[] entTables = m_Edit.DefaultTables;
-            ChecklistForm<ITable> dial = new ChecklistForm<ITable>(tables, entTables);
-            //if (dial.ShowDialog() == DialogResult.OK)
-            //    m_Edit.E
+
+            ChecklistForm<ITable> dial = new ChecklistForm<ITable>(tables, m_DefaultTables);
+            if (dial.ShowDialog() == DialogResult.OK)
+                m_DefaultTables = dial.Selection;
 
             dial.Dispose();
         }
