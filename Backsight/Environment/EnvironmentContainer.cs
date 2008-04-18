@@ -76,6 +76,57 @@ namespace Backsight.Environment
         }
 
         /// <summary>
+        /// Returns the default entity for a type of geometry on a map layer.
+        /// </summary>
+        /// <param name="type">The geometric type of interest</param>
+        /// <param name="layer">The layer of interest</param>
+        /// <returns>The default entity type (may be null)</returns>
+        public static IEntity GetDefaultEntity(SpatialType type, ILayer layer)
+        {
+            switch (type)
+            {
+                case SpatialType.Point:
+                    return layer.DefaultPointType;
+
+                case SpatialType.Line:
+                    return layer.DefaultLineType;
+
+                case SpatialType.Text:
+                    return layer.DefaultTextType;
+
+                case SpatialType.Polygon:
+                    return layer.DefaultPolygonType;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// The schemas that relate to the specified spatial type and mapping layer.
+        /// </summary>
+        /// <param name="t">The type(s) of interest</param>
+        /// <param name="layer">The layer of interest (null for all layers)</param>
+        /// <returns>The schemas associated with the entity types that apply to the specified
+        /// spatial type and mapping layer</returns>
+        public static ITable[] Schemas(SpatialType t, ILayer layer)
+        {
+            List<ITable> result = new List<ITable>();
+            IEntity[] ents = EntityTypes(t, layer);
+
+            foreach (IEntity e in ents)
+            {
+                ITable[] entSchemas = e.DefaultTables;
+                foreach (ITable schema in entSchemas)
+                {
+                    if (!result.Contains(schema))
+                        result.Add(schema);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        /// <summary>
         /// Restricts the supplied array to those entity types where certain
         /// spatial type(s) are valid.
         /// </summary>

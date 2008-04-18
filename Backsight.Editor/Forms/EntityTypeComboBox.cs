@@ -85,7 +85,7 @@ namespace Backsight.Editor.Forms
                                     { return a.Name.CompareTo(b.Name); });
             this.DataSource = entities;
 
-            IEntity ent = GetDefaultEntity(layer, type);
+            IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
             if (ent==null)
                 return null;
 
@@ -140,32 +140,6 @@ namespace Backsight.Editor.Forms
                 else
                     return e;
             }
-        }
-
-        /// <summary>
-        /// Returns the default entity for a type of geometry on a map layer.
-        /// </summary>
-        /// <param name="layer">The layer of interest</param>
-        /// <param name="type">The geometric type of interest</param>
-        /// <returns>The default entity type (may be null)</returns>
-        static IEntity GetDefaultEntity(ILayer layer, SpatialType type)
-        {
-            switch (type)
-            {
-                case SpatialType.Point:
-                    return layer.DefaultPointType;
-
-                case SpatialType.Line:
-                    return layer.DefaultLineType;
-
-                case SpatialType.Text:
-                    return layer.DefaultTextType;
-
-                case SpatialType.Polygon:
-                    return layer.DefaultPolygonType;
-            }
-
-            return null;
         }
     }
 }

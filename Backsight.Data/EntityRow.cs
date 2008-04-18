@@ -121,9 +121,7 @@ namespace Backsight.Data
                     ITable[] tables = (ITable[])ds.Schema.Select();
                     return Array.FindAll<ITable>(tables, delegate(ITable t)
                     {
-                        EntitySchemaRow result = Array.Find<EntitySchemaRow>(entSchemas,
-                            delegate(EntitySchemaRow esr) { return esr.SchemaId == t.Id; });
-                        return (result != null);
+                        return EntitySchemaRow.IsTableInArray(t, entSchemas);
                     });
                 }
 
@@ -131,20 +129,22 @@ namespace Backsight.Data
                 {
                     // Grab the current entity type -> schema (table) associations
                     BacksightDataSet ds = GetDataSet(this);
-                    EntitySchemaRow[] entSchemas = ds.EntitySchema.FindByEntityId(this.EntityId);
+                    EntitySchemaDataTable tab = ds.EntitySchema;
+                    EntitySchemaRow[] entSchemas = tab.FindByEntityId(this.EntityId);
+
+                    // Insert new associations
+                    foreach (ITable t in value)
+                    {
+                        if (!EntitySchemaRow.IsTableInArray(t, entSchemas))
+                            tab.AddEntitySchemaRow(this.EntityId, t.Id);
+                    }
 
                     // Remove any associations that no longer apply
                     foreach (EntitySchemaRow row in entSchemas)
                     {
-                        //bool found = false;
-                        //foreach (ITable t in value)
-                        //{
-                        //    if (
-                        //}
+                        if (!Array.Exists<ITable>(value, delegate(ITable t) { return t.Id==row.SchemaId; }))
+                            row.Delete();
                     }
-
-                    // Insert new associations
-
                 }
             }
 

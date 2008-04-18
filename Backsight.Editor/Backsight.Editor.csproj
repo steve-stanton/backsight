@@ -237,6 +237,12 @@
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="Forms\ScaleSpecificPen.cs" />
+    <Compile Include="Forms\SchemaComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\SchemaComboBox.Designer.cs">
+      <DependentUpon>SchemaComboBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TextSizeAction.cs" />
     <Compile Include="Forms\UpdatePathForm.cs">
       <SubType>Form</SubType>
@@ -821,6 +827,10 @@
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SchemaComboBox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SchemaComboBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SessionForm.resx">
       <SubType>Designer</SubType>
