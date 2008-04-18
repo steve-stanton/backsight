@@ -1561,12 +1561,20 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsTextAddPolygonLabelsEnabled()
         {
-            return false;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void TextAddPolygonLabels(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Confirm that text is currently displayed
+            if (!IsTextDrawn)
+            {
+                MessageBox.Show("Text is not currently displayed. Use Edit-Preferences to change the scale at which text will be drawn");
+                return;
+            }
+
+            CommandUI cmd = new NewLabelUI(this, action);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsTextMoveEnabled()

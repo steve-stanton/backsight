@@ -108,5 +108,21 @@ namespace Backsight.Editor.Forms
 
             return null;
         }
+
+        /// <summary>
+        /// The currently selected table
+        /// </summary>
+        public ITable SelectedTable
+        {
+            get { return (this.SelectedItem as ITable); }
+        }
+
+        /// <summary>
+        /// Clears this combo (sets the <see cref="DataSource"/> property to null).
+        /// </summary>
+        public void Clear()
+        {
+            DataSource = null;
+        }
     }
 }

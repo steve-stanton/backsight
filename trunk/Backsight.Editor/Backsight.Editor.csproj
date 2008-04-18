@@ -257,6 +257,7 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
+    <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />

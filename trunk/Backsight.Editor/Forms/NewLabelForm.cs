@@ -114,90 +114,85 @@ namespace Backsight.Editor.Forms
             ListSchemas();
         }
 
-        /*
-void CdNewLabel::OnSelchangeEntity() 
-{
-	// Get the new polygon type.
-	CComboBox* pBox = (CComboBox*)GetDlgItem(IDC_ENTITY);
-	m_pPolygonType = ReadEntityCombo(pBox);
+        private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            // Get the new polygon type.
+            m_PolygonType = entityTypeComboBox.SelectedEntityType;
 
-	// Ensure that the schema combo lists everything for the
-	// newly selected entity type.
-	ListSchemas();
-}
+            // Ensure that the schema combo lists everything for the
+            // newly selected entity type.
+            ListSchemas();
+        }
 
-void CdNewLabel::OnSelchangeAttributeSchema() 
-{
-//	Get the new polygon attribute schema
-	CComboBox* pSchBox = (CComboBox*)GetDlgItem(IDC_ATTRIBUTE_SCHEMA);
-	m_pSchema = ReadSchemaCombo(pSchBox);
-	OnDefaultAnnotation();
-}
+        private void schemaComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            // Get the new polygon attribute schema
+            m_Schema = schemaComboBox.SelectedTable;
+            OnDefaultAnnotation();
+        }
 
-////////////////////////////////////////////////////////////////////////////////////
-//
-//  @mfunc	Handle event when user clicks on the checkbox that says
-//			"Use ID".
-//
-////////////////////////////////////////////////////////////////////////////////////
+        private void defaultAnnotationCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            OnDefaultAnnotation();
+        }
 
-void CdNewLabel::OnDefaultAnnotation ( void ) {
+        /// <summary>
+        /// Handles event when user clicks on the checkbox that says "Use ID".
+        /// </summary>
+        void OnDefaultAnnotation()
+        {
+            // What does the user want to do?
+            m_IsUseId = defaultAnnotationCheckBox.Checked;
 
-	// What does the user want to do?
-	CButton* pTmpDef = (CButton*)GetDlgItem(IDC_DEFAULT_ANNOTATION);
-	m_IsUseId = (pTmpDef->GetCheck()==1);
+            // If the user does NOT want to use the ID, confirm that we
+            // have a schema!
+            if (!m_IsUseId && m_Schema == null)
+            {
+                string errmsg = String.Empty;
+                errmsg += ("The specified polygon type does not have any" + System.Environment.NewLine);
+                errmsg += ("annotation templates, so you can only use the ID.");
+                MessageBox.Show(errmsg);
+                m_IsUseId = true;
+            }
 
-	// If the user does NOT want to use the ID, confirm that we
-	// have a schema!
-	if ( !m_IsUseId && m_pSchema==0 ) {
-		CString errmsg;
-		errmsg.Format( "%s\n%s"
-			, "The specified polygon type does not have any"
-			, "annotation templates, so you can only use the ID.");
-		AfxMessageBox(errmsg);
-		m_IsUseId = TRUE;
-	}
+            UseId(m_IsUseId);
+        }
 
-	UseId(m_IsUseId);
+        private void annotationTemplateComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            // Get the new annotation template
+            m_Template = (ITemplate)annotationTemplateComboBox.SelectedItem;
+        }
 
-} // end of OnDefaultAnnotation
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            Close();
+        }
 
-void CdNewLabel::OnSelchangeAnnotationTemplate() 
-{
-//	Get the new annotation template
-	CComboBox* pTmpBox = (CComboBox*)GetDlgItem(IDC_ANNOTATION_TEMPLATE);
-	m_pTemplate = ReadTemplateCombo(pTmpBox);
-}
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            Close();
+        }
 
-void CdNewLabel::OnOK() 
-{
-	CDialog::OnOK();
-}
+        /// <summary>
+        /// Handles event when user clicks on the checkbox that says "List all choices".
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void allSchemasCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // Does the user want to see all schema(s)?
+            m_IsAllSchemas = (allSchemasCheckBox.Checked);
 
-////////////////////////////////////////////////////////////////////////////////////
-//
-//  @mfunc	Handle event when user clicks on the checkbox that says
-//			"List all choices".
-//
-////////////////////////////////////////////////////////////////////////////////////
+            // Display what the user wants to see.
+            ListSchemas();
 
-void CdNewLabel::OnAllSchemas ( void ) {
-
-	// Does the user want to see all schema(s)?
-	CButton* pAllSch = (CButton*)GetDlgItem(IDC_ALL_SCHEMAS);
-	m_IsAllSchemas = (pAllSch->GetCheck()==1);
-
-	// Display what the user wants to see.
-	ListSchemas();
-
-	// If the user wants all choices, force the combo to drop down.
-	if ( m_IsAllSchemas ) {
-		CComboBox* pSchBox = (CComboBox*)GetDlgItem(IDC_ATTRIBUTE_SCHEMA);
-		pSchBox->ShowDropDown();
-	}
-
-} // end of OnAllSchemas
-        */
+            // If the user wants all choices, force the combo to drop down.            
+            if (m_IsAllSchemas)
+                schemaComboBox.DroppedDown = true;
+        }
 
         /// <summary>
         /// Loads the schema combo box (as well as the annotation templates that apply).
@@ -287,63 +282,50 @@ void CdNewLabel::OnAllSchemas ( void ) {
             m_Template = null;
         }
 
-        /*
-////////////////////////////////////////////////////////////////////////////////////
-//
-//  @mfunc	Handle click on the "Don't have attributes" checkbox.
-//
-////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Handles click on the "Don't have attributes" checkbox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void noAttributesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            m_IsNoAttr = noAttributesCheckBox.Checked;
 
-void CdNewLabel::OnNoAttributes ( void ) {
+            if (m_IsNoAttr)
+            {
+                // Clear out the schema and template combos and disable them.
+                schemaComboBox.Clear();
+                annotationTemplateComboBox.DataSource = null;
 
-	CButton* pCheckBox = (CButton*)GetDlgItem(IDC_NO_ATTRIBUTES);
-	CComboBox* pSchBox = (CComboBox*)GetDlgItem(IDC_ATTRIBUTE_SCHEMA);
-	CComboBox* pTmpBox = (CComboBox*)GetDlgItem(IDC_ANNOTATION_TEMPLATE);
-	CButton* pAllSch = (CButton*)GetDlgItem(IDC_ALL_SCHEMAS);
+                // And disable them
+                schemaComboBox.Enabled = false;
+                annotationTemplateComboBox.Enabled = false;
 
-	// If the check-box has been set ...
-	if ( pCheckBox->GetCheck() ) {
+                // Also the checkbox that says "List all choices"
+                allSchemasCheckBox.Checked = false;
+                allSchemasCheckBox.Enabled = false;
+                m_IsAllSchemas = false;
 
-		m_IsNoAttr = TRUE;
+                // Null any previous selection.
+                m_Schema = null;
+                m_Template = null;
 
-		// Clear out the schema and template combos and disable them.
-		pSchBox->ResetContent();
-		pTmpBox->ResetContent();
+                // The ID is the only choice.
+                UseId(true);
 
-		// And disable them
-		pSchBox->EnableWindow(FALSE);
-		pTmpBox->EnableWindow(FALSE);
+                // And set the focus to the OK button.
+                okButton.Focus();
+            }
+            else
+            {
+                // Load the schema and template combos.
+                ListSchemas();
 
-		// Also the checkbox that says "List all choices"
-		pAllSch->SetCheck(0);
-		pAllSch->EnableWindow(FALSE);
-		m_IsAllSchemas = FALSE;
-
-		// Null any previous selection.
-		m_pSchema = 0;
-		m_pTemplate = 0;
-
-		// The ID is the only choice.
-		UseId();
-
-		// And set the focus to the OK button.
-		GetDlgItem(IDOK)->SetFocus();
-	}
-	else {
-
-		// Reset flag so that ListSchemas will actually list.
-		m_IsNoAttr = FALSE;
-
-		// Load the schema and template combos.
-		ListSchemas();
-
-		// And enable stuff.
-		pSchBox->EnableWindow(TRUE);
-		pTmpBox->EnableWindow(TRUE);
-		pAllSch->EnableWindow(TRUE);
-	}
-
-} // end of OnNoAttributes
-         */
+                // And enable stuff.
+                schemaComboBox.Enabled = true;
+                annotationTemplateComboBox.Enabled = true;
+                allSchemasCheckBox.Enabled = true;
+            }
+        }
     }
 }
