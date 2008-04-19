@@ -404,5 +404,44 @@ namespace Backsight.Editor
                 xd.SortValue = dset;
             }
         }
+
+        /// <summary>
+        /// Calculates an angle that is parallel to this line (suitable for adding text)
+        /// </summary>
+        /// <param name="p">A significant point on the line (not used).</param>
+        /// <returns>The rotation (in radians, clockwise from horizontal). Always greater
+        /// than or equal to 0.0</returns>
+        internal override double GetRotation(IPointGeometry p)
+        {
+            double xs = Start.X;
+            double ys = Start.Y;
+            double xe = End.X;
+            double ye = End.Y;
+            double dx = xe - xs;
+            double dy = ye - ys;
+
+            // Horizontal (to nearest mm)
+            double ady = Math.Abs(dy);
+            if (ady < 0.001)
+                return 0.0;
+
+            // Vertical (to nearest mm)
+            double adx = Math.Abs(dx);
+            if (adx < 0.001)
+                return MathConstants.PIDIV2;
+
+            // Get result in range (0,PIDIV2)
+            double rotation = Math.Atan(ady/adx);
+
+            // Stuff in the NE and SW quadrants needs to be tweaked.
+            if ((dx < 0.0 && dy < 0.0) || (dx > 0.0 && dy > 0.0))
+            {
+                rotation = -rotation;
+                if (rotation < 0.0)
+                    rotation += MathConstants.PIMUL2;
+            }
+        
+            return rotation;
+        }
     }
 }

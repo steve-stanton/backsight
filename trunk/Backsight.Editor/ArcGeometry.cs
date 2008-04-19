@@ -675,5 +675,30 @@ namespace Backsight.Editor
                 xd.SortValue = dset;
             }
         }
+
+        /// <summary>
+        /// Calculates an angle that is parallel to this line (suitable for adding text)
+        /// </summary>
+        /// <param name="pos">A significant point on the line (the returned angle
+        /// will be at a tangent at this point)</param>
+        /// <returns>The rotation (in radians, clockwise from horizontal). Always greater
+        /// than or equal to 0.0</returns>
+        internal override double GetRotation(IPointGeometry pos)
+        {
+            // Get the bearing from the centre to the midpoint.
+            IPosition center = m_Circle.Center;
+            double bearing = Geom.Bearing(center, pos).Radians;
+
+            // If the midpoint is above the circle center, we get upside-down
+            // text so rotate it the other way.
+            if (pos.Y > center.Y)
+                return bearing;
+
+            double angle = bearing - MathConstants.PI;
+            if (angle < 0.0)
+                angle = bearing + MathConstants.PI;
+
+            return angle;
+        }
     }
 }

@@ -1170,6 +1170,7 @@ namespace Backsight.Editor
         internal bool IsAutoNumber
         {
             get { return m_AutoNumber; }
+            set { m_AutoNumber = value; }
         }
 
         /// <summary>

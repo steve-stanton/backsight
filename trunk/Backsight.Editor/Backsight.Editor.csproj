@@ -132,6 +132,12 @@
     <Compile Include="Forms\GetDistanceControl.Designer.cs">
       <DependentUpon>GetDistanceControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GetIdForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetIdForm.Designer.cs">
+      <DependentUpon>GetIdForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\GetKeyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -684,6 +690,10 @@
     <EmbeddedResource Include="Forms\GetEntityForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetEntityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetIdForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetIdForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetKeyForm.resx">
       <SubType>Designer</SubType>
