@@ -240,5 +240,17 @@ namespace Backsight.Editor
         {
             Make().SetSortValues(data);
         }
+
+        /// <summary>
+        /// Calculates an angle that is parallel to this line (suitable for adding text)
+        /// </summary>
+        /// <param name="p">A significant point on the line. In the case of lines
+        /// that are multi-segments, the individual line segment that contains this
+        /// position should be used to obtain the angle.</param>
+        /// <returns>The rotation (in radians, clockwise from horizontal)</returns>
+        internal override double GetRotation(IPointGeometry p)
+        {
+            return Make().GetRotation(p);
+        }
     }
 }

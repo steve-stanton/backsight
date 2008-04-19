@@ -15,12 +15,13 @@
 
 using System;
 using System.Data;
+using System.Windows.Forms;
 
 using Backsight.Environment;
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Properties;
-using System.Windows.Forms;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -174,13 +175,12 @@ namespace Backsight.Editor
                 m_PolygonId.ReserveId(ent, 0);
             else
             {
-                /*
-		CdGetId dial(pEnt,m_PolygonId);
-		if ( dial.DoModal()!=IDOK ) {
-			DialFinish(0);
-			return FALSE;
-		}
-                 */
+                GetIdForm dial = new GetIdForm(ent, m_PolygonId);
+                if (dial.ShowDialog() != DialogResult.OK)
+                {
+                    DialFinish(null);
+                    return false;
+                }
             }
 
             // Start by assuming the text is the key.
@@ -189,20 +189,22 @@ namespace Backsight.Editor
             // Get any attributes.
             if (m_Schema != null)
             {
-                /*
-		if ( !GetAttributes() || m_pLastRow==0 ) {
-			DialFinish(0);
-			return FALSE;
-		}
+                if (!GetAttributes() || m_LastRow == null)
+                {
+                    DialFinish(null);
+                    return false;
+                }
 
-		// If an annotation template has been specified, use that
-		// to get the text from the row (pass in the ID in case the
-		// template includes a reference to the key).
-		if ( m_pTemplate ) {
-			CString text;
-			m_pTemplate->GetText(*m_pLastRow,(LPCTSTR)str,text);
-			str = text;
-		}
+                // If an annotation template has been specified, use that
+                // to get the text from the row (pass in the ID in case the
+                // template includes a reference to the key).
+                throw new NotImplementedException("NewLabelUI.GetLabelInfo");
+                /*
+		            if ( m_pTemplate ) {
+			            CString text;
+			            m_pTemplate->GetText(*m_pLastRow,(LPCTSTR)str,text);
+			            str = text;
+		            }
                  */
             }
 
@@ -219,56 +221,49 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// Handles mouse-move.
+        /// </summary>
+        /// <param name="pos">The new position of the mouse</param>
+        internal override void MouseMove(IPosition pos)
+        {
+            // If we previously drew a text outline, erase it now.
+            EraseRect();
+
+            // Find the polygon (if any) that encloses the mouse position.
+            CadastralMapModel map = CadastralMapModel.Current;
+            ISpatialIndex index = map.Index;
+            IPointGeometry pg = PointGeometry.Create(pos);
+            Polygon enc = new FindPointContainerQuery(index, pg).Result;
+
+            // If it's different from what we previously had, remember the
+            // new enclosing polygon.
+            if (!Object.ReferenceEquals(enc, m_Polygon))
+            {
+                // If we had something before, and we filled it, erase
+                // the fill now.
+                DrawPolygon(false);
+
+                // Remember the polygon we're now enclosed by (if any).
+                m_Polygon = enc;
+
+                // Draw the new polygon.
+                DrawPolygon(true);
+
+                // See if a new orientation applies
+                CheckOrientation(pg);
+
+                // If the enclosing polygon does not have a label, use the
+                // standard cursor and fill the polygon. Otherwise use the
+                // gray cursor.
+                SetCommandCursor();
+            }
+
+            // Draw a rectangle representing the outline of the text.
+            DrawRect(pos);
+        }
+
         /*		
-//	@mfunc	Handle mouse-move.
-//
-//	@parm	The new position of the mouse, in logical units.
-//
-//////////////////////////////////////////////////////////////////////
-
-void CuiNewLabel::MouseMove ( const CPoint& lpt ) {
-
-	// If we previously drew a text outline, erase it now.
-	EraseRect();
-
-	// Get the position in ground units.
-	CeVertex pos;
-	GetpWnd()->LPToGround(lpt,&pos);
-
-	// Find the polygon (if any) that encloses the mouse position.
-	const CeTheme* const pTheme = CeMap::GetpMap()->GetpTheme();
-	CePolygon* pEnc = pos.FindEnclosedBy(*pTheme);
-
-	// If it's different from what we previously had, remember the
-	// new enclosing polygon.
-	if ( pEnc != m_pPolygon ) {
-
-		// If we had something before, and we filled it, erase
-		// the fill now.
-		DrawPolygon(FALSE);
-
-		// Remember the polygon we're now enclosed by (if any).
-		m_pPolygon = pEnc;
-
-		// Draw the new polygon.
-		DrawPolygon(TRUE);
-
-		// See if a new orientation applies
-		CheckOrientation(pos);
-
-		// If the enclosing polygon does not have a label, use the
-		// standard cursor and fill the polygon. Otherwise use the
-		// gray cursor.
-		SetCommandCursor();
-	}
-
-	// Draw a rectangle representing the outline of the text.
-	DrawRect(pos);
-
-} // end of MouseMove
-
-//////////////////////////////////////////////////////////////////////
-//
 //	@mfunc	React to selection of the OK button in the dialog.
 //
 //	@parm	The dialog window (needed because of definition of
@@ -545,63 +540,59 @@ INT4 CuiNewLabel::GetCursorId ( void ) const {
 	}
 
 } // end of GetCursorId
+        */
 
-/////////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Draw (or erase) the polygon that the mouse currently sits in.
-//
-//	@parm	Draw the polygon? Default=TRUE
-//
-//	@rdesc	TRUE if a polygon was drawn or erased.
-//
-/////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Draws (or erases) the polygon that the mouse currently sits in.
+        /// </summary>
+        /// <param name="draw">Draw the polygon? [Default was true]</param>
+        /// <returns>True if a polygon was drawn or erased.</returns>
+        bool DrawPolygon(bool draw)
+        {
+            // Return if there is no valid polygon.
+            if (!IsValidPolygon())
+                return false;
 
-LOGICAL CuiNewLabel::DrawPolygon ( const LOGICAL draw ) const {
+            if (draw)
+            {
+                m_Polygon.Render(ActiveDisplay, new DrawStyle());
+                if (m_Orient != null)
+                    m_Orient.Render(ActiveDisplay, new HighlightStyle());
+            }
+            else
+                ErasePainting();
 
-	// Return if there is no valid polygon.
-	if ( !IsValidPolygon() ) return FALSE;
+            return true;
+        }
 
-	// Draw or erase the polygon.
-	CeDraw* pDraw = GetpWnd();
-	CClientDC dc(pDraw);
-	pDraw->OnPrepareDC(&dc);
+        /// <summary>
+        /// Do we currently have a valid polygon for adding a new label?
+        /// </summary>
+        /// <returns>True if <c>m_Polygon</c> is defined and valid.</returns>
+        bool IsValidPolygon()
+        {
+            // Return if there is no polygon to draw.
+            if (m_Polygon==null)
+                return false;
 
-	if ( draw )
-	{
-		pDraw->Highlight(&dc,m_pPolygon);
-		if ( m_pOrient ) m_pOrient->Highlight();
-	}
-	else
-		pDraw->UnHighlight(&dc,m_pPolygon);
+            // Try to find an existing label inside the polygon.
+            TextFeature label = m_Polygon.Label;
 
-	return TRUE;
+            // If we got something, the normal course of action is
+            // to disallow addition of another label. However, if the
+            // current editing layer is derived from the base layer
+            // of the label, we'll allow it ... UNLESS the existing
+            // label is key text and the replacement would be key
+            // text as well.
 
-} // end of DrawPolygon
+            if (label == null)
+                return true;
 
-/////////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Do we currently have a valid polygon for adding
-//			a new label?
-//
-//	@rdesc	TRUE if m_pPolygon is defined and valid.
-//
-/////////////////////////////////////////////////////////////////////////////////
+            //if (m_Template==null && label.TextGeometry is KeyText
 
-LOGICAL CuiNewLabel::IsValidPolygon ( void ) const {
-
-	// Return if there is no polygon to draw.
-	if ( !m_pPolygon ) return FALSE;
-
-	// Try to find an existing label inside the polygon.
-	const CeTheme& curtheme = GetActiveTheme();
-	const CeLabel* const pLabel = m_pPolygon->FindLabel(curtheme);
-
-	// If we got something, the normal course of action is
-	// to disallow addition of another label. However, if the
-	// current editing theme is derived from the base theme
-	// of the label, we'll allow it ... UNLESS the existing
-	// label is key text and the replacement would be key
-	// text as well.
+            return false;
+        }
+        /*
 
 	if ( pLabel ) {
 		if ( m_pTemplate==0 &&
@@ -609,16 +600,9 @@ LOGICAL CuiNewLabel::IsValidPolygon ( void ) const {
 		const CeTheme* const pBase = pLabel->GetBaseTheme();
 		return (pBase && curtheme.IsDerivedFrom(*pBase));
 	}
-	else
-		return TRUE;
 
 } // end of IsValidPolygon
         */
-
-        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
 
         /*
 //////////////////////////////////////////////////////////////////////
@@ -649,9 +633,20 @@ CeLabel* CuiNewLabel::AddNewLabel ( CeLabel* pOldLabel ) {
 	return AddNewLabel(pos,pOldLabel);
 
 } // end of AddNewLabel
+        */
 
-//////////////////////////////////////////////////////////////////////
-//
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="posn"></param>
+        /// <param name="oldLabel"></param>
+        /// <returns></returns>
+        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        /*
 //	@private
 //
 //	@mfunc	Create a new polygon label in the map.
@@ -660,11 +655,6 @@ CeLabel* CuiNewLabel::AddNewLabel ( CeLabel* pOldLabel ) {
 //	@parm	An old shared label that is being replaced.
 //
 //	@rdesc	Pointer to the CeLabel feature that was added.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "CeNewLabelEx.h"
-#include "CeFeatureId.h"
 
 CeLabel* CuiNewLabel::AddNewLabel ( const CeVertex& posn
 								  , CeLabel* pOldLabel ) {
@@ -849,23 +839,24 @@ CeLabel* CuiNewLabel::AddNewLabel ( const CeVertex& posn
 	return pNewLabel;
 
 } // end of AddNewLabel
+        */
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Get the attributes for a new label.
-//
-//	@rdesc	TRUE if attributes entered OK.
-//
-//////////////////////////////////////////////////////////////////////////////////
 
-#include "CdRowDialog.h"
-#include "CeRowDisplay.h"
+        /// <summary>
+        /// Gets the attributes for a new label.
+        /// </summary>
+        /// <returns>True if attributes entered OK.</returns>
+        bool GetAttributes()
+        {
+            // There HAS to be a schema.
+            if (m_Schema==null)
+                return false;
 
-LOGICAL CuiNewLabel::GetAttributes ( void ) {
 
-	// There HAS to be a schema.
-	if ( !m_pSchema ) return FALSE;
-
+            MessageBox.Show("Attribute data entry is not currently implemented");
+            return false;
+        }
+        /*
 	// Allocate a blob of memory to hold the attribute data.
 	CHARS* pAttrData = new CHARS[m_pSchema->GetSchemaMemSize()];
 
@@ -961,81 +952,79 @@ LOGICAL CuiNewLabel::Update ( CeLabel& label ) {
 	return FALSE;
 
 } // end of Update
+        */
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Sees whether the orientation of the new text should
-//			be altered. This occurs if the auto-angle capability
-//			is enabled, and the specified position is close to
-//			any visible line.
-//
-//	@parm	The current mouse position (reference position for
-//			the new label)
-//
-//	@rdesc	TRUE if the orientation angle got changed.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Sees whether the orientation of the new text should be altered. This
+        /// occurs if the auto-angle capability is enabled, and the specified
+        /// position is close to any visible line.
+        /// </summary>
+        /// <param name="refpos">The current mouse position (reference position
+        /// for the new label)</param>
+        /// <returns>True if the orientation angle got changed.</returns>
+        bool CheckOrientation(IPointGeometry refpos)
+        {
+            // Return if the auto-angle function is disabled.
+            if (!m_IsAutoAngle)
+                return false;
 
-LOGICAL CuiNewLabel::CheckOrientation ( const CeVertex& refpos )
-{
-	// Return if the auto-angle function is disabled.
-	if ( !m_IsAutoAngle ) return FALSE;
+            // Try to get an orientation line
+            LineFeature orient = GetOrientation(refpos);
+            if (!Object.ReferenceEquals(orient, m_Orient))
+                ErasePainting();
 
-	// Try to get an orientation line
-	const CeArc* const pOrient = GetOrientation(refpos);
-	if ( pOrient != m_pOrient && m_pOrient )
-		m_pOrient->UnHighlight();
+            m_Orient = null;
+            if (orient == null)
+                return false;
 
-	m_pOrient = 0;
-	if ( pOrient == 0 ) return FALSE;
+            // Locate the closest point on the line (we SHOULD find it,
+            // but if we don't, just bail out)
+            ISpatialDisplay display = ActiveDisplay;
+            ILength tol = new Length(0.002 * display.MapScale);
+            IPosition closest = orient.LineGeometry.GetClosest(refpos, tol);
+            if (closest == null)
+                return false;
 
-	// Locate the closest point on the line (we SHOULD find it,
-	// but if we don't, just bail out)
-	CeVertex closest;
-	FLOAT8 tol = 0.002 * GetpWnd()->GetDrawScale();
-	if ( !pOrient->GetClosest(refpos,tol,closest) ) return FALSE;
+            m_Orient = orient;
+            if (m_Orient==null)
+                return false;
 
-	m_pOrient = pOrient;
-	if ( !m_pOrient ) return FALSE;
+            // Highlight the new orientation line
+            m_Orient.Render(display, new HighlightStyle());
 
-	// Highlight the new orientation line
-	m_pOrient->Highlight();
+            // Get the rotation angle
+            IPointGeometry cg = PointGeometry.Create(closest);
+            double rot = m_Orient.LineGeometry.GetRotation(cg);
+            SetRotation(rot);
+            return true;
+        }
 
-	// Get the rotation angle
-	FLOAT8 rot = m_pOrient->GetRotation(closest);
-	SetRotation(rot);
-	return TRUE;
-}
+        /// <summary>
+        /// Sees whether the orientation of the new text should be altered. This
+        /// occurs if the auto-orient capability is enabled, and the specified
+        /// position is close to any visible lne.
+        /// </summary>
+        /// <param name="posn">The position to use for making the check.</param>
+        /// <returns></returns>
+        LineFeature GetOrientation(IPointGeometry posn)
+        {
+            // The ground tolerance is 2mm at the draw scale.
+            ISpatialDisplay display = ActiveDisplay;
+            double tol = 0.002 * display.MapScale;
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Sees whether the orientation of the new text should
-//			be altered. This occurs if the auto-orient capability
-//			is enabled, and the specified position is close to
-//			any visible line.
-//
-//	@parm	The position to use for making the check.
-//
-//////////////////////////////////////////////////////////////////////
+            // If we previously selected something, see if the search point
+            // lies within tolerance. If so, there's no change.
+            if (m_Orient != null)
+            {
+                double dist = m_Orient.Distance(posn).Meters;
+                if (dist < tol)
+                    return m_Orient;
+            }
 
-const CeArc* CuiNewLabel::GetOrientation ( const CeVertex& posn ) const
-{
-	// The ground tolerance is 2mm at the draw scale.
-	FLOAT8 tol = 0.002 * GetpWnd()->GetDrawScale();
-
-	// If we previously selected something, see if the search point
-	// lies within tolerance. If so, there's no change
-
-	if ( m_pOrient )
-	{
-		FLOAT8 dist =  m_pOrient->MinDistanceSquared(posn);
-		if ( dist < (tol*tol) ) return m_pOrient;
-	}
-
-	// Get the map to find the closest selectable arc.
-	CeMap* pMap = CeMap::GetpMap();
-	return pMap->FindClosestArc(posn,tol,TRUE);
-}
-         */
+            // Get the map to find the closest line
+            CadastralMapModel map = CadastralMapModel.Current;
+            ISpatialIndex index = map.Index;
+            return (index.QueryClosest(posn, new Length(tol), SpatialType.Line) as LineFeature);
+        }
     }
 }

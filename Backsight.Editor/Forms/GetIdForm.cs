@@ -16,48 +16,56 @@
 using System;
 using System.Windows.Forms;
 
+using Backsight.Environment;
+
 namespace Backsight.Editor.Forms
 {
-    /// <written by="Steve Stanton" />
     /// <summary>
     /// Dialog for obtaining a feature ID from the user.
     /// </summary>
-    /// <seealso cref="GetIdForm"/>
-    partial class GetKeyForm : Form
+    /// <seealso cref="GetKeyForm"/>
+    partial class GetIdForm : Form
     {
         #region Class data
 
         /// <summary>
-        /// The key entered by the user (may be null)
+        /// The desired entity type.
         /// </summary>
-        string m_Key;
+        readonly IEntity m_Entity;
+
+        /// <summary>
+        /// The reserved ID.
+        /// </summary>
+        readonly IdHandle m_IdHandle;
 
         #endregion
 
         #region Constructors
 
-        /// <summary>
-        /// Creates a new <c>GetKeyForm</c> with the usual title bar.
-        /// </summary>
-        internal GetKeyForm()
+        internal GetIdForm(IEntity ent, IdHandle idh)
         {
             InitializeComponent();
 
-            m_Key = null;
+            m_Entity = ent;
+            m_IdHandle = idh;
         }
-
-        /// <summary>
-        /// Creates a new <c>GetKeyForm</c> with the specified title bar.
-        /// </summary>
-        /// <param name="title">The text for the title bar</param>
-        internal GetKeyForm(string title)
-            : this()
-        {
-            this.Text = title;
-        }
-
 
         #endregion
+
+        private void GetIdForm_Shown(object sender, EventArgs e)
+        {
+            // Load the ID combo and reserve the first available ID (extending
+            // the allocation if necessary).
+            int nid = IdHelper.LoadIdCombo(pointIdComboBox, m_Entity, m_IdHandle, true);
+
+            // If nothing could be reserved, get out now.
+            if (nid == 0)
+            {
+                string errmsg = String.Format("Cannot obtain any IDs for '{0}'", m_Entity.Name);
+                MessageBox.Show(errmsg);
+                Close();
+            }
+        }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
@@ -67,25 +75,16 @@ namespace Backsight.Editor.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            string k = keyTextBox.Text.Trim();
-            if (k.Length==0)
-            {
-                MessageBox.Show("You have not specified anything.");
-                keyTextBox.Focus();
-                return;
-            }
+            CadastralMapModel map = CadastralMapModel.Current;
+            map.IsAutoNumber = autoNumberCheckBox.Checked;
 
-            m_Key = k;
             this.DialogResult = DialogResult.OK;
             Close();
         }
 
-        /// <summary>
-        /// The key entered by the user (may be null)
-        /// </summary>
-        internal string Key
+        private void pointIdComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            get { return m_Key; }
+            IdHelper.OnChangeSelectedId(pointIdComboBox, m_IdHandle);
         }
     }
 }
