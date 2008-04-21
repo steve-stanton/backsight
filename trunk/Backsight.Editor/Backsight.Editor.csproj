@@ -211,6 +211,12 @@
     <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewLabelContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\NewLabelContextMenu.Designer.cs">
+      <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewLabelForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -263,6 +269,7 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
+    <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
@@ -799,6 +806,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewLabelContextMenu.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewLabelForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NewLabelForm.cs</DependentUpon>
@@ -1039,6 +1050,8 @@
     <Content Include="Resources\DomainIcon.ico" />
     <Content Include="Resources\Editor.ico" />
     <Content Include="Resources\FieldDefinitionIcon.ico" />
+    <Content Include="Resources\GrayReverseArrowCursor.cur" />
+    <Content Include="Resources\GrayWandCursor.cur" />
     <Content Include="Resources\LayerIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\Point1Cursor.cur" />
@@ -1048,6 +1061,7 @@
     <Content Include="Resources\TableDefinitionIcon.ico" />
     <Content Include="Resources\TemplateIcon.ico" />
     <Content Include="Resources\ThemeIcon.ico" />
+    <Content Include="Resources\WandCursor.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Data;
 
 using Backsight.Environment;
 
@@ -159,50 +160,32 @@ namespace Backsight.Editor.Operations
             return false;
         }
 
+        /// <summary>
+        /// Executes the new label operation.
+        /// </summary>
+        /// <param name="vtx">The position of the new label.</param>
+        /// <param name="polygonId">The ID and entity type to assign to the new label.</param>
+        /// <param name="pol">The polygon that the label falls inside. It should not already refer to a label.</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        internal void Execute(IPosition vtx, IdHandle polygonId, Polygon pol, 
+                                double height, double width, double rotation)
+        {
+            // Add the label.
+            CadastralMapModel map = MapModel;
+            m_NewText = map.AddKeyLabel(this, polygonId, vtx, height, width, rotation);
+
+            // Associate the polygon with the label, and vice versa.
+            m_NewText.SetTopology(true);
+            pol.ClaimLabel(m_NewText);
+        }
+
+        internal void Execute(IPosition vtx, double ght, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol)
+        {
+            throw new NotImplementedException("NewTextOperation.Execute");
+        }
         /*
-//	@mfunc	Execute the new label operation.
-//
-//	@parm	The position of the new label.
-//	@parm	The height for the new label, in metres on the ground.
-//			Specify 0.0 to get the entity type's default size.
-//	@parm	The ID and entity type to assign to the new label.
-//	@parm	The polygon that the label falls inside. It should
-//			not already refer to a label. Specify 0 if the
-//			label is non-topological.
-//
-//	@rdesc	TRUE if operation executed ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CeNewLabel::Execute	( const CeVertex& vtx
-							, const FLOAT8 ght
- 							, const CeIdHandle& polygonId
-							, CePolygon* pPol ) {
-
-//	Confirm that any specified polygon is good.
-	if ( pPol && pPol->IsIsland() ) {
-		ShowMessage ( "CeNewLabel::Execute\nIsland polygon." );
-		return FALSE;
-	}
-
-	CeMap* pMap = CeMap::GetpMap();
-
-//	Add the label.
-	m_pNewLabel = pMap->AddKeyLabel(polygonId,vtx,(FLOAT4)ght);
-	if ( !m_pNewLabel ) return FALSE;
-
-//	Associate the polygon with the label, and vice versa.
-	if ( pPol ) {
-		m_pNewLabel->SetTopology(TRUE);
-		pPol->ClaimLabel(*m_pNewLabel);
-	}
-	else
-		m_pNewLabel->SetTopology(FALSE);
-
-	return TRUE;
-
-} // end of Execute
-
 //	@mfunc	Execute the new label operation.
 //
 //	@parm	The position of the new label.

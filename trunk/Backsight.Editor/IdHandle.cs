@@ -144,7 +144,7 @@ namespace Backsight.Editor
 
         #endregion
 
-        bool IsReserved
+        internal bool IsReserved
         {
             get { return (m_Id>0); }
         }

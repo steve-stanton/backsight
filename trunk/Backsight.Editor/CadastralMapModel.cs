@@ -1463,8 +1463,7 @@ namespace Backsight.Editor
         /// <param name="vtx">The position of the top-left corner of the first character of the text.</param>
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
-        /// <param name="rotation">The clockwise rotation of the text, in radians from the
-        /// horizontal (default=0.0).</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
         /// <returns>The newly created text</returns>
         internal TextFeature AddMiscText(Operation creator, string s, IEntity ent, IPosition vtx, double height,
                                             double width, double rotation)
@@ -1483,6 +1482,37 @@ namespace Backsight.Editor
 
             // Do standard stuff for adding a label.
             return AddLabel(creator, text, newEnt, null);
+        }
+
+        /// <summary>
+        /// Adds a label that is based on a reserved ID.
+        /// </summary>
+        /// <param name="creator">The editing operation creating the text</param>
+        /// <param name="polygonId">The reserved ID and entity type for the the label.</param>
+        /// <param name="vtx">The reference position of the label (the position of the top-left corner of the first character
+        /// of the text).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        /// <returns>The newly created text</returns>
+        internal TextFeature AddKeyLabel(Operation creator, IdHandle polygonId, IPosition vtx,
+                                            double height, double width, double rotation)
+        {
+            // Exit with error if the key is not reserved.
+            if (!polygonId.IsReserved)
+                throw new ArgumentException("CadastralMapMode.AddKeyLabel - ID is undefined.");
+
+            // Add the label.
+            IEntity ent = polygonId.Entity;
+            IPointGeometry p = PointGeometry.Create(vtx);
+            KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
+            TextFeature label = AddLabel(creator, text, ent, null);
+
+            // Define the label's ID
+      		polygonId.CreateId(label);
+            text.Label = label;
+
+            return label;
         }
 
         /// <summary>
