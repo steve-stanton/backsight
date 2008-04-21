@@ -16,12 +16,15 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Geometry;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -263,200 +266,132 @@ namespace Backsight.Editor
             DrawRect(pos);
         }
 
-        /*		
-//	@mfunc	React to selection of the OK button in the dialog.
-//
-//	@parm	The dialog window (needed because of definition of
-//			pure virtual in CuiCommand). Not used.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Reacts to action that concludes the command dialog.
+        /// </summary>
+        /// <param name="wnd">The dialog window where the action originated (not used)</param>
+        /// <returns>True if command finished ok. This implementation returns the
+        /// result of a call to <see cref="FinishCommand"/>.</returns>
+        internal override bool DialFinish(Control wnd)
+        {
+            // Ensure any text outline has been erased.
+            EraseRect();
 
-LOGICAL CuiNewLabel::DialFinish ( CWnd* pWnd ) {
+            // Clear any polygon fill
+            DrawPolygon(false);
 
-	// Ensure any text outline has been erased.
-	EraseRect();
+            // And un-highlight any orientation line
+            if (m_Orient!=null)
+            {
+                ErasePainting();
+                m_Orient = null;
+            }
 
-	// Clear any polygon fill
-	DrawPolygon(FALSE);
+            // If the last row we created was not associated with a label, get rid of it now.
+            //if (m_pLastRow && !m_pLastRow->GetpId())
+            //{
+            //    delete m_pLastRow;
+            //    m_pLastRow = 0;
+            //}
 
-	// And un-highlight any orientation line
-	if ( m_pOrient )
-	{
-		m_pOrient->UnHighlight();
-		m_pOrient = 0;
-	}
+            // Get the base class to finish up.
+            return base.DialFinish(wnd);
+        }
 
-	// If the last row we created was not associated with a
-	// label, get rid of it now.
-	if ( m_pLastRow && !m_pLastRow->GetpId() ) {
-		delete m_pLastRow;
-		m_pLastRow = 0;
-	}
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>True (always), indicating that something was done.</returns>
+        internal override bool LButtonDown(IPosition p)
+        {
+            // Make sure the enclosing polygon refers to the point we
+            // have been supplied.
+            MouseMove(p);
 
-	// Get the base class to finish up.
-	return FinishCommand();
+            // Exit the command if the user left-clicked in an area that
+            // does not have a polygon (perhaps the user doesn't know that
+            // you exit via the right-click menu).
+            if (m_Polygon==null)
+            {
+                DialFinish(null);
+                return true;
+            }
 
-} // end of DialFinish
+            // Issue error if the enclosing polygon already has a label (this
+            // was supposed to be pretty obvious, given that the cursor is
+            // grey, and the polygon is not filled in that case).
+            if (!IsValidPolygon())
+            {
+                MessageBox.Show("Polygon already has a label");
+                SetCommandCursor();
+                return true;
+            }
 
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Handle left mouse click.
-//
-//	@parm	The position where the left-click occurred, in logical
-//			units.
-//
-//////////////////////////////////////////////////////////////////////
+            // Erase any text outline.
+            EraseRect();
 
-void CuiNewLabel::LButtonDown ( const CPoint& lpt ) {
+            // Erase any highlighting.
+            DrawPolygon(false);
 
-	// Make sure the enclosing polygon refers to the point we
-	// have been supplied.
-	MouseMove(lpt);
+            if (m_Orient!=null)
+            {
+                ErasePainting();
+                m_Orient = null;
+            }
 
-	// Exit the command if the user left-clicked in an area that
-	// does not have a polygon (perhaps the user doesn't know that
-	// you exit via the right-click menu).
-	if ( !m_pPolygon ) {
-		DialFinish(0);
-		return;
-	}
+            // Does the polygon actually contain a label that's shared with a base layer?
+            TextFeature oldLabel = m_Polygon.Label;
 
-	// Issue error if the enclosing polygon already has a label (this
-	// was supposed to be pretty obvious, given that the cursor is
-	// grey, and the polygon is not filled in that case).
-	if ( !IsValidPolygon() ) {
-		AfxMessageBox("Polygon already has a label");
-		SetCommandCursor();
-		return;
-	}
+            // Add a new label.
+            TextFeature label = null;
 
-	// Erase any text outline.
-	EraseRect();
+            if (m_IsAutoPos)
+                label = AddNewLabel(oldLabel);
+            else
+                label = AddNewLabel(p, oldLabel);
 
-	// Erase any highlighting.
-	DrawPolygon(FALSE);
+            // Tell the base class (resets the last known position, used
+            // to erase labels during dragging). 
+            OnLabelAdd();
 
-	if ( m_pOrient )
-	{
-		m_pOrient->UnHighlight();
-		m_pOrient = 0;
-	}
+            // Undefine the enclosing polygon pointer so that the cursor
+            // will become gray as the user moves the mouse out of the polygon.
+            m_Polygon = null;
 
-	// Does the polygon actually contain a label that shared
-	// with a base layer?
-	const CeTheme& curtheme = GetActiveTheme();
-	CeLabel* pOldLabel = m_pPolygon->FindLabel(curtheme);
+            // Draw it. Note that if the new label replaces an old label,
+            // the AddNewLabel call explicitly erases it, but something
+            // from within a subsequent CleanEdit call re-draws it in
+            // red. To get around that, ensure it's erased again here.
+            // ...changes made elsewhere may now make this redundant
+            //if (pLabel)
+            //{
+            //    if (pOldLabel)
+            //        pOldLabel->Erase();
+            //    GetpWnd()->Draw(pLabel, COL_BLACK);
+            //}
 
-	// Add a new label.
+            // Get the info for the next label.
+            return GetLabelInfo();
+        }
 
-	CeLabel* pLabel = 0;
+        /// <summary>
+        /// Creates any applicable context menu
+        /// </summary>
+        /// <returns>The context menu for this command.</returns>
+        internal override ContextMenuStrip CreateContextMenu()
+        {
+            return new NewLabelContextMenu(this);
+        }
 
-	if ( m_IsAutoPos )
-		pLabel = AddNewLabel(pOldLabel);
-	else {
-		CeVertex pos;
-		GetpWnd()->LPToGround(lpt,&pos);
-		pLabel = AddNewLabel(pos,pOldLabel);
-	}
-
-	// Draw it (do it below)
-	//if ( pLabel ) GetpWnd()->Draw(pLabel,COL_BLACK);
-
-	// Tell the base class (resets the last known position, used
-	// to erase labels during dragging). 
-	OnLabelAdd();
-
-	// Undefine the enclosing polygon pointer so that the cursor
-	// will become grey as the user moves the mouse out of the
-	// polygon.
-	m_pPolygon = 0;
-
-	// Draw it. Note that if the new label replaces an old label,
-	// the AddNewLabel call explicitly erases it, but something
-	// from within a subsequent CleanEdit call re-draws it in
-	// red. To get around that, ensure it's erased again here.
-	// ...changes made elsewhere may now make this redundant
-
-	if ( pLabel )
-	{
-		if ( pOldLabel ) pOldLabel->Erase();
-		GetpWnd()->Draw(pLabel,COL_BLACK);
-	}
-
-	// Get the info for the next label.
-	GetLabelInfo();
-
-} // end of LButtonDown					   } 
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Handle right mouse click.
-//
-//	@parm	The position where the right-click occurred, in
-//			logical units.
-//
-//	@rdesc	TRUE (always)
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CuiNewLabel::RButtonDown ( const CPoint& lpt ) {
-
-	// Display sub-menu shown while adding new labels, routing
-	// any WM_COMMAND messages back to the window of the session.
-
-	CMenu menu;
-	menu.LoadMenu(IDR_CURSOR_MENU);
-
-	// Get the sub-menu.
-	CMenu* pMenu = menu.GetSubMenu(3);
-	if ( !pMenu ) return FALSE;
-
-	// Convert logical units into screen coordinates.
-	CPoint point;
-	LPToScreen(lpt,point);
-
-	// If labels should be auto-positioned, set check mark.
-	if ( m_IsAutoPos )
-		pMenu->CheckMenuItem(ID_AUTO_POSITION,MF_CHECKED|MF_BYCOMMAND);
-
-	// If the orientation should adjust automatically, set check mark
-	if ( m_IsAutoAngle )
-		pMenu->CheckMenuItem(ID_AUTO_ANGLE,MF_CHECKED|MF_BYCOMMAND);
-
-	// And the current size factor.
-	INT4 id = GetSizeId();
-	if ( id ) pMenu->CheckMenuItem(id,MF_CHECKED|MF_BYCOMMAND);
-
-	pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,
-						  point.x,point.y,GetpWnd());
-
-	return TRUE;
-
-} // end of RButtonDown
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Receive a sub-command. These actually get sent down
-//			via the view class, which is reacting to the handling
-//			of <mf CuiNewLabel::RButtonDown>.
-//
-//	@parm	The ID of the sub-command.
-//
-//	@rdesc	TRUE if sub-command was dispatched.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CuiNewLabel::Dispatch ( const INT4 id ) {
-
-	switch ( id ) {
-
-	case ID_FINISH: {
-		DialFinish(0);
-		return TRUE;
-	}
-
-	case ID_AUTO_POSITION: {
-
+        /// <summary>
+        /// Handles the context menu "Auto-Position" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void ToggleAutoPosition(IUserAction action)
+        {
+            m_IsAutoPos = !m_IsAutoPos;
+            /*
 		// Ensure any text outline has been erased.
 		EraseRect();
 
@@ -472,12 +407,17 @@ LOGICAL CuiNewLabel::Dispatch ( const INT4 id ) {
 
 		// Set the appropriate command cursor.
 		SetCommandCursor();
+             */
+        }
 
-		return TRUE;
-	}
-
-	case ID_AUTO_ANGLE:
-	{
+        /// <summary>
+        /// Handles the context menu "Auto-Angle" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void ToggleAutoAngle(IUserAction action)
+        {
+            m_IsAutoAngle= !m_IsAutoAngle;
+            /*
 		m_IsAutoAngle = !m_IsAutoAngle;
 		SetBooleanSetting("Auto-Angle",m_IsAutoAngle);
 
@@ -486,61 +426,58 @@ LOGICAL CuiNewLabel::Dispatch ( const INT4 id ) {
 			m_pOrient->UnHighlight();
 			m_pOrient = 0;
 		}
+             */
+        }
 
-		return TRUE;
-	}
+        /// <summary>
+        /// Is the "Auto-Angle" menuitem checked in this UI's context menu?
+        /// </summary>
+        internal bool IsAutoAngle
+        {
+            get { return m_IsAutoAngle; }
+        }
 
-	case ID_TEXT_500:
-	case ID_TEXT_200:
-	case ID_TEXT_150:
-	case ID_TEXT_100:
-	case ID_TEXT_75:
-	case ID_TEXT_50:
-	case ID_TEXT_25: {
+        /// <summary>
+        /// Handles the context menu "Finish" menuitem.
+        /// </summary>
+        /// <param name="action">The action that initiated this method call</param>
+        internal void Finish(IUserAction action)
+        {
+            DialFinish(null);
+        }
 
-		SetSizeId(id);
-		SetCommandCursor();
-		return TRUE;
-	}
+        /// <summary>
+        /// Ensures the command cursor is shown (the reverse arrow cursor).
+        /// </summary>
+        internal override void SetCommandCursor()
+        {
+            ActiveDisplay.MapPanel.Cursor = GetCommandCursor();
+        }
 
-	} // end switch
+        Cursor GetCommandCursor()
+        {
+            if (IsValidPolygon())
+            {
+                // If the polygon actually contains a label that is
+                // drawn on the current editing theme, take this
+                // opportunity to draw it in gray.
+                TextFeature label = m_Polygon.Label;
+                if (label!=null)
+                    label.Draw(ActiveDisplay, Color.Gray);
 
-	AfxMessageBox("CuiNewLabel::Dispatch\nUnexpected sub-command");
-	return FALSE;
-
-} // end of Dispatch
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return the ID of the cursor for this command.
-//
-//////////////////////////////////////////////////////////////////////
-
-INT4 CuiNewLabel::GetCursorId ( void ) const {
-
-	if ( IsValidPolygon() ) {
-
-		// If the polygon actually contains a label that is
-		// drawn on the current editing theme, take this
-		// opportunity to draw it in grey.
-		const CeTheme& curtheme = GetActiveTheme();
-		const CeLabel* const pLabel = m_pPolygon->FindLabel(curtheme);
-		if ( pLabel ) pLabel->DrawThis(COL_GREY);
-
-		if ( m_IsAutoPos )
-			return IDC_WAND;
-		else
-			return IDC_REVERSE_ARROW;
-	}
-	else {
-		if ( m_IsAutoPos )
-			return IDC_GREY_WAND;
-		else
-			return IDC_GREY_REV_ARROW;
-	}
-
-} // end of GetCursorId
-        */
+                if (m_IsAutoPos)
+                    return EditorResources.WandCursor;
+                else
+                    return EditorResources.ReverseArrowCursor;
+            }
+            else
+            {
+                if (m_IsAutoPos)
+                    return EditorResources.GrayWandCursor;
+                else
+                    return EditorResources.GrayReverseArrowCursor;
+            }
+        }
 
         /// <summary>
         /// Draws (or erases) the polygon that the mouse currently sits in.
@@ -604,75 +541,51 @@ INT4 CuiNewLabel::GetCursorId ( void ) const {
 } // end of IsValidPolygon
         */
 
-        /*
-//////////////////////////////////////////////////////////////////////
-//
-//	@private
-//
-//	@mfunc	Create a new polygon label.
-//
-//	@parm	An old shared label that is being replaced.
-//
-//	@rdesc	Pointer to the CeLabel feature that was added.
-//
-//////////////////////////////////////////////////////////////////////
-
-CeLabel* CuiNewLabel::AddNewLabel ( CeLabel* pOldLabel ) {
-
-	assert(m_pPolygon);
-
-	// Get the dimensions of the text.
-	FLOAT8 width = GetWidth();
-	FLOAT8 height = GetHeight();
-
-	// Get a position for the annotation.
-	CeVertex pos;
-	if ( !m_pPolygon->GetLabelPosition(width,height,pos) ) return 0;
-
-	// Add the label (assumes key label for now).
-	return AddNewLabel(pos,pOldLabel);
-
-} // end of AddNewLabel
-        */
-
         /// <summary>
-        /// 
+        /// Creates a new polygon label.
         /// </summary>
-        /// <param name="posn"></param>
-        /// <param name="oldLabel"></param>
-        /// <returns></returns>
-        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        /// <param name="oldLabel">An old shared label that is being replaced.</param>
+        /// <returns>The text feature that was added.</returns>
+        TextFeature AddNewLabel(TextFeature oldLabel)
         {
-            throw new Exception("The method or operation is not implemented.");
+            Debug.Assert(m_Polygon!=null);
+
+            // Get the dimensions of the text.
+            double width = Width;
+            double height = Height;
+
+            // Get a position for the annotation.
+            IPosition pos = m_Polygon.GetLabelPosition(width, height);
+            if (pos==null)
+                return null;
+
+            // Add the label (assumes key label for now).
+            return AddNewLabel(pos, oldLabel);
         }
 
-        /*
-//	@private
-//
-//	@mfunc	Create a new polygon label in the map.
-//
-//	@parm	Reference position for the label.
-//	@parm	An old shared label that is being replaced.
-//
-//	@rdesc	Pointer to the CeLabel feature that was added.
+        /// <summary>
+        /// Creates a new polygon label in the map.
+        /// </summary>
+        /// <param name="posn">Reference position for the label.</param>
+        /// <param name="oldLabel">An old shared label that is being replaced.</param>
+        /// <returns>The text feature that was added.</returns>
+        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        {
+            Debug.Assert(m_Polygon!=null);
+            CadastralMapModel map = CadastralMapModel.Current;
+            TextFeature newLabel = null;
 
-CeLabel* CuiNewLabel::AddNewLabel ( const CeVertex& posn
-								  , CeLabel* pOldLabel ) {
+            // If we are replacing another label, use that label's ID
+            // and ensure that any ID we reserved has been released.
+            if (oldLabel!=null)
+            {
+                // Get the entity type that the ID handle was assigned
+                // before freeing the handle.
+                IEntity ent = m_PolygonId.Entity;
+                m_PolygonId.FreeId();
+                Debug.Assert(ent!=null);
 
-	assert(m_pPolygon);
-	CeMap* pMap = CeMap::GetpMap();
-	CeLabel* pNewLabel=0;
-
-	// If we are replacing another label, use that label's ID
-	// and ensure that any ID we reserved has been released.
-	if ( pOldLabel ) {
-
-		// Get the entity type that the ID handle was assigned
-		// before freeing the handle.
-		const CeEntity* const pEnt = m_PolygonId.GetpEntity();
-		m_PolygonId.FreeId();
-		assert(pEnt);
-
+                /*
 		// Create an undefined persistent operation.
 		CeNewLabelEx* pSave = new ( os_database::of(pMap),
 								    os_ts<CeNewLabelEx>::get() )
@@ -721,92 +634,81 @@ CeLabel* CuiNewLabel::AddNewLabel ( const CeVertex& posn
 
 		// Pick up the address of the new label.
 		pNewLabel = pSave->GetpLabel();
-	}
-	else {
+                 */
+            }
+            else
+            {
+                // Not replacing an existing label, so confirm that
+                // the polygon ID has been reserved.
+                if (!m_PolygonId.IsReserved)
+                {
+                    MessageBox.Show("NewLabelUI.AddNewLabel - No polygon ID");
+                    return null;
+                }
 
-		// Not replacing an existing label, so confirm that
-		// the polygon ID has been reserved.
-		
-		if ( !m_PolygonId.IsReserved() ) {
-			AfxMessageBox("CuiNewLabel::AddNewLabel\nNo polygon ID");
-			return 0;
-		}
+                /*
+                // Check whether another label exists in the specified
+                // polygon, but on a layer that is derived from the current
+                // editing layer. If so, note the entity type and free the
+                // supplied ID.
+ 
+                // SS20080421 - This bit of code was used to check whether the polygon
+                // was already labelled on a derived layer, in which case the ID would
+                // be promoted to the current layer. However, it's difficult to continue
+                // with that logic, since the polygon object is no longer shared with
+                // any other layer (and won't even exist unless you switch to another
+                // editing layer). Even if the structure was unchanged, I'm not convinced
+                // that it's good to define the ID on the basis of something that the user
+                // can't actually see (if this were to be done, the user should have been
+                // told already, since an explicitly specified ID would be disregarded here).
 
-		// Check whether another label exists in the specified
-		// polygon, but on a layer that is derived from the current
-		// editing theme. If so, note the entity type and free the
-		// supplied ID.
+		        CeLabel* pOldLabel = m_pPolygon->GetBaseLabel();
+		        const CeEntity* pEnt=0;
 
-		CeLabel* pOldLabel = m_pPolygon->GetBaseLabel();
-		const CeEntity* pEnt=0;
+		        if ( pOldLabel ) {
+			        pEnt = m_PolygonId.GetpEntity();
+			        m_PolygonId.FreeId();
+		        }
+                 */
 
-		if ( pOldLabel ) {
-			pEnt = m_PolygonId.GetpEntity();
-			m_PolygonId.FreeId();
-		}
+                // Execute the edit
+                NewTextOperation op = null;
 
-		// Create an undefined persistent operation.
-		CeNewLabel* pSave = new ( os_database::of(pMap),
-								  os_ts<CeNewLabel>::get() )
-								  CeNewLabel();
+                try
+                {
+                    op = new NewTextOperation();
 
-		// Tell map a save is starting.
-		pMap->SaveOp(pSave);
+                    if (m_Template!=null && m_LastRow!=null)
+                    {
+                        op.Execute(posn, Height, m_PolygonId, m_LastRow, m_Template, m_Polygon);
 
-		// Execute the operation
-		LOGICAL ok;
-		if ( m_pTemplate && m_pLastRow ) {
+                        // Confirm that the row got cross-referenced to an ID (not
+			            // sure what the above ends up doing).
+                        //if (m_LastRow.GetpId()==null)
+                        //{
+                        //    MessageBox.Show("Attributes were not attached to an ID");
+                        //    return null;
+                        //}
+                    }
+                    else
+                    {
+                        op.Execute(posn, m_PolygonId, m_Polygon, Height, Width, Rotation);
+                    }
 
-			if ( pOldLabel )
-				ok = pSave->Execute( posn
-								   , GetHeight()
-								   , *pEnt
-								   , *m_pLastRow
-								   , *m_pTemplate
-								   , *m_pPolygon
-								   , *pOldLabel );
-			else
-				ok = pSave->Execute( posn
-								   , GetHeight()
-								   , m_PolygonId
-								   , *m_pLastRow
-								   , *m_pTemplate
-								   , m_pPolygon );
+                    newLabel = op.Text;
+                }
 
-			// Confirm that the row got cross-referenced to an ID (not
-			// sure what the above ends up doing).
-			if ( ok && !m_pLastRow->GetpId() ) {
-				AfxMessageBox("Attributes were not attached to an ID");
-				ok = FALSE;
-			}
-		}
-		else {
+                catch (Exception ex)
+                {
+                    Session.CurrentSession.Remove(op);
+                    MessageBox.Show(ex.Message);
+                }
+            }
 
-			if ( pOldLabel )
-				ok = pSave->Execute(posn,GetHeight(),*pEnt,*m_pPolygon,*pOldLabel);
-			else
-				ok = pSave->Execute(posn,GetHeight(),m_PolygonId,m_pPolygon);
-		}
-
-		// Tell map the save has finished.
-		pMap->SaveOp(pSave,ok);
-
-		// If things failed, delete persistent memory for the op.
-		if ( !ok ) {
-			delete pSave;
-			return 0;
-		}
-
-		// Pick up the address of the new label.
-		pNewLabel = pSave->GetpLabel();
-	}
-
-	// If a new label has actually been added
-	if ( pNewLabel ) {
-
-		// Remember that the map has been changed.
-		SetChanged();
-
+            // If a new label has actually been added
+            if (newLabel!=null)
+            {
+                /*
 		// If a row was created, but we only created key text,
 		// make sure the label's ID has been cross-referenced
 		// to the row (the call to CeRow::SetId makes pointers
@@ -834,13 +736,11 @@ CeLabel* CuiNewLabel::AddNewLabel ( const CeVertex& posn
 			assert(pFid);
 			if ( pFid ) m_pLastRow->SetId(*pFid);
 		}
-	}
+                 */
+            }
 
-	return pNewLabel;
-
-} // end of AddNewLabel
-        */
-
+            return newLabel;
+        }
 
         /// <summary>
         /// Gets the attributes for a new label.

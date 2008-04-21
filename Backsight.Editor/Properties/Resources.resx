@@ -256,4 +256,13 @@
   <data name="Point2Cursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Point2Cursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GrayReverseArrowCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GrayReverseArrowCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GrayWandCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GrayWandCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="WandCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\WandCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

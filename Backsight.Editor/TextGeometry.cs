@@ -61,6 +61,14 @@ namespace Backsight.Editor
 
         #region Constructors
 
+        /// <summary>
+        /// Creates a new <c>TextGeometry</c>
+        /// </summary>
+        /// <param name="pos">Position of the text's reference point (always the top left corner of the string).</param>
+        /// <param name="font">The text style (defines the type-face and the height of the text).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The total width of the text, in meters on the ground.</param>
+        /// <param name="rotation">Clockwise rotation from horizontal</param>
         protected TextGeometry(IPointGeometry pos, IFont font, double height, double width, float rotation)
         {
             m_Font = font;

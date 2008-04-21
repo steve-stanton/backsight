@@ -26,72 +26,60 @@ namespace Backsight.Editor
     {
         internal static Cursor PenCursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.PenCursor));
-                c.Tag = "PenCursor"; // test
-                return c;
-            }
+            get { return CreateCursor(Resources.PenCursor, "PenCursor"); }
         }
 
         internal static Cursor PolygonSubdivisionCursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.PolygonSubdivisionCursor));
-                c.Tag = "PolygonSubdivisionCursor"; // test
-                return c;
-            }
+            get { return CreateCursor(Resources.PolygonSubdivisionCursor, "PolygonSubdivisionCursor"); }
         }
 
         internal static Cursor AttachPointCursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.AttachPointCursor));
-                c.Tag = "AttachPointCursor";
-                return c;
-            }
+            get { return CreateCursor(Resources.AttachPointCursor, "AttachPointCursor"); }
         }
 
         internal static Cursor DiagonalCursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.DiagonalCursor));
-                c.Tag = "DiagonalCursor";
-                return c;
-            }
+            get { return CreateCursor(Resources.DiagonalCursor, "DiagonalCursor"); }
         }
 
         internal static Cursor ReverseArrowCursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.ReverseArrowCursor));
-                c.Tag = "ReverseArrowCursor";
-                return c;
-            }
+            get { return CreateCursor(Resources.ReverseArrowCursor, "ReverseArrowCursor"); }
+        }
+
+        internal static Cursor GrayReverseArrowCursor
+        {
+            get { return CreateCursor(Resources.GrayReverseArrowCursor, "GrayReverseArrowCursor"); }
         }
 
         internal static Cursor Point1Cursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.Point1Cursor));
-                c.Tag = "Point1Cursor";
-                return c;
-            }
+            get { return CreateCursor(Resources.Point1Cursor, "Point1Cursor"); }
         }
 
         internal static Cursor Point2Cursor
         {
-            get
-            {
-                Cursor c = new Cursor(new MemoryStream(Resources.Point2Cursor));
-                c.Tag = "Point2Cursor";
-                return c;
-            }
+            get { return CreateCursor(Resources.Point2Cursor, "Point2Cursor"); }
+        }
+
+        internal static Cursor WandCursor
+        {
+            get { return CreateCursor(Resources.WandCursor, "WandCursor"); }
+        }
+
+        internal static Cursor GrayWandCursor
+        {
+            get { return CreateCursor(Resources.GrayWandCursor, "GrayWandCursor"); }
+        }
+
+        static Cursor CreateCursor(byte[] cursorData, string tag)
+        {
+            Stream s = new MemoryStream(cursorData);
+            Cursor result = new Cursor(s);
+            result.Tag = tag;
+            return result;
         }
     }
 }
