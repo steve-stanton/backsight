@@ -390,24 +390,19 @@ namespace Backsight.Editor
         /// <param name="action">The action that initiated this method call</param>
         internal void ToggleAutoPosition(IUserAction action)
         {
-            m_IsAutoPos = !m_IsAutoPos;
-            /*
-		// Ensure any text outline has been erased.
-		EraseRect();
+		    // Ensure any text outline has been erased.
+		    EraseRect();
 
-		//m_LastPos.Reset();
-		OnLabelAdd();	// Bit of a hack
+		    ResetLastPos();
+		    //OnLabelAdd();	// Bit of a hack
 
-		// Toggle the auto-positioning option.
-		m_IsAutoPos = !m_IsAutoPos;
-		SetBooleanSetting("Auto-Position",m_IsAutoPos);
+		    // Toggle the auto-positioning option.
+		    m_IsAutoPos = !m_IsAutoPos;
+            Settings.Default.AutoPosition = m_IsAutoPos;
+            Settings.Default.Save();
 
-		// If we are now auto-positioning, erase any rectangle
-		// that we had.
-
-		// Set the appropriate command cursor.
-		SetCommandCursor();
-             */
+		    // Set the appropriate command cursor.
+		    SetCommandCursor();
         }
 
         /// <summary>
@@ -417,16 +412,14 @@ namespace Backsight.Editor
         internal void ToggleAutoAngle(IUserAction action)
         {
             m_IsAutoAngle= !m_IsAutoAngle;
-            /*
-		m_IsAutoAngle = !m_IsAutoAngle;
-		SetBooleanSetting("Auto-Angle",m_IsAutoAngle);
+            Settings.Default.AutoAngle = m_IsAutoAngle;
+            Settings.Default.Save();
 
-		if ( !m_IsAutoAngle && m_pOrient )
-		{
-			m_pOrient->UnHighlight();
-			m_pOrient = 0;
-		}
-             */
+            if (!m_IsAutoAngle && m_Orient != null)
+            {
+                ErasePainting();
+                m_Orient = null;
+            }
         }
 
         /// <summary>
@@ -525,21 +518,15 @@ namespace Backsight.Editor
             if (label == null)
                 return true;
 
-            //if (m_Template==null && label.TextGeometry is KeyText
+            if (m_Template == null && label.TextGeometry is KeyTextGeometry)
+                return false;
 
-            return false;
+            // Allow things if the user is working with a derived theme (the label
+            // that's displayed is currently shared with a base layer, but will
+            // be superseded with the label we're about to add).
+            ILayer baseLayer = label.BaseLayer;
+            return ActiveLayer.ThemeSequence > baseLayer.ThemeSequence;
         }
-        /*
-
-	if ( pLabel ) {
-		if ( m_pTemplate==0 &&
-			 pLabel->GetpText()->GetType() == PTY_KTEXT ) return FALSE;
-		const CeTheme* const pBase = pLabel->GetBaseTheme();
-		return (pBase && curtheme.IsDerivedFrom(*pBase));
-	}
-
-} // end of IsValidPolygon
-        */
 
         /// <summary>
         /// Creates a new polygon label.
@@ -585,56 +572,42 @@ namespace Backsight.Editor
                 m_PolygonId.FreeId();
                 Debug.Assert(ent!=null);
 
-                /*
-		// Create an undefined persistent operation.
-		CeNewLabelEx* pSave = new ( os_database::of(pMap),
-								    os_ts<CeNewLabelEx>::get() )
-								    CeNewLabelEx();
+                // Execute the edit
+                ReplaceTextOperation op = null;
 
-		// Tell map a save is starting.
-		pMap->SaveOp(pSave);
+                try
+                {
+                    op = new ReplaceTextOperation(oldLabel);
 
-		// Execute the operation
-		LOGICAL ok;
-		if ( m_pTemplate && m_pLastRow ) {
+                    if (m_Template != null && m_LastRow != null)
+                    {
+                        op.Execute(posn, Height, ent, m_LastRow, m_Template, m_Polygon);
 
-			ok = pSave->Execute( posn
-							   , GetHeight()
-							   , *pEnt
-							   , *m_pLastRow
-							   , *m_pTemplate
-							   , *m_pPolygon
-							   , *pOldLabel );
+                        // Confirm that the row got cross-referenced to an ID (not
+                        // sure what the above ends up doing).
+                        //if (m_LastRow.GetpId()==null)
+                        //{
+                        //    MessageBox.Show("Attributes were not attached to an ID");
+                        //    return null;
+                        //}
 
-			// Confirm that the row got cross-referenced to an ID (not
-			// sure what the above ends up doing).
-			if ( ok && !m_pLastRow->GetpId() ) {
-				AfxMessageBox("Attributes were not attached to an ID");
-				ok = FALSE;
-			}
+                        // Ensure the row is cross-referenced to the op.
+                        //m_LastRow->AddOp(op);
+                    }
+                    else
+                    {
+                        op.Execute(posn, Height, ent, m_Polygon);
+                    }
 
-			// Ensure the row is cross-referenced to the op.
-			if ( ok ) m_pLastRow->AddOp(*pSave);
-		}
-		else 
-			ok = pSave->Execute	( posn
-								, GetHeight()
-								, *pEnt
-								, *m_pPolygon
-								, *pOldLabel );
+                    // Pick up the new label.
+                    newLabel = op.Text;
+                }
 
-		// Tell map the save has finished.
-		pMap->SaveOp(pSave,ok);
-
-		// If things failed, delete persistent memory for the op.
-		if ( !ok ) {
-			delete pSave;
-			return 0;
-		}
-
-		// Pick up the address of the new label.
-		pNewLabel = pSave->GetpLabel();
-                 */
+                catch (Exception ex)
+                {
+                    Session.CurrentSession.Remove(op);
+                    MessageBox.Show(ex.Message);
+                }
             }
             else
             {
@@ -823,36 +796,20 @@ namespace Backsight.Editor
 } // end of GetAttributes
         */
 
+        /// <summary>
+        /// Updates a previously added polygon label.
+        /// </summary>
+        /// <param name="label">The previously added label.</param>
+        /// <returns>True if an update was made.</returns>
         internal override bool Update(TextFeature label)
         {
-            throw new Exception("The method or operation is not implemented.");
+            // For the time being, "update" means updating the attributes
+            // associated with the label. There's no way to update the
+            // entity type, schema, or annotation template (apart from
+            // deleting an existing label, and re-adding a new one).
+
+            return false;
         }
-
-        /*
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Update a previously added polygon label.
-//
-//	@parm	The previously added label.
-//
-//	@rdesc	TRUE if an update was made.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CuiNewLabel::Update ( CeLabel& label ) {
-
-	// For the time being, "update" means updating the attributes
-	// associated with the label. There's no way to update the
-	// entity type, schema, or annotation template (apart from
-	// deleting an existing label, and re-adding a new one).
-
-	// The update of attributes is currently handled via the
-	// view class.
-
-	return FALSE;
-
-} // end of Update
-        */
 
         /// <summary>
         /// Sees whether the orientation of the new text should be altered. This
@@ -925,6 +882,22 @@ LOGICAL CuiNewLabel::Update ( CeLabel& label ) {
             CadastralMapModel map = CadastralMapModel.Current;
             ISpatialIndex index = map.Index;
             return (index.QueryClosest(posn, new Length(tol), SpatialType.Line) as LineFeature);
+        }
+
+        /// <summary>
+        /// Do any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
+        internal override void Paint(PointFeature point)
+        {
+            if (m_Orient != null)
+            {
+                HighlightStyle style = new HighlightStyle();
+                style.ShowLineEndPoints = false;
+                m_Orient.Render(ActiveDisplay, style);
+            }
+
+            base.Paint(point);
         }
     }
 }

@@ -273,6 +273,7 @@
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
+    <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="SpanData.cs" />

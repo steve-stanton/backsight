@@ -255,6 +255,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Nulls the position used for drawing the outline of new text
+        /// </summary>
+        protected void ResetLastPos()
+        {
+            m_LastPos = null;
+        }
+
+        /// <summary>
         /// Resets info when derived class has just added a label.
         /// </summary>
         protected void OnLabelAdd()
