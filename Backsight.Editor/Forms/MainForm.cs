@@ -93,15 +93,23 @@ namespace Backsight.Editor.Forms
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
-            m_Controller.OnStartup(cs);
+            try
+            {
+                m_Controller.OnStartup(cs);
 
-            InitializeActions();
+                InitializeActions();
 
-            // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
-            string fullMapName = m_Controller.CadastralMapModel.Name;
-            if (!String.IsNullOrEmpty(fullMapName))
-                m_MruMenu.AddFile(fullMapName);
+                // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
+                string fullMapName = m_Controller.CadastralMapModel.Name;
+                if (!String.IsNullOrEmpty(fullMapName))
+                    m_MruMenu.AddFile(fullMapName);
+            }
 
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Close();
+            }
         }
 
         private void InitializeActions()
@@ -372,6 +380,7 @@ namespace Backsight.Editor.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             CadastralMapModel map = CadastralMapModel.Current;
+            /*
             if (map!=null && String.IsNullOrEmpty(map.Name) && !map.IsEmpty)
             {
                 if (MessageBox.Show("Do you want to save the current map?", "Map not saved", MessageBoxButtons.YesNo)
@@ -386,7 +395,7 @@ namespace Backsight.Editor.Forms
                 else
                     m_Controller.DiscardModel();
             }
-
+            */
             if (map!=null && !String.IsNullOrEmpty(map.Name))
                 AddRecentFile(map.Name);
 
@@ -551,11 +560,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
-            string name = AskForFileName();
-            if (String.IsNullOrEmpty(name))
+            string name = EditingController.AskForFileName("Create new map");
+            if (name==null)
                 return;
-                                
-            m_Controller.Create();
+
+            ModelFileName modelName = new ModelFileName(name);                                
+            m_Controller.Create(modelName);
             CadastralMapModel.Current.Write(name);
             AddRecentFile(name);
         }
@@ -601,23 +611,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSaveAs(IUserAction action)
         {
-            string name = AskForFileName();
-            if (!String.IsNullOrEmpty(name))
+            string name = EditingController.AskForFileName("Save as");
+            if (name!=null)
             {
                 CadastralMapModel.Current.Write(name);
                 AddRecentFile(name);
             }
-        }
-
-        internal string AskForFileName()
-        {
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
-            dial.DefaultExt = "ce";
-            if (dial.ShowDialog() == DialogResult.OK)
-                return dial.FileName;
-
-            return String.Empty;
         }
 
         void OnMruFile(int number, string filename)
