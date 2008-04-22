@@ -67,6 +67,11 @@ namespace Backsight.Editor
         bool m_IsAutoPos;
 
         /// <summary>
+        /// The calculated position (defined only if m_IsAutoPos is true and m_Polygon is defined)
+        /// </summary>
+        IPosition m_AutoPosition;
+
+        /// <summary>
         /// True if orientation should be automatically determined
         /// </summary>
         bool m_IsAutoAngle;
@@ -96,6 +101,7 @@ namespace Backsight.Editor
             m_IsAutoPos = Settings.Default.AutoPosition;
             m_IsAutoAngle = Settings.Default.AutoAngle;
             m_Orient = null;
+            m_AutoPosition = null;
         }
 
         #endregion
@@ -245,13 +251,16 @@ namespace Backsight.Editor
             {
                 // If we had something before, and we filled it, erase
                 // the fill now.
-                DrawPolygon(false);
+                //DrawPolygon(false);
 
                 // Remember the polygon we're now enclosed by (if any).
                 m_Polygon = enc;
 
                 // Draw the new polygon.
-                DrawPolygon(true);
+                //DrawPolygon(true);
+
+                // Ensure any calculated position has been cleared
+                m_AutoPosition = null;
 
                 // See if a new orientation applies
                 CheckOrientation(pg);
@@ -263,7 +272,16 @@ namespace Backsight.Editor
             }
 
             // Draw a rectangle representing the outline of the text.
-            DrawRect(pos);
+            if (m_IsAutoPos && m_Polygon!=null)
+            {
+                if (m_AutoPosition==null)
+                    m_AutoPosition = m_Polygon.GetLabelPosition(Width, Height);
+            }
+
+            if (m_IsAutoPos && m_AutoPosition!=null)
+                DrawRect(m_AutoPosition);
+            else
+                DrawRect(pos);
         }
 
         /// <summary>
@@ -400,6 +418,9 @@ namespace Backsight.Editor
 		    m_IsAutoPos = !m_IsAutoPos;
             Settings.Default.AutoPosition = m_IsAutoPos;
             Settings.Default.Save();
+
+            // If we've just turned the option on, we'll calculate position on mouse move
+            m_AutoPosition = null;
 
 		    // Set the appropriate command cursor.
 		    SetCommandCursor();
@@ -825,6 +846,10 @@ namespace Backsight.Editor
             if (!m_IsAutoAngle)
                 return false;
 
+            // Return if the auto-position function is enabled
+            if (m_IsAutoPos)
+                return false;
+
             // Try to get an orientation line
             LineFeature orient = GetOrientation(refpos);
             if (!Object.ReferenceEquals(orient, m_Orient))
@@ -890,14 +915,40 @@ namespace Backsight.Editor
         /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
         internal override void Paint(PointFeature point)
         {
+            HighlightStyle style = new HighlightStyle();
+
             if (m_Orient != null)
             {
-                HighlightStyle style = new HighlightStyle();
                 style.ShowLineEndPoints = false;
                 m_Orient.Render(ActiveDisplay, style);
             }
 
-            base.Paint(point);
+            if (m_IsAutoPos && m_Polygon!=null)
+            {
+                if (m_AutoPosition==null)
+                    m_AutoPosition = m_Polygon.GetLabelPosition(Width, Height);
+
+                DrawRect(m_AutoPosition);
+            }
+            else
+                base.Paint(point);
+
+            if (IsValidPolygon())
+                m_Polygon.Render(ActiveDisplay, style);
+        }
+
+        /// <summary>
+        /// Performs any processing when the text magnification factor has been changed. If
+        /// the text position is being calculated, a new position will be calculated to
+        /// account for the size change.
+        /// </summary>
+        internal override void OnSizeFactorChange()
+        {
+            if (m_IsAutoPos && m_Polygon!=null)
+            {
+                m_AutoPosition = m_Polygon.GetLabelPosition(Width, Height);
+                //DrawRect(m_AutoPosition);
+            }
         }
     }
 }

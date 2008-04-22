@@ -62,7 +62,9 @@ namespace Backsight.Editor
         IPosition m_LastPos;
 
         /// <summary>
-        /// Rotation angle for labels, in radians.
+        /// Rotation angle for labels, in radians. This should be used only if the user
+        /// is positioning the text "manually" (if the <see cref="IsAutoPosition"/> property
+        /// is true, text is always added horizontally).
         /// </summary>
         double m_Rotation;
 
@@ -151,7 +153,7 @@ namespace Backsight.Editor
             result[4] = refpos;
 
             // If the text is rotated ...
-            if (m_Rotation > MathConstants.TINY)
+            if (Rotation > MathConstants.TINY)
             {
                 // Get vertical and horizontal bearings for the label.
                 double vbearing = VBearing;
@@ -186,7 +188,7 @@ namespace Backsight.Editor
         /// </summary>
         double VBearing
         {
-            get { return m_Rotation; }
+            get { return Rotation; }
         }
 
         /// <summary>
@@ -197,12 +199,14 @@ namespace Backsight.Editor
         {
             get
             {
-                if (m_Rotation < MathConstants.TINY)
+                double r = Rotation;
+
+                if (r < MathConstants.TINY)
                     return MathConstants.PIDIV2;
-                else if (m_Rotation > MathConstants.PIMUL1P5)
-                    return m_Rotation - MathConstants.PIMUL1P5;
+                else if (r > MathConstants.PIMUL1P5)
+                    return r - MathConstants.PIMUL1P5;
                 else
-                    return m_Rotation + MathConstants.PIDIV2;
+                    return r + MathConstants.PIDIV2;
             }
         }
 
@@ -281,7 +285,13 @@ namespace Backsight.Editor
         /// </summary>
         protected double Rotation
         {
-            get { return m_Rotation; }
+            get
+            {
+                if (IsAutoPosition)
+                    return 0.0;
+                else
+                    return m_Rotation;
+            }
         }
 
         /// <summary>
@@ -340,7 +350,18 @@ namespace Backsight.Editor
             s_SizeFactor = pc;
 
             // Redraw the rectangle at the last position.
-            DrawRect(m_LastPos);
+            //DrawRect(m_LastPos);
+
+            // Derived classes may need to know that size has changed
+            OnSizeFactorChange();
+        }
+
+        /// <summary>
+        /// Performs any processing when the text magnification factor has been changed. This
+        /// implementation does nothing. The <see cref="NewLabelUI"/> class overrides.
+        /// </summary>
+        internal virtual void OnSizeFactorChange()
+        {
         }
 
         /// <summary>

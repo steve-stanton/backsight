@@ -551,7 +551,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
+            string name = AskForFileName();
+            if (String.IsNullOrEmpty(name))
+                return;
+                                
             m_Controller.Create();
+            CadastralMapModel.Current.Write(name);
+            AddRecentFile(name);
         }
 
         private bool IsFileOpenEnabled()
