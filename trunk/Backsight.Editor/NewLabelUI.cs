@@ -525,7 +525,7 @@ namespace Backsight.Editor
             // that's displayed is currently shared with a base layer, but will
             // be superseded with the label we're about to add).
             ILayer baseLayer = label.BaseLayer;
-            return ActiveLayer.ThemeSequence > baseLayer.ThemeSequence;
+            return (baseLayer!=null && ActiveLayer.ThemeSequence > baseLayer.ThemeSequence);
         }
 
         /// <summary>
@@ -581,7 +581,7 @@ namespace Backsight.Editor
 
                     if (m_Template != null && m_LastRow != null)
                     {
-                        op.Execute(posn, Height, ent, m_LastRow, m_Template, m_Polygon);
+                        op.Execute(posn, ent, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
                         // Confirm that the row got cross-referenced to an ID (not
                         // sure what the above ends up doing).
@@ -596,7 +596,7 @@ namespace Backsight.Editor
                     }
                     else
                     {
-                        op.Execute(posn, Height, ent, m_Polygon);
+                        op.Execute(posn, ent, m_Polygon, Height, Width, Rotation);
                     }
 
                     // Pick up the new label.

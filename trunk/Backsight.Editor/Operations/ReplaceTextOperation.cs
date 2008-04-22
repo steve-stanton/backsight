@@ -58,10 +58,13 @@ namespace Backsight.Editor.Operations
         /// not be key text, since what gets created here will also be key text).
         /// </summary>
         /// <param name="vtx">The position of the new label.</param>
-        /// <param name="ght">The height for the new label, in meters on the ground.</param>
         /// <param name="ent">The entity type for the new label.</param>
         /// <param name="pol">The polygon that the label falls inside.</param>
-        internal void Execute(IPosition vtx, double ght, IEntity ent, Polygon pol)
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        internal void Execute(IPosition vtx, IEntity ent, Polygon pol,
+                            double height, double width, double rotation)
         {
             // Confirm the old label has an ID.
             FeatureId fid = m_OldText.Id;
@@ -72,70 +75,55 @@ namespace Backsight.Editor.Operations
             SetOldLabel();
 
             // Add the new label on the current editing layer.
-            CreateLabel(vtx, ght, ent, fid, m_OldText.IsForeignId, pol);
+            CreateLabel(vtx, ent, fid, m_OldText.IsForeignId, pol, height, width, rotation);
         }
 
         /// <summary>
         /// Creates a key-text label.
         /// </summary>
         /// <param name="vtx">The reference position of the label.</param>
-        /// <param name="ght">The height for the new label, in meters on the ground.</param>
         /// <param name="ent">The entity type for the new label.</param>
         /// <param name="id">The ID for the new label.</param>
         /// <param name="isForeign">Is the ID foreign?</param>
         /// <param name="pol">The polygon that the label relates to.</param>
-        void CreateLabel(IPosition vtx, double ght, IEntity ent, FeatureId id, bool isForeign, Polygon pol)
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        void CreateLabel(IPosition vtx, IEntity ent, FeatureId id, bool isForeign, Polygon pol,
+                            double height, double width, double rotation)
         {
+            // Get the map to add a new label to the current editing layer (without any ID).
+            TextFeature label = MapModel.AddKeyLabel(this, ent, vtx, height, width, rotation);
+
+            // Relate the new label to the specified ID and vice versa.
+            label.SetId(id, isForeign);
+            id.AddReference(label);
+
+            // The label MUST be topological, so make sure it's marked as such.
+            label.SetTopology(true);
+
+            // Relate the label to the specified polygon & vice versa.
+            pol.ClaimLabel(label);
+
+            // Hold reference to the new label.
+            SetText(label);
+
+            Complete();
         }
-
-        /*
-LOGICAL CeNewLabelEx::CreateLabel ( const CeVertex& vtx
-								  , const FLOAT8 ght
-								  , const CeEntity& ent
-								  , CeFeatureId& id
-								  , const LOGICAL isForeign
-								  , CePolygon& pol ) {
-
-	// Get the map to add a new label to the current editing
-	// theme (without any ID).
-	CeMap* pMap = CeMap::GetpMap();
-	CeLabel* pLabel = pMap->AddKeyLabel(ent,vtx,0,ght);
-	if ( !pLabel ) return FALSE;
-
-	// Relate the new label to the specified ID and vice versa.
-	pLabel->SetpId(&id,isForeign);
-	id.AddReference(*pLabel);
-
-	// Spatially index it.
-	pMap->GetSpace().Add(*pLabel);
-
-	// The label MUST be topological, so make sure it's
-	// marked as such.
-	pLabel->SetTopology(TRUE);
-
-	// Relate the label to the specified polygon & vice versa.
-	pol.ClaimLabel(*pLabel);
-
-	// Get the base class to hold the address of the new label.
-	SetpLabel(pLabel);
-
-	pMap->CleanEdit();
-	return TRUE;
-
-} // end of CreateLabel
-        */
 
         /// <summary>
         /// Executes the new label operation.
         /// </summary>
         /// <param name="vtx">The position of the new label.</param>
-        /// <param name="ght">The height for the new label, in meters on the ground.</param>
         /// <param name="ent">The entity type for the new label.</param>
         /// <param name="row">The transient row to use for creating a row for the new label.</param>
         /// <param name="atemplate">The template to use in creating the RowText for the new label.</param>
         /// <param name="pol">The polygon that the label falls inside.</param>
-        internal void Execute(IPosition vtx, double ght, IEntity ent, DataRow row,
-                                ITemplate atemplate, Polygon pol)
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        internal void Execute(IPosition vtx, IEntity ent, DataRow row, ITemplate atemplate, Polygon pol,
+                            double height, double width, double rotation)
         {
             // Confirm the old label has an ID.
             FeatureId fid = m_OldText.Id;
@@ -146,54 +134,47 @@ LOGICAL CeNewLabelEx::CreateLabel ( const CeVertex& vtx
             SetOldLabel();
 
             // Add the new label on the current editing layer.
-            CreateLabel(vtx, ght, ent, row, atemplate, fid, m_OldText.IsForeignId, pol);
+            CreateLabel(vtx, ent, row, atemplate, fid, m_OldText.IsForeignId, pol, height, width, rotation);
         }
 
         /// <summary>
         /// Creates a row-text label.
         /// </summary>
         /// <param name="vtx">The reference position of the label.</param>
-        /// <param name="ght">The height for the new label, in meters on the ground.</param>
         /// <param name="ent">The entity type for the new label.</param>
         /// <param name="row">The transient row to use for creating a row for the new label.</param>
         /// <param name="atemplate">The template to use in creating the RowText for the new label.</param>
         /// <param name="id">The ID for the new label.</param>
         /// <param name="isForeign">Is the ID foreign?</param>
         /// <param name="pol">The polygon that the label relates to.</param>
-        void CreateLabel(IPosition vtx, double ght, IEntity ent, DataRow row, ITemplate atemplate,
-                            FeatureId id, bool isForeign, Polygon pol)
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        void CreateLabel(IPosition vtx, IEntity ent, DataRow row, ITemplate atemplate,
+                            FeatureId id, bool isForeign, Polygon pol,
+                            double height, double width, double rotation)
         {
+            // Get the map to add a new label to the current editing layer (without any ID).
+            TextFeature label = MapModel.AddRowLabel(this, ent, vtx, row, atemplate, height, width, rotation);
+
+            // Relate the new label to the specified ID and vice versa.
+            label.SetId(id, isForeign);
+            id.AddReference(label);
+
+            // Relate the row to the ID and vice versa.
+            //row.SetId(id);
+
+            // The label MUST be topological, so make sure it's marked as such.
+            label.SetTopology(true);
+
+            // Relate the label to the specified polygon & vice versa.
+            pol.ClaimLabel(label);
+
+            // Hold reference to the new label.
+            SetText(label);
+
+            Complete();
         }
-        /*
-	// Get the map to add a new label to the current editing
-	// theme (without any ID).
-	CeMap* pMap = CeMap::GetpMap();
-	CeLabel* pLabel = pMap->AddRowLabel(ent,vtx,&row,&atemplate,0
-										,(FLOAT4)ght);
-	if ( !pLabel ) return FALSE;
-
-	// Relate the new label to the specified ID and vice versa.
-	pLabel->SetpId(&id,isForeign);
-	id.AddReference(*pLabel);
-
-	// Relate the row to the ID and vice versa.
-	row.SetId(id);
-
-	// The label MUST be topological, so make sure it's
-	// marked as such.
-	pLabel->SetTopology(TRUE);
-
-	// Relate the label to the specified polygon & vice versa.
-	pol.ClaimLabel(*pLabel);
-
-	// Get the base class to hold the address of the new label.
-	SetpLabel(pLabel);
-
-	pMap->CleanEdit();
-	return TRUE;
-
-} // end of CreateLabel
-*/
 
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).

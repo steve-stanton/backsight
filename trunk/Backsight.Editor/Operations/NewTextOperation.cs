@@ -54,7 +54,15 @@ namespace Backsight.Editor.Operations
         internal TextFeature Text // was GetpLabel
         {
             get { return m_NewText; }
-            //set { m_Label = value; }
+        }
+
+        /// <summary>
+        /// Defines the text created by this edit
+        /// </summary>
+        /// <param name="label">The created text (not null)</param>
+        protected void SetText(TextFeature label)
+        {
+            m_NewText = label;
         }
 
         /// <summary>
@@ -179,6 +187,8 @@ namespace Backsight.Editor.Operations
             // Associate the polygon with the label, and vice versa.
             m_NewText.SetTopology(true);
             pol.ClaimLabel(m_NewText);
+
+            Complete();
         }
 
         internal void Execute(IPosition vtx, double ght, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol)
