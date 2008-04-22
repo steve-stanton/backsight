@@ -128,6 +128,7 @@ namespace Backsight.Editor
 
         #endregion
 
+        /*
         internal void DiscardModel()
         {
             CadastralMapModel cmm = this.CadastralMapModel;
@@ -137,6 +138,7 @@ namespace Backsight.Editor
                 this.MapModel = CadastralMapModel.Create();
             }
         }
+        */
 
         public override void Close()
         {
@@ -379,12 +381,12 @@ namespace Backsight.Editor
             }
         }
 
-        internal void Create()
+        internal void Create(ModelFileName modelName)
         {
             try
             {
                 Close();
-                CadastralMapModel cmm = CadastralMapModel.Create();
+                CadastralMapModel cmm = CadastralMapModel.Create(modelName);
                 this.MapModel = cmm;
 
                 // Ensure an editing layer is defined
@@ -432,8 +434,8 @@ namespace Backsight.Editor
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                MessageBox.Show("Creating new map");
-                Create();
+                //MessageBox.Show("Creating new map");
+                //Create();
             }
 
             return false;
@@ -490,13 +492,21 @@ namespace Backsight.Editor
             // Open the last map (if any)...
             string fileName = Settings.Default.LastMap;
 
-            if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
-                Open(fileName);
-            else
-                Create();
+            //if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
+            //    Open(fileName);
+            //else
+            //    Create();
 
-            // Ensure an editing layer is defined
-            SetActiveLayer();
+            //// Ensure an editing layer is defined
+            //SetActiveLayer();
+
+            if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
+            {
+                Open(fileName);
+
+                // Ensure an editing layer is defined
+                SetActiveLayer();
+            }
         }
 
         internal bool AutoSelect
@@ -1198,6 +1208,23 @@ namespace Backsight.Editor
 
             if (repaint)
                 display.PaintNow();
+        }
+
+        /// <summary>
+        /// Asks the user to supply the name of a file
+        /// </summary>
+        /// <param name="title">Title for the dialog</param>
+        /// <returns>The entered file name (null if not specified)</returns>
+        internal static string AskForFileName(string title)
+        {
+            SaveFileDialog dial = new SaveFileDialog();
+            dial.Title = title;
+            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
+            dial.DefaultExt = "ce";
+            if (dial.ShowDialog() == DialogResult.OK)
+                return dial.FileName;
+
+            return null;
         }
     }
 }

@@ -50,9 +50,9 @@ namespace Backsight.Editor
             }
         }
 
-        internal static CadastralMapModel Create()
+        internal static CadastralMapModel Create(ModelFileName modelName)
         {
-            return new CadastralMapModel();
+            return new CadastralMapModel(modelName);
         }
 
         /// <summary>
@@ -263,11 +263,16 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new empty model
         /// </summary>
-        CadastralMapModel()
+        /// <param name="modelName">The name of the map model (not null)</param>
+        /// <exception cref="ArgumentNullException">If the supplied map model is null</exception>
+        CadastralMapModel(ModelFileName modelName)
         {
+            if (modelName == null)
+                throw new ArgumentNullException();
+
             m_Format = 1;
 
-            m_ModelFileName = null;
+            m_ModelFileName = modelName;
             m_Meters = new DistanceUnit(DistanceUnitType.Meters);
             m_Feet = new DistanceUnit(DistanceUnitType.Feet);
             m_Chains = new DistanceUnit(DistanceUnitType.Chains);
@@ -682,6 +687,35 @@ namespace Backsight.Editor
         {
             if (m_ModelFileName==null)
                 m_ModelFileName = new ModelFileName();
+
+            // Test
+            /*
+            if (!m_ModelFileName.IsTempName)
+            {
+                string dir = Path.GetDirectoryName(m_ModelFileName.Name);
+                string name = Path.GetFileNameWithoutExtension(m_ModelFileName.Name);
+                string res = Path.Combine(dir, name + ".ced");
+                DirectoryInfo dirInfo = Directory.CreateDirectory(res);
+                dirInfo.Attributes |= FileAttributes.Compressed;
+
+             * // try SetAttributes
+
+                res = Path.Combine(res, "Map.Data");
+                using (FileStream fs = new FileStream(res, FileMode.Create))
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(fs, this);
+                }
+            }
+            else
+            {
+                using (FileStream fs = new FileStream(m_ModelFileName.Name, FileMode.Create))
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(fs, this);
+                }
+            }
+            */
 
             using (FileStream fs = new FileStream(m_ModelFileName.Name, FileMode.Create))
             {
@@ -1177,6 +1211,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Deletes the file that contains this model.
         /// </summary>
+        /*
         internal void Discard()
         {
             if (m_ModelFileName!=null)
@@ -1185,6 +1220,7 @@ namespace Backsight.Editor
                 m_ModelFileName = null;
             }
         }
+         */
 
         internal IEntity GetDefaultEntity(SpatialType t)
         {
