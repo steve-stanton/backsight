@@ -43,6 +43,12 @@ namespace Backsight.Editor.Forms
             ctxAutoPosition.Checked = ui.IsAutoPosition;
             ctxAutoAngle.Checked = ui.IsAutoAngle;
 
+            // If we're auto-positioning, the auto-angle option should be disabled (it may
+            // still be checked to signify that it'll be re-enabled on turning off the
+            // auto-angle option).
+            if (ui.IsAutoPosition)
+                ctxAutoAngle.Enabled = false;
+
             uint sizeFactor = ui.SizeFactor;
             new TextSizeAction(ctx500, ui.SetSizeFactor, 500, sizeFactor);
             new TextSizeAction(ctx200, ui.SetSizeFactor, 200, sizeFactor);
