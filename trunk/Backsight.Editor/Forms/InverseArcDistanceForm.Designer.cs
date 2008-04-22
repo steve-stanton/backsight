@@ -201,6 +201,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "InverseArcDistanceForm";
             this.Text = "Inverse Arc Distance";
             this.TopMost = true;
