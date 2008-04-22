@@ -358,7 +358,7 @@ namespace Backsight.Forms
                     catch { }
                 }
 
-                Brush b = new HatchBrush(HatchStyle.BackwardDiagonal, Color.LightSalmon, Color.Transparent);
+                Brush b = new HatchBrush(HatchStyle.BackwardDiagonal, Color.Yellow, Color.Transparent);
                 display.Graphics.FillPath(b, m_Path);
             }
 

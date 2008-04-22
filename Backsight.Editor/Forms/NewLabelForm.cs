@@ -112,6 +112,9 @@ namespace Backsight.Editor.Forms
             // default, you get just the default schemas for the entity
             // type we have defined.
             ListSchemas();
+
+            // 20080422 - FOR THE TIME BEING, DEFAULT TO USING THE ID (NO ATTRIBUTES)
+            noAttributesCheckBox.Checked = true;
         }
 
         private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
