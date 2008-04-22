@@ -270,6 +270,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "InverseDistanceAngleForm";
             this.Text = "Inverse Distance & Angle";
             this.TopMost = true;

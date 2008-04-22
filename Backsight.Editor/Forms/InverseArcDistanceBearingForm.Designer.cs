@@ -68,6 +68,7 @@ namespace Backsight.Editor.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(667, 173);
             this.Controls.Add(this.groupBox3);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "InverseArcDistanceBearingForm";
             this.Text = "Arc Distance & Bearings to Center";
             this.Controls.SetChildIndex(this.groupBox3, 0);

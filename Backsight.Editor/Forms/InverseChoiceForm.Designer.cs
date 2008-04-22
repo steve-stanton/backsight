@@ -29,12 +29,12 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.distanceButton = new System.Windows.Forms.Button();
-            this.distanceBearingButton = new System.Windows.Forms.Button();
             this.distanceAngleButton = new System.Windows.Forms.Button();
-            this.arcDistanceButton = new System.Windows.Forms.Button();
+            this.distanceBearingButton = new System.Windows.Forms.Button();
+            this.distanceButton = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.arcDistanceBearingButton = new System.Windows.Forms.Button();
+            this.arcDistanceButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -53,28 +53,16 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Point to Point";
             // 
-            // groupBox2
+            // distanceAngleButton
             // 
-            this.groupBox2.Controls.Add(this.arcDistanceBearingButton);
-            this.groupBox2.Controls.Add(this.arcDistanceButton);
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(256, 25);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(268, 114);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Points on Circular Arcs";
-            // 
-            // distanceButton
-            // 
-            this.distanceButton.Location = new System.Drawing.Point(29, 27);
-            this.distanceButton.Name = "distanceButton";
-            this.distanceButton.Size = new System.Drawing.Size(145, 25);
-            this.distanceButton.TabIndex = 0;
-            this.distanceButton.TabStop = false;
-            this.distanceButton.Text = "&Distance...";
-            this.distanceButton.UseVisualStyleBackColor = true;
-            this.distanceButton.Click += new System.EventHandler(this.distanceButton_Click);
+            this.distanceAngleButton.Location = new System.Drawing.Point(29, 113);
+            this.distanceAngleButton.Name = "distanceAngleButton";
+            this.distanceAngleButton.Size = new System.Drawing.Size(145, 25);
+            this.distanceAngleButton.TabIndex = 2;
+            this.distanceAngleButton.TabStop = false;
+            this.distanceAngleButton.Text = "Distance - &Angle...";
+            this.distanceAngleButton.UseVisualStyleBackColor = true;
+            this.distanceAngleButton.Click += new System.EventHandler(this.distanceAngleButton_Click);
             // 
             // distanceBearingButton
             // 
@@ -87,27 +75,28 @@ namespace Backsight.Editor.Forms
             this.distanceBearingButton.UseVisualStyleBackColor = true;
             this.distanceBearingButton.Click += new System.EventHandler(this.distanceBearingButton_Click);
             // 
-            // distanceAngleButton
+            // distanceButton
             // 
-            this.distanceAngleButton.Location = new System.Drawing.Point(29, 113);
-            this.distanceAngleButton.Name = "distanceAngleButton";
-            this.distanceAngleButton.Size = new System.Drawing.Size(145, 25);
-            this.distanceAngleButton.TabIndex = 2;
-            this.distanceAngleButton.TabStop = false;
-            this.distanceAngleButton.Text = "Distance - &Angle...";
-            this.distanceAngleButton.UseVisualStyleBackColor = true;
-            this.distanceAngleButton.Click += new System.EventHandler(this.distanceAngleButton_Click);
+            this.distanceButton.Location = new System.Drawing.Point(29, 27);
+            this.distanceButton.Name = "distanceButton";
+            this.distanceButton.Size = new System.Drawing.Size(145, 25);
+            this.distanceButton.TabIndex = 0;
+            this.distanceButton.TabStop = false;
+            this.distanceButton.Text = "&Distance...";
+            this.distanceButton.UseVisualStyleBackColor = true;
+            this.distanceButton.Click += new System.EventHandler(this.distanceButton_Click);
             // 
-            // arcDistanceButton
+            // groupBox2
             // 
-            this.arcDistanceButton.Location = new System.Drawing.Point(21, 27);
-            this.arcDistanceButton.Name = "arcDistanceButton";
-            this.arcDistanceButton.Size = new System.Drawing.Size(230, 25);
-            this.arcDistanceButton.TabIndex = 3;
-            this.arcDistanceButton.TabStop = false;
-            this.arcDistanceButton.Text = "A&rc Distance...";
-            this.arcDistanceButton.UseVisualStyleBackColor = true;
-            this.arcDistanceButton.Click += new System.EventHandler(this.arcDistanceButton_Click);
+            this.groupBox2.Controls.Add(this.arcDistanceBearingButton);
+            this.groupBox2.Controls.Add(this.arcDistanceButton);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Location = new System.Drawing.Point(256, 25);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(268, 114);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Points on Circular Arcs";
             // 
             // arcDistanceBearingButton
             // 
@@ -119,6 +108,17 @@ namespace Backsight.Editor.Forms
             this.arcDistanceBearingButton.Text = "Arc Distance - &Centre Bearing...";
             this.arcDistanceBearingButton.UseVisualStyleBackColor = true;
             this.arcDistanceBearingButton.Click += new System.EventHandler(this.arcDistanceBearingButton_Click);
+            // 
+            // arcDistanceButton
+            // 
+            this.arcDistanceButton.Location = new System.Drawing.Point(21, 27);
+            this.arcDistanceButton.Name = "arcDistanceButton";
+            this.arcDistanceButton.Size = new System.Drawing.Size(230, 25);
+            this.arcDistanceButton.TabIndex = 3;
+            this.arcDistanceButton.TabStop = false;
+            this.arcDistanceButton.Text = "A&rc Distance...";
+            this.arcDistanceButton.UseVisualStyleBackColor = true;
+            this.arcDistanceButton.Click += new System.EventHandler(this.arcDistanceButton_Click);
             // 
             // cancelButton
             // 
@@ -140,6 +140,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "InverseChoiceForm";
             this.Text = "Inverse Calculator";
             this.groupBox1.ResumeLayout(false);
