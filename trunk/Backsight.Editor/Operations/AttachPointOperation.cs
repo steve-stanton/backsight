@@ -16,12 +16,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml.Serialization;
+using System.Xml.Schema;
+using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Data;
-//using System.Xml.Schema;
-//using System.Xml;
-//using System.Xml.Serialization;
 
 namespace Backsight.Editor.Operations
 {
@@ -31,7 +31,7 @@ namespace Backsight.Editor.Operations
     /// </summary>
     [Serializable]
     //[XmlSchemaProvider(GetXmlSchema)]
-    class AttachPointOperation : Operation //, IXmlSerializable
+    class AttachPointOperation : Operation, IXmlSerializable
     {
         /// <summary>
         /// The max value stored for <c>m_PositionRatio</c>
@@ -199,7 +199,7 @@ namespace Backsight.Editor.Operations
             // If necessary, assign the new point the next available ID.
             m_Point.SetNextId();
 
-            //WriteXml(); // TEST
+            WriteXml(); // TEST
 
             // Peform standard completion steps
             Complete();
@@ -212,18 +212,33 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Point; }
         }
-
         /*
         internal void WriteXml()
         {
-            AttachPoint edit = new AttachPoint();
-            edit.EditSequence = EditSequence;
-            edit.Line = m_Line;
-            edit.PositionRatio = m_PositionRatio;
-            edit.Point = m_Point;
-            MapModel.WriteEdit(edit);
+            XmlSerializer xs = new XmlSerializer(typeof(AttachPointOperation));
+            using (System.IO.StreamWriter s = System.IO.File.CreateText(@"C:\Temp\Test.xml"))
+            {
+                xs.Serialize(s, this);
+            }
         }
+        */
 
+        internal void WriteXml()
+        {
+            AttachPointTest edit = new AttachPointTest();
+            edit.EditSequence = EditSequence;
+            //edit.Line = m_Line;
+            edit.PositionRatio = m_PositionRatio;
+            //edit.Point = m_Point;
+            //MapModel.WriteEdit(edit);
+
+            XmlSerializer xs = new XmlSerializer(typeof(AttachPointTest));
+            using (System.IO.StreamWriter s = System.IO.File.CreateText(@"C:\Temp\Test.xml"))
+            {
+                xs.Serialize(s, edit);
+            }
+        }
+        /*
         private const string ns = "http://www.backsight.org";
 
         public static XmlQualifiedName GetXmlSchema(XmlSchemaSet xs)
@@ -242,13 +257,13 @@ namespace Backsight.Editor.Operations
 
             return new XmlQualifiedName("attachPoint", ns);
         }
-
+        */
 
         #region IXmlSerializable Members
 
         public XmlSchema GetSchema()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public void ReadXml(XmlReader reader)
@@ -258,11 +273,18 @@ namespace Backsight.Editor.Operations
 
         public void WriteXml(XmlWriter writer)
         {
-            //writer.WriteAttributeString("positionRatio"
-            throw new Exception("The method or operation is not implemented.");
+            writer.WriteStartAttribute("EditSequence");
+            writer.WriteValue(EditSequence);
+            writer.WriteEndAttribute();
+
+            writer.WriteStartAttribute("PositionRatio");
+            writer.WriteValue(m_PositionRatio);
+            writer.WriteEndAttribute();
+
+            //edit.Line = m_Line;
+            //edit.Point = m_Point;
         }
 
         #endregion
-         */
     }
 }

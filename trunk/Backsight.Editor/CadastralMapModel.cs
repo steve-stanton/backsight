@@ -20,6 +20,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 //using System.Xml.Serialization;
+using System.Management;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
@@ -694,14 +695,23 @@ namespace Backsight.Editor
             {
                 string dir = Path.GetDirectoryName(m_ModelFileName.Name);
                 string name = Path.GetFileNameWithoutExtension(m_ModelFileName.Name);
-                string res = Path.Combine(dir, name + ".ced");
-                DirectoryInfo dirInfo = Directory.CreateDirectory(res);
-                dirInfo.Attributes |= FileAttributes.Compressed;
+                dir = Path.Combine(dir, name + ".ced");
+                if (!Directory.Exists(dir))
+                {
+                    DirectoryInfo dirInfo = Directory.CreateDirectory(dir);
+                    dirInfo.Attributes |= FileAttributes.Compressed;
 
-             * // try SetAttributes
+                    // Documentation doesn't say that not all attributes can be set, so need
+                    // to do it the following way...
+                    string moPath = String.Format("Win32_Directory.Name=\"{0}\"", dir);
+                    using (ManagementObject mo = new ManagementObject(moPath))
+                    {
+                        mo.InvokeMethod("Compress", null);
+                    }
+                }
 
-                res = Path.Combine(res, "Map.Data");
-                using (FileStream fs = new FileStream(res, FileMode.Create))
+                string file = Path.Combine(dir, "Map.Data");
+                using (FileStream fs = new FileStream(file, FileMode.Create))
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     formatter.Serialize(fs, this);
