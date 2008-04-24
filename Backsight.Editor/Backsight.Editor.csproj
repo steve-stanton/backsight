@@ -54,6 +54,9 @@
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="DataHandle.cs" />
+    <Compile Include="editingschema.cs">
+      <DependentUpon>EditingSchema.xsd</DependentUpon>
+    </Compile>
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />

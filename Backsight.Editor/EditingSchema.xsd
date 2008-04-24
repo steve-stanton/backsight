@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Created with Liquid XML Studio 1.0.7.0 (http://www.liquid-technologies.com) -->
 <xs:schema xmlns:mstns="http://tempuri.org/EditingSchema.xsd" xmlns="http://tempuri.org/EditingSchema.xsd" elementFormDefault="qualified" targetNamespace="http://tempuri.org/EditingSchema.xsd" id="EditingSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="OperationClass" type="mstns:operation" />
   <xs:complexType name="operation" abstract="true">
     <xs:sequence />
   </xs:complexType>
@@ -54,5 +55,18 @@
         <xs:attribute name="positionRatio" type="xs:unsignedInt" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AttachPointClass" type="mstns:attachPoint">
+  </xs:element>
+  <xs:complexType name="point">
+    <xs:sequence>
+      <xs:element name="x" type="xs:unsignedLong" />
+      <xs:element name="y" type="xs:unsignedLong" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lineString">
+    <xs:sequence>
+      <xs:element name="points" type="mstns:point" minOccurs="2" maxOccurs="unbounded" />
+    </xs:sequence>
   </xs:complexType>
 </xs:schema>
