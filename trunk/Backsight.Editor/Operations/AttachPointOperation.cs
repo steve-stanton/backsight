@@ -225,6 +225,21 @@ namespace Backsight.Editor.Operations
 
         internal void WriteXml()
         {
+            attachPoint edit = new attachPoint();
+            edit.positionRatio = m_PositionRatio;
+            edit.line = new dataHandle();
+            edit.line.item = 1;
+            edit.line.job = 123;
+            edit.point = new dataHandle();
+            edit.point.item = 2;
+            edit.point.job = 44;
+
+            XmlSerializer xs = new XmlSerializer(typeof(attachPoint));
+            using (System.IO.StreamWriter s = System.IO.File.CreateText(@"C:\Temp\Test.xml"))
+            {
+                xs.Serialize(s, edit);
+            }
+            /*
             AttachPointTest edit = new AttachPointTest();
             edit.EditSequence = EditSequence;
             //edit.Line = m_Line;
@@ -237,6 +252,9 @@ namespace Backsight.Editor.Operations
             {
                 xs.Serialize(s, edit);
             }
+             */
+
+
         }
         /*
         private const string ns = "http://www.backsight.org";
