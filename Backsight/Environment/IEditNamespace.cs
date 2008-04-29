@@ -1,5 +1,5 @@
 /// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
+/// Copyright 2008 - Steve Stanton. This file is part of Backsight
 ///
 /// Backsight is free software; you can redistribute it and/or modify it under the terms
 /// of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -17,19 +17,21 @@ using System;
 
 namespace Backsight.Environment
 {
-    public enum ItemType
+    /// <written by="Steve Stanton" on="29-APR-2008"/>
+    /// <summary>
+    /// A mutable version of <c>INamespace</c>
+    /// </summary>
+    public interface IEditNamespace : INamespace, IEditControl
     {
-        None,
-        Domain,
-        DomainEntry,
-        Entity,
-        Field,
-        Font,
-        IdGroup,
-        Layer,
-        Namespace,
-        Schema,
-        Template,
-        Theme,
-    };
+        /// <summary>
+        /// The name for the namespace (e.g. "Vancouver")
+        /// </summary>
+        new string Name { get; set; }
+
+        /// <summary>
+        /// The namespace (if any) that encloses this one. Null if this namespace is
+        /// at the root of a tree.
+        /// </summary>
+        new INamespace Parent { get; set; }
+    }
 }

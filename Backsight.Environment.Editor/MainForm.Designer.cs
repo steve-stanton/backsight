@@ -71,6 +71,7 @@ namespace Backsight.Environment.Editor
             this.newButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.viewNamespacesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -160,6 +161,7 @@ namespace Backsight.Environment.Editor
             this.viewFontsMenuItem,
             this.viewIdGroupsMenuItem,
             this.viewLayersMenuItem,
+            this.viewNamespacesMenuItem,
             this.viewTablesMenuItem,
             this.viewTemplatesMenuItem,
             this.viewThemesMenuItem,
@@ -172,61 +174,61 @@ namespace Backsight.Environment.Editor
             // viewEntityTypesMenuItem
             // 
             this.viewEntityTypesMenuItem.Name = "viewEntityTypesMenuItem";
-            this.viewEntityTypesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewEntityTypesMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewEntityTypesMenuItem.Text = "&Entity Types";
             this.viewEntityTypesMenuItem.Click += new System.EventHandler(this.viewEntityTypesMenuItem_Click);
             // 
             // viewFontsMenuItem
             // 
             this.viewFontsMenuItem.Name = "viewFontsMenuItem";
-            this.viewFontsMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewFontsMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewFontsMenuItem.Text = "&Fonts";
             this.viewFontsMenuItem.Click += new System.EventHandler(this.viewFontsMenuItem_Click);
             // 
             // viewIdGroupsMenuItem
             // 
             this.viewIdGroupsMenuItem.Name = "viewIdGroupsMenuItem";
-            this.viewIdGroupsMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewIdGroupsMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewIdGroupsMenuItem.Text = "ID &Groups";
             this.viewIdGroupsMenuItem.Click += new System.EventHandler(this.viewIdGroupsMenuItem_Click);
             // 
             // viewLayersMenuItem
             // 
             this.viewLayersMenuItem.Name = "viewLayersMenuItem";
-            this.viewLayersMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewLayersMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewLayersMenuItem.Text = "Layers";
             this.viewLayersMenuItem.Click += new System.EventHandler(this.viewLayersMenuItem_Click);
             // 
             // viewTablesMenuItem
             // 
             this.viewTablesMenuItem.Name = "viewTablesMenuItem";
-            this.viewTablesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewTablesMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewTablesMenuItem.Text = "T&ables";
             this.viewTablesMenuItem.Click += new System.EventHandler(this.viewTablesMenuItem_Click);
             // 
             // viewTemplatesMenuItem
             // 
             this.viewTemplatesMenuItem.Name = "viewTemplatesMenuItem";
-            this.viewTemplatesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewTemplatesMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewTemplatesMenuItem.Text = "Te&mplates";
             this.viewTemplatesMenuItem.Click += new System.EventHandler(this.viewTemplateMenuItem_Click);
             // 
             // viewThemesMenuItem
             // 
             this.viewThemesMenuItem.Name = "viewThemesMenuItem";
-            this.viewThemesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewThemesMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewThemesMenuItem.Text = "&Themes";
             this.viewThemesMenuItem.Click += new System.EventHandler(this.viewThemesMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(158, 6);
             // 
             // viewPropertiesMenuItem
             // 
             this.viewPropertiesMenuItem.Name = "viewPropertiesMenuItem";
-            this.viewPropertiesMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewPropertiesMenuItem.Size = new System.Drawing.Size(161, 22);
             this.viewPropertiesMenuItem.Text = "&Properties...";
             this.viewPropertiesMenuItem.Click += new System.EventHandler(this.viewPropertiesMenuItem_Click);
             // 
@@ -343,6 +345,13 @@ namespace Backsight.Environment.Editor
             this.splitContainer2.SplitterDistance = 442;
             this.splitContainer2.TabIndex = 0;
             // 
+            // viewNamespacesMenuItem
+            // 
+            this.viewNamespacesMenuItem.Name = "viewNamespacesMenuItem";
+            this.viewNamespacesMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.viewNamespacesMenuItem.Text = "&Namespaces";
+            this.viewNamespacesMenuItem.Click += new System.EventHandler(this.viewNamespacesMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -399,6 +408,7 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripMenuItem viewFontsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewTablesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewTemplatesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewNamespacesMenuItem;
     }
 }
 

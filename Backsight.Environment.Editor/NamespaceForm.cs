@@ -14,22 +14,39 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
-namespace Backsight.Environment
+namespace Backsight.Environment.Editor
 {
-    public enum ItemType
+    /// <summary>
+    /// Dialog for working with Backsight "namespaces" (named areas of space)
+    /// </summary>
+    public partial class NamespaceForm : Form
     {
-        None,
-        Domain,
-        DomainEntry,
-        Entity,
-        Field,
-        Font,
-        IdGroup,
-        Layer,
-        Namespace,
-        Schema,
-        Template,
-        Theme,
-    };
+        private readonly IEditNamespace m_Edit;
+
+        #region Constructors
+
+        internal NamespaceForm()
+            : this(null)
+        {
+        }
+
+        internal NamespaceForm(IEditNamespace edit)
+        {
+            InitializeComponent();
+
+            m_Edit = edit;
+            if (m_Edit == null)
+            {
+                IEnvironmentFactory f = EnvironmentContainer.Factory;
+                m_Edit = f.CreateNamespace();
+            }
+
+            m_Edit.BeginEdit();
+        }
+
+        #endregion
+
+    }
 }

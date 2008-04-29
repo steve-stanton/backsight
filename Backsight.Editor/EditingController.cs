@@ -467,6 +467,15 @@ namespace Backsight.Editor
             // Update the timestamp for the current editing session.
             map.UpdateSession();
             map.Write();
+
+            string modelName = Path.GetFileNameWithoutExtension(map.Name);
+            string testFile = Path.Combine(modelName, JobFile.TYPE);
+            JobFile jf = new JobFile();
+            jf.ConnectionString = "Steve";
+            jf.JobId = 123;
+            ISpatialDisplay display = ActiveDisplay;
+            jf.LastDraw = new DrawInfo(display.Extent, display.MapScale);
+            jf.WriteXML(testFile);
         }
 
         /// <summary>

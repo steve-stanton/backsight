@@ -273,6 +273,7 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
+    <Compile Include="JobFile.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
