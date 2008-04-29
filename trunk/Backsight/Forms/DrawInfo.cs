@@ -19,7 +19,7 @@ namespace Backsight.Forms
 {
 	/// <written by="Steve Stanton" on="14-SEP-2006" />
     /// <summary>The center and scale used for a map display</summary>
-    struct DrawInfo
+    public struct DrawInfo
     {
         public double CenterX;
         public double CenterY;

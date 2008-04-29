@@ -202,6 +202,11 @@ namespace Backsight.Data
             get { return (ILayer[])m_Data.Layer.Select(); }
         }
 
+        public INamespace[] Namespaces
+        {
+            get { return (INamespace[])m_Data.Namespaces.Select(); }
+        }
+
         public ITable[] Tables
         {
             get { return (ITable[])m_Data.Schema.Select(); }

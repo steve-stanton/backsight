@@ -42,6 +42,21 @@ namespace Backsight.SqlServer
             get { return m_Database; }
         }
 
+        /// <summary>
+        /// The connection string for the selected database (null if a database
+        /// hasn't been selected)
+        /// </summary>
+        public string ConnectionString
+        {
+            get
+            {
+                if (m_Database==null)
+                    return null;
+
+                return new TableFactory(m_Database).ConnectionString;
+            }
+        }
+
         private void ConnectionForm_Shown(object sender, EventArgs e)
         {
             string s = GlobalUserSetting.LastConnection;
