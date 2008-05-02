@@ -19,19 +19,13 @@ namespace Backsight.Environment
 {
     /// <written by="Steve Stanton" on="29-APR-2008"/>
     /// <summary>
-    /// A mutable version of <c>INamespace</c>
+    /// A mutable version of <c>IZone</c>
     /// </summary>
-    public interface IEditNamespace : INamespace, IEditControl
+    public interface IEditZone : IZone, IEditControl
     {
         /// <summary>
-        /// The name for the namespace (e.g. "Vancouver")
+        /// The name for the zone (e.g. "Vancouver")
         /// </summary>
         new string Name { get; set; }
-
-        /// <summary>
-        /// The namespace (if any) that encloses this one. Null if this namespace is
-        /// at the root of a tree.
-        /// </summary>
-        new INamespace Parent { get; set; }
     }
 }

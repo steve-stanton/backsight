@@ -312,14 +312,14 @@ namespace Backsight.Environment.Editor
                 dial = new IdGroupForm();
             else if (m_CurrentType == ItemType.Layer)
                 dial = new LayerForm();
-            else if (m_CurrentType == ItemType.Namespace)
-                dial = new NamespaceForm();
             else if (m_CurrentType == ItemType.Schema)
                 dial = new TableForm();
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm();
             else if (m_CurrentType == ItemType.Template)
                 dial = new TemplateForm();
+            else if (m_CurrentType == ItemType.Zone)
+                dial = new ZoneForm();
 
             if (dial==null)
             {
@@ -365,14 +365,14 @@ namespace Backsight.Environment.Editor
                 dial = new IdGroupForm((IEditIdGroup)item);
             else if (m_CurrentType == ItemType.Layer)
                 dial = new LayerForm((IEditLayer)item);
-            else if (m_CurrentType == ItemType.Namespace)
-                dial = new NamespaceForm((IEditNamespace)item);
             else if (m_CurrentType == ItemType.Schema)
                 dial = new TableForm((IEditTable)item);
             else if (m_CurrentType == ItemType.Theme)
                 dial = new ThemeForm((IEditTheme)item);
             else if (m_CurrentType == ItemType.Template)
                 dial = new TemplateForm((IEditTemplate)item);
+            else if (m_CurrentType == ItemType.Zone)
+                dial = new ZoneForm((IEditZone)item);
 
             if (dial==null)
             {
@@ -442,13 +442,6 @@ namespace Backsight.Environment.Editor
                     break;
                 }
 
-                case ItemType.Namespace:
-                {
-                    typeName = "namespace";
-                    RefreshList(m_CurrentType, m_Data.Namespaces);
-                    break;
-                }
-
                 case ItemType.Schema:
                 {
                     typeName = "table";
@@ -467,6 +460,13 @@ namespace Backsight.Environment.Editor
                 {
                     typeName = "theme";
                     RefreshList(m_CurrentType, m_Data.Themes);
+                    break;
+                }
+
+                case ItemType.Zone:
+                {
+                    typeName = "zone";
+                    RefreshList(m_CurrentType, m_Data.Zones);
                     break;
                 }
 
@@ -504,11 +504,6 @@ namespace Backsight.Environment.Editor
             RefreshList(ItemType.Layer);
         }
 
-        private void viewNamespacesMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Namespace);
-        }
-
         private void viewTablesMenuItem_Click(object sender, EventArgs e)
         {
             RefreshList(ItemType.Schema);
@@ -522,6 +517,11 @@ namespace Backsight.Environment.Editor
         private void viewThemesMenuItem_Click(object sender, EventArgs e)
         {
             RefreshList(ItemType.Theme);
+        }
+
+        private void viewZonesMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshList(ItemType.Zone);
         }
 
         void RefreshList(ItemType t)

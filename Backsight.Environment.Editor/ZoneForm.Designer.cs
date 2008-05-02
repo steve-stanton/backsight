@@ -1,6 +1,6 @@
 namespace Backsight.Environment.Editor
 {
-    partial class NamespaceForm
+    partial class ZoneForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@ namespace Backsight.Environment.Editor
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "NamespaceForm";
+            this.Text = "ZoneForm";
         }
 
         #endregion
