@@ -1001,6 +1001,12 @@
     <None Include="EditingSchema.xsx">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
     </None>
+    <None Include="GeometrySchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="GeometrySchema.xsx">
+      <DependentUpon>GeometrySchema.xsd</DependentUpon>
+    </None>
     <None Include="IdDataSet.xsc">
       <DependentUpon>IdDataSet.xsd</DependentUpon>
     </None>
