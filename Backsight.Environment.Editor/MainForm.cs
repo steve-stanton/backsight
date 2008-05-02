@@ -83,6 +83,9 @@ namespace Backsight.Environment.Editor
             {
                 lastConn = TableFactory.GetDefaultConnection();
                 lookedForDefault = true;
+
+                if (!String.IsNullOrEmpty(lastConn))
+                    GlobalUserSetting.LastConnection = lastConn;
             }
 
             if (String.IsNullOrEmpty(lastConn) && lookedForDefault)
@@ -116,7 +119,6 @@ namespace Backsight.Environment.Editor
                 Close();
             else
             {
-                GlobalUserSetting.LastConnection = lastConn;
                 Application.Idle += OnIdle;
                 RefreshList();
             }

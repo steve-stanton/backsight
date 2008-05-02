@@ -19,7 +19,7 @@ using System.Windows.Forms;
 namespace Backsight.Environment.Editor
 {
     /// <summary>
-    /// Dialog for working with Backsight "zons" (named areas of space)
+    /// Dialog for working with Backsight "zone" (named areas of space)
     /// </summary>
     public partial class ZoneForm : Form
     {
@@ -48,5 +48,41 @@ namespace Backsight.Environment.Editor
 
         #endregion
 
+        private void ZoneForm_Shown(object sender, EventArgs e)
+        {
+            nameTextBox.Text = m_Edit.Name;
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            m_Edit.CancelEdit();
+            this.DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            if (ValidateEdit())
+            {
+                m_Edit.FinishEdit();
+                this.DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+
+        bool ValidateEdit()
+        {
+            string name = nameTextBox.Text.Trim();
+            if (name.Length==0)
+            {
+                MessageBox.Show("A name must be supplied for the zone");
+                nameTextBox.Focus();
+                return false;
+            }
+
+            m_Edit.Name = name;
+
+            return true;
+        }
     }
 }

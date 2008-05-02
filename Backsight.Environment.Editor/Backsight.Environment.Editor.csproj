@@ -157,6 +157,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>ThemeForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ZoneForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ZoneForm.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
