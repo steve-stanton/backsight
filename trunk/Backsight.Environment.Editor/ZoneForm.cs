@@ -19,20 +19,20 @@ using System.Windows.Forms;
 namespace Backsight.Environment.Editor
 {
     /// <summary>
-    /// Dialog for working with Backsight "namespaces" (named areas of space)
+    /// Dialog for working with Backsight "zons" (named areas of space)
     /// </summary>
-    public partial class NamespaceForm : Form
+    public partial class ZoneForm : Form
     {
-        private readonly IEditNamespace m_Edit;
+        private readonly IEditZone m_Edit;
 
         #region Constructors
 
-        internal NamespaceForm()
+        internal ZoneForm()
             : this(null)
         {
         }
 
-        internal NamespaceForm(IEditNamespace edit)
+        internal ZoneForm(IEditZone edit)
         {
             InitializeComponent();
 
@@ -40,7 +40,7 @@ namespace Backsight.Environment.Editor
             if (m_Edit == null)
             {
                 IEnvironmentFactory f = EnvironmentContainer.Factory;
-                m_Edit = f.CreateNamespace();
+                m_Edit = f.CreateZone();
             }
 
             m_Edit.BeginEdit();

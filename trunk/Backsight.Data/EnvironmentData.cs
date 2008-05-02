@@ -148,6 +148,13 @@ namespace Backsight.Data
             return row;
         }
 
+        public IEditZone CreateZone()
+        {
+            EnvData.ZoneRow row = EnvData.ZoneRow.CreateZoneRow(m_Data);
+            row.ZoneId = ReserveId();
+            return row;
+        }
+
         /// <summary>
         /// Implements <c>IEnvironmentContainer.Factory</c> on behalf of
         /// derived classes.
@@ -202,11 +209,6 @@ namespace Backsight.Data
             get { return (ILayer[])m_Data.Layer.Select(); }
         }
 
-        public INamespace[] Namespaces
-        {
-            get { return (INamespace[])m_Data.Namespaces.Select(); }
-        }
-
         public ITable[] Tables
         {
             get { return (ITable[])m_Data.Schema.Select(); }
@@ -225,6 +227,11 @@ namespace Backsight.Data
         public IProperty[] Properties
         {
             get { return (IProperty[])m_Data.Property.Select(); }
+        }
+
+        public IZone[] Zones
+        {
+            get { return (IZone[])m_Data.Zone.Select(); }
         }
         /*
         T[] Copy<T, F>(F[] rows) where F : T

@@ -19,21 +19,14 @@ namespace Backsight.Environment
 {
     /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
-    /// A namespace is some named area of space. A namespace may form a node in some sort of
-    /// logical tree structure. This is used to provide a form of spatial indexing when dealing
-    /// with a Backsight database.
+    /// A zone is some named area of space. This is used to provide a form of spatial
+    /// indexing when dealing with a Backsight database.
     /// </summary>
-    public interface INamespace : IEnvironmentItem
+    public interface IZone : IEnvironmentItem
     {
         /// <summary>
-        /// The name for the namespace (e.g. "Vancouver")
+        /// The name for the zone (e.g. "Vancouver")
         /// </summary>
         string Name { get; }
-
-        /// <summary>
-        /// The namespace (if any) that encloses this one. Null if this namespace is
-        /// at the root of a tree.
-        /// </summary>
-        INamespace Parent { get; }
     }
 }

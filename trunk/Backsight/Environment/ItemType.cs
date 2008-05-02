@@ -27,9 +27,9 @@ namespace Backsight.Environment
         Font,
         IdGroup,
         Layer,
-        Namespace,
         Schema,
         Template,
         Theme,
+        Zone,
     };
 }
