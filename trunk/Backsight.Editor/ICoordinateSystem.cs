@@ -29,7 +29,14 @@ namespace Backsight.Editor
         string Ellipsoid { get; }
         string Projection { get; }
 
+        /// <summary>
+        /// Obtain latitude and longitude for a position
+        /// </summary>
+        /// <param name="p">The position to convert</param>
+        /// <param name="latitude">The corresponding latitude (in radians)</param>
+        /// <param name="longitude">The corresponding longitude (in radians)</param>
         void GetLatLong(IPosition p, out double latitude, out double longitude);
+
         double GetLineScaleFactor(IPosition start, IPosition end);
         double GetGroundArea(IPosition[] v);
     }

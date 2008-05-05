@@ -1713,7 +1713,26 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            //MessageBox.Show(action.Title);
+
+            /*
+            if (MessageBox.Show("Load point positions to db?", "Test", MessageBoxButtons.YesNo)
+                    == DialogResult.No)
+                return;
+
+            // Go through each point feature, converting to lat-long and
+            // store in the database
+
+            PositionLoader loader = new PositionLoader(CadastralMapModel.Current);
+            loader.LoadDatabase();
+             */
+
+            if (MessageBox.Show("Read point positions from db?", "Test", MessageBoxButtons.YesNo)
+                    == DialogResult.No)
+                return;
+
+            PositionLoader loader = new PositionLoader(CadastralMapModel.Current);
+            IDictionary<int, IPosition> data = loader.ReadPositions();
         }
 
         #endregion

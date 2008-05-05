@@ -69,4 +69,6 @@
       <xs:element name="points" type="mstns:point" minOccurs="2" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
+  <xs:element name="DataHandleClass" type="mstns:dataHandle">
+  </xs:element>
 </xs:schema>
