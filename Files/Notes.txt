@@ -1,0 +1,90 @@
+20080502
+
+On starting a job, the editor needs to select relevant edits. First
+select basic info for the job:
+
+  SELECT JobId, ZoneId, LayerId
+  FROM Jobs
+  WHERE Name = ?Name
+
+The layer ID refers to the active editing layer for the whole job. It
+could be a layer in a theme, so it could translate into a series of
+layers - a recursive CTE can be used to get the relevant layers:
+
+  WITH JobLayers (LayerId, ParentId) AS
+  (
+    SELECT LayerId, ParentId
+    FROM LayerTree
+    WHERE LayerId = ?LayerId
+
+    UNION ALL
+
+    SELECT t.LayerId, t.ParentId
+    FROM LayerTree t, Layers l
+    WHERE t.LayerId = l.ParentId
+  )
+
+In the past, I worked with the notion that layers in a theme could be
+worked with using different zoning arrangements. However, if the Control
+layer is loaded using a zones called 14 and 15, and it's the base for
+a Survey layer that contains much smaller zones, any sort of select
+will pull in data with the largest cover. This suggests that layers
+within a theme should utilize the same zoning. But if that's the case,
+Control can't be the base for Survey.
+
+To grab data outside a zone, you would need to "use" another layer
+(layers up the tree are implied (and have the same zoning)). Ignoring
+that for the time being, how do you grab the core edits for the job's
+zone?
+
+  SELECT * FROM Edits
+  WHERE SessionId IN
+  (
+    SELECT s.SessionId
+    FROM Sessions s, Jobs j
+    WHERE s.JobId = j.JobId
+    AND j.ZoneId = ?ZoneId
+    AND j.LayerId IN (SELECT LayerId FROM JobLayers)
+  )
+
+Now suppose we have a table that associates sessions with edits that were
+performed on other layers, other zones.
+
+  CREATE TABLE ExternalRefs
+  (
+    SessionId int not null, // or JobId
+    EditId int not null // refers to a row in the Edits table
+  )
+
+When you perform an edit like "Import Control", suppose it notes
+the edits that originally created the referenced data. For a given
+session, you can therefore get all its external edits with:
+
+  SELECT * FROM Edits
+  WHERE EditId IN
+  (
+    SELECT EditId FROM ExternalRefs
+    WHERE SessionId = ?SessionId
+  )
+
+What we actually want are the external refs of all the sessions
+previously selected.
+
+...don't care about the specifics for now - what do we end up
+   with - do we need refs made by the external refs, etc etc?
+
+
+==========================================================================
+  
+20080503
+
+When you create a job, the software will "materialize" the data. Supposing
+each job has its own db schema, each job could have its own Points, Lines,
+and Polygons tables etc.
+
+In fact, the overall db needs to hold an XY for ALL points - otherwise you'd
+need to trace through referenced data until you get to some absolute positions.
+So we likely need a Positions table just for point features (and probably
+stored in lat/long).
+
+

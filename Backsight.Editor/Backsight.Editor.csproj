@@ -282,6 +282,7 @@
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
+    <Compile Include="PositionLoader.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
     <Compile Include="NewCircularArcUI.cs" />
@@ -997,6 +998,7 @@
     <None Include="app.config" />
     <None Include="EditingSchema.xsd">
       <SubType>Designer</SubType>
+      <CustomToolNamespace>http://backsight.org</CustomToolNamespace>
     </None>
     <None Include="EditingSchema.xsx">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
