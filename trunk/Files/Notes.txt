@@ -87,4 +87,133 @@ need to trace through referenced data until you get to some absolute positions.
 So we likely need a Positions table just for point features (and probably
 stored in lat/long).
 
+==========================================================================
+  
+20080507
+
+There is a problem (complication) with storing the position of all PointFeature
+objects in the database, relating to multi-layer themes. Suppose I subdivide
+a line on layer 1980. Later, I change the observed lengths while working on
+derived layer 1990.
+
+  A--------10-------C--------10-------B  [1980]
+
+  A------8------C-----------12--------B  [1990]
+
+The original position for point C needs to be retained in case I do a job on the
+1980 layer. But you need the C from the 1990 layer as well.
+
+While it would be possible to tag positions with a layer ID, it strikes me that this
+would be the top of some further data structure complications. Which makes me wonder
+whether it would be better to revisit the need for storing positions at all.
+
+The idea of a master position table was to make it possible to materialize a job
+without having to trace a potential network of dependencies to reach something
+with an absolute (fixed) position. But consider the reality - in all CEdit jobs,
+users starts with control points which were imported into the map. There IS a
+command to import from another CED file, and that command does need to be
+improved to accommodate cross-job updates. However, the bulk of stuff is handled
+using imported control. And if the software to materialize a job involves selecting
+all the relevant sessions within a zone, it WILL pick up all the control first (i.e.
+the problem of undefined point positions doesn't really exist).
+
+Buf before closing the issue, consider how control updates and cross-zone updates
+might be handled. In the CED-file world, points are cross-referenced to the edits
+(operations) that depend on them (the edit contains a reference to a point feature,
+and the point knows about all edits that refer to it). Thus, if the point moves,
+it can mark the edit for rollforward processing.
+
+*** Radical side-thought: What if the referenced feature DOESN'T hold a pointer to
+the edit? As it is, it's merely a convenience - an artefact that was contrived to
+enhance performance when working with slower computers. But an alternative
+rollforward logic could involved a dictionary that holds all positions that have
+been changed. As you scan through each edit, you don't just check a flag bit to
+see if rollforward is required - instead, you look at each referenced feature to
+see if it's in the change dictionary.
+
+This may end up being slower at runtime, but it also makes it possible to simplify
+the database structure. For things like control points, you don't need an
+association table to say where they're used. If it was really necessary, an
+association table COULD be constructed upon materialization of a job. However,
+it would be nicer to try to do without it (keep the structure as lean as possible,
+to avoid data management overheads).
+
+So lets say a control point is modified. How do you determine what needs to be
+updated? Is it viable to scan every session that was ever performed to find every
+reference? Perhaps a compromise would be in order. Instead of cross-referencing
+control points to specific edits (the edits that refer to the points), we
+cross-reference to the editing job (or possibly the zone that is associated with
+a job).
+
+A cross-reference to a job would seem to be the most "natural" thing to do. But
+does this work as well as a cross-reference to a zone? Remember that a job is
+associated with a a zone and a map layer. Thus, job 1 may deal with layer 1980
+in zone A. And as part of this job, the user might import control point P.
+So let's assume that P gets cross-referenced to job 1.
+
+Later, job 2 is created to perform further edits in zone A, but this time on
+derived layer 1990. As a derived layer, the edits that were performed on the
+1980 layer will also be visible. Meaning that it will also see edits performed
+as part of job 1.
+
+Now consider the reverse situation, where job 1 deals with layer 1990, and
+job 2 deals with layer 1980. Any control that is added on 1990 will not be
+visible on layer 1980, so a further import and cross-reference would be needed
+as part of job 2. Thus, the control point would end up being cross-referenced
+to two related jobs.
+
+There is nothing bad about this, it just seems a bit asymmetrical. Which suggests
+that the control should be cross-referenced to the zone, not the job. So suppose
+we have a ZoneControl table that holds zone-control cross-references
+
+CREATE TABLE ZoneControl
+(
+  ZoneId int not null
+, ControlId int not null
+)
+
+If the position of a control point gets changed, we can easily locate the relevant
+zones with:
+
+  SELECT ZoneId FROM ZoneControl WHERE ControlId = ?ControlId
+
+The result of this select leads to the jobs involved:
+
+  SELECT * FROM Jobs WHERE ZoneId IN
+  (
+    SELECT ZoneId FROM ZoneControl WHERE ControlId = ?ControlId
+  )
+
+Which leads to the sessions:
+
+  SELECT * FROM SESSIONS WHERE JobId IN
+  (
+    SELECT JobId FROM Jobs WHERE ZoneId IN
+    (
+      SELECT ZoneId FROM ZoneControl WHERE ControlId = ?ControlId
+    )
+  )
+
+Which leads to individual edits:
+
+  SELECT * FROM EditHistory WHERE SessionId IN
+  (
+    SELECT * FROM Sessions WHERE JobId IN
+    (
+      SELECT JobId FROM Jobs WHERE ZoneId IN
+      (
+        SELECT ZoneId FROM ZoneControl WHERE ControlId = ?ControlId
+      )
+    )
+  )
+
+Rollforward would be handled as follows:
+
+  Initialize Dictionary with the ID(s) of modified control
+  For each edit coming back from the above query
+    If the edit makes a reference to anything in the change dictionary
+      Re-execute the edit. For each created feature that ends up getting
+      moved, add to dictionary.
+    Endif
+  Next edit
 
