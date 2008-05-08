@@ -78,6 +78,22 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The deleted features
+        /// </summary>
+        internal Feature[] Deletions
+        {
+            get
+            {
+                if (m_Deletions==null)
+                    return new Feature[0];
+
+                List<Feature> result = new List<Feature>(m_Deletions.Count);
+                result.AddRange(m_Deletions);
+                return result.ToArray();
+            }
+        }
+
+        /// <summary>
         /// The unique identifier for this edit.
         /// </summary>
         internal override EditingActionId EditId

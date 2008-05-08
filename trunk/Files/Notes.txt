@@ -217,3 +217,34 @@ Rollforward would be handled as follows:
     Endif
   Next edit
 
+
+==========================================================================
+  
+20080508
+
+When you open the Cadastral Editor, you need to specify an editing job.
+This defines what you will see.
+
+You will initially be in view-only mode - the database will remain untouched,
+and will not contain any record that you are looking at something. On starting
+your first edit, it will acquire a "Session" object (and insert a row into the
+Sessions table). On completing an edit, the following will happen:
+
+1. The row in the Sessions table will be updated by incrementing the edit
+   count, updating the total number of features created, and the time of
+   the last edit.
+2. The edit will be stored in the Edits table.
+3. If any features were created, their IDs will be recorded in the Features
+   table (cross-referenced to the edit)
+
+So what do you initially see? Ideally, the display will be re-generated each
+time you start the Editor, to produce an object model for a map that represents
+the current state of the job. This may not be entirely viable (depending on
+the amount of data involved, and the speed of the computer/network you're using).
+[If it's not viable, the materialized object model can be stored in the database
+for the duration of the job, controlled by the user via File-Save perhaps].
+
+To materialize a job, we need to re-execute all the relevant edits, which can
+be obtained using the following query:
+
+
