@@ -53,7 +53,6 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
-    <Compile Include="DataHandle.cs" />
     <Compile Include="editingschema.cs">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
     </Compile>

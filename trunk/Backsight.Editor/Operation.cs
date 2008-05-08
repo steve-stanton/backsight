@@ -303,6 +303,10 @@ namespace Backsight.Editor
             Feature[] feats = Features;
             MapModel.AddToIndex(feats);
 
+            // Assign 1-based creation sequence to each created feature
+            for (uint i = 0; i < feats.Length; i++)
+                feats[i].CreatorSequence = (i + 1);
+
             // Point referenced features to this editing operation
             AddReferences();
 

@@ -44,14 +44,15 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// Unique identifier for this feature
-        /// </summary>
-        private Guid m_DataId;
-
-        /// <summary>
         /// The editing operation that originally created this feature.
         /// </summary>
         private Operation m_Creator;
+
+        /// <summary>
+        /// The 1-based creation sequence of this feature within the creating edit. A value
+        /// of 0 means the sequence still needs to be defined.
+        /// </summary>
+        private uint m_CreatorSequence;
 
         /// <summary>
         /// What sort of thing is it?
@@ -83,7 +84,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        /// </param>
         protected Feature(IEntity e, Operation creator)
             //: base(creator.MapModel)
         {
@@ -95,10 +95,21 @@ namespace Backsight.Editor
 
             m_What = creator.MapModel.GetRegisteredEntityType(e);
             m_Creator = creator;
-            m_DataId = Guid.NewGuid();
+            m_CreatorSequence = 0;
         }
 
         #endregion
+
+        /// <summary>
+        /// The 1-based creation sequence of this feature within the creating edit. A value
+        /// of 0 means the sequence still needs to be defined. The value will usually be
+        /// initialized to a non-zero value by the <see cref="Operation.Complete"/> method.
+        /// </summary>
+        internal uint CreatorSequence
+        {
+            get { return m_CreatorSequence; }
+            set { m_CreatorSequence = value; }
+        }
 
         abstract public SpatialType SpatialType { get; }
 
@@ -116,7 +127,8 @@ namespace Backsight.Editor
         /// </summary>
         public string DataId
         {
-            get { return m_DataId.ToString(); }
+            get { return String.Format("{0}.{1}.{2}", m_Creator.Session.Id,
+                        m_Creator.EditSequence, m_CreatorSequence); }
         }
 
         [Description("Unique ID")]

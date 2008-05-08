@@ -52,16 +52,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a model name that refers to an existing file.
+        /// Creates a model name with the supplied name
         /// </summary>
         /// <param name="name">The name of the model file (including full path)</param>
         internal ModelFileName(string name)
         {
-            if (!File.Exists(name))
-            {
-                string msg = String.Format("Model file '{0}' does not exist", name);
-                throw new ArgumentException(msg);
-            }
+            //if (!File.Exists(name))
+            //{
+            //    string msg = String.Format("Model file '{0}' does not exist", name);
+            //    throw new ArgumentException(msg);
+            //}
 
             m_Name = name;
             m_IsTempName = false;
