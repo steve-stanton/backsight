@@ -512,10 +512,9 @@ namespace Backsight.Editor
 
             if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
             {
-                Open(fileName);
-
-                // Ensure an editing layer is defined
-                SetActiveLayer();
+                // On successfully opening the map, ensure an editing layer is defined
+                if (Open(fileName))
+                    SetActiveLayer();
             }
         }
 

@@ -46,7 +46,7 @@ namespace Backsight.Editor
         /// <summary>
         /// A unique ID for this session
         /// </summary>
-        readonly uint m_SessionId;
+        readonly InternalIdValue m_SessionId;
 
         /// <summary>
         /// The user logged on for the session. 
@@ -94,7 +94,7 @@ namespace Backsight.Editor
             if (model==null || activeLayer==null)
                 throw new ArgumentNullException();
 
-            m_SessionId = model.CreateNextInternalId().CreationSequence;
+            m_SessionId = model.CreateSessionId();
             m_Model = model;
             m_Layer = activeLayer;
         }
@@ -102,6 +102,11 @@ namespace Backsight.Editor
         #endregion
 
         public uint Id
+        {
+            get { return m_SessionId.SessionSequence; }
+        }
+
+        public InternalIdValue InternalId
         {
             get { return m_SessionId; }
         }
