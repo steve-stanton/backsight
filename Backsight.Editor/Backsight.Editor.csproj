@@ -277,7 +277,8 @@
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
-    <Compile Include="Operations\AttachPointTest.cs" />
+    <Compile Include="Operations\AttachPointAdapter.cs" />
+    <Compile Include="Operations\DeletionAdapter.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
@@ -1030,6 +1031,10 @@
     <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
       <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
       <Name>Backsight.SqlServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Backsight.Xml\Backsight.Xml.csproj">
+      <Project>{C0218734-E13C-4BF7-8D8A-C404347CD30F}</Project>
+      <Name>Backsight.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>

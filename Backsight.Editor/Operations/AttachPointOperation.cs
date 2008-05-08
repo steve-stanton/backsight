@@ -22,6 +22,7 @@ using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Data;
+using Backsight.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -206,6 +207,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The line the point should appear on 
+        /// </summary>
+        internal LineFeature Line
+        {
+            get { return m_Line; }
+        }
+
+        /// <summary>
         /// The point that was created (defined on a call to <see cref="Execute"/>)
         /// </summary>
         internal PointFeature NewPoint
@@ -225,6 +234,10 @@ namespace Backsight.Editor.Operations
 
         internal void WriteXml()
         {
+            IAttachPoint a = new AttachPointAdapter(this);
+            AttachPointData.WriteXml(a, @"C:\Temp\Test.xml");
+
+            /*
             attachPoint edit = new attachPoint();
             edit.positionRatio = m_PositionRatio;
             edit.line = new dataHandle();
@@ -239,6 +252,7 @@ namespace Backsight.Editor.Operations
             {
                 xs.Serialize(s, edit);
             }
+             */
             /*
             AttachPointTest edit = new AttachPointTest();
             edit.EditSequence = EditSequence;
@@ -304,5 +318,15 @@ namespace Backsight.Editor.Operations
         }
 
         #endregion
+
+        /// <summary>
+        /// The position ratio of the attached point. A point coincident with the start
+        /// of the line is a value of 0. A point at the end of the line is a value of
+        /// 1 billion  (1,000,000,000).
+        /// </summary>
+        internal uint PositionRatio
+        {
+            get { return m_PositionRatio; }
+        }
     }
 }

@@ -38,9 +38,15 @@ namespace Backsight.Editor
     /// </summary>
     [Serializable]
     [DefaultProperty("EntityType")]
-    abstract class Feature : DataHandle, ISpatialObject, IPossibleList<Feature>
+    //abstract class Feature : DataHandle, ISpatialObject, IPossibleList<Feature>
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>
     {
         #region Class data
+
+        /// <summary>
+        /// Unique identifier for this feature
+        /// </summary>
+        private Guid m_DataId;
 
         /// <summary>
         /// The editing operation that originally created this feature.
@@ -79,7 +85,7 @@ namespace Backsight.Editor
         /// <param name="creator">The operation that created the feature (not null)</param>
         /// </param>
         protected Feature(IEntity e, Operation creator)
-            : base(creator.MapModel)
+            //: base(creator.MapModel)
         {
             if (e==null)
                 throw new ArgumentNullException("Entity type must be defined");
@@ -89,11 +95,29 @@ namespace Backsight.Editor
 
             m_What = creator.MapModel.GetRegisteredEntityType(e);
             m_Creator = creator;
+            m_DataId = Guid.NewGuid();
         }
 
         #endregion
 
         abstract public SpatialType SpatialType { get; }
+
+        /// <summary>
+        /// Override returns a formatted version of this handle's unique ID.
+        /// </summary>
+        /// <returns>The <c>DataId</c> property</returns>
+        public override string ToString()
+        {
+            return DataId;
+        }
+
+        /// <summary>
+        /// The formatted ID of the unique identifier for this feature
+        /// </summary>
+        public string DataId
+        {
+            get { return m_DataId.ToString(); }
+        }
 
         [Description("Unique ID")]
         public FeatureId Id
