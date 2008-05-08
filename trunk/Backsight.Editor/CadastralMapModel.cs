@@ -106,7 +106,7 @@ namespace Backsight.Editor
         /// An ID indicating that this map model has been registered as part of some
         /// greater data processing job. Zero means this model is unknown to the wider world.
         /// </summary>
-        uint m_JobRegistrationId;
+        uint m_JobId;
 
         /// <summary>
         /// The number of internal IDs that have been generated throughout the lifetime of
@@ -1405,6 +1405,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Creates an ID for a new editing session.
+        /// </summary>
+        /// <returns></returns>
+        public InternalIdValue CreateSessionId()
+        {
+            return CreateNextInternalId();
+        }
+
+        /// <summary>
         /// Creates a new <c>InternalIdValue</c> that can be used to uniquely identify
         /// objects associated with this model.
         /// </summary>
@@ -1412,7 +1421,7 @@ namespace Backsight.Editor
         public InternalIdValue CreateNextInternalId()
         {
             m_NumInternalIds++;
-            return new InternalIdValue(m_JobRegistrationId, m_NumInternalIds);
+            return new InternalIdValue(m_JobId, m_NumInternalIds);
         }
 
         /// <summary>

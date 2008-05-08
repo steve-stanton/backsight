@@ -127,8 +127,12 @@ namespace Backsight.Editor
         /// </summary>
         public string DataId
         {
-            get { return String.Format("{0}.{1}.{2}", m_Creator.Session.Id,
-                        m_Creator.EditSequence, m_CreatorSequence); }
+            get
+            {
+                InternalIdValue iid = m_Creator.Session.InternalId;
+                iid.FeatureSequence = m_CreatorSequence;
+                return iid.ToString();
+            }
         }
 
         [Description("Unique ID")]
