@@ -44,6 +44,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// A unique ID for this session
+        /// </summary>
+        readonly uint m_SessionId;
+
+        /// <summary>
         /// The user logged on for the session. 
         /// </summary>
         Person m_Who;
@@ -89,11 +94,17 @@ namespace Backsight.Editor
             if (model==null || activeLayer==null)
                 throw new ArgumentNullException();
 
+            m_SessionId = model.CreateNextInternalId().CreationSequence;
             m_Model = model;
             m_Layer = activeLayer;
         }
 
         #endregion
+
+        public uint Id
+        {
+            get { return m_SessionId; }
+        }
 
         public override string ToString()
         {

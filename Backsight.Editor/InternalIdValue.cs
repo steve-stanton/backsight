@@ -105,6 +105,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The sequence in which the associated object was instantiated. Not zero.
+        /// </summary>
+        internal uint CreationSequence
+        {
+            get { return m_CreationSequence; }
+        }
+
+        /// <summary>
         /// Override returns a concatenation of the job registration ID & the
         /// creation sequence value.
         /// </summary>

@@ -53,7 +53,14 @@ namespace Backsight.Editor
             return new PointFeature(g, e, creator);
         }
 
-        public PointFeature(IPointGeometry g, IEntity e, Operation creator) : base(e, creator)
+        /// <summary>
+        /// Creates a new <c>PointFeature</c>
+        /// </summary>
+        /// <param name="g">The geometry for the point (not null)</param>
+        /// <param name="e">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation that created the feature (not null)</param>
+        public PointFeature(IPointGeometry g, IEntity e, Operation creator)
+            : base(e, creator)
         {
             m_Geom = (PointGeometry)g;
         }
