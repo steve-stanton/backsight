@@ -248,3 +248,12 @@ To materialize a job, we need to re-execute all the relevant edits, which can
 be obtained using the following query:
 
 
+==========================================================================
+  
+20080509
+
+Saw something at http://catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s02.html,
+which is a good way to describe the origin of the "Backsight" name:
+
+
+``Plan to throw one away; you will, anyhow.'' (Fred Brooks, The Mythical Man-Month, Chapter 11)

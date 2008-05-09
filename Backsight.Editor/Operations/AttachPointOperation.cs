@@ -23,6 +23,7 @@ using System.Xml;
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Xml;
+using System.Text;
 
 namespace Backsight.Editor.Operations
 {
@@ -327,6 +328,18 @@ namespace Backsight.Editor.Operations
         internal uint PositionRatio
         {
             get { return m_PositionRatio; }
+        }
+
+        internal string ToXml()
+        {
+            StringBuilder sb = new StringBuilder(200);
+            sb.Append("<AttachPoint xmlns=\"Backsight\"");
+            sb.AppendFormat(" Line=\"{0}\"", m_Line.DataId);
+            sb.AppendFormat(" PositionRatio=\"{0}\"", m_PositionRatio);
+            sb.AppendFormat(" <Point Id=\"{0}\" EntityId=\"{1}\" Key=\"{2}\"/>",
+                m_Point.DataId, m_Point.EntityType.Id, m_Point.FormattedKey);
+            sb.Append("/>");
+            return sb.ToString();
         }
     }
 }
