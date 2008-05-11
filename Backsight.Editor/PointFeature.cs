@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Geometry;
 using System.Diagnostics;
+using System.Text;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -313,6 +315,18 @@ namespace Backsight.Editor
 
             foreach (IDivider d in da)
                 Topology.MarkPolygons(d);
+        }
+
+        internal string XmlData()
+        {
+            StringBuilder sb = new StringBuilder(100);
+            XmlWriter xw = XmlWriter.Create(sb);
+
+            xw.WriteAttributeString("Id", DataId);
+            xw.WriteAttributeString("EntityId", EntityType.Id.ToString());
+            xw.WriteAttributeString("Key", FormattedKey);
+
+            return sb.ToString();
         }
     }
 }
