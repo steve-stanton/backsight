@@ -24,6 +24,7 @@ using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Xml;
 using System.Text;
+using System.IO;
 
 namespace Backsight.Editor.Operations
 {
@@ -235,8 +236,8 @@ namespace Backsight.Editor.Operations
 
         internal void WriteXml()
         {
-            IAttachPoint a = new AttachPointAdapter(this);
-            AttachPointData.WriteXml(a, @"C:\Temp\Test.xml");
+            //IAttachPoint a = new AttachPointAdapter(this);
+            //AttachPointData.WriteXml(a, @"C:\Temp\Test.xml");
 
             /*
             attachPoint edit = new attachPoint();
@@ -254,6 +255,10 @@ namespace Backsight.Editor.Operations
                 xs.Serialize(s, edit);
             }
              */
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\Test.xml"))
+            {
+                sw.Write(ToXml());
+            }
             /*
             AttachPointTest edit = new AttachPointTest();
             edit.EditSequence = EditSequence;
@@ -268,8 +273,6 @@ namespace Backsight.Editor.Operations
                 xs.Serialize(s, edit);
             }
              */
-
-
         }
         /*
         private const string ns = "http://www.backsight.org";
@@ -333,12 +336,24 @@ namespace Backsight.Editor.Operations
         internal string ToXml()
         {
             StringBuilder sb = new StringBuilder(200);
-            sb.Append("<AttachPoint xmlns=\"Backsight\"");
-            sb.AppendFormat(" Line=\"{0}\"", m_Line.DataId);
-            sb.AppendFormat(" PositionRatio=\"{0}\"", m_PositionRatio);
-            sb.AppendFormat(" <Point Id=\"{0}\" EntityId=\"{1}\" Key=\"{2}\"/>",
-                m_Point.DataId, m_Point.EntityType.Id, m_Point.FormattedKey);
-            sb.Append("/>");
+            XmlWriter xw = XmlWriter.Create(sb);
+
+            /*
+            writer.WriteStartAttribute("EditSequence");
+            writer.WriteValue(EditSequence);
+            writer.WriteEndAttribute();
+
+            writer.WriteStartAttribute("PositionRatio");
+            writer.WriteValue(m_PositionRatio);
+            writer.WriteEndAttribute();
+            */
+            //xw.WriteStartElement("AttachPoint");
+            xw.WriteQualifiedName("AttachPoint", "Backsight");
+            xw.WriteAttributeString("Line", m_Line.DataId);
+            xw.WriteAttributeString("PositionRatio", m_PositionRatio.ToString());
+            xw.WriteElementString("Point", m_Point.XmlData());
+            xw.WriteEndElement();
+
             return sb.ToString();
         }
     }
