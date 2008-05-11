@@ -59,6 +59,20 @@ namespace Backsight.Editor.Forms
             // Define the controller for the application
             m_Controller = new EditingController(this);
 
+            try
+            {
+                if (args != null && args.Length > 0)
+                    m_Controller.OpenJob(args[0]);
+                else
+                    m_Controller.OpenJob(null);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
             InitializeComponent();
 
             string regkey = @"Software\Backsight\Editor\MRU";

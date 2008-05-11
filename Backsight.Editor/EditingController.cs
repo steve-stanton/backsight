@@ -441,6 +441,28 @@ namespace Backsight.Editor
             return false;
         }
 
+        /// <summary>
+        /// Attempts to open a job
+        /// </summary>
+        /// <param name="jobFileSpec">The file specification of a job file (null if
+        /// the user should be asked)</param>
+        /// <exception cref="Exception">If a job could not be opened</exception>
+        internal void OpenJob(string jobFileSpec)
+        {
+            // If a job file has been specified, attempt to open it
+            JobFile jf = null;
+            if (String.IsNullOrEmpty(jobFileSpec))
+                jf = null;
+            else
+                jf = Starter.GetJobFile(jobFileSpec);
+
+            // Just pass it over to a dedicated starter instance
+            Starter s = new Starter(jf);
+
+            if (!s.Open())
+                throw new Exception("Cannot access editing job");
+        }
+
         void InitializeIdManager()
         {
             IdManager idMan = IdManager.Current;

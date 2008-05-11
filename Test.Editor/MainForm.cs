@@ -18,6 +18,7 @@ namespace Test.Editor
     {
         public MainForm(string[] args)
         {
+            /*
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, attempt to open it
             JobFile jf = null;
@@ -33,45 +34,7 @@ namespace Test.Editor
                     MessageBox.Show(ex.Message);
                 }
             }
-
-            AdapterFactory.ConnectionString = String.Empty;
-
-            while(String.IsNullOrEmpty(AdapterFactory.ConnectionString))
-            {
-                // If the job file isn't defined, get the database connection string
-                string cs = null;
-                if (jf==null)
-                {
-                    cs = GetConnectionString();
-                    if (String.IsNullOrEmpty(cs))
-                        return;
-
-                    MessageBox.Show(cs);
-                }
-                else
-                    cs = jf.ConnectionString;
-
-                // Attempt to open the database
-                try
-                {
-                    TableFactory tf = new TableFactory(cs);
-                    AdapterFactory.ConnectionString = cs;
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-
-            // Get the job info from the database
-
-            if (jf!=null)
-            {
-                uint jobId = jf.JobId;
-
-            }
-
+            */
             InitializeComponent();
         }
 
