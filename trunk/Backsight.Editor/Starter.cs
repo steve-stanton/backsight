@@ -15,10 +15,12 @@
 
 using System;
 using System.IO;
-using Backsight.Data;
 using System.Windows.Forms;
-using Backsight.SqlServer;
+
 using Microsoft.Win32;
+
+using Backsight.Data;
+using Backsight.SqlServer;
 
 namespace Backsight.Editor
 {
@@ -154,7 +156,7 @@ namespace Backsight.Editor
                 // Attempt to open the database
                 try
                 {
-                    TableFactory tf = new TableFactory(cs);
+                    //TableFactory tf = new TableFactory(cs);
                     AdapterFactory.ConnectionString = cs;
                 }
 
@@ -172,7 +174,7 @@ namespace Backsight.Editor
 
             }
 
-
+            return true;
         }
 
         string GetConnectionString()
