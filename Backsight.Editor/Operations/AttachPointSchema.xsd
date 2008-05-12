@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="AttachPointSchema" targetNamespace="Backsight" elementFormDefault="qualified" xmlns="Backsight" xmlns:mstns="Backsight" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import />
+  <xs:include id="Feature" schemaLocation="..\FeatureSchema.xsd" />
+  <xs:complexType name="AttachPointType">
+    <xs:sequence>
+      <xs:element name="Point" type="FeatureType" />
+    </xs:sequence>
+    <xs:attribute name="Line" type="xs:string" />
+    <xs:attribute name="PositionRatio" type="xs:unsignedInt" />
+  </xs:complexType>
+  <xs:element name="AttachPoint" type="AttachPointType">
+  </xs:element>
+</xs:schema>

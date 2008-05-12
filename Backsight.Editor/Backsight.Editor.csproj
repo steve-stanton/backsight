@@ -276,8 +276,6 @@
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
-    <Compile Include="Operations\AttachPointAdapter.cs" />
-    <Compile Include="Operations\DeletionAdapter.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
@@ -1004,6 +1002,12 @@
     <None Include="EditingSchema.xsx">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
     </None>
+    <None Include="FeatureSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="FeatureSchema.xsx">
+      <DependentUpon>FeatureSchema.xsd</DependentUpon>
+    </None>
     <None Include="GeometrySchema.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -1021,6 +1025,12 @@
     <None Include="IdDataSet.xss">
       <DependentUpon>IdDataSet.xsd</DependentUpon>
     </None>
+    <None Include="Operations\AttachPointSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Operations\AttachPointSchema.xsx">
+      <DependentUpon>AttachPointSchema.xsd</DependentUpon>
+    </None>
     <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -1031,10 +1041,6 @@
     <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
       <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
       <Name>Backsight.SqlServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Backsight.Xml\Backsight.Xml.csproj">
-      <Project>{C0218734-E13C-4BF7-8D8A-C404347CD30F}</Project>
-      <Name>Backsight.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>

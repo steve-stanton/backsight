@@ -19,12 +19,11 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using System.Xml.Schema;
 using System.Xml;
+using System.Text;
+using System.IO;
 
 using Backsight.Environment;
 using Backsight.Data;
-using Backsight.Xml;
-using System.Text;
-using System.IO;
 
 namespace Backsight.Editor.Operations
 {
