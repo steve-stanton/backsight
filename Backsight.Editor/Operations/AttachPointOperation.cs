@@ -32,7 +32,6 @@ namespace Backsight.Editor.Operations
     /// Operation to attach a point to a line.
     /// </summary>
     [Serializable]
-    //[XmlSchemaProvider(GetXmlSchema)]
     class AttachPointOperation : Operation, IXmlSerializable
     {
         /// <summary>
