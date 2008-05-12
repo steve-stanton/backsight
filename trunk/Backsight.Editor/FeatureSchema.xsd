@@ -1,12 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="FeatureSchema" targetNamespace="Backsight" elementFormDefault="qualified" xmlns="Backsight" xmlns:mstns="Backsight" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:complexType name="FeatureType">
+  <xs:complexType name="FeatureType" abstract="true">
     <xs:sequence>
     </xs:sequence>
-    <xs:attribute name="Id" type="xs:string" />
-    <xs:attribute name="EntityId" type="xs:unsignedInt" />
-    <xs:attribute name="Key" type="xs:string" />
+    <xs:attribute name="Id" type="xs:string" use="required" id="Id" />
+    <xs:attribute name="EntityId" type="xs:unsignedInt" use="required" />
+    <xs:attribute name="Key" type="xs:string" use="optional" />
   </xs:complexType>
   <xs:element name="Feature" type="FeatureType">
+  </xs:element>
+  <xs:complexType name="PointFeatureType">
+    <xs:complexContent>
+      <xs:extension base="FeatureType">
+        <xs:sequence>
+          <xs:element name="Geometry" type="PointGeometryType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointGeometryType">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="X" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="Z" type="xs:unsignedInt" use="optional" />
+  </xs:complexType>
+  <xs:element name="PointGeometry" type="PointGeometryType">
+  </xs:element>
+  <xs:complexType name="TextFeatureType">
+    <xs:complexContent>
+      <xs:extension base="FeatureType">
+        <xs:sequence>
+          <xs:element name="Geometry" type="TextGeometryType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TextGeometryType">
+    <xs:sequence>
+      <xs:element name="Position" type="PointGeometryType" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="FontId" type="xs:unsignedInt" use="required" />
+    <xs:attribute name="Width" type="xs:float" use="required" />
+    <xs:attribute name="Height" type="xs:float" use="required" />
+    <xs:attribute name="Rotation" type="xs:double" use="optional" default="0.0" />
+  </xs:complexType>
+  <xs:element name="TextGeometry" type="TextGeometryType">
+  </xs:element>
+  <xs:element name="PointFeature" type="PointFeatureType">
+  </xs:element>
+  <xs:complexType name="LineGeometryType">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="Start" type="xs:string" />
+    <xs:attribute name="End" type="xs:string" />
+  </xs:complexType>
+  <xs:element name="TextFeature" type="TextGeometryType">
   </xs:element>
 </xs:schema>
