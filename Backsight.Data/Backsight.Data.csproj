@@ -39,24 +39,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterFactory.cs" />
-    <Compile Include="ArchiveDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="BacksightDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BacksightDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="CheckoutDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="ConnectionWrapper.cs" />
-    <Compile Include="DomainDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DomainListDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="EntityDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -71,9 +59,6 @@
     </Compile>
     <Compile Include="EnvironmentData.cs" />
     <Compile Include="EnvironmentFile.cs" />
-    <Compile Include="FieldDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="FontDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -96,19 +81,10 @@
     <Compile Include="IdGroupRow.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="JobDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="LayerDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LayerRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MapDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MapUserDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ZoneRow.cs">
@@ -119,9 +95,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SchemaDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SchemaFieldDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SchemaRow.cs">

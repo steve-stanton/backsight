@@ -132,23 +132,14 @@ namespace Backsight.SqlServer
             // Add simple checks (unfortunately, this info isn't held as part of the
             // generated DataSet, so need to explicitly identify each table involved)
 
-            AddSimpleChecks(logger, ds.Archive, ds.Archive.Checks);
-            AddSimpleChecks(logger, ds.Checkout, ds.Checkout.Checks);
-            AddSimpleChecks(logger, ds.DomainList, ds.DomainList.Checks);
-            AddSimpleChecks(logger, ds.Domain, ds.Domain.Checks);
             AddSimpleChecks(logger, ds.Entity, ds.Entity.Checks);
             AddSimpleChecks(logger, ds.EntitySchema, ds.EntitySchema.Checks);
-            AddSimpleChecks(logger, ds.Field, ds.Field.Checks);
             AddSimpleChecks(logger, ds.Font, ds.Font.Checks);
             AddSimpleChecks(logger, ds.IdAllocation, ds.IdAllocation.Checks);
             AddSimpleChecks(logger, ds.IdFree, ds.IdFree.Checks);
             AddSimpleChecks(logger, ds.IdGroup, ds.IdGroup.Checks);
-            AddSimpleChecks(logger, ds.Job, ds.Job.Checks);
             AddSimpleChecks(logger, ds.Layer, ds.Layer.Checks);
-            AddSimpleChecks(logger, ds.Map, ds.Map.Checks);
-            AddSimpleChecks(logger, ds.MapUser, ds.MapUser.Checks);
             AddSimpleChecks(logger, ds.Schema, ds.Schema.Checks);
-            AddSimpleChecks(logger, ds.SchemaField, ds.SchemaField.Checks);
             AddSimpleChecks(logger, ds.SchemaTemplate, ds.SchemaTemplate.Checks);
             AddSimpleChecks(logger, ds.Template, ds.Template.Checks);
             AddSimpleChecks(logger, ds.Theme, ds.Theme.Checks);
