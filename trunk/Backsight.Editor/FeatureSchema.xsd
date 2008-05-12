@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="FeatureSchema" targetNamespace="Backsight" elementFormDefault="qualified" xmlns="Backsight" xmlns:mstns="Backsight" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="FeatureType">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:string" />
+    <xs:attribute name="EntityId" type="xs:unsignedInt" />
+    <xs:attribute name="Key" type="xs:string" />
+  </xs:complexType>
+  <xs:element name="Feature" type="FeatureType">
+  </xs:element>
+</xs:schema>
