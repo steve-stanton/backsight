@@ -3,7 +3,7 @@
   <xs:complexType name="FeatureType" abstract="true">
     <xs:sequence>
     </xs:sequence>
-    <xs:attribute name="Id" type="xs:string" use="required" id="Id" />
+    <xs:attribute name="Id" type="InternalId" use="required" id="Id" />
     <xs:attribute name="EntityId" type="xs:unsignedInt" use="required" />
     <xs:attribute name="Key" type="xs:string" use="optional" />
   </xs:complexType>
@@ -52,9 +52,12 @@
   <xs:complexType name="LineGeometryType">
     <xs:sequence>
     </xs:sequence>
-    <xs:attribute name="Start" type="xs:string" />
-    <xs:attribute name="End" type="xs:string" />
+    <xs:attribute name="Start" type="InternalId" />
+    <xs:attribute name="End" type="InternalId" />
   </xs:complexType>
   <xs:element name="TextFeature" type="TextGeometryType">
   </xs:element>
+  <xs:simpleType name="InternalId">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
 </xs:schema>
