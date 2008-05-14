@@ -245,7 +245,12 @@ namespace Backsight.Editor.Operations
 
         internal string ToXml()
         {
-            return new XStream().ToXml(this);
+            XStream xs = new XStream();
+            AttachPointData data = new AttachPointData();
+            data.PositionRatio = (int)m_PositionRatio;
+            data.Id = m_Point.DataId;
+            return xs.ToXml(data);
+            //return new XStream().ToXml(this);
                 /*
             StringBuilder sb = new StringBuilder(200);
             XmlWriter xw = XmlWriter.Create(sb);

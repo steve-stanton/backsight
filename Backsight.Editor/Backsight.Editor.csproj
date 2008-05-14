@@ -38,10 +38,6 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Xstream.Core, Version=1.0.2719.23643, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Files\Xstream.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddLabelUI.cs" />
@@ -280,6 +276,7 @@
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
+    <Compile Include="Operations\AttachPointData.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
@@ -1057,6 +1054,10 @@
     <ProjectReference Include="..\WizardLib\WizardLib.csproj">
       <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
       <Name>WizardLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xstream\Core\Xstream.Core.csproj">
+      <Project>{65E47904-3497-4021-A63E-85BEB6D210E4}</Project>
+      <Name>Xstream.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
