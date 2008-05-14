@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Backsight.Data.Properties {
+namespace Backsight.ShapeViewer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,25 +25,13 @@ namespace Backsight.Data.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost\\SQLEXPRESS;Initial Catalog=Backsight;Integrated Security=Tr" +
-            "ue")]
-        public string BacksightConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastMap {
             get {
-                return ((string)(this["BacksightConnectionString"]));
+                return ((string)(this["LastMap"]));
             }
             set {
-                this["BacksightConnectionString"] = value;
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost\\SQLEXPRESS;Initial Catalog=Backsight;Integrated Security=Tr" +
-            "ue")]
-        public string BacksightConnectionString1 {
-            get {
-                return ((string)(this["BacksightConnectionString1"]));
+                this["LastMap"] = value;
             }
         }
     }

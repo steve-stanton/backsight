@@ -20,6 +20,8 @@ using System.Xml;
 using System.Text;
 using System.IO;
 
+using Xstream.Core;
+
 using Backsight.Environment;
 using Backsight.Data;
 
@@ -243,6 +245,8 @@ namespace Backsight.Editor.Operations
 
         internal string ToXml()
         {
+            return new XStream().ToXml(this);
+                /*
             StringBuilder sb = new StringBuilder(200);
             XmlWriter xw = XmlWriter.Create(sb);
 
@@ -254,6 +258,7 @@ namespace Backsight.Editor.Operations
             xw.WriteEndElement();
 
             return sb.ToString();
+                 */
         }
     }
 }

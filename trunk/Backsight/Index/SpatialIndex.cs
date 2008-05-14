@@ -15,10 +15,10 @@
 
 using System;
 using System.IO;
+using System.Diagnostics;
 
 using Backsight.Index.Point;
 using Backsight.Index.Rectangle;
-using System.Diagnostics;
 
 namespace Backsight.Index
 {

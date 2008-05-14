@@ -14,20 +14,21 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
 
-namespace Backsight
+namespace Backsight.ShapeViewer
 {
-    /// <written by="Steve Stanton" on="20-SEP-2007" />
-    /// <summary>
-    /// Something that logs messages (might just display them on a screen, might stuff
-    /// them into some archive, whatever).
-    /// </summary>
-    public interface ILog
+    static class Program
     {
         /// <summary>
-        /// Logs the specified message
+        /// The main entry point for the application.
         /// </summary>
-        /// <param name="message">The message to log</param>
-        void LogMessage(string message);
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
     }
 }
