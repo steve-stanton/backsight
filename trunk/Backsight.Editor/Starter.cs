@@ -21,6 +21,7 @@ using Microsoft.Win32;
 
 using Backsight.Data;
 using Backsight.SqlServer;
+using System.Data.SqlClient;
 
 namespace Backsight.Editor
 {
@@ -72,7 +73,7 @@ namespace Backsight.Editor
         /// The job file that the user double-clicked on (null if the application
         /// was launched some other way)
         /// </summary>
-        readonly JobFile m_JobFile;
+        JobFile m_JobFile;
 
         /// <summary>
         /// The database connection string (blank if unknown)
@@ -148,23 +149,38 @@ namespace Backsight.Editor
                     if (String.IsNullOrEmpty(cs))
                         return false;
 
-                    MessageBox.Show(cs);
+                    //MessageBox.Show(cs);
                 }
                 else
                     cs = m_JobFile.ConnectionString;
 
-                // Attempt to open the database
+                // Attempt to open the database, to get the user ID for the person
+                // who's currently logged in.
+
                 try
                 {
-                    //TableFactory tf = new TableFactory(cs);
+                    using (SqlConnection c = new SqlConnection(cs))
+                    {
+                        c.Open();
+                    }
+
+                    // Remember the successful connection
                     AdapterFactory.ConnectionString = cs;
+                    // and save to registry
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    m_JobFile = null;
                 }
             }
+
+            // If we get here, it means we have a valid database connection...
+
+            // Get the ID of the current user
+            uint userId = GetUserId();
+            MessageBox.Show("User ID is " + userId);
 
             // Get the job info from the database
 
@@ -193,5 +209,34 @@ namespace Backsight.Editor
             return cs;
         }
 
+        /// <summary>
+        /// Obtains the ID of the user who is currently logged in. If the user is not
+        /// registered in the database, they will be added.
+        /// </summary>
+        /// <returns>The ID of the current user</returns>
+        uint GetUserId()
+        {
+            string userName = System.Environment.UserName;
+            string sql = String.Format("SELECT [UserId] FROM [dbo].[Users] WHERE [Name]='{0}'", userName);
+
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                object result = cmd.ExecuteScalar();
+                if (result==null)
+                {
+                    sql = String.Format("INSERT INTO [dbo].[Users] ([Name]) VALUES ('{0}')", userName);
+                    cmd = new SqlCommand(sql, ic.Value);
+                    cmd.ExecuteNonQuery();
+
+                    cmd = new SqlCommand("SELECT @@IDENTITY", ic.Value);
+                    result = cmd.ExecuteScalar();
+                    if (result == null)
+                        throw new Exception("Failed to assign user ID");
+                }
+                
+                return Convert.ToUInt32(result);
+            }
+        }
     }
 }
