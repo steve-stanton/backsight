@@ -14,17 +14,31 @@
 /// </remarks>
 
 using System;
+using System.Runtime.Serialization;
 
-namespace Backsight.Editor.Operations
+namespace Backsight.Editor
 {
     /// <summary>
-    /// Data class for the <see cref="AttachPointOperation"/> class.
+    /// Data class for a new feature, excluding the geometry (you use this class
+    /// if the geometry will be calculated on-the-fly).
     /// </summary>
     [Serializable]
-    class AttachPointData
+    class FeatureData
     {
-        public int PositionRatio;
-        public string Id;
-        public FeatureData Point;
+        /// <summary>
+        /// The 1-based creation sequence of this feature within the creating edit.
+        /// </summary>
+        public int CreationSequence;
+
+        /// <summary>
+        /// The ID of the entity type assigned to the feature
+        /// </summary>
+        public int EntityId;
+
+        /// <summary>
+        /// The user-perceived ID for the feature (if any)
+        /// </summary>
+        [OptionalField]
+        public string Key;
     }
 }

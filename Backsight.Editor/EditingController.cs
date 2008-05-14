@@ -461,6 +461,9 @@ namespace Backsight.Editor
 
             if (!s.Open())
                 throw new Exception("Cannot access editing job");
+
+            // If you get here, the database connection string should now be
+            // defined in the AdapterFactory.ConnectionString property.
         }
 
         void InitializeIdManager()

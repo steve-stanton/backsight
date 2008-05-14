@@ -60,6 +60,7 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
+    <Compile Include="FeatureData.cs" />
     <Compile Include="FontFacade.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
@@ -1054,10 +1055,6 @@
     <ProjectReference Include="..\WizardLib\WizardLib.csproj">
       <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
       <Name>WizardLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xstream\Core\Xstream.Core.csproj">
-      <Project>{65E47904-3497-4021-A63E-85BEB6D210E4}</Project>
-      <Name>Xstream.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
