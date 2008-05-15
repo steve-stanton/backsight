@@ -16,12 +16,13 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 using Microsoft.Win32;
 
 using Backsight.Data;
 using Backsight.SqlServer;
-using System.Data.SqlClient;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -83,12 +84,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the user involved (0 for no user)
         /// </summary>
-        uint m_UserId;
+        int m_UserId;
 
         /// <summary>
         /// The ID of the job that's being edited
         /// </summary>
-        uint m_JobId;
+        int m_JobId;
 
         #endregion
 
@@ -148,8 +149,6 @@ namespace Backsight.Editor
                     cs = GetConnectionString();
                     if (String.IsNullOrEmpty(cs))
                         return false;
-
-                    //MessageBox.Show(cs);
                 }
                 else
                     cs = m_JobFile.ConnectionString;
@@ -165,8 +164,7 @@ namespace Backsight.Editor
                     }
 
                     // Remember the successful connection
-                    AdapterFactory.ConnectionString = cs;
-                    // and save to registry
+                    SetConnectionString(cs);
                 }
 
                 catch (Exception ex)
@@ -179,15 +177,29 @@ namespace Backsight.Editor
             // If we get here, it means we have a valid database connection...
 
             // Get the ID of the current user
-            uint userId = GetUserId();
-            MessageBox.Show("User ID is " + userId);
+            m_UserId = User.GetUserId();
 
             // Get the job info from the database
 
+            Job j = null;
             if (m_JobFile != null)
             {
-                uint jobId = m_JobFile.JobId;
+                try
+                {
+                    j = Job.FindByJobId(m_JobFile.JobId);
+                }
 
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+            // If we don't have a job, ask the user whether they want to open an existing
+            // job, or create a new one.
+            if (j==null)
+            {
+                MessageBox.Show("Open existing job, or create a new one");
             }
 
             return true;
@@ -209,34 +221,11 @@ namespace Backsight.Editor
             return cs;
         }
 
-        /// <summary>
-        /// Obtains the ID of the user who is currently logged in. If the user is not
-        /// registered in the database, they will be added.
-        /// </summary>
-        /// <returns>The ID of the current user</returns>
-        uint GetUserId()
+        void SetConnectionString(string cs)
         {
-            string userName = System.Environment.UserName;
-            string sql = String.Format("SELECT [UserId] FROM [dbo].[Users] WHERE [Name]='{0}'", userName);
-
-            using (IConnection ic = AdapterFactory.GetConnection())
-            {
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
-                object result = cmd.ExecuteScalar();
-                if (result==null)
-                {
-                    sql = String.Format("INSERT INTO [dbo].[Users] ([Name]) VALUES ('{0}')", userName);
-                    cmd = new SqlCommand(sql, ic.Value);
-                    cmd.ExecuteNonQuery();
-
-                    cmd = new SqlCommand("SELECT @@IDENTITY", ic.Value);
-                    result = cmd.ExecuteScalar();
-                    if (result == null)
-                        throw new Exception("Failed to assign user ID");
-                }
-                
-                return Convert.ToUInt32(result);
-            }
+            AdapterFactory.ConnectionString = cs;
+            string hklm = Registry.LocalMachine + @"\Software\Backsight";
+            Registry.SetValue(hklm, "ConnectionString", cs);
         }
     }
 }

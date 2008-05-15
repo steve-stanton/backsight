@@ -5,15 +5,11 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-DECLARE @xsd varchar(MAX)
-SELECT @xsd = xmlCol FROM OPENROWSET(Bulk 'C:\\temp\\EditingSchema.xsd', SINGLE_CLOB) as results(xmlCol)
-create xml schema collection BacksightSchemaCollection AS @xsd
-GO
 
 CREATE TABLE [dbo].[Edits](
 	[SessionId] [int] NOT NULL,
 	[EditSequence] [int] NOT NULL,
-	[Data] [xml] (CONTENT [dbo].[BacksightSchemaCollection]) NULL,
+	[Data] [varbinary](max) NOT NULL,
  CONSTRAINT [PK_Edits] PRIMARY KEY CLUSTERED 
 (
 	[SessionId] ASC,
@@ -23,7 +19,7 @@ CREATE TABLE [dbo].[Edits](
 GO
 
 CREATE TABLE [dbo].[Jobs](
-	[JobId] [int] NOT NULL,
+	[JobId] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	[ZoneId] [int] NOT NULL,
 	[LayerId] [int] NOT NULL,
@@ -34,9 +30,14 @@ CREATE TABLE [dbo].[Jobs](
 ) ON [PRIMARY]
 
 GO
+CREATE TABLE [dbo].[LastRevision](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RevisionTime] [datetime] NOT NULL
+) ON [PRIMARY]
+GO
 
 CREATE TABLE [dbo].[Sessions](
-	[SessionId] [int] NOT NULL,
+	[SessionId] [int] IDENTITY(1,1) NOT NULL,
 	[JobId] [int] NOT NULL,
 	[UserId] [int] NOT NULL,
 	[RevisionId] [int],
@@ -51,18 +52,28 @@ CREATE TABLE [dbo].[Sessions](
 GO
 
 CREATE TABLE [dbo].[Users](
-	[UserId] [int] NOT NULL,
-	[Name] [varchar](100) NOT NULL,
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+)WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
 
+CREATE TABLE [dbo].[UserJobs](
+	[UserId] [int] NOT NULL,
+	[JobId] [int] NOT NULL,
+	[LastRevision] [int] NOT NULL,
+ CONSTRAINT [PK_UserJobs] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[JobId] ASC
+)WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 
-
+GO
 ALTER TABLE [dbo].[Edits]  WITH CHECK ADD  CONSTRAINT [FK_Edits_Sessions] FOREIGN KEY([SessionId])
 REFERENCES [dbo].[Sessions] ([SessionId])
 GO
@@ -92,3 +103,14 @@ ALTER TABLE [dbo].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Sessions_Users] FOR
 REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[Sessions] CHECK CONSTRAINT [FK_Sessions_Users]
+GO
+ALTER TABLE [dbo].[UserJobs]  WITH CHECK ADD  CONSTRAINT [FK_UserJobs_Jobs] FOREIGN KEY([JobId])
+REFERENCES [dbo].[Jobs] ([JobId])
+GO
+ALTER TABLE [dbo].[UserJobs] CHECK CONSTRAINT [FK_UserJobs_Jobs]
+GO
+ALTER TABLE [dbo].[UserJobs]  WITH CHECK ADD  CONSTRAINT [FK_UserJobs_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[UserJobs] CHECK CONSTRAINT [FK_UserJobs_Users]
+GO
