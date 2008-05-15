@@ -50,7 +50,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the job that should be accessed (0 if not known)
         /// </summary>
-        uint m_JobId;
+        int m_JobId;
 
         /// <summary>
         /// Information about the area that was last drawn.
@@ -119,7 +119,7 @@ namespace Backsight.Editor
         /// The ID of the job that should be accessed (0 if not known)
         /// </summary>
         [XmlAttribute]
-        public uint JobId
+        public int JobId
         {
             get { return m_JobId; }
             set { m_JobId = value; }

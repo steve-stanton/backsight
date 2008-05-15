@@ -53,6 +53,8 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
+    <Compile Include="Database\Job.cs" />
+    <Compile Include="Database\User.cs" />
     <Compile Include="editingschema.cs">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
     </Compile>
@@ -202,6 +204,12 @@
     <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
       <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GetJobForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetJobForm.Designer.cs">
+      <DependentUpon>GetJobForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LineStyle.cs" />
     <Compile Include="Forms\NewCircleForm.cs">
       <SubType>Form</SubType>
@@ -275,6 +283,7 @@
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="KeyTextGeometry.cs" />
+    <Compile Include="Database\LastRevision.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\AttachPointData.cs" />
@@ -794,6 +803,10 @@
     <EmbeddedResource Include="Forms\InverseForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InverseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetJobForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GetJobForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineExtensionControl.resx">
       <SubType>Designer</SubType>

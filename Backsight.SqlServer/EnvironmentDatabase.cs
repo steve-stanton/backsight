@@ -79,7 +79,7 @@ namespace Backsight.SqlServer
                 // Disable all foreign key constraints
                 tf.EnableForeignKeys(false);
 
-                Transaction.Execute(delegate()
+                Transaction.Execute(delegate
                 {
                     // Get rid of everything in this database.
                     tf.RemoveAll();
