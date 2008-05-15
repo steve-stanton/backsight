@@ -116,7 +116,7 @@ namespace Backsight.Editor.Database
         /// <param name="layerId">The internal ID of the map layer the job involves. If the layer is
         /// part of a theme, edits made as part of the job will affect this layer, as well as
         /// layers derived from it.</param>
-        Job(int jobId, string name, int zoneId, int layerId)
+        internal Job(int jobId, string name, int zoneId, int layerId)
         {
             m_JobId = jobId;
             m_Name = name;

@@ -16,6 +16,7 @@
 using System;
 using System.IO;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using GisSharpBlog.NetTopologySuite.IO;
 using NTS=GisSharpBlog.NetTopologySuite.Geometries;
@@ -23,7 +24,6 @@ using GisSharpBlog.NetTopologySuite.Geometries;
 
 using Backsight.Index;
 using Backsight.Forms;
-using System.Collections.Generic;
 
 namespace Backsight.ShapeViewer
 {

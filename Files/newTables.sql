@@ -40,7 +40,7 @@ CREATE TABLE [dbo].[Sessions](
 	[SessionId] [int] IDENTITY(1,1) NOT NULL,
 	[JobId] [int] NOT NULL,
 	[UserId] [int] NOT NULL,
-	[RevisionId] [int],
+	[Revision] [int],
 	[StartTime] [datetime] NOT NULL,
 	[EndTime] [datetime] NOT NULL,
 	[NumEdit] [int] NOT NULL,
@@ -93,11 +93,6 @@ ALTER TABLE [dbo].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Sessions_Jobs] FORE
 REFERENCES [dbo].[Jobs] ([JobId])
 GO
 ALTER TABLE [dbo].[Sessions] CHECK CONSTRAINT [FK_Sessions_Jobs]
-GO
-ALTER TABLE [dbo].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Sessions_Revision] FOREIGN KEY([RevisionId])
-REFERENCES [dbo].[Sessions] ([SessionId])
-GO
-ALTER TABLE [dbo].[Sessions] CHECK CONSTRAINT [FK_Sessions_Revision]
 GO
 ALTER TABLE [dbo].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Sessions_Users] FOREIGN KEY([UserId])
 REFERENCES [dbo].[Users] ([UserId])

@@ -108,5 +108,10 @@ namespace Backsight.Environment
         /// All defined text formatting templates
         /// </summary>
         ITemplate[] Templates { get; }
+
+        /// <summary>
+        /// All defined spatial zones
+        /// </summary>
+        IZone[] Zones { get; }
     }
 }

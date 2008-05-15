@@ -16,13 +16,15 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 
 using Microsoft.Win32;
 
 using Backsight.Data;
 using Backsight.SqlServer;
 using Backsight.Editor.Database;
+using Backsight.Environment;
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
@@ -158,10 +160,12 @@ namespace Backsight.Editor
 
                 try
                 {
-                    using (SqlConnection c = new SqlConnection(cs))
-                    {
-                        c.Open();
-                    }
+                    IEnvironmentContainer ec = new EnvironmentDatabase(cs);
+                    EnvironmentContainer.Current = ec;
+                    //using (SqlConnection c = new SqlConnection(cs))
+                    //{
+                    //    c.Open();
+                    //}
 
                     // Remember the successful connection
                     SetConnectionString(cs);
@@ -199,9 +203,17 @@ namespace Backsight.Editor
             // job, or create a new one.
             if (j==null)
             {
-                MessageBox.Show("Open existing job, or create a new one");
+                GetJobForm dial = new GetJobForm();
+                if (dial.ShowDialog() == DialogResult.OK)
+                    j = dial.Job;
+
+                dial.Dispose();
             }
 
+            if (j==null)
+                return false;
+
+            MessageBox.Show(j.Name);
             return true;
         }
 

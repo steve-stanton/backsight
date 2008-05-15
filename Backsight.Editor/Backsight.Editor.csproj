@@ -622,7 +622,6 @@
     <Compile Include="IntersectionFinder.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="LayerFacade.cs" />
-    <Compile Include="LayerRange.cs" />
     <Compile Include="LineAnnotationOptions.cs" />
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />
@@ -833,6 +832,10 @@
     <EmbeddedResource Include="Forms\NewCircularArcContextMenu.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewJobForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewJobForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewLabelContextMenu.resx">
       <SubType>Designer</SubType>

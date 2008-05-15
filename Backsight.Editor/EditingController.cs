@@ -515,11 +515,9 @@ namespace Backsight.Editor
             if (String.IsNullOrEmpty(cs))
                 throw new ArgumentException("Environment connection string not defined");
 
-            IEnvironmentContainer ec = new EnvironmentDatabase(cs);
-            EnvironmentContainer.Current = ec;
-
-            // Initialize layer ranges
-            LayerRange.Initialize(ec);
+            // This should now be done in Starter.Open
+            //IEnvironmentContainer ec = new EnvironmentDatabase(cs);
+            //EnvironmentContainer.Current = ec;
 
             // Initialize any entity translations and styles
             new EntityUtil().Open();
