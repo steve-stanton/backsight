@@ -74,12 +74,6 @@ namespace Backsight.Editor
         LayerFacade m_Layer;
 
         /// <summary>
-        /// The range of layers (with a base that corresponds to <c>m_Layer</c>)
-        /// </summary>
-        [NonSerialized]
-        private LayerRange m_Layers;
-
-        /// <summary>
         /// The model that contains this session
         /// </summary>
         [NonSerialized]
@@ -127,11 +121,6 @@ namespace Backsight.Editor
         public ILayer ActiveLayer
         {
             get { return m_Layer; }
-        }
-
-        internal LayerRange ActiveLayerRange
-        {
-            get { return m_Layers; }
         }
 
         public bool IsEmpty
@@ -220,7 +209,6 @@ namespace Backsight.Editor
         {
             Debug.Assert(m_Model==null);
             m_Model = container;
-            m_Layers = LayerRange.CreateRange(m_Layer);
 
             if (m_Operations!=null)
             {
