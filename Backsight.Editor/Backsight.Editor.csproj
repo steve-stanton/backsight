@@ -223,6 +223,12 @@
     <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewJobForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewJobForm.Designer.cs">
+      <DependentUpon>NewJobForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewLabelContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
