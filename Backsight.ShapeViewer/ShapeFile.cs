@@ -23,6 +23,7 @@ using GisSharpBlog.NetTopologySuite.Geometries;
 
 using Backsight.Index;
 using Backsight.Forms;
+using System.Collections.Generic;
 
 namespace Backsight.ShapeViewer
 {
@@ -55,22 +56,38 @@ namespace Backsight.ShapeViewer
                 NTS.Geometry geom = sfdr.Geometry;
                 geom.UserData = row;
 
-                if (geom is GeometryCollection)
+                List<NTS.Geometry> geoms = GetBasicGeometries(geom);
+                foreach (NTS.Geometry g in geoms)
                 {
-                    // Not sure if this should be done
-                    GeometryCollection gc = (GeometryCollection)geom;
-                    foreach (NTS.Geometry g in gc)
-                    {
-                        g.UserData = row;
-                        index.Add(new GeometryWrapper(g));
-                    }
+                    g.UserData = row;
+                    index.Add(new GeometryWrapper(g));
                 }
-                else
-                    index.Add(new GeometryWrapper(geom));
             }
 
             // Don't permit any further additions
             m_Index = index;
+        }
+
+        private List<NTS.Geometry> GetBasicGeometries(NTS.Geometry geom)
+        {
+            List<NTS.Geometry> result = new List<NTS.Geometry>();
+            AppendBasicGeometries(result, geom);
+            return result;
+        }
+
+        private void AppendBasicGeometries(List<NTS.Geometry> result, NTS.Geometry geom)
+        {
+            if (geom is GeometryCollection)
+            {
+                // Note that I initially had 'foreach (NTS.Geometry g in gc)', which compiled,
+                // but which led to an infinite loop when dealing with multi-polygons.
+                GeometryCollection gc = (GeometryCollection)geom;
+                NTS.Geometry[] ga = gc.Geometries;
+                foreach (NTS.Geometry g in ga)
+                    AppendBasicGeometries(result, g); // recurse
+            }
+            else
+                result.Add(geom);
         }
 
         // If you select the ICustomTypeDescriptor implemented by RowStructure into a
