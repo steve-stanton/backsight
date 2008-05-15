@@ -15,6 +15,7 @@
 
 using System;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 using Backsight.Data;
 
@@ -27,6 +28,36 @@ namespace Backsight.Editor.Database
     {
         #region Static
 
+        /// <summary>
+        /// Selects all defined jobs (ordered by name)
+        /// </summary>
+        /// <returns>All defined jobs (may be an empty array, but never null)</returns>
+        internal static Job[] FindAll()
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = "SELECT [JobId], [Name], [ZoneId], [LayerId] FROM [dbo].[Jobs] ORDER BY [Name]";
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                List<Job> result = new List<Job>(1000);
+
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        Job j = new Job(rdr.GetInt32(0), rdr.GetString(1), rdr.GetInt32(2), rdr.GetInt32(3));
+                        result.Add(j);
+                    }
+                }
+
+                return result.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Attempts to locate job information based on the internal job ID.
+        /// </summary>
+        /// <param name="jobId">The ID of the job to select</param>
+        /// <returns>The corresponding job (null if not found)</returns>
         internal static Job FindByJobId(int jobId)
         {
             using (IConnection ic = AdapterFactory.GetConnection())
@@ -127,6 +158,15 @@ namespace Backsight.Editor.Database
         internal int LayerId
         {
             get { return m_LayerId; }
+        }
+
+        /// <summary>
+        /// Override returns the user-perceived name for the job.
+        /// </summary>
+        /// <returns>The <see cref="Name"/> property</returns>
+        public override string ToString()
+        {
+            return m_Name;
         }
     }
 }

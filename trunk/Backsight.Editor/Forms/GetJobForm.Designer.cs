@@ -45,6 +45,7 @@ namespace Backsight.Editor.Forms
             this.listBox.Name = "listBox";
             this.listBox.Size = new System.Drawing.Size(272, 260);
             this.listBox.TabIndex = 0;
+            this.listBox.DoubleClick += new System.EventHandler(this.listBox_DoubleClick);
             // 
             // createButton
             // 
@@ -55,6 +56,7 @@ namespace Backsight.Editor.Forms
             this.createButton.TabIndex = 1;
             this.createButton.Text = "New...";
             this.createButton.UseVisualStyleBackColor = true;
+            this.createButton.Click += new System.EventHandler(this.createButton_Click);
             // 
             // openButton
             // 
@@ -65,6 +67,7 @@ namespace Backsight.Editor.Forms
             this.openButton.TabIndex = 2;
             this.openButton.Text = "Open";
             this.openButton.UseVisualStyleBackColor = true;
+            this.openButton.Click += new System.EventHandler(this.openButton_Click);
             // 
             // cancelButton
             // 
@@ -75,9 +78,11 @@ namespace Backsight.Editor.Forms
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // JobChoiceForm
+            // GetJobForm
             // 
+            this.AcceptButton = this.openButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(296, 337);
@@ -87,9 +92,10 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.listBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Name = "JobChoiceForm";
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Name = "GetJobForm";
             this.Text = "Specify Job";
+            this.Shown += new System.EventHandler(this.GetJobForm_Shown);
             this.ResumeLayout(false);
 
         }
