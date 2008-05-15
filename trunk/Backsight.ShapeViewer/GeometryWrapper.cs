@@ -99,7 +99,7 @@ namespace Backsight.ShapeViewer
         {
             get
             {
-                if (m_Geometry is NTS.LineString || m_Geometry is NTS.MultiLineString || m_Geometry is NTS.Polygon)
+                if (m_Geometry is NTS.LineString || m_Geometry is NTS.Polygon)
                     return SpatialType.Line;
                 else if (m_Geometry is NTS.Point)
                     return SpatialType.Point;
