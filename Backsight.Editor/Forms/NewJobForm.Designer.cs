@@ -40,7 +40,7 @@ namespace Backsight.Editor.Forms
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(142, 168);
+            this.cancelButton.Location = new System.Drawing.Point(152, 174);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -51,11 +51,11 @@ namespace Backsight.Editor.Forms
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(238, 168);
+            this.okButton.Location = new System.Drawing.Point(248, 174);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 3;
-            this.okButton.Text = "OK";
+            this.okButton.Text = "Save...";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
@@ -72,15 +72,15 @@ namespace Backsight.Editor.Forms
             // 
             this.jobNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.jobNameTextBox.Location = new System.Drawing.Point(106, 21);
+            this.jobNameTextBox.Location = new System.Drawing.Point(107, 21);
             this.jobNameTextBox.Name = "jobNameTextBox";
-            this.jobNameTextBox.Size = new System.Drawing.Size(236, 22);
+            this.jobNameTextBox.Size = new System.Drawing.Size(264, 22);
             this.jobNameTextBox.TabIndex = 0;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 70);
+            this.label2.Location = new System.Drawing.Point(14, 72);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 16);
             this.label2.TabIndex = 4;
@@ -91,15 +91,15 @@ namespace Backsight.Editor.Forms
             this.zoneComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.zoneComboBox.FormattingEnabled = true;
-            this.zoneComboBox.Location = new System.Drawing.Point(107, 67);
+            this.zoneComboBox.Location = new System.Drawing.Point(107, 69);
             this.zoneComboBox.Name = "zoneComboBox";
-            this.zoneComboBox.Size = new System.Drawing.Size(235, 24);
+            this.zoneComboBox.Size = new System.Drawing.Size(264, 24);
             this.zoneComboBox.TabIndex = 1;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(14, 116);
+            this.label3.Location = new System.Drawing.Point(14, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(82, 16);
             this.label3.TabIndex = 6;
@@ -110,9 +110,9 @@ namespace Backsight.Editor.Forms
             this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.layerComboBox.FormattingEnabled = true;
-            this.layerComboBox.Location = new System.Drawing.Point(106, 113);
+            this.layerComboBox.Location = new System.Drawing.Point(106, 117);
             this.layerComboBox.Name = "layerComboBox";
-            this.layerComboBox.Size = new System.Drawing.Size(236, 24);
+            this.layerComboBox.Size = new System.Drawing.Size(265, 24);
             this.layerComboBox.TabIndex = 2;
             // 
             // NewJobForm
@@ -120,7 +120,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(370, 208);
+            this.ClientSize = new System.Drawing.Size(400, 222);
             this.Controls.Add(this.layerComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.zoneComboBox);

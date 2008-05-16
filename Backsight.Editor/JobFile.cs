@@ -24,7 +24,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
     /// Information about a mapping job that gets saved as a disk file (with the
-    /// file type <c>.ced-xml</c>). The expectation is that the file type will be
+    /// file type <c>.cedx</c>). The expectation is that the file type will be
     /// associated with the Cadastral Editor application so that the application
     /// can be launched with a double-click.
     /// </summary>
@@ -34,9 +34,9 @@ namespace Backsight.Editor
         #region Constants
 
         /// <summary>
-        /// The file extension for job files is ".ced-xml"
+        /// The file extension for job files is ".cedx"
         /// </summary>
-        public const string TYPE = ".ced-xml";
+        public const string TYPE = ".cedx";
 
         #endregion
 
