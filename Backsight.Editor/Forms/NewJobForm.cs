@@ -22,18 +22,37 @@ using Backsight.Environment;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog for defining a new editing job. This defines the parameters
-    /// for the job, but does not actually store the result in the database.
+    /// Dialog for defining a new editing job. The work of actually storing the new
+    /// job in the database is done elsewhere.
     /// </summary>
     public partial class NewJobForm : Form
     {
-        Job m_Job;
+        #region Class data
 
-        public NewJobForm()
+        /// <summary>
+        /// The dialog displaying this one.
+        /// </summary>
+        readonly GetJobForm m_Parent;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>NewJobForm</c>
+        /// </summary>
+        /// <param name="parent">The dialog displaying this one (not null)</param>
+        /// <exception cref="ArgumentNullException">If the specified parent is null</exception>
+        public NewJobForm(GetJobForm parent)
         {
             InitializeComponent();
-            m_Job = null;
+            m_Parent = parent;
+
+            if (m_Parent==null)
+                throw new ArgumentNullException();
         }
+
+        #endregion
 
         private void NewJobForm_Shown(object sender, EventArgs e)
         {
@@ -44,14 +63,6 @@ namespace Backsight.Editor.Forms
 
             // Load all defined editing layers
             layerComboBox.DataSource = ec.Layers;
-        }
-
-        /// <summary>
-        /// Information for the job to create (null if user cancelled)
-        /// </summary>
-        internal Job Job
-        {
-            get { return m_Job; }
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -80,16 +91,12 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            // Confirm the job name is unique
-
-            // Confirm that there isn't another job that refers to the
-            // same zone and editing layer
-
-            // Remember job parameters
-            m_Job = new Job(0, jobName, zone.Id, layer.Id);
-
-            DialogResult = DialogResult.OK;
-            Close();
+            // Get the parent dialog to do the rest
+            if (m_Parent.CreateJob(jobName, zone, layer)!=null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void cancelButton_Click(object sender, EventArgs e)

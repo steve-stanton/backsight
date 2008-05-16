@@ -40,7 +40,7 @@ CREATE TABLE [dbo].[Sessions](
 	[SessionId] [int] IDENTITY(1,1) NOT NULL,
 	[JobId] [int] NOT NULL,
 	[UserId] [int] NOT NULL,
-	[Revision] [int],
+	[Revision] [int] NOT NULL,
 	[StartTime] [datetime] NOT NULL,
 	[EndTime] [datetime] NOT NULL,
 	[NumEdit] [int] NOT NULL,

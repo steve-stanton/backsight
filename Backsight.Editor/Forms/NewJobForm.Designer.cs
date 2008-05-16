@@ -70,8 +70,8 @@ namespace Backsight.Editor.Forms
             // 
             // jobNameTextBox
             // 
-            this.jobNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.jobNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.jobNameTextBox.Location = new System.Drawing.Point(106, 21);
             this.jobNameTextBox.Name = "jobNameTextBox";
             this.jobNameTextBox.Size = new System.Drawing.Size(236, 22);
@@ -88,8 +88,8 @@ namespace Backsight.Editor.Forms
             // 
             // zoneComboBox
             // 
-            this.zoneComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.zoneComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.zoneComboBox.FormattingEnabled = true;
             this.zoneComboBox.Location = new System.Drawing.Point(107, 67);
             this.zoneComboBox.Name = "zoneComboBox";
@@ -107,8 +107,8 @@ namespace Backsight.Editor.Forms
             // 
             // layerComboBox
             // 
-            this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.layerComboBox.FormattingEnabled = true;
             this.layerComboBox.Location = new System.Drawing.Point(106, 113);
             this.layerComboBox.Name = "layerComboBox";
@@ -130,7 +130,8 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewJobForm";
             this.Text = "Create New Job";
             this.Shown += new System.EventHandler(this.NewJobForm_Shown);

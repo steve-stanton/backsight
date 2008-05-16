@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 
 using Backsight.Editor.Database;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -26,18 +27,35 @@ namespace Backsight.Editor.Forms
     /// </summary>
     public partial class GetJobForm : Form
     {
+        #region Class data
+
+        /// <summary>
+        /// The job to open (null if nothing was selected)
+        /// </summary>
         Job m_Job;
+
+        /// <summary>
+        /// All defined jobs
+        /// </summary>
+        Job[] m_AllJobs;
+
+        #endregion
+
+        #region Constructors
 
         public GetJobForm()
         {
             InitializeComponent();
             m_Job = null;
+            m_AllJobs = null;
         }
+
+        #endregion
 
         private void GetJobForm_Shown(object sender, EventArgs e)
         {
-            Job[] jobs = Job.FindAll();
-            listBox.DataSource = jobs;
+            m_AllJobs = Job.FindAll();
+            listBox.DataSource = m_AllJobs;
         }
 
         private void listBox_DoubleClick(object sender, EventArgs e)
@@ -49,15 +67,54 @@ namespace Backsight.Editor.Forms
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            NewJobForm dial = new NewJobForm();
+            NewJobForm dial = new NewJobForm(this);
             DialogResult = dial.ShowDialog();
-            if (DialogResult == DialogResult.OK)
-                m_Job = dial.Job;
-
             dial.Dispose();
 
-            if (m_Job!=null)
+            if (DialogResult == DialogResult.OK)
                 Close();
+        }
+
+        /// <summary>
+        /// Callback from <see cref="NewJobForm"/> that first validates the details for a new
+        /// job, then records it in the database.
+        /// </summary>
+        /// <param name="jobName">The user-perceived name for the job (not null or blank)</param>
+        /// <param name="zone">The spatial zone the job covers (not null)</param>
+        /// <param name="layer">The (base) map layer for the job (not null)</param>
+        /// <returns>The created job (null on any validation or database insert error)</returns>
+        internal Job CreateJob(string jobName, IZone zone, ILayer layer)
+        {
+            if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
+                throw new ArgumentNullException();
+
+            // Confirm the job name is unique
+            Job job = Array.Find<Job>(m_AllJobs, delegate(Job j)
+                { return String.Compare(j.Name, jobName, true)==0; });
+            if (job != null)
+            {
+                listBox.SelectedItem = job;
+                MessageBox.Show("A job with that name already exists");
+                return null;
+            }
+
+            // Confirm that there isn't another job that refers to the
+            // same zone and editing layer
+            job = Array.Find<Job>(m_AllJobs, delegate(Job j)
+                { return (j.ZoneId==zone.Id && j.LayerId==layer.Id); });
+            if (job != null)
+            {
+                listBox.SelectedItem = job;
+                string msg = String.Format("{0} already refers to the same zone and editing layer", job.Name);
+                MessageBox.Show(msg);
+                return null;
+            }
+
+            // Insert the new job into the database.
+            // Don't bother including in m_AllJobs, since returning a valid job should cause
+            // this dialog to close momentarily.
+            m_Job = Job.Insert(jobName, zone.Id, layer.Id);
+            return m_Job;
         }
 
         private void openButton_Click(object sender, EventArgs e)

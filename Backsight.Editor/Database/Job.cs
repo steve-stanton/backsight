@@ -77,6 +77,26 @@ namespace Backsight.Editor.Database
             }
         }
 
+        /// <summary>
+        /// Inserts a new job into the database
+        /// </summary>
+        /// <param name="jobName">The user-perceived name for the job</param>
+        /// <param name="zoneId">The ID of the spatial zone the job covers</param>
+        /// <param name="layerId">The ID of the (base) map layer for the job</param>
+        /// <returns>The newly created job</returns>
+        internal static Job Insert(string jobName, int zoneId, int layerId)
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("INSERT INTO [dbo].[Jobs] ([Name], [ZoneId], [LayerId]) VALUES ('{0}', {1}, {2})",
+                                            jobName, zoneId, layerId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                cmd.ExecuteNonQuery();
+                int jobId = DbUtil.GetLastId(ic.Value);
+                return new Job(jobId, jobName, zoneId, layerId);
+            }
+        }
+
         #endregion
 
         #region Class data
