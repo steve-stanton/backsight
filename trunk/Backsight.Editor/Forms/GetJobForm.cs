@@ -18,6 +18,9 @@ using System.Windows.Forms;
 
 using Backsight.Editor.Database;
 using Backsight.Environment;
+using Backsight.Data;
+using Backsight.Editor.Properties;
+using System.IO;
 
 namespace Backsight.Editor.Forms
 {
@@ -114,6 +117,29 @@ namespace Backsight.Editor.Forms
             // Don't bother including in m_AllJobs, since returning a valid job should cause
             // this dialog to close momentarily.
             m_Job = Job.Insert(jobName, zone.Id, layer.Id);
+
+            // Save a job file as well (if the user doesn't specify anything, that's fine too)
+            SaveFileDialog dial = new SaveFileDialog();
+            dial.Title = "Save As";
+            dial.DefaultExt = JobFile.TYPE;
+            dial.FileName = jobName + JobFile.TYPE;
+            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
+
+            string lastMap = Settings.Default.LastMap;
+            if (!String.IsNullOrEmpty(lastMap))
+                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
+
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                JobFile jf = new JobFile();
+                jf.ConnectionString = AdapterFactory.ConnectionString;
+                jf.JobId = m_Job.JobId;
+                jf.WriteXML(dial.FileName);
+
+                Settings.Default.LastMap = dial.FileName;
+                Settings.Default.Save();
+            }
+
             return m_Job;
         }
 

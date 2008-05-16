@@ -98,18 +98,12 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            string cs = GlobalUserSetting.LastConnection;
-            if (String.IsNullOrEmpty(cs))
-            {
-                MessageBox.Show("Cannot obtain connection to environment database.");
-                Close();
-            }
-
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
             try
             {
-                m_Controller.OnStartup(cs);
+                // Initialize any entity translations and styles
+                new EntityUtil().Open();
 
                 InitializeActions();
 
@@ -592,11 +586,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void FileOpen(IUserAction action)
         {
             OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
+            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
 
             if (dial.ShowDialog() == DialogResult.OK)
             {
-                m_Controller.Open(dial.FileName);
+                m_Controller.OpenJob(dial.FileName);
                 AddRecentFile(dial.FileName);
             }
         }

@@ -49,7 +49,7 @@ namespace Backsight.Editor
         {
             // Confirm it has the expected file extension (this is mainly to remind
             // people not to click on old-style files)
-            string fileType = Path.GetFileNameWithoutExtension(fileSpec);
+            string fileType = Path.GetExtension(fileSpec);
             if (String.Compare(fileType, JobFile.TYPE, true) != 0)
             {
                 string msg = String.Format("Unexpected file extension (should be {0})", JobFile.TYPE);
@@ -223,13 +223,19 @@ namespace Backsight.Editor
             object o = Registry.GetValue(hklm, "ConnectionString", String.Empty);
             string cs = (o == null ? String.Empty : o.ToString());
 
-            if (String.IsNullOrEmpty(cs))
-            {
-                ConnectionForm dial = new ConnectionForm();
-                if (dial.ShowDialog() == DialogResult.OK)
-                    cs = dial.ConnectionString;
-            }
+            if (!String.IsNullOrEmpty(cs))
+                GlobalUserSetting.LastConnection = cs;
 
+            ConnectionForm dial = new ConnectionForm();
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                cs = dial.ConnectionString;
+                SetConnectionString(cs);
+            }
+            else
+                cs = String.Empty;
+
+            dial.Dispose();
             return cs;
         }
 
@@ -238,6 +244,22 @@ namespace Backsight.Editor
             AdapterFactory.ConnectionString = cs;
             string hklm = Registry.LocalMachine + @"\Software\Backsight";
             Registry.SetValue(hklm, "ConnectionString", cs);
+        }
+
+        /// <summary>
+        /// The ID of the current user (0 if not known)
+        /// </summary>
+        internal int UserId
+        {
+            get { return m_UserId; }
+        }
+
+        /// <summary>
+        /// The ID of the current editing job (0 if not known)
+        /// </summary>
+        internal int JobId
+        {
+            get { return m_JobId; }
         }
     }
 }

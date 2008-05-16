@@ -27,6 +27,7 @@ using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.SqlServer;
 using Backsight.Geometry;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -49,6 +50,21 @@ namespace Backsight.Editor
         #endregion
 
         #region Class data
+
+        /// <summary>
+        /// The ID of the current user
+        /// </summary>
+        int m_UserId;
+
+        /// <summary>
+        /// Information about the current job
+        /// </summary>
+        Job m_Job;
+
+        /// <summary>
+        /// Information about the editing layer
+        /// </summary>
+        ILayer m_ActiveLayer;
 
         /// <summary>
         /// The main screen (largely comprised of a control for displaying the current
@@ -116,6 +132,9 @@ namespace Backsight.Editor
             if (main==null)
                 throw new ArgumentNullException();
 
+            m_UserId = 0;
+            m_Job = null;
+            m_ActiveLayer = null;
             m_Main = main;
             m_IsAutoSelect = 0;
             m_CurrentEdit = null;
@@ -127,18 +146,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        /*
-        internal void DiscardModel()
-        {
-            CadastralMapModel cmm = this.CadastralMapModel;
-            if (cmm!=null)
-            {
-                cmm.Discard();
-                this.MapModel = CadastralMapModel.Create();
-            }
-        }
-        */
 
         public override void Close()
         {
@@ -390,7 +397,7 @@ namespace Backsight.Editor
                 this.MapModel = cmm;
 
                 // Ensure an editing layer is defined
-                SetActiveLayer();
+                //SetActiveLayer();
 
                 // Pick up any default entity types for points, lines, text, polygons
                 ILayer layer = ActiveLayer;
@@ -449,6 +456,10 @@ namespace Backsight.Editor
         /// <exception cref="Exception">If a job could not be opened</exception>
         internal void OpenJob(string jobFileSpec)
         {
+            m_UserId = 0;
+            m_Job = null;
+            m_ActiveLayer = null;
+
             // If a job file has been specified, attempt to open it
             JobFile jf = null;
             if (String.IsNullOrEmpty(jobFileSpec))
@@ -464,6 +475,18 @@ namespace Backsight.Editor
 
             // If you get here, the database connection string should now be
             // defined in the AdapterFactory.ConnectionString property.
+
+            m_UserId = s.UserId;
+            m_Job = Job.FindByJobId(s.JobId);
+
+            if (m_Job==null)
+                throw new Exception("Cannot locate editing job in database");
+
+            // Locate information about the editing layer
+            int layerId = m_Job.LayerId;
+            ILayer layer = EnvironmentContainer.FindLayerById(layerId);
+            if (layer==null)
+                throw new Exception("Cannot locate map layer associated with current job");
         }
 
         void InitializeIdManager()
@@ -492,53 +515,6 @@ namespace Backsight.Editor
             // Update the timestamp for the current editing session.
             map.UpdateSession();
             map.Write();
-            /*
-            string modelName = Path.GetFileNameWithoutExtension(map.Name);
-            string testFile = Path.Combine(modelName, JobFile.TYPE);
-            JobFile jf = new JobFile();
-            jf.ConnectionString = "Steve";
-            jf.JobId = 123;
-            ISpatialDisplay display = ActiveDisplay;
-            jf.LastDraw = new DrawInfo(display.Extent, display.MapScale);
-            jf.WriteXML(testFile);
-             */
-        }
-
-        /// <summary>
-        /// Performs initialization on application startup
-        /// </summary>
-        /// <param name="cs">Connection string for the database holding the Backsight operating environment
-        /// (not null or blank)</param>
-        internal void OnStartup(string cs)
-        {
-            // Load info about the operating environment...
-            if (String.IsNullOrEmpty(cs))
-                throw new ArgumentException("Environment connection string not defined");
-
-            // This should now be done in Starter.Open
-            //IEnvironmentContainer ec = new EnvironmentDatabase(cs);
-            //EnvironmentContainer.Current = ec;
-
-            // Initialize any entity translations and styles
-            new EntityUtil().Open();
-
-            // Open the last map (if any)...
-            string fileName = Settings.Default.LastMap;
-
-            //if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
-            //    Open(fileName);
-            //else
-            //    Create();
-
-            //// Ensure an editing layer is defined
-            //SetActiveLayer();
-
-            if (!String.IsNullOrEmpty(fileName) && File.Exists(fileName))
-            {
-                // On successfully opening the map, ensure an editing layer is defined
-                if (Open(fileName))
-                    SetActiveLayer();
-            }
         }
 
         internal bool AutoSelect
@@ -808,97 +784,8 @@ namespace Backsight.Editor
             set { m_IsAutoNumber = value; }
         }
 
-        /// <summary>
-        /// Ensures the map model has a defined value for the active editing layer
-        /// </summary>
-        /// <returns>True if the map model has an active layer. False if it
-        /// hasn't been defined (you shouldn't be able to do any editing until
-        /// it gets defined)</returns>
-        bool SetActiveLayer()
-        {
-            ILayer layer = CadastralMapModel.ActiveLayer;
-            if (layer!=null)
-                return true;
-
-            int layerId = Settings.Default.DefaultLayerId;
-            if (layerId != 0)
-                layer = EnvironmentContainer.FindLayerById(layerId);
-
-            if (layer==null)
-            {
-                GetLayerForm dial = new GetLayerForm();
-                if (dial.ShowDialog() == DialogResult.OK)
-                {
-                    layer = dial.SelectedLayer;
-                    Settings.Default.DefaultLayerId = layer.Id;
-                    Settings.Default.Save();
-                }
-                dial.Dispose();
-            }
-
-            if (layer==null)
-                return false;
-
-            LayerFacade oldLayer = (LayerFacade)CadastralMapModel.ActiveLayer;
-            CadastralMapModel.ActiveLayer = layer;
-
-            try
-            {
-                // Un-highlight stuff. Otherwise it will still be showing after the change of layer,
-                // even if it's supposed to be invisible.
-                RemoveSelection();
-                /*
-                SetActiveLayer op = new SetActiveLayer(this.MapModel,
-                                                        (LayerFacade)oldLayer,
-                                                        (LayerFacade)CadastralMapModel.ActiveLayer);
-                StartEdit(op);
-                m_CurrentEdit =  op;
-                */
-            }
-
-            finally
-            {
-                //FinishEdit();
-                m_CurrentEdit = null;
-            }
-            /*
-
-			StartEdit((INT4)&dial);
-
-			// Create an operation and execute it.
-			CeSetTheme* pop = new ( os_database::of(pMap)
-								  , os_ts<CeSetTheme>::get() ) CeSetTheme();
-
-			// Tell the map an operation is starting.
-			pMap->SaveOp(pop);
-
-			// Execute the operation.
-			LOGICAL ok = pop->Execute(*pTheme);
-
-			// Tell the map the operation has finished.
-			pMap->SaveOp(pop,ok);
-
-			// On success, ensure the list of any extra draw
-			// themes gets cleared. If the change actually failed,
-			// get rid of the operation.
-			if ( ok )
-				m_ExtraThemes.RemoveAll();
-			else
-				delete pop;
-
-			FinishEdit((INT4)&dial);
-
-			// Force a redraw (with erase).
-			InvalidateRect(0);
-             */
-            
-            return true;
-        }
-
         void RemoveSelection()
         {
-            // see CeSelection
-            //m_Sel.RemoveSel();
         }
 
         /*
