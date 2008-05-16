@@ -47,9 +47,7 @@ namespace Backsight.Editor.Database
                 cmd = new SqlCommand("INSERT INTO [dbo].[LastRevision] (RevisionTime) VALUES (GETDATE())", con);
                 cmd.ExecuteNonQuery();
 
-                cmd = new SqlCommand("SELECT SCOPE_IDENTITY()", con);
-                object o = cmd.ExecuteScalar();
-                result = Convert.ToInt32(o);
+                result = DbUtil.GetLastId(con);
             });
 
             return result;
