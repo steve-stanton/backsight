@@ -51,11 +51,6 @@ namespace Backsight.Editor
             }
         }
 
-        internal static CadastralMapModel Create(ModelFileName modelName)
-        {
-            return new CadastralMapModel(modelName);
-        }
-
         /// <summary>
         /// Opens a map model (creates if it didn't previously exist)
         /// </summary>
@@ -63,14 +58,18 @@ namespace Backsight.Editor
         /// <returns>The map model</returns>
         internal static CadastralMapModel Open(string s)
         {
+            /*
             CadastralMapModel cmm = LoadFile(s);
             cmm.m_ModelFileName = new ModelFileName(s);
             cmm.OnOpen();
             Settings.Default.LastMap = s;
             Settings.Default.Save();
             return cmm;
+             */
+            return null;
         }
 
+        /*
         private static CadastralMapModel LoadFile(string inputFileName)
         {
             using (FileStream fs = new FileStream(inputFileName, FileMode.Open))
@@ -80,7 +79,7 @@ namespace Backsight.Editor
                 return (CadastralMapModel)o;
             }
         }
-
+    */
         #endregion
 
         #region Class data
@@ -88,8 +87,8 @@ namespace Backsight.Editor
         /// <summary>
         /// The name of the file containing the current map model (including full path).
         /// </summary>
-        [NonSerialized]
-        ModelFileName m_ModelFileName;
+        //[NonSerialized]
+        //ModelFileName m_ModelFileName;
 
         /// <summary>
         /// Spatial index for the data in this model.
@@ -264,16 +263,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new empty model
         /// </summary>
-        /// <param name="modelName">The name of the map model (not null)</param>
-        /// <exception cref="ArgumentNullException">If the supplied map model is null</exception>
-        CadastralMapModel(ModelFileName modelName)
+        internal CadastralMapModel()
         {
-            if (modelName == null)
-                throw new ArgumentNullException();
-
             m_Format = 1;
 
-            m_ModelFileName = modelName;
             m_Meters = new DistanceUnit(DistanceUnitType.Meters);
             m_Feet = new DistanceUnit(DistanceUnitType.Feet);
             m_Chains = new DistanceUnit(DistanceUnitType.Chains);
@@ -322,19 +315,20 @@ namespace Backsight.Editor
         {
             get
             {
-                if (m_ModelFileName==null || m_ModelFileName.IsTempName)
-                    return String.Empty;
-                else
-                    return m_ModelFileName.Name;
+                return EditingController.Current.JobFile.Name;
+                //if (m_ModelFileName==null || m_ModelFileName.IsTempName)
+                //    return String.Empty;
+                //else
+                //    return m_ModelFileName.Name;
             }
 
-            internal set
-            {
-                if (m_ModelFileName==null)
-                    m_ModelFileName = new ModelFileName(value);
-                else
-                    m_ModelFileName.Name = value;
-            }
+            //internal set
+            //{
+            //    if (m_ModelFileName==null)
+            //        m_ModelFileName = new ModelFileName(value);
+            //    else
+            //        m_ModelFileName.Name = value;
+            //}
         }
 
         /// <summary>
@@ -674,6 +668,7 @@ namespace Backsight.Editor
             return me;
         }
 
+        /*
         internal void Write(string fileName)
         {
             if (m_ModelFileName==null)
@@ -683,49 +678,13 @@ namespace Backsight.Editor
 
             Write();
         }
+        */
 
+        /*
         internal void Write()
         {
             if (m_ModelFileName==null)
                 m_ModelFileName = new ModelFileName();
-
-            // Test
-            /*
-            if (!m_ModelFileName.IsTempName)
-            {
-                string dir = Path.GetDirectoryName(m_ModelFileName.Name);
-                string name = Path.GetFileNameWithoutExtension(m_ModelFileName.Name);
-                dir = Path.Combine(dir, name + ".ced");
-                if (!Directory.Exists(dir))
-                {
-                    DirectoryInfo dirInfo = Directory.CreateDirectory(dir);
-                    dirInfo.Attributes |= FileAttributes.Compressed;
-
-                    // Documentation doesn't say that not all attributes can be set, so need
-                    // to do it the following way...
-                    string moPath = String.Format("Win32_Directory.Name=\"{0}\"", dir);
-                    using (ManagementObject mo = new ManagementObject(moPath))
-                    {
-                        mo.InvokeMethod("Compress", null);
-                    }
-                }
-
-                string file = Path.Combine(dir, "Map.Data");
-                using (FileStream fs = new FileStream(file, FileMode.Create))
-                {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(fs, this);
-                }
-            }
-            else
-            {
-                using (FileStream fs = new FileStream(m_ModelFileName.Name, FileMode.Create))
-                {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(fs, this);
-                }
-            }
-            */
 
             using (FileStream fs = new FileStream(m_ModelFileName.Name, FileMode.Create))
             {
@@ -733,6 +692,7 @@ namespace Backsight.Editor
                 formatter.Serialize(fs, this);
             }
         }
+        */
 
         /// <summary>
         /// Exports edit details to an XML file that sits alongside the file holding

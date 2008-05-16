@@ -34,42 +34,6 @@ namespace Backsight.Editor
     /// </summary>
     class Starter
     {
-        #region Static
-
-        /// <summary>
-        /// Attempts to open a job file
-        /// </summary>
-        /// <param name="fileSpec">The file specification of the job file</param>
-        /// <returns>The job file</returns>
-        /// <exception cref="Exception">If the specified file has an unexpected file type,
-        /// the file does not exist, or <see cref="JobFile.CreateInstance"/> failed to parse
-        /// the file.
-        /// </exception>
-        internal static JobFile GetJobFile(string fileSpec)
-        {
-            // Confirm it has the expected file extension (this is mainly to remind
-            // people not to click on old-style files)
-            string fileType = Path.GetExtension(fileSpec);
-            if (String.Compare(fileType, JobFile.TYPE, true) != 0)
-            {
-                string msg = String.Format("Unexpected file extension (should be {0})", JobFile.TYPE);
-                throw new Exception(msg);
-            }
-
-            // Confirm the file exists (it presumably exists if you double-clicked on it, but
-            // perhaps the user launched from command line)
-            if (!File.Exists(fileSpec))
-            {
-                string msg = String.Format("No such file: {0}", fileSpec);
-                throw new Exception(msg);
-            }
-
-            // Parse the file
-            return JobFile.CreateInstance(fileSpec);
-        }
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -79,19 +43,9 @@ namespace Backsight.Editor
         JobFile m_JobFile;
 
         /// <summary>
-        /// The database connection string (blank if unknown)
-        /// </summary>
-        string m_ConnectionString;
-
-        /// <summary>
         /// The ID of the user involved (0 for no user)
         /// </summary>
         int m_UserId;
-
-        /// <summary>
-        /// The ID of the job that's being edited
-        /// </summary>
-        int m_JobId;
 
         #endregion
 
@@ -117,6 +71,7 @@ namespace Backsight.Editor
             m_JobFile = jobFile;
             m_UserId = 0;
 
+            /*
             if (m_JobFile == null)
             {
                 m_ConnectionString = String.Empty;
@@ -124,9 +79,10 @@ namespace Backsight.Editor
             }
             else
             {
-                m_ConnectionString = m_JobFile.ConnectionString;
+                m_ConnectionString = m_JobFile.Data.ConnectionString;
                 m_JobId = m_JobFile.JobId;
             }
+             */
         }
 
         #endregion
@@ -153,7 +109,7 @@ namespace Backsight.Editor
                         return false;
                 }
                 else
-                    cs = m_JobFile.ConnectionString;
+                    cs = m_JobFile.Data.ConnectionString;
 
                 // Attempt to open the database, to get the user ID for the person
                 // who's currently logged in.
@@ -183,38 +139,35 @@ namespace Backsight.Editor
             // Get the ID of the current user
             m_UserId = User.GetUserId();
 
-            // Get the job info from the database
+            // Confirm that we can get the job info from the database
 
-            Job j = null;
             if (m_JobFile != null)
             {
                 try
                 {
-                    j = Job.FindByJobId(m_JobFile.JobId);
+                    int jobId = m_JobFile.Data.JobId;
+                    Job j = Job.FindByJobId(jobId);
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    m_JobFile = null;
                 }
             }
 
             // If we don't have a job, ask the user whether they want to open an existing
             // job, or create a new one.
-            if (j==null)
+            if (m_JobFile==null)
             {
                 GetJobForm dial = new GetJobForm();
                 if (dial.ShowDialog() == DialogResult.OK)
-                    j = dial.Job;
+                    m_JobFile = dial.JobFile;
 
                 dial.Dispose();
             }
 
-            if (j==null)
-                return false;
-
-            MessageBox.Show(j.Name);
-            return true;
+            return (m_JobFile != null);
         }
 
         string GetConnectionString()
@@ -255,11 +208,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The ID of the current editing job (0 if not known)
+        /// The job file used to launch the application
         /// </summary>
-        internal int JobId
+        internal JobFile JobFile
         {
-            get { return m_JobId; }
+            get { return m_JobFile; }
         }
     }
 }

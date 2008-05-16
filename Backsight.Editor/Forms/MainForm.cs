@@ -53,8 +53,8 @@ namespace Backsight.Editor.Forms
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, remember it as the last map (the controller will pick it up later
             // during startup)
-            if (args!=null && args.Length>0 && File.Exists(args[0]))
-                Settings.Default.LastMap = args[0];
+            //if (args!=null && args.Length>0 && File.Exists(args[0]))
+            //    Settings.Default.LastMap = args[0];
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
@@ -568,6 +568,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
+            MessageBox.Show(action.Title);
+            /*
             string name = EditingController.AskForFileName("Create new map");
             if (name==null)
                 return;
@@ -576,6 +578,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             m_Controller.Create(modelName);
             CadastralMapModel.Current.Write(name);
             AddRecentFile(name);
+             */
         }
 
         private bool IsFileOpenEnabled()
@@ -609,7 +612,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSave(IUserAction action)
         {
-            CadastralMapModel.Current.Write();
+            MessageBox.Show(action.Title);
+            //CadastralMapModel.Current.Write();
         }
 
         private bool IsFileSaveAsEnabled()
@@ -619,12 +623,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSaveAs(IUserAction action)
         {
+            MessageBox.Show(action.Title);
+            /*
             string name = EditingController.AskForFileName("Save as");
             if (name!=null)
             {
                 CadastralMapModel.Current.Write(name);
                 AddRecentFile(name);
             }
+             */
         }
 
         void OnMruFile(int number, string filename)
