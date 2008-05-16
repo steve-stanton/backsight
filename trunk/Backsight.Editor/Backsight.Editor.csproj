@@ -289,6 +289,7 @@
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="JobFile.cs" />
+    <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
     <Compile Include="NewLabelUI.cs" />
@@ -627,7 +628,6 @@
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />
     <Compile Include="MiscText.cs" />
-    <Compile Include="ModelFileName.cs" />
     <Compile Include="NewPointUI.cs" />
     <Compile Include="NtxImport.cs" />
     <Compile Include="EditingActionId.cs" />

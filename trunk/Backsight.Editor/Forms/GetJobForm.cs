@@ -15,12 +15,12 @@
 
 using System;
 using System.Windows.Forms;
+using System.IO;
 
 using Backsight.Editor.Database;
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Properties;
-using System.IO;
 
 namespace Backsight.Editor.Forms
 {
@@ -33,9 +33,9 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The job to open (null if nothing was selected)
+        /// The job file (null if nothing was selected)
         /// </summary>
-        Job m_Job;
+        JobFile m_JobFile;
 
         /// <summary>
         /// All defined jobs
@@ -49,7 +49,7 @@ namespace Backsight.Editor.Forms
         public GetJobForm()
         {
             InitializeComponent();
-            m_Job = null;
+            m_JobFile = null;
             m_AllJobs = null;
         }
 
@@ -85,8 +85,8 @@ namespace Backsight.Editor.Forms
         /// <param name="jobName">The user-perceived name for the job (not null or blank)</param>
         /// <param name="zone">The spatial zone the job covers (not null)</param>
         /// <param name="layer">The (base) map layer for the job (not null)</param>
-        /// <returns>The created job (null on any validation or database insert error)</returns>
-        internal Job CreateJob(string jobName, IZone zone, ILayer layer)
+        /// <returns>The created job file (null on any validation or database insert error)</returns>
+        internal JobFile CreateJob(string jobName, IZone zone, ILayer layer)
         {
             if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
                 throw new ArgumentNullException();
@@ -116,31 +116,10 @@ namespace Backsight.Editor.Forms
             // Insert the new job into the database.
             // Don't bother including in m_AllJobs, since returning a valid job should cause
             // this dialog to close momentarily.
-            m_Job = Job.Insert(jobName, zone.Id, layer.Id);
+            job = Job.Insert(jobName, zone.Id, layer.Id);
 
-            // Save a job file as well (if the user doesn't specify anything, that's fine too)
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Title = "Save As";
-            dial.DefaultExt = JobFile.TYPE;
-            dial.FileName = jobName + JobFile.TYPE;
-            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-
-            string lastMap = Settings.Default.LastMap;
-            if (!String.IsNullOrEmpty(lastMap))
-                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
-
-            if (dial.ShowDialog() == DialogResult.OK)
-            {
-                JobFile jf = new JobFile();
-                jf.ConnectionString = AdapterFactory.ConnectionString;
-                jf.JobId = m_Job.JobId;
-                jf.WriteXML(dial.FileName);
-
-                Settings.Default.LastMap = dial.FileName;
-                Settings.Default.Save();
-            }
-
-            return m_Job;
+            // Save a job file as well
+            return SaveJobFile(job);
         }
 
         private void openButton_Click(object sender, EventArgs e)
@@ -152,9 +131,39 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            m_Job = j;
-            DialogResult = DialogResult.OK;
-            Close();
+            if (SaveJobFile(j) != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+
+        JobFile SaveJobFile(Job job)
+        {
+            m_JobFile = null;
+
+            SaveFileDialog dial = new SaveFileDialog();
+            dial.Title = "Save As";
+            dial.DefaultExt = JobFileInfo.TYPE;
+            dial.FileName = job.Name + JobFileInfo.TYPE;
+            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
+
+            string lastMap = Settings.Default.LastMap;
+            if (!String.IsNullOrEmpty(lastMap))
+                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
+
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                JobFileInfo jfi = new JobFileInfo();
+                jfi.ConnectionString = AdapterFactory.ConnectionString;
+                jfi.JobId = job.JobId;
+                m_JobFile = JobFile.SaveJobFile(dial.FileName, jfi);
+
+                Settings.Default.LastMap = dial.FileName;
+                Settings.Default.Save();
+            }
+
+            return m_JobFile;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -164,11 +173,11 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// The selected job (null if nothing was selected)
+        /// The selected job file (null if nothing was selected)
         /// </summary>
-        internal Job Job
+        internal JobFile JobFile
         {
-            get { return m_Job; }
+            get { return m_JobFile; }
         }
     }
 }

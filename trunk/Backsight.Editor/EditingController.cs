@@ -57,9 +57,15 @@ namespace Backsight.Editor
         int m_UserId;
 
         /// <summary>
-        /// Information about the current job
+        /// Information about the current job file
         /// </summary>
-        Job m_Job;
+        JobFile m_JobFile;
+
+        /// <summary>
+        /// Further info relating to the job (read from database rather than
+        /// the job file)
+        /// </summary>
+        Job m_JobData;
 
         /// <summary>
         /// Information about the editing layer
@@ -133,7 +139,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_UserId = 0;
-            m_Job = null;
+            m_JobFile = null;
             m_ActiveLayer = null;
             m_Main = main;
             m_IsAutoSelect = 0;
@@ -167,6 +173,14 @@ namespace Backsight.Editor
         public CadastralMapModel CadastralMapModel
         {
             get { return (this.MapModel as CadastralMapModel); }
+        }
+
+        /// <summary>
+        /// Information about the current job file
+        /// </summary>
+        internal JobFile JobFile
+        {
+            get { return m_JobFile; }
         }
 
         public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
@@ -388,12 +402,13 @@ namespace Backsight.Editor
             }
         }
 
+        /*
         internal void Create(ModelFileName modelName)
         {
             try
             {
                 Close();
-                CadastralMapModel cmm = CadastralMapModel.Create(modelName);
+                CadastralMapModel cmm = new CadastralMapModel();
                 this.MapModel = cmm;
 
                 // Ensure an editing layer is defined
@@ -418,6 +433,7 @@ namespace Backsight.Editor
                 MessageBox.Show(e.Message);
             }
         }
+        */
 
         /// <summary>
         /// Attempts to open a map.
@@ -457,7 +473,8 @@ namespace Backsight.Editor
         internal void OpenJob(string jobFileSpec)
         {
             m_UserId = 0;
-            m_Job = null;
+            m_JobData = null;
+            m_JobFile = null;
             m_ActiveLayer = null;
 
             // If a job file has been specified, attempt to open it
@@ -465,7 +482,7 @@ namespace Backsight.Editor
             if (String.IsNullOrEmpty(jobFileSpec))
                 jf = null;
             else
-                jf = Starter.GetJobFile(jobFileSpec);
+                jf = new JobFile(jobFileSpec);
 
             // Just pass it over to a dedicated starter instance
             Starter s = new Starter(jf);
@@ -477,16 +494,20 @@ namespace Backsight.Editor
             // defined in the AdapterFactory.ConnectionString property.
 
             m_UserId = s.UserId;
-            m_Job = Job.FindByJobId(s.JobId);
+            m_JobFile = s.JobFile;
+            m_JobData = Job.FindByJobId(m_JobFile.Data.JobId);
 
-            if (m_Job==null)
+            if (m_JobData==null)
                 throw new Exception("Cannot locate editing job in database");
 
             // Locate information about the editing layer
-            int layerId = m_Job.LayerId;
-            ILayer layer = EnvironmentContainer.FindLayerById(layerId);
-            if (layer==null)
+            int layerId = m_JobData.LayerId;
+            m_ActiveLayer = EnvironmentContainer.FindLayerById(layerId);
+            if (m_ActiveLayer == null)
                 throw new Exception("Cannot locate map layer associated with current job");
+
+            // Initialize the model
+
         }
 
         void InitializeIdManager()
@@ -514,7 +535,7 @@ namespace Backsight.Editor
 
             // Update the timestamp for the current editing session.
             map.UpdateSession();
-            map.Write();
+            //map.Write();
         }
 
         internal bool AutoSelect

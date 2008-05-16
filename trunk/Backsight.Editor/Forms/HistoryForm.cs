@@ -133,7 +133,10 @@ namespace Backsight.Editor.Forms
         {
             // If we rolled back anything, save the map model
             if (m_IsEdited)
-                CadastralMapModel.Current.Write();
+            {
+                MessageBox.Show("Save changes"); // TODO
+                //CadastralMapModel.Current.Write();
+            }
         }
     }
 }

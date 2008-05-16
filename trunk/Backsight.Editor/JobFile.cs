@@ -14,125 +14,73 @@
 /// </remarks>
 
 using System;
-using System.IO;
-using System.Xml.Serialization;
-
-using Backsight.Forms;
 
 namespace Backsight.Editor
 {
-    /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
-    /// Information about a mapping job that gets saved as a disk file (with the
-    /// file type <c>.cedx</c>). The expectation is that the file type will be
-    /// associated with the Cadastral Editor application so that the application
-    /// can be launched with a double-click.
+    /// The file holding job information (with the "cedx" file extension).
     /// </summary>
-    [XmlRoot]
-    public class JobFile
+    class JobFile
     {
-        #region Constants
+        #region Static
 
         /// <summary>
-        /// The file extension for job files is ".cedx"
+        /// Writes a new job file
         /// </summary>
-        public const string TYPE = ".cedx";
+        /// <param name="fileName">The name of the job file to create</param>
+        /// <param name="info">The information to write out</param>
+        /// <returns>An object representing the resultant file</returns>
+        internal static JobFile SaveJobFile(string fileName, JobFileInfo info)
+        {
+            // Write out the info, then read it back in
+            info.WriteXML(fileName);
+            return new JobFile(fileName);
+        }
 
         #endregion
 
         #region Class data
 
         /// <summary>
-        /// The database connection string
+        /// The full name of the job file (including directory)
         /// </summary>
-        string m_ConnectionString;
+        string m_FileName;
 
         /// <summary>
-        /// The ID of the job that should be accessed (0 if not known)
+        /// The information read from the file.
         /// </summary>
-        int m_JobId;
-
-        /// <summary>
-        /// Information about the area that was last drawn.
-        /// </summary>
-        DrawInfo m_DrawInfo;
+        JobFileInfo m_Info;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization mechanism)
+        /// Creates a new <c>JobFile</c> that refers to an existing file
         /// </summary>
-        public JobFile()
+        /// <param name="fileName">The name of the job file to load</param>
+        internal JobFile(string fileName)
         {
-            m_ConnectionString = String.Empty;
-            m_JobId = 0;
-            m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
+            m_FileName = fileName;
+            m_Info = JobFileInfo.CreateInstance(m_FileName);
         }
 
         #endregion
 
         /// <summary>
-        /// Reads job information from an XML file.
+        /// The information read from the file.
         /// </summary>
-        /// <param name="fileName">The file spec for the input data</param>
-        /// <returns>The data read from the input file</returns>
-        public static JobFile CreateInstance(string fileName)
+        internal JobFileInfo Data
         {
-            XmlSerializer xs = new XmlSerializer(typeof(JobFile));
-            using (TextReader reader = new StreamReader(fileName))
-            {
-                return (JobFile)xs.Deserialize(reader);
-            }
+            get { return m_Info; }
         }
 
         /// <summary>
-        /// Writes job information to an XML file.
+        /// The full name of the job file (including directory)
         /// </summary>
-        /// <param name="fileName">The output file (to create)</param>
-        public void WriteXML(string fileName)
+        internal string Name
         {
-            // Create the directory if it doesn't already exist
-            string dir = Path.GetDirectoryName(fileName);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            XmlSerializer xs = new XmlSerializer(typeof(JobFile));
-            using (TextWriter writer = new StreamWriter(fileName))
-            {
-                xs.Serialize(writer, this);
-            }
-        }
-
-        /// <summary>
-        /// The database connection string
-        /// </summary>
-        [XmlAttribute]
-        public string ConnectionString
-        {
-            get { return m_ConnectionString; }
-            set { m_ConnectionString = value; }
-        }
-
-        /// <summary>
-        /// The ID of the job that should be accessed (0 if not known)
-        /// </summary>
-        [XmlAttribute]
-        public int JobId
-        {
-            get { return m_JobId; }
-            set { m_JobId = value; }
-        }
-
-        /// <summary>
-        /// Information about the area that was last drawn.
-        /// </summary>
-        [XmlElement]
-        public DrawInfo LastDraw
-        {
-            get { return m_DrawInfo; }
-            set { m_DrawInfo = value; }
+            get { return m_FileName; }
         }
     }
 }
