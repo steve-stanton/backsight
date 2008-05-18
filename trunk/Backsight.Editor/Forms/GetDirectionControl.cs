@@ -1305,7 +1305,7 @@ namespace Backsight.Editor.Forms
                 // we have an offset to the right. This may or may not be correct.
 
                 m_OffsetDistance = dist.Offset;
-                DistanceUnit entry = CadastralMapModel.Current.EntryUnit;
+                DistanceUnit entry = EditingController.Current.EntryUnit;
                 offsetTextBox.Text = m_OffsetDistance.Format(entry, true);
 
                 // Override whatever we got above.

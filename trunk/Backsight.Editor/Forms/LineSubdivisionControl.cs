@@ -91,7 +91,7 @@ namespace Backsight.Editor.Forms
 
             // Display the length of the arc that is being subdivided (in
             // the current data entry units).
-            DistanceUnit dunit = CadastralMapModel.Current.EntryUnit;
+            DistanceUnit dunit = EditingController.Current.EntryUnit;
             lengthTextBox.Text = dunit.Format(m_GroundLength);
 
             // Check the radio button saying distances are from the
@@ -312,7 +312,7 @@ namespace Backsight.Editor.Forms
                     style.Render(draw, pts[i]);
             }
 
-            DistanceUnit entryUnit = CadastralMapModel.Current.EntryUnit;
+            DistanceUnit entryUnit = EditingController.Current.EntryUnit;
             double tot = GetTotalDistance();
             string s = (tot < Double.Epsilon ? String.Empty : entryUnit.Format(tot));
             totalEnteredTextBox.Text = s;

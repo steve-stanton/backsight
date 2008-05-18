@@ -19,17 +19,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
-//using System.Xml.Serialization;
 using System.Management;
+using System.Data;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
 using Backsight.Environment;
 using Backsight.Editor.Properties;
 using Backsight.Geometry;
-using System.Data;
-//using Backsight.Data;
-//using Backsight.Data.Xml;
 
 namespace Backsight.Editor
 {
@@ -113,46 +110,20 @@ namespace Backsight.Editor
         /// </summary>
         uint m_NumInternalIds;
 
-        // Acceptable units of measurement ...
-        readonly DistanceUnit m_Meters;
-        readonly DistanceUnit m_Feet;
-        readonly DistanceUnit m_Chains;
-        readonly DistanceUnit m_AsEntered;
-
-        /// <summary>
-        /// Current display units
-        /// </summary>
-        DistanceUnit m_DisplayUnit;
-
-        /// <summary>
-        /// Current data entry units
-        /// </summary>
-        DistanceUnit m_EntryUnit;
-
-        /// <summary>
-        /// Should feature IDs be assigned automatically? (false if the user must specify).
-        /// </summary>
-        bool m_AutoNumber;
-
-        /// <summary>
-        /// Scale denominator at which labels (text) will start to be drawn.
-        /// </summary>
-        double m_ShowLabelScale;
-
         /// <summary>
         /// Scale denominator at which points will start to be drawn.
         /// </summary>
-        double m_ShowPointScale;
+        double m_ShowPointScale; //->JobFile
 
         /// <summary>
         /// Height of point symbols.
         /// </summary>
-        ILength m_PointHeight;
+        ILength m_PointHeight; //->JobFile
 
         /// <summary>
         /// Should intersection points be drawn?
         /// </summary>
-        bool m_AreIntersectionsDrawn;
+        bool m_AreIntersectionsDrawn; //->JobFile
 
         /// <summary>
         /// Should polygon topology be maintained during edits? (may get turned off
@@ -267,15 +238,6 @@ namespace Backsight.Editor
         {
             m_Format = 1;
 
-            m_Meters = new DistanceUnit(DistanceUnitType.Meters);
-            m_Feet = new DistanceUnit(DistanceUnitType.Feet);
-            m_Chains = new DistanceUnit(DistanceUnitType.Chains);
-            m_AsEntered = new DistanceUnit(DistanceUnitType.AsEntered);
-            m_DisplayUnit = m_AsEntered;
-            m_EntryUnit = m_Meters;
-            m_AutoNumber = true;
-            m_ShowLabelScale = 2000.0;
-            m_ShowPointScale = 2000.0;
             m_PointHeight = new Length(2.0);
             m_AreIntersectionsDrawn = false;
             m_MaintainTopology = true;
@@ -366,12 +328,6 @@ namespace Backsight.Editor
             }
         }
 
-        internal double ShowPointScale
-        {
-            get { return m_ShowPointScale; }
-            set { m_ShowPointScale = value; }
-        }
-
         internal ILength PointHeight
         {
             get { return m_PointHeight; }
@@ -382,15 +338,6 @@ namespace Backsight.Editor
         {
             get { return m_AreIntersectionsDrawn; }
             set { m_AreIntersectionsDrawn = value; }
-        }
-
-        /// <summary>
-        /// Scale denominator at which labels (text) will start to be drawn.
-        /// </summary>
-        internal double ShowLabelScale
-        {
-            get { return m_ShowLabelScale; }
-            set { m_ShowLabelScale = value; }
         }
 
         /// <summary>
@@ -423,71 +370,6 @@ namespace Backsight.Editor
 
         internal IList<Person> People { get { return m_People; } }
 
-        internal DistanceUnit DisplayUnit
-        {
-            get { return m_DisplayUnit; }
-            set { m_DisplayUnit = GetUnits(value.UnitType); }
-        }
-
-        internal DistanceUnitType DisplayUnitType
-        {
-            get { return m_DisplayUnit.UnitType; }
-            set { m_DisplayUnit = GetUnits(value); }
-        }
-
-        internal DistanceUnit EntryUnit
-        {
-            get { return m_EntryUnit; }
-            set { m_EntryUnit = GetUnits(value.UnitType); }
-        }
-
-        internal DistanceUnitType EntryUnitType
-        {
-            get { return m_EntryUnit.UnitType; }
-            set { m_EntryUnit = GetUnits(value); }
-        }
-
-        internal DistanceUnit GetUnits(DistanceUnitType unitType)
-        {
-            switch (unitType)
-            {
-                case DistanceUnitType.Meters:
-                    return m_Meters;
-                case DistanceUnitType.Feet:
-                    return m_Feet;
-                case DistanceUnitType.Chains:
-                    return m_Chains;
-                case DistanceUnitType.AsEntered:
-                    return m_AsEntered;
-            }
-
-            throw new ArgumentException("Unexpected unit type");
-        }
-
-        /// <summary>
-        /// Converts a string that represents a distance unit abbreviation into one
-        /// of the <c>DistanceUnit</c> instances known to the map.
-        /// </summary>
-        /// <param name="abbr">The abbreviation to look for (not case-sensitive)</param>
-        /// <returns>The corresponding unit (null if the unit cannot be determined)</returns>
-        internal DistanceUnit GetUnit(string abbrev)
-        {
-            string a = abbrev.ToUpper().Trim();
-            if (a.Length==0)
-                return null;
-
-            if (m_Meters.Abbreviation.ToUpper().StartsWith(a))
-                return m_Meters;
-
-            if (m_Feet.Abbreviation.ToUpper().StartsWith(a))
-                return m_Feet;
-
-            if (m_Chains.Abbreviation.ToUpper().StartsWith(a))
-                return m_Chains;
-
-            return null;
-        }
-
         #region ISpatialModel Members
 
         public bool IsEmpty
@@ -519,11 +401,12 @@ namespace Backsight.Editor
             SpatialType types = SpatialType.Feature;
 
             // Suppress text if the display scale is too small
-            if (display.MapScale > m_ShowLabelScale)
+            EditingController ec = EditingController.Current;
+            if (display.MapScale > ec.JobFile.Data.ShowLabelScale)
                 types ^= SpatialType.Text;
 
             // Suppress points if the display scale is too small
-            if (display.MapScale > m_ShowPointScale)
+            if (display.MapScale > ec.JobFile.Data.ShowPointScale)
                 types ^= SpatialType.Point;
 
             new DrawQuery(m_Index, display, style, types);
@@ -1170,12 +1053,6 @@ namespace Backsight.Editor
 		        m_Index.Clean(m_UpdateWindow, false);
             }
              */
-        }
-
-        internal bool IsAutoNumber
-        {
-            get { return m_AutoNumber; }
-            set { m_AutoNumber = value; }
         }
 
         /// <summary>

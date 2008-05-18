@@ -139,7 +139,7 @@ namespace Backsight.Editor.Forms
                     entityTypeComboBox.SelectedItem = defEnt;
 
                     // If we are auto-numbering, disable the ID combo.
-                    if (CadastralMapModel.Current.IsAutoNumber)
+                    if (EditingController.Current.IsAutoNumber)
                         idComboBox.Enabled = false;
                 }
                 else

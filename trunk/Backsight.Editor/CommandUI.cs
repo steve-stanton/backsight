@@ -626,8 +626,8 @@ namespace Backsight.Editor
         internal bool ArePointsDrawn()
         {
             ISpatialDisplay display = ActiveDisplay;
-            CadastralMapModel cmm = CadastralMapModel.Current;
-            return (display.MapScale < cmm.ShowPointScale);
+            EditingController ec = EditingController.Current;
+            return (display.MapScale < ec.JobFile.Data.ShowPointScale);
         }
     }
 }

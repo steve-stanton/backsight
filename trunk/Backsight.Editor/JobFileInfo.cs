@@ -57,6 +57,41 @@ namespace Backsight.Editor
         /// </summary>
         DrawInfo m_DrawInfo;
 
+        /// <summary>
+        /// Current display units
+        /// </summary>
+        DistanceUnitType m_DisplayUnit;
+
+        /// <summary>
+        /// Current data entry units
+        /// </summary>
+        DistanceUnitType m_EntryUnit;
+
+        /// <summary>
+        /// Should feature IDs be assigned automatically? (false if the user must specify).
+        /// </summary>
+        bool m_AutoNumber;
+
+        /// <summary>
+        /// Scale denominator at which labels (text) will start to be drawn.
+        /// </summary>
+        double m_ShowLabelScale;
+
+        /// <summary>
+        /// Scale denominator at which points will start to be drawn.
+        /// </summary>
+        double m_ShowPointScale;
+
+        /// <summary>
+        /// Height of point symbols.
+        /// </summary>
+        double m_PointHeight;
+
+        /// <summary>
+        /// Should intersection points be drawn?
+        /// </summary>
+        bool m_AreIntersectionsDrawn;
+
         #endregion
 
         #region Constructors
@@ -69,6 +104,11 @@ namespace Backsight.Editor
             m_ConnectionString = String.Empty;
             m_JobId = 0;
             m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
+            m_DisplayUnit = DistanceUnitType.AsEntered;
+            m_EntryUnit = DistanceUnitType.Meters;
+            m_AutoNumber = true;
+            m_ShowLabelScale = 2000.0;
+            m_ShowPointScale = 2000.0;
         }
 
         #endregion
@@ -133,6 +173,56 @@ namespace Backsight.Editor
         {
             get { return m_DrawInfo; }
             set { m_DrawInfo = value; }
+        }
+
+        /// <summary>
+        /// Current display units
+        /// </summary>
+        [XmlAttribute("DisplayUnit")]
+        public DistanceUnitType DisplayUnitType
+        {
+            get { return m_DisplayUnit; }
+            set { m_DisplayUnit = value; }
+        }
+
+        /// <summary>
+        /// Current data entry units
+        /// </summary>
+        [XmlAttribute("EntryUnit")]
+        public DistanceUnitType EntryUnitType
+        {
+            get { return m_EntryUnit; }
+            set { m_EntryUnit = value; }
+        }
+
+        /// <summary>
+        /// Should feature IDs be assigned automatically? (false if the user must specify).
+        /// </summary>
+        [XmlAttribute("AutoNumber")]
+        public bool IsAutoNumber
+        {
+            get { return m_AutoNumber; }
+            set { m_AutoNumber = value; }
+        }
+
+        /// <summary>
+        /// Scale denominator at which labels (text) will start to be drawn.
+        /// </summary>
+        [XmlAttribute("LabelScale")]
+        public double ShowLabelScale
+        {
+            get { return m_ShowLabelScale; }
+            set { m_ShowLabelScale = value; }
+        }
+
+        /// <summary>
+        /// Scale denominator at which points will start to be drawn.
+        /// </summary>
+        [XmlAttribute("PointScale")]
+        public double ShowPointScale
+        {
+            get { return m_ShowPointScale; }
+            set { m_ShowPointScale = value; }
         }
     }
 }

@@ -47,6 +47,11 @@ namespace Backsight.Editor
             get { return (SpatialController.Current as EditingController); }
         }
 
+        static DistanceUnit s_Meters = new DistanceUnit(DistanceUnitType.Meters);
+        static DistanceUnit s_Feet = new DistanceUnit(DistanceUnitType.Feet);
+        static DistanceUnit s_Chains = new DistanceUnit(DistanceUnitType.Chains);
+        static DistanceUnit s_AsEntered = new DistanceUnit(DistanceUnitType.AsEntered);
+
         #endregion
 
         #region Class data
@@ -596,13 +601,14 @@ namespace Backsight.Editor
 
         private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
+            JobFileInfo jfi = EditingController.Current.JobFile.Data;
             CadastralMapModel cmm = this.CadastralMapModel;
             ISpatialSelection currentSel = this.SpatialSelection;
             ISpatialObject oldItem = currentSel.Item;
             ISpatialObject newItem;
 
             // Try to find a point feature if points are drawn.
-            if ((spatialType & SpatialType.Point)!=0 && display.MapScale <= cmm.ShowPointScale)
+            if ((spatialType & SpatialType.Point)!=0 && display.MapScale <= jfi.ShowPointScale)
             {
                 ILength size = new Length(cmm.PointHeight.Meters * 0.5);
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
@@ -643,7 +649,7 @@ namespace Backsight.Editor
             // Try for a text string if text is drawn.
             // The old software handles text by checking that the point is inside
             // the outline, not sure whether the new index provides acceptable alternative.
-            if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= cmm.ShowLabelScale)
+            if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= m_JobFile.Data.ShowLabelScale)
             {
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
                 if (newItem!=null)
@@ -964,7 +970,7 @@ namespace Backsight.Editor
         /// </summary>
         bool ArePointsDrawn
         {
-            get { return IsVisible(CadastralMapModel.ShowPointScale); }
+            get { return IsVisible(EditingController.Current.JobFile.Data.ShowPointScale); }
         }
 
         /// <summary>
@@ -974,7 +980,7 @@ namespace Backsight.Editor
         /// </summary>
         bool AreLabelsDrawn
         {
-            get { return IsVisible(CadastralMapModel.ShowLabelScale); }
+            get { return IsVisible(m_JobFile.Data.ShowLabelScale); }
         }
 
         /// <summary>
@@ -1163,6 +1169,69 @@ namespace Backsight.Editor
             dial.DefaultExt = "ce";
             if (dial.ShowDialog() == DialogResult.OK)
                 return dial.FileName;
+
+            return null;
+        }
+
+        /// <summary>
+        /// The units that should be used on display of observed lengths.
+        /// </summary>
+        internal DistanceUnit DisplayUnit
+        {
+            get
+            {
+                DistanceUnitType du = m_JobFile.Data.DisplayUnitType;
+                return GetUnits(du);
+            }
+            //set { m_DisplayUnit = GetUnits(value.UnitType); }
+        }
+
+        internal DistanceUnit EntryUnit
+        {
+            get
+            {
+                DistanceUnitType du = m_JobFile.Data.EntryUnitType;
+                return GetUnits(du);
+            }
+        }
+
+        internal DistanceUnit GetUnits(DistanceUnitType unitType)
+        {
+            switch (unitType)
+            {
+                case DistanceUnitType.Meters:
+                    return s_Meters;
+                case DistanceUnitType.Feet:
+                    return s_Feet;
+                case DistanceUnitType.Chains:
+                    return s_Chains;
+                case DistanceUnitType.AsEntered:
+                    return s_AsEntered;
+            }
+
+            throw new ArgumentException("Unexpected unit type");
+        }
+
+        /// <summary>
+        /// Converts a string that represents a distance unit abbreviation into one
+        /// of the <c>DistanceUnit</c> instances known to the map.
+        /// </summary>
+        /// <param name="abbr">The abbreviation to look for (not case-sensitive)</param>
+        /// <returns>The corresponding unit (null if the unit cannot be determined)</returns>
+        internal DistanceUnit GetUnit(string abbrev)
+        {
+            string a = abbrev.ToUpper().Trim();
+            if (a.Length == 0)
+                return null;
+
+            if (s_Meters.Abbreviation.ToUpper().StartsWith(a))
+                return s_Meters;
+
+            if (s_Feet.Abbreviation.ToUpper().StartsWith(a))
+                return s_Feet;
+
+            if (s_Chains.Abbreviation.ToUpper().StartsWith(a))
+                return s_Chains;
 
             return null;
         }

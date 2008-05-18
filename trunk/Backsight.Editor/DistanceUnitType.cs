@@ -18,7 +18,7 @@ using System;
 namespace Backsight.Editor
 {
     [Serializable]
-    enum DistanceUnitType
+    public enum DistanceUnitType
     {
         Meters,
         Feet,

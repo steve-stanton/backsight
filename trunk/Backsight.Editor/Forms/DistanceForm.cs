@@ -74,7 +74,7 @@ namespace Backsight.Editor.Forms
 
             m_Distance = 0.0;
             m_Repeat = 1;
-            m_Unit = CadastralMapModel.Current.EntryUnit;
+            m_Unit = EditingController.Current.EntryUnit;
             m_CurUnit = m_Unit;
             m_NewUnit = false;
             m_WantLine = true;
@@ -153,19 +153,19 @@ namespace Backsight.Editor.Forms
 
         private void fRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Feet);
+            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Feet);
             SetNewDefault();
         }
 
         private void mRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Meters);
+            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Meters);
             SetNewDefault();
         }
 
         private void cRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = CadastralMapModel.Current.GetUnits(DistanceUnitType.Chains);
+            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Chains);
             SetNewDefault();
         }
 
@@ -292,7 +292,7 @@ namespace Backsight.Editor.Forms
 
             // Change the default units if required
             if (m_NewUnit)
-                CadastralMapModel.Current.EntryUnit = m_Unit;
+                EditingController.Current.JobFile.Data.EntryUnitType = m_Unit.UnitType;
 
             DialogResult = DialogResult.OK;
             Close();

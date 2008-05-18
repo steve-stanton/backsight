@@ -75,8 +75,8 @@ namespace Backsight.Editor.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-            map.IsAutoNumber = autoNumberCheckBox.Checked;
+            EditingController ec = EditingController.Current;
+            ec.IsAutoNumber = autoNumberCheckBox.Checked;
 
             this.DialogResult = DialogResult.OK;
             Close();

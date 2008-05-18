@@ -430,7 +430,7 @@ namespace Backsight.Editor.Forms
             {
                 ILayer layer = map.ActiveLayer;
                 activeLayerStatusLabel.Text = (layer==null ? "No active layer" : layer.Name);
-                unitsStatusLabel.Text = map.EntryUnit.ToString();
+                unitsStatusLabel.Text = m_Controller.EntryUnit.ToString();
                 IEntity ent = map.DefaultPointType;
                 pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
                 ent = map.DefaultLineType;
@@ -1266,9 +1266,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                CadastralMapModel cmm = m_Controller.CadastralMapModel;
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= cmm.ShowPointScale);
+                return (display!=null && display.MapScale <= m_Controller.JobFile.Data.ShowPointScale);
             }
         }
 
@@ -1288,7 +1287,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
                 Debug.Assert(display!=null);
                 double scale = display.MapScale;
-                cmm.ShowPointScale = (scale + 1.0);
+                m_Controller.JobFile.Data.ShowPointScale = (scale + 1.0);
                 double height = 0.001 * scale;
                 cmm.PointHeight = new Length(Math.Max(0.01, height));
             }
@@ -1310,6 +1309,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointReduce(IUserAction action)
         {
+            JobFileInfo jfi = m_Controller.JobFile.Data;
             CadastralMapModel cmm = m_Controller.CadastralMapModel;
             ISpatialDisplay display = m_Controller.ActiveDisplay;
             if (display==null)
@@ -1326,7 +1326,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // up below 0.1mm at the current draw scale, turn them off.
             double size = height / display.MapScale;
             if (size < 0.0001)
-                cmm.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
+                jfi.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
             else
                 cmm.PointHeight = new Length(Math.Max(0.01, height));
 
@@ -1573,9 +1573,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                CadastralMapModel cmm = m_Controller.CadastralMapModel;
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= cmm.ShowLabelScale);
+                return (display!=null && display.MapScale <= m_Controller.JobFile.Data.ShowLabelScale);
             }
         }
 

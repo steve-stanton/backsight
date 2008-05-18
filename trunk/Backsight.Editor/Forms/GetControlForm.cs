@@ -202,7 +202,7 @@ namespace Backsight.Editor.Forms
                 display.MapScale = scale;
                 if (!m_Cmd.ArePointsDrawn())
                 {
-                    CadastralMapModel.Current.ShowPointScale = (scale+1);
+                    EditingController.Current.JobFile.Data.ShowPointScale = (scale+1);
                     Debug.Assert(m_Cmd.ArePointsDrawn());
                 }
 
