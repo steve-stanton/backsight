@@ -93,13 +93,10 @@ namespace Backsight.Editor.Forms
             // units. If the display units are "as entered", use
             // the current data entry units instead.
 
-            CadastralMapModel map = CadastralMapModel.Current;
-            if (map!=null)
-            {
-                DistanceUnit display = map.DisplayUnit;
-                m_Unit = (display.UnitType == DistanceUnitType.AsEntered ? map.EntryUnit : display);
-                InitializeUnits(m_Unit);
-            }
+            EditingController ec = EditingController.Current;
+            DistanceUnit display = ec.DisplayUnit;
+            m_Unit = (display.UnitType == DistanceUnitType.AsEntered ? ec.EntryUnit : display);
+            InitializeUnits(m_Unit);
         }
 
         protected void SetMeters()
@@ -119,8 +116,8 @@ namespace Backsight.Editor.Forms
 
         void SetUnit (DistanceUnitType type)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-            m_Unit = map.GetUnits(type);
+            EditingController ec = EditingController.Current;
+            m_Unit = ec.GetUnits(type);
         }
 
         /// <summary>

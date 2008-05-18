@@ -133,16 +133,16 @@ namespace Backsight.Editor
 
             // If the abbreviation corresponds to some form a data entry, save the
             // entered distance in those. Otherwise save in the current data entry units.
-            CadastralMapModel map = CadastralMapModel.Current;
+            EditingController ec = EditingController.Current;
             if (abbr.Length > 0)
             {
-                m_EnteredUnit = map.GetUnit(abbr);
+                m_EnteredUnit = ec.GetUnit(abbr);
                 if (m_EnteredUnit!=null)
                     m_ObservedMetric = m_EnteredUnit.ToMetric(dval);
             }
             else
             {
-                DistanceUnit dunit = map.EntryUnit;
+                DistanceUnit dunit = ec.EntryUnit;
                 m_ObservedMetric = dunit.ToMetric(dval);
                 m_EnteredUnit = dunit;
             }

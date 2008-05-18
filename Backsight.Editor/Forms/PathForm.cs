@@ -133,7 +133,7 @@ namespace Backsight.Editor.Forms
             ShowInput(op);
 
             // Display the current default units.
-            m_Units = CadastralMapModel.Current.EntryUnit;
+            m_Units = EditingController.Current.EntryUnit;
             if (m_Units == null)
                 defaultUnitsLabel.Text = String.Empty;
             else
@@ -933,9 +933,6 @@ namespace Backsight.Editor.Forms
         /// <returns>The corresponding units.</returns>
         DistanceUnit GetUnits(string str, bool makedef)
         {
-            // Get pointer to the enclosing map.
-            CadastralMapModel map = CadastralMapModel.Current;
-
             if (str != null)
             {
                 // Pick up characters that represent the abbreviation for
@@ -974,7 +971,7 @@ namespace Backsight.Editor.Forms
                 // If the default was not previously defined, pick up
                 // the map's current default.
                 if (m_Units == null)
-                    m_Units = map.EntryUnit;
+                    m_Units = EditingController.Current.EntryUnit;
 
                 return m_Units;
             }
@@ -988,8 +985,8 @@ namespace Backsight.Editor.Forms
         /// <returns>The corresponding units (null if the abbreviation was not found).</returns>
         DistanceUnit MatchUnits(string abbrev)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-            return map.GetUnit(abbrev);
+            EditingController ec = EditingController.Current;
+            return ec.GetUnit(abbrev);
         }
 
         /// <summary>

@@ -74,10 +74,8 @@ namespace Backsight.Editor.Forms
             this.Location = new Point(0, 0);
 
             // Display the adjustment results in the current data entry units.
-            CadastralMapModel map = CadastralMapModel.Current;
-            DistanceUnit entry = map.EntryUnit;
 
-            DistanceUnitType unitType = entry.UnitType;
+            DistanceUnitType unitType = EditingController.Current.JobFile.Data.EntryUnitType;
             if (unitType==DistanceUnitType.Feet)
                 OnFeet();
             else if (unitType==DistanceUnitType.Chains)
@@ -146,8 +144,8 @@ namespace Backsight.Editor.Forms
 
         void ShowResults(DistanceUnitType type)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-            DistanceUnit unit = map.GetUnits(type);
+            EditingController ec = EditingController.Current;
+            DistanceUnit unit = ec.GetUnits(type);
             if (unit==null)
                 return;
 

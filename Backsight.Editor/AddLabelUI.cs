@@ -387,9 +387,9 @@ namespace Backsight.Editor
         {
             get
             {
-                CadastralMapModel cmm = CadastralMapModel.Current;
+                EditingController ec = EditingController.Current;
                 ISpatialDisplay display = ActiveDisplay;
-                return (display!=null && display.MapScale <= cmm.ShowLabelScale);
+                return (display!=null && display.MapScale <= ec.JobFile.Data.ShowLabelScale);
             }
         }
 

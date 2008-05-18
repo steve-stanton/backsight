@@ -180,7 +180,7 @@ namespace Backsight.Editor
             // If we are auto-numbering, just get the next ID. Otherwise
             // ask for it, showing the default.
 
-            if (CadastralMapModel.Current.IsAutoNumber)
+            if (EditingController.Current.IsAutoNumber)
                 m_PolygonId.ReserveId(ent, 0);
             else
             {
