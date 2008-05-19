@@ -17,6 +17,7 @@ using System;
 using System.Drawing;
 
 using Backsight.Environment;
+using System.Runtime.Serialization;
 
 namespace Backsight.Editor
 {
@@ -45,6 +46,12 @@ namespace Backsight.Editor
         public FontStyle Modifiers
         {
             get { return (this.Data==null ? FontStyle.Regular : this.Data.Modifiers); }
+        }
+
+        [OnDeserialized]
+        void GetEnvironmentData(StreamingContext context)
+        {
+            this.Data = EnvironmentContainer.FindFontById(this.Id);
         }
     }
 }

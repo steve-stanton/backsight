@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Management;
 using System.Data;
+using System.Data.SqlClient;
+using System.Text;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
@@ -29,8 +31,6 @@ using Backsight.Editor.Properties;
 using Backsight.Geometry;
 using Backsight.Editor.Database;
 using Backsight.Data;
-using System.Data.SqlClient;
-using System.Text;
 
 namespace Backsight.Editor
 {
@@ -118,11 +118,6 @@ namespace Backsight.Editor
         IEditWindow m_Window;
 
         /// <summary>
-        /// The last draw window (if any).
-        /// </summary>
-        IWindow m_DrawWindow;
-
-        /// <summary>
         /// Editing sessions.
         /// </summary>
         List<Session> m_Sessions;
@@ -150,34 +145,6 @@ namespace Backsight.Editor
         /// </summary>
         readonly List<IdRange> m_IdRanges;
 
-        /// <summary>
-        /// The currently active editing layer.
-        /// </summary>
-        //LayerFacade m_ActiveLayer;
-
-        // May want to change the following, since we previously had the ability to define
-        // defaults for each layer... (the entity type implied the layer)
-
-        /// <summary>
-        /// The default entity type for points (may be null)
-        /// </summary>
-        MapEntity m_DefaultPointType;
-
-        /// <summary>
-        /// The default entity type for lines (may be null)
-        /// </summary>
-        MapEntity m_DefaultLineType;
-
-        /// <summary>
-        /// The default entity type for polygon labels (may be null)
-        /// </summary>
-        MapEntity m_DefaultPolygonType;
-
-        /// <summary>
-        /// The default entity type for text (may be null)
-        /// </summary>
-        MapEntity m_DefaultTextType;
-
         #endregion
 
         #region Constructors
@@ -191,16 +158,11 @@ namespace Backsight.Editor
             m_OpSequence = 0;
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
-            m_DrawWindow = new Window();
             m_Sessions = new List<Session>();
             m_Entities = new List<MapEntity>();
             m_Layers = new List<LayerFacade>();
             m_Fonts = new List<FontFacade>();
             m_IdRanges = new List<IdRange>();
-            m_DefaultPointType = null;
-            m_DefaultLineType = null;
-            m_DefaultPolygonType = null;
-            m_DefaultTextType = null;
             m_Index = null;
         }
 
@@ -953,20 +915,6 @@ namespace Backsight.Editor
              */
         }
 
-        /// <summary>
-        /// Deletes the file that contains this model.
-        /// </summary>
-        /*
-        internal void Discard()
-        {
-            if (m_ModelFileName!=null)
-            {
-                File.Delete(m_ModelFileName.Name);
-                m_ModelFileName = null;
-            }
-        }
-         */
-
         internal IEntity GetDefaultEntity(SpatialType t)
         {
             if (t == SpatialType.Point)
@@ -997,32 +945,62 @@ namespace Backsight.Editor
 
         internal IEntity DefaultPointType
         {
-            get { return m_DefaultPointType; }
-            set { m_DefaultPointType = GetRegisteredEntityType(value); }
+            get
+            {
+                int entityId = EditingController.Current.JobFile.Data.DefaultPointType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+
+            set
+            {
+                int entityId = (value == null ? 0 : value.Id);
+                EditingController.Current.JobFile.Data.DefaultPointType = entityId;
+            }
         }
 
         internal IEntity DefaultLineType
         {
-            get { return m_DefaultLineType; }
-            set { m_DefaultLineType = GetRegisteredEntityType(value); }
+            get
+            {
+                int entityId = EditingController.Current.JobFile.Data.DefaultLineType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+
+            set
+            {
+                int entityId = (value == null ? 0 : value.Id);
+                EditingController.Current.JobFile.Data.DefaultLineType = entityId;
+            }
         }
 
         internal IEntity DefaultPolygonType
         {
-            get { return m_DefaultPolygonType; }
-            set { m_DefaultPolygonType = GetRegisteredEntityType(value); }
+            get
+            {
+                int entityId = EditingController.Current.JobFile.Data.DefaultPolygonType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+
+            set
+            {
+                int entityId = (value == null ? 0 : value.Id);
+                EditingController.Current.JobFile.Data.DefaultPolygonType = entityId;
+            }
         }
 
         internal IEntity DefaultTextType
         {
-            get { return m_DefaultTextType; }
-            set { m_DefaultTextType = GetRegisteredEntityType(value); }
-        }
+            get
+            {
+                int entityId = EditingController.Current.JobFile.Data.DefaultTextType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
 
-        internal IWindow DrawExtent
-        {
-            get { return m_DrawWindow; }
-            set { m_DrawWindow = value; }
+            set
+            {
+                int entityId = (value == null ? 0 : value.Id);
+                EditingController.Current.JobFile.Data.DefaultTextType = entityId;
+            }
         }
 
         /// <summary>

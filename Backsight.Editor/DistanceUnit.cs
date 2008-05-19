@@ -15,6 +15,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace Backsight.Editor
 {
@@ -36,22 +37,26 @@ namespace Backsight.Editor
         /// <summary>
         /// A name for the unit of measurement.
         /// </summary>
+        [NonSerialized]
         private string m_UnitName;
 
         /// <summary>
         /// Accepted abbreviation (e.g. "ft"). May be an empty string (not null).
         /// </summary>
+        [NonSerialized]
         private string m_Abbreviation;
 
         /// <summary>
         /// Scaling factor to convert an entered unit of this type to meters (i.e. 0.3048
         /// for feet to meters).
         /// </summary>
-	    private readonly double m_Multiplier;
+        [NonSerialized]
+        private double m_Multiplier;
 
         /// <summary>
         /// The display colour.
         /// </summary>
+        [NonSerialized]
         private Color m_Colour;
 
         #endregion
@@ -230,5 +235,24 @@ namespace Backsight.Editor
         {
             return m_UnitName;
         }
+
+        /// <summary>
+        /// Method that is called upon deserialization, used to load the
+        /// class using the information known to the controller.
+        /// </summary>
+        [OnDeserialized]
+        void GetControllerData(StreamingContext context)
+        {
+            // The only thing that we have upon deserialization is the
+            // enum that declares the unit type. Grab the associated info
+            // from the controller.
+
+            DistanceUnit du = EditingController.Current.GetUnits(m_UnitCode);
+            m_UnitName = du.m_UnitName;
+            m_Abbreviation = du.m_Abbreviation;
+            m_Multiplier = du.m_Multiplier;
+            m_Colour = du.m_Colour;
+        }
+
     }
 }
