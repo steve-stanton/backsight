@@ -83,14 +83,26 @@ namespace Backsight.Editor
         double m_ShowPointScale;
 
         /// <summary>
-        /// Height of point symbols.
+        /// Height of point symbols, in meters on the ground.
         /// </summary>
         double m_PointHeight;
 
         /// <summary>
-        /// Should intersection points be drawn?
+        /// Should intersection points be drawn? Relevant only if points
+        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/>
+        /// property).
         /// </summary>
         bool m_AreIntersectionsDrawn;
+
+        /// <summary>
+        /// The nominal map scale, for use in converting the size of fonts.
+        /// </summary>
+        uint m_MapScale;
+
+        /// <summary>
+        /// The style for annotating lines with distances (and angles)
+        /// </summary>
+        LineAnnotationStyle m_Annotation;
 
         #endregion
 
@@ -109,6 +121,10 @@ namespace Backsight.Editor
             m_AutoNumber = true;
             m_ShowLabelScale = 2000.0;
             m_ShowPointScale = 2000.0;
+            m_PointHeight = 2.0;
+            m_AreIntersectionsDrawn = false;
+            m_MapScale = 2000;
+            m_Annotation = new LineAnnotationStyle();
         }
 
         #endregion
@@ -223,6 +239,47 @@ namespace Backsight.Editor
         {
             get { return m_ShowPointScale; }
             set { m_ShowPointScale = value; }
+        }
+
+        /// <summary>
+        /// Height of point symbols, in meters on the ground.
+        /// </summary>
+        [XmlAttribute]
+        public double PointHeight
+        {
+            get { return m_PointHeight; }
+            set { m_PointHeight = value; }
+        }
+
+        /// <summary>
+        /// Should intersection points be drawn? Relevant only if points
+        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/>
+        /// property).
+        /// </summary>
+        [XmlAttribute("IntersectionsDrawn")]
+        public bool AreIntersectionsDrawn
+        {
+            get { return m_AreIntersectionsDrawn; }
+            set { m_AreIntersectionsDrawn = value; }
+        }
+
+        /// <summary>
+        /// The nominal map scale, for use in converting the size of fonts.
+        /// </summary>
+        [XmlAttribute]
+        public uint NominalMapScale
+        {
+            get { return m_MapScale; }
+            set { m_MapScale = value; }
+        }
+
+        /// <summary>
+        /// The style for annotating lines with distances (and angles)
+        /// </summary>
+        [XmlElement]
+        public LineAnnotationStyle LineAnnotation
+        {
+            get { return m_Annotation; }
         }
     }
 }

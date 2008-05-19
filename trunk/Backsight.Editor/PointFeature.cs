@@ -40,7 +40,7 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        public static PointFeature Create(IPosition p, IEntity e, ILayer layer, Operation creator)
+        public static PointFeature Create(IPosition p, IEntity e, Operation creator)
         {
             if (p==null)
                 throw new ArgumentNullException("Position for new point feature cannot be null");

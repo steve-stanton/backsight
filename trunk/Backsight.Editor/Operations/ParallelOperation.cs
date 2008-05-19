@@ -422,7 +422,7 @@ namespace Backsight.Editor.Operations
             // Add the parallel line to the map (if it's a circular arc,
             // we may need to reverse the direction).
 
-            IEntity ent = map.ActiveLayer.DefaultLineType;
+            IEntity ent = EditingController.Current.ActiveLayer.DefaultLineType;
 
             if (refLine is ArcFeature)
             {

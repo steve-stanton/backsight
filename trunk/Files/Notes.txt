@@ -257,3 +257,24 @@ which is a good way to describe the origin of the "Backsight" name:
 
 
 ``Plan to throw one away; you will, anyhow.'' (Fred Brooks, The Mythical Man-Month, Chapter 11)
+
+
+==========================================================================
+
+CREATE TABLE TestList ([SessionId] INT NOT NULL)
+GO
+
+INSERT INTO [TestList] ([SessionId])
+SELECT [SessionId] FROM [dbo].[Sessions] WHERE
+[JobId] IN (SELECT [JobId] FROM [dbo].[Jobs] WHERE
+	    [LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [Theme]=15 AND [ThemeSequence]<=2))
+
+AND [ZoneId]=123
+AND [Revision]>0
+ORDER BY [Revision]
+
+UNION ALL
+SELECT [SessionId] FROM [dbo].[Sessions] WHERE
+[JobId]=123 AND [UserId]=1 AND [Revision]=0
+ORDER BY [SessionId]
+GO

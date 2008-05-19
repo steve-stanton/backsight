@@ -207,7 +207,7 @@ namespace Backsight.Editor.Forms
                 }
 
                 // Ensure the point size isn't TOO small (2mm at the display scale should be fine)
-                CadastralMapModel.Current.PointHeight = new Length(0.002 * scale);
+                EditingController.Current.JobFile.Data.PointHeight = 0.002 * scale;
 
                 string scalemsg = String.Format("Draw scale has been set to 1:{0}", (uint)scale);
                 MessageBox.Show(scalemsg);

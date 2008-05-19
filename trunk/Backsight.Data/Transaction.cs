@@ -61,7 +61,10 @@ namespace Backsight.Data
         /// further calls to <c>Transaction.Execute</c>)</param>
         public static void Execute(TransactionBody body)
         {
-            using (TransactionScope ts = new TransactionScope())
+            TransactionOptions top = new TransactionOptions();
+            top.IsolationLevel = IsolationLevel.ReadCommitted;
+
+            using (TransactionScope ts = new TransactionScope(TransactionScopeOption.Required, top))
             {
                 Exec(body);
                 ts.Complete();

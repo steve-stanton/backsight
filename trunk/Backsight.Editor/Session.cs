@@ -16,14 +16,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
-using System.Collections.ObjectModel;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     class Session
     {
         #region Static

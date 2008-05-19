@@ -452,7 +452,7 @@ namespace Backsight.Editor
             {
                 Close();
                 CadastralMapModel cmm = CadastralMapModel.Open(connectionString);
-                cmm.AddSession();
+                //cmm.AddSession();
                 SetMapModel(cmm, cmm.DrawExtent);
                 InitializeIdManager();
                 m_AutoSaver.OnOpen();
@@ -512,6 +512,8 @@ namespace Backsight.Editor
                 throw new Exception("Cannot locate map layer associated with current job");
 
             // Initialize the model
+            CadastralMapModel cmm = new CadastralMapModel();
+            //cmm.Load(m_JobData, m_UserId);
 
         }
 
@@ -594,14 +596,13 @@ namespace Backsight.Editor
 
         private IDrawStyle InitializeDrawStyle(IDrawStyle style)
         {
-            CadastralMapModel cmm = this.CadastralMapModel;
-            style.PointHeight = cmm.PointHeight;
+            style.PointHeight = new Length(m_JobFile.Data.PointHeight);
             return style;
         }
 
         private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
+            JobFileInfo jfi = m_JobFile.Data;
             CadastralMapModel cmm = this.CadastralMapModel;
             ISpatialSelection currentSel = this.SpatialSelection;
             ISpatialObject oldItem = currentSel.Item;
@@ -610,7 +611,7 @@ namespace Backsight.Editor
             // Try to find a point feature if points are drawn.
             if ((spatialType & SpatialType.Point)!=0 && display.MapScale <= jfi.ShowPointScale)
             {
-                ILength size = new Length(cmm.PointHeight.Meters * 0.5);
+                ILength size = new Length(jfi.PointHeight * 0.5);
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
                 if (newItem!=null)
                     return newItem;
@@ -696,8 +697,7 @@ namespace Backsight.Editor
 
         internal ILayer ActiveLayer
         {
-            get { return CadastralMapModel.ActiveLayer; }
-            set { CadastralMapModel.ActiveLayer = value; }
+            get { return m_ActiveLayer; }
         }
 
         internal void StartCommand(CommandUI cmd)
