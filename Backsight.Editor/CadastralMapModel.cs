@@ -27,6 +27,10 @@ using Backsight.Index;
 using Backsight.Environment;
 using Backsight.Editor.Properties;
 using Backsight.Geometry;
+using Backsight.Editor.Database;
+using Backsight.Data;
+using System.Data.SqlClient;
+using System.Text;
 
 namespace Backsight.Editor
 {
@@ -82,27 +86,10 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The name of the file containing the current map model (including full path).
-        /// </summary>
-        //[NonSerialized]
-        //ModelFileName m_ModelFileName;
-
-        /// <summary>
         /// Spatial index for the data in this model.
         /// </summary>
         [NonSerialized]
         EditingIndex m_Index;
-
-        /// <summary>
-        /// Current format ID for the entire cadastral editor class structure.
-        /// </summary>
-        uint m_Format;
-
-        /// <summary>
-        /// An ID indicating that this map model has been registered as part of some
-        /// greater data processing job. Zero means this model is unknown to the wider world.
-        /// </summary>
-        uint m_JobId;
 
         /// <summary>
         /// The number of internal IDs that have been generated throughout the lifetime of
@@ -111,40 +98,9 @@ namespace Backsight.Editor
         uint m_NumInternalIds;
 
         /// <summary>
-        /// Scale denominator at which points will start to be drawn.
-        /// </summary>
-        double m_ShowPointScale; //->JobFile
-
-        /// <summary>
-        /// Height of point symbols.
-        /// </summary>
-        ILength m_PointHeight; //->JobFile
-
-        /// <summary>
-        /// Should intersection points be drawn?
-        /// </summary>
-        bool m_AreIntersectionsDrawn; //->JobFile
-
-        /// <summary>
-        /// Should polygon topology be maintained during edits? (may get turned off
-        /// temporarily during bulk loads).
-        /// </summary>
-        bool m_MaintainTopology;
-
-        /// <summary>
-        /// The style for annotating lines with distances (and angles)
-        /// </summary>
-        LineAnnotationStyle m_Annotation;
-
-        /// <summary>
         /// Default rotation angle for text (in radians).
         /// </summary>
         double m_Rotation;
-
-        /// <summary>
-        /// The nominal map scale, for use in converting the size of fonts.
-        /// </summary>
-        uint m_MapScale;
 
         /// <summary>
         /// The highest sequence number assigned to any operation.
@@ -165,11 +121,6 @@ namespace Backsight.Editor
         /// The last draw window (if any).
         /// </summary>
         IWindow m_DrawWindow;
-
-        /// <summary>
-        /// People who have accessed the map model for read/write
-        /// </summary>
-        List<Person> m_People;
 
         /// <summary>
         /// Editing sessions.
@@ -202,7 +153,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The currently active editing layer.
         /// </summary>
-        LayerFacade m_ActiveLayer;
+        //LayerFacade m_ActiveLayer;
 
         // May want to change the following, since we previously had the ability to define
         // defaults for each layer... (the entity type implied the layer)
@@ -236,19 +187,11 @@ namespace Backsight.Editor
         /// </summary>
         internal CadastralMapModel()
         {
-            m_Format = 1;
-
-            m_PointHeight = new Length(2.0);
-            m_AreIntersectionsDrawn = false;
-            m_MaintainTopology = true;
-            m_Annotation = new LineAnnotationStyle();
             m_Rotation = 0.0;
-            m_MapScale = 2000; // arbitrary nominal scale
             m_OpSequence = 0;
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_DrawWindow = new Window();
-            m_People = new List<Person>();
             m_Sessions = new List<Session>();
             m_Entities = new List<MapEntity>();
             m_Layers = new List<LayerFacade>();
@@ -258,7 +201,7 @@ namespace Backsight.Editor
             m_DefaultLineType = null;
             m_DefaultPolygonType = null;
             m_DefaultTextType = null;
-            //m_Index = new EditingIndex();
+            m_Index = null;
         }
 
         #endregion
@@ -328,18 +271,6 @@ namespace Backsight.Editor
             }
         }
 
-        internal ILength PointHeight
-        {
-            get { return m_PointHeight; }
-            set { m_PointHeight = value; }
-        }
-
-        internal bool AreIntersectionsDrawn
-        {
-            get { return m_AreIntersectionsDrawn; }
-            set { m_AreIntersectionsDrawn = value; }
-        }
-
         /// <summary>
         /// Default rotation angle for text (in radians).
         /// </summary>
@@ -349,26 +280,10 @@ namespace Backsight.Editor
             set { m_Rotation = value; }
         }
 
-        /// <summary>
-        /// The nominal map scale, for use in converting the size of fonts.
-        /// </summary>
-        internal uint NominalMapScale
-        {
-            get { return m_MapScale; }
-            set { m_MapScale = value; }
-        }
-
-        internal LineAnnotationStyle Annotation
-        {
-            get { return m_Annotation; }
-        }
-
         internal ReadOnlyCollection<Session> Sessions
         {
             get { return m_Sessions.AsReadOnly(); }
         }
-
-        internal IList<Person> People { get { return m_People; } }
 
         #region ISpatialModel Members
 
@@ -402,7 +317,8 @@ namespace Backsight.Editor
 
             // Suppress text if the display scale is too small
             EditingController ec = EditingController.Current;
-            if (display.MapScale > ec.JobFile.Data.ShowLabelScale)
+            JobFileInfo jfi = ec.JobFile.Data;
+            if (display.MapScale > jfi.ShowLabelScale)
                 types ^= SpatialType.Text;
 
             // Suppress points if the display scale is too small
@@ -412,7 +328,7 @@ namespace Backsight.Editor
             new DrawQuery(m_Index, display, style, types);
 
             // Draw intersections if necessary
-            if (m_AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
+            if (jfi.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
                 (m_Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
@@ -424,6 +340,7 @@ namespace Backsight.Editor
         /// Adds a new session to this model.
         /// </summary>
         /// <returns>The newly created session.</returns>
+        /*
         internal Session AddSession()
         {
             Person p = AddPerson();
@@ -432,6 +349,7 @@ namespace Backsight.Editor
             s.Start(p);
             return s;
         }
+        */
 
         /// <summary>
         /// Updates the end time of the current editing session (if there is one).
@@ -441,23 +359,6 @@ namespace Backsight.Editor
             Session s = Session.CurrentSession;
             if (s!=null)
                 s.UpdateEndTime();
-        }
-
-        /// <summary>
-        /// Adds a person to this model. If the current user is already known to the
-        /// model, you just get back a reference to that user. A person is only added
-        /// if they were previously unknown.
-        /// </summary>
-        /// <returns>The current user</returns>
-        private Person AddPerson()
-        {
-            Person p = Person.FindCurrentUser(m_People);
-            if (p==null)
-            {
-                p = new Person();
-                m_People.Add(p);
-            }
-            return p;
         }
 
         internal uint MakeBackup()
@@ -731,6 +632,7 @@ namespace Backsight.Editor
             get { return m_IdRanges; }
         }
 
+        /*
         internal ILayer ActiveLayer
         {
             get { return m_ActiveLayer; }
@@ -753,6 +655,7 @@ namespace Backsight.Editor
                 }
             }
         }
+        */
 
         /// <summary>
         /// Creates a new point feature as part of this model. The caller is responsible for assigning
@@ -767,7 +670,7 @@ namespace Backsight.Editor
         /// <returns>The created point feature.</returns>
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
-            PointFeature f = PointFeature.Create(p, e, ActiveLayer, creator);
+            PointFeature f = PointFeature.Create(p, e, creator);
             //m_Window.Union(p);
             //m_Index.Add(f);
             return f;
@@ -807,10 +710,8 @@ namespace Backsight.Editor
             //m_Window.Union(f.Extent);
             //m_Index.Add(f);
 
-            // If topology needs to be maintained, ensure polygons in the vicinity have
-            // been marked for rebuild
-            if (m_MaintainTopology)
-                f.MarkPolygons();
+            // Ensure polygons in the vicinity have been marked for rebuild
+            f.MarkPolygons();
 
             return f;
         }
@@ -905,23 +806,20 @@ namespace Backsight.Editor
             // Do usual cleaning stuff.
             CleanupQuery cq = new CleanupQuery(this);
 
-            if (m_MaintainTopology)
-            {
-                // If maintaining topology, ensure that all moved stuff has been intersected
-                // (and that any trimmed lines have been adjusted appropriately).
-                //System.Windows.Forms.MessageBox.Show("starting intersect");
-                //Stopwatch sw = Stopwatch.StartNew();
-                Intersect(cq.Moves);
-                //sw.Stop();
-                //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
+            // Ensure that all moved stuff has been intersected
+            // (and that any trimmed lines have been adjusted appropriately).
+            //System.Windows.Forms.MessageBox.Show("starting intersect");
+            //Stopwatch sw = Stopwatch.StartNew();
+            Intersect(cq.Moves);
+            //sw.Stop();
+            //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
 
-                //System.Windows.Forms.MessageBox.Show("building topology");
-                //sw.Reset();
-                //sw.Start();
-                BuildPolygons();
-                //sw.Stop();
-                //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
-            }
+            //System.Windows.Forms.MessageBox.Show("building topology");
+            //sw.Reset();
+            //sw.Start();
+            BuildPolygons();
+            //sw.Stop();
+            //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
         }
 
         /// <summary>
@@ -1233,10 +1131,8 @@ namespace Backsight.Editor
             //m_Window.Union(result.Extent);
             //m_Index.Add(result);
 
-            // If topology needs to be maintained, ensure polygons in the vicinity have
-            // been marked for rebuild
-            if (m_MaintainTopology)
-                result.MarkPolygons();
+            // Ensure polygons in the vicinity have been marked for rebuild
+            result.MarkPolygons();
 
             return result;
         }
@@ -1258,7 +1154,8 @@ namespace Backsight.Editor
         public InternalIdValue CreateNextInternalId()
         {
             m_NumInternalIds++;
-            return new InternalIdValue(m_JobId, m_NumInternalIds);
+            int jobId = EditingController.Current.JobFile.Data.JobId;
+            return new InternalIdValue((uint)jobId, m_NumInternalIds);
         }
 
         /// <summary>
@@ -1305,15 +1202,6 @@ namespace Backsight.Editor
             }
 
             return 0;
-        }
-
-        /// <summary>
-        /// Should polygon topology be maintained during edits? (may get turned off
-        /// temporarily during bulk loads).
-        /// </summary>
-        internal bool IsMaintainingTopology
-        {
-            get { return m_MaintainTopology; }
         }
 
         /// <summary>
@@ -1543,6 +1431,65 @@ namespace Backsight.Editor
             }
 
             return label;
+        }
+
+        /// <summary>
+        /// Loads this model from the database
+        /// </summary>
+        /// <param name="job">The job to load</param>
+        /// <param name="userId">The internal ID of the user who wants to load the model (the
+        /// current user could possibly be impersonating someone else)</param>
+        internal void Load(Job job, ILayer layer, int userId)
+        {
+            // Load all applicable sessions
+
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
+
+            }
+        }
+
+        void LoadSessions(SqlConnection con, string sessionTable, Job job, ILayer layer, int userId)
+        {
+            // Create the table for holding session numbers
+            string sql = String.Format("CREATE TABLE {0} ([SessionId] INT NOT NULL)", sessionTable);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.ExecuteNonQuery();
+
+            /*
+SELECT [SessionId] FROM [dbo].[Sessions] WHERE
+[JobId] IN (SELECT [JobId] FROM [dbo].[Jobs] WHERE
+[ZoneId]=123 AND
+	    [LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [ThemeId]=15 AND [ThemeSequence]<=2))
+AND [Revision]>0
+             */
+
+            // Determine whether we're dealing with a simple layer, or something that
+            // is part of a theme.
+            string layerClause;
+            ITheme t = layer.Theme;
+            if (t==null)
+                layerClause = String.Format("[LayerId]={0}", layer.Id);
+            else
+                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
+                                        t.Id, layer.ThemeSequence);
+
+            StringBuilder sb = new StringBuilder(1000);
+            sb.AppendFormat("INSERT INTO {0} ([SessionId])", sessionTable);
+            sb.Append(" SELECT [SessionId] FROM [dbo].[Sessions] WHERE ");
+            sb.Append(layerClause);
+            sb.AppendFormat(" AND [ZoneId]={0}", job.ZoneId);
+            sb.Append(" AND [Revision]>0");
+            sb.Append(" ORDER BY [Revision]");
+
+            // Include user sessions (relevant to the job in question) that have not been published
+            sb.Append(" UNION ALL");
+            sb.Append(" SELECT [SessionId] FROM [dbo].[Sessions] WHERE");
+            sb.AppendFormat(" [JobId]={0} AND [UserId]={1} AND [Revision]=0", job.JobId, userId);
+            sb.Append(" ORDER BY [SessionId]");
+
+            sql = sb.ToString();
         }
     }
 }

@@ -148,7 +148,6 @@ namespace Backsight.Editor.Forms
             AddAction(mnuEditRepeat, IsEditRepeatEnabled, EditRepeat);
             AddAction(mnuEditRecall, IsEditRecallEnabled, EditRecall);
             AddAction(mnuEditOperationHistory, IsEditOperationHistoryEnabled, EditOperationHistory);
-            AddAction(mnuEditSetActiveTheme, IsEditSetEditLayerEnabled, EditSetEditLayer);
             AddAction(mnuEditIdAllocations, IsEditIdAllocationsEnabled, EditIdAllocations);
             AddAction(mnuEditAutoNumber, IsEditAutoNumberEnabled, EditAutoNumber);
             AddAction(mnuEditPreferences, IsEditPreferencesEnabled, EditPreferences);
@@ -418,7 +417,8 @@ namespace Backsight.Editor.Forms
             mapScaleLabel.Text = (Double.IsNaN(mapScale) ? "Scale undefined" : String.Format("1:{0:0}", mapScale));
 
             CadastralMapModel map = CadastralMapModel.Current;
-            if (map==null) // this isn't supposed to happen
+
+            if (m_Controller==null) // this isn't supposed to happen
             {                
                 activeLayerStatusLabel.Text = "No active layer";
                 unitsStatusLabel.Text = String.Empty;
@@ -428,14 +428,14 @@ namespace Backsight.Editor.Forms
             }
             else
             {
-                ILayer layer = map.ActiveLayer;
+                ILayer layer = m_Controller.ActiveLayer;
                 activeLayerStatusLabel.Text = (layer==null ? "No active layer" : layer.Name);
                 unitsStatusLabel.Text = m_Controller.EntryUnit.ToString();
                 IEntity ent = map.DefaultPointType;
                 pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
                 ent = map.DefaultLineType;
                 lineEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
-                string name = map.Name;
+                string name = m_Controller.JobFile.Name;
                 this.Text = (String.IsNullOrEmpty(name) ? "(Untitled map)" : name);
             }
 
@@ -829,25 +829,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             HistoryForm dial = new HistoryForm();
             dial.ShowDialog();
             dial.Dispose();
-        }
-
-        private bool IsEditSetEditLayerEnabled()
-        {
-            //	You can select the editing layer if the map contains at least
-            //	two defined layers and a file check is not underway.
-
-            if (m_Controller.IsChecking)
-                return false;
-
-            ILayer[] layers = EnvironmentContainer.Current.Layers;
-            return layers.Length>1;
-        }
-
-        private void EditSetEditLayer(IUserAction action)
-        {
-            GetLayerForm dial = new GetLayerForm(m_Controller.ActiveLayer);
-            if (dial.ShowDialog() == DialogResult.OK)
-                m_Controller.ActiveLayer = dial.SelectedLayer;
         }
 
         private bool IsEditIdAllocationsEnabled()
@@ -1289,13 +1270,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 double scale = display.MapScale;
                 m_Controller.JobFile.Data.ShowPointScale = (scale + 1.0);
                 double height = 0.001 * scale;
-                cmm.PointHeight = new Length(Math.Max(0.01, height));
+                m_Controller.JobFile.Data.PointHeight = Math.Max(0.01, height);
             }
             else
             {
-                // Increase by a metre on the ground.
-                double oldHeight = cmm.PointHeight.Meters;
-                cmm.PointHeight = new Length(oldHeight + 1.0);
+                // Increase by a meter on the ground.
+                double oldHeight = m_Controller.JobFile.Data.PointHeight;
+                m_Controller.JobFile.Data.PointHeight = oldHeight + 1.0;
             }
 
             // Redraw (no need for erase).
@@ -1316,7 +1297,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
 
             // Reduce the current size of points by a metre. 
-            double height = cmm.PointHeight.Meters;
+            double height = jfi.PointHeight;
             if ((height-1.0) < 1.0)
                 height -= 0.2;
             else
@@ -1328,7 +1309,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (size < 0.0001)
                 jfi.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
             else
-                cmm.PointHeight = new Length(Math.Max(0.01, height));
+                jfi.PointHeight = Math.Max(0.01, height);
 
             // Force redraw (with erase).
             m_Controller.RefreshAllDisplays();

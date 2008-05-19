@@ -234,7 +234,7 @@ namespace Backsight.Editor
 
             // Figure out the ground height at the map's nominal scale
             float fontSize = fontInfo.PointSize;
-            uint nominalScale = CadastralMapModel.Current.NominalMapScale;
+            uint nominalScale = EditingController.Current.JobFile.Data.NominalMapScale;
             double ht = (double)fontSize * (double)nominalScale * MathConstants.POINTSIZE_TO_METERS;
 
             // Convert into pixels on the active display

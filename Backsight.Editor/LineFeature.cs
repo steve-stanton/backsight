@@ -788,11 +788,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// </remarks>
         internal void Split(List<LineFeature> retrims)
         {
-            // Do nothing if not maintaining topology!
-            CadastralMapModel map = this.MapModel;
-            if (!map.IsMaintainingTopology)
-                return;
-
             // No need to split lines that aren't topological.
             if (!IsTopological)
                 return;

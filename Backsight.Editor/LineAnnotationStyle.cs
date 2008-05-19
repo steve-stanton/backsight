@@ -14,11 +14,15 @@
 /// </remarks>
 
 using System;
+using System.Xml.Serialization;
 
 namespace Backsight.Editor
 {
-    [Serializable]
-    class LineAnnotationStyle
+    /// <summary>
+    /// Options relating to the line annotation (the display of observed distances and
+    /// angles).
+    /// </summary>
+    public class LineAnnotationStyle
     {
         #region Class data
 
@@ -41,6 +45,11 @@ namespace Backsight.Editor
 
         #region Constructors
 
+        /// <summary>
+        /// Default constructor defines a style indicating that line annotation should
+        /// not be displayed (if subsequently turned on, the display scale will default
+        /// to 1:2000, and the height of the text will default to 5 meters on the ground).
+        /// </summary>
         internal LineAnnotationStyle()
         {
             m_Scale = 2000.0;
@@ -50,30 +59,52 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// Scale denominator at which line annotation will be drawn.
+        /// </summary>
+        [XmlAttribute]
         public double ShowScale
         {
             get { return m_Scale; }
             set { m_Scale = value; }
         }
 
+        /// <summary>
+        /// Height of line annotation text, in meters on the ground.
+        /// </summary>
+        [XmlAttribute]
         public double Height
         {
             get { return m_Height; }
             set { m_Height = value; }
         }
 
+        /// <summary>
+        /// Should the adjusted length of lines be displayed?
+        /// (the units used for the display is determined via another display preference)
+        /// </summary>
+        [XmlAttribute]
         public bool ShowAdjustedLengths
         {
             get { return (m_Options & LineAnnotationOptions.ShowAdjustedLengths)!=0; }
             set { SetOption(LineAnnotationOptions.ShowAdjustedLengths, value); }
         }
 
+        /// <summary>
+        /// Should the observed length of lines be displayed?
+        /// (the units used for the display is determined via another display preference)
+        /// </summary>
+        [XmlAttribute]
         public bool ShowObservedLengths
         {
             get { return (m_Options & LineAnnotationOptions.ShowObservedLengths)!=0; }
             set { SetOption(LineAnnotationOptions.ShowObservedLengths, value); }
         }
 
+        /// <summary>
+        /// Should observed angles be displayed?
+        /// </summary>
+        [XmlAttribute]
         public bool ShowObservedAngles
         {
             get { return (m_Options & LineAnnotationOptions.ShowObservedAngles)!=0; }

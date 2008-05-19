@@ -231,8 +231,6 @@ namespace Backsight.Editor
 	        }
 	        else
             {
-                CadastralMapModel map = CadastralMapModel.Current;
-
         		// Get info from the dialog.
 		        Direction dir = m_Dialog.Direction;
 		        Observation len = m_Dialog.Length;
@@ -241,7 +239,8 @@ namespace Backsight.Editor
 		        IEntity lineEnt = null;
 		        if (m_Dialog.WantLine)
                 {
-                    lineEnt = map.ActiveLayer.DefaultLineType;
+                    EditingController ec = EditingController.Current;
+                    lineEnt = ec.ActiveLayer.DefaultLineType;
                     if (lineEnt==null)
                         throw new InvalidOperationException("No default entity type for lines");
                 }

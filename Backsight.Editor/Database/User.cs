@@ -15,6 +15,7 @@
 
 using System;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 using Backsight.Data;
 
@@ -23,8 +24,35 @@ namespace Backsight.Editor.Database
     /// <summary>
     /// Database access to the <c>Users</c> table.
     /// </summary>
-    static class User
+    class User
     {
+        #region Static
+
+        /// <summary>
+        /// Selects all defined users (ordered by name)
+        /// </summary>
+        /// <returns>All defined users (may be an empty array, but never null)</returns>
+        internal static User[] FindAll()
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = "SELECT [UserId], [Name] FROM [dbo].[Users] ORDER BY [Name]";
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                List<User> result = new List<User>(1000);
+
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        User u = new User(rdr.GetInt32(0), rdr.GetString(1));
+                        result.Add(u);
+                    }
+                }
+
+                return result.ToArray();
+            }
+        }
+
         /// <summary>
         /// Obtains the ID of the user who is currently logged in. If the user is not
         /// registered in the database, they will be added.
@@ -54,5 +82,53 @@ namespace Backsight.Editor.Database
                 return Convert.ToInt32(result);
             }
         }
+
+        #endregion
+
+        #region Class data
+
+        /// <summary>
+        /// The internal ID for the user
+        /// </summary>
+        int m_UserId;
+
+        /// <summary>
+        /// The user-perceived name for the user
+        /// </summary>
+        string m_Name;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>User</c> using information selected from the database.
+        /// </summary>
+        /// <param name="userId">The internal ID for the user</param>
+        /// <param name="name">The user-perceived name for the user</param>
+        User(int userId, string name)
+        {
+            m_UserId = userId;
+            m_Name = name;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The internal ID for the user
+        /// </summary>
+        internal int UserId
+        {
+            get { return m_UserId; }
+        }
+
+        /// <summary>
+        /// The user-perceived name for the user
+        /// </summary>
+        internal string Name
+        {
+            get { return m_Name; }
+        }
+
     }
 }

@@ -59,7 +59,7 @@ namespace Backsight.Editor.Forms
             ShowPointsPage(cmm);
             ShowLabelsPage(cmm);
             ShowUnitsPage(cmm);
-            ShowLineAnnotationPage(cmm);
+            ShowLineAnnotationPage();
             ShowSymbologyPage(cmm);
         }
 
@@ -169,8 +169,8 @@ void CdPrefLabel::OnFont()
         {
             JobFileInfo jfi = EditingController.Current.JobFile.Data;
             pointScaleTextBox.Text = String.Format("{0:F0}", jfi.ShowPointScale);
-            pointSizeTextBox.Text = String.Format("{0:F2}", cmm.PointHeight.Meters);
-            showIntersectionsCheckBox.Checked = cmm.AreIntersectionsDrawn;
+            pointSizeTextBox.Text = String.Format("{0:F2}", jfi.PointHeight);
+            showIntersectionsCheckBox.Checked = jfi.AreIntersectionsDrawn;
         }
 
         bool SavePointsPage(CadastralMapModel cmm)
@@ -204,26 +204,26 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(pointSize - cmm.PointHeight.Meters) > 0.001)
-                cmm.PointHeight = new Length(pointSize);
+            if (Math.Abs(pointSize - jfi.PointHeight) > 0.001)
+                jfi.PointHeight = pointSize;
 
             // Should intersections be drawn?
-            cmm.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
+            jfi.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
             return true;
         }
 
         void ShowLabelsPage(CadastralMapModel cmm)
         {
-            EditingController ec = EditingController.Current;
-            labelScaleTextBox.Text = String.Format("{0:F0}", ec.JobFile.Data.ShowLabelScale);
+            JobFileInfo jfi = EditingController.Current.JobFile.Data;
+            labelScaleTextBox.Text = String.Format("{0:F0}", jfi.ShowLabelScale);
             textRotationAngleLabel.Text = RadianValue.AsShortString(cmm.DefaultTextRotation);
-            nominalScaleTextBox.Text = cmm.NominalMapScale.ToString();
+            nominalScaleTextBox.Text = jfi.NominalMapScale.ToString();
             ShowFont();
         }
 
         bool SaveLabelsPage(CadastralMapModel cmm)
         {
-            EditingController ec = EditingController.Current;
+            JobFileInfo jfi = EditingController.Current.JobFile.Data;
 
             // Label threshold scale
 
@@ -236,8 +236,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(labelScale - ec.JobFile.Data.ShowLabelScale) > 0.001)
-                ec.JobFile.Data.ShowLabelScale = labelScale;
+            if (Math.Abs(labelScale - jfi.ShowLabelScale) > 0.001)
+                jfi.ShowLabelScale = labelScale;
 
             // Rotation angle (can't be changed via this dialog)
 
@@ -251,8 +251,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (nominalScale != cmm.NominalMapScale)
-                cmm.NominalMapScale = (uint)nominalScale;
+            if (nominalScale != jfi.NominalMapScale)
+                jfi.NominalMapScale = (uint)nominalScale;
 
             // TODO: Font
 
@@ -336,9 +336,9 @@ void CdPrefLabel::OnFont()
             return true;
         }
 
-        void ShowLineAnnotationPage(CadastralMapModel cmm)
+        void ShowLineAnnotationPage()
         {
-            LineAnnotationStyle anno = cmm.Annotation;
+            LineAnnotationStyle anno = EditingController.Current.JobFile.Data.LineAnnotation;
             annoScaleTextBox.Text = String.Format("{0:F0}", anno.ShowScale);
             annoHeightTextBox.Text = String.Format("{0:F2}", anno.Height);
 
@@ -354,6 +354,8 @@ void CdPrefLabel::OnFont()
 
         bool SaveLineAnnotationPage(CadastralMapModel cmm)
         {
+            LineAnnotationStyle anno = EditingController.Current.JobFile.Data.LineAnnotation;
+
             // Annotation scale threshold
 
             double showScale;
@@ -365,8 +367,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(showScale - cmm.Annotation.ShowScale) > 0.001)
-                cmm.Annotation.ShowScale = showScale;
+            if (Math.Abs(showScale - anno.ShowScale) > 0.001)
+                anno.ShowScale = showScale;
 
             // Annotation height
 
@@ -379,12 +381,11 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(height - cmm.Annotation.Height) > 0.001)
-                cmm.Annotation.Height = height;
+            if (Math.Abs(height - anno.Height) > 0.001)
+                anno.Height = height;
 
             // What needs to be shown...
 
-            LineAnnotationStyle anno = cmm.Annotation;
             anno.ShowAdjustedLengths = false;
             anno.ShowObservedLengths = false;
 
