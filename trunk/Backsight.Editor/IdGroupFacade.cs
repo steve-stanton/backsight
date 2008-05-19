@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Runtime.Serialization;
 
 using Backsight.Environment;
 
@@ -67,6 +68,12 @@ namespace Backsight.Editor
         public IEntity[] EntityTypes
         {
             get { return (this.Data==null ? null : this.Data.EntityTypes); }
+        }
+
+        [OnDeserialized]
+        void GetEnvironmentData(StreamingContext context)
+        {
+            this.Data = EnvironmentContainer.FindIdGroupById(this.Id);
         }
     }
 }

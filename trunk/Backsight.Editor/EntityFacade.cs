@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Runtime.Serialization;
 
 using Backsight.Environment;
 
@@ -91,6 +92,12 @@ namespace Backsight.Editor
         public IFont Font
         {
             get { return (this.Data == null ? null : this.Data.Font); }
+        }
+
+        [OnDeserialized]
+        void GetEnvironmentData(StreamingContext context)
+        {
+            this.Data = EnvironmentContainer.FindEntityById(this.Id);
         }
     }
 }

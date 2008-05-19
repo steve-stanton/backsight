@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Runtime.Serialization;
 
 using Backsight.Environment;
 
@@ -68,6 +69,12 @@ namespace Backsight.Editor
         public int ThemeSequence
         {
             get { return (this.Data==null ? 0 : this.Data.ThemeSequence); }
+        }
+
+        [OnDeserialized]
+        void GetEnvironmentData(StreamingContext context)
+        {
+            this.Data = EnvironmentContainer.FindLayerById(this.Id);
         }
     }
 }

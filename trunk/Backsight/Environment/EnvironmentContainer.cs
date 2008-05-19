@@ -215,5 +215,38 @@ namespace Backsight.Environment
             IProperty[] props = s_Container.Properties;
             return Array.Find<IProperty>(props, delegate(IProperty p) { return p.Name == propertyName; });
         }
+
+        /// <summary>
+        /// Locates font information based on it's unique ID
+        /// </summary>
+        /// <param name="id">The ID of the required font</param>
+        /// <returns>The corresponding font information  (null if not found)</returns>
+        public static IFont FindFontById(int id)
+        {
+            IFont[] fonts = s_Container.Fonts;
+            return Array.Find<IFont>(fonts, delegate(IFont f) { return f.Id == id; });
+        }
+
+        /// <summary>
+        /// Locates a map theme based on it's unique ID
+        /// </summary>
+        /// <param name="id">The ID of the required theme</param>
+        /// <returns>The corresponding theme (null if not found)</returns>
+        public static ITheme FindThemeById(int id)
+        {
+            ITheme[] themes = s_Container.Themes;
+            return Array.Find<ITheme>(themes, delegate(ITheme t) { return t.Id == id; });
+        }
+
+        /// <summary>
+        /// Locates an ID group based on it's unique ID
+        /// </summary>
+        /// <param name="id">The ID of the required ID group</param>
+        /// <returns>The corresponding ID group (null if not found)</returns>
+        public static IIdGroup FindIdGroupById(int id)
+        {
+            IIdGroup[] idGroups = s_Container.IdGroups;
+            return Array.Find<IIdGroup>(idGroups, delegate(IIdGroup g) { return g.Id == id; });
+        }
     }
 }

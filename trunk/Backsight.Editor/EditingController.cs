@@ -453,7 +453,7 @@ namespace Backsight.Editor
                 Close();
                 CadastralMapModel cmm = CadastralMapModel.Open(connectionString);
                 //cmm.AddSession();
-                SetMapModel(cmm, cmm.DrawExtent);
+                //SetMapModel(cmm, cmm.DrawExtent);
                 InitializeIdManager();
                 m_AutoSaver.OnOpen();
                 return true;
@@ -1097,13 +1097,12 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Perform any processing whenever a display has changed the drawn extent
-        /// of a map. This saves the extent as part of the map model.
+        /// of a map. This saves the extent as part of the job data.
         /// </summary>
         /// <param name="sender">The display that has changed</param>
         public override void OnSetExtent(ISpatialDisplay sender)
         {
-            CadastralMapModel cmm = this.CadastralMapModel;
-            cmm.DrawExtent = sender.Extent;
+            m_JobFile.Data.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
         }
 
         /// <summary>
