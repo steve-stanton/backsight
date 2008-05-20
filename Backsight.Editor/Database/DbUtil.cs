@@ -34,5 +34,16 @@ namespace Backsight.Editor.Database
             object o = cmd.ExecuteScalar();
             return Convert.ToInt32(o);
         }
+
+        /// <summary>
+        /// Expresses a DateTime value according to ISO8601,
+        /// (matching CONVERT style 126)
+        /// </summary>
+        /// <param name="dt">The date and time to respresent</param>
+        /// <returns>The standardized string used to refer to the date</returns>
+        internal static string GetDateTimeString(DateTime dt)
+        {
+            return String.Format("CONVERT(DATETIME, '{0}', 126)", dt.ToString("s"));
+        }
     }
 }

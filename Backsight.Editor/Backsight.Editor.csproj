@@ -55,6 +55,7 @@
     <Compile Include="ControlRange.cs" />
     <Compile Include="Database\DbUtil.cs" />
     <Compile Include="Database\Job.cs" />
+    <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="editingschema.cs">
       <DependentUpon>EditingSchema.xsd</DependentUpon>
