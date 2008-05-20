@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="TestSchema" targetNamespace="TestSpace" elementFormDefault="qualified" xmlns="TestSpace" xmlns:mstns="TestSpace" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="BaseType" abstract="true">
+    <xs:sequence />
+  </xs:complexType>
+  <xs:complexType name="FirstType" abstract="false">
+    <xs:complexContent>
+      <xs:extension base="BaseType">
+        <xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="Id" type="xs:int" />
+        <xs:attribute name="Name" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SecondType" abstract="false">
+    <xs:complexContent>
+      <xs:extension base="BaseType">
+        <xs:sequence />
+        <xs:attribute name="Id" type="xs:int" />
+        <xs:attribute name="Name" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="First" type="FirstType">
+  </xs:element>
+  <xs:element name="Second" type="SecondType">
+  </xs:element>
+</xs:schema>
