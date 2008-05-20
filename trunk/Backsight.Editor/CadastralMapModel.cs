@@ -23,6 +23,7 @@ using System.Management;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Xml;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
@@ -1415,59 +1416,54 @@ namespace Backsight.Editor
         /// Loads this model from the database
         /// </summary>
         /// <param name="job">The job to load</param>
-        /// <param name="userId">The internal ID of the user who wants to load the model (the
-        /// current user could possibly be impersonating someone else)</param>
-        internal void Load(Job job, ILayer layer, int userId)
+        internal void Load(Job job)
         {
-            // Load all applicable sessions
+            m_Sessions.Clear();
+            m_Sessions.Capacity = 100;
 
+            List<SessionData> sessions = SessionData.Load(job);
+            /*
             using (IConnection ic = AdapterFactory.GetConnection())
             {
+                // Load information about the sessions involved
+                SqlConnection con = ic.Value;
+                LoadPublishedSessions(con, job, layer);
+                LoadUnpublishedSessions(con, job, userId);
+
+                // Stuff the session IDs into a temp table and use it to load the edits
                 string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
+                CopySessionIdsToTable(con, sessionTable);
 
+                // Load information about the edits involved
+                StringBuilder sb = new StringBuilder(200);
+                sb.Append("SELECT [SessionId], [EditSequence], [Data]");
+                sb.Append(" FROM [dbo].[Edits] WHERE [SessionId] IN");
+                sb.AppendFormat(" (SELECT [SessionId] FROM {0})", sessionTable);
+                sb.Append(" ORDER BY [SessionId], [EditSequence]");
+                SqlCommand cmd = new SqlCommand(sb.ToString(), con);
+
+                Session curSession = null;
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int sessionId = reader.GetInt32(0);
+                        int editSequence = reader.GetInt32(1);
+
+                        // Ensure we have the correct session object
+                        if (curSession==null || curSession.Id!=sessionId)
+                        {
+                            curSession = m_Sessions.Find(delegate(Session s)
+                                            { return (s.Id==sessionId); });
+                            Debug.Assert(curSession!=null);
+                        }
+
+                        //curSession.AddEdit(editSequence);
+                    }
+                }
             }
-        }
-
-        void LoadSessions(SqlConnection con, string sessionTable, Job job, ILayer layer, int userId)
-        {
-            // Create the table for holding session numbers
-            string sql = String.Format("CREATE TABLE {0} ([SessionId] INT NOT NULL)", sessionTable);
-            SqlCommand cmd = new SqlCommand(sql, con);
-            cmd.ExecuteNonQuery();
-
-            /*
-SELECT [SessionId] FROM [dbo].[Sessions] WHERE
-[JobId] IN (SELECT [JobId] FROM [dbo].[Jobs] WHERE
-[ZoneId]=123 AND
-	    [LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [ThemeId]=15 AND [ThemeSequence]<=2))
-AND [Revision]>0
-             */
-
-            // Determine whether we're dealing with a simple layer, or something that
-            // is part of a theme.
-            string layerClause;
-            ITheme t = layer.Theme;
-            if (t==null)
-                layerClause = String.Format("[LayerId]={0}", layer.Id);
-            else
-                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
-                                        t.Id, layer.ThemeSequence);
-
-            StringBuilder sb = new StringBuilder(1000);
-            sb.AppendFormat("INSERT INTO {0} ([SessionId])", sessionTable);
-            sb.Append(" SELECT [SessionId] FROM [dbo].[Sessions] WHERE ");
-            sb.Append(layerClause);
-            sb.AppendFormat(" AND [ZoneId]={0}", job.ZoneId);
-            sb.Append(" AND [Revision]>0");
-            sb.Append(" ORDER BY [Revision]");
-
-            // Include user sessions (relevant to the job in question) that have not been published
-            sb.Append(" UNION ALL");
-            sb.Append(" SELECT [SessionId] FROM [dbo].[Sessions] WHERE");
-            sb.AppendFormat(" [JobId]={0} AND [UserId]={1} AND [Revision]=0", job.JobId, userId);
-            sb.Append(" ORDER BY [SessionId]");
-
-            sql = sb.ToString();
+            */
+            // Now build the topology for the map
         }
     }
 }
