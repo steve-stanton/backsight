@@ -261,12 +261,6 @@ namespace Backsight.Editor.Database
                     " ([JobId], [UserId], [Revision], [StartTime], [EndTime], [NumEdit])" +
                     " VALUES ({0}, {1}, 0, {2}, {3}, 0)", jobId, userId, nowString, nowString);
 
-                System.Windows.Forms.MessageBox.Show(sql);
-                using (System.IO.StreamWriter sw = System.IO.File.CreateText(@"C:\temp\sql.txt"))
-                {
-                    sw.WriteLine(sql);
-                }
-
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
                 int sessionId = DbUtil.GetLastId(ic.Value);
@@ -281,17 +275,17 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// Unique ID for the session.
         /// </summary>
-        int m_SessionId;
+        readonly int m_SessionId;
 
         /// <summary>
         /// The ID of the job the session is part of
         /// </summary>
-        int m_JobId;
+        readonly int m_JobId;
 
         /// <summary>
         /// The ID of the user running the session
         /// </summary>
-        int m_UserId;
+        readonly int m_UserId;
 
         /// <summary>
         /// The revision number for the session (0 if the session has not been published)
@@ -301,7 +295,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// When was session started? 
         /// </summary>
-        DateTime m_Start;
+        readonly DateTime m_Start;
 
         /// <summary>
         /// When was the last edit performed?
