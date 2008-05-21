@@ -38,6 +38,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Second.cs" />
+    <Compile Include="testschema.cs">
+      <DependentUpon>TestSchema.xsd</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
