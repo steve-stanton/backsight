@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace TestX
 {
-    class Second : Base
+    [XmlType(TypeName = "Second", Namespace = "TestSpace")]
+    [XmlRoot(Namespace="TestSpace")]
+    public class Second : Base
     {
+        [XmlAttribute]
         public int Id;
+
+        [XmlAttribute]
         public string Name;
 
         internal override string TestType
