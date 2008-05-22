@@ -28,6 +28,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Data.SqlXml, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -41,6 +42,7 @@
     <Compile Include="testschema.cs">
       <DependentUpon>TestSchema.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Third.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
