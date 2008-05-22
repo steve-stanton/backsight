@@ -17,6 +17,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Backsight.Environment;
+using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -345,5 +346,21 @@ namespace Backsight.Editor
         //    return TextRenderer.MeasureText(text, font, proposedSize,
         //        (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
         //}
+
+        /// <summary>
+        /// Obtains basic data for this geometry (for use in serialization)
+        /// </summary>
+        /// <returns>The items of information that will be persisted</returns>
+        internal TextGeometryData GetData()
+        {
+            TextGeometryData result = new TextGeometryData();
+            result.FontId = m_Font.Id;
+            result.Height = m_Height;
+            result.Width = m_Width;
+            result.Rotation = m_Rotation.Radians;
+            result.Position.X = m_Position.Easting.Microns;
+            result.Position.Y = m_Position.Northing.Microns;
+            return result;
+        }
     }
 }

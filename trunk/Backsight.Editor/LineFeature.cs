@@ -22,6 +22,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
+using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -1186,5 +1187,17 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
 
 } // end of ChangeEnd
          */
+
+        /// <summary>
+        /// Obtains basic data for this feature (for use in serialization)
+        /// </summary>
+        /// <returns>The items of information that will be persisted</returns>
+        internal FeatureData GetData()
+        {
+            LineFeatureData result = new LineFeatureData();
+            result.Geometry = m_Geom.GetData();
+            SetFeatureData(result);
+            return result;
+        }
     }
 }
