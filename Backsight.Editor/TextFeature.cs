@@ -18,6 +18,7 @@ using System;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
+using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -290,6 +291,18 @@ namespace Backsight.Editor
         internal IPointGeometry Position
         {
             get { return m_Geom.Position; }
+        }
+
+        /// <summary>
+        /// Obtains basic data for this feature (for use in serialization)
+        /// </summary>
+        /// <returns>The items of information that will be persisted</returns>
+        internal FeatureData GetData()
+        {
+            TextFeatureData result = new TextFeatureData();
+            result.Geometry = m_Geom.GetData();
+            SetFeatureData(result);
+            return result;
         }
     }
 }

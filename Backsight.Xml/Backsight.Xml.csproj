@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F743B7B5-FBB4-4BF1-8887-63414146B889}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{5B982027-FF50-4C99-87EC-A07CA968B1F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestX</RootNamespace>
-    <AssemblyName>TestX</AssemblyName>
+    <RootNamespace>Backsight.Xml</RootNamespace>
+    <AssemblyName>Backsight.Xml</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,29 +33,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base.cs" />
-    <Compile Include="First.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="AttachPointData.cs" />
+    <Compile Include="FeatureData.cs" />
+    <Compile Include="LineFeatureData.cs" />
+    <Compile Include="LineGeometryData.cs" />
+    <Compile Include="OperationData.cs" />
+    <Compile Include="PointFeatureData.cs" />
+    <Compile Include="PointGeometryData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Second.cs" />
-    <Compile Include="testschema.cs">
-      <DependentUpon>TestSchema.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="Third.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
-      <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
-      <Name>Backsight.Data</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TestSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TestSchema.xsx">
-      <DependentUpon>TestSchema.xsd</DependentUpon>
-    </None>
+    <Compile Include="TextFeatureData.cs" />
+    <Compile Include="TextGeometryData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

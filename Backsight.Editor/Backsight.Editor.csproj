@@ -64,7 +64,6 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
-    <Compile Include="FeatureData.cs" />
     <Compile Include="FontFacade.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
@@ -295,7 +294,6 @@
     <Compile Include="Database\LastRevision.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
-    <Compile Include="Operations\AttachPointData.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
@@ -1067,6 +1065,10 @@
     <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
       <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
       <Name>Backsight.SqlServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Backsight.Xml\Backsight.Xml.csproj">
+      <Project>{5B982027-FF50-4C99-87EC-A07CA968B1F7}</Project>
+      <Name>Backsight.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>

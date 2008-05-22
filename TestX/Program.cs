@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Reflection;
 
-using Microsoft.Data.SqlXml;
+//using Microsoft.Data.SqlXml;
 
 using Backsight.Data;
 
@@ -111,8 +111,16 @@ namespace TestX
         {
             string x = GetXml(b);
             Console.WriteLine(x);
+            /*
             string sql = String.Format("insert into dbo.test (data) values (N'{0}')", x);
             SqlCommand cmd = new SqlCommand(sql, c);
+            cmd.ExecuteNonQuery();
+            */
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = c;
+            cmd.CommandText = "insert into dbo.test (data) values (@data)";
+            cmd.Parameters.Add(new SqlParameter("@data", System.Data.SqlDbType.Xml));
+            cmd.Parameters[0].Value = x;
             cmd.ExecuteNonQuery();
 
             /*
@@ -148,7 +156,8 @@ namespace TestX
 
             // Get rid of verbose baggage that isn't needed (makes it more difficult to see
             // the info I'm actually interested in). Don't see any way to suppress them as
-            // part of the actual serialization (would be nice).
+            // part of the actual serialization (would be nice). I believe these xmlns values
+            // are included in a schema collection that's built into SqlServer.
             string s = sb.ToString();
             s = s.Replace(" encoding=\"utf-16\"", String.Empty);
             s = s.Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ", String.Empty);

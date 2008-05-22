@@ -23,6 +23,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
+using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -760,5 +761,21 @@ namespace Backsight.Editor
             get { return IsFlagSet(FeatureFlag.Void); }
             set { SetFlag(FeatureFlag.Void, value); }
         }
+
+        internal FeatureData GetFeatureData()
+        {
+            FeatureData result = new FeatureData();
+            SetFeatureData(result);
+            return result;
+        }
+
+        protected void SetFeatureData(FeatureData data)
+        {
+            data.CreationSequence = m_CreatorSequence;
+            data.EntityId = m_What.Id;
+            data.Key = FormattedKey;
+        }
+
+        //abstract internal FeatureData GetData();
     }
 }

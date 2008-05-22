@@ -21,6 +21,7 @@ using Backsight.Geometry;
 using System.Diagnostics;
 using System.Text;
 using System.Xml;
+using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -327,6 +328,16 @@ namespace Backsight.Editor
             xw.WriteAttributeString("Key", FormattedKey);
 
             return sb.ToString();
+        }
+
+        //internal override FeatureData GetData()
+        internal FeatureData GetData()
+        {
+            PointFeatureData result = new PointFeatureData();
+            result.Geometry.X = m_Geom.Easting.Microns;
+            result.Geometry.Y = m_Geom.Northing.Microns;
+            SetFeatureData(result);
+            return result;
         }
     }
 }
