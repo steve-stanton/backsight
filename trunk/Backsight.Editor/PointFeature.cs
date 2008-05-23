@@ -339,5 +339,19 @@ namespace Backsight.Editor
             SetFeatureData(result);
             return result;
         }
+
+        /*
+        public void WriteXml(System.Xml.XmlWriter writer)
+        {
+            //if (writer.WriteState == System.Xml.WriteState.Start)
+            //    writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+
+            //writer.WriteStartElement("PointFeature", "Backsight");
+            base.WriteXml(writer);
+            writer.WriteStartElement("Geometry");
+            m_Geom.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+         */
     }
 }

@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight.Geometry
 {
@@ -285,5 +286,11 @@ namespace Backsight.Geometry
 	    CePrimitive::OnPostMove(pOrig);
 	    delete pOrig;
              */
+
+        public virtual void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("X", m_X.Microns.ToString());
+            writer.WriteAttributeString("Y", m_Y.Microns.ToString());
+        }
     }
 }

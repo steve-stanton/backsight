@@ -700,5 +700,10 @@ namespace Backsight.Editor
 
             return angle;
         }
+
+        internal override Backsight.Xml.LineGeometryData GetData()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 }

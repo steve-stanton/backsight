@@ -20,11 +20,15 @@ namespace TestX
             get { return "The Second Type"; }
         }
 
-        internal override string ToXml()
+        public override string ToString()
         {
-            return String.Format(
-            "<?xml version=\"1.0\"?> <Second xmlns=\"TestSpace\" Id=\"{0}\" Name=\"{1}\"/>",
-            Id, Name);
+            return String.Format("Id={0}", Id);
+        }
+
+        internal override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString("Id", Id.ToString());
+            writer.WriteAttributeString("Name", Name.ToString());
         }
     }
 }
