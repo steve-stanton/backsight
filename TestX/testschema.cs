@@ -24,11 +24,23 @@ using System.Xml.Serialization;
 [System.Xml.Serialization.XmlRootAttribute("First", Namespace="TestSpace", IsNullable=false)]
 public partial class FirstType : BaseType {
     
+    private SecondType moreField;
+    
     private int idField;
     
     private bool idFieldSpecified;
     
     private string nameField;
+    
+    /// <remarks/>
+    public SecondType More {
+        get {
+            return this.moreField;
+        }
+        set {
+            this.moreField = value;
+        }
+    }
     
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -62,17 +74,6 @@ public partial class FirstType : BaseType {
             this.nameField = value;
         }
     }
-}
-
-/// <remarks/>
-[System.Xml.Serialization.XmlIncludeAttribute(typeof(SecondType))]
-[System.Xml.Serialization.XmlIncludeAttribute(typeof(FirstType))]
-[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-[System.SerializableAttribute()]
-[System.Diagnostics.DebuggerStepThroughAttribute()]
-[System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="TestSpace")]
-public abstract partial class BaseType {
 }
 
 /// <remarks/>
@@ -122,4 +123,15 @@ public partial class SecondType : BaseType {
             this.nameField = value;
         }
     }
+}
+
+/// <remarks/>
+[System.Xml.Serialization.XmlIncludeAttribute(typeof(SecondType))]
+[System.Xml.Serialization.XmlIncludeAttribute(typeof(FirstType))]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+[System.SerializableAttribute()]
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.ComponentModel.DesignerCategoryAttribute("code")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="TestSpace")]
+public abstract partial class BaseType {
 }

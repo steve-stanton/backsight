@@ -252,5 +252,10 @@ namespace Backsight.Editor
         {
             return Make().GetRotation(p);
         }
+
+        internal override Backsight.Xml.LineGeometryData GetData()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 }

@@ -29,6 +29,20 @@ namespace TestX
             Base.CheckIncludedTypes();
 
             s_TypeSerializers = Base.GetSerializers();
+
+            // TEST
+            /*
+            First test = new First();
+            test.Id = 1;
+            test.Name = "A";
+            test.More = new Second();
+            test.More.Id = 777;
+            test.More.Name = "More stuff";
+            Console.WriteLine(GetXml(test));
+            Console.WriteLine(test.ToXml());
+            return;
+            */
+
             /*
             Type[] types = Base.GetDerivedTypes();
             if (types.Length==0)
@@ -64,6 +78,14 @@ namespace TestX
                 Second s = new Second();
                 s.Id = 2;
                 s.Name = "B";
+                f.More = s;
+
+                First f2 = new First();
+                f2.Id = 3;
+                f2.Name = "C";
+                //f2.More = new Second();
+                //f2.More.Id = 776;
+                //f2.More.Name = "another second";
 
                 Third third = new Third();
                 third.Id = 3;
@@ -71,16 +93,13 @@ namespace TestX
 
                 Insert(c, f);
                 Insert(c, s);
+                Insert(c, f2);
                 //Insert(c, third);
 
                 Console.WriteLine("rows inserted");
             }
 
             // Now get them back!
-
-            //XmlSchemaSet xss = new XmlSchemaSet();
-            // See http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=395012&SiteID=1
-            IXmlNamespaceResolver xnameRes = null;
 
             using (IConnection ic = AdapterFactory.GetConnection())
             {
@@ -94,12 +113,10 @@ namespace TestX
                         int id = reader.GetInt32(0);
                         SqlXml sx = reader.GetSqlXml(1);
 
+                        //Base b = Base.FromXml(sx, new );
                         using (XmlReader xr = sx.CreateReader())
                         {
-                            // It's a fragment
-                            //Console.WriteLine("ConformanceLevel="+xr.Settings.ConformanceLevel);
                             Base b = FromXml(xr);
-                            Console.WriteLine("Got back a " + b.GetType().Name);
                             Console.WriteLine(b.ToString());
                         }
                     } 
@@ -109,41 +126,19 @@ namespace TestX
 
         static void Insert(SqlConnection c, Base b)
         {
-            string x = GetXml(b);
+            //string x = GetXml(b);
+            string x = b.ToXml();
             Console.WriteLine(x);
-            /*
-            string sql = String.Format("insert into dbo.test (data) values (N'{0}')", x);
-            SqlCommand cmd = new SqlCommand(sql, c);
-            cmd.ExecuteNonQuery();
-            */
+
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = c;
             cmd.CommandText = "insert into dbo.test (data) values (@data)";
             cmd.Parameters.Add(new SqlParameter("@data", System.Data.SqlDbType.Xml));
             cmd.Parameters[0].Value = x;
             cmd.ExecuteNonQuery();
-
-            /*
-            StringBuilder sb = new StringBuilder(1000);
-            using (XmlWriter xw = XmlWriter.Create(sb))
-            {
-                Type t = b.GetType();
-                XmlSerializer xs = GetSerializer(t);
-                xs.Serialize(xw, b);
-
-                SqlXmlCommand xcmd = new SqlXmlCommand(AdapterFactory.ConnectionString);
-                xcmd.CommandType = SqlXmlCommandType.Sql;
-                xcmd.CommandText = "insert into dbo.test (data) values (@data)";
-                SqlXmlParameter xp = xcmd.CreateParameter();
-                xp.Name = "@data";
-                xp.Value = sb.ToString();
-                Console.WriteLine(sb.ToString());
-
-                xcmd.ExecuteNonQuery();
-            }
-             */
         }
 
+        /*
         static string GetXml(Base b)
         {
             Type t = b.GetType();
@@ -164,6 +159,7 @@ namespace TestX
             s = s.Replace("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ", String.Empty);
             return s;
         }
+        */
 
         static Base FromXml(XmlReader xr)
         {
@@ -177,6 +173,10 @@ namespace TestX
             // Note that the name passed to GetType isn't assembly qualified, so it will only look
             // in the calling assembly and mscorlib.dll (see
             // http://blogs.msdn.com/suzcook/archive/2003/05/30/using-type-gettype-typename.aspx)
+
+            // TODO: The name coming back ISN'T the same as the type. Ideally, it would need to
+            // be pulled from the schema. So the following will only work for the top-most
+            // element (assuming it has an element name that matches the class name).
 
             string typeName = String.Format("{0}.{1}", s_AssemblyName, xr.Name);
             Type t = Type.GetType(typeName);
