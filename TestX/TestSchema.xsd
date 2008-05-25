@@ -27,4 +27,33 @@
   </xs:element>
   <xs:element name="Second" type="SecondType">
   </xs:element>
+  <xs:complexType name="AbClass" abstract="true">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="AbValue" type="xs:int" />
+  </xs:complexType>
+  <xs:complexType name="SegClass">
+    <xs:complexContent>
+      <xs:extension base="AbClass">
+        <xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="Start" type="xs:int" />
+        <xs:attribute name="End" type="xs:int" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArcClass">
+    <xs:complexContent>
+      <xs:extension base="AbClass">
+        <xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="Radius" type="xs:int" />
+        <xs:attribute name="Center" type="xs:int" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Seg" type="SegClass">
+  </xs:element>
+  <xs:element name="Arc" type="ArcClass">
+  </xs:element>
 </xs:schema>

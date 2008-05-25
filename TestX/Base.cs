@@ -90,6 +90,7 @@ namespace TestX
             xws.ConformanceLevel = ConformanceLevel.Fragment;
             XmlWriter writer = XmlWriter.Create(sb, xws);
             writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+            writer.WriteString(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
 
             // The top-level element MUST have a name that matches the class name (this acts
             // as the handle for deserializing stuff in FromXml)

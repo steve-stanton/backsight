@@ -78,14 +78,24 @@ namespace TestX
                 Second s = new Second();
                 s.Id = 2;
                 s.Name = "B";
-                f.More = s;
+                //f.More = s;
 
                 First f2 = new First();
                 f2.Id = 3;
                 f2.Name = "C";
+                MyArcClass ac = new MyArcClass();
+                ac.Radius = 999;
+                ac.Center = 995;
+                ac.AbValue = 123;
+                f2.More = ac;
                 //f2.More = new Second();
                 //f2.More.Id = 776;
                 //f2.More.Name = "another second";
+
+                string x = f2.ToXml();
+                //string x = GetXml(f2);
+                Console.WriteLine(x);
+                return;
 
                 Third third = new Third();
                 third.Id = 3;
@@ -138,7 +148,6 @@ namespace TestX
             cmd.ExecuteNonQuery();
         }
 
-        /*
         static string GetXml(Base b)
         {
             Type t = b.GetType();
@@ -159,7 +168,6 @@ namespace TestX
             s = s.Replace("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ", String.Empty);
             return s;
         }
-        */
 
         static Base FromXml(XmlReader xr)
         {
