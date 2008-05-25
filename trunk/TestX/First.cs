@@ -17,7 +17,7 @@ namespace TestX
         [XmlAttribute]
         public string Name;
 
-        public Second More;
+        public MyAbClass More;
 
         internal override string TestType
         {
