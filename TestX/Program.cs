@@ -94,8 +94,6 @@ namespace TestX
 
                 string x = f2.ToXml();
                 //string x = GetXml(f2);
-                Console.WriteLine(x);
-                return;
 
                 Third third = new Third();
                 third.Id = 3;
@@ -162,11 +160,14 @@ namespace TestX
             // the info I'm actually interested in). Don't see any way to suppress them as
             // part of the actual serialization (would be nice). I believe these xmlns values
             // are included in a schema collection that's built into SqlServer.
+            /*
             string s = sb.ToString();
             s = s.Replace(" encoding=\"utf-16\"", String.Empty);
             s = s.Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ", String.Empty);
             s = s.Replace("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ", String.Empty);
             return s;
+             */
+            return sb.ToString();
         }
 
         static Base FromXml(XmlReader xr)

@@ -30,5 +30,10 @@ namespace TestX
             writer.WriteAttributeString("Id", Id.ToString());
             writer.WriteAttributeString("Name", Name.ToString());
         }
+
+        internal override void FromXml(System.Xml.XmlReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 }
