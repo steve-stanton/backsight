@@ -17,18 +17,18 @@ namespace TestX
 {
     class Program
     {
-        static Dictionary<RuntimeTypeHandle, XmlSerializer> s_TypeSerializers;
-        static string s_AssemblyName;
+        //static Dictionary<RuntimeTypeHandle, XmlSerializer> s_TypeSerializers;
+        //static string s_AssemblyName;
 
         static void Main(string[] args)
         {
-            s_AssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            //s_AssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
             // Confirm that all classes derived from Base are properly defined in the Base class (so
             // that xml serialization will work properly)
-            Base.CheckIncludedTypes();
+            //Base.CheckIncludedTypes();
 
-            s_TypeSerializers = Base.GetSerializers();
+            //s_TypeSerializers = Base.GetSerializers();
 
             // TEST
             /*
@@ -88,12 +88,8 @@ namespace TestX
                 ac.Center = 995;
                 ac.AbValue = 123;
                 f2.More = ac;
-                //f2.More = new Second();
-                //f2.More.Id = 776;
-                //f2.More.Name = "another second";
 
-                string x = f2.ToXml();
-                //string x = GetXml(f2);
+                //string x = f2.ToXml();
 
                 Third third = new Third();
                 third.Id = 3;
@@ -124,7 +120,8 @@ namespace TestX
                         //Base b = Base.FromXml(sx, new );
                         using (XmlReader xr = sx.CreateReader())
                         {
-                            Base b = FromXml(xr);
+                            Base b = Base.FromXml(xr);
+                            //Base b = FromXml(xr);
                             Console.WriteLine(b.ToString());
                         }
                     } 
@@ -145,7 +142,7 @@ namespace TestX
             cmd.Parameters[0].Value = x;
             cmd.ExecuteNonQuery();
         }
-
+        /*
         static string GetXml(Base b)
         {
             Type t = b.GetType();
@@ -160,24 +157,24 @@ namespace TestX
             // the info I'm actually interested in). Don't see any way to suppress them as
             // part of the actual serialization (would be nice). I believe these xmlns values
             // are included in a schema collection that's built into SqlServer.
-            /*
-            string s = sb.ToString();
-            s = s.Replace(" encoding=\"utf-16\"", String.Empty);
-            s = s.Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ", String.Empty);
-            s = s.Replace("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ", String.Empty);
-            return s;
-             */
+
+            //string s = sb.ToString();
+            //s = s.Replace(" encoding=\"utf-16\"", String.Empty);
+            //s = s.Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ", String.Empty);
+            //s = s.Replace("xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" ", String.Empty);
+            //return s;
+
             return sb.ToString();
         }
+        */
 
+        /*
         static Base FromXml(XmlReader xr)
         {
             xr.Read();
 
-            /*
-            Type t = xr.ValueType; // it's initially String, after xr.Read it's Object (which isn't
+            //Type t = xr.ValueType; // it's initially String, after xr.Read it's Object (which isn't
                                     // good enough for feeding into the XmlSerializer cstr)
-            */
 
             // Note that the name passed to GetType isn't assembly qualified, so it will only look
             // in the calling assembly and mscorlib.dll (see
@@ -195,7 +192,9 @@ namespace TestX
             XmlSerializer xs = GetSerializer(t);
             return (Base)xs.Deserialize(xr);
         }
+        */
 
+        /*
         static XmlSerializer GetSerializer(Type t)
         {
             if (t==null)
@@ -203,6 +202,6 @@ namespace TestX
             else
                 return s_TypeSerializers[t.TypeHandle];
         }
-
+        */
     }
 }

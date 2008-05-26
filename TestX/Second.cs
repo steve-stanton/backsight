@@ -15,14 +15,9 @@ namespace TestX
         [XmlAttribute]
         public string Name;
 
-        internal override string TestType
-        {
-            get { return "The Second Type"; }
-        }
-
         public override string ToString()
         {
-            return String.Format("Id={0}", Id);
+            return String.Format("Type={2}, Id={0}, Name={1}", Id, Name, GetType().Name);
         }
 
         internal override void WriteXml(System.Xml.XmlWriter writer)
@@ -31,9 +26,10 @@ namespace TestX
             writer.WriteAttributeString("Name", Name.ToString());
         }
 
-        internal override void FromXml(System.Xml.XmlReader reader)
+        internal override void ReadXml(System.Xml.XmlReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            Id = Int32.Parse(reader["Id"]);
+            Name = reader["Name"];
         }
     }
 }

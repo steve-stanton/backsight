@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace TestX
 {
@@ -11,29 +13,25 @@ namespace TestX
     [XmlRoot(Namespace="TestSpace")]
     public class First : Base
     {
-        [XmlAttribute]
+        //[XmlAttribute]
         public int Id;
 
-        [XmlAttribute]
+        //[XmlAttribute]
         public string Name;
 
         public MyAbClass More;
 
-        internal override string TestType
-        {
-            get { return "The First Type"; }
-        }
-
         public override string ToString()
         {
             if (More==null)
-                return String.Format("ID={1}, TestType='{0}' with no more", TestType, Id);
+                return String.Format("Type={0}, ID={1}, Name={2}, with no more", GetType().Name, Id, Name);
             else
-                return String.Format("ID={2}, TestType='{0}' with more... {1}", TestType, More.ToString(), Id);
+                return String.Format("Type={0}. ID={1}, Name={2}, with more... {3}", GetType().Name, Id, Name, More.ToString());
         }
 
         internal override void WriteXml(System.Xml.XmlWriter writer)
         {
+            Console.WriteLine("writing " + Id);
             writer.WriteAttributeString("Id", Id.ToString());
             writer.WriteAttributeString("Name", Name.ToString());
 
@@ -41,24 +39,15 @@ namespace TestX
                 More.WriteElement(writer, "More");
         }
 
-        internal override void FromXml(XmlReader reader)
+        internal override void ReadXml(XmlReader reader)
         {
-            Id = Int32.Parse(reader.GetAttribute("Id"));
-            Name = reader.GetAttribute("Name");
+            // The attributes don't need to be "read"
+            Id = Int32.Parse(reader["Id"]);
+            Name = reader["Name"];
 
-            /*
-            reader.MoveToFirstAttribute();
-            do
-            {
-                if (reader.Name == "Id")
-                    Id = reader.ReadContentAsInt();
-                else if (reader.Name == "Name")
-                    Name = reader.ReadContentAsString();
-
-            } while (reader.MoveToNextAttribute());
-            */
-
-            throw new Exception("The method or operation is not implemented.");
+            reader.Read();
+            if (reader.IsStartElement("More"))
+                More = MyAbClass.FromXml(reader);
         }
     }
 }
