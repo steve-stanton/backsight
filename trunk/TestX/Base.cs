@@ -9,17 +9,15 @@ using System.Xml.Schema;
 
 namespace TestX
 {
-    [XmlIncludeAttribute(typeof(First))]
-    [XmlIncludeAttribute(typeof(Second))]
-    [XmlIncludeAttribute(typeof(Third))]
-    [XmlIncludeAttribute(typeof(MyAbClass))]
-    [XmlIncludeAttribute(typeof(MyArcClass))]
-    [XmlIncludeAttribute(typeof(MySegClass))]
-    [XmlType(TypeName="Base", Namespace="TestSpace")]
+    //[XmlIncludeAttribute(typeof(First))]
+    //[XmlIncludeAttribute(typeof(Second))]
+    //[XmlIncludeAttribute(typeof(Third))]
+    //[XmlIncludeAttribute(typeof(MyAbClass))]
+    //[XmlIncludeAttribute(typeof(MyArcClass))]
+    //[XmlIncludeAttribute(typeof(MySegClass))]
+    //[XmlType(TypeName="Base", Namespace="TestSpace")]
     public abstract class Base
     {
-        abstract internal string TestType { get; }
-
         internal static Dictionary<RuntimeTypeHandle, XmlSerializer> GetSerializers()
         {
             Type[] types = GetDerivedTypes();
@@ -133,17 +131,15 @@ namespace TestX
             WriteXml(writer);
             writer.WriteEndElement();
         }
-
+/*
         static internal Base FromXml(SqlXml sx, XmlSerializer xs)
         {
             using (XmlReader xr = sx.CreateReader())
             {
                 xr.Read();
 
-                /*
-                Type t = xr.ValueType; // it's initially String, after xr.Read it's Object (which isn't
+                //Type t = xr.ValueType; // it's initially String, after xr.Read it's Object (which isn't
                                         // good enough for feeding into the XmlSerializer cstr)
-                */
 
                 // Note that the name passed to GetType isn't assembly qualified, so it will only look
                 // in the calling assembly and mscorlib.dll (see
@@ -164,11 +160,35 @@ namespace TestX
 
                 ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
                 Base result = (Base)ci.Invoke(null);
-                result.FromXml(xr);
+                result.ReadXml(xr);
                 return result;
             }
         }
+*/
+        static internal Base FromXml(XmlReader xr)
+        {
+            xr.Read();
 
-        abstract internal void FromXml(XmlReader reader);
+            // Note that the name passed to GetType isn't assembly qualified, so it will only look
+            // in the calling assembly and mscorlib.dll (see
+            // http://blogs.msdn.com/suzcook/archive/2003/05/30/using-type-gettype-typename.aspx)
+
+            // The name of the initial element must match the name of the class that was
+            // originally written (see ToXml). The type for nested elements should be obtained
+            // by the deserializer using information from the xml schema.
+
+            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            string typeName = String.Format("{0}.{1}", assemblyName, xr.Name);
+            Type t = Type.GetType(typeName);
+            if (t == null)
+                Console.WriteLine("didn't get type for " + typeName);
+
+            ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
+            Base result = (Base)ci.Invoke(null);
+            result.ReadXml(xr);
+            return result;
+        }
+
+        abstract internal void ReadXml(XmlReader reader);
     }
 }
