@@ -13,23 +13,13 @@ namespace TestX
         public int Center;
         [XmlAttribute]
         public int Radius;
-        /*
-        internal override void WriteElement(XmlWriter writer, string localName)
-        {
-            writer.WriteStartElement(
-            WriteXml(writer);
-            writer.WriteEndElement();
-        }
-        */
+
         internal override void WriteXml(XmlWriter writer)
         {
-            //writer.WriteString(" xsi:type=\"ArcClass\" ");
-            //writer.WriteAttributeString("xsi", "type", null, "Backsight.ArcClass");
-            //writer.WriteAttributeString("xsi", "type", "Backsight", "ArcClass");
-            //writer.WriteAttributeString("xsi", "type=\"ArcClass\"");
-            //writer.WriteRaw(" xsi:type=\"ArcClass\" ");
+            writer.WriteAttributeString("xsi", "type", null, "ced:MyArcClass");
             writer.WriteAttributeString("Center", Center.ToString());
             writer.WriteAttributeString("Radius", Radius.ToString());
+            base.WriteXml(writer);
         }
     }
 }

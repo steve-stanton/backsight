@@ -16,6 +16,7 @@
 using System;
 
 using NTS=GisSharpBlog.NetTopologySuite.Geometries;
+using Backsight.Forms;
 
 namespace Backsight.ShapeViewer
 {
@@ -77,17 +78,23 @@ namespace Backsight.ShapeViewer
         /// </remarks>
         IPosition[] PositionArray
         {
-            get
+            get { return GetPositionArray(m_Geometry.Coordinates); }
+        }
+
+        /// <summary>
+        /// Converts an array of NTS coordinates into Backsight positions
+        /// </summary>
+        /// <param name="cos">The coordinates to convert</param>
+        /// <returns>The corresponding positions</returns>
+        IPosition[] GetPositionArray(NTS.Coordinate[] cos)
+        {
+            IPosition[] pts = new Position[cos.Length];
+            for (int i=0; i<cos.Length; i++)
             {
-                NTS.Coordinate[] cos = m_Geometry.Coordinates;
-                IPosition[] pts = new Position[cos.Length];
-                for (int i=0; i<cos.Length; i++)
-                {
-                    NTS.Coordinate c = cos[i];
-                    pts[i] = new Position(c.X, c.Y);
-                }
-                return pts;
+                NTS.Coordinate c = cos[i];
+                pts[i] = new Position(c.X, c.Y);
             }
+            return pts;
         }
 
         /// <summary>
@@ -101,6 +108,10 @@ namespace Backsight.ShapeViewer
             {
                 if (m_Geometry is NTS.LineString || m_Geometry is NTS.Polygon)
                     return SpatialType.Line;
+                //if (m_Geometry is NTS.LineString)
+                //    return SpatialType.Line;
+                //else if (m_Geometry is NTS.Polygon)
+                //    return SpatialType.Polygon;
                 else if (m_Geometry is NTS.Point)
                     return SpatialType.Point;
 
@@ -115,7 +126,25 @@ namespace Backsight.ShapeViewer
         /// <param name="style">The drawing style</param>
         public void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            style.Render(display, PositionArray);
+            if (m_Geometry is NTS.Polygon)
+            {
+                NTS.Polygon p = (NTS.Polygon)m_Geometry;
+                NTS.LineString edge = p.ExteriorRing;
+                NTS.LineString[] holes = p.InteriorRings;
+
+                IPosition[][] outlines = new IPosition[1+holes.Length][];
+                outlines[0] = GetPositionArray(edge.Coordinates);
+                for (int i=0; i<holes.Length; i++)
+                    outlines[i+1] = GetPositionArray(holes[i].Coordinates);
+
+                foreach (IPosition[] pa in outlines)
+                    style.Render(display, pa);
+                    
+                if (style is HighlightStyle)
+                    style.Render(display, outlines);
+            }
+            else
+                style.Render(display, PositionArray);
         }
 
         /// <summary>

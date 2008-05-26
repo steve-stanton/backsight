@@ -12,7 +12,10 @@ namespace TestX
         [XmlAttribute]
         public int AbValue;
 
-        abstract internal void WriteXml(XmlWriter writer);
+        internal virtual void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("AbValue", AbValue.ToString());
+        }
 
         internal virtual void WriteElement(XmlWriter writer, string localName)
         {        

@@ -39,8 +39,26 @@ namespace TestX
 
             if (More!=null)
                 More.WriteElement(writer, "More");
-            else
-                writer.WriteElementString("More", String.Empty);
+        }
+
+        internal override void FromXml(XmlReader reader)
+        {
+            Id = Int32.Parse(reader.GetAttribute("Id"));
+            Name = reader.GetAttribute("Name");
+
+            /*
+            reader.MoveToFirstAttribute();
+            do
+            {
+                if (reader.Name == "Id")
+                    Id = reader.ReadContentAsInt();
+                else if (reader.Name == "Name")
+                    Name = reader.ReadContentAsString();
+
+            } while (reader.MoveToNextAttribute());
+            */
+
+            throw new Exception("The method or operation is not implemented.");
         }
     }
 }

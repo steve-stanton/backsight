@@ -5,12 +5,16 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 using System.Data.SqlTypes;
+using System.Xml.Schema;
 
 namespace TestX
 {
     [XmlIncludeAttribute(typeof(First))]
     [XmlIncludeAttribute(typeof(Second))]
     [XmlIncludeAttribute(typeof(Third))]
+    [XmlIncludeAttribute(typeof(MyAbClass))]
+    [XmlIncludeAttribute(typeof(MyArcClass))]
+    [XmlIncludeAttribute(typeof(MySegClass))]
     [XmlType(TypeName="Base", Namespace="TestSpace")]
     public abstract class Base
     {
@@ -90,14 +94,21 @@ namespace TestX
             xws.ConformanceLevel = ConformanceLevel.Fragment;
             XmlWriter writer = XmlWriter.Create(sb, xws);
             writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-            writer.WriteString(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
 
             // The top-level element MUST have a name that matches the class name (this acts
             // as the handle for deserializing stuff in FromXml)
             string localName = GetType().Name;
 
             // The initial element must be namespace qualified (thereafter, it doesn't matter)
+            //writer.WriteStartElement(localName, "TestSpace");
             writer.WriteStartElement(localName, "TestSpace");
+
+            // You'll probably need these for handling references to abstract classes
+            writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
+            writer.WriteAttributeString("xmlns", "xsd", null, XmlSchema.Namespace);
+
+            // Define abbreviation for referring to the target namespace
+            writer.WriteAttributeString("xmlns", "ced", null, "TestSpace");
 
             // Call abstract method to write out the content
             WriteXml(writer);
@@ -149,8 +160,15 @@ namespace TestX
                     Console.WriteLine("didn't get type for "+typeName);
 
                 //XmlSerializer xs = GetSerializer(t);
-                return (Base)xs.Deserialize(xr);
+                //return (Base)xs.Deserialize(xr);
+
+                ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
+                Base result = (Base)ci.Invoke(null);
+                result.FromXml(xr);
+                return result;
             }
         }
+
+        abstract internal void FromXml(XmlReader reader);
     }
 }
