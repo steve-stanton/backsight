@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml;
 
 using Backsight.Geometry;
 
@@ -26,7 +25,6 @@ namespace Backsight.Editor
     /// <summary>
     /// The geometry for a circular arc.
     /// </summary>
-    //[Serializable]
     class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry
     {
         #region Class data
@@ -702,18 +700,11 @@ namespace Backsight.Editor
             return angle;
         }
 
-        /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the base class. Derived classes should override
-        /// and call this implementation up front.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteAttributeString("Clockwise", m_IsClockwise.ToString());
-            m_Circle.WriteElement(writer, "Circle");
+            writer.WriteBool("Clockwise", m_IsClockwise);
+            writer.WriteElement(m_Circle, "Circle");
         }
     }
 }

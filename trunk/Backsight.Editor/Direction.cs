@@ -661,12 +661,12 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteAttributeString("Flags", m_Flag.ToString("X"));
+            writer.WriteString("Flags", m_Flag.ToString("X"));
 
             if (m_Offset!=null)
-                m_Offset.WriteElement(writer, "Offset");
+                writer.WriteElement(m_Offset, "Offset");
         }
     }
 }

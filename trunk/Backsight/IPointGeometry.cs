@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Xml;
 
 namespace Backsight
 {

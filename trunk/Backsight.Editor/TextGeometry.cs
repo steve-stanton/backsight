@@ -16,7 +16,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Geometry;
@@ -29,7 +28,7 @@ namespace Backsight.Editor
     //	MiscText, KeyText, RowText, and FeatureText.
     /// </summary>
     //[Serializable]
-    abstract public class TextGeometry : BaseGeometry, IString
+    abstract public class TextGeometry : IString
     {
         #region Class data
 
@@ -356,15 +355,15 @@ namespace Backsight.Editor
         /// Derived classes should override and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteAttributeString("X", m_Position.Easting.Microns.ToString());
-            writer.WriteAttributeString("Y", m_Position.Northing.Microns.ToString());
-            writer.WriteAttributeString("FontId", m_Font.Id.ToString());
-            writer.WriteAttributeString("Height", String.Format("{0:0.00}", m_Height));
-            writer.WriteAttributeString("Width", String.Format("{0:0.00}", m_Width));
+            writer.WriteLong("X", m_Position.Easting.Microns);
+            writer.WriteLong("Y", m_Position.Northing.Microns);
+            writer.WriteInt("FontId", m_Font.Id);
+            writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
+            writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
 
-            m_Rotation.WriteElement(writer, "Rotation");
+            writer.WriteElement(m_Rotation, "Rotation");
         }
     }
 }

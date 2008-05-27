@@ -64,18 +64,19 @@ namespace Backsight
             get { return Length.ToMeters(m_Value); }
         }
 
+        #region IXmlContent Members
+
         /// <summary>
-        /// Writes this object to XML with the specified name, preceded by an <c>xsi:type</c>
-        /// declaration that provides the element type.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        /// <param name="name">The name for the XML element</param>
-        public void WriteElement(XmlWriter writer, string name)
+        public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteStartElement(name);
-            writer.WriteAttributeString("xsi", "type", null, "ced:Micron");
-            writer.WriteAttributeString("Value", m_Value.ToString());
-            writer.WriteEndElement();
+            writer.WriteString("Value", m_Value.ToString());
         }
+
+        #endregion
     }
 }

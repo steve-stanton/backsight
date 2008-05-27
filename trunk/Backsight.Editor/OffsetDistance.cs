@@ -215,10 +215,10 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteAttributeString("IsLeft", m_IsLeft.ToString());
-            m_Offset.WriteElement(writer, "Offset");
+            writer.WriteString("IsLeft", m_IsLeft.ToString());
+            writer.WriteElement(m_Offset, "Offset");
         }
     }
 }

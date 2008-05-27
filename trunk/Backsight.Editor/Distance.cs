@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -356,11 +355,11 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteAttributeString("Unit", m_EnteredUnit.UnitType.ToString());
-            writer.WriteAttributeString("MetricValue", m_ObservedMetric.ToString());
-            writer.WriteAttributeString("IsFixed", m_IsFixed.ToString());
+            writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
+            writer.WriteString("MetricValue", m_ObservedMetric.ToString());
+            writer.WriteBool("IsFixed", m_IsFixed);
         }
     }
 }

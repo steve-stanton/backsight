@@ -1,5 +1,5 @@
 /// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
+/// Copyright 2008 - Steve Stanton. This file is part of Backsight
 ///
 /// Backsight is free software; you can redistribute it and/or modify it under the terms
 /// of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,30 +14,35 @@
 /// </remarks>
 
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Backsight
 {
-	/// <written by="Steve Stanton" on="28-NOV-2006" />
     /// <summary>
-    /// The length of (could be position of) something on the ground. This
-    /// could either be a real ground length, of a length on the mapping projection.
+    /// Base class for XML persistence classes.
     /// </summary>
-    [TypeConverter(typeof(StringConverter))]
-    public interface ILength : IXmlContent
+    abstract public class XmlBase
     {
-        /// <summary>
-        /// The length in meters.
-        /// </summary>
-        double Meters { get; }
+        #region Class data
 
         /// <summary>
-        /// The length in microns.
+        /// Cross-reference of type names to the corresponding constructor.
         /// </summary>
-        /// <remarks>
-        /// You can obviously obtain the same result by multiplying the <c>Meters</c>
-        /// property by a million. This property is provided because Backsight tends to
-        /// store data in microns.</remarks>
-        long Microns { get; }
+        readonly Dictionary<string, ConstructorInfo> m_Types;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>XmlBase</c>
+        /// </summary>
+        protected XmlBase()
+        {
+            m_Types = new Dictionary<string, ConstructorInfo>();
+        }
+
+        #endregion
     }
 }
