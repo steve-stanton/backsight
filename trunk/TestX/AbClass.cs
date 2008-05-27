@@ -1,35 +1,56 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
 using System.Xml;
 using System.Diagnostics;
 using System.Reflection;
 
 namespace TestX
 {
-    //[XmlRoot(Namespace = "TestSpace")]
-    public abstract class MyAbClass
+    abstract class MyAbClass
     {
-        //[XmlAttribute]
         public int AbValue;
 
-        internal virtual void WriteXml(XmlWriter writer)
+        // Writes this object with the a name that matches the class name
+        internal void WriteElement(XmlWriter writer)
         {
-            writer.WriteAttributeString("AbValue", AbValue.ToString());
+            WriteElement(writer, GetType().Name);
         }
 
-        internal virtual void WriteElement(XmlWriter writer, string localName)
+        // Writes this object with the specified name
+        internal void WriteElement(XmlWriter writer, string localName)
         {        
             writer.WriteStartElement(localName);
-            WriteXml(writer);
+            writer.WriteAttributeString("xsi", "type", null, "ced:"+GetType().Name);
+            writer.WriteAttributeString("AbValue", AbValue.ToString());
+            WriteContent(writer);
             writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal abstract void WriteContent(XmlWriter writer);
+
+        /// <summary>
+        /// Creates an object that was previously written using <see cref="WriteElement"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool, positioned at the start of the element</param>
+        /// <returns></returns>
+        //static internal MyAbClass ReadElement(XmlReader reader)
+        //{
+        //}
+
+        // Derived classes are expected to override and call this at the start
+        internal virtual void ReadXml(XmlReader reader)
+        {
+            AbValue = Int32.Parse(reader["AbValue"]);
         }
 
         static internal MyAbClass FromXml(XmlReader reader)
         {
             string type = reader["xsi:type"];
-            //Console.WriteLine("Type=" + type);
             string[] names = type.Split(':');
             Debug.Assert(names.Length == 2);
             Debug.Assert(names[0] == "ced");
@@ -39,18 +60,12 @@ namespace TestX
             string typeName = String.Format("{0}.{1}", assemblyName, className);
             Type t = Type.GetType(typeName);
             if (t == null)
-                Console.WriteLine("didn't get type for " + typeName);
+                throw new Exception(String.Format("Couldn't create object for "+type));
 
             ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
             MyAbClass result = (MyAbClass)ci.Invoke(null);
             result.ReadXml(reader);
             return result;
-        }
-
-        // Derived classes are expected to override
-        internal virtual void ReadXml(XmlReader reader)
-        {
-            AbValue = Int32.Parse(reader["AbValue"]);
         }
     }
 }

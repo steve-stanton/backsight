@@ -117,6 +117,7 @@
     <Compile Include="Forms\UserActionList.cs" />
     <Compile Include="Forms\UserActionSupport.cs" />
     <Compile Include="Forms\ZoomRectangleTool.cs" />
+    <Compile Include="Geometry\BaseGeometry.cs" />
     <Compile Include="Geometry\CircleGeometry.cs" />
     <Compile Include="Geometry\CircularArcGeometry.cs" />
     <Compile Include="ICircleGeometry.cs" />

@@ -16,8 +16,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml;
+
 using Backsight.Environment;
-using Backsight.Xml;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -26,8 +28,8 @@ namespace Backsight.Editor
     /// A text object is some sort of string that appears on a map. This is the base class for
     //	MiscText, KeyText, RowText, and FeatureText.
     /// </summary>
-    [Serializable]
-    abstract public class TextGeometry : IString
+    //[Serializable]
+    abstract public class TextGeometry : BaseGeometry, IString
     {
         #region Class data
 
@@ -348,19 +350,21 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
-        /// Obtains basic data for this geometry (for use in serialization)
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base <see cref="BaseGeometry"/> class.
+        /// Derived classes should override and call this implementation up front.
         /// </summary>
-        /// <returns>The items of information that will be persisted</returns>
-        internal TextGeometryData GetData()
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlWriter writer)
         {
-            TextGeometryData result = new TextGeometryData();
-            result.FontId = m_Font.Id;
-            result.Height = m_Height;
-            result.Width = m_Width;
-            result.Rotation = m_Rotation.Radians;
-            result.Position.X = m_Position.Easting.Microns;
-            result.Position.Y = m_Position.Northing.Microns;
-            return result;
+            writer.WriteAttributeString("X", m_Position.Easting.Microns.ToString());
+            writer.WriteAttributeString("Y", m_Position.Northing.Microns.ToString());
+            writer.WriteAttributeString("FontId", m_Font.Id.ToString());
+            writer.WriteAttributeString("Height", String.Format("{0:0.00}", m_Height));
+            writer.WriteAttributeString("Width", String.Format("{0:0.00}", m_Width));
+
+            m_Rotation.WriteElement(writer, "Rotation");
         }
     }
 }

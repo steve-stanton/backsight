@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -23,7 +24,6 @@ namespace Backsight.Editor
     /// a pair of points that the direction is parallel to. Parallel directions are
     /// always regarded as FIXED directions.
     /// </summary>
-    [Serializable]
     class ParallelDirection : Direction
     {
         #region Class data
@@ -164,6 +164,21 @@ namespace Backsight.Editor
                 return true;
 
             return base.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
+        {
+            base.WriteContent(writer);
+            writer.WriteAttributeString("From", m_From.DataId);
+            writer.WriteAttributeString("Par1", m_Par1.DataId);
+            writer.WriteAttributeString("Par2", m_Par2.DataId);
         }
     }
 }

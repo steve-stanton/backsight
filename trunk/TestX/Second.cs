@@ -5,9 +5,9 @@ using System.Xml.Serialization;
 
 namespace TestX
 {
-    [XmlType("Second")]
-    [XmlRoot(Namespace="TestSpace")]
-    public class Second : Base
+    //[XmlType("Second")]
+    //[XmlRoot(Namespace="TestSpace")]
+    class Second : Base
     {
         [XmlAttribute]
         public int Id;

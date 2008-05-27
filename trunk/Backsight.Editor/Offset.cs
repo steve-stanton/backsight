@@ -21,7 +21,6 @@ namespace Backsight.Editor
     /// <summary>
     /// An offset with respect to something else.
     /// </summary>
-    [Serializable]
     abstract class Offset : Observation
     {
         /// <summary>

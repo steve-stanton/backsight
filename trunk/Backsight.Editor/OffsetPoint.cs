@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -26,7 +27,6 @@ namespace Backsight.Editor
     /// editing operation (that should be done when(if) the operation is saved, via a call
     /// to <c>AddReferences</c>).
     /// </summary>
-    [Serializable]
     class OffsetPoint : Offset
     {
         #region Class data
@@ -187,6 +187,18 @@ namespace Backsight.Editor
         {
         	if (m_Point!=null)
                 m_Point.CutOp(op);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
+        {
+            writer.WriteAttributeString("Point", m_Point.DataId);
         }
     }
 }

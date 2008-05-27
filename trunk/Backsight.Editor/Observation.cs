@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -21,7 +22,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Any sort of survey observation.
     /// </summary>
-    [Serializable]
     abstract class Observation
     {
         abstract internal bool HasReference(Feature feature);
@@ -97,5 +97,26 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that makes use of this observation</param>
         internal abstract void AddReferences(Operation op);
+
+        /// <summary>
+        /// Writes this object to XML with the specified name 
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <param name="name">The name for the XML element</param>
+        public void WriteElement(XmlWriter writer, string name)
+        {
+            writer.WriteStartElement(name);
+            writer.WriteAttributeString("xsi", "type", null, "ced:"+GetType().Name);
+            WriteContent(writer);
+            writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the <see cref="Observation"/> class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal abstract void WriteContent(XmlWriter writer);
     }
 }

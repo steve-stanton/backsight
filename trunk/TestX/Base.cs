@@ -183,7 +183,14 @@ namespace TestX
             if (t == null)
                 Console.WriteLine("didn't get type for " + typeName);
 
-            ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
+            ConstructorInfo ci = t.GetConstructor(new Type[] { typeof(XmlReader) });
+            if (ci!=null)
+                return (Base)ci.Invoke(new object[] { xr });
+
+            ci = t.GetConstructor(Type.EmptyTypes);
+            if (ci==null)
+                throw new Exception("Cannot locate suitable constructor for "+typeName);
+
             Base result = (Base)ci.Invoke(null);
             result.ReadXml(xr);
             return result;

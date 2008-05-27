@@ -9,9 +9,9 @@ using System.Reflection;
 namespace TestX
 {
     //[XmlType(TypeName = "First", Namespace = "TestSpace")]
-    [XmlType("First")]
-    [XmlRoot(Namespace="TestSpace")]
-    public class First : Base
+    //[XmlType("First")]
+    //[XmlRoot(Namespace="TestSpace")]
+    class First : Base
     {
         //[XmlAttribute]
         public int Id;
@@ -20,6 +20,16 @@ namespace TestX
         public string Name;
 
         public MyAbClass More;
+
+        internal First()
+        {
+        }
+
+        public First(XmlReader reader)
+        {
+            //Console.WriteLine("Creating First from reader");
+            ReadXml(reader);
+        }
 
         public override string ToString()
         {

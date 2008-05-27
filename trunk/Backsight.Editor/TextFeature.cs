@@ -14,15 +14,15 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
-using Backsight.Xml;
 
 namespace Backsight.Editor
 {
-    [Serializable]
+    //[Serializable]
     class TextFeature : Feature
     {
         #region Static
@@ -294,15 +294,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains basic data for this feature (for use in serialization)
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the <see cref="Feature"/> class.
         /// </summary>
-        /// <returns>The items of information that will be persisted</returns>
-        internal FeatureData GetData()
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
         {
-            TextFeatureData result = new TextFeatureData();
-            result.Geometry = m_Geom.GetData();
-            SetFeatureData(result);
-            return result;
+            m_Geom.WriteElement(writer, "Geometry");
         }
     }
 }

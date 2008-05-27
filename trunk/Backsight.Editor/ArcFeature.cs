@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Geometry;
@@ -22,7 +23,6 @@ using Backsight.Forms;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     class ArcFeature : LineFeature
     {
         #region Class data
