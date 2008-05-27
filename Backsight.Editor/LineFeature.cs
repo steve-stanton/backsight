@@ -18,11 +18,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
-using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A line feature.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     class LineFeature : Feature, IFeatureDependent, IIntersectable
     {
         #region Class data
@@ -1189,15 +1189,14 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
          */
 
         /// <summary>
-        /// Obtains basic data for this feature (for use in serialization)
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the <see cref="Feature"/> class.
         /// </summary>
-        /// <returns>The items of information that will be persisted</returns>
-        internal FeatureData GetData()
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
         {
-            LineFeatureData result = new LineFeatureData();
-            result.Geometry = m_Geom.GetData();
-            SetFeatureData(result);
-            return result;
+            m_Geom.WriteElement(writer, "Geometry");
         }
     }
 }

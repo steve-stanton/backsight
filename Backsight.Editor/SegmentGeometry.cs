@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
-using Backsight.Xml;
 
 namespace Backsight.Editor
 {
@@ -443,14 +442,6 @@ namespace Backsight.Editor
             }
         
             return rotation;
-        }
-
-        internal override LineGeometryData GetData()
-        {
-            LineGeometryData result = new LineGeometryData();
-            result.From = this.Start.ToString();
-            result.To = this.End.ToString();
-            return result;
         }
     }
 }

@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight
 {
@@ -327,6 +328,20 @@ namespace Backsight
         public double Degrees
         {
             get { return (m_Value * MathConstants.RADTODEG); }
+        }
+
+        /// <summary>
+        /// Writes this object to XML with the specified name, preceded by an <c>xsi:type</c>
+        /// declaration that provides the element type.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <param name="name">The name for the XML element</param>
+        public void WriteElement(XmlWriter writer, string name)
+        {
+            writer.WriteStartElement(name);
+            writer.WriteAttributeString("xsi", "type", null, "ced:Radian");
+            writer.WriteAttributeString("Value", ToString());
+            writer.WriteEndElement();
         }
 
         #endregion

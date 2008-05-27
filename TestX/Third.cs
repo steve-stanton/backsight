@@ -6,8 +6,8 @@ using System.Xml.Serialization;
 namespace TestX
 {
     //[XmlType("Third")]
-    [XmlRoot(Namespace = "TestSpace")]
-    public class Third : Second
+    //[XmlRoot(Namespace = "TestSpace")]
+    class Third : Second
     {
     }
 }

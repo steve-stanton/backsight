@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
-using Backsight.Xml;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// Base class for any sort of line geometry.
     /// </summary>
     [Serializable]
-    abstract class LineGeometry : ILineGeometry, IIntersectable
+    abstract class LineGeometry : BaseGeometry, ILineGeometry, IIntersectable
     {
         #region Class data
 
@@ -219,9 +219,17 @@ namespace Backsight.Editor
         abstract internal double GetRotation(IPointGeometry p);
 
         /// <summary>
-        /// Obtains basic data for this geometry (for use in serialization)
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
         /// </summary>
-        /// <returns>The items of information that will be persisted</returns>
-        abstract internal LineGeometryData GetData();
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlWriter writer)
+        {
+            // TODO: ITerminal should define something more definitive for use with XML
+            writer.WriteAttributeString("From", m_Start.ToString());
+            writer.WriteAttributeString("To", m_End.ToString());
+        }
     }
 }

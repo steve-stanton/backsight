@@ -1017,16 +1017,16 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Adds a circle to the model. If a circle with the specified radius is
-        /// already attached to the point at the centre of the circle, you get back the
+        /// already attached to the point at the center of the circle, you get back the
         /// existing circle. If there is no such circle, one will be created, and the
-        /// centre point will be modified to refer to it.
+        /// center point will be modified to refer to it.
         /// </summary>
-        /// <param name="c">The point at the centre.</param>
+        /// <param name="c">The point at the center.</param>
         /// <param name="radius">The radius (on the ground)</param>
         /// <returns></returns>
         internal Circle AddCircle(PointFeature c, ILength radius)
         {
-            // Try to match the centre point with an existing circle with
+            // Try to match the center point with an existing circle with
             // the specified radius.
 	        Circle circle = c.GetCircle(radius);
 	        if (circle!=null)
@@ -1035,7 +1035,7 @@ namespace Backsight.Editor
             // Create a new circle.
             circle = new Circle(c, radius);
 
-            // Refer the centre point to the circle.
+            // Refer the center point to the circle.
             circle.AddReferences();
             return circle;
         }

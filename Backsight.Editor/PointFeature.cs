@@ -15,13 +15,12 @@
 
 using System;
 using System.Collections.Generic;
-
-using Backsight.Environment;
-using Backsight.Geometry;
 using System.Diagnostics;
 using System.Text;
 using System.Xml;
-using Backsight.Xml;
+
+using Backsight.Environment;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -30,7 +29,7 @@ namespace Backsight.Editor
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
     /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     class PointFeature : Feature, IPoint, ITerminal
     {
         #region Class data
@@ -318,40 +317,15 @@ namespace Backsight.Editor
                 Topology.MarkPolygons(d);
         }
 
-        internal string XmlData()
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the <see cref="Feature"/> class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
         {
-            StringBuilder sb = new StringBuilder(100);
-            XmlWriter xw = XmlWriter.Create(sb);
-
-            xw.WriteAttributeString("Id", DataId);
-            xw.WriteAttributeString("EntityId", EntityType.Id.ToString());
-            xw.WriteAttributeString("Key", FormattedKey);
-
-            return sb.ToString();
+            m_Geom.WriteElement(writer, "Geometry");
         }
-
-        //internal override FeatureData GetData()
-        internal FeatureData GetData()
-        {
-            PointFeatureData result = new PointFeatureData();
-            result.Geometry.X = m_Geom.Easting.Microns;
-            result.Geometry.Y = m_Geom.Northing.Microns;
-            SetFeatureData(result);
-            return result;
-        }
-
-        /*
-        public void WriteXml(System.Xml.XmlWriter writer)
-        {
-            //if (writer.WriteState == System.Xml.WriteState.Start)
-            //    writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-
-            //writer.WriteStartElement("PointFeature", "Backsight");
-            base.WriteXml(writer);
-            writer.WriteStartElement("Geometry");
-            m_Geom.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-         */
     }
 }

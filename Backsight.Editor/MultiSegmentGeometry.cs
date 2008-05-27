@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml;
 
 using Backsight.Geometry;
 
@@ -133,12 +134,12 @@ namespace Backsight.Editor
         /// Convert this data into a series of ground positions.
         /// </summary>
         /// <returns>The unpacked version of this data.</returns>
-        internal IPointGeometry[] GetUnpackedData()
+        internal PointGeometry[] GetUnpackedData()
         {
             return GetDataInMicrons();
         }
 
-        IPointGeometry[] GetDataInMicrons()
+        PointGeometry[] GetDataInMicrons()
         {
             int numCommonX = (int)m_Data[0];
             int numCommonY = (int)m_Data[1];
@@ -1113,9 +1114,27 @@ namespace Backsight.Editor
             return rotation;
         }
 
-        internal override Backsight.Xml.LineGeometryData GetData()
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlWriter writer)
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.WriteContent(writer);
+
+            // Write out array of expanded positions (there aren't that many multi-segments in
+            // a cadastral database).
+
+            PointGeometry[] data = GetUnpackedData();
+            writer.WriteStartElement("Geometry");
+
+            foreach (PointGeometry p in data)
+                p.WriteElement(writer, "Position");
+
+            writer.WriteEndElement();
         }
     }
 }

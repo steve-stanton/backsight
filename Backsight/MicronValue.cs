@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight
 {
@@ -21,7 +22,6 @@ namespace Backsight
     /// <summary>
     /// An ordinate (or dimension) that's stored in microns.
     /// </summary>
-    [Serializable]
     public struct MicronValue : ILength
     {
         #region Data
@@ -62,6 +62,20 @@ namespace Backsight
         public double Meters
         {
             get { return Length.ToMeters(m_Value); }
+        }
+
+        /// <summary>
+        /// Writes this object to XML with the specified name, preceded by an <c>xsi:type</c>
+        /// declaration that provides the element type.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <param name="name">The name for the XML element</param>
+        public void WriteElement(XmlWriter writer, string name)
+        {
+            writer.WriteStartElement(name);
+            writer.WriteAttributeString("xsi", "type", null, "ced:Micron");
+            writer.WriteAttributeString("Value", m_Value.ToString());
+            writer.WriteEndElement();
         }
     }
 }

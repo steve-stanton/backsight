@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight
 {
@@ -21,17 +22,24 @@ namespace Backsight
     /// <summary>
     /// The length of something on the ground
     /// </summary>
-    [Serializable]
     public class Length : ILength
     {
         public static Length Zero = new Length(0.0);
 
+        #region Class data
+
         private readonly double m_Value;
+
+        #endregion
+
+        #region Constructors
 
         public Length(double meters)
         {
             m_Value = meters;
         }
+
+        #endregion
 
         public double Meters
         {
@@ -66,6 +74,20 @@ namespace Backsight
         public override string ToString()
         {
             return String.Format("{0:0.000000}", Meters);
+        }
+
+        /// <summary>
+        /// Writes this object to XML with the specified name, preceded by an <c>xsi:type</c>
+        /// declaration that provides the element type.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <param name="name">The name for the XML element</param>
+        public void WriteElement(XmlWriter writer, string name)
+        {
+            writer.WriteStartElement(name);
+            writer.WriteAttributeString("xsi", "type", null, "ced:Length");
+            writer.WriteAttributeString("Value", m_Value.ToString());
+            writer.WriteEndElement();
         }
     }
 }

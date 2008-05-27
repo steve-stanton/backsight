@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -22,7 +23,6 @@ namespace Backsight.Editor
     /// An "angle" is an angle taken from a point, with respect to a backsight
     /// that provides the reference orientation.
     /// </summary>
-    [Serializable]
     class AngleDirection : Direction
     {
         #region Class data
@@ -165,6 +165,21 @@ namespace Backsight.Editor
                 return true;
 
             return base.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
+        {
+            base.WriteContent(writer);
+            writer.WriteAttributeString("Backsight", m_Backsight.DataId);
+            writer.WriteAttributeString("From", m_From.DataId);
+            m_Observation.WriteElement(writer, "Observation");
         }
     }
 }

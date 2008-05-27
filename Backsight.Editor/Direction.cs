@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Xml;
 
 using Backsight.Environment;
 
@@ -24,7 +25,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Some sort of direction observation.
     /// </summary>
-    [Serializable]
     abstract class Direction : Observation
     {
         #region Class data
@@ -654,5 +654,19 @@ namespace Backsight.Editor
             return Geom.Distance(x.Min, x.Max);
         }
 
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
+        {
+            writer.WriteAttributeString("Flags", m_Flag.ToString("X"));
+
+            if (m_Offset!=null)
+                m_Offset.WriteElement(writer, "Offset");
+        }
     }
 }

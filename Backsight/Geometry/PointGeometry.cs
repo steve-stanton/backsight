@@ -27,8 +27,8 @@ namespace Backsight.Geometry
     /// Integer values are used largely for historical reasons, since various items
     /// of software are coded to accommodate the consequences of roundoff.
     /// </remarks>
-    [Serializable]
-    public class PointGeometry : IPointGeometry
+    //[Serializable]
+    public class PointGeometry : BaseGeometry, IPointGeometry
     {
         #region Class data
 
@@ -287,7 +287,14 @@ namespace Backsight.Geometry
 	    delete pOrig;
              */
 
-        public virtual void WriteXml(XmlWriter writer)
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base <see cref="BaseGeometry"/> class.
+        /// Derived classes should override and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlWriter writer)
         {
             writer.WriteAttributeString("X", m_X.Microns.ToString());
             writer.WriteAttributeString("Y", m_Y.Microns.ToString());

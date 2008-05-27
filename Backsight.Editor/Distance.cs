@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -21,7 +22,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A distance observation.
     /// </summary>
-    [Serializable]
     class Distance : Observation, ILength, IEquatable<Distance>
     {
         #region Static
@@ -347,6 +347,20 @@ namespace Backsight.Editor
         {
             return (this.IsFixed == that.IsFixed &&
                     Math.Abs(this.Meters - that.Meters) < Constants.TINY);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteContent(XmlWriter writer)
+        {
+            writer.WriteAttributeString("Unit", m_EnteredUnit.UnitType.ToString());
+            writer.WriteAttributeString("MetricValue", m_ObservedMetric.ToString());
+            writer.WriteAttributeString("IsFixed", m_IsFixed.ToString());
         }
     }
 }

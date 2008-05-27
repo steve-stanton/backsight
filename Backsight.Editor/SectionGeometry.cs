@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
+using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -24,15 +25,15 @@ namespace Backsight.Editor
     /// <summary>
     /// Geometry for a section of a line.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     class SectionGeometry : LineGeometry, ISection
     {
         #region Class data
 
         /// <summary>
-        /// The geometry that the section is based on (not an instance of <c>SectionGeometry</c>).
+        /// The line that the section is based on.
         /// </summary>
-        readonly UnsectionedLineGeometry m_Base;
+        readonly LineFeature m_Base;
 
         #endregion
 
@@ -53,8 +54,7 @@ namespace Backsight.Editor
             if (line==null)
                 throw new ArgumentNullException();
 
-            // Get the geometry the section is ultimately based on.
-            m_Base = line.LineGeometry.SectionBase;
+            m_Base = line;            
         }
 
         #endregion
@@ -84,7 +84,7 @@ namespace Backsight.Editor
         /// </summary>
         internal override UnsectionedLineGeometry SectionBase
         {
-            get { return m_Base; }
+            get { return m_Base.LineGeometry.SectionBase; ; }
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Backsight.Editor
         /// <returns>Geometry corresponding to this section.</returns>
         internal UnsectionedLineGeometry Make()
         {
-            return m_Base.Section(this);
+            return SectionBase.Section(this);
         }
 
         public override ILength Length
@@ -253,9 +253,17 @@ namespace Backsight.Editor
             return Make().GetRotation(p);
         }
 
-        internal override Backsight.Xml.LineGeometryData GetData()
+        /// <summary>
+        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
+        /// after the class type (xsi:type) has been written, and after any attributes
+        /// and elements that are part of the base class. Derived classes should override
+        /// and call this implementation up front.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlWriter writer)
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.WriteContent(writer);
+            writer.WriteAttributeString("Base", m_Base.DataId);
         }
     }
 }
