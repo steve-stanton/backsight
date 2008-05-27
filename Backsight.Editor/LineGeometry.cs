@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
-using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -25,8 +24,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of line geometry.
     /// </summary>
-    [Serializable]
-    abstract class LineGeometry : BaseGeometry, ILineGeometry, IIntersectable
+    abstract class LineGeometry : ILineGeometry, IIntersectable, IXmlContent
     {
         #region Class data
 
@@ -225,11 +223,11 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public void WriteContent(XmlContentWriter writer)
         {
             // TODO: ITerminal should define something more definitive for use with XML
-            writer.WriteAttributeString("From", m_Start.ToString());
-            writer.WriteAttributeString("To", m_End.ToString());
+            writer.WriteString("From", m_Start.ToString());
+            writer.WriteString("To", m_End.ToString());
         }
     }
 }

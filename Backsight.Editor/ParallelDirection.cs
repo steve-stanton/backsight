@@ -173,12 +173,12 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteAttributeString("From", m_From.DataId);
-            writer.WriteAttributeString("Par1", m_Par1.DataId);
-            writer.WriteAttributeString("Par2", m_Par2.DataId);
+            writer.WriteString("From", m_From.DataId);
+            writer.WriteString("Par1", m_Par1.DataId);
+            writer.WriteString("Par2", m_Par2.DataId);
         }
     }
 }

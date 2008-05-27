@@ -117,7 +117,6 @@
     <Compile Include="Forms\UserActionList.cs" />
     <Compile Include="Forms\UserActionSupport.cs" />
     <Compile Include="Forms\ZoomRectangleTool.cs" />
-    <Compile Include="Geometry\BaseGeometry.cs" />
     <Compile Include="Geometry\CircleGeometry.cs" />
     <Compile Include="Geometry\CircularArcGeometry.cs" />
     <Compile Include="ICircleGeometry.cs" />
@@ -133,6 +132,7 @@
     <Compile Include="GlobalUserSetting.cs" />
     <Compile Include="IPoint.cs" />
     <Compile Include="ISpatialSystem.cs" />
+    <Compile Include="IXmlContent.cs" />
     <Compile Include="Length.cs" />
     <Compile Include="IEditPosition3D.cs" />
     <Compile Include="IExpandablePropertyItem.cs" />
@@ -218,6 +218,9 @@
     <Compile Include="SpatialController.cs" />
     <Compile Include="SpatialSelection.cs" />
     <Compile Include="SpatialType.cs" />
+    <Compile Include="XmlBase.cs" />
+    <Compile Include="XmlContentReader.cs" />
+    <Compile Include="XmlContentWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\NewCenterCursor.cur" />

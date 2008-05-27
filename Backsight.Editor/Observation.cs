@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Any sort of survey observation.
     /// </summary>
-    abstract class Observation
+    abstract class Observation : IXmlContent
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
@@ -103,6 +103,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="writer">The writing tool</param>
         /// <param name="name">The name for the XML element</param>
+        /*
         public void WriteElement(XmlWriter writer, string name)
         {
             writer.WriteStartElement(name);
@@ -110,6 +111,7 @@ namespace Backsight.Editor
             WriteContent(writer);
             writer.WriteEndElement();
         }
+        */
 
         /// <summary>
         /// Writes the content of this class. This is called by <see cref="WriteElement"/>
@@ -117,6 +119,18 @@ namespace Backsight.Editor
         /// and elements that are part of the <see cref="Observation"/> class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal abstract void WriteContent(XmlWriter writer);
+        //internal abstract void WriteContent(XmlWriter writer);
+
+        #region IXmlContent Members
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        abstract public void WriteContent(XmlContentWriter writer);
+
+        #endregion
     }
 }

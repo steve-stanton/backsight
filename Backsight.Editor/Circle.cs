@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml;
 
 using Backsight.Geometry;
 
@@ -27,7 +26,7 @@ namespace Backsight.Editor
     /// The definition of a circle (as used by the Cadastral Editor).
     /// </summary>
     /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
-    class Circle : BaseGeometry, ISpatialObject, ICircleGeometry, IFeatureDependent
+    class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
     {
         #region Class data
 
@@ -359,9 +358,9 @@ namespace Backsight.Editor
         /// and elements that are part of the <see cref="Feature"/> class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteAttributeString("Center", m_Center.DataId);
+            writer.WriteString("Center", m_Center.DataId);
             //writer.WriteAttributeString("FirstArc", 
             //m_Radius.W
         }

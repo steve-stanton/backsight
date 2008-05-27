@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Xml;
 
 namespace Backsight
 {
@@ -76,18 +75,13 @@ namespace Backsight
             return String.Format("{0:0.000000}", Meters);
         }
 
-        /// <summary>
-        /// Writes this object to XML with the specified name, preceded by an <c>xsi:type</c>
-        /// declaration that provides the element type.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <param name="name">The name for the XML element</param>
-        public void WriteElement(XmlWriter writer, string name)
+        #region IXmlContent Members
+
+        public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteStartElement(name);
-            writer.WriteAttributeString("xsi", "type", null, "ced:Length");
-            writer.WriteAttributeString("Value", m_Value.ToString());
-            writer.WriteEndElement();
+            writer.WriteString("Value", m_Value.ToString());
         }
+
+        #endregion
     }
 }
