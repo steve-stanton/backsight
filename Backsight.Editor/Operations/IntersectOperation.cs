@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
@@ -24,7 +25,6 @@ namespace Backsight.Editor.Operations
     /// An intersect is a COGO operation used to generate a point where two
     /// lines intersect.
     /// </summary>
-    [Serializable]
     abstract class IntersectOperation : Operation
     {
         #region Class data

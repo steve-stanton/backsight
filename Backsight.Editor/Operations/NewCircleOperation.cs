@@ -21,7 +21,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new circle
     /// </summary>
-    [Serializable]
     class NewCircleOperation : NewLineOperation
     {
         #region Class data
@@ -308,6 +307,10 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteString("Center", m_Center.DataId);
+            writer.WriteElement("Radius", m_Radius);
         }
     }
 }

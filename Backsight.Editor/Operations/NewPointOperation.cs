@@ -17,7 +17,6 @@ using System;
 
 namespace Backsight.Editor.Operations
 {
-    [Serializable]
     class NewPointOperation : Operation
     {
         #region Class data
@@ -120,6 +119,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteElement("NewPoint", m_NewPoint);
         }
     }
 }

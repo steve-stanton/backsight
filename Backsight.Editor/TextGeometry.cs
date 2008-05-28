@@ -56,7 +56,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Position of the text's reference point (always the top left corner of the string).
         /// </summary>
-        private IPointGeometry m_Position;
+        private PointGeometry m_Position;
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The total width of the text, in meters on the ground.</param>
         /// <param name="rotation">Clockwise rotation from horizontal</param>
-        protected TextGeometry(IPointGeometry pos, IFont font, double height, double width, float rotation)
+        protected TextGeometry(PointGeometry pos, IFont font, double height, double width, float rotation)
         {
             m_Font = font;
             m_Position = pos;
@@ -89,7 +89,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Position of the text's reference point (always the top left corner of the string).
         /// </summary>
-        public IPointGeometry Position
+        public PointGeometry Position
         {
             get { return m_Position; }
             internal set { m_Position = value; }

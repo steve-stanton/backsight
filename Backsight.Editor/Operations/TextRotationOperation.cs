@@ -21,7 +21,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Edit to define the default angle for subsequently added text.
     /// </summary>
-    [Serializable]
     class TextRotationOperation : Operation
     {
         #region Class Data
@@ -146,6 +145,8 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteDouble("NewRotation", m_Rotation);
+            writer.WriteDouble("OldRotation", m_PrevRotation); // TODO: Is this needed?
         }
     }
 }

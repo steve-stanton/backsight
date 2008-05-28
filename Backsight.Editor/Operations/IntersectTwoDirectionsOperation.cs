@@ -24,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on two direction observations.
     /// </summary>
-    [Serializable]
     class IntersectTwoDirectionsOperation : IntersectOperation
     {
         #region Class data
@@ -387,6 +386,18 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteElement("Direction1", m_Direction1);
+            writer.WriteElement("Direction2", m_Direction2);
+
+            // Creations ...
+
+            writer.WriteElement("To", new FeatureData(m_To));
+            if (m_Line1 != null)
+                writer.WriteElement("Line1", new FeatureData(m_Line1));
+            if (m_Line2 != null)
+                writer.WriteElement("Line2", new FeatureData(m_Line2));
         }
     }
 }

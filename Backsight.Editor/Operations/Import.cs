@@ -22,7 +22,6 @@ namespace Backsight.Editor.Operations
     /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
     /// the current map model.
     /// </summary>
-    [Serializable]
     class Import : Operation
     {
         #region Class data
@@ -115,6 +114,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteArray("FeatureArray", "Feature", m_Data);
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to assign "trim" status to dangling lines.
     /// </summary>
-    [Serializable]
     class TrimLineOperation : Operation
     {
         #region Static
@@ -273,6 +272,17 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            string[] lines = new string[m_Lines.Count];
+            for (int i = 0; i < lines.Length; i++)
+                lines[i] = m_Lines[i].DataId;
+
+            writer.WriteArray("LineArray", "Id", lines);
+
+            string[] points = new string[m_Points.Count];
+            for (int i = 0; i < points.Length; i++)
+                points[i] = m_Points[i].DataId;
+
+            writer.WriteArray("PointArray", "Id", points);
         }
     }
 }

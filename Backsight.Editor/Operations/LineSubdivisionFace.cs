@@ -269,6 +269,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteArray("SectionArray", "Section", m_Sections.ToArray());
         }
     }
 }

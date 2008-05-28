@@ -16,8 +16,6 @@
 using System;
 using System.Collections.Generic;
 
-//using Backsight.
-
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="10-JUN-1999" />
@@ -25,7 +23,6 @@ namespace Backsight.Editor.Operations
     /// Add a point at a specific distance from the start or end of an existing line,
     /// splitting the original line at the point.
     /// </summary>
-    [Serializable]
     class PointOnLineOperation : Operation
     {
         #region Class data
@@ -352,6 +349,14 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteElement("Distance", m_Distance);
+
+            // Creations ...
+
+            writer.WriteElement("NewLine1", new FeatureData(m_NewLine1));
+            writer.WriteElement("NewPoint", new FeatureData(m_NewPoint));
+            writer.WriteElement("NewLine2", new FeatureData(m_NewLine2));
         }
     }
 }

@@ -27,7 +27,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// A connection path between two points. Like a traverse.
     /// </summary>
-    [Serializable]
     class PathOperation : Operation
     {
         #region Class data
@@ -993,6 +992,9 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("From", m_From.DataId);
+            writer.WriteString("To", m_To.DataId);
+            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
     }
 }

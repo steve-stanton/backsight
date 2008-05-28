@@ -15,7 +15,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Xml;
 
 using Backsight.Environment;
 
@@ -662,7 +661,7 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Flags", m_Flag.ToString("X"));
+            writer.WriteString("Flags", m_Flag.ToString("X2"));
 
             if (m_Offset!=null)
                 writer.WriteElement("Offset", m_Offset);

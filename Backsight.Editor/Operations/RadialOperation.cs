@@ -27,7 +27,6 @@ namespace Backsight.Editor.Operations
     /// <remarks>It was originally planned to also provide a RadialStakeout
     /// operation, that would add a whole bunch of sideshots, but there has
     /// been no need for that so far.</remarks>
-    [Serializable]
     class RadialOperation : Operation
     {
         #region Class data
@@ -408,6 +407,14 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteElement("Direction", m_Direction);
+            writer.WriteElement("Length", m_Length);
+
+            // Creations ...
+
+            writer.WriteElement("To", new FeatureData(m_To));
+            if (m_Line != null)
+                writer.WriteElement("Line", new FeatureData(m_Line));
         }
     }
 }

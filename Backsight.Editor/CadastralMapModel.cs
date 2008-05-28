@@ -23,7 +23,6 @@ using System.Management;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
-using System.Xml;
 
 using Backsight.Editor.Operations;
 using Backsight.Index;
@@ -1228,7 +1227,7 @@ namespace Backsight.Editor
                                             double width, double rotation)
         {
             // Create the "geometry"
-            IPointGeometry topLeft = PointGeometry.Create(vtx);
+            PointGeometry topLeft = PointGeometry.Create(vtx);
             MiscText text = new MiscText(s, topLeft, ent.Font, height, width, (float)rotation);
 
             // If an entity type has not been given, get the default entity type for text.
@@ -1263,7 +1262,7 @@ namespace Backsight.Editor
 
             // Add the label.
             IEntity ent = polygonId.Entity;
-            IPointGeometry p = PointGeometry.Create(vtx);
+            PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
             TextFeature label = AddLabel(creator, text, ent, null);
 
@@ -1288,7 +1287,7 @@ namespace Backsight.Editor
                                             double height, double width, double rotation)
         {
             // Create a key-text primitive.
-            IPointGeometry pos = PointGeometry.Create(vtx);
+            PointGeometry pos = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
 
             // Do standard stuff for adding a label

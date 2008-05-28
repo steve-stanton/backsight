@@ -15,14 +15,12 @@
 
 using System;
 
-
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="30-MAR-1999" was="CeSetTopology" />
     /// <summary>
     /// Edit that toggles the topological status of a line.
     /// </summary>
-    [Serializable]
     class SetTopologyOperation : Operation
     {
         #region Class data
@@ -137,6 +135,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("Line", m_Line.DataId);
         }
     }
 }

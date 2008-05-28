@@ -16,6 +16,8 @@
 using System;
 using System.Drawing;
 
+using Backsight.Geometry;
+
 namespace Backsight
 {
     public interface IString
@@ -33,7 +35,7 @@ namespace Backsight
         /// <summary>
         /// The position of the top-left corner of the string.
         /// </summary>
-        IPointGeometry Position { get; }
+        PointGeometry Position { get; }
 
         /// <summary>
         /// A closed outline that surrounds the string.

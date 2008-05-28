@@ -286,7 +286,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The position of the top left corner of the text
         /// </summary>
-        internal IPointGeometry Position
+        internal PointGeometry Position
         {
             get { return m_Geom.Position; }
         }

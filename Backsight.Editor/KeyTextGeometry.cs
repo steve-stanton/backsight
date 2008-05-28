@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -48,7 +49,7 @@ namespace Backsight.Editor
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The total width of the text, in meters on the ground.</param>
         /// <param name="rotation">Clockwise rotation from horizontal</param>
-        internal KeyTextGeometry(IPointGeometry pos, IFont font, double height, double width, float rotation)
+        internal KeyTextGeometry(PointGeometry pos, IFont font, double height, double width, float rotation)
             : base(pos, font, height, width, rotation)
         {
             m_Feature = null;
