@@ -23,7 +23,6 @@ namespace Backsight
     /// <summary>
     /// The 2D rectangular extent of something.
     /// </summary>
-    [Serializable]
     public class Window : IEditWindow, IEquatable<Window>
     {
         #region Class data

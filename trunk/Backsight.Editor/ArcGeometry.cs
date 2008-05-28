@@ -700,11 +700,17 @@ namespace Backsight.Editor
             return angle;
         }
 
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
             writer.WriteBool("Clockwise", m_IsClockwise);
-            writer.WriteElement(m_Circle, "Circle");
+            writer.WriteElement("Circle", m_Circle);
         }
     }
 }

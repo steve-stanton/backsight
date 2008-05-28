@@ -361,7 +361,7 @@ namespace Backsight.Editor
             writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
             writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
 
-            writer.WriteElement(m_Rotation, "Rotation");
+            writer.WriteElement("Rotation", m_Rotation);
         }
     }
 }

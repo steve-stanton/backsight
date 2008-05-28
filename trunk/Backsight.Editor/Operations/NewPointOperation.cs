@@ -111,5 +111,15 @@ namespace Backsight.Editor.Operations
             // Rollforward the base class.
 	        return base.OnRollforward();
         }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+        }
     }
 }

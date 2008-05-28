@@ -28,7 +28,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A circular leg in a connection path.
     /// </summary>
-    [Serializable]
     class CircularLeg : Leg, ICircularLeg
     {
         #region Class data
@@ -1376,6 +1375,28 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // Ensure the radius is correct.
             if (m_Circle!=null)
                 m_Circle.Radius = new Length(span.ScaledRadius);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+            base.WriteContent(writer);
+            writer.WriteString("Flags", String.Format("{0:X2}", m_Flag));
+            writer.WriteDouble("Angle1", m_Angle1);
+
+            if (IsTwoAngles)
+                writer.WriteDouble("Angle2", m_Angle2);
+
+            writer.WriteElement("Radius", m_Radius);
+
+            // TODO: Circle has no ID
+            throw new NotImplementedException("CircularLeg.WriteContent");
+            //writer.WriteString("Circle", m_Circle.DataId);
         }
     }
 }

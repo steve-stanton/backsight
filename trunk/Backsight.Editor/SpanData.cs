@@ -22,8 +22,7 @@ namespace Backsight.Editor
     /// Information for defining a single span in a connection path. A span
     /// is part of a <see cref="Leg"/>.
     /// </summary>
-    [Serializable]
-    class SpanData
+    class SpanData : IXmlContent
     {
         #region Class data
 
@@ -182,6 +181,25 @@ namespace Backsight.Editor
         {
             get { return ((m_Switches & LegItemFlag.NewLine)!=0); }
             set { SetFlag(LegItemFlag.NewLine, value); }
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void WriteContent(XmlContentWriter writer)
+        {
+            writer.WriteString("Switches", String.Format("{0:X2}", m_Switches));
+
+            if (m_Distance!=null)
+                writer.WriteElement("Distance", m_Distance);
+
+            // TODO: This is probably a derived item, so we should probably not store the geometry
+            throw new NotImplementedException("SpanData.WriteContent");
+            //if (m_Feature!=null)
+            //    writer.WriteElement("Feature", m_Feature);
         }
     }
 }

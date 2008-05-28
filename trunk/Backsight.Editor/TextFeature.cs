@@ -300,7 +300,7 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteElement(m_Geom, "Geometry");
+            writer.WriteElement("Geometry", m_Geom);
         }
     }
 }

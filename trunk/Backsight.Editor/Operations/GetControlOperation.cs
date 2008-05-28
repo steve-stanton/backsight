@@ -24,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Import control points.
     /// </summary>
-    [Serializable]
     class GetControlOperation : Operation
     {
         #region Class data
@@ -197,6 +196,17 @@ namespace Backsight.Editor.Operations
         internal int Count
         {
             get { return m_Features.Count; }
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+            writer.WriteArray("PointArray", "Point", m_Features.ToArray());
         }
     }
 }

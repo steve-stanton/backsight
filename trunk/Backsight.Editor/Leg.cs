@@ -29,8 +29,7 @@ namespace Backsight.Editor
     /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
     /// and <see cref="CircularLeg"/>.
     /// </summary>
-    [Serializable]
-    abstract class Leg : ILeg
+    abstract class Leg : ILeg, IXmlContent
     {
         #region Class data
 
@@ -1211,6 +1210,17 @@ void CeLeg::MakeText ( const CeVertex& bs
                 return null;
             else
                 return m_Spans[index];
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteContent(XmlContentWriter writer)
+        {
+            writer.WriteArray("SpanArray", "Span", m_Spans);
         }
     }
 }

@@ -632,5 +632,15 @@ namespace Backsight.Editor.Operations
 	    	epar = pos;
 	        return true;
 	    }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+        }
     }
 }

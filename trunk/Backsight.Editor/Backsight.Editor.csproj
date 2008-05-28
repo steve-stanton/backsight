@@ -65,6 +65,7 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
+    <Compile Include="FeatureData.cs" />
     <Compile Include="FontFacade.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
@@ -1049,12 +1050,6 @@
     </None>
     <None Include="IdDataSet.xss">
       <DependentUpon>IdDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="Operations\AttachPointSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Operations\AttachPointSchema.xsx">
-      <DependentUpon>AttachPointSchema.xsd</DependentUpon>
     </None>
     <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>

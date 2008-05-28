@@ -23,7 +23,6 @@ namespace Backsight.Editor
     /// A <c>BasicList</c> is a simplified list, implemented via association with a <c>List</c>
     /// </summary>
     /// <typeparam name="T">The type of object in the list</typeparam>
-    [Serializable]
     class BasicList<T> : IPossibleList<T> where T : IPossibleList<T>
     {
         #region Class data

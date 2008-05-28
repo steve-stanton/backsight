@@ -23,8 +23,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    [Serializable]
-    abstract class Operation : IFeatureDependent
+    abstract class Operation : IFeatureDependent, IXmlContent
     {
         #region Class data
 
@@ -363,5 +362,17 @@ namespace Backsight.Editor
             if (point != null)
                 point.CutOp(this);
         }
+
+        #region IXmlContent Members
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        abstract public void WriteContent(XmlContentWriter writer);
+
+        #endregion
     }
 }
