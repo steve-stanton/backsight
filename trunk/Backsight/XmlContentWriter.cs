@@ -74,6 +74,18 @@ namespace Backsight
         }
 
         /// <summary>
+        /// Writes out the supplied <c>UInt32</c> as an attribute
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="value">The value of the attribute</param>
+        public void WriteUnsignedInt(string name, uint value)
+        {
+            m_Writer.WriteStartAttribute(name);
+            m_Writer.WriteValue(value);
+            m_Writer.WriteEndAttribute();
+        }
+
+        /// <summary>
         /// Writes out the supplied <c>Int64</c> as an attribute
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
@@ -105,6 +117,22 @@ namespace Backsight
             m_Writer.WriteStartAttribute(name);
             m_Writer.WriteValue(value);
             m_Writer.WriteEndAttribute();
+        }
+
+        /// <summary>
+        /// Writes an array element for the supplied content
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the complete array</param>
+        /// <param name="itemName">The element name for individual elements in the array</param>
+        /// <param name="data">The content to write out</param>
+        public void WriteArray(string arrayName, string itemName, IXmlContent[] data)
+        {
+            m_Writer.WriteStartElement(arrayName);
+
+            foreach (IXmlContent xc in data)
+                WriteElement(xc, itemName);
+
+            m_Writer.WriteEndElement();
         }
     }
 }

@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml;
 
 using Backsight.Geometry;
 
@@ -29,7 +28,6 @@ namespace Backsight.Editor
     /// by holding common high-order bytes just once (if there are no common bytes, the
     /// space required will actually be 2 bytes more than the unpacked data).
     /// </summary>
-    [Serializable]
     class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
     {
         #region Data
@@ -1115,26 +1113,20 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the base class. Derived classes should override
-        /// and call this implementation up front.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
 
-            // Write out array of expanded positions (there aren't that many multi-segments in
-            // a cadastral database).
+            // Write out array of expanded positions (there aren't that many
+            // multi-segments in a cadastral database).
 
             PointGeometry[] data = GetUnpackedData();
-            writer.WriteStartElement("Geometry");
-
-            foreach (PointGeometry p in data)
-                p.WriteElement(writer, "Position");
-
-            writer.WriteEndElement();
+            writer.WriteArray("Geometry", "Position", data);
         }
     }
 }

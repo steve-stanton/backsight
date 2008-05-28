@@ -223,7 +223,7 @@ namespace Backsight.Editor
         /// and call this implementation up front.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
+        public virtual void WriteContent(XmlContentWriter writer)
         {
             // TODO: ITerminal should define something more definitive for use with XML
             writer.WriteString("From", m_Start.ToString());

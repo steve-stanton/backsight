@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Geometry;
@@ -29,7 +28,6 @@ namespace Backsight.Editor
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
     /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
-    //[Serializable]
     class PointFeature : Feature, IPoint, ITerminal
     {
         #region Class data
@@ -318,14 +316,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the <see cref="Feature"/> class.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        internal override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
-            m_Geom.WriteElement(writer, "Geometry");
+            base.WriteContent(writer);
+            writer.WriteElement(m_Geom, "Geometry");
         }
     }
 }

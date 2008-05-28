@@ -198,8 +198,6 @@ namespace Backsight.Editor.Operations
             // If necessary, assign the new point the next available ID.
             m_Point.SetNextId();
 
-            WriteXml(); // TEST
-
             // Peform standard completion steps
             Complete();
         }
@@ -230,43 +228,10 @@ namespace Backsight.Editor.Operations
             get { return m_PositionRatio; }
         }
 
-        //public void ReadXml(XmlReader reader)
-        //public void WriteXml(XmlWriter writer)
-
-        internal void WriteXml()
-        {
-            using (StreamWriter sw = File.CreateText(@"C:\Temp\Test.xml"))
-            {
-                sw.Write(ToXml());
-            }
-        }
-
-        internal string ToXml()
-        {
-            return String.Empty;
-
-            /*
-            XStream xs = new XStream();
-            AttachPointData data = new AttachPointData();
-            data.PositionRatio = (int)m_PositionRatio;
-            data.Id = m_Point.DataId;
-            return xs.ToXml(data);
-             */
-
-            //return new XStream().ToXml(this);
                 /*
-            StringBuilder sb = new StringBuilder(200);
-            XmlWriter xw = XmlWriter.Create(sb);
-
-            //xw.WriteStartElement("AttachPoint");
-            xw.WriteQualifiedName("AttachPoint", "Backsight");
             xw.WriteAttributeString("Line", m_Line.DataId);
             xw.WriteAttributeString("PositionRatio", m_PositionRatio.ToString());
             xw.WriteElementString("Point", m_Point.XmlData());
-            xw.WriteEndElement();
-
-            return sb.ToString();
                  */
-        }
     }
 }
