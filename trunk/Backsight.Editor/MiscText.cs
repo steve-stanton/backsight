@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -42,7 +43,7 @@ namespace Backsight.Editor
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal (default=0.0).</param>
-        internal MiscText(string text, IPointGeometry topLeft, IFont font, double height, double width, float rotation)
+        internal MiscText(string text, PointGeometry topLeft, IFont font, double height, double width, float rotation)
             : base(topLeft, font, height, width, rotation)
         {
             m_Text = text;

@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Xml;
 
 namespace Backsight
 {
@@ -74,7 +73,7 @@ namespace Backsight
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Value", m_Value.ToString());
+            writer.WriteLong("Value", m_Value);
         }
 
         #endregion

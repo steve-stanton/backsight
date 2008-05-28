@@ -25,7 +25,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on 2 distance observations.
     /// </summary>
-    [Serializable]
     class IntersectTwoDistancesOperation : IntersectOperation
     {
         #region Class data
@@ -558,6 +557,21 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteElement("Distance1", m_Distance1);
+            writer.WriteString("From1", m_From1.DataId);
+            writer.WriteElement("Distance2", m_Distance2);
+            writer.WriteString("From2", m_From2.DataId);
+            writer.WriteBool("IsDefault", m_Default);
+
+            // Creations ...
+
+            writer.WriteElement("To", new FeatureData(m_To));
+            if (m_Line1 != null)
+                writer.WriteElement("Line1", new FeatureData(m_Line1));
+            if (m_Line2 != null)
+                writer.WriteElement("Line2", new FeatureData(m_Line2));
         }
     }
 }

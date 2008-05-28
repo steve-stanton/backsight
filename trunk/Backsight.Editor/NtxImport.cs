@@ -479,7 +479,7 @@ namespace Backsight.Editor
             double hbear = vbear - Constants.PIDIV2;
 
             // Back up half a character to get the initial corner.
-            IPointGeometry topleft = new PointGeometry(Geom.Polar(above, hbear, 0.5 * (double)charwidth));
+            PointGeometry topleft = new PointGeometry(Geom.Polar(above, hbear, 0.5 * (double)charwidth));
             /*
             if (name.IsLabel)
             {            

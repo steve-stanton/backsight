@@ -24,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Edit to add an item of text (perhaps a polygon label).
     /// </summary>
-    [Serializable]
     class NewTextOperation : Operation
     {
         #region Class data
@@ -469,6 +468,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteElement("NewText", m_NewText);
         }
     }
 }

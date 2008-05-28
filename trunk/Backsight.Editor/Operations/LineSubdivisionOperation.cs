@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
@@ -70,7 +71,6 @@ namespace Backsight.Editor.Operations
     ///  --X---- Additional face for layers 3-4
     ///  -X---X- Additional face for layer 5
     /// </remarks>
-    [Serializable]
     class LineSubdivisionOperation : Operation
     {
         #region Class data
@@ -391,6 +391,14 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("Line", m_Line.DataId);
+
+            // TODO: The structure here is a bit weak. Needs to be revisited.
+            LineSubdivisionFace[] faces = new LineSubdivisionFace[m_Faces.Count];
+            for (int i=0; i<faces.Length; i++)
+                faces[i] = m_Faces[i];
+
+            writer.WriteArray("FaceArray", "Face", faces);
         }
     }
 }

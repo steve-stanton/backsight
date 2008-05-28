@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Geometry;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Operations
 {
@@ -27,7 +27,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
-    [Serializable]
     class ParallelOperation : Operation
     {
         #region Class data
@@ -641,6 +640,30 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("RefLine", m_RefLine.DataId);
+            writer.WriteElement("Offset", m_Offset);
+            writer.WriteUnsignedInt("Flags", m_Flags);
+
+            if (m_Term1 != null)
+                writer.WriteString("Term1", m_Term1.DataId);
+            if (m_Term2 != null)
+                writer.WriteString("Term2", m_Term2.DataId);
+            if (m_Near1 !=null)
+                writer.WriteString("Near1", m_Near1.DataId);
+            if (m_Near2 != null)
+                writer.WriteString("Near2", m_Near2.DataId);
+
+            // Created features ...
+            writer.WriteElement("ParLine", new FeatureData(m_ParLine));
+
+            if (m_Term1a != null)
+                writer.WriteElement("Term1a", new FeatureData(m_Term1a));
+            if (m_Term1b != null)
+                writer.WriteElement("Term1b", new FeatureData(m_Term1b));
+            if (m_Term2a != null)
+                writer.WriteElement("Term2a", new FeatureData(m_Term2a));
+            if (m_Term2b != null)
+                writer.WriteElement("Term2b", new FeatureData(m_Term2b));
         }
     }
 }

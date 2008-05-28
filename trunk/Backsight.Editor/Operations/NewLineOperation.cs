@@ -22,7 +22,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new line (either a simple line segment, or a circular arc).
     /// </summary>
-    [Serializable]
     class NewLineOperation : Operation
     {
         #region Class data
@@ -272,6 +271,13 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            // TODO: Is this right? - should writing the geometry for the new line
+            // lead to the center and radius info when dealing with a NewCircleOperation?
+
+            if (this is NewCircleOperation)
+                writer.WriteElement("NewLine", new FeatureData(m_NewLine));
+            else
+                writer.WriteElement("NewLine", m_NewLine);
         }
     }
 }

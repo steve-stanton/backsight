@@ -25,7 +25,6 @@ namespace Backsight.Editor.Operations
     /// A new polygon label that is created on a derived layer so as to
     /// replace an existing label that was originally shared with the base layers.
     /// </summary>
-    [Serializable]
     class ReplaceTextOperation : NewTextOperation
     {
         #region Class data
@@ -212,6 +211,8 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+            writer.WriteString("OldText", m_OldText.DataId);
         }
     }
 }

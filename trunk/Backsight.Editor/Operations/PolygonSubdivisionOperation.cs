@@ -24,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Subdivision of a polygon.
     /// </summary>
-    [Serializable]
     class PolygonSubdivisionOperation : Operation
     {
         #region Class data
@@ -157,6 +156,10 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            if (m_Label!=null)
+                writer.WriteString("DeactivatedLabel", m_Label.DataId);
+
+            writer.WriteArray("LineArray", "Line", m_Lines);
         }
     }
 }

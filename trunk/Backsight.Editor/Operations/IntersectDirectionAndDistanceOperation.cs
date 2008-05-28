@@ -25,7 +25,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on a direction and a distance observation.
     /// </summary>
-    [Serializable]
     class IntersectDirectionAndDistanceOperation : IntersectOperation
     {
         #region Class data
@@ -523,6 +522,21 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteElement("Direction", m_Direction);
+            writer.WriteElement("Distance", m_Distance);
+            writer.WriteString("From", m_From.DataId);
+            writer.WriteBool("IsDefault", m_Default);
+
+            // Creations...
+            writer.WriteElement("To", new FeatureData(m_To));
+
+            if (m_DirLine != null)
+                writer.WriteElement("DirLine", new FeatureData(m_DirLine));
+
+            if (m_DistLine != null)
+                writer.WriteElement("DistLine", new FeatureData(m_DistLine));
         }
     }
 }

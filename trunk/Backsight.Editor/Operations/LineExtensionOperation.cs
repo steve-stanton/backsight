@@ -26,7 +26,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to extend a line.
     /// </summary>
-    [Serializable]
     class LineExtensionOperation : Operation
     {
         #region Class data
@@ -398,6 +397,13 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("ExtendLine", m_ExtendLine.DataId);
+            writer.WriteBool("IsExtendFromEnd", m_IsExtendFromEnd);
+            writer.WriteElement("Distance", m_Length);
+
+            writer.WriteElement("NewPoint", new FeatureData(m_NewPoint));
+            if (m_NewLine != null)
+                writer.WriteElement("NewLine", new FeatureData(m_NewLine));
         }
     }
 }

@@ -24,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to intersect 2 lines.
     /// </summary>
-    [Serializable]
     class IntersectTwoLinesOperation : IntersectOperation
     {
         #region Class data
@@ -470,6 +469,25 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteString("Line1", m_Line1.DataId);
+            writer.WriteString("Line2", m_Line2.DataId);
+            writer.WriteString("CloseTo", m_CloseTo.DataId);
+            writer.WriteBool("IsSplit1", m_IsSplit1);
+            writer.WriteBool("IsSplit2", m_IsSplit2);
+
+            // Creations...
+            writer.WriteElement("To", new FeatureData(m_Intersection));
+
+            if (m_Line1a != null)
+                writer.WriteElement("Line1a", new FeatureData(m_Line1a));
+            if (m_Line1b != null)
+                writer.WriteElement("Line1b", new FeatureData(m_Line1b));
+            if (m_Line2a != null)
+                writer.WriteElement("Line2a", new FeatureData(m_Line2a));
+            if (m_Line2b != null)
+                writer.WriteElement("Line2b", new FeatureData(m_Line2b));
         }
     }
 }

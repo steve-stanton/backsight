@@ -25,7 +25,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to intersect a direction with a line.
     /// </summary>
-    [Serializable]
     class IntersectDirectionAndLineOperation : IntersectOperation
     {
         #region Class data
@@ -515,6 +514,22 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            base.WriteContent(writer);
+
+            writer.WriteElement("Direction", m_Direction);
+            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteString("CloseTo", m_CloseTo.DataId);
+            writer.WriteBool("IsSplit", m_IsSplit);
+
+            // Creations...
+            writer.WriteElement("To", new FeatureData(m_Intersection));
+
+            if (m_DirLine != null)
+                writer.WriteElement("DirLine", new FeatureData(m_DirLine));
+            if (m_LineA != null)
+                writer.WriteElement("LineA", new FeatureData(m_LineA));
+            if (m_LineB != null)
+                writer.WriteElement("LineB", new FeatureData(m_LineB));
         }
     }
 }

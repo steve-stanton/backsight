@@ -17,7 +17,6 @@ using System;
 
 using Backsight.Geometry;
 
-
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="" />
@@ -113,6 +112,8 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteString("Text", m_Text.DataId);
+            writer.WriteElement("NewPosition", m_Text.Position);
         }
     }
 }
