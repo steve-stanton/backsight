@@ -228,10 +228,17 @@ namespace Backsight.Editor.Operations
             get { return m_PositionRatio; }
         }
 
-                /*
-            xw.WriteAttributeString("Line", m_Line.DataId);
-            xw.WriteAttributeString("PositionRatio", m_PositionRatio.ToString());
-            xw.WriteElementString("Point", m_Point.XmlData());
-                 */
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
+            writer.WriteElement("Point", new FeatureData(m_Point));
+        }
     }
 }

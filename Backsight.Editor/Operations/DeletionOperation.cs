@@ -16,8 +16,6 @@
 using System;
 using System.Collections.Generic;
 
-//using Backsight.
-
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="22-DEC-1997" was="CeDeletion" />
@@ -26,7 +24,6 @@ namespace Backsight.Editor.Operations
     /// and it doesn't get garbage collected. It just gets marked as deleted, and will
     /// be retained as part of the map history.
     /// </summary>
-    [Serializable]
     class DeletionOperation : Operation
     {
         #region Class data
@@ -200,9 +197,19 @@ namespace Backsight.Editor.Operations
             return true;
         }
 
-        internal string ToXml()
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
         {
-            return String.Empty;
+            string[] ids = new string[m_Deletions.Count];
+            for (int i=0; i<ids.Length; i++)
+                ids[i] = m_Deletions[i].DataId;
+
+            writer.WriteArray("IdArray", "Id", ids);
         }
     }
 }

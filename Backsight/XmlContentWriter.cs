@@ -53,7 +53,7 @@ namespace Backsight
         /// </summary>
         /// <param name="content">The content to write</param>
         /// <param name="name">The name for the XML element</param>
-        public void WriteElement(IXmlContent content, string name)
+        public void WriteElement(string name, IXmlContent content)
         {
             m_Writer.WriteStartElement(name);
             m_Writer.WriteAttributeString("xsi", "type", null, content.GetType().Name);
@@ -120,6 +120,18 @@ namespace Backsight
         }
 
         /// <summary>
+        /// Writes out the supplied <c>Double</c> as an attribute
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="value">The value of the attribute</param>
+        public void WriteDouble(string name, double value)
+        {
+            m_Writer.WriteStartAttribute(name);
+            m_Writer.WriteValue(value);
+            m_Writer.WriteEndAttribute();
+        }
+
+        /// <summary>
         /// Writes an array element for the supplied content
         /// </summary>
         /// <param name="arrayName">The name for the element representing the complete array</param>
@@ -130,7 +142,23 @@ namespace Backsight
             m_Writer.WriteStartElement(arrayName);
 
             foreach (IXmlContent xc in data)
-                WriteElement(xc, itemName);
+                WriteElement(itemName, xc);
+
+            m_Writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes an array element for the supplied content
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the complete array</param>
+        /// <param name="itemName">The element name for individual elements in the array</param>
+        /// <param name="data">The content to write out</param>
+        public void WriteArray(string arrayName, string itemName, string[] data)
+        {
+            m_Writer.WriteStartElement(arrayName);
+
+            foreach (string s in data)
+                m_Writer.WriteElementString(itemName, s);
 
             m_Writer.WriteEndElement();
         }

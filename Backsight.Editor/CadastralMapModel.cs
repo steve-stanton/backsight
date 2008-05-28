@@ -35,7 +35,6 @@ using Backsight.Data;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     class CadastralMapModel : ISpatialModel, ISpatialData, IInternalIdFactory
     {
         #region Static Methods

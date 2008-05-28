@@ -20,7 +20,6 @@ namespace Backsight
     /// <summary>
     /// A two-dimensional position on the ground
     /// </summary>
-    [Serializable]
     public class Position : IEditPosition
     {
         #region Statics

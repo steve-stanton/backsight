@@ -28,7 +28,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A straight leg in a connection path.
     /// </summary>
-    [Serializable]
     class StraightLeg : Leg, IStraightLeg
     {
         #region Class data
@@ -696,6 +695,18 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         {
             // Get the extra face to do it.
             return face.UpdateSegments(insert, op, spos, epos);
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
+            base.WriteContent(writer);
+            writer.WriteDouble("StartAngle", m_StartAngle);
         }
     }
 }

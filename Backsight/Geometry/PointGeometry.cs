@@ -26,7 +26,6 @@ namespace Backsight.Geometry
     /// Integer values are used largely for historical reasons, since various items
     /// of software are coded to accommodate the consequences of roundoff.
     /// </remarks>
-    //[Serializable]
     public class PointGeometry : IPointGeometry, IXmlContent
     {
         #region Class data
@@ -286,7 +285,7 @@ namespace Backsight.Geometry
 	    delete pOrig;
              */
 
-        public void WriteContent(XmlContentWriter writer)
+        public virtual void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);

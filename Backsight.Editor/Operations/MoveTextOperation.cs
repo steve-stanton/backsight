@@ -24,7 +24,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// 
     /// </summary>
-    class MoveTextOperation
+    class MoveTextOperation : Operation
     {
         #region Class data
 
@@ -68,6 +68,51 @@ namespace Backsight.Editor.Operations
         internal IPointGeometry OldPosition
         {
             get { return m_OldPosition; }
+        }
+
+        public override string Name
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        internal override Distance GetDistance(LineFeature line)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        internal override Feature[] Features
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        internal override EditingActionId EditId
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        internal override bool Undo()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        internal override bool Rollforward()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public override void AddReferences()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteContent(XmlContentWriter writer)
+        {
         }
     }
 }

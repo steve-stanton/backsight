@@ -1126,7 +1126,7 @@ namespace Backsight.Editor
             // multi-segments in a cadastral database).
 
             PointGeometry[] data = GetUnpackedData();
-            writer.WriteArray("Geometry", "Position", data);
+            writer.WriteArray("PositionArray", "Position", data);
         }
     }
 }
