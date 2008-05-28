@@ -14,7 +14,6 @@
 /// </remarks>
 
 using System;
-using System.Xml;
 
 using Backsight.Environment;
 
@@ -24,7 +23,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A miscellaneous text object
     /// </summary>
-    //[Serializable]
     class MiscText : TextGeometry
     {
         #region Class data
@@ -130,16 +128,15 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the base class. Derived classes should override
-        /// and call this implementation up front.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteAttributeString("Text", m_Text);
+            writer.WriteString("Text", m_Text);
         }
     }
 }

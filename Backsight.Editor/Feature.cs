@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Xml;
 
 using Backsight.Environment;
 using Backsight.Forms;
@@ -40,7 +39,7 @@ namespace Backsight.Editor
     [Serializable]
     [DefaultProperty("EntityType")]
     //abstract class Feature : DataHandle, ISpatialObject, IPossibleList<Feature>
-    abstract class Feature : ISpatialObject, IPossibleList<Feature>
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IXmlContent
     {
         #region Class data
 
@@ -762,33 +761,21 @@ namespace Backsight.Editor
             set { SetFlag(FeatureFlag.Void, value); }
         }
 
+        #region IXmlContent Members
+
         /// <summary>
-        /// Writes this object to XML with the specified name 
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        /// <param name="name">The name for the XML element</param>
-        internal void WriteElement(XmlWriter writer, string name)
+        public virtual void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteStartElement(name);
-            writer.WriteAttributeString("xsi", "type", null, "ced:"+GetType().Name);
-
-            // Write the content of this class
-            writer.WriteAttributeString("CreationSequence", m_CreatorSequence.ToString());
-            writer.WriteAttributeString("EntityId", m_What.Id.ToString());
-            writer.WriteAttributeString("Key", FormattedKey);
-
-            // Write derived content
-            WriteContent(writer);
-
-            writer.WriteEndElement();
+            writer.WriteUnsignedInt("CreationSequence", m_CreatorSequence);
+            writer.WriteInt("EntityId", m_What.Id);
+            writer.WriteString("Key", FormattedKey);
         }
 
-        /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the <see cref="Feature"/> class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal abstract void WriteContent(XmlWriter writer);
+        #endregion
     }
 }

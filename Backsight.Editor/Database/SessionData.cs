@@ -200,9 +200,6 @@ namespace Backsight.Editor.Database
         /// <param name="sessions">The list to append to</param>
         static void LoadSessions(SqlCommand cmd, List<SessionData> sessions)
         {
-            //XmlReader reader = cmd.ExecuteXmlReader();
-            //Operation op = (Operation)reader.ReadElementContentAsObject();
-
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())

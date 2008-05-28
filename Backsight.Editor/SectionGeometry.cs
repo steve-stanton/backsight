@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
-using System.Xml;
 
 namespace Backsight.Editor
 {
@@ -25,7 +24,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Geometry for a section of a line.
     /// </summary>
-    //[Serializable]
     class SectionGeometry : LineGeometry, ISection
     {
         #region Class data
@@ -254,16 +252,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the base class. Derived classes should override
-        /// and call this implementation up front.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteAttributeString("Base", m_Base.DataId);
+            writer.WriteString("Base", m_Base.DataId);
         }
     }
 }

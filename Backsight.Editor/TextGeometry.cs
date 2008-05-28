@@ -27,8 +27,7 @@ namespace Backsight.Editor
     /// A text object is some sort of string that appears on a map. This is the base class for
     //	MiscText, KeyText, RowText, and FeatureText.
     /// </summary>
-    //[Serializable]
-    abstract public class TextGeometry : IString
+    abstract public class TextGeometry : IString, IXmlContent
     {
         #region Class data
 
@@ -349,13 +348,12 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
-        /// Writes the content of this class. This is called by <see cref="WriteElement"/>
-        /// after the class type (xsi:type) has been written, and after any attributes
-        /// and elements that are part of the base <see cref="BaseGeometry"/> class.
-        /// Derived classes should override and call this implementation up front.
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
+        public virtual void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_Position.Easting.Microns);
             writer.WriteLong("Y", m_Position.Northing.Microns);
