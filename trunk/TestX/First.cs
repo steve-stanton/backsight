@@ -67,7 +67,7 @@ namespace TestX
             writer.WriteElement("More", More);
         }
 
-        public void ReadContent(XmlContentReader reader)
+        public override void ReadContent(XmlContentReader reader)
         {
             Id = reader.ReadInt("Id");
             Name = reader.ReadString("Name");
