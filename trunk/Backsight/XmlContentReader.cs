@@ -15,6 +15,9 @@
 
 using System;
 using System.Xml;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight
 {
@@ -22,7 +25,7 @@ namespace Backsight
     /// Reads back XML data that was previously created using the
     /// <see cref="XmlContentWriter"/> class.
     /// </summary>
-    public class XmlContentReader : XmlBase
+    public class XmlContentReader
     {
         #region Class data
 
@@ -30,6 +33,11 @@ namespace Backsight
         /// The object that actually does the reading.
         /// </summary>
         readonly XmlReader m_Reader;
+
+        /// <summary>
+        /// Cross-reference of type names to the corresponding constructor.
+        /// </summary>
+        readonly Dictionary<string, ConstructorInfo> m_Types;
 
         #endregion
 
@@ -43,17 +51,107 @@ namespace Backsight
         public XmlContentReader(XmlReader reader)
         {
             m_Reader = reader;
+            m_Types = new Dictionary<string, ConstructorInfo>();
         }
 
         #endregion
 
         /// <summary>
-        /// Loads the next element (if any) from the XML content
+        /// Loads the next content element (if any) from the XML content
         /// </summary>
-        /// <returns>The next element (null if there's nothing further)</returns>
-        public IXmlContent ReadNextElement()
+        /// <returns>The next content element (null if there's nothing further)</returns>
+        public IXmlContent ReadContent()
         {
+            Debug.Assert(m_Reader.NodeType == XmlNodeType.None);
+
+            // Read the next node
+            if (!m_Reader.Read())
+                return null;
+
+            // Assume we've reached the next element
+            Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
+
+            // The element HAS to have a type declaration
+            string typeName = m_Reader["xsi:type"];
+            if (String.IsNullOrEmpty(typeName))
+                throw new Exception("Content does not contain xsi:type attribute");
+
+            // If we haven't previously encountered the type, look up an appropriate
+            // constructor (where possible, go for a constructor that accepts an
+            // XmlContentReader parameter).
+            if (!m_Types.ContainsKey(typeName))
+            {
+                Type t = FindType(typeName);
+                if (t==null)
+                    throw new Exception("Cannot create object with type: "+typeName);
+
+                // Confirm that the type implements IXmlContent
+                if (t.FindInterfaces(Module.FilterTypeName, "IXmlContent").Length==0)
+                    throw new Exception("IXmlContent not implemented by type: "+t.FullName);
+
+                ConstructorInfo ci = t.GetConstructor(new Type[] { typeof(XmlContentReader) });
+                if (ci==null)
+                    ci = t.GetConstructor(Type.EmptyTypes);
+
+                if (ci==null)
+                    throw new Exception("Cannot locate suitable constructor for type: "+t.FullName);
+
+                m_Types.Add(typeName, ci);
+            }
+
+            ConstructorInfo c = m_Types[typeName];
+            IXmlContent result;
+            if (c.GetParameters().Length==0)
+            {
+                result = (IXmlContent)c.Invoke(new object[0]);
+                throw new NotImplementedException("XmlContentReader"); // will need to alter interface
+                //result.ReadContent(this);
+            }
+            else
+            {
+                result = (IXmlContent)c.Invoke(new object[] { this });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Attempts to locate the <c>Type</c> corresponding to the supplied type name
+        /// </summary>
+        /// <param name="typeName">The name of the type (unqualified with any assembly stuff)</param>
+        /// <returns>The correspond class type (null if not found in application domain)</returns>
+        /// <remarks>This stuff is in pretty murky territory for me. I would guess it's possible
+        /// that the same type name could appear in more than one assembly, so there could be
+        /// some ambiguity.</remarks>
+        Type FindType(string typeName)
+        {
+            Assembly[] aa = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly a in aa)
+            {
+                foreach (Type type in a.GetTypes())
+                {
+                    if (type.Name == typeName)
+                        return type;
+                }
+            }
+
             return null;
+        }
+
+        public int ReadInt(string name)
+        {
+            string s = m_Reader[name];
+            return (s==null ? 0 : Int32.Parse(s));
+        }
+
+        public string ReadString(string name)
+        {
+            return m_Reader[name];
+        }
+
+        public IXmlContent ReadElement(string name)
+        {
+            return null; // TODO
         }
     }
 }

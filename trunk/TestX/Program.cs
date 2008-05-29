@@ -22,10 +22,6 @@ namespace TestX
 
         static void Main(string[] args)
         {
-            double d = 123.456789;
-            Console.WriteLine(String.Format("{0:G6}", d));
-            return;
-
             //s_AssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
             // Confirm that all classes derived from Base are properly defined in the Base class (so

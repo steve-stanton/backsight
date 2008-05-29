@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using Backsight;
 
 namespace TestX
 {
@@ -14,6 +15,15 @@ namespace TestX
 
         [XmlAttribute]
         public string Name;
+
+        internal Second()
+        {
+        }
+
+        public Second(XmlContentReader reader)
+        {
+            ReadContent(reader);
+        }
 
         public override string ToString()
         {
@@ -30,6 +40,18 @@ namespace TestX
         {
             Id = Int32.Parse(reader["Id"]);
             Name = reader["Name"];
+        }
+
+        public override void WriteContent(Backsight.XmlContentWriter writer)
+        {
+            writer.WriteInt("Id", Id);
+            writer.WriteString("Name", Name);
+        }
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            Id = reader.ReadInt("Id");
+            Name = reader.ReadString("Name");
         }
     }
 }
