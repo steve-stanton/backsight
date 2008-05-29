@@ -15,6 +15,8 @@
 
 using System;
 using System.Xml;
+using System.Text;
+using System.Xml.Schema;
 
 namespace Backsight
 {
@@ -23,8 +25,41 @@ namespace Backsight
     /// class will be qualified with a type name. While this is a bit verbose,
     /// it should hopefully make it easier to evolve the XML schema over time.
     /// </summary>
-    public class XmlContentWriter : XmlBase
+    public class XmlContentWriter
     {
+        #region Static
+
+        /// <summary>
+        /// The target namespace that should be used when writing out the
+        /// top-level element. Not null.
+        /// </summary>
+        static string s_TargetNamespace = String.Empty;
+
+        /// <summary>
+        /// The target namespace that should be used when writing out the
+        /// top-level element. Not null.
+        /// </summary>
+        public static string TargetNamespace
+        {
+            get { return s_TargetNamespace; }
+            set { s_TargetNamespace = (value==null ? String.Empty : value); }
+        }
+
+        public static string GetXml(string name, IXmlContent content)
+        {
+            StringBuilder sb = new StringBuilder(1000);
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.ConformanceLevel = ConformanceLevel.Fragment;
+
+            using (XmlWriter writer = XmlWriter.Create(sb, xws))
+            {
+                new XmlContentWriter(writer).WriteTopElement(name, content);
+            }
+            return sb.ToString();
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -49,13 +84,50 @@ namespace Backsight
         #endregion
 
         /// <summary>
+        /// Writes out a top-level element with the specified name. In addition to
+        /// the usual stuff, this will write out a namespace for the element (which
+        /// is required if the XML is destined for storage in a SqlServer database).
+        /// The namespace used is obtained through the static <see cref="TargetNamespace"/>
+        /// property.
+        /// </summary>
+        /// <param name="content">The content to write (not null)</param>
+        /// <param name="name">The name for the XML element</param>
+        /// <exception cref="ArgumentNullException">If the supplied content is null</exception>
+        public void WriteTopElement(string name, IXmlContent content)
+        {
+            if (content==null)
+                throw new ArgumentNullException();
+
+            // Should encoding be written too?
+            m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+
+            // The initial element needs a namespace (for SqlServer)
+            m_Writer.WriteStartElement(name, s_TargetNamespace);
+
+            // Write declaration that allows specification of class type (if you don't do
+            // this, an attempt to write out "xsi:type" will only give you "type").
+            m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
+
+            WriteElementContent(content);
+        }
+
+        /// <summary>
         /// Writes out an element with the specified name
         /// </summary>
         /// <param name="content">The content to write</param>
-        /// <param name="name">The name for the XML element</param>
+        /// <param name="name">The name for the XML element. If a null value
+        /// is supplied, nothing will be written.</param>
         public void WriteElement(string name, IXmlContent content)
         {
-            m_Writer.WriteStartElement(name);
+            if (content!=null)
+            {
+                m_Writer.WriteStartElement(name);
+                WriteElementContent(content);
+            }
+        }
+
+        void WriteElementContent(IXmlContent content)
+        {
             m_Writer.WriteAttributeString("xsi", "type", null, content.GetType().Name);
             content.WriteContent(this);
             m_Writer.WriteEndElement();

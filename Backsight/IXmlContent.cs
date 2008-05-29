@@ -35,8 +35,16 @@ namespace Backsight
         /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader.ReadNextElement"/>
-        /// after the content object has been instantiated through it's default
-        /// constructor.
+        /// if the content object has a default constructor.
+        /// <para/>
+        /// In situations where a class contains readonly members (i.e. members that
+        /// are not expected to change after instantiation), you must provide a
+        /// constructor that accepts an <see cref="XmlContentReader"/>. This more
+        /// specialized constructor will do the sort of stuff that would normally
+        /// be done in an implementation of <c>ReadContent</c>. In that situation,
+        /// you must obviously still implement a <c>ReadContent</c> method, but it
+        /// would be a good idea to throw an exception on an attempt to load the
+        /// object that way.
         /// </summary>
         /// <param name="reader">The reading tool</param>
         //void ReadContent(XmlContentReader reader);

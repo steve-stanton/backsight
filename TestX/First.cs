@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Diagnostics;
 using System.Reflection;
+using Backsight;
 
 namespace TestX
 {
@@ -25,10 +26,9 @@ namespace TestX
         {
         }
 
-        public First(XmlReader reader)
+        public First(XmlContentReader reader)
         {
-            //Console.WriteLine("Creating First from reader");
-            ReadXml(reader);
+            ReadContent(reader);
         }
 
         public override string ToString()
@@ -58,6 +58,20 @@ namespace TestX
             reader.Read();
             if (reader.IsStartElement("More"))
                 More = MyAbClass.FromXml(reader);
+        }
+
+        public override void WriteContent(Backsight.XmlContentWriter writer)
+        {
+            writer.WriteInt("Id", Id);
+            writer.WriteString("Name", Name);
+            writer.WriteElement("More", More);
+        }
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            Id = reader.ReadInt("Id");
+            Name = reader.ReadString("Name");
+            More = (MyAbClass)reader.ReadElement("More");
         }
     }
 }

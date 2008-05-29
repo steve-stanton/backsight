@@ -51,6 +51,10 @@
       <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
       <Name>Backsight.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Backsight\Backsight.csproj">
+      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
+      <Name>Backsight</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestSchema.xsd">

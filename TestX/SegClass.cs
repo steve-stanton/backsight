@@ -1,5 +1,6 @@
 using System;
 using System.Xml;
+using Backsight;
 
 namespace TestX
 {
@@ -19,6 +20,13 @@ namespace TestX
         {
             writer.WriteAttributeString("Start", Start.ToString());
             writer.WriteAttributeString("End", End.ToString());
+        }
+
+        public virtual void WriteContent(XmlContentWriter writer)
+        {
+            base.WriteContent(writer);
+            writer.WriteInt("Start", Start);
+            writer.WriteInt("End", End);
         }
     }
 }

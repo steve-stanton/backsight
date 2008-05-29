@@ -6,6 +6,7 @@ using System.Xml;
 using System.Text;
 using System.Data.SqlTypes;
 using System.Xml.Schema;
+using Backsight;
 
 namespace TestX
 {
@@ -16,7 +17,7 @@ namespace TestX
     //[XmlIncludeAttribute(typeof(MyArcClass))]
     //[XmlIncludeAttribute(typeof(MySegClass))]
     //[XmlType(TypeName="Base", Namespace="TestSpace")]
-    public abstract class Base
+    public abstract class Base : IXmlContent
     {
         internal static Dictionary<RuntimeTypeHandle, XmlSerializer> GetSerializers()
         {
@@ -87,10 +88,14 @@ namespace TestX
 
         internal string ToXml()
         {
+            XmlContentWriter.TargetNamespace = "TestSpace";
+            return XmlContentWriter.GetXml("Test", this);
+            /*
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.ConformanceLevel = ConformanceLevel.Fragment;
             XmlWriter writer = XmlWriter.Create(sb, xws);
+
             writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
 
             // The top-level element MUST have a name that matches the class name (this acts
@@ -114,6 +119,7 @@ namespace TestX
             writer.WriteEndElement();
             writer.Close();
             return sb.ToString();
+             */
         }
 
         abstract internal void WriteXml(XmlWriter writer);
@@ -167,6 +173,10 @@ namespace TestX
 */
         static internal Base FromXml(XmlReader xr)
         {
+            XmlContentReader xcr = new XmlContentReader(xr);
+            return (Base)xcr.ReadContent();
+
+            /*
             xr.Read();
 
             // Note that the name passed to GetType isn't assembly qualified, so it will only look
@@ -194,8 +204,11 @@ namespace TestX
             Base result = (Base)ci.Invoke(null);
             result.ReadXml(xr);
             return result;
+             */
         }
 
         abstract internal void ReadXml(XmlReader reader);
+
+        abstract public void WriteContent(XmlContentWriter writer);
     }
 }

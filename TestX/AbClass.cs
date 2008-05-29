@@ -2,10 +2,11 @@ using System;
 using System.Xml;
 using System.Diagnostics;
 using System.Reflection;
+using Backsight;
 
 namespace TestX
 {
-    abstract class MyAbClass
+    abstract class MyAbClass : IXmlContent
     {
         public int AbValue;
 
@@ -66,6 +67,16 @@ namespace TestX
             MyAbClass result = (MyAbClass)ci.Invoke(null);
             result.ReadXml(reader);
             return result;
+        }
+
+        public virtual void WriteContent(XmlContentWriter writer)
+        {
+            writer.WriteInt("AbValue", AbValue);
+        }
+
+        public virtual void ReadContent(XmlContentReader reader)
+        {
+            AbValue = reader.ReadInt("AbValue");
         }
     }
 }
