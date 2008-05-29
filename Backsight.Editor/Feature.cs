@@ -36,9 +36,7 @@ namespace Backsight.Editor
     /// fact that an unlabelled polygon may often be created inadvertently during
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
-    [Serializable]
     [DefaultProperty("EntityType")]
-    //abstract class Feature : DataHandle, ISpatialObject, IPossibleList<Feature>
     abstract class Feature : ISpatialObject, IPossibleList<Feature>, IXmlContent
     {
         #region Class data
@@ -774,6 +772,27 @@ namespace Backsight.Editor
             writer.WriteUnsignedInt("CreationSequence", m_CreatorSequence);
             writer.WriteInt("EntityId", m_What.Id);
             writer.WriteString("Key", FormattedKey);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadContent(XmlContentReader reader)
+        {
+            m_CreatorSequence = reader.ReadUnsignedInt("CreationSequence");
+            int entId = reader.ReadInt("EntityId");
+            string key = reader.ReadString("Key");
+
+            m_What = EnvironmentContainer.FindEntityById(entId);
+
+            // TODO: The FeatureId instance may have been loaded already (since
+            // multiple features can share the same ID) => The ID requires its
+            // own DataId, and we need some lookup here. Can the XmlContentReader
+            // really be in the Backsight.csproj?
+            //m_Id = 
         }
 
         #endregion

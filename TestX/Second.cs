@@ -48,7 +48,7 @@ namespace TestX
             writer.WriteString("Name", Name);
         }
 
-        public void ReadContent(XmlContentReader reader)
+        public override void ReadContent(XmlContentReader reader)
         {
             Id = reader.ReadInt("Id");
             Name = reader.ReadString("Name");

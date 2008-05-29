@@ -34,7 +34,7 @@ namespace Backsight
 
         /// <summary>
         /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader.ReadNextElement"/>
+        /// <see cref="XmlContentReader.ReadContent"/>
         /// if the content object has a default constructor.
         /// <para/>
         /// In situations where a class contains readonly members (i.e. members that
@@ -47,6 +47,6 @@ namespace Backsight
         /// object that way.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        //void ReadContent(XmlContentReader reader);
+        void ReadContent(XmlContentReader reader);
     }
 }

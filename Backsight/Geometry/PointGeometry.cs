@@ -285,10 +285,28 @@ namespace Backsight.Geometry
 	    delete pOrig;
              */
 
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadContent(XmlContentReader reader)
+        {
+            m_X = new MicronValue(reader.ReadLong("X"));
+            m_Y = new MicronValue(reader.ReadLong("Y"));
         }
     }
 }

@@ -62,11 +62,12 @@ namespace Backsight
         /// <returns>The next content element (null if there's nothing further)</returns>
         public IXmlContent ReadContent()
         {
-            Debug.Assert(m_Reader.NodeType == XmlNodeType.None);
-
-            // Read the next node
-            if (!m_Reader.Read())
-                return null;
+            // Read the next node if we're at the start
+            if (m_Reader.NodeType == XmlNodeType.None)
+            {
+                if (!m_Reader.Read())
+                    return null;
+            }
 
             // Assume we've reached the next element
             Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
@@ -104,8 +105,7 @@ namespace Backsight
             if (c.GetParameters().Length==0)
             {
                 result = (IXmlContent)c.Invoke(new object[0]);
-                throw new NotImplementedException("XmlContentReader"); // will need to alter interface
-                //result.ReadContent(this);
+                result.ReadContent(this);
             }
             else
             {
@@ -144,6 +144,24 @@ namespace Backsight
             return (s==null ? 0 : Int32.Parse(s));
         }
 
+        public uint ReadUnsignedInt(string name)
+        {
+            string s = m_Reader[name];
+            return (s == null ? 0 : UInt32.Parse(s));
+        }
+
+        public long ReadLong(string name)
+        {
+            string s = m_Reader[name];
+            return (s == null ? 0 : Int64.Parse(s));
+        }
+
+        public double ReadDouble(string name)
+        {
+            string s = m_Reader[name];
+            return (s == null ? 0 : Double.Parse(s));
+        }
+
         public string ReadString(string name)
         {
             return m_Reader[name];
@@ -151,7 +169,10 @@ namespace Backsight
 
         public IXmlContent ReadElement(string name)
         {
-            return null; // TODO
+            if (m_Reader.ReadToFollowing(name))
+                return ReadContent();
+            else
+                return null;
         }
     }
 }

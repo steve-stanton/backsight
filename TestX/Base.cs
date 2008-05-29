@@ -10,15 +10,9 @@ using Backsight;
 
 namespace TestX
 {
-    //[XmlIncludeAttribute(typeof(First))]
-    //[XmlIncludeAttribute(typeof(Second))]
-    //[XmlIncludeAttribute(typeof(Third))]
-    //[XmlIncludeAttribute(typeof(MyAbClass))]
-    //[XmlIncludeAttribute(typeof(MyArcClass))]
-    //[XmlIncludeAttribute(typeof(MySegClass))]
-    //[XmlType(TypeName="Base", Namespace="TestSpace")]
     public abstract class Base : IXmlContent
     {
+        /*
         internal static Dictionary<RuntimeTypeHandle, XmlSerializer> GetSerializers()
         {
             Type[] types = GetDerivedTypes();
@@ -85,41 +79,12 @@ namespace TestX
                     throw new Exception(String.Format("Class '{0}' is not defined in the Base class", dt.Name));
             }
         }
+        */
 
         internal string ToXml()
         {
             XmlContentWriter.TargetNamespace = "TestSpace";
             return XmlContentWriter.GetXml("Test", this);
-            /*
-            StringBuilder sb = new StringBuilder(1000);
-            XmlWriterSettings xws = new XmlWriterSettings();
-            xws.ConformanceLevel = ConformanceLevel.Fragment;
-            XmlWriter writer = XmlWriter.Create(sb, xws);
-
-            writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-
-            // The top-level element MUST have a name that matches the class name (this acts
-            // as the handle for deserializing stuff in FromXml)
-            string localName = GetType().Name;
-
-            // The initial element must be namespace qualified (thereafter, it doesn't matter)
-            //writer.WriteStartElement(localName, "TestSpace");
-            writer.WriteStartElement(localName, "TestSpace");
-
-            // You'll probably need these for handling references to abstract classes
-            writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
-            writer.WriteAttributeString("xmlns", "xsd", null, XmlSchema.Namespace);
-
-            // Define abbreviation for referring to the target namespace
-            writer.WriteAttributeString("xmlns", "ced", null, "TestSpace");
-
-            // Call abstract method to write out the content
-            WriteXml(writer);
-
-            writer.WriteEndElement();
-            writer.Close();
-            return sb.ToString();
-             */
         }
 
         abstract internal void WriteXml(XmlWriter writer);
@@ -137,78 +102,16 @@ namespace TestX
             WriteXml(writer);
             writer.WriteEndElement();
         }
-/*
-        static internal Base FromXml(SqlXml sx, XmlSerializer xs)
-        {
-            using (XmlReader xr = sx.CreateReader())
-            {
-                xr.Read();
 
-                //Type t = xr.ValueType; // it's initially String, after xr.Read it's Object (which isn't
-                                        // good enough for feeding into the XmlSerializer cstr)
-
-                // Note that the name passed to GetType isn't assembly qualified, so it will only look
-                // in the calling assembly and mscorlib.dll (see
-                // http://blogs.msdn.com/suzcook/archive/2003/05/30/using-type-gettype-typename.aspx)
-
-                // The name of the initial element must match the name of the class that was
-                // originally written (see ToXml). The type for nested elements should be obtained
-                // by the deserializer using information from the xml schema.
-
-                string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-                string typeName = String.Format("{0}.{1}", assemblyName, xr.Name);
-                Type t = Type.GetType(typeName);
-                if (t==null)
-                    Console.WriteLine("didn't get type for "+typeName);
-
-                //XmlSerializer xs = GetSerializer(t);
-                //return (Base)xs.Deserialize(xr);
-
-                ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
-                Base result = (Base)ci.Invoke(null);
-                result.ReadXml(xr);
-                return result;
-            }
-        }
-*/
         static internal Base FromXml(XmlReader xr)
         {
             XmlContentReader xcr = new XmlContentReader(xr);
             return (Base)xcr.ReadContent();
-
-            /*
-            xr.Read();
-
-            // Note that the name passed to GetType isn't assembly qualified, so it will only look
-            // in the calling assembly and mscorlib.dll (see
-            // http://blogs.msdn.com/suzcook/archive/2003/05/30/using-type-gettype-typename.aspx)
-
-            // The name of the initial element must match the name of the class that was
-            // originally written (see ToXml). The type for nested elements should be obtained
-            // by the deserializer using information from the xml schema.
-
-            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            string typeName = String.Format("{0}.{1}", assemblyName, xr.Name);
-            Type t = Type.GetType(typeName);
-            if (t == null)
-                Console.WriteLine("didn't get type for " + typeName);
-
-            ConstructorInfo ci = t.GetConstructor(new Type[] { typeof(XmlReader) });
-            if (ci!=null)
-                return (Base)ci.Invoke(new object[] { xr });
-
-            ci = t.GetConstructor(Type.EmptyTypes);
-            if (ci==null)
-                throw new Exception("Cannot locate suitable constructor for "+typeName);
-
-            Base result = (Base)ci.Invoke(null);
-            result.ReadXml(xr);
-            return result;
-             */
         }
 
         abstract internal void ReadXml(XmlReader reader);
 
         abstract public void WriteContent(XmlContentWriter writer);
+        abstract public void ReadContent(XmlContentReader reader);
     }
 }

@@ -51,6 +51,15 @@ namespace Backsight
             m_Value = Length.ToMicrons(meters);
         }
 
+        /// <summary>
+        /// Creates a new <c>MicronValue</c> during deserialization from XML.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public MicronValue(XmlContentReader reader)
+        {
+            m_Value = reader.ReadLong("Value");
+        }
+
         #endregion
 
         public long Microns
@@ -74,6 +83,18 @@ namespace Backsight
         public void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("Value", m_Value);
+        }
+
+        /// <summary>
+        /// Loads the content of this class using the supplied reader.
+        /// </summary>
+        /// <param name="reader">The reading tool.</param>
+        /// <exception cref="InvalidOperationException">Always thrown. This struct involves
+        /// readonly members, so the constructor that accepts am <c>XmlContentReader</c> should
+        /// be used.</exception>
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new InvalidOperationException();
         }
 
         #endregion

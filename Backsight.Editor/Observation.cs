@@ -107,6 +107,14 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         abstract public void WriteContent(XmlContentWriter writer);
 
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        abstract public void ReadContent(XmlContentReader reader);
+
         #endregion
     }
 }
