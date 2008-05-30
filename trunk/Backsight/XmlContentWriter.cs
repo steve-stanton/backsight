@@ -119,7 +119,9 @@ namespace Backsight
         /// is supplied, nothing will be written.</param>
         public void WriteElement(string name, IXmlContent content)
         {
-            if (content!=null)
+            if (content==null)
+                m_Writer.WriteElementString(name, null);
+            else
             {
                 m_Writer.WriteStartElement(name);
                 WriteElementContent(content);

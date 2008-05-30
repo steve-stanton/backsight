@@ -113,7 +113,7 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        abstract public void ReadContent(XmlContentReader reader);
+        //abstract public void ReadContent(XmlContentReader reader);
 
         #endregion
     }

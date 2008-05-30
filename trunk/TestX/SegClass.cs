@@ -9,24 +9,32 @@ namespace TestX
         public int Start;
         public int End;
 
-        internal override void ReadXml(XmlReader reader)
+        internal MySegClass()
         {
-            base.ReadXml(reader);
-            Start = Int32.Parse(reader["Start"]);
-            End = Int32.Parse(reader["End"]);
         }
 
-        internal override void WriteContent(XmlWriter writer)
+        public MySegClass(XmlContentReader reader)
         {
-            writer.WriteAttributeString("Start", Start.ToString());
-            writer.WriteAttributeString("End", End.ToString());
+            ReadContent(reader);
         }
 
-        public virtual void WriteContent(XmlContentWriter writer)
+        public override string ToString()
+        {
+            return String.Format("AbValue={0} Start={1} End={2}", AbValue, Start, End);
+        }
+
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
             writer.WriteInt("Start", Start);
             writer.WriteInt("End", End);
+        }
+
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            Start = reader.ReadInt("Start");
+            End = reader.ReadInt("End");
         }
     }
 }
