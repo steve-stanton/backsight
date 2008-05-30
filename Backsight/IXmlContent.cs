@@ -47,6 +47,6 @@ namespace Backsight
         /// object that way.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        void ReadContent(XmlContentReader reader);
+        //void ReadContent(XmlContentReader reader);
     }
 }

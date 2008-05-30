@@ -87,29 +87,11 @@ namespace TestX
             return XmlContentWriter.GetXml("Test", this);
         }
 
-        abstract internal void WriteXml(XmlWriter writer);
-
-        /// <summary>
-        /// Writes an XML element with the specified name. This method is called by implementations
-        /// of <see cref="WriteXml"/> to write out embedded objects. It does not qualify the element
-        /// with a namespace (so it should not be used for writing out top-level elements).
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <param name="localName">The name for the element</param>
-        internal void WriteElement(XmlWriter writer, string localName)
-        {
-            writer.WriteStartElement(localName);
-            WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
         static internal Base FromXml(XmlReader xr)
         {
             XmlContentReader xcr = new XmlContentReader(xr);
             return (Base)xcr.ReadContent();
         }
-
-        abstract internal void ReadXml(XmlReader reader);
 
         abstract public void WriteContent(XmlContentWriter writer);
         abstract public void ReadContent(XmlContentReader reader);

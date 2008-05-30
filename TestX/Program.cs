@@ -32,26 +32,41 @@ namespace TestX
                 SqlCommand cmd = new SqlCommand("DELETE FROM dbo.Test", c);
                 cmd.ExecuteNonQuery();
 
-                First f = new First();
-                f.Id = 1;
-                f.Name = "A";
-
-                Second s = new Second();
-                s.Id = 2;
-                s.Name = "B";
+                First f1 = new First();
+                f1.Id = 1;
+                f1.Name = "A";
 
                 First f2 = new First();
-                f2.Id = 3;
-                f2.Name = "C";
-                MyArcClass ac = new MyArcClass();
-                ac.Radius = 999;
-                ac.Center = 995;
-                ac.AbValue = 123;
-                f2.More = ac;
+                f2.Id = 2;
+                f2.Name = "B";
 
-                Insert(c, f);
-                Insert(c, s);
+                First f3 = new First();
+                f3.Id = 3;
+                f3.Name = "C";
+
+                First f4 = new First();
+                f4.Id = 4;
+                f4.Name = "D";
+
+                MyArcClass ac = new MyArcClass();
+                ac.Radius = 990;
+                ac.Center = 991;
+                ac.AbValue = 100;
+
+                MySegClass seg = new MySegClass();
+                seg.Start = 200;
+                seg.End = 201;
+                seg.AbValue = 101;
+
+                f3.More1 = ac;
+                f2.More2 = seg;
+                f4.More1 = ac;
+                f4.More2 = seg;
+
+                Insert(c, f1);
                 Insert(c, f2);
+                Insert(c, f3);
+                Insert(c, f4);
 
                 Console.WriteLine("rows inserted");
             }

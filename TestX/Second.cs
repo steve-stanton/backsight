@@ -30,18 +30,6 @@ namespace TestX
             return String.Format("Type={2}, Id={0}, Name={1}", Id, Name, GetType().Name);
         }
 
-        internal override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("Id", Id.ToString());
-            writer.WriteAttributeString("Name", Name.ToString());
-        }
-
-        internal override void ReadXml(System.Xml.XmlReader reader)
-        {
-            Id = Int32.Parse(reader["Id"]);
-            Name = reader["Name"];
-        }
-
         public override void WriteContent(Backsight.XmlContentWriter writer)
         {
             writer.WriteInt("Id", Id);

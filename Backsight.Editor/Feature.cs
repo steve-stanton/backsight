@@ -786,7 +786,7 @@ namespace Backsight.Editor
             int entId = reader.ReadInt("EntityId");
             string key = reader.ReadString("Key");
 
-            m_What = EnvironmentContainer.FindEntityById(entId);
+            //m_What = EnvironmentContainer.FindEntityById(entId);
 
             // TODO: The FeatureId instance may have been loaded already (since
             // multiple features can share the same ID) => The ID requires its

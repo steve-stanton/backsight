@@ -72,10 +72,16 @@ namespace Backsight
             // Assume we've reached the next element
             Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
 
-            // The element HAS to have a type declaration
+            // Empty elements are placeholders for nulls.
+            //if (m_Reader.IsEmptyElement)
+            //    return null;
+
+            // If there's no type declaration, treat as empty element (since XmlReader.IsEmptyElement
+            // is always returning true)
             string typeName = m_Reader["xsi:type"];
             if (String.IsNullOrEmpty(typeName))
-                throw new Exception("Content does not contain xsi:type attribute");
+                return null;
+                //throw new Exception("Content does not contain xsi:type attribute");
 
             // If we haven't previously encountered the type, look up an appropriate
             // constructor (where possible, go for a constructor that accepts an
@@ -105,7 +111,8 @@ namespace Backsight
             if (c.GetParameters().Length==0)
             {
                 result = (IXmlContent)c.Invoke(new object[0]);
-                result.ReadContent(this);
+                throw new NotImplementedException("Need to uncomment IXmlContent.ReadContent");
+                //result.ReadContent(this);
             }
             else
             {
@@ -169,10 +176,21 @@ namespace Backsight
 
         public IXmlContent ReadElement(string name)
         {
-            if (m_Reader.ReadToFollowing(name))
-                return ReadContent();
-            else
-                return null;
+            // Read the next node if we're at the start
+            if (m_Reader.NodeType == XmlNodeType.None)
+            {
+                if (!m_Reader.Read())
+                    return null;
+            }
+
+            m_Reader.Read();
+
+            // I'm not 100% sure what to expect, this is what I think I'll have...
+            Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
+            Console.WriteLine("Name="+m_Reader.Name);
+            //Debug.Assert(m_Reader.Name == name);
+
+            return ReadContent();
         }
     }
 }

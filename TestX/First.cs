@@ -9,18 +9,12 @@ using Backsight;
 
 namespace TestX
 {
-    //[XmlType(TypeName = "First", Namespace = "TestSpace")]
-    //[XmlType("First")]
-    //[XmlRoot(Namespace="TestSpace")]
     class First : Base
     {
-        //[XmlAttribute]
         public int Id;
-
-        //[XmlAttribute]
         public string Name;
-
-        public MyAbClass More;
+        public MyAbClass More1;
+        public MyAbClass More2;
 
         internal First()
         {
@@ -33,45 +27,26 @@ namespace TestX
 
         public override string ToString()
         {
-            if (More==null)
-                return String.Format("Type={0}, ID={1}, Name={2}, with no more", GetType().Name, Id, Name);
-            else
-                return String.Format("Type={0}. ID={1}, Name={2}, with more... {3}", GetType().Name, Id, Name, More.ToString());
-        }
+            string m1 = (More1==null ? String.Empty : More1.ToString());
+            string m2 = (More2==null ? String.Empty : More2.ToString());
 
-        internal override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            Console.WriteLine("writing " + Id);
-            writer.WriteAttributeString("Id", Id.ToString());
-            writer.WriteAttributeString("Name", Name.ToString());
-
-            if (More!=null)
-                More.WriteElement(writer, "More");
-        }
-
-        internal override void ReadXml(XmlReader reader)
-        {
-            // The attributes don't need to be "read"
-            Id = Int32.Parse(reader["Id"]);
-            Name = reader["Name"];
-
-            reader.Read();
-            if (reader.IsStartElement("More"))
-                More = MyAbClass.FromXml(reader);
+            return String.Format("ID={0}, Name={1}: M1=[{2}], M2=[{3}]", Id, Name, m1, m2);
         }
 
         public override void WriteContent(Backsight.XmlContentWriter writer)
         {
             writer.WriteInt("Id", Id);
             writer.WriteString("Name", Name);
-            writer.WriteElement("More", More);
+            writer.WriteElement("More1", More1);
+            writer.WriteElement("More2", More2);
         }
 
         public override void ReadContent(XmlContentReader reader)
         {
             Id = reader.ReadInt("Id");
             Name = reader.ReadString("Name");
-            More = (MyAbClass)reader.ReadElement("More");
+            More1 = (MyAbClass)reader.ReadElement("More1");
+            More2 = (MyAbClass)reader.ReadElement("More2");
         }
     }
 }
