@@ -51,9 +51,9 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The observed direction, in units that that are consistent with the direction type.
+        /// The observed direction, in radians
         /// </summary>
-        abstract internal IAngle Observation { get; }
+        abstract internal double ObservationInRadians { get; }
 
         /// <summary>
         /// The observed direction, as a bearing.

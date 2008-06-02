@@ -201,5 +201,15 @@ namespace Backsight.Editor
             //if (m_Feature!=null)
             //    writer.WriteElement("Feature", m_Feature);
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

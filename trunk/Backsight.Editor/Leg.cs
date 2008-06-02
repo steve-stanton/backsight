@@ -1222,5 +1222,15 @@ void CeLeg::MakeText ( const CeVertex& bs
         {
             writer.WriteArray("SpanArray", "Span", m_Spans);
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

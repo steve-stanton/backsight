@@ -361,7 +361,18 @@ namespace Backsight.Editor
             writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
             writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
 
-            writer.WriteElement("Rotation", m_Rotation);
+            // TODO: May want to cover indirect rotations
+            writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

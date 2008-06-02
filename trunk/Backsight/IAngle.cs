@@ -21,7 +21,7 @@ namespace Backsight
     /// <summary>
     /// Some sort of angular measure (with respect to an unspecified reference direction)
     /// </summary>
-    public interface IAngle : IXmlContent
+    public interface IAngle
     {
         /// <summary>
         /// The angle in radians.

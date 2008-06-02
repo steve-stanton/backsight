@@ -365,5 +365,15 @@ namespace Backsight.Editor
             writer.WriteString("Center", m_Center.DataId);
             //writer.WriteAttributeString("FirstArc", 
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

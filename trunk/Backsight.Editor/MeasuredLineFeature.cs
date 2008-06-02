@@ -49,8 +49,18 @@ namespace Backsight.Editor
             if (d==null)
                 throw new ArgumentNullException();
 
-            m_Line = line;
             m_ObservedLength = d;
+            m_Line = line;
+        }
+
+        /// <summary>
+        /// Creates a new <c>MeasuredLineFeature</c>
+        /// </summary>
+        /// <param name="reader">The reader that holds the definition of this object</param>
+        internal MeasuredLineFeature(XmlContentReader reader)
+        {
+            m_ObservedLength = (Distance)reader.ReadElement("Distance");
+            m_Line = (LineFeature)reader.ReadFeatureByReference("Line");
         }
 
         #endregion
@@ -81,7 +91,18 @@ namespace Backsight.Editor
         public void WriteContent(XmlContentWriter writer)
         {
             writer.WriteElement("Distance", m_ObservedLength);
-            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteFeatureReference("Line", m_Line);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new InvalidOperationException("Use constructor that accepts XmlContentReader");
         }
     }
 }

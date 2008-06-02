@@ -290,6 +290,7 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
+    <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
@@ -948,6 +949,8 @@
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateUI.cs" />
     <Compile Include="Wildcard.cs" />
+    <Compile Include="XmlContentReader.cs" />
+    <Compile Include="XmlContentWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

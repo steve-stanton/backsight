@@ -24,7 +24,7 @@ namespace Backsight
     /// could either be a real ground length, of a length on the mapping projection.
     /// </summary>
     [TypeConverter(typeof(StringConverter))]
-    public interface ILength : IXmlContent
+    public interface ILength
     {
         /// <summary>
         /// The length in meters.

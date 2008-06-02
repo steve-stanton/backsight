@@ -17,6 +17,8 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Backsight.Editor.Database;
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="23-OCT-1997" was="CeOperation" />
@@ -30,7 +32,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The session in which this operation was originally defined.
         /// </summary>
-        readonly Session m_Session;
+        SessionData m_Session;
 
         /// <summary>
         /// Operation sequence number. Meant to provide an easy way to check for edit
@@ -51,7 +53,7 @@ namespace Backsight.Editor
 
         protected Operation()
         {
-            m_Session = Backsight.Editor.Session.CurrentSession;
+            m_Session = SessionData.CurrentSession;
             if (m_Session==null)
                 throw new ArgumentNullException("Editing session is not defined");
 
@@ -377,7 +379,12 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        //abstract public void ReadContent(XmlContentReader reader);
+        public virtual void ReadContent(XmlContentReader reader)
+        {
+            m_Session = reader.CurrentSession;
+            m_Sequence = reader.EditSequence;
+            m_Flag = 0;
+        }
 
         #endregion
     }

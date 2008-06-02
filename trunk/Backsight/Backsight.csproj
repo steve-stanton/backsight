@@ -132,7 +132,6 @@
     <Compile Include="GlobalUserSetting.cs" />
     <Compile Include="IPoint.cs" />
     <Compile Include="ISpatialSystem.cs" />
-    <Compile Include="IXmlContent.cs" />
     <Compile Include="Length.cs" />
     <Compile Include="IEditPosition3D.cs" />
     <Compile Include="IExpandablePropertyItem.cs" />
@@ -217,8 +216,6 @@
     <Compile Include="SpatialController.cs" />
     <Compile Include="SpatialSelection.cs" />
     <Compile Include="SpatialType.cs" />
-    <Compile Include="XmlContentReader.cs" />
-    <Compile Include="XmlContentWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\NewCenterCursor.cur" />
