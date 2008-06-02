@@ -44,7 +44,8 @@ namespace Backsight.Editor.Database
                 {
                     while (rdr.Read())
                     {
-                        Job j = new Job(rdr.GetInt32(0), rdr.GetString(1), rdr.GetInt32(2), rdr.GetInt32(3));
+                        uint jobId = (uint)rdr.GetInt32(0);
+                        Job j = new Job(jobId, rdr.GetString(1), rdr.GetInt32(2), rdr.GetInt32(3));
                         result.Add(j);
                     }
                 }
@@ -58,7 +59,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         /// <param name="jobId">The ID of the job to select</param>
         /// <returns>The corresponding job (null if not found)</returns>
-        internal static Job FindByJobId(int jobId)
+        internal static Job FindByJobId(uint jobId)
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
@@ -92,7 +93,7 @@ namespace Backsight.Editor.Database
                                             jobName, zoneId, layerId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
-                int jobId = DbUtil.GetLastId(ic.Value);
+                uint jobId = DbUtil.GetLastId(ic.Value);
                 return new Job(jobId, jobName, zoneId, layerId);
             }
         }
@@ -104,7 +105,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The internal ID for the job
         /// </summary>
-        int m_JobId;
+        uint m_JobId;
 
         /// <summary>
         /// The user-perceived name for the job
@@ -136,7 +137,7 @@ namespace Backsight.Editor.Database
         /// <param name="layerId">The internal ID of the map layer the job involves. If the layer is
         /// part of a theme, edits made as part of the job will affect this layer, as well as
         /// layers derived from it.</param>
-        internal Job(int jobId, string name, int zoneId, int layerId)
+        internal Job(uint jobId, string name, int zoneId, int layerId)
         {
             m_JobId = jobId;
             m_Name = name;
@@ -149,7 +150,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The internal ID for the job
         /// </summary>
-        internal int JobId
+        internal uint JobId
         {
             get { return m_JobId; }
         }

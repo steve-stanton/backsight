@@ -19,11 +19,11 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
 using System.Data;
+using System.Data.SqlTypes;
+using System.Xml;
 
 using Backsight.Data;
 using Backsight.Environment;
-using System.Data.SqlTypes;
-using System.Xml;
 
 namespace Backsight.Editor.Database
 {
@@ -57,6 +57,13 @@ namespace Backsight.Editor.Database
             // Get the ID of the current user
             int userId = User.GetUserId();
 
+            // Grab information about all defined users
+            User[] allUsers = User.FindAll();
+
+            // Grab information about all defined jobs
+            // TODO: This isn't very smart!
+            Job[] allJobs = Job.FindAll();
+
             using (IConnection ic = AdapterFactory.GetConnection())
             {
                 // Load information about the sessions involved
@@ -81,19 +88,32 @@ namespace Backsight.Editor.Database
                 SqlCommand cmd = new SqlCommand(sb.ToString(), con);
 
                 SessionData curSession = null;
+                User curUser = null;
+                Job curJob = null;
+
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        int sessionId = reader.GetInt32(0);
-                        int editSequence = reader.GetInt32(1);
+                        uint sessionId = (uint)reader.GetInt32(0);
+                        uint editSequence = (uint)reader.GetInt32(1);
 
                         // Ensure we have the correct session object
                         if (curSession==null || curSession.m_SessionId!=sessionId)
                         {
                             curSession = sessions.Find(delegate(SessionData s)
                                             { return (s.m_SessionId==sessionId); });
-                            Debug.Assert(curSession!=null);
+                            Debug.Assert(curSession != null);
+
+                            curUser = Array.Find<User>(allUsers, delegate(User u)
+                                            { return (u.UserId==curSession.UserId); });
+                            Debug.Assert(curUser != null);
+
+                            curJob = Array.Find<Job>(allJobs, delegate(Job j)
+                                            { return (j.JobId == curSession.JobId); });
+                            Debug.Assert(curJob != null);
+
+                            Session.CurrentSession = new Session(curSession, curUser, curJob);
                         }
 
                         SqlXml data = reader.GetSqlXml(2);
@@ -217,10 +237,10 @@ namespace Backsight.Editor.Database
         /// <returns>The object representing the session</returns>
         static SessionData ParseSelectFromSessions(SqlDataReader reader)
         {
-            int sessionId = reader.GetInt32(0);
-            int jobId = reader.GetInt32(1);
-            int userId = reader.GetInt32(2);
-            int revision = reader.GetInt32(3);
+            uint sessionId = (uint)reader.GetInt32(0);
+            uint jobId = (uint)reader.GetInt32(1);
+            uint userId = (uint)reader.GetInt32(2);
+            uint revision = (uint)reader.GetInt32(3);
             DateTime startTime = reader.GetDateTime(4);
             DateTime endTime = reader.GetDateTime(5);
             uint numItem = (uint)reader.GetInt32(6);
@@ -283,7 +303,7 @@ namespace Backsight.Editor.Database
         /// Inserts a new session into the database
         /// </summary>
         /// <returns></returns>
-        internal static SessionData Insert(int jobId, int userId)
+        internal static SessionData Insert(uint jobId, uint userId)
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
@@ -291,12 +311,12 @@ namespace Backsight.Editor.Database
                 string nowString = DbUtil.GetDateTimeString(now);
 
                 string sql = String.Format("INSERT INTO [dbo].[Sessions]" +
-                    " ([JobId], [UserId], [Revision], [StartTime], [EndTime], [NumEdit])" +
+                    " ([JobId], [UserId], [Revision], [StartTime], [EndTime], [NumItem])" +
                     " VALUES ({0}, {1}, 0, {2}, {3}, 0)", jobId, userId, nowString, nowString);
 
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
-                int sessionId = DbUtil.GetLastId(ic.Value);
+                uint sessionId = DbUtil.GetLastId(ic.Value);
                 return new SessionData(sessionId, jobId, userId, 0, now, now, 0);
             }
         }
@@ -308,22 +328,22 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// Unique ID for the session.
         /// </summary>
-        readonly int m_SessionId;
+        readonly uint m_SessionId;
 
         /// <summary>
         /// The ID of the job the session is part of
         /// </summary>
-        readonly int m_JobId;
+        readonly uint m_JobId;
 
         /// <summary>
         /// The ID of the user running the session
         /// </summary>
-        readonly int m_UserId;
+        readonly uint m_UserId;
 
         /// <summary>
         /// The revision number for the session (0 if the session has not been published)
         /// </summary>
-        int m_Revision;
+        uint m_Revision;
 
         /// <summary>
         /// When was session started? 
@@ -354,7 +374,7 @@ namespace Backsight.Editor.Database
         /// <param name="start">When was session started? </param>
         /// <param name="end">When was the last edit performed?</param>
         /// <param name="numItem">TThe number of items (objects) created by the session</param>
-        SessionData(int sessionId, int jobId, int userId, int revision, DateTime start, DateTime end, uint numItem)
+        SessionData(uint sessionId, uint jobId, uint userId, uint revision, DateTime start, DateTime end, uint numItem)
         {
             m_SessionId = sessionId;
             m_JobId = jobId;
@@ -366,5 +386,89 @@ namespace Backsight.Editor.Database
         }
 
         #endregion
+
+        /// <summary>
+        /// Unique ID for the session.
+        /// </summary>
+        internal uint Id
+        {
+            get { return m_SessionId; }
+        }
+
+        /// <summary>
+        /// The ID of the user running the session
+        /// </summary>
+        internal uint UserId
+        {
+            get { return m_UserId; }
+        }
+
+        /// <summary>
+        /// The ID of the job the session is part of
+        /// </summary>
+        internal uint JobId
+        {
+            get { return m_JobId; }
+        }
+
+        /// <summary>
+        /// When was session started? 
+        /// </summary>
+        internal DateTime StartTime
+        {
+            get { return m_Start; }
+        }
+
+        /// <summary>
+        /// The number of items (objects) created by the session
+        /// </summary>
+        internal uint NumItem
+        {
+            get { return m_NumItem; }
+        }
+
+        /// <summary>
+        /// Deletes this session from the database. This will succeed only
+        /// if no edits have been performed as part of the session.
+        /// </summary>
+        internal void Delete()
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("DELETE FROM [dbo].[Sessions] WHERE [SessionId]={0}",
+                                                m_SessionId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Updates the end-time associated with this session. This should be
+        /// called at the end of each editing operation.
+        /// </summary>
+        internal void UpdateEndTime()
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("UPDATE [dbo].[Sessions] SET [EndTime]=GETDATE(), [NumItem]={0}" +
+                                            " WHERE [SessionId]={1}", m_NumItem, m_SessionId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Reserves an item number for use with this session. This should only
+        /// be called for the currently active session. It is a lightweight
+        /// request, because it just increments a counter. The database will not
+        /// get updated until <see cref="UpdateEndTime"/> is called.
+        /// </summary>
+        /// <returns>The reserved item number</returns>
+        internal uint ReserveNextItem()
+        {
+            Debug.Assert(m_SessionId == Session.CurrentSession.Id);
+            m_NumItem++;
+            return m_NumItem;
+        }
     }
 }

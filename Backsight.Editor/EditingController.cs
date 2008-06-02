@@ -28,6 +28,7 @@ using Backsight.Environment;
 using Backsight.SqlServer;
 using Backsight.Geometry;
 using Backsight.Editor.Database;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -104,11 +105,6 @@ namespace Backsight.Editor
         private Operation m_CurrentEdit;
 
         /// <summary>
-        /// The object responsible for saving & backing up any data file
-        /// </summary>
-        private readonly AutoSaver m_AutoSaver;
-
-        /// <summary>
         /// Modeless dialog used to perform inverse calculations (null if dialog
         /// is not currently displayed).
         /// </summary>
@@ -133,6 +129,11 @@ namespace Backsight.Editor
         /// </summary>
         bool m_HasSelectionChanged;
 
+        /// <summary>
+        /// Any edits performed in update mode. Null if not in update mode.
+        /// </summary>
+        //List<Operation> m_Updates;
+
         #endregion
 
         #region Constructors
@@ -149,11 +150,11 @@ namespace Backsight.Editor
             m_Main = main;
             m_IsAutoSelect = 0;
             m_CurrentEdit = null;
-            m_AutoSaver = new AutoSaver(this);
             m_Inverse = null;
             m_Check = null;
             m_Sel = null;
             m_HasSelectionChanged = false;
+            //m_Updates = null;
         }
 
         #endregion
@@ -167,12 +168,9 @@ namespace Backsight.Editor
                 m_Inverse = null;
             }
 
-            m_AutoSaver.OnClose();
-            CadastralMapModel cmm = this.CadastralMapModel;
-            if (cmm!=null)
-                cmm.Close();
-
-            base.Close();
+            Session s = Session.CurrentSession;
+            if (s!=null)
+                s.End();
         }
 
         public CadastralMapModel CadastralMapModel
@@ -455,7 +453,6 @@ namespace Backsight.Editor
                 //cmm.AddSession();
                 //SetMapModel(cmm, cmm.DrawExtent);
                 InitializeIdManager();
-                m_AutoSaver.OnOpen();
                 return true;
             }
 
@@ -527,22 +524,6 @@ namespace Backsight.Editor
             }
 
             idMan.MapOpen(CadastralMapModel);
-        }
-
-        /// <summary>
-        /// Performs an auto-save. This function should be called ONLY by the
-        /// <c>AutoSaver</c> class. This may be called before the user has specified
-        /// the name to give to a new map.
-        /// </summary>
-        internal void AutoSave()
-        {
-            CadastralMapModel map = this.CadastralMapModel;
-            if (map==null)
-                return;
-
-            // Update the timestamp for the current editing session.
-            map.UpdateSession();
-            //map.Write();
         }
 
         internal bool AutoSelect
@@ -712,7 +693,6 @@ namespace Backsight.Editor
             if (m_IsAutoSelect>0)
                 m_IsAutoSelect = -m_IsAutoSelect;
 
-            m_AutoSaver.StartEdit(cmd);
             m_Command = cmd;
             m_Command.Run();
         }
@@ -731,8 +711,6 @@ namespace Backsight.Editor
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
                 m_IsAutoSelect = -m_IsAutoSelect;
-
-            m_AutoSaver.AbortEdit(m_Command);
 
             cmd.ActiveDisplay.PaintNow();
             m_Command.Dispose();
@@ -776,8 +754,8 @@ namespace Backsight.Editor
                 ActiveDisplay.PaintNow();
             }
 
-            // Save the map model
-            m_AutoSaver.FinishEdit(m_Command);
+            // Update the end-time associated with the session
+            Session.CurrentSession.UpdateEndTime();
 
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
@@ -822,14 +800,24 @@ namespace Backsight.Editor
         }
         */
 
+        /// <summary>
+        /// Records the fact that update processing has been started.
+        /// </summary>
         void OnStartUpdate()
 	    {
-            m_AutoSaver.OnStartUpdate();
+            throw new NotImplementedException("EditingController.OnStartUpdate");
+            /*
+            if (m_Updates != null)
+                throw new InvalidOperationException();
+
+            m_Updates = new List<Operation>();
+             */
         }
 
         void OnFinishUpdate()
 	    {
-            m_AutoSaver.OnFinishUpdate();
+            throw new NotImplementedException("EditingController.OnFinishUpdate");
+            //m_AutoSaver.OnFinishUpdate();
         }
 
         /// <summary>

@@ -44,7 +44,6 @@
     <Compile Include="AngleDirection.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttachPointUI.cs" />
-    <Compile Include="AutoSaver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="BearingDirection.cs" />
     <Compile Include="CircularLeg.cs" />

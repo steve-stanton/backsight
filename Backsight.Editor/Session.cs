@@ -24,19 +24,25 @@ using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
+    /// <summary>
+    /// An editing session.
+    /// </summary>
     class Session
     {
         #region Static
 
         /// <summary>
-        /// The current editing session. Initialized on a call to <c>Start</c>, cleared
-        /// on a call to <c>End</c>.
+        /// The current editing session
         /// </summary>
-        private static Session s_CurrentSession = null;
+        static Session s_CurrentSession = null;
 
-        public static Session CurrentSession
+        /// <summary>
+        /// The current editing session
+        /// </summary>
+        internal static Session CurrentSession
         {
             get { return s_CurrentSession; }
+            set { s_CurrentSession = value; }
         }
 
         #endregion
@@ -46,27 +52,23 @@ namespace Backsight.Editor
         /// <summary>
         /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
         /// </summary>
-        SessionData m_Data;
-
-        /// <summary>
-        /// A unique ID for this session
-        /// </summary>
-        readonly InternalIdValue m_SessionId;
+        readonly SessionData m_Data;
 
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        Person m_Who;
+        readonly User m_Who;
 
         /// <summary>
-        /// When was session started? 
+        /// The job the session is associated with
         /// </summary>
-        DateTime m_Start;
+        readonly Job m_Job;
 
         /// <summary>
-        /// When was the last edit performed?
+        /// The map layer associated with the job (null until the <see cref="ActiveLayer"/>
+        /// property is accessed).
         /// </summary>
-        DateTime m_End;
+        ILayer m_Layer;
 
         /// <summary>
         /// Operations (if any) that were performed during the session. 
@@ -74,45 +76,49 @@ namespace Backsight.Editor
         List<Operation> m_Operations;
 
         /// <summary>
-        /// The map layer that was being edited throughout this session.
-        /// </summary>
-        LayerFacade m_Layer;
-
-        /// <summary>
         /// The model that contains this session
         /// </summary>
-        [NonSerialized]
         private CadastralMapModel m_Model;
 
         #endregion
 
         #region Constructors
 
-        internal Session(CadastralMapModel model, LayerFacade activeLayer)
+        /// <summary>
+        /// Creates a <c>Session</c> using information retrieved from the database.
+        /// This is called when historical sessions are loaded during loading of
+        /// the editing model.
+        /// </summary>
+        /// <param name="sessionData">The information selected from the database</param>
+        /// <param name="user">The user who performed the session</param>
+        /// <param name="job">The job the session is associated with</param>
+        internal Session(SessionData sessionData, User user, Job job)
         {
-            if (model==null || activeLayer==null)
+            if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
 
-            m_SessionId = model.CreateSessionId();
-            m_Model = model;
-            m_Layer = activeLayer;
+            Debug.Assert(user.UserId == sessionData.UserId);
+            Debug.Assert(job.JobId == sessionData.JobId);
+
+            m_Data = sessionData;
+            m_Who = user;
+            m_Job = job;
+            m_Layer = null;
         }
 
         #endregion
 
+        /// <summary>
+        /// Unique ID for the session.
+        /// </summary>
         public uint Id
         {
-            get { return m_SessionId.SessionId; }
-        }
-
-        public InternalIdValue InternalId
-        {
-            get { return m_SessionId; }
+            get { return m_Data.Id; }
         }
 
         public override string ToString()
         {
-            return String.Format("{0} ({1})", m_Start, m_Who);
+            return String.Format("{0} ({1})", m_Data.StartTime, m_Who);
         }
 
         internal CadastralMapModel MapModel
@@ -125,36 +131,44 @@ namespace Backsight.Editor
         /// </summary>
         public ILayer ActiveLayer
         {
-            get { return m_Layer; }
+            get
+            {
+                if (m_Layer == null)
+                    m_Layer = EnvironmentContainer.FindLayerById(m_Job.LayerId);
+
+                return m_Layer;
+            }
         }
 
+        /// <summary>
+        /// Have any persistent objects been created via this editing session?
+        /// </summary>
         public bool IsEmpty
         {
-            get { return (m_Operations==null || m_Operations.Count==0); }
+            get { return m_Data.NumItem==0; }
         }
 
-        internal void Start(Person p)
-        {
-            m_Who = p;
-            m_Start = DateTime.Now;
-            m_End = m_Start;
-            m_Operations = new List<Operation>();
-
-            s_CurrentSession = this;
-        }
-
+        /// <summary>
+        /// Concludes this editing session. If nothing has been created, the
+        /// row in the database will be deleted. Otherwise it gets updated
+        /// with the current time.
+        /// </summary>
         public void End()
         {
-            UpdateEndTime();
-            if (IsEmpty)
-                m_Operations = null;
+            if (m_Data.NumItem==0)
+                m_Data.Delete();
+            else
+                m_Data.UpdateEndTime();
 
             s_CurrentSession = null;
         }
 
+        /// <summary>
+        /// Updates the end-time (and item count) associated with this session
+        /// </summary>
         public void UpdateEndTime()
         {
-            m_End = DateTime.Now;
+            m_Data.UpdateEndTime();
         }
 
         /// <summary>
@@ -240,43 +254,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// When was session started? 
-        /// </summary>
-        public DateTime StartTime
-        {
-            get { return m_Start; }
-        }
-
-        /// <summary>
-        /// When was the last edit performed?
-        /// </summary>
-        public DateTime EndTime
-        {
-            get { return m_End; }
-        }
-
-        /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        public Person User
+        public User User
         {
             get { return m_Who; }
-        }
-
-        /// <summary>
-        /// The number of edits performed during the session.
-        /// </summary>
-        public int OperationCount
-        {
-            get { return (m_Operations==null ? 0 : m_Operations.Count); }
-        }
-
-        /// <summary>
-        /// The map layer that was being edited throughout this session.
-        /// </summary>
-        public ILayer Layer
-        {
-            get { return m_Layer; }
         }
 
         /// <summary>
