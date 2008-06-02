@@ -343,7 +343,7 @@ namespace Backsight.Editor.Forms
             else
             {	
 		        // What's the bearing from the start to the end of the parallel?
-		        double bearing = Geom.Bearing(m_South, m_North).Radians;
+                double bearing = Geom.BearingInRadians(m_South, m_North);
 
 		        // What's the max length of a diagonal crossing the entire screen?
 		        double maxdiag = m_Cmd.MaxDiagonal;

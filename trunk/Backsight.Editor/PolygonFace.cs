@@ -300,7 +300,7 @@ namespace Backsight.Editor
                 if (isRadial)
                 {
                     Debug.Assert(centre!=null);
-                    bearing = Geom.Bearing(centre, m_Begin).Radians;
+                    bearing = Geom.BearingInRadians(centre, m_Begin);
                     angle = 0.0;
                     if (iscw  != isPolLeft)
                         bearing += Constants.PI;
@@ -317,11 +317,11 @@ namespace Backsight.Editor
                 // around the polygon, this will always give us the exterior
                 // angle.
                 Turn reference = new Turn(m_Begin, prev.TailReference);
-                angle = reference.GetAngle(this.HeadReference).Radians;
+                angle = reference.GetAngleInRadians(this.HeadReference);
 
                 // Define the bearing to use for projecting the point. It's
                 // in the middle of the angle, but projected into the polygon.
-                bearing = reference.Bearing.Radians + angle*0.5 + Constants.PI;
+                bearing = reference.BearingInRadians + angle*0.5 + Constants.PI;
             }
 
             // Initialize the link at the start of the face
@@ -362,7 +362,7 @@ namespace Backsight.Editor
                     if (isRadial)
                     {
                         Debug.Assert(centre!=null);
-                        bearing = Geom.Bearing(centre, loc).Radians;
+                        bearing = Geom.BearingInRadians(centre, loc);
                         if (iscw  != isPolLeft)
                             bearing += Constants.PI;
                     }
@@ -376,20 +376,20 @@ namespace Backsight.Editor
                         if (i==0)
                             back = m_Begin;
                         else
-                            back = m_ExtraPoints[i-1].PointGeometry;
+                            back = m_ExtraPoints[i-1].Geometry;
 
                         if (i==(m_ExtraPoints.Length-1))
                             fore = m_End;
                         else
-                            fore = m_ExtraPoints[i+1].PointGeometry;
+                            fore = m_ExtraPoints[i+1].Geometry;
 
 
                         Turn reference = new Turn(loc, back);
-                        angle = reference.GetAngle(fore).Radians;
+                        angle = reference.GetAngleInRadians(fore);
 
                         // Define the bearing to use for projecting the point. It's
                         // in the middle of the angle, but projected into the polygon.
-                        bearing = reference.Bearing.Radians + angle*0.5 + Constants.PI;
+                        bearing = reference.BearingInRadians + angle*0.5 + Constants.PI;
                     }
 
                     link = new PolygonLink(m_ExtraPoints[i], isCurveEnd, isRadial, bearing, angle);
@@ -413,7 +413,7 @@ namespace Backsight.Editor
                     return m_Begin;
 
                 PointFeature tail = m_ExtraPoints[m_ExtraPoints.Length-1];
-                return tail.PointGeometry;
+                return tail.Geometry;
             }
         }
 
@@ -430,7 +430,7 @@ namespace Backsight.Editor
                     return m_End;
 
                 PointFeature head = m_ExtraPoints[0];
-                return head.PointGeometry;
+                return head.Geometry;
             }
         }
     }

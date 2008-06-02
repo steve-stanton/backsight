@@ -376,11 +376,11 @@ namespace Backsight.Editor
             // Get the clockwise angle subtended by the circular arc. Add
             // on a tiny bit to cover numerical comparison problems.
             Turn reft = new Turn(centre, start);
-            double maxangle = reft.GetAngle(end).Radians + Constants.TINY;
+            double maxangle = reft.GetAngleInRadians(end) + Constants.TINY;
 
             // Get the clockwise angles to both intersections.
-            double a1 = reft.GetAngle(x1).Radians;
-            double a2 = reft.GetAngle(x2).Radians;
+            double a1 = reft.GetAngleInRadians(x1);
+            double a2 = reft.GetAngleInRadians(x2);
 
             // No graze if both are beyond the arc sector.
             if (a1>maxangle && a2>maxangle)
@@ -500,7 +500,7 @@ namespace Backsight.Editor
 		        // Check if the angle to the other end is prior to the EC.
                 // If not, it's somewhere off the curve.
                 Turn reft = new Turn(centre, bc);
-		        if (reft.GetAngle(othend).Radians > reft.GetAngle(ec).Radians)
+		        if (reft.GetAngleInRadians(othend) > reft.GetAngleInRadians(ec))
                 {
 			        xsect.Append(xend);
 			        return 1;
@@ -568,8 +568,8 @@ namespace Backsight.Editor
             // confirm that it actually intersects the arc!
 
             Turn refbc = new Turn(centre, trueBC);
-            double eangle = refbc.GetAngle(trueEC).Radians;
-            double xangle = refbc.GetAngle(x1).Radians;
+            double eangle = refbc.GetAngleInRadians(trueEC);
+            double xangle = refbc.GetAngleInRadians(x1);
 
             if (xangle > eangle)
             {
@@ -1040,12 +1040,12 @@ namespace Backsight.Editor
             // Define the start of the clockwise arc as a reference line,
             // and get the clockwise angle to it's EC.
             Turn reft = new Turn(circle.Center, bc1);
-            double sector = reft.GetAngle(ec1).Radians;
+            double sector = reft.GetAngleInRadians(ec1);
 
             // Where do the BC and EC of the 2nd curve fall with respect
             // to the 1st curve's arc sector?
-            double bcang = reft.GetAngle(bc2).Radians;
-            double ecang = reft.GetAngle(ec2).Radians;
+            double bcang = reft.GetAngleInRadians(bc2);
+            double ecang = reft.GetAngleInRadians(ec2);
 
             if (bcang<sector)
             {
@@ -1103,10 +1103,10 @@ namespace Backsight.Editor
             QuadVertex q2x1 = new QuadVertex(b.Center, x1);
             QuadVertex q2x2 = new QuadVertex(b.Center, x2);
 
-            double b1x1 = q1x1.Bearing.Radians;
-            double b1x2 = q1x2.Bearing.Radians;
-            double b2x1 = q2x1.Bearing.Radians;
-            double b2x2 = q2x2.Bearing.Radians;
+            double b1x1 = q1x1.BearingInRadians;
+            double b1x2 = q1x2.BearingInRadians;
+            double b2x1 = q2x1.BearingInRadians;
+            double b2x2 = q2x2.BearingInRadians;
 
             // Switch if the min bearing to the 2nd intersection is actually
             // less than the min bearing to the 1st intersection.
@@ -1182,8 +1182,8 @@ namespace Backsight.Editor
 
             IPointGeometry centre = c2;
             Turn reft = new Turn(centre, bc);
-            double eangle = reft.GetAngle(ec).Radians;
-            double xangle = reft.GetAngle(x1).Radians;
+            double eangle = reft.GetAngleInRadians(ec);
+            double xangle = reft.GetAngleInRadians(x1);
             if (xangle > eangle)
             {
                 xsect.Append(xend);
@@ -1291,8 +1291,8 @@ namespace Backsight.Editor
                     // angles subtended by the arcs.
 
                     IPointGeometry centre = circle.Center;
-                    double ang1 = new Turn(centre, bc1).GetAngle(ec1).Radians;
-                    double ang2 = new Turn(centre, bc2).GetAngle(ec2).Radians;
+                    double ang1 = new Turn(centre, bc1).GetAngleInRadians(ec1);
+                    double ang2 = new Turn(centre, bc2).GetAngleInRadians(ec2);
 			        bool isThisGraze = (ang1 < ang2);
 
 			        if (isThisGraze)

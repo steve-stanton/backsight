@@ -36,9 +36,9 @@ namespace Backsight
         private readonly IPosition m_Reference;
 
         /// <summary>
-        /// The bearing from the origin to the reference position.
+        /// The bearing from the origin to the reference position, in radians
         /// </summary>
-        private readonly IAngle m_Bearing;
+        private readonly double m_Bearing;
 
         #endregion
 
@@ -53,17 +53,17 @@ namespace Backsight
         {
 	        m_Origin = origin;
 	        m_Reference = reference;
-            m_Bearing = BasicGeom.Bearing(m_Origin, m_Reference);
+            m_Bearing = BasicGeom.BearingInRadians(m_Origin, m_Reference);
         }
 
         #endregion
 
-        public IAngle GetAngle(Turn that)
+        public double GetAngle(Turn that)
         {
-            return this.GetAngle(that.Bearing, 0.0);
+            return GetAngleInRadians(that.BearingInRadians, 0.0);
         }
 
-        public IAngle Bearing
+        public double BearingInRadians
         {
             get { return m_Bearing; }
         }
@@ -72,10 +72,10 @@ namespace Backsight
         /// Returns the clockwise angle between the reference direction and a position.
         /// </summary>
         /// <param name="pos">The position we want the clockwise angle to.</param>
-        /// <returns>The clockwise angle.</returns>
-        public IAngle GetAngle(IPosition pos)
+        /// <returns>The clockwise angle, in radians.</returns>
+        public double GetAngleInRadians(IPosition pos)
         {
-            return GetAngle(pos, 0.0);
+            return GetAngleInRadians(pos, 0.0);
         }
 
         /// <summary>
@@ -85,38 +85,38 @@ namespace Backsight
         /// <param name="angtol">Angular tolerance. If you specify a non-zero value, and the position is
         ///	within tolerance of the reference bearing, you will get back a value of zero.</param>
         /// <returns>The clockwise angle, in radians.</returns>
-        public IAngle GetAngle(IPosition pos, double angtol)
+        public double GetAngleInRadians(IPosition pos, double angtol)
         {
             // Get the bearing of the specified position.
-            IAngle bearing = BasicGeom.Bearing(m_Origin, pos);
+            double bearing = BasicGeom.BearingInRadians(m_Origin, pos);
 
             // Return the angle.
-            return this.GetAngle(bearing, angtol);
+            return GetAngleInRadians(bearing, angtol);
         }
 
         /// <summary>
         /// Calls <c>GetAngle(double, double)</c> with an angular tolerance of zero.
         /// </summary>
-        /// <param name="bearing"></param>
+        /// <param name="bearing">The bearing we want the angle to (in radians)</param>
         /// <returns></returns>
-        public IAngle GetAngle(IAngle bearing)
+        public double GetAngleInRadians(double bearing)
         {
-            return GetAngle(bearing, 0.0);
+            return GetAngleInRadians(bearing, 0.0);
         }
 
         /// <summary>
         /// Returns the clockwise angle between the reference direction and a value
         /// representing a bearing that was measured from the same origin.
         /// </summary>
-        /// <param name="bearing">The bearing we want the angle to.</param>
+        /// <param name="bearing">The bearing we want the angle to (in radians)</param>
         /// <param name="angtol">Angular tolerance for match with reference direction.</param>
         /// <returns></returns>
-        IAngle GetAngle(IAngle bearing, double angtol)
+        double GetAngleInRadians(double bearing, double angtol)
         {
             // Get the clockwise angle with respect to the reference bearing.
 	        double angle;
-            double thisVal = m_Bearing.Radians;
-            double thatVal = bearing.Radians;
+            double thisVal = m_Bearing;
+            double thatVal = bearing;
 	        if (thatVal < thisVal)
 		        angle = MathConstants.PIMUL2 + thatVal - thisVal;
 	        else
@@ -131,9 +131,9 @@ namespace Backsight
 
 	        if ( angtol > MathConstants.TINY &&
 		        (angle<angtol || Math.Abs(angle-MathConstants.PIMUL2)<angtol) )
-		        return new RadianValue(0.0);
+		        return 0.0;
 	        else
-		        return new RadianValue(angle);
+		        return angle;
         }
 
         /// <summary>

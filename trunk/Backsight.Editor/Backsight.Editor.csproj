@@ -300,7 +300,9 @@
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
+    <Compile Include="PointGeometry.cs" />
     <Compile Include="PositionLoader.cs" />
+    <Compile Include="RadianValue.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
     <Compile Include="NewCircularArcUI.cs" />

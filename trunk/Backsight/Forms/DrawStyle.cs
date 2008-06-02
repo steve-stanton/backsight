@@ -253,8 +253,8 @@ namespace Backsight.Forms
             float topLeftX = display.EastingToDisplay(extent.Min.X);
             float topLeftY = display.NorthingToDisplay(extent.Max.Y);
             float size = 2.0f * display.LengthToDisplay(circle.Radius.Meters);
-            float startAngle = (float)(arc.StartBearing.Degrees - 90.0);
-            float sweepAngle = (float)(arc.SweepAngle.Degrees);
+            float startAngle = (float)(arc.StartBearingInRadians * MathConstants.RADTODEG - 90.0);
+            float sweepAngle = (float)(arc.SweepAngleInRadians * MathConstants.RADTODEG);
             display.Graphics.DrawArc(m_Pen, topLeftX, topLeftY, size, size, startAngle, sweepAngle);
         }
 

@@ -160,7 +160,7 @@ namespace Backsight.Editor.Forms
 
                 // Get the clockwise angle from point 1 to point 2.
                 Turn reft = new Turn(c, m_Point1);
-                double angle = reft.GetAngle(m_Point2).Radians;
+                double angle = reft.GetAngleInRadians(m_Point2);
                 bool iscw = true;
 
                 // Make sure the angle is consistent with whether we want

@@ -30,14 +30,14 @@ namespace Backsight
         ICircleGeometry Circle { get; }
 
         /// <summary>
-        /// The bearing from the centre of circle to the start of the arc
+        /// The bearing from the centre of circle to the start of the arc, in radians
         /// </summary>
-        IAngle StartBearing { get; }
+        double StartBearingInRadians { get; }
 
         /// <summary>
-        /// The angular length of the arc
+        /// The angular length of the arc, in radians
         /// </summary>
-        IAngle SweepAngle { get; }
+        double SweepAngleInRadians { get; }
 
         /// <summary>
         /// The point at the start of the clockwise arc.

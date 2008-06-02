@@ -158,7 +158,7 @@ namespace Backsight.Editor.Forms
             {
                 // Get the clockwise angle.
                 Turn reft = new Turn(m_Point2, m_Point1);
-                double ang = reft.GetAngle(m_Point3).Radians;
+                double ang = reft.GetAngleInRadians(m_Point3);
 
                 // Get the complement if we actually want it anti-clockwise.
                 if (!m_Clockwise)

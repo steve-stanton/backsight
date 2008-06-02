@@ -219,18 +219,18 @@ namespace Backsight
         }
 
         /// <summary>
-        /// The bearing of the vertex
+        /// The bearing of the vertex, in radians
         /// </summary>
-        public IAngle Bearing
-        {
-            get
-            {
-                double ang = this.BearingInRadians;
-                return new RadianValue(ang);
-            }
-        }
+        //public IAngle Bearing
+        //{
+        //    get
+        //    {
+        //        double ang = this.BearingInRadians;
+        //        return new RadianValue(ang);
+        //    }
+        //}
 
-        private double BearingInRadians
+        public double BearingInRadians
         {
             get
             {

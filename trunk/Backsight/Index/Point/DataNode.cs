@@ -65,7 +65,7 @@ namespace Backsight.Index.Point
                 {
                     foreach (IPoint p in m_Items)
                     {
-                        if (searchExtent.IsOverlap(p.PointGeometry))
+                        if (searchExtent.IsOverlap(p.Geometry))
                         {
                             bool keepGoing = itemHandler(p);
                             if (!keepGoing)

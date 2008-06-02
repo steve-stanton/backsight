@@ -96,8 +96,8 @@ namespace Backsight.Index.Point
             if (depth==0)
                 return new Extent();
 
-            ulong x = SpatialIndex.ToUnsigned(p.PointGeometry.Easting.Microns);
-            ulong y = SpatialIndex.ToUnsigned(p.PointGeometry.Northing.Microns);
+            ulong x = SpatialIndex.ToUnsigned(p.Geometry.Easting.Microns);
+            ulong y = SpatialIndex.ToUnsigned(p.Geometry.Northing.Microns);
 
             // The lower-left corner is given by masking out the low-order bits (neat)
             ulong size = Node.SIZES[depth];

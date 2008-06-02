@@ -381,8 +381,7 @@ namespace Backsight.Editor
 
             // Get the clockwise angle formed by the reference direction and the
             // ideal bearing for this link point.
-            IAngle b = new RadianValue(m_Bearing);
-	        double angle = reference.GetAngle(b).Radians;
+            double angle = reference.GetAngleInRadians(m_Bearing);
 
             // Force the angle to be less than 180 degrees.
 	        if (angle > Constants.PI)

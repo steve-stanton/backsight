@@ -95,7 +95,7 @@ namespace Backsight.Editor
 
         bool LoadData(ISpatialObject so)
         {
-            IPointGeometry pg = (so as IPoint).PointGeometry;
+            IPointGeometry pg = (so as IPoint).Geometry;
             ICoordinateSystem cs = CadastralMapModel.Current.CoordinateSystem;
             double lat, lon;
             cs.GetLatLong(pg, out lat, out lon);

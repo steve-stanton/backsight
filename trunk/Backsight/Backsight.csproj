@@ -119,6 +119,7 @@
     <Compile Include="Forms\ZoomRectangleTool.cs" />
     <Compile Include="Geometry\CircleGeometry.cs" />
     <Compile Include="Geometry\CircularArcGeometry.cs" />
+    <Compile Include="Geometry\PositionGeometry.cs" />
     <Compile Include="ICircleGeometry.cs" />
     <Compile Include="ICircularArcGeometry.cs" />
     <Compile Include="IFill.cs" />
@@ -128,7 +129,6 @@
     <Compile Include="IMultiSegmentGeometry.cs" />
     <Compile Include="Geometry\LineSegmentGeometry.cs" />
     <Compile Include="Geometry\LineStringGeometry.cs" />
-    <Compile Include="Geometry\PointGeometry.cs" />
     <Compile Include="GlobalUserSetting.cs" />
     <Compile Include="IPoint.cs" />
     <Compile Include="ISpatialSystem.cs" />
@@ -141,7 +141,6 @@
     <Compile Include="Position3D.cs" />
     <Compile Include="Quadrant.cs" />
     <Compile Include="QuadVertex.cs" />
-    <Compile Include="RadianValue.cs" />
     <Compile Include="Turn.cs" />
     <Compile Include="Window.cs" />
     <Compile Include="Position.cs" />

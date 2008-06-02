@@ -17,6 +17,7 @@ using System;
 using System.Xml;
 using System.Text;
 using System.Xml.Schema;
+using Backsight.Geometry;
 
 namespace Backsight
 {
