@@ -54,8 +54,8 @@ namespace Backsight.Geometry
         public CircularArcGeometry(ICircleGeometry circle, IPosition bc, IPosition ec, bool isClockwise)
         {
             m_Circle = circle;
-            m_BC = PointGeometry.Create(bc);
-            m_EC = PointGeometry.Create(ec);
+            m_BC = PositionGeometry.Create(bc);
+            m_EC = PositionGeometry.Create(ec);
             m_IsClockwise = isClockwise;
         }
 
@@ -349,27 +349,27 @@ namespace Backsight.Geometry
             return g.BC.IsCoincident(g.EC);
         }
 
-        public IAngle StartBearing
+        public double StartBearingInRadians
         {
-            get { return CircularArcGeometry.GetStartBearing(this); }
+            get { return CircularArcGeometry.GetStartBearingInRadians(this); }
         }
 
-        public static IAngle GetStartBearing(ICircularArcGeometry g)
+        public static double GetStartBearingInRadians(ICircularArcGeometry g)
         {
-            return BasicGeom.Bearing(g.Circle.Center, g.First);
+            return BasicGeom.BearingInRadians(g.Circle.Center, g.First);
         }
 
-        public IAngle SweepAngle
+        public double SweepAngleInRadians
         {
-            get { return CircularArcGeometry.GetSweepAngle(this); }
+            get { return CircularArcGeometry.GetSweepAngleInRadians(this); }
         }
 
-        public static IAngle GetSweepAngle(ICircularArcGeometry g)
+        public static double GetSweepAngleInRadians(ICircularArcGeometry g)
         {
             IPosition f = g.First;
             IPosition s = g.Second;
             Turn t = new Turn(g.Circle.Center, f);
-            return t.GetAngle(s);
+            return t.GetAngleInRadians(s);
         }
 
         public IPointGeometry First
@@ -414,7 +414,7 @@ namespace Backsight.Geometry
             double radius = circle.Radius.Meters;
 
             if (asFarAs==null)
-                return new Length(radius * g.SweepAngle.Radians);
+                return new Length(radius * g.SweepAngleInRadians);
 
             // Express the position of the BC in a local coordinate system.
             IPosition c = circle.Center;
@@ -422,7 +422,7 @@ namespace Backsight.Geometry
 
             // Calculate the clockwise angle to the desired point.
             QuadVertex to = new QuadVertex(c, asFarAs, radius);
-            double ang = to.Bearing.Radians - bc.Bearing.Radians;
+            double ang = to.BearingInRadians - bc.BearingInRadians;
             if (ang<0.0)
                 ang += MathConstants.PIMUL2;
 
@@ -455,7 +455,7 @@ namespace Backsight.Geometry
 
             // Get the total angle subtended by the curve.
             Turn reft = new Turn(center, start);
-            double totang = reft.GetAngle(end).Radians; // clockwise
+            double totang = reft.GetAngleInRadians(end); // clockwise
             if (!iscw)
                 totang = MathConstants.PIMUL2 - totang;
 
@@ -472,7 +472,7 @@ namespace Backsight.Geometry
                 dbear = -dbear;
 
             // Get the initial bearing to the first position along the curve.
-	        double curbear = reft.Bearing.Radians + dbear;
+	        double curbear = reft.BearingInRadians + dbear;
 
             // Append positions along the length of the curve.
             List<IPointGeometry> result = new List<IPointGeometry>(nv);
@@ -481,7 +481,7 @@ namespace Backsight.Geometry
             for (int i=0; i<nv; i++, curbear+=dbear)
             {
                 IPosition p = BasicGeom.Polar(center, curbear, radius);
-                result.Add(PointGeometry.Create(p));
+                result.Add(PositionGeometry.Create(p));
             }
 
             result.Add(end);
@@ -549,7 +549,7 @@ namespace Backsight.Geometry
             ICircleGeometry circle = g.Circle;
             IPosition c = circle.Center;
             double radius = circle.Radius.Meters;
-            double bearing = BasicGeom.Bearing(c, g.BC).Radians;
+            double bearing = BasicGeom.BearingInRadians(c, g.BC);
 
             // Add the angle that subtends the required distance (or
             // subtract if the curve goes anti-clockwise).

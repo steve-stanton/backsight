@@ -124,7 +124,7 @@ namespace Backsight.Editor.Operations
         internal bool Execute(PointFeature start, PointFeature end)
         {
             // Disallow an attempt to add a null line.
-            if (start.PointGeometry.IsCoincident(end.PointGeometry))
+            if (start.Geometry.IsCoincident(end.Geometry))
                 throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
 
             // Add the new line with default entity type.
@@ -148,7 +148,7 @@ namespace Backsight.Editor.Operations
         internal bool Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
         {
             // Disallow an attempt to add a null line.
-            if (start.PointGeometry.IsCoincident(end.PointGeometry))
+            if (start.Geometry.IsCoincident(end.Geometry))
                 throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
 
             // Figure out whether the arc should go clockwise or not.
@@ -156,7 +156,7 @@ namespace Backsight.Editor.Operations
 
             // Get the clockwise angle from the start to the end.
             Turn sturn = new Turn(centre, start);
-            double angle = sturn.GetAngle(end).Radians;
+            double angle = sturn.GetAngleInRadians(end);
 
             // Figure out which direction the curve should go, depending
             // on whether the user wants the short arc or the long one.

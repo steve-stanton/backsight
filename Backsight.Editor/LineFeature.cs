@@ -96,8 +96,8 @@ namespace Backsight.Editor
             : this(e, creator, new MultiSegmentGeometry(start, end, data))
         {
             Debug.Assert(data.Length>2);
-            Debug.Assert(start.PointGeometry.IsCoincident(data[0]));
-            Debug.Assert(end.PointGeometry.IsCoincident(data[data.Length-1]));
+            Debug.Assert(start.Geometry.IsCoincident(data[0]));
+            Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
         }
 
         /// <summary>

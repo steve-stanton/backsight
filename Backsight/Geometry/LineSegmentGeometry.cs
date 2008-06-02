@@ -46,8 +46,8 @@ namespace Backsight.Geometry
         /// <param name="end">The position of the end of the line.</param>
         public LineSegmentGeometry(IPosition start, IPosition end)
         {
-            m_Start = PointGeometry.Create(start);
-            m_End = PointGeometry.Create(end);
+            m_Start = PositionGeometry.Create(start);
+            m_End = PositionGeometry.Create(end);
         }
 
         /// <summary>

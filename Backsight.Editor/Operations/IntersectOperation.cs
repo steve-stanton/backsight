@@ -216,7 +216,7 @@ protected:
 
             // If the intersection corresponds EXACTLY to the start
             // or end of the line, there's nothing to do.
-            IPointGeometry xLoc = xsect.PointGeometry;
+            IPointGeometry xLoc = xsect.Geometry;
             IPointGeometry sLoc = line.Start;
             IPointGeometry eLoc = line.End;
 

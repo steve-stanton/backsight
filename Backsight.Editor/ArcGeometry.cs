@@ -88,17 +88,17 @@ namespace Backsight.Editor
         /// <summary>
         /// The bearing from the center of circle to the start of the arc
         /// </summary>
-        public IAngle StartBearing
+        public double StartBearingInRadians
         {
-            get { return CircularArcGeometry.GetStartBearing(this); }
+            get { return CircularArcGeometry.GetStartBearingInRadians(this); }
         }
 
         /// <summary>
         /// The angular length of the arc
         /// </summary>
-        public IAngle SweepAngle
+        public double SweepAngleInRadians
         {
-            get { return CircularArcGeometry.GetSweepAngle(this); }
+            get { return CircularArcGeometry.GetSweepAngleInRadians(this); }
         }
 
         public IPointGeometry First
@@ -179,7 +179,7 @@ namespace Backsight.Editor
 
             // Get the bearing of the location from the center of the circular arc
             IPointGeometry centre = Circle.Center;
-            double bearing = Geom.Bearing(centre, loc).Radians;
+            double bearing = Geom.BearingInRadians(centre, loc);
 
             // Get the distance to the orientation point. It should not be
             // any further than the length of the arc. We use a fixed
@@ -562,7 +562,7 @@ namespace Backsight.Editor
 
             if (CircularArcGeometry.IsInSector(this, p, 0.0))
             {
-                double bearing = Geom.Bearing(center, p).Radians;
+                double bearing = Geom.BearingInRadians(center, p);
                 return Geom.Polar(center, bearing, radius);
             }
 
@@ -625,10 +625,10 @@ namespace Backsight.Editor
                 double xi = xpos.X;
                 double yi = xpos.Y;
 
-                if (end.GetAngle(xpos, angtol).Radians < Constants.TINY)
-                    angle = start.GetAngle(end).Radians;
+                if (end.GetAngleInRadians(xpos, angtol) < Constants.TINY)
+                    angle = start.GetAngle(end);
                 else
-                    angle = start.GetAngle(xpos, angtol).Radians;
+                    angle = start.GetAngleInRadians(xpos, angtol);
 
                 // If we have a graze, process the 2nd intersection too.
                 // If it's closer than the distance we already have, use
@@ -641,10 +641,10 @@ namespace Backsight.Editor
                     xi = xpos.X;
                     yi = xpos.Y;
 
-                    if (end.GetAngle(xpos, angtol).Radians < Constants.TINY)
-                        angle2 = start.GetAngle(end).Radians;
+                    if (end.GetAngleInRadians(xpos, angtol) < Constants.TINY)
+                        angle2 = start.GetAngle(end);
                     else
-                        angle2 = start.GetAngle(xpos, angtol).Radians;
+                        angle2 = start.GetAngleInRadians(xpos, angtol);
 
                     if (m_IsClockwise)
                     {
@@ -686,7 +686,7 @@ namespace Backsight.Editor
         {
             // Get the bearing from the centre to the midpoint.
             IPosition center = m_Circle.Center;
-            double bearing = Geom.Bearing(center, pos).Radians;
+            double bearing = Geom.BearingInRadians(center, pos);
 
             // If the midpoint is above the circle center, we get upside-down
             // text so rotate it the other way.

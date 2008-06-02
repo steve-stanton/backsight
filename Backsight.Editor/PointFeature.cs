@@ -69,12 +69,12 @@ namespace Backsight.Editor
 
         public double X
         {
-            get { return PointGeometry.X; }
+            get { return m_Geom.X; }
         }
 
         public double Y
         {
-            get { return PointGeometry.Y; }
+            get { return m_Geom.Y; }
         }
 
         public bool IsAt(IPosition p, double tol)
@@ -84,7 +84,7 @@ namespace Backsight.Editor
 
         public bool IsCoincident(PointFeature p)
         {
-            return PointGeometry.IsCoincident(p.PointGeometry);
+            return m_Geom.IsCoincident(p.Geometry);
         }
 
         public override SpatialType SpatialType
@@ -159,7 +159,7 @@ namespace Backsight.Editor
         {
             // Just return if the new location is at the same position
             // as the old location.
-            IPointGeometry g = this.PointGeometry;
+            IPointGeometry g = this.Geometry;
             if (g.IsCoincident(to))
                 return false;
 
@@ -192,7 +192,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry defining the position of this feature.
         /// </summary>
-        public IPointGeometry PointGeometry
+        public IPointGeometry Geometry // IPoint
         {
             get { return m_Geom; }
         }
@@ -291,7 +291,7 @@ namespace Backsight.Editor
             if (HasDependents)
                 throw new InvalidOperationException("Cannot move point that has dependents");
 
-            m_Geom = Backsight.Geometry.PointGeometry.Create(newPosition);
+            m_Geom = PointGeometry.Create(newPosition);
         }
 
         /// <summary>

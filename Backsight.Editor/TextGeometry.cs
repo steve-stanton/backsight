@@ -89,10 +89,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Position of the text's reference point (always the top left corner of the string).
         /// </summary>
-        public PointGeometry Position
+        public IPointGeometry Position
         {
             get { return m_Position; }
-            internal set { m_Position = value; }
+            internal set { m_Position = PointGeometry.Create(value); }
         }
 
         /// <summary>

@@ -95,7 +95,7 @@ namespace Backsight.Editor
 	            if (m_Par1==null || m_Par2==null)
                     return new RadianValue(0.0);
 
-                return Geom.Bearing(m_Par1, m_Par2);
+                return new RadianValue(Geom.BearingInRadians(m_Par1, m_Par2));
             }
         }
 

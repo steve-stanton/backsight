@@ -77,7 +77,7 @@ namespace Backsight.Index
 
             // It's important to round off to the nearest micron. Otherwise you might not
             // get the desired results in situations where the search radius is zero.
-            m_Position = PointGeometry.Create(p);
+            m_Position = PositionGeometry.Create(p);
 
             m_Radius = radius;
             m_Types = types;

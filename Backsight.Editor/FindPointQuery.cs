@@ -67,7 +67,7 @@ namespace Backsight.Editor
             Debug.Assert(item is PointFeature);
 
             PointFeature p = (PointFeature)item;
-            if (p.PointGeometry.IsCoincident(m_Point))
+            if (p.Geometry.IsCoincident(m_Point))
             {
                 m_Result = p;
                 return false;

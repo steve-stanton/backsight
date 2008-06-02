@@ -309,13 +309,13 @@ namespace Backsight.Editor
 
             // Get the bearing from the orientation point to the start of the extension.
             Turn turn = new Turn(orient, start);
-            IAngle bearing = turn.Bearing;
+            double bearing = turn.BearingInRadians;
 
             // Get the distance on the mapping plane.
-            double plandist = dist.GetPlanarMetric(start, bearing.Radians, extendLine.CoordinateSystem);
+            double plandist = dist.GetPlanarMetric(start, bearing, extendLine.CoordinateSystem);
 
             // Figure out the end of the extension.
-            end = Geom.Polar(start, bearing.Radians, plandist);
+            end = Geom.Polar(start, bearing, plandist);
             return true;
         }
 
@@ -377,7 +377,7 @@ namespace Backsight.Editor
 
             // Get the bearing from the center of the circle to the start of the arc.
             Turn turn = new Turn(center, start);
-            double sbearing = turn.Bearing.Radians;
+            double sbearing = turn.BearingInRadians;
 
             // Get the sector angle (in radians).
             double sector = arclen / radius;

@@ -35,7 +35,7 @@ namespace Backsight
         /// <summary>
         /// The position of the top-left corner of the string.
         /// </summary>
-        PointGeometry Position { get; }
+        IPointGeometry Position { get; }
 
         /// <summary>
         /// A closed outline that surrounds the string.

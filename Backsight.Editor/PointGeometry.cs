@@ -15,7 +15,7 @@
 
 using System;
 
-namespace Backsight.Geometry
+namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="18-OCT-2006" />
     /// <summary>
@@ -178,135 +178,20 @@ namespace Backsight.Geometry
             get { return m_Y; }
         }
 
-        /// <summary>
-        /// Moves this location to a new position.
-        /// 
-        /// probably irrelevant... The new position must not correspond to any other
-        /// location object, which can be confirmed by making an initial call to
-        /// CeMap::FindLocation.
-        /// </summary>
-        /// <param name="to">The new position.</param>
-        /*
-        internal void Move(IPointGeometry to)
-        {
-            if (this.IsCoincident(to))
-                return;
+        #region IXmlContent Members
 
-            m_X = to.E;
-            m_Y = to.N;
-         */
-            /*
-            // Get a list of all the things that this location
-            // currently references. It may change when we do the
-            // subsequent call to CePrimitive::OnMove. See further
-            // explanation below.
-             * 
-	        CeObjectList* pOrig=0;
-	        CeClass* pObjects = this->GetpObjects();
-
-	        if ( pObjects ) {
-		        if ( this->IsObjectList() ) {
-			        const CeObjectList& list = dynamic_cast<const CeObjectList&>(*pObjects);
-			        pOrig = new CeObjectList(list);
-		        }
-		        else {
-			        pOrig = new CeObjectList();
-			        pOrig->Append(pObjects);
-		        }
-	        }
-
-            // Get the base class to do its stuff
-	        if ( !this->IsTransient() ) CePrimitive::OnMove(this);
-
-            //	Remember to expand the map window if the new location is
-            //	beyond the current limits.
-
-	        const LOGICAL transient = this->IsTransient();
-	        CeMap* pMap=0;
-
-	        if ( !transient ) {
-		        pMap = CeMap::GetpMap();
-		        const CeWindow* const pWin = pMap->GetpWindow();
-		        if ( !pWin->IsOverlap(toloc) ) {
-			        CeWindow newwin(*pWin);
-			        newwin.Expand(toloc);
-			        pMap->SetExtent(newwin);
-		        }
-	        }
-
-    //	If the destination is in the same tile as the original,
-    //	all we have to do is move the position.
-
-	    if ( *(this->m_pTileId) == *(toloc.m_pTileId) ) {
-
-    //		Change the position.
-		    this->m_X = toloc.m_X;
-		    this->m_Y = toloc.m_Y;
-
-	    }
-	    else {
-
-    //		Update spatial index to reference this location
-    //		from the new tile. If the location is not transient,
-    //		THIS will be modified to point to a tile ID that is
-    //		part of the spatial index. If the location IS transient,
-    //		we copy the pointer to the ID & then null out the original
-    //		pointer so that the location destructor will not blow the
-    //		ID away.
-
-		    if ( !transient )
-			    pMap->GetSpace().Move(this,*(toloc.m_pTileId));
-		    else {
-			    this->m_pTileId = toloc.m_pTileId;
-			    toloc.m_pTileId = 0;
-		    }
-
-    //		Copy the new position (but NOT any base class stuff).
-		    this->m_X = toloc.m_X;
-		    this->m_Y = toloc.m_Y;
-	    }
-
-    //	Get the base class to update the spatial index for any
-    //	attached lines. 
-
-    //	The location might not reference the same things that
-    //	it originally did. We need to pass in the original
-    //	list to cover the fact that CePrimitive::OnMove may
-    //	have called CeMultiSegment::OnMove. In that case, if
-    //	this location is an intermediate vertex, the multi-segment
-    //	would have been changed to refer to a new location (at
-    //	the original position of this location). Furthermore,
-    //	any sections terminating at the old location will now
-    //	be pointing to a different location, so this location
-    //	will not point back either. By using the original list,
-    //	we ensure that everything gets re-indexed.
-
-	    CePrimitive::OnPostMove(pOrig);
-	    delete pOrig;
-             */
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);
         }
 
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
         public virtual void ReadContent(XmlContentReader reader)
         {
-            m_X = new MicronValue(reader.ReadLong("X"));
-            m_Y = new MicronValue(reader.ReadLong("Y"));
+            m_X = new Length(reader.ReadLong("X"));
+            m_Y = new Length(reader.ReadLong("Y"));
         }
+
+        #endregion
     }
 }

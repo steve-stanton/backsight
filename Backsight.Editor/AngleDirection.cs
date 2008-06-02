@@ -75,10 +75,10 @@ namespace Backsight.Editor
             get
             {
                 // Get the bearing to the backsight
-                IAngle bb = Geom.Bearing(m_From, m_Backsight);
+                double bb = Geom.BearingInRadians(m_From, m_Backsight);
 
                 // Add on the observed angle, and restrict to [0,2*PI]
-                double a = bb.Radians + m_Observation.Radians;
+                double a = bb + m_Observation.Radians;
                 return new RadianValue(Direction.Normalize(a));
             }
         }

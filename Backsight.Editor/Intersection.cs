@@ -150,7 +150,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry for this point is <c>this</c>
         /// </summary>
-        public new IPointGeometry PointGeometry // IPoint
+        public IPointGeometry Geometry // IPoint
         {
             get { return this; }
         }

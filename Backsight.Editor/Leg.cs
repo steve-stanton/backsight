@@ -919,7 +919,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             double factor = len/obs;
 
             // Get the bearing of the line.
-            double bearing = Geom.Bearing(spos, epos).Radians;
+            double bearing = Geom.BearingInRadians(spos, epos);
 
             // Define start of first segment.
             IPosition start = spos;
@@ -1012,7 +1012,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             double factor = len/obs;
 
             // Get the bearing of the line.
-            double bearing = Geom.Bearing(spos, epos).Radians;
+            double bearing = Geom.BearingInRadians(spos, epos);
 
             // Haven't got anywhere yet.
             double totobs = 0.0;

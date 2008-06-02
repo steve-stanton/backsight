@@ -298,8 +298,8 @@ namespace Backsight.Editor
             PointFeature pe = EnsurePointExists(pts[pts.Length-1], tol, creator);
 
             // Force end positions to match
-            pts[0] = ps.PointGeometry;
-            pts[pts.Length-1] = pe.PointGeometry;
+            pts[0] = ps.Geometry;
+            pts[pts.Length-1] = pe.Geometry;
 
             // If we're dealing with a multi-segment, I have occasionally seen tiny glitches
             // at the end of the incoming lines (whether this is a real data problem, or an

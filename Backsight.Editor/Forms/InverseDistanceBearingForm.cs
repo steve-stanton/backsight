@@ -39,8 +39,8 @@ namespace Backsight.Editor.Forms
             // Now show the bearing too.
 	        if (Point1!=null && Point2!=null)
             {
-                IAngle bearing = Geom.Bearing(Point1, Point2);
-                bearingTextBox.Text = RadianValue.AsString(bearing.Radians);
+                double bearing = Geom.BearingInRadians(Point1, Point2);
+                bearingTextBox.Text = RadianValue.AsString(bearing);
             }
         }
 	}

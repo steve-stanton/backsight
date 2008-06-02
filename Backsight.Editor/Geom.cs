@@ -358,7 +358,7 @@ namespace Backsight.Editor
             istangent = false;
 
             // Get the bearing of this segment.
-        	double bearing = Geom.Bearing(start,end).Radians;
+            double bearing = Geom.BearingInRadians(start, end);
 
             // The equation of each line is given in parametric form as:
             //

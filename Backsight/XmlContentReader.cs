@@ -18,6 +18,7 @@ using System.Xml;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Backsight.Geometry;
 
 namespace Backsight
 {
@@ -192,5 +193,24 @@ namespace Backsight
 
             return ReadContent();
         }
+
+        /// <summary>
+        /// Attempts to read a pair of attributes called X and Y
+        /// </summary>
+        /*
+        public PointGeometry ReadPointGeometry()
+        {
+            string xs = m_Reader["X"];
+            string ys = m_Reader["Y"];
+
+            if (xs==null || ys==null)
+                return null;
+
+            long x = Int64.Parse(xs);
+            long y = Int64.Parse(ys);
+
+            return new PointGeometry(x, y);
+        }
+         */
     }
 }

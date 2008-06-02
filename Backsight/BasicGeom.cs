@@ -217,9 +217,13 @@ namespace Backsight
         /// <param name="origin">The origin (from point)</param>
         /// <param name="pos">The position to determine the bearing for</param>
         /// <returns>The bearing to the position.</returns>
-        public static IAngle Bearing(IPosition origin, IPosition pos)
+        //public static IAngle Bearing(IPosition origin, IPosition pos)
+        //{
+        //    return new QuadVertex(origin, pos).Bearing;
+        //}
+        public static double BearingInRadians(IPosition origin, IPosition pos)
         {
-            return new QuadVertex(origin, pos).Bearing;
+            return new QuadVertex(origin, pos).BearingInRadians;
         }
 
         /// <summary>
@@ -277,8 +281,8 @@ namespace Backsight
             // Check if definitely in sector.
 
             Turn turn = new Turn(centre, start);
-            double aThis = turn.GetAngle(pos).Radians;
-            double aEnd  = turn.GetAngle(end).Radians;
+            double aThis = turn.GetAngleInRadians(pos);
+            double aEnd  = turn.GetAngleInRadians(end);
             if (aThis <= aEnd)
                 return true;
 
@@ -327,7 +331,7 @@ namespace Backsight
             double dist = Distance(origin, point);
 
             // Get the bearing of the rotated point with respect to the origin.
-            double newbearing = Bearing(origin, point).Radians + rotation.Radians;
+            double newbearing = BearingInRadians(origin, point) + rotation.Radians;
 
             // Figure out the new position.
             return Polar(origin, newbearing, dist);

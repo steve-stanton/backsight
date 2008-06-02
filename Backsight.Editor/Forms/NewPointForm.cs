@@ -72,7 +72,7 @@ namespace Backsight.Editor.Forms
                 m_Position.X = pt.X;
                 m_Position.Y = pt.Y;
 
-                IPointGeometry pg = pt.PointGeometry;
+                IPointGeometry pg = pt.Geometry;
                 if (pg is IPosition3D)
                     m_Elevation = (pg as IPosition3D).Z;
             }
@@ -92,7 +92,7 @@ namespace Backsight.Editor.Forms
             m_Position.X = upt.X;
             m_Position.Y = upt.Y;
 
-            IPointGeometry pg = upt.PointGeometry;
+            IPointGeometry pg = upt.Geometry;
             if (pg is IPosition3D)
                 m_Elevation = (pg as IPosition3D).Z;
 

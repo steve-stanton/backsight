@@ -59,7 +59,7 @@ namespace Backsight.Geometry
 
             m_Data = new IPointGeometry[data.Length];
             for (int i=0; i<data.Length; i++)
-                m_Data[i] = PointGeometry.Create(data[i]);
+                m_Data[i] = PositionGeometry.Create(data[i]);
         }
 
         #endregion

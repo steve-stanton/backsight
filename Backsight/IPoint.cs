@@ -26,6 +26,6 @@ namespace Backsight
         /// <summary>
         /// The geometry for this point.
         /// </summary>
-        IPointGeometry PointGeometry { get; }
+        IPointGeometry Geometry { get; }
     }
 }

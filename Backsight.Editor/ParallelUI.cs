@@ -333,7 +333,7 @@ namespace Backsight.Editor
                     double maxdiag = this.MaxDiagonal;
 
                     // What's the bearing from the start to the end of the parallel?
-                    double bearing = Geom.Bearing(start, end).Radians;
+                    double bearing = Geom.BearingInRadians(start, end);
 
                     // Project to a point before the start end of the parallel, as
                     // well as a point after the end.
@@ -631,23 +631,23 @@ namespace Backsight.Editor
 
                 // Get the bearing from the centre to the mid-position
                 // and use that to reduce the offset to the mapping plane.
-                double bearing = Geom.Bearing(centre, middle).Radians;
+                double bearing = Geom.BearingInRadians(centre, middle);
                 double offdist = offset.GetPlanarMetric(middle, bearing, sys);
 
                 // No parallel if the offset exceeds the radius.
                 // if ( offdist > radius ) return FALSE;
 
                 // Calculate the parallel points.
-                double sbear = Geom.Bearing(centre, spos).Radians;
+                double sbear = Geom.BearingInRadians(centre, spos);
                 sres = Geom.Polar(centre, sbear, offdist+radius);
 
-                double ebear = Geom.Bearing(centre, epos).Radians;
+                double ebear = Geom.BearingInRadians(centre, epos);
                 eres = Geom.Polar(centre, ebear, offdist+radius);
             }
             else
             {
                 // Get the bearing.of the line.
-                double bearing = Geom.Bearing(spos, epos).Radians;
+                double bearing = Geom.BearingInRadians(spos, epos);
 
                 // Get the planar distance for a perpendicular line that passes
                 // through the midpoint of the reference line. The planar distance
@@ -697,15 +697,15 @@ namespace Backsight.Editor
                 double offdist = Geom.Distance(offpoint, centre);
 
                 // Project the BC/EC radially.
-                double sbear = Geom.Bearing(centre, spos).Radians;
+                double sbear = Geom.BearingInRadians(centre, spos);
                 sres = Geom.Polar(centre, sbear, offdist);
 
-                double ebear = Geom.Bearing(centre, epos).Radians;
+                double ebear = Geom.BearingInRadians(centre, epos);
                 eres = Geom.Polar(centre, ebear, offdist);
             }
             else
             {
-                double bearing = Geom.Bearing(spos, epos).Radians;
+                double bearing = Geom.BearingInRadians(spos, epos);
 
                 // Get the perpendicular distance (signed) from the offset point
                 // to the reference line.
@@ -780,7 +780,7 @@ namespace Backsight.Editor
             IPosition epos = m_Line.End;
 
             // And its bearing.
-            double bearing = Geom.Bearing(spos, epos).Radians;
+            double bearing = Geom.BearingInRadians(spos, epos);
 
             // Get the perpendicular distance (signed) from one of the
             // parallel points to the reference line.
@@ -838,7 +838,7 @@ namespace Backsight.Editor
             else
             {
                 // Get the bearing from the start to the end of the parallel.
-                double bearing = Geom.Bearing(m_Par1, m_Par2).Radians;
+                double bearing = Geom.BearingInRadians(m_Par1, m_Par2);
 
                 // Get the ground dimension of a line that crosses the
                 // extent of the draw window.
@@ -920,7 +920,7 @@ namespace Backsight.Editor
                 // Get the bearing from the start to the end of the reference line.
                 IPosition spos = refline.Start;
                 IPosition epos = refline.End;
-                double bearing = Geom.Bearing(spos, epos).Radians;
+                double bearing = Geom.BearingInRadians(spos, epos);
 
                 // Project the parallel line to positions that are a
                 // long way away (but make sure we don't end up with

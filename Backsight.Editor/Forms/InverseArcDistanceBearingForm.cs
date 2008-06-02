@@ -52,11 +52,11 @@ namespace Backsight.Editor.Forms
                     return;
 
                 // Get the bearing from the center to both points
-                IAngle bear1 = Geom.Bearing(Point1, circle.Center);
-                IAngle bear2 = Geom.Bearing(Point2, circle.Center);
+                double bear1 = Geom.BearingInRadians(Point1, circle.Center);
+                double bear2 = Geom.BearingInRadians(Point2, circle.Center);
 
-                bearing1TextBox.Text = RadianValue.AsString(bear1.Radians);
-                bearing2TextBox.Text = RadianValue.AsString(bear2.Radians);
+                bearing1TextBox.Text = RadianValue.AsString(bear1);
+                bearing2TextBox.Text = RadianValue.AsString(bear2);
             }
             else
             {

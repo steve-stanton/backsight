@@ -199,7 +199,7 @@ namespace Backsight.Editor
             // Get the clockwise angle from the start to the current end point.
             IPointGeometry center = bestCircle.Center;
             Turn sturn = new Turn(center, start);
-            double angle = sturn.GetAngle(cirend).Radians;
+            double angle = sturn.GetAngleInRadians(cirend);
 
             // Figure out which direction the curve should go, depending
             // on whether the user wants the short arc or the long one.

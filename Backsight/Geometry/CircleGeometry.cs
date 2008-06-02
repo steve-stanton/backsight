@@ -140,8 +140,8 @@ namespace Backsight.Geometry
         {
             get
             {
-                return new PointGeometry(m_Center.Easting.Microns,
-                                         m_Center.Northing.Microns + m_Radius.Microns);
+                return new PositionGeometry(m_Center.Easting.Meters,
+                                            m_Center.Northing.Meters + m_Radius.Meters);
             }
         }
 

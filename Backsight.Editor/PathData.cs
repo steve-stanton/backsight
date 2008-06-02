@@ -475,11 +475,11 @@ namespace Backsight.Editor
             }
 
             // Get the bearing and distance of the end point we ended up with.
-            double gotbear = Geom.Bearing(m_From, gotend).Radians;
+            double gotbear = Geom.BearingInRadians(m_From, gotend);
             double gotdist = Geom.Distance(m_From, gotend);
 
             // Get the bearing and distance we want.
-            double wantbear = Geom.Bearing(m_From, m_To).Radians;
+            double wantbear = Geom.BearingInRadians(m_From, m_To);
             double wantdist = Geom.Distance(m_From, m_To);
 
             // Figure out the rotation.
