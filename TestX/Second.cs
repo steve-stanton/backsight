@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using Backsight;
+using Backsight.Editor;
 
 namespace TestX
 {
@@ -30,7 +31,7 @@ namespace TestX
             return String.Format("Type={2}, Id={0}, Name={1}", Id, Name, GetType().Name);
         }
 
-        public override void WriteContent(Backsight.XmlContentWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteInt("Id", Id);
             writer.WriteString("Name", Name);

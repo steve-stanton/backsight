@@ -22,6 +22,8 @@ using System.Data;
 
 using Backsight.Data;
 using Backsight.Environment;
+using System.Data.SqlTypes;
+using System.Xml;
 
 namespace Backsight.Editor.Database
 {
@@ -31,6 +33,17 @@ namespace Backsight.Editor.Database
     class SessionData
     {
         #region Static
+
+        /// <summary>
+        /// The current editing session.
+        /// </summary>
+        static SessionData s_CurrentSession = null;
+
+        internal static SessionData CurrentSession
+        {
+            get { return s_CurrentSession; }
+            set { s_CurrentSession = value; }
+        }
 
         /// <summary>
         /// Loads session data for a job (for the user who is currently running the application).
@@ -54,6 +67,10 @@ namespace Backsight.Editor.Database
                 // Stuff the session IDs into a temp table and use it to load the edits
                 string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
                 CopySessionIdsToTable(con, sessions, sessionTable);
+
+                // Create the loader
+                uint numItem = SumItems(sessions);
+                XmlContentReader xcr = new XmlContentReader(numItem);
 
                 // Load information about the edits involved
                 StringBuilder sb = new StringBuilder(200);
@@ -79,13 +96,32 @@ namespace Backsight.Editor.Database
                             Debug.Assert(curSession!=null);
                         }
 
-                        //curSession.AddEdit(editSequence);
+                        SqlXml data = reader.GetSqlXml(2);
+                        using (XmlReader xr = data.CreateReader())
+                        {
+                            xcr.LoadOperation(curSession, editSequence, xr);
+                        }
                     }
                 }
             }
 
             sessions.TrimExcess();
             return sessions;
+        }
+
+        /// <summary>
+        /// Returns the summation of the item counts associated with the supplied sessions
+        /// </summary>
+        /// <param name="sessions">The sessions of interest</param>
+        /// <returns>The sum of the <see cref="ItemCount"/> property</returns>
+        static uint SumItems(List<SessionData> sessions)
+        {
+            uint result = 0;
+
+            foreach (SessionData s in sessions)
+                result += s.m_NumItem;
+
+            return result;
         }
 
         /// <summary>
@@ -167,7 +203,7 @@ namespace Backsight.Editor.Database
             sb.Append("[Revision], ");
             sb.Append("[StartTime], ");
             sb.Append("[EndTime], ");
-            sb.Append("[NumEdit]");
+            sb.Append("[NumItem]");
 
             return sb.ToString();
         }
@@ -187,9 +223,9 @@ namespace Backsight.Editor.Database
             int revision = reader.GetInt32(3);
             DateTime startTime = reader.GetDateTime(4);
             DateTime endTime = reader.GetDateTime(5);
-            int numEdit = reader.GetInt32(6);
+            uint numItem = (uint)reader.GetInt32(6);
 
-            return new SessionData(sessionId, jobId, userId, revision, startTime, endTime, numEdit);
+            return new SessionData(sessionId, jobId, userId, revision, startTime, endTime, numItem);
         }
 
         /// <summary>
@@ -300,9 +336,9 @@ namespace Backsight.Editor.Database
         DateTime m_End;
 
         /// <summary>
-        /// The number of edits performed (completed) within the session
+        /// The number of items (objects) created by the session
         /// </summary>
-        int m_NumEdit;
+        uint m_NumItem;
 
         #endregion
 
@@ -317,8 +353,8 @@ namespace Backsight.Editor.Database
         /// <param name="revision">The revision number for the session (0 if the session has not been published)</param>
         /// <param name="start">When was session started? </param>
         /// <param name="end">When was the last edit performed?</param>
-        /// <param name="numEdit">The number of edits performed (completed) within the session</param>
-        SessionData(int sessionId, int jobId, int userId, int revision, DateTime start, DateTime end, int numEdit)
+        /// <param name="numItem">TThe number of items (objects) created by the session</param>
+        SessionData(int sessionId, int jobId, int userId, int revision, DateTime start, DateTime end, uint numItem)
         {
             m_SessionId = sessionId;
             m_JobId = jobId;
@@ -326,7 +362,7 @@ namespace Backsight.Editor.Database
             m_Revision = revision;
             m_Start = start;
             m_End = end;
-            m_NumEdit = numEdit;
+            m_NumItem = numItem;
         }
 
         #endregion

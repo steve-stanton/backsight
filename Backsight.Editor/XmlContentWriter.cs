@@ -17,9 +17,8 @@ using System;
 using System.Xml;
 using System.Text;
 using System.Xml.Schema;
-using Backsight.Geometry;
 
-namespace Backsight
+namespace Backsight.Editor
 {
     /// <summary>
     /// Controls serialization of data to XML. All elements written using this
@@ -34,7 +33,7 @@ namespace Backsight
         /// The target namespace that should be used when writing out the
         /// top-level element. Not null.
         /// </summary>
-        static string s_TargetNamespace = String.Empty;
+        static string s_TargetNamespace = "Backsight";
 
         /// <summary>
         /// The target namespace that should be used when writing out the
@@ -180,6 +179,16 @@ namespace Backsight
         public void WriteString(string name, string value)
         {
             m_Writer.WriteAttributeString(name, value);
+        }
+
+        /// <summary>
+        /// Writes out a reference to a previously existing spatial feature
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="feature">The feature that's referenced</param>
+        internal void WriteFeatureReference(string name, Feature feature)
+        {
+            m_Writer.WriteAttributeString(name, feature.DataId);
         }
 
         /// <summary>

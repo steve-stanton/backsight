@@ -6,6 +6,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Reflection;
 using Backsight;
+using Backsight.Editor;
 
 namespace TestX
 {
@@ -33,7 +34,7 @@ namespace TestX
             return String.Format("ID={0}, Name={1}: M1=[{2}], M2=[{3}]", Id, Name, m1, m2);
         }
 
-        public override void WriteContent(Backsight.XmlContentWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteInt("Id", Id);
             writer.WriteString("Name", Name);

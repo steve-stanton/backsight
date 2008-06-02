@@ -3,6 +3,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Reflection;
 using Backsight;
+using Backsight.Editor;
 
 namespace TestX
 {

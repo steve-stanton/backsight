@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using Backsight;
+using Backsight.Editor;
 
 namespace TestX
 {

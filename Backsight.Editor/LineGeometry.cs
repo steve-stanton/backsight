@@ -228,5 +228,15 @@ namespace Backsight.Editor
             writer.WriteString("From", m_Start.ToString());
             writer.WriteString("To", m_End.ToString());
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

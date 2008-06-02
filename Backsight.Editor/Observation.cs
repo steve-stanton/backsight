@@ -116,5 +116,15 @@ namespace Backsight.Editor
         //abstract public void ReadContent(XmlContentReader reader);
 
         #endregion
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

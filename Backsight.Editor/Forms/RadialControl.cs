@@ -264,7 +264,7 @@ namespace Backsight.Editor.Forms
             {
                 AngleDirection angle = (AngleDirection)dir;
                 m_Backsight = angle.Backsight;
-                m_Radians = angle.Observation.Radians;
+                m_Radians = angle.ObservationInRadians;
                 if (m_Radians < 0.0)
                 {
                     m_Radians = Math.Abs(m_Radians);

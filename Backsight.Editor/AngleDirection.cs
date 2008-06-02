@@ -27,9 +27,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The angle. A negated value indicates an anticlockwise angle.
+        /// The angle in radians. A negated value indicates an anticlockwise angle.
         /// </summary>
-        private readonly IAngle m_Observation;
+        private readonly double m_Observation;
 
         /// <summary>
         /// The backsight point.
@@ -57,12 +57,12 @@ namespace Backsight.Editor
         {
             m_Backsight = backsight;
             m_From = occupied;
-            m_Observation = observation;
+            m_Observation = observation.Radians;
         }
 
         #endregion
 
-        internal override IAngle Observation
+        internal override double ObservationInRadians
         {
             get { return m_Observation; }
         }
@@ -78,7 +78,7 @@ namespace Backsight.Editor
                 double bb = Geom.BearingInRadians(m_From, m_Backsight);
 
                 // Add on the observed angle, and restrict to [0,2*PI]
-                double a = bb + m_Observation.Radians;
+                double a = bb + m_Observation;
                 return new RadianValue(Direction.Normalize(a));
             }
         }
@@ -136,7 +136,7 @@ namespace Backsight.Editor
 
             return (Object.ReferenceEquals(this.m_From, that.m_From) &&
                     Object.ReferenceEquals(this.m_Backsight, that.m_Backsight) &&
-                    Math.Abs(this.m_Observation.Radians - that.m_Observation.Radians) < Constants.TINY);
+                    Math.Abs(this.m_Observation - that.m_Observation) < Constants.TINY);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Backsight.Editor
             base.WriteContent(writer);
             writer.WriteString("Backsight", m_Backsight.DataId);
             writer.WriteString("From", m_From.DataId);
-            writer.WriteElement("Observation", m_Observation);
+            writer.WriteString("Observation", RadianValue.AsString(m_Observation));
         }
     }
 }

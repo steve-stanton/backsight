@@ -79,9 +79,9 @@ namespace Backsight.Editor
         /// <summary>
         /// Returns the "observed" angle as a bearing. 
         /// </summary>
-        internal override IAngle Observation
+        internal override double ObservationInRadians
         {
-            get { return this.Bearing; }
+            get { return this.Bearing.Radians; }
         }
 
         /// <summary>

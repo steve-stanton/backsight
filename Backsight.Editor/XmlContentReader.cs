@@ -18,9 +18,10 @@ using System.Xml;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Backsight.Geometry;
 
-namespace Backsight
+using Backsight.Editor.Database;
+
+namespace Backsight.Editor
 {
     /// <summary>
     /// Reads back XML data that was previously created using the
@@ -33,12 +34,17 @@ namespace Backsight
         /// <summary>
         /// The object that actually does the reading.
         /// </summary>
-        readonly XmlReader m_Reader;
+        XmlReader m_Reader;
 
         /// <summary>
         /// Cross-reference of type names to the corresponding constructor.
         /// </summary>
         readonly Dictionary<string, ConstructorInfo> m_Types;
+
+        /// <summary>
+        /// Spatial features that have been loaded.
+        /// </summary>
+        readonly Dictionary<InternalIdValue, Feature> m_Features;
 
         #endregion
 
@@ -48,14 +54,18 @@ namespace Backsight
         /// Creates a new <c>XmlContentReader</c> that wraps the supplied
         /// reading tool.
         /// </summary>
-        /// <param name="reader">The object that actually does the reading.</param>
-        public XmlContentReader(XmlReader reader)
+        /// <param name="numItem">The estimated number of items that will be
+        /// loaded (used to initialize an index of the loaded data)</param>
+        public XmlContentReader(uint numItem)
         {
-            m_Reader = reader;
+            m_Reader = null;
             m_Types = new Dictionary<string, ConstructorInfo>();
+            m_Features = new Dictionary<InternalIdValue, Feature>((int)numItem);
         }
 
         #endregion
+
+        //internal void LoadSession(SessionData session, 
 
         /// <summary>
         /// Loads the next content element (if any) from the XML content
@@ -112,8 +122,8 @@ namespace Backsight
             if (c.GetParameters().Length==0)
             {
                 result = (IXmlContent)c.Invoke(new object[0]);
-                throw new NotImplementedException("Need to uncomment IXmlContent.ReadContent");
-                //result.ReadContent(this);
+                //throw new NotImplementedException("Need to uncomment IXmlContent.ReadContent");
+                result.ReadContent(this);
             }
             else
             {
@@ -195,22 +205,33 @@ namespace Backsight
         }
 
         /// <summary>
-        /// Attempts to read a pair of attributes called X and Y
+        /// Obtains the spatial feature associated with a reference that was
+        /// originally output using <see cref="XmlContentWriter.WriteFeatureReference"/>
         /// </summary>
-        /*
-        public PointGeometry ReadPointGeometry()
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The corresponding feature</returns>
+        internal Feature ReadFeatureByReference(string name)
         {
-            string xs = m_Reader["X"];
-            string ys = m_Reader["Y"];
-
-            if (xs==null || ys==null)
-                return null;
-
-            long x = Int64.Parse(xs);
-            long y = Int64.Parse(ys);
-
-            return new PointGeometry(x, y);
+            // Get the internal ID of the feature
+            string s = m_Reader[name];
+            //InternalIdValue iid = InternalIdValue.
+            return null;
         }
-         */
+
+        /// <summary>
+        /// Loads the content of an editing operation
+        /// </summary>
+        /// <param name="session">The session the edit is part of</param>
+        /// <param name="editSequence">The item sequence for the edit</param>
+        /// <param name="data">The data that describes the edit</param>
+        /// <returns>The created editing object</returns>
+        internal Operation LoadOperation(SessionData session, uint editSequence, XmlReader data)
+        {
+            // Remember the session and sequence number of the edit that's being loaded
+            SessionData.CurrentSession = session;
+            Operation.CurrentEditSequence = editSequence;
+
+            return null;
+        }
     }
 }

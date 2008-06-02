@@ -7,6 +7,7 @@ using System.Text;
 using System.Data.SqlTypes;
 using System.Xml.Schema;
 using Backsight;
+using Backsight.Editor;
 
 namespace TestX
 {
@@ -89,7 +90,7 @@ namespace TestX
 
         static internal Base FromXml(XmlReader xr)
         {
-            XmlContentReader xcr = new XmlContentReader(xr);
+            XmlContentReader xcr = new XmlContentReader(xr, 0);
             return (Base)xcr.ReadContent();
         }
 

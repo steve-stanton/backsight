@@ -28,7 +28,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Angle from grid north, in range [0,2*PI].
         /// </summary>
-        private readonly IAngle m_Observation;
+        private readonly double m_Observation;
 
         /// <summary>
         /// The point which the bearing was taken.
@@ -49,7 +49,7 @@ namespace Backsight.Editor
         internal BearingDirection(PointFeature from, IAngle observation)
         {
             double a = observation.Radians;
-            m_Observation = new RadianValue(Direction.Normalize(a));
+            m_Observation = Direction.Normalize(a);
             m_From = from;
         }
 
@@ -57,10 +57,10 @@ namespace Backsight.Editor
 
         internal override IAngle Bearing
         {
-            get { return m_Observation; }
+            get { return new RadianValue(m_Observation); }
         }
 
-        internal override IAngle Observation
+        internal override double ObservationInRadians
         {
             get { return m_Observation; }
         }
@@ -111,7 +111,7 @@ namespace Backsight.Editor
                 return false;
 
             return (Object.ReferenceEquals(this.m_From, that.m_From) &&
-                    Math.Abs(this.m_Observation.Radians - that.m_Observation.Radians) < Constants.TINY);
+                    Math.Abs(this.m_Observation - that.m_Observation) < Constants.TINY);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteString("From", m_From.DataId);
-            writer.WriteElement("Observation", m_Observation);
+            writer.WriteString("Observation", RadianValue.AsString(m_Observation));
         }
     }
 }

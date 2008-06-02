@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -41,6 +42,11 @@ namespace Backsight.Editor
         #endregion
 
         #region Class data
+
+        /// <summary>
+        /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
+        /// </summary>
+        SessionData m_Data;
 
         /// <summary>
         /// A unique ID for this session
@@ -96,7 +102,7 @@ namespace Backsight.Editor
 
         public uint Id
         {
-            get { return m_SessionId.SessionSequence; }
+            get { return m_SessionId.SessionId; }
         }
 
         public InternalIdValue InternalId

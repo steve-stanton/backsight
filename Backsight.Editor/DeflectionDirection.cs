@@ -58,7 +58,7 @@ namespace Backsight.Editor
                 double bb = Geom.BearingInRadians(this.Backsight, this.From);
 
                 // Add on the observed angle, and restrict to [0,2*PI]
-                double a = bb + this.Observation.Radians;
+                double a = bb + this.ObservationInRadians;
                 return new RadianValue(Direction.Normalize(a));
             }
         }

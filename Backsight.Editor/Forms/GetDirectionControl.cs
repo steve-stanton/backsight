@@ -1194,7 +1194,7 @@ namespace Backsight.Editor.Forms
             ShowKey(backsightTextBox, m_Backsight);
 
             // Define the observed angle.
-            m_Radians = angle.Observation.Radians;
+            m_Radians = angle.ObservationInRadians;
             m_IsClockwise = (m_Radians>=0.0);
             m_Radians = Math.Abs(m_Radians);
 
