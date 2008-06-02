@@ -28,11 +28,11 @@ namespace Backsight.Editor.Database
         /// </summary>
         /// <param name="c">The connection involved</param>
         /// <returns>The last ID that was assigned</returns>
-        internal static int GetLastId(SqlConnection c)
+        internal static uint GetLastId(SqlConnection c)
         {
             SqlCommand cmd = new SqlCommand("SELECT SCOPE_IDENTITY()", c);
             object o = cmd.ExecuteScalar();
-            return Convert.ToInt32(o);
+            return Convert.ToUInt32(o);
         }
 
         /// <summary>

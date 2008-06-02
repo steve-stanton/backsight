@@ -65,12 +65,13 @@ namespace Backsight.Editor.Forms
         {
             // If we saved anything, save the file too (so that it's in
             // sync with the database).
+            /*
             if (m_IsChange)
             {
                 EditingController c = EditingController.Current;
                 c.AutoSave();
             }
-
+            */
             Close();
         }
 

@@ -27,12 +27,30 @@ namespace Backsight.Editor
     /// </summary>
     abstract class Operation : IFeatureDependent, IXmlContent
     {
+        #region Static
+
+        /// <summary>
+        /// The item number of the current editing operation.
+        /// </summary>
+        static uint s_CurrentEditSequence = 0;
+
+        /// <summary>
+        /// The item number of the current editing operation.
+        /// </summary>
+        internal static uint CurrentEditSequence
+        {
+            get { return s_CurrentEditSequence; }
+            set { s_CurrentEditSequence = value; }
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
         /// The session in which this operation was originally defined.
         /// </summary>
-        SessionData m_Session;
+        Session m_Session;
 
         /// <summary>
         /// Operation sequence number. Meant to provide an easy way to check for edit
@@ -53,7 +71,7 @@ namespace Backsight.Editor
 
         protected Operation()
         {
-            m_Session = SessionData.CurrentSession;
+            m_Session = Session.CurrentSession;
             if (m_Session==null)
                 throw new ArgumentNullException("Editing session is not defined");
 
@@ -381,8 +399,8 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public virtual void ReadContent(XmlContentReader reader)
         {
-            m_Session = reader.CurrentSession;
-            m_Sequence = reader.EditSequence;
+            m_Session = Session.CurrentSession;
+            m_Sequence = Operation.CurrentEditSequence;
             m_Flag = 0;
         }
 

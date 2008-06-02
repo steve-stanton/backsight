@@ -90,7 +90,7 @@ namespace TestX
 
         static internal Base FromXml(XmlReader xr)
         {
-            XmlContentReader xcr = new XmlContentReader(xr, 0);
+            XmlContentReader xcr = new XmlContentReader(0);
             return (Base)xcr.ReadContent();
         }
 

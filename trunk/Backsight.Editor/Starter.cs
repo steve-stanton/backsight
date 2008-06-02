@@ -145,7 +145,7 @@ namespace Backsight.Editor
             {
                 try
                 {
-                    int jobId = m_JobFile.Data.JobId;
+                    uint jobId = m_JobFile.Data.JobId;
                     Job j = Job.FindByJobId(jobId);
                 }
 

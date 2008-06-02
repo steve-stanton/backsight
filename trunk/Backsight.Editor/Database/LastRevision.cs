@@ -31,12 +31,12 @@ namespace Backsight.Editor.Database
         /// the transaction that actually commits the revision.
         /// </summary>
         /// <returns>The reserved revision number</returns>
-        internal static int ReserveValue()
+        internal static uint ReserveValue()
         {
             // I originally had the following as a stored procedure (arguably a better place
             // for it), but I'd rather keep things in code...
 
-            int result = -1;
+            uint result = 0;
 
             Transaction.Execute(delegate
             {

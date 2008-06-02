@@ -127,9 +127,8 @@ namespace Backsight.Editor
         {
             get
             {
-                InternalIdValue iid = m_Creator.Session.InternalId;
-                iid.ItemSequence = m_CreatorSequence;
-                return iid.ToString();
+                uint sessionId = m_Creator.Session.Id;
+                return String.Format("{0}.{1}", sessionId, m_CreatorSequence);
             }
         }
 

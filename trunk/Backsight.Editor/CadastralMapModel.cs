@@ -34,7 +34,7 @@ using Backsight.Data;
 
 namespace Backsight.Editor
 {
-    class CadastralMapModel : ISpatialModel, ISpatialData, IInternalIdFactory
+    class CadastralMapModel : ISpatialModel, ISpatialData
     {
         #region Static Methods
 
@@ -89,12 +89,6 @@ namespace Backsight.Editor
         /// </summary>
         [NonSerialized]
         EditingIndex m_Index;
-
-        /// <summary>
-        /// The number of internal IDs that have been generated throughout the lifetime of
-        /// this model (via calls to the <see cref="CreateNextInternalId"/> method).
-        /// </summary>
-        uint m_NumInternalIds;
 
         /// <summary>
         /// Default rotation angle for text (in radians).
@@ -315,12 +309,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Updates the end time of the current editing session (if there is one).
         /// </summary>
+        /*
         internal void UpdateSession()
         {
             Session s = Session.CurrentSession;
             if (s!=null)
                 s.UpdateEndTime();
         }
+         */
 
         internal uint MakeBackup()
         {
@@ -1112,35 +1108,6 @@ namespace Backsight.Editor
             result.MarkPolygons();
 
             return result;
-        }
-
-        /// <summary>
-        /// Creates an ID for a new editing session.
-        /// </summary>
-        /// <returns></returns>
-        public InternalIdValue CreateSessionId()
-        {
-            return CreateNextInternalId();
-        }
-
-        /// <summary>
-        /// Creates a new <c>InternalIdValue</c> that can be used to uniquely identify
-        /// objects associated with this model.
-        /// </summary>
-        /// <returns>The created ID value</returns>
-        public InternalIdValue CreateNextInternalId()
-        {
-            m_NumInternalIds++;
-            int jobId = EditingController.Current.JobFile.Data.JobId;
-            return new InternalIdValue((uint)jobId, m_NumInternalIds);
-        }
-
-        /// <summary>
-        /// The number of internal IDs that have been generated for this model.
-        /// </summary>
-        internal uint InternalIdCount
-        {
-            get { return m_NumInternalIds; }
         }
 
         /// <summary>
