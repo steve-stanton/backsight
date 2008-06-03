@@ -95,7 +95,7 @@ namespace Backsight.Editor
         readonly CoordinateSystem m_CoordSystem;
 
         /// <summary>
-        /// Window of all data in the map
+        /// Window of all data in the map.
         /// </summary>
         IEditWindow m_Window;
 
@@ -105,22 +105,16 @@ namespace Backsight.Editor
         readonly List<Session> m_Sessions;
 
         /// <summary>
-        /// Entity types that have been utilized by the map (stubs that front information
-        /// obtained from the environment database).
-        /// </summary>
-        List<MapEntity> m_Entities;
-
-        /// <summary>
         /// Layers that have been utilized by the map (stubs that front information
         /// obtained from the environment database).
         /// </summary>
-        List<LayerFacade> m_Layers;
+        //List<LayerFacade> m_Layers;
 
         /// <summary>
         /// Fonts that have been utilized by the map (stubs that front information
         /// obtained from the environment database).
         /// </summary>
-        List<FontFacade> m_Fonts;
+        //List<FontFacade> m_Fonts;
 
         /// <summary>
         /// The ID ranges associated with this map.
@@ -140,9 +134,8 @@ namespace Backsight.Editor
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
-            m_Entities = new List<MapEntity>();
-            m_Layers = new List<LayerFacade>();
-            m_Fonts = new List<FontFacade>();
+            //m_Layers = new List<LayerFacade>();
+            //m_Fonts = new List<FontFacade>();
             m_IdRanges = new List<IdRange>();
             m_Index = null;
         }
@@ -357,6 +350,7 @@ namespace Backsight.Editor
              */
         }
 
+        /*
         LayerFacade GetRegisteredLayer(ILayer layer)
         {
             LayerFacade f = m_Layers.Find(delegate(LayerFacade d) { return d.Id==layer.Id; });
@@ -367,7 +361,8 @@ namespace Backsight.Editor
             }
             return f;
         }
-
+        */
+        /*
         FontFacade GetRegisteredFont(IFont font)
         {
             FontFacade f = m_Fonts.Find(delegate(FontFacade ff) { return ff.Id==font.Id; });
@@ -378,7 +373,8 @@ namespace Backsight.Editor
             }
             return f;
         }
-
+        */
+        /*
         internal MapEntity GetRegisteredEntityType(IEntity entity)
         {
             if (entity==null)
@@ -396,7 +392,7 @@ namespace Backsight.Editor
 
             return me;
         }
-
+        */
         /*
         internal void Write(string fileName)
         {
@@ -461,17 +457,17 @@ namespace Backsight.Editor
         /// <summary>
         /// Performs initialization whenever a specific map model is opened.
         /// </summary>
+        /*
         private void OnOpen()
         {
             // Ensure all entity type wrappers know that they're part of this model.
-            foreach (MapEntity me in m_Entities)
-                me.MapModel = this;
+            //foreach (MapEntity me in m_Entities)
+            //    me.MapModel = this;
 
             // Define information relating to the environment
-            AssignData(EnvironmentContainer.Current);
+            //AssignData(EnvironmentContainer.Current);
 
-            // Notify all sessions
-            /*
+            // Notify all sessions      
             foreach (Session s in m_Sessions)
             {
                 s.OnLoad(this);
@@ -487,10 +483,9 @@ namespace Backsight.Editor
 
             // Generate a spatial index
             foreach (Session s in m_Sessions)
-                s.AddToIndex();
-            */
+                s.AddToIndex();      
         }
-
+    */
         /*
         private void CreateIndex()
         {
@@ -541,20 +536,22 @@ namespace Backsight.Editor
         /// the supplied environment container.
         /// </summary>
         /// <param name="ec">The container holding environment data (not null)</param>
+        /*
         private void AssignData(IEnvironmentContainer ec)
         {
             if (ec==null)
                 throw new ArgumentNullException();
 
-            foreach (MapEntity f in m_Entities)
-                f.Data = EnvironmentItemFacade<IEntity>.FindById(ec.EntityTypes, f.Id);
+            //foreach (MapEntity f in m_Entities)
+            //    f.Data = EnvironmentItemFacade<IEntity>.FindById(ec.EntityTypes, f.Id);
 
-            foreach (LayerFacade f in m_Layers)
-                f.Data = EnvironmentItemFacade<ILayer>.FindById(ec.Layers, f.Id);
+            //foreach (LayerFacade f in m_Layers)
+            //    f.Data = EnvironmentItemFacade<ILayer>.FindById(ec.Layers, f.Id);
 
-            foreach (FontFacade f in m_Fonts)
-                f.Data = EnvironmentItemFacade<IFont>.FindById(ec.Fonts, f.Id);
+            //foreach (FontFacade f in m_Fonts)
+            //    f.Data = EnvironmentItemFacade<IFont>.FindById(ec.Fonts, f.Id);
         }
+        */
 
         public ISpatialSystem SpatialSystem
         {
@@ -1392,6 +1389,9 @@ namespace Backsight.Editor
             foreach (Session s in m_Sessions)
             {
                 s.OnLoad(this);
+
+                // Add the session to the spatial index. This also updates the overall
+                // extent that's stored as part of the model.
                 s.AddToIndex();
             }
 
@@ -1414,6 +1414,19 @@ namespace Backsight.Editor
         internal void AddSession(Session s)
         {
             m_Sessions.Add(s);
+        }
+
+        /// <summary>
+        /// Creates a new editing session and appends to this model
+        /// </summary>
+        /// <returns>The created session</returns>
+        internal Session CreateSession(Job job, User user)
+        {
+            SessionData data = SessionData.Insert(job.JobId, user.UserId);
+            Session s = new Session(this, data, user, job);
+            Session.CurrentSession = s;
+            m_Sessions.Add(s);
+            return s;
         }
     }
 }

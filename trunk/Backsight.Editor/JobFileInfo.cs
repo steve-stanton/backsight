@@ -114,19 +114,16 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for points (0 if undefined)
         /// </summary>
-        [XmlAttribute]
         int m_DefaultPointType;
 
         /// <summary>
         /// The ID of the default entity type for lines (0 if undefined)
         /// </summary>
-        [XmlAttribute]
         int m_DefaultLineType;
 
         /// <summary>
         /// The ID of the default entity type for polygon labels (0 if undefined)
         /// </summary>
-        [XmlAttribute]
         int m_DefaultPolygonType;
 
         /// <summary>
@@ -215,7 +212,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The database connection string
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public string ConnectionString
         {
             get { return m_ConnectionString; }
@@ -225,7 +222,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the job that should be accessed (0 if not known)
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public uint JobId
         {
             get { return m_JobId; }
@@ -245,7 +242,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Current display units
         /// </summary>
-        [XmlAttribute("DisplayUnit")]
+        [XmlElement("DisplayUnit")]
         public DistanceUnitType DisplayUnitType
         {
             get { return m_DisplayUnit; }
@@ -255,7 +252,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Current data entry units
         /// </summary>
-        [XmlAttribute("EntryUnit")]
+        [XmlElement("EntryUnit")]
         public DistanceUnitType EntryUnitType
         {
             get { return m_EntryUnit; }
@@ -265,7 +262,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Should feature IDs be assigned automatically? (false if the user must specify).
         /// </summary>
-        [XmlAttribute("AutoNumber")]
+        [XmlElement("AutoNumber")]
         public bool IsAutoNumber
         {
             get { return m_AutoNumber; }
@@ -275,7 +272,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Scale denominator at which labels (text) will start to be drawn.
         /// </summary>
-        [XmlAttribute("LabelScale")]
+        [XmlElement("LabelScale")]
         public double ShowLabelScale
         {
             get { return m_ShowLabelScale; }
@@ -285,7 +282,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Scale denominator at which points will start to be drawn.
         /// </summary>
-        [XmlAttribute("PointScale")]
+        [XmlElement("PointScale")]
         public double ShowPointScale
         {
             get { return m_ShowPointScale; }
@@ -295,7 +292,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Height of point symbols, in meters on the ground.
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public double PointHeight
         {
             get { return m_PointHeight; }
@@ -307,7 +304,7 @@ namespace Backsight.Editor
         /// are drawn at the current display scale (see the <see cref="ShowPointScale"/>
         /// property).
         /// </summary>
-        [XmlAttribute("IntersectionsDrawn")]
+        [XmlElement("IntersectionsDrawn")]
         public bool AreIntersectionsDrawn
         {
             get { return m_AreIntersectionsDrawn; }
@@ -317,7 +314,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The nominal map scale, for use in converting the size of fonts.
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public uint NominalMapScale
         {
             get { return m_MapScale; }
@@ -337,7 +334,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for points (0 if undefined)
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public int DefaultPointType
         {
             get { return m_DefaultPointType; }
@@ -347,7 +344,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for lines (0 if undefined)
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public int DefaultLineType
         {
             get { return m_DefaultLineType; }
@@ -357,7 +354,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for polygons (0 if undefined)
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public int DefaultPolygonType
         {
             get { return m_DefaultPolygonType; }
@@ -367,7 +364,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for text (0 if undefined)
         /// </summary>
-        [XmlAttribute]
+        [XmlElement]
         public int DefaultTextType
         {
             get { return m_DefaultTextType; }

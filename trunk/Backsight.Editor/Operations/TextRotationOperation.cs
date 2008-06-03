@@ -148,5 +148,17 @@ namespace Backsight.Editor.Operations
             writer.WriteDouble("NewRotation", m_Rotation);
             writer.WriteDouble("OldRotation", m_PrevRotation); // TODO: Is this needed?
         }
+
+        /// <summary>
+        /// Initializes this operation upon loading of the session that contains it.
+        /// This implementation ensures the defined rotation angle is recorded as
+        /// part of the enclosing model.
+        /// </summary>
+        /// <param name="container">The editing session that contains this operation</param>
+        internal override void OnLoad(Session container)
+        {
+            base.OnLoad(container);
+            container.MapModel.DefaultTextRotation = m_Rotation;
+        }
     }
 }
