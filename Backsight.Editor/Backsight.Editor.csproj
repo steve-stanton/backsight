@@ -284,7 +284,6 @@
     </Compile>
     <Compile Include="GetControlUI.cs" />
     <Compile Include="ICircularLeg.cs" />
-    <Compile Include="IInternalIdFactory.cs" />
     <Compile Include="ILeg.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />

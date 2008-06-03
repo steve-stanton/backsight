@@ -29,6 +29,9 @@ using Backsight.SqlServer;
 using Backsight.Geometry;
 using Backsight.Editor.Database;
 using System.Collections.Generic;
+using Backsight.Data;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace Backsight.Editor
 {
@@ -102,7 +105,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The edit the is currently being saved.
         /// </summary>
-        private Operation m_CurrentEdit;
+        //private Operation m_CurrentEdit;
 
         /// <summary>
         /// Modeless dialog used to perform inverse calculations (null if dialog
@@ -149,7 +152,7 @@ namespace Backsight.Editor
             m_ActiveLayer = null;
             m_Main = main;
             m_IsAutoSelect = 0;
-            m_CurrentEdit = null;
+            //m_CurrentEdit = null;
             m_Inverse = null;
             m_Check = null;
             m_Sel = null;
@@ -445,6 +448,7 @@ namespace Backsight.Editor
         /// <param name="connectionString">The file name of the map to open</param>
         /// <returns>True if map opened ok. False if map couldn't be opened (in that case,
         /// a brand new map gets created)</returns>
+        /*
         public bool Open(string connectionString)
         {
             try
@@ -466,6 +470,7 @@ namespace Backsight.Editor
 
             return false;
         }
+        */
 
         /// <summary>
         /// Attempts to open a job
@@ -517,7 +522,7 @@ namespace Backsight.Editor
             cmm.Load(m_JobData);
             cmm.CreateSession(m_JobData, u);
             SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
-            //InitializeIdManager();
+            InitializeIdManager();
         }
 
         void InitializeIdManager()
@@ -675,13 +680,13 @@ namespace Backsight.Editor
 
             return null;
         }
-
+        /*
         internal Operation CurrentEdit
         {
             get { return m_CurrentEdit; }
             set { m_CurrentEdit = value; }
         }
-
+        */
         internal ILayer ActiveLayer
         {
             get { return m_ActiveLayer; }
@@ -760,8 +765,35 @@ namespace Backsight.Editor
                 ActiveDisplay.PaintNow();
             }
 
-            // Update the end-time associated with the session
-            Session.CurrentSession.UpdateEndTime();
+            // Save the last edit in the database
+            // TODO: There should really be something in the command object
+            // that provides the edit that got saved
+            Operation op = Session.CurrentSession.LastOperation;
+            string x = op.ToXml();
+
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
+            {
+                sw.Write(x);
+            }
+
+            Transaction.Execute(delegate
+            {
+                // Insert the edit
+                SqlCommand c = new SqlCommand();
+                c.Connection = Transaction.Connection.Value;
+                c.CommandText = "INSERT INTO [dbo].[Edits] ([SessionId], [EditSequence], [Data])" +
+                                    " VALUES (@sessionId, @editSequence, @data)";
+                c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
+                c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
+                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Xml));
+                c.Parameters[0].Value = Session.CurrentSession.Id;
+                c.Parameters[1].Value = op.EditSequence;
+                c.Parameters[2].Value = x;
+                c.ExecuteNonQuery();
+
+                // Update the end-time associated with the session
+                Session.CurrentSession.UpdateEndTime();
+            });
 
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
@@ -838,7 +870,7 @@ namespace Backsight.Editor
             ISpatialDisplay display = ActiveDisplay;
             IWindow drawExtent = display.Extent;
 
-            if (drawExtent.IsEmpty)
+            if (drawExtent==null || drawExtent.IsEmpty)
                 display.DrawOverview();
             else if (!drawExtent.IsOverlap(p))
                 display.Center = p;

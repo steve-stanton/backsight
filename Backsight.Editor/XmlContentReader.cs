@@ -184,7 +184,7 @@ namespace Backsight.Editor
         {
             return m_Reader[name];
         }
-
+        /*
         public IXmlContent ReadElement(string name)
         {
             // Read the next node if we're at the start
@@ -203,6 +203,25 @@ namespace Backsight.Editor
 
             return ReadContent();
         }
+        */
+        public T ReadElement<T>(string name)
+        {
+            // Read the next node if we're at the start
+            if (m_Reader.NodeType == XmlNodeType.None)
+            {
+                if (!m_Reader.Read())
+                    return default(T);
+            }
+
+            m_Reader.Read();
+
+            // I'm not 100% sure what to expect, this is what I think I'll have...
+            Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
+            Console.WriteLine("Name=" + m_Reader.Name);
+            //Debug.Assert(m_Reader.Name == name);
+
+            return (T)ReadContent();
+        }
 
         /// <summary>
         /// Obtains the spatial feature associated with a reference that was
@@ -210,12 +229,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
         /// <returns>The corresponding feature</returns>
-        internal Feature ReadFeatureByReference(string name)
+        internal T ReadFeatureByReference<T>(string name) where T : Feature
         {
             // Get the internal ID of the feature
             string s = m_Reader[name];
             //InternalIdValue iid = InternalIdValue.
-            return null;
+            return default(T);
         }
 
         /// <summary>
@@ -231,7 +250,7 @@ namespace Backsight.Editor
             SessionData.CurrentSession = session;
             Operation.CurrentEditSequence = editSequence;
 
-            return null;
+            throw new NotImplementedException("XmlContentReader.LoadOperation");
         }
     }
 }

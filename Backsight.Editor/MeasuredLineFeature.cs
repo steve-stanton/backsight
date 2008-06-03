@@ -59,8 +59,8 @@ namespace Backsight.Editor
         /// <param name="reader">The reader that holds the definition of this object</param>
         internal MeasuredLineFeature(XmlContentReader reader)
         {
-            m_ObservedLength = (Distance)reader.ReadElement("Distance");
-            m_Line = (LineFeature)reader.ReadFeatureByReference("Line");
+            m_ObservedLength = reader.ReadElement<Distance>("Distance");
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
         }
 
         #endregion
