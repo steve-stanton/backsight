@@ -56,7 +56,7 @@ namespace Backsight.Editor.Database
             List<SessionData> sessions = new List<SessionData>(1000);
 
             // Get the ID of the current user
-            int userId = User.GetUserId();
+            uint userId = User.GetUserId();
 
             // Grab information about all defined users
             User[] allUsers = User.FindAll();
@@ -187,7 +187,7 @@ namespace Backsight.Editor.Database
         /// <param name="sessions">The sessions to append to</param>
         /// <param name="job">The job that's being loaded</param>
         /// <param name="userId">The ID of the user involved</param>
-        static void LoadUnpublishedSessions(SqlConnection con, List<SessionData> sessions, Job job, int userId)
+        static void LoadUnpublishedSessions(SqlConnection con, List<SessionData> sessions, Job job, uint userId)
         {
             // Include user sessions (relevant to the job in question) that have not been published
             StringBuilder sb = new StringBuilder(200);

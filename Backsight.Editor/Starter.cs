@@ -45,7 +45,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the user involved (0 for no user)
         /// </summary>
-        int m_UserId;
+        uint m_UserId;
 
         #endregion
 
@@ -202,7 +202,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the current user (0 if not known)
         /// </summary>
-        internal int UserId
+        internal uint UserId
         {
             get { return m_UserId; }
         }

@@ -44,7 +44,9 @@ namespace Backsight.Editor.Database
                 {
                     while (rdr.Read())
                     {
-                        User u = new User(rdr.GetInt32(0), rdr.GetString(1));
+                        uint userId = (uint)rdr.GetInt32(0);
+                        string name = rdr.GetString(1);
+                        User u = new User(userId, name);
                         result.Add(u);
                     }
                 }
@@ -54,11 +56,30 @@ namespace Backsight.Editor.Database
         }
 
         /// <summary>
+        /// Attempts to select user information by primary key
+        /// </summary>
+        /// <param name="userId">The ID of the user to select</param>
+        /// <returns>The corresponding user (null if not found)</returns>
+        internal static User FindByPrimaryKey(uint userId)
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("SELECT [Name] FROM [dbo].[Users] WHERE [UserId]={0}", userId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                object o = cmd.ExecuteScalar();
+                if (o==null)
+                    return null;
+
+                return new User(userId, o.ToString());
+            }
+        }
+
+        /// <summary>
         /// Obtains the ID of the user who is currently logged in. If the user is not
         /// registered in the database, they will be added.
         /// </summary>
         /// <returns>The ID of the current user</returns>
-        internal static int GetUserId()
+        internal static uint GetUserId()
         {
             string userName = System.Environment.UserName;
             string sql = String.Format("SELECT [UserId] FROM [dbo].[Users] WHERE [Name]='{0}'", userName);
@@ -79,7 +100,7 @@ namespace Backsight.Editor.Database
                         throw new Exception("Failed to assign user ID");
                 }
 
-                return Convert.ToInt32(result);
+                return Convert.ToUInt32(result);
             }
         }
 
@@ -90,7 +111,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The internal ID for the user
         /// </summary>
-        int m_UserId;
+        uint m_UserId;
 
         /// <summary>
         /// The user-perceived name for the user
@@ -106,7 +127,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         /// <param name="userId">The internal ID for the user</param>
         /// <param name="name">The user-perceived name for the user</param>
-        User(int userId, string name)
+        User(uint userId, string name)
         {
             m_UserId = userId;
             m_Name = name;
@@ -117,7 +138,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The internal ID for the user
         /// </summary>
-        internal int UserId
+        internal uint UserId
         {
             get { return m_UserId; }
         }

@@ -60,7 +60,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the current user
         /// </summary>
-        int m_UserId;
+        uint m_UserId;
 
         /// <summary>
         /// Information about the current job file
@@ -509,10 +509,15 @@ namespace Backsight.Editor
             if (m_ActiveLayer == null)
                 throw new Exception("Cannot locate map layer associated with current job");
 
+            // Ensure we can read back the user info
+            User u = User.FindByPrimaryKey(m_UserId);
+
             // Initialize the model
             CadastralMapModel cmm = new CadastralMapModel();
-            //cmm.Load(m_JobData, m_UserId);
-
+            cmm.Load(m_JobData);
+            cmm.CreateSession(m_JobData, u);
+            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+            //InitializeIdManager();
         }
 
         void InitializeIdManager()

@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// <summary>
         /// What sort of thing is it?
         /// </summary>
-        private MapEntity m_What;
+        private IEntity m_What;
 
         /// <summary>
         /// Objects that reference this feature (either directly, or
@@ -91,7 +91,7 @@ namespace Backsight.Editor
             if (creator==null) 
                 throw new ArgumentNullException("Creating operation must be defined");
 
-            m_What = creator.MapModel.GetRegisteredEntityType(e);
+            m_What = e; //creator.MapModel.GetRegisteredEntityType(e);
             m_Creator = creator;
             m_CreatorSequence = 0;
         }
@@ -299,7 +299,7 @@ namespace Backsight.Editor
                 if (value==null)
                     throw new ArgumentNullException();
 
-                m_What = MapModel.GetRegisteredEntityType(value);
+                m_What = value; //MapModel.GetRegisteredEntityType(value);
             }
         }
 
