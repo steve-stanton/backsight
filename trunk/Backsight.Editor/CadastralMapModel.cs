@@ -51,18 +51,17 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="s">The name of the file holding the model</param>
         /// <returns>The map model</returns>
+        /*
         internal static CadastralMapModel Open(string s)
         {
-            /*
             CadastralMapModel cmm = LoadFile(s);
             cmm.m_ModelFileName = new ModelFileName(s);
             cmm.OnOpen();
             Settings.Default.LastMap = s;
             Settings.Default.Save();
             return cmm;
-             */
-            return null;
         }
+         */
 
         /*
         private static CadastralMapModel LoadFile(string inputFileName)
@@ -82,7 +81,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Spatial index for the data in this model.
         /// </summary>
-        EditingIndex m_Index;
+        readonly EditingIndex m_Index;
 
         /// <summary>
         /// Default rotation angle for text (in radians).
@@ -137,7 +136,8 @@ namespace Backsight.Editor
             //m_Layers = new List<LayerFacade>();
             //m_Fonts = new List<FontFacade>();
             m_IdRanges = new List<IdRange>();
-            m_Index = null;
+            //m_Index = null;
+            m_Index = new EditingIndex();
         }
 
         #endregion
@@ -200,8 +200,8 @@ namespace Backsight.Editor
             get
             {
                 // The index may be null if the model has just been deserialized
-                if (m_Index==null)
-                    m_Index = new EditingIndex();
+                //if (m_Index==null)
+                //    m_Index = new EditingIndex();
 
                 return m_Index;
             }

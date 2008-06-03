@@ -15,9 +15,9 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Backsight.Environment;
-using System.Collections.Generic;
 
 namespace Backsight.Editor
 {

@@ -76,6 +76,7 @@ namespace Backsight.Editor
         /// call this function when they are saving themselves, to confirm that the observation
         /// is associated with an edit.
         /// </summary>
+        /*
         protected Operation SaveOp
         {
             get
@@ -86,6 +87,8 @@ namespace Backsight.Editor
                 return edit;
             }
         }
+         */
+
         /// <summary>
         /// Adds references to existing features referenced by this observation.
         /// 

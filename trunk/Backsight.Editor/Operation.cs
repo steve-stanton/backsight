@@ -402,5 +402,19 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Represents this editing operation in XML (suitable for inserting
+        /// into the database)
+        /// </summary>
+        /// <returns>The XML for this edit</returns>
+        internal string ToXml()
+        {
+            // This will end up calling the implementation of WriteContent
+            XmlContentWriter.TargetNamespace = "Backsight";
+            return XmlContentWriter.GetXml("Edit", this);
+        }
+
+
     }
 }

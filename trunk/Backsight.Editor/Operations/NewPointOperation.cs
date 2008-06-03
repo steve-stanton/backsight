@@ -24,8 +24,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The created feature
         /// </summary>
-        private PointFeature m_NewPoint;
+        PointFeature m_NewPoint;
 
+        #endregion
+
+        #region Constructors
         #endregion
 
         public PointFeature Point
@@ -120,6 +123,12 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteElement("NewPoint", m_NewPoint);
+        }
+
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_NewPoint = reader.ReadElement<PointFeature>("NewPoint");
         }
     }
 }

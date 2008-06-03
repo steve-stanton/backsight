@@ -214,7 +214,8 @@ namespace Backsight.Editor.Forms
             // Check whether the position is on screen. If not, issue a warning
             // message, and let the user cancel if desired.
             ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-            if (!display.Extent.IsOverlap(m_Position))
+            IWindow extent = display.Extent;
+            if (extent==null || !extent.IsOverlap(m_Position))
             {
                 if (MessageBox.Show("Specified position does not overlap current draw window. Continue?",
                                         "Off screen", MessageBoxButtons.YesNo) == DialogResult.No)
@@ -334,7 +335,7 @@ namespace Backsight.Editor.Forms
             NewPointOperation save = new NewPointOperation();
 
             // Notify the controller that a save is starting
-            m_Cmd.Controller.CurrentEdit = save;
+            //m_Cmd.Controller.CurrentEdit = save;
 
             // Execute the operation.
 
@@ -360,7 +361,7 @@ namespace Backsight.Editor.Forms
             }
 
             // Tell the controller the save has finished.
-            m_Cmd.Controller.CurrentEdit = null;
+            //m_Cmd.Controller.CurrentEdit = null;
 	        //pMap->SaveOp(pSave,ok);
 
             // Return the new point if everything ok

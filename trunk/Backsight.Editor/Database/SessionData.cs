@@ -452,10 +452,13 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("UPDATE [dbo].[Sessions] SET [EndTime]=GETDATE(), [NumItem]={0}" +
-                                            " WHERE [SessionId]={1}", m_NumItem, m_SessionId);
+                DateTime now = DateTime.Now;
+                string nowString = DbUtil.GetDateTimeString(now);
+                string sql = String.Format("UPDATE [dbo].[Sessions] SET [EndTime]={0}, [NumItem]={1}" +
+                                            " WHERE [SessionId]={2}", nowString, m_NumItem, m_SessionId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
+                m_End = now;
             }
         }
 

@@ -153,7 +153,6 @@ namespace Backsight.Editor.Forms
             AddAction(mnuEditAutoNumber, IsEditAutoNumberEnabled, EditAutoNumber);
             AddAction(mnuEditPreferences, IsEditPreferencesEnabled, EditPreferences);
             AddAction(mnuEditAutoHighlight, IsEditAutoHighlightEnabled, EditAutoHighlight);
-            AddAction(mnuEditBackupLimit, IsEditBackupLimitEnabled, EditBackupLimit);
 
             // View menu...
             AddAction(new ToolStripItem[] { mnuViewOverview
@@ -637,13 +636,30 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         void OnMruFile(int number, string filename)
         {
-            if (m_Controller.Open(filename))
+            try
+            {
+                m_Controller.OpenJob(filename);
                 m_MruMenu.SetFirstFile(number);
-            else
+            }
+
+            catch (Exception ex)
             {
                 string msg = String.Format("Cannot access '{0}'", filename);
                 MessageBox.Show(msg);
                 m_MruMenu.RemoveFile(number);
+
+                try
+                {
+                    m_Controller.OpenJob(null);
+                    m_MruMenu.AddFile(m_Controller.JobFile.Name);
+                }
+
+                catch (Exception ex2)
+                {
+                    // For now, you just get one extra shot at it
+                    MessageBox.Show(ex2.Message);
+                    Close();
+                }
             }
 
             m_MruMenu.SaveToRegistry();
@@ -877,16 +893,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             //vSplitContainer.Panel2Collapsed = !vSplitContainer.Panel2Collapsed;
             m_Controller.AutoSelect = !m_Controller.AutoSelect;
-        }
-
-        private bool IsEditBackupLimitEnabled()
-        {
-            return false;
-        }
-
-        private void EditBackupLimit(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
         }
 
         #endregion
