@@ -17,9 +17,9 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Properties;
-using System.Diagnostics;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 
