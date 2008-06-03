@@ -81,9 +81,7 @@ namespace Backsight.Editor
         {
             writer.WriteUnsignedInt("CreationSequence", m_CreationSequence);
             writer.WriteInt("EntityId", m_EntityId);
-
-            if (!String.IsNullOrEmpty(m_Key))
-                writer.WriteString("Key", m_Key);
+            writer.WriteString("Key", m_Key);
         }
 
         #endregion
