@@ -50,6 +50,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The model that contains this session
+        /// </summary>
+        readonly CadastralMapModel m_Model;
+
+        /// <summary>
         /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
         /// </summary>
         readonly SessionData m_Data;
@@ -73,12 +78,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Operations (if any) that were performed during the session. 
         /// </summary>
-        List<Operation> m_Operations;
-
-        /// <summary>
-        /// The model that contains this session
-        /// </summary>
-        private CadastralMapModel m_Model;
+        readonly List<Operation> m_Operations;
 
         #endregion
 
@@ -89,10 +89,11 @@ namespace Backsight.Editor
         /// This is called when historical sessions are loaded during loading of
         /// the editing model.
         /// </summary>
+        /// <param name="model">The object model containing this session</param>
         /// <param name="sessionData">The information selected from the database</param>
         /// <param name="user">The user who performed the session</param>
         /// <param name="job">The job the session is associated with</param>
-        internal Session(SessionData sessionData, User user, Job job)
+        internal Session(CadastralMapModel model, SessionData sessionData, User user, Job job)
         {
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
@@ -100,10 +101,12 @@ namespace Backsight.Editor
             Debug.Assert(user.UserId == sessionData.UserId);
             Debug.Assert(job.JobId == sessionData.JobId);
 
+            m_Model = model;
             m_Data = sessionData;
             m_Who = user;
             m_Job = job;
             m_Layer = null;
+            m_Operations = new List<Operation>();
         }
 
         #endregion
@@ -111,16 +114,21 @@ namespace Backsight.Editor
         /// <summary>
         /// Unique ID for the session.
         /// </summary>
-        public uint Id
+        internal uint Id
         {
             get { return m_Data.Id; }
         }
 
+        // TODO: I think the output was dedicated to a list of sessions to be shown
+        // to the user - probably not a good idea
         public override string ToString()
         {
             return String.Format("{0} ({1})", m_Data.StartTime, m_Who);
         }
 
+        /// <summary>
+        /// The model that contains this session
+        /// </summary>
         internal CadastralMapModel MapModel
         {
             get { return m_Model; }
@@ -129,7 +137,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The map layer that was active throughout the session.
         /// </summary>
-        public ILayer ActiveLayer
+        internal ILayer ActiveLayer
         {
             get
             {
@@ -143,30 +151,23 @@ namespace Backsight.Editor
         /// <summary>
         /// Have any persistent objects been created via this editing session?
         /// </summary>
-        public bool IsEmpty
+        internal bool IsEmpty
         {
             get { return m_Data.NumItem==0; }
         }
 
         /// <summary>
-        /// Concludes this editing session. If nothing has been created, the
-        /// row in the database will be deleted. Otherwise it gets updated
-        /// with the current time.
+        /// Deletes information about this session from the database.
         /// </summary>
-        public void End()
+        internal void Delete()
         {
-            if (m_Data.NumItem==0)
-                m_Data.Delete();
-            else
-                m_Data.UpdateEndTime();
-
-            s_CurrentSession = null;
+            m_Data.Delete();
         }
 
         /// <summary>
         /// Updates the end-time (and item count) associated with this session
         /// </summary>
-        public void UpdateEndTime()
+        internal void UpdateEndTime()
         {
             m_Data.UpdateEndTime();
         }
@@ -182,9 +183,6 @@ namespace Backsight.Editor
         internal void Add(Operation o)
         {
             Debug.Assert(object.ReferenceEquals(s_CurrentSession,this));
-            if (m_Operations==null)
-                m_Operations = new List<Operation>();
-
             m_Operations.Add(o);
         }
 
@@ -196,10 +194,7 @@ namespace Backsight.Editor
         /// <returns>True if operation removed</returns>
         internal bool Remove(Operation o)
         {
-            if (m_Operations!=null)
-                return m_Operations.Remove(o);
-            else
-                return false;
+            return m_Operations.Remove(o);
         }
 
         /// <summary>
@@ -226,14 +221,10 @@ namespace Backsight.Editor
         /// <param name="container">The map model that contains this session</param>
         internal void OnLoad(CadastralMapModel container)
         {
-            Debug.Assert(m_Model==null);
-            m_Model = container;
+            Debug.Assert(m_Model==container);
 
-            if (m_Operations!=null)
-            {
-                foreach (Operation op in m_Operations)
-                    op.OnLoad(this);
-            }
+            foreach (Operation op in m_Operations)
+                op.OnLoad(this);
         }
 
         /// <summary>
@@ -243,20 +234,17 @@ namespace Backsight.Editor
         /// </summary>
         internal void AddToIndex()
         {
-            if (m_Operations!=null)
+            foreach (Operation op in m_Operations)
             {
-                foreach (Operation op in m_Operations)
-                {
-                    Feature[] createdFeatures = op.Features;
-                    m_Model.AddToIndex(createdFeatures);
-                }
+                Feature[] createdFeatures = op.Features;
+                m_Model.AddToIndex(createdFeatures);
             }
         }
 
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        public User User
+        internal User User
         {
             get { return m_Who; }
         }
@@ -270,7 +258,7 @@ namespace Backsight.Editor
         internal int Rollback()
         {
             // Return if there is nothing to rollback.
-            if (m_Operations==null || m_Operations.Count==0)
+            if (m_Operations.Count==0)
                 return 0;
 
             // Get the tail operation
@@ -285,9 +273,6 @@ namespace Backsight.Editor
                 return -1;
 
             m_Operations.RemoveAt(index);
-            if (m_Operations.Count==0)
-                m_Operations = null;
-
             return type;
         }
 
@@ -299,9 +284,6 @@ namespace Backsight.Editor
         /// an empty array)</returns>
         internal Operation[] GetOperations(bool reverse)
         {
-            if (m_Operations==null)
-                return new Operation[0];
-
             if (!reverse)
                 return m_Operations.ToArray();
 
@@ -314,6 +296,18 @@ namespace Backsight.Editor
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// The last editing operation in this session (null if no edits have been performed)
+        /// </summary>
+        internal Operation LastOperation
+        {
+            get
+            {
+                int numOp = m_Operations.Count;
+                return (numOp==0 ? null : m_Operations[numOp-1]);
+            }
         }
     }
 }

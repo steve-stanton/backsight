@@ -168,9 +168,10 @@ namespace Backsight.Editor
                 m_Inverse = null;
             }
 
-            Session s = Session.CurrentSession;
-            if (s!=null)
-                s.End();
+            // Close down the model
+            CadastralMapModel cmm = this.CadastralMapModel;
+            if (cmm!=null)
+                cmm.Close();
         }
 
         public CadastralMapModel CadastralMapModel

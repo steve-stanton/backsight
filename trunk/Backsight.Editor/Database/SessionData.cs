@@ -48,9 +48,10 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// Loads session data for a job (for the user who is currently running the application).
         /// </summary>
+        /// <param name="model">The model to load</param>
         /// <param name="job"></param>
         /// <returns></returns>
-        internal static List<SessionData> Load(Job job)
+        internal static void Load(CadastralMapModel model, Job job)
         {
             List<SessionData> sessions = new List<SessionData>(1000);
 
@@ -74,6 +75,9 @@ namespace Backsight.Editor.Database
                 // Stuff the session IDs into a temp table and use it to load the edits
                 string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
                 CopySessionIdsToTable(con, sessions, sessionTable);
+
+                // Initialize session capacity in the model
+                model.SetSessionCapacity(sessions.Count+1);
 
                 // Create the loader
                 uint numItem = SumItems(sessions);
@@ -113,7 +117,8 @@ namespace Backsight.Editor.Database
                                             { return (j.JobId == curSession.JobId); });
                             Debug.Assert(curJob != null);
 
-                            Session.CurrentSession = new Session(curSession, curUser, curJob);
+                            Session.CurrentSession = new Session(model, curSession, curUser, curJob);
+                            model.AddSession(Session.CurrentSession);
                         }
 
                         SqlXml data = reader.GetSqlXml(2);
@@ -124,9 +129,6 @@ namespace Backsight.Editor.Database
                     }
                 }
             }
-
-            sessions.TrimExcess();
-            return sessions;
         }
 
         /// <summary>

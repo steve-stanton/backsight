@@ -16,21 +16,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Diagnostics;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Management;
 using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 
-using Backsight.Editor.Operations;
-using Backsight.Index;
-using Backsight.Environment;
-using Backsight.Editor.Properties;
-using Backsight.Geometry;
-using Backsight.Editor.Database;
 using Backsight.Data;
+using Backsight.Editor.Database;
+using Backsight.Editor.Operations;
+using Backsight.Editor.Properties;
+using Backsight.Environment;
+using Backsight.Geometry;
+using Backsight.Index;
 
 namespace Backsight.Editor
 {
@@ -87,18 +82,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Spatial index for the data in this model.
         /// </summary>
-        [NonSerialized]
         EditingIndex m_Index;
 
         /// <summary>
         /// Default rotation angle for text (in radians).
         /// </summary>
         double m_Rotation;
-
-        /// <summary>
-        /// The highest sequence number assigned to any operation.
-        /// </summary>
-        uint m_OpSequence;
 
         /// <summary>
         /// The coordinate system.
@@ -113,7 +102,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Editing sessions.
         /// </summary>
-        List<Session> m_Sessions;
+        readonly List<Session> m_Sessions;
 
         /// <summary>
         /// Entity types that have been utilized by the map (stubs that front information
@@ -148,7 +137,6 @@ namespace Backsight.Editor
         internal CadastralMapModel()
         {
             m_Rotation = 0.0;
-            m_OpSequence = 0;
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
@@ -455,15 +443,18 @@ namespace Backsight.Editor
         //    }
         //}
 
-        public void Close()
+        internal void Close()
         {
             Session s = Session.CurrentSession;
             if (s!=null)
             {
-                s.End();
-
                 if (s.IsEmpty)
-                    m_Sessions.Remove(s);
+                    s.Delete();
+                else
+                    s.UpdateEndTime();
+
+                m_Sessions.Clear();
+                Session.CurrentSession = null;
             }
         }
 
@@ -479,27 +470,25 @@ namespace Backsight.Editor
             // Define information relating to the environment
             AssignData(EnvironmentContainer.Current);
 
-            // Initialize operation sequencing
-            m_OpSequence = 0;
-
             // Notify all sessions
+            /*
             foreach (Session s in m_Sessions)
             {
                 s.OnLoad(this);
 
                 // Ensure the session refers to the same layer data as this model
-                /*
-                LayerFacade layerFacade = s.LayerFacade;
-                if (layerFacade==null)
-                    throw new Exception("Session is not associated with an editing layer");
+          
+                //LayerFacade layerFacade = s.LayerFacade;
+                //if (layerFacade==null)
+                //    throw new Exception("Session is not associated with an editing layer");
 
-                LayerFacade modelFacade = FindLayerById(layerFacade.Id);
-                 */
+                //LayerFacade modelFacade = FindLayerById(layerFacade.Id);
             }
 
             // Generate a spatial index
             foreach (Session s in m_Sessions)
                 s.AddToIndex();
+            */
         }
 
         /*
@@ -515,23 +504,36 @@ namespace Backsight.Editor
          */
 
         /// <summary>
-        /// Reserves the next operation sequence number. This should be obtained each time
-        /// a new editing operation is appended to this model. It also gets used when a map
-        /// model is opened (since the op sequence number is not persisted).
-        /// </summary>
-        /// <returns>The next available operation sequence number.</returns>
-        internal uint ReserveNextOpSequence()
-        {
-            m_OpSequence++;
-            return m_OpSequence;
-        }
-
-        /// <summary>
-        /// The last operation sequence number returned by <see cref="ReserveNextOpSequence"/>
+        /// The sequence number of the last edit in the last session (0 if no edits have
+        /// been performed in the last session)
         /// </summary>
         internal uint LastOpSequence
         {
-            get { return m_OpSequence; }
+            get
+            {
+                Session s = LastSession;
+                if (s==null)
+                    return 0;
+
+                Operation o = s.LastOperation;
+                if (o==null)
+                    return 0;
+
+                return o.EditSequence;
+            }
+        }
+
+        /// <summary>
+        /// The last editing session in this model (null if this is a freshly created model,
+        /// and data is still being loaded)
+        /// </summary>
+        internal Session LastSession
+        {
+            get
+            {
+                int numSession = m_Sessions.Count;
+                return (numSession==0 ? null : m_Sessions[numSession-1]);
+            }
         }
 
         /// <summary>
@@ -1384,51 +1386,34 @@ namespace Backsight.Editor
         internal void Load(Job job)
         {
             m_Sessions.Clear();
-            m_Sessions.Capacity = 100;
+            SessionData.Load(this, job);
 
-            List<SessionData> sessions = SessionData.Load(job);
-            /*
-            using (IConnection ic = AdapterFactory.GetConnection())
+            // Ensure everything is as expected (not sure if this is still needed)
+            foreach (Session s in m_Sessions)
             {
-                // Load information about the sessions involved
-                SqlConnection con = ic.Value;
-                LoadPublishedSessions(con, job, layer);
-                LoadUnpublishedSessions(con, job, userId);
-
-                // Stuff the session IDs into a temp table and use it to load the edits
-                string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
-                CopySessionIdsToTable(con, sessionTable);
-
-                // Load information about the edits involved
-                StringBuilder sb = new StringBuilder(200);
-                sb.Append("SELECT [SessionId], [EditSequence], [Data]");
-                sb.Append(" FROM [dbo].[Edits] WHERE [SessionId] IN");
-                sb.AppendFormat(" (SELECT [SessionId] FROM {0})", sessionTable);
-                sb.Append(" ORDER BY [SessionId], [EditSequence]");
-                SqlCommand cmd = new SqlCommand(sb.ToString(), con);
-
-                Session curSession = null;
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        int sessionId = reader.GetInt32(0);
-                        int editSequence = reader.GetInt32(1);
-
-                        // Ensure we have the correct session object
-                        if (curSession==null || curSession.Id!=sessionId)
-                        {
-                            curSession = m_Sessions.Find(delegate(Session s)
-                                            { return (s.Id==sessionId); });
-                            Debug.Assert(curSession!=null);
-                        }
-
-                        //curSession.AddEdit(editSequence);
-                    }
-                }
+                s.OnLoad(this);
+                s.AddToIndex();
             }
-            */
+
             // Now build the topology for the map
+        }
+
+        /// <summary>
+        /// Initializes the number of elements in this model's session list
+        /// </summary>
+        /// <param name="numSession">The size of the session list.</param>
+        internal void SetSessionCapacity(int numSession)
+        {
+            m_Sessions.Capacity = numSession;
+        }
+
+        /// <summary>
+        /// Remembers a session as part of this model
+        /// </summary>
+        /// <param name="s"></param>
+        internal void AddSession(Session s)
+        {
+            m_Sessions.Add(s);
         }
     }
 }
