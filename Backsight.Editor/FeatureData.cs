@@ -60,7 +60,7 @@ namespace Backsight.Editor
         /// in the supplied feature.
         /// </summary>
         /// <param name="f">The feature of interest</param>
-        public FeatureData(Feature f)
+        internal FeatureData(Feature f)
         {
             if (f==null)
             {
@@ -88,6 +88,7 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
+            // Don't write out any attributes if we had a null Feature
             if (m_CreationSequence>0)
             {
                 writer.WriteUnsignedInt("CreationSequence", m_CreationSequence);
@@ -96,14 +97,14 @@ namespace Backsight.Editor
             }
         }
 
-        #endregion
-
-        #region IXmlContent Members
-
-
         public void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            if (reader.HasAttribute("CreationSequence"))
+            {
+                m_CreationSequence = reader.ReadUnsignedInt("CreationSequence");
+                m_EntityId = reader.ReadInt("EntityId");
+                m_Key = reader.ReadString("Key");
+            }
         }
 
         #endregion

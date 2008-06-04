@@ -793,7 +793,6 @@ namespace Backsight.Editor
         /// </devnote>
         void BuildPolygons()
         {
-            Trace.Write("Building polygons");
             new PolygonBuilder(this).Build();
         }
 

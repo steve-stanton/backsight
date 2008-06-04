@@ -96,6 +96,13 @@ namespace Backsight.Editor
             m_CreatorSequence = 0;
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        protected Feature()
+        {
+        }
+
         #endregion
 
         /// <summary>
@@ -779,7 +786,10 @@ namespace Backsight.Editor
         {
             writer.WriteUnsignedInt("CreationSequence", m_CreatorSequence);
             writer.WriteInt("EntityId", m_What.Id);
-            writer.WriteString("Key", FormattedKey);
+
+            string s = FormattedKey;
+            if (s.Length>0)
+                writer.WriteString("Key", FormattedKey);
         }
 
         /// <summary>
@@ -792,15 +802,17 @@ namespace Backsight.Editor
         {
             m_CreatorSequence = reader.ReadUnsignedInt("CreationSequence");
             int entId = reader.ReadInt("EntityId");
-            string key = reader.ReadString("Key");
+            m_What = EnvironmentContainer.FindEntityById(entId);
 
-            //m_What = EnvironmentContainer.FindEntityById(entId);
+            if (reader.HasAttribute("Key"))
+            {
+                string key = reader.ReadString("Key");
 
-            // TODO: The FeatureId instance may have been loaded already (since
-            // multiple features can share the same ID) => The ID requires its
-            // own DataId, and we need some lookup here. Can the XmlContentReader
-            // really be in the Backsight.csproj?
-            //m_Id = 
+                // TODO: The FeatureId instance may have been loaded already (since
+                // multiple features can share the same ID) => XmlContentReader
+                // should have a lookup by user key.
+                //m_Id = 
+            }
         }
 
         #endregion

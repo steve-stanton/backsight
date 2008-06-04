@@ -112,14 +112,6 @@ namespace Backsight.Editor
             }
         }
 
-        /*
-        void SetMoved(List<Feature> features)
-        {
-            foreach (Feature f in features)
-                f.IsMoved = true;
-        }
-        */
-
         /// <summary>
         /// Loads all point features (symbols) from an NTX file.
         /// </summary>
