@@ -113,9 +113,9 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of features created by this edit.
         /// </summary>
-        public int FeatureCount
+        public uint FeatureCount
         {
-            get { return Features.Length; }
+            get { return (uint)Features.Length; }
         }
 
         /// <summary>
@@ -318,8 +318,13 @@ namespace Backsight.Editor
             MapModel.AddToIndex(feats);
 
             // Assign 1-based creation sequence to each created feature
+            uint numItem = Session.CurrentSession.NumItem;
             for (uint i = 0; i < feats.Length; i++)
-                feats[i].CreatorSequence = (i + 1);
+            {
+                numItem++;
+                feats[i].CreatorSequence = numItem;
+            }
+            Session.CurrentSession.NumItem = numItem;
 
             // Point referenced features to this editing operation
             AddReferences();

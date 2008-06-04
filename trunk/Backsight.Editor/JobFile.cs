@@ -82,5 +82,13 @@ namespace Backsight.Editor
         {
             get { return m_FileName; }
         }
+
+        /// <summary>
+        /// Saves the job file to disk
+        /// </summary>
+        internal void Save()
+        {
+            m_Info.WriteXML(m_FileName);
+        }
     }
 }

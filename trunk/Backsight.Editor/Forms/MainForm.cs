@@ -71,8 +71,19 @@ namespace Backsight.Editor.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
                 return;
             }
+
+            uint numSess = 0;
+            uint numFeat = 0;
+            foreach (Session s in CadastralMapModel.Current.Sessions)
+            {
+                numSess++;
+                numFeat += s.FeatureCount;
+            }
+            MessageBox.Show("Number of sessions loaded="+numSess);
+            MessageBox.Show("Number of features="+numFeat);
 
             InitializeComponent();
 

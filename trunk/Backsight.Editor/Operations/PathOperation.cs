@@ -992,8 +992,8 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("From", m_From.DataId);
-            writer.WriteString("To", m_To.DataId);
+            writer.WriteFeatureReference("From", m_From);
+            writer.WriteFeatureReference("To", m_To);
             writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
     }

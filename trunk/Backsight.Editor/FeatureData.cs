@@ -62,9 +62,18 @@ namespace Backsight.Editor
         /// <param name="f">The feature of interest</param>
         public FeatureData(Feature f)
         {
-            m_CreationSequence = f.CreatorSequence;
-            m_EntityId = f.EntityType.Id;
-            m_Key = f.FormattedKey;
+            if (f==null)
+            {
+                m_CreationSequence = 0;
+                m_EntityId = 0;
+                m_Key = null;
+            }
+            else
+            {
+                m_CreationSequence = f.CreatorSequence;
+                m_EntityId = f.EntityType.Id;
+                m_Key = f.FormattedKey;
+            }
         }
 
         #endregion
@@ -79,9 +88,12 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteUnsignedInt("CreationSequence", m_CreationSequence);
-            writer.WriteInt("EntityId", m_EntityId);
-            writer.WriteString("Key", m_Key);
+            if (m_CreationSequence>0)
+            {
+                writer.WriteUnsignedInt("CreationSequence", m_CreationSequence);
+                writer.WriteInt("EntityId", m_EntityId);
+                writer.WriteString("Key", m_Key);
+            }
         }
 
         #endregion

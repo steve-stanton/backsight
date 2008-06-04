@@ -362,7 +362,7 @@ namespace Backsight.Editor
         {
             // TODO: Need some ID for the circle itself
 
-            writer.WriteString("Center", m_Center.DataId);
+            writer.WriteFeatureReference("Center", m_Center);
             //writer.WriteAttributeString("FirstArc", 
         }
 

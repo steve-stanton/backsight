@@ -471,23 +471,18 @@ namespace Backsight.Editor.Operations
         {
             base.WriteContent(writer);
 
-            writer.WriteString("Line1", m_Line1.DataId);
-            writer.WriteString("Line2", m_Line2.DataId);
-            writer.WriteString("CloseTo", m_CloseTo.DataId);
+            writer.WriteFeatureReference("Line1", m_Line1);
+            writer.WriteFeatureReference("Line2", m_Line2);
+            writer.WriteFeatureReference("CloseTo", m_CloseTo);
             writer.WriteBool("IsSplit1", m_IsSplit1);
             writer.WriteBool("IsSplit2", m_IsSplit2);
 
             // Creations...
             writer.WriteElement("To", new FeatureData(m_Intersection));
-
-            if (m_Line1a != null)
-                writer.WriteElement("Line1a", new FeatureData(m_Line1a));
-            if (m_Line1b != null)
-                writer.WriteElement("Line1b", new FeatureData(m_Line1b));
-            if (m_Line2a != null)
-                writer.WriteElement("Line2a", new FeatureData(m_Line2a));
-            if (m_Line2b != null)
-                writer.WriteElement("Line2b", new FeatureData(m_Line2b));
+            writer.WriteElement("Line1a", new FeatureData(m_Line1a));
+            writer.WriteElement("Line1b", new FeatureData(m_Line1b));
+            writer.WriteElement("Line2a", new FeatureData(m_Line2a));
+            writer.WriteElement("Line2b", new FeatureData(m_Line2b));
         }
     }
 }

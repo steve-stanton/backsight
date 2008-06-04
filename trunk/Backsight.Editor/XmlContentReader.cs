@@ -184,6 +184,16 @@ namespace Backsight.Editor
         {
             return m_Reader[name];
         }
+
+        internal InternalIdValue ReadId(string name)
+        {
+            string s = m_Reader[name];
+            if (s==null)
+                return new InternalIdValue();
+            else
+                return new InternalIdValue(s);
+        }
+
         /*
         public IXmlContent ReadElement(string name)
         {
@@ -217,10 +227,24 @@ namespace Backsight.Editor
 
             // I'm not 100% sure what to expect, this is what I think I'll have...
             Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
-            Console.WriteLine("Name=" + m_Reader.Name);
+            //Console.WriteLine("Name=" + m_Reader.Name);
             //Debug.Assert(m_Reader.Name == name);
 
             return (T)ReadContent();
+        }
+
+        public T[] ReadArray<T>(string arrayName, string itemName) where T : IXmlContent
+        {
+            Debug.Assert(m_Reader.Name == arrayName);
+            List<T> result = new List<T>(1000);
+
+            while (m_Reader.NodeType != XmlNodeType.EndElement)
+            {
+                T item = ReadElement<T>(itemName);
+                result.Add(item);
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -232,9 +256,12 @@ namespace Backsight.Editor
         internal T ReadFeatureByReference<T>(string name) where T : Feature
         {
             // Get the internal ID of the feature
-            string s = m_Reader[name];
-            //InternalIdValue iid = InternalIdValue.
-            return default(T);
+            InternalIdValue iid = ReadId(name);
+            if (iid.IsEmpty)
+                return null;
+
+            Debug.Assert(m_Features.ContainsKey(iid));
+            return (T)m_Features[iid];
         }
 
         /// <summary>
@@ -250,7 +277,16 @@ namespace Backsight.Editor
             SessionData.CurrentSession = session;
             Operation.CurrentEditSequence = editSequence;
 
-            throw new NotImplementedException("XmlContentReader.LoadOperation");
+            try
+            {
+                m_Reader = data;
+                return ReadElement<Operation>("Edit");
+            }
+
+            finally
+            {
+                m_Reader = null;
+            }
         }
     }
 }

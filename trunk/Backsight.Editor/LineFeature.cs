@@ -1195,6 +1195,8 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
+            writer.WriteFeatureReference("From", StartPoint);
+            writer.WriteFeatureReference("To", EndPoint);
             writer.WriteElement("Geometry", m_Geom);
         }
     }

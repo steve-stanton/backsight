@@ -640,30 +640,20 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("RefLine", m_RefLine.DataId);
+            writer.WriteFeatureReference("RefLine", m_RefLine);
             writer.WriteElement("Offset", m_Offset);
             writer.WriteUnsignedInt("Flags", m_Flags);
-
-            if (m_Term1 != null)
-                writer.WriteString("Term1", m_Term1.DataId);
-            if (m_Term2 != null)
-                writer.WriteString("Term2", m_Term2.DataId);
-            if (m_Near1 !=null)
-                writer.WriteString("Near1", m_Near1.DataId);
-            if (m_Near2 != null)
-                writer.WriteString("Near2", m_Near2.DataId);
+            writer.WriteFeatureReference("Term1", m_Term1);
+            writer.WriteFeatureReference("Term2", m_Term2);
+            writer.WriteFeatureReference("Near1", m_Near1);
+            writer.WriteFeatureReference("Near2", m_Near2);
 
             // Created features ...
             writer.WriteElement("ParLine", new FeatureData(m_ParLine));
-
-            if (m_Term1a != null)
-                writer.WriteElement("Term1a", new FeatureData(m_Term1a));
-            if (m_Term1b != null)
-                writer.WriteElement("Term1b", new FeatureData(m_Term1b));
-            if (m_Term2a != null)
-                writer.WriteElement("Term2a", new FeatureData(m_Term2a));
-            if (m_Term2b != null)
-                writer.WriteElement("Term2b", new FeatureData(m_Term2b));
+            writer.WriteElement("Term1a", new FeatureData(m_Term1a));
+            writer.WriteElement("Term1b", new FeatureData(m_Term1b));
+            writer.WriteElement("Term2a", new FeatureData(m_Term2a));
+            writer.WriteElement("Term2b", new FeatureData(m_Term2b));
         }
     }
 }

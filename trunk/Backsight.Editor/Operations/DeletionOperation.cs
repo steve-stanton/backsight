@@ -205,9 +205,9 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            string[] ids = new string[m_Deletions.Count];
+            InternalIdValue[] ids = new InternalIdValue[m_Deletions.Count];
             for (int i=0; i<ids.Length; i++)
-                ids[i] = m_Deletions[i].DataId;
+                ids[i] = m_Deletions[i].InternalId;
 
             writer.WriteArray("IdArray", "Id", ids);
         }

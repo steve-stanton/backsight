@@ -175,8 +175,8 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteString("Backsight", m_Backsight.DataId);
-            writer.WriteString("From", m_From.DataId);
+            writer.WriteId("Backsight", m_Backsight.InternalId);
+            writer.WriteId("From", m_From.InternalId);
             writer.WriteString("Observation", RadianValue.AsString(m_Observation));
         }
     }

@@ -68,6 +68,21 @@ namespace Backsight.Editor
             m_Item = itemSequence;
         }
 
+        /// <summary>
+        /// Creates a new <c>InternalIdValue</c> by parsing the supplied string
+        /// </summary>
+        /// <param name="s">The string that represents an ID (in the same format produced
+        /// by a call to <see cref="InternalIdValue.ToString"/>)</param>
+        internal InternalIdValue(string s)
+        {
+            int dotPos = s.IndexOf('.');
+            if (dotPos<=0)
+                throw new ArgumentException();
+
+            m_Session = UInt32.Parse(s.Substring(0, dotPos));
+            m_Item = UInt32.Parse(s.Substring(dotPos+1));
+        }
+
         #endregion
 
         /// <summary>
@@ -89,6 +104,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Is this an "empty" ID (with session ID and item sequence both zero).
+        /// </summary>
+        internal bool IsEmpty
+        {
+            get { return (m_Session==0 && m_Item==0); }
+        }
+
+        /// <summary>
         /// Override returns a concatenation of the job registration ID & the
         /// creation sequence value.
         /// </summary>
@@ -97,6 +120,17 @@ namespace Backsight.Editor
         public override string ToString()
         {
             return String.Format("{0}.{1}", m_Session, m_Item);
+        }
+
+        /// <summary>
+        /// Hash code (for use with Dictionary) is the session ID shifted over 16 bits,
+        /// OR'd with the 16 low-order bits of the item number. This will produce unique
+        /// values so long as the item number and session ID are both less than 65536.
+        /// </summary>
+        /// <returns>The value to use for indexing IDs</returns>
+        public override int GetHashCode()
+        {
+            return ((int)(m_Session<<16) | (int)(m_Item&0x0000FFFF));
         }
     }
 }

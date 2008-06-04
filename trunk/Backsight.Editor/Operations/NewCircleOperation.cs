@@ -309,7 +309,7 @@ namespace Backsight.Editor.Operations
         {
             base.WriteContent(writer);
 
-            writer.WriteString("Center", m_Center.DataId);
+            writer.WriteFeatureReference("Center", m_Center);
             writer.WriteElement("Radius", m_Radius);
         }
     }
