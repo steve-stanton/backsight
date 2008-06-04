@@ -25,6 +25,7 @@ using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Editor.Database;
+using System.Xml;
 
 namespace Backsight.Editor.Forms
 {
@@ -51,6 +52,24 @@ namespace Backsight.Editor.Forms
 
         public MainForm(string[] args)
         {
+            /*
+            StreamWriter output = new StreamWriter(@"C:\Temp\Dump.txt");
+
+            using (TextReader tr = new StreamReader(@"C:\Temp\LastEdit.txt"))
+            {
+                using (XmlReader r = XmlReader.Create(tr))
+                {
+                    while (r.Read())
+                    {
+                        output.WriteLine(String.Format("{0} {1}", r.Name, r.NodeType));
+                    }
+                }
+            }
+
+            output.Close();
+            return;
+            */
+
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, remember it as the last map (the controller will pick it up later
             // during startup)

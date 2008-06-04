@@ -66,8 +66,11 @@ namespace Backsight.Editor
         /// </summary>
         internal void Build()
         {
+            Trace.Write("Building network");
             m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
+            Trace.Write("Processing island polygons");
             BuildIslands();
+            Trace.Write("Associating polygon labels");
             BuildLabels();
             //(m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
         }

@@ -235,6 +235,7 @@ namespace Backsight.Editor
         public void WriteArray(string arrayName, string itemName, IXmlContent[] data)
         {
             m_Writer.WriteStartElement(arrayName);
+            WriteUnsignedInt("Capacity", (uint)data.Length);
 
             foreach (IXmlContent xc in data)
                 WriteElement(itemName, xc);
@@ -251,6 +252,7 @@ namespace Backsight.Editor
         public void WriteArray(string arrayName, string itemName, string[] data)
         {
             m_Writer.WriteStartElement(arrayName);
+            WriteUnsignedInt("Capacity", (uint)data.Length);
 
             foreach (string s in data)
                 m_Writer.WriteElementString(itemName, s);
@@ -267,6 +269,7 @@ namespace Backsight.Editor
         internal void WriteArray(string arrayName, string itemName, InternalIdValue[] data)
         {
             m_Writer.WriteStartElement(arrayName);
+            WriteUnsignedInt("Capacity", (uint)data.Length);
 
             foreach (InternalIdValue id in data)
                 m_Writer.WriteElementString(itemName, id.ToString());
