@@ -132,6 +132,15 @@ namespace Backsight.Editor
             }
         }
 
+        public InternalIdValue InternalId
+        {
+            get
+            {
+                uint sessionId = m_Creator.Session.Id;
+                return new InternalIdValue(sessionId, m_CreatorSequence);
+            }
+        }
+
         [Description("Unique ID")]
         public FeatureId Id
         {

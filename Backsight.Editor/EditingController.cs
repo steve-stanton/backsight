@@ -175,6 +175,9 @@ namespace Backsight.Editor
             CadastralMapModel cmm = this.CadastralMapModel;
             if (cmm!=null)
                 cmm.Close();
+
+            // Write out the job file
+            m_JobFile.Save();
         }
 
         public CadastralMapModel CadastralMapModel
@@ -769,6 +772,34 @@ namespace Backsight.Editor
             // TODO: There should really be something in the command object
             // that provides the edit that got saved
             Operation op = Session.CurrentSession.LastOperation;
+            SaveOperation(op);
+
+            // Re-enable auto-highlighting if it was on before.
+            if (m_IsAutoSelect<0)
+                m_IsAutoSelect = -m_IsAutoSelect;
+
+            /*
+            if ( pCmd->GetCommandId() == ID_FEATURE_UPDATE )
+                GetDocument()->OnFinishUpdate();
+            else
+                FinishEdit((INT4)m_pCommand);
+            // m_pAutoSaver->FinishEdit(edid);
+            */
+
+            m_Command.Dispose();
+            m_Command = null;
+        }
+
+        /// <summary>
+        /// Saves an editing operation in the database. This writes to the <c>Edits</c>
+        /// table and updates the timestamp in the <c>Sessions</c> table.
+        /// </summary>
+        /// <param name="op">The edit to save</param>
+        internal void SaveOperation(Operation op)
+        {
+            // Save the last edit in the database
+            // TODO: There should really be something in the command object
+            // that provides the edit that got saved
             string x = op.ToXml();
 
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
@@ -794,21 +825,6 @@ namespace Backsight.Editor
                 // Update the end-time associated with the session
                 Session.CurrentSession.UpdateEndTime();
             });
-
-            // Re-enable auto-highlighting if it was on before.
-            if (m_IsAutoSelect<0)
-                m_IsAutoSelect = -m_IsAutoSelect;
-
-            /*
-            if ( pCmd->GetCommandId() == ID_FEATURE_UPDATE )
-                GetDocument()->OnFinishUpdate();
-            else
-                FinishEdit((INT4)m_pCommand);
-            // m_pAutoSaver->FinishEdit(edid);
-            */
-
-            m_Command.Dispose();
-            m_Command = null;
         }
 
         /// <summary>

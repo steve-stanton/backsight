@@ -235,7 +235,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteFeatureReference("Line", m_Line);
             writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
             writer.WriteElement("Point", new FeatureData(m_Point));
         }

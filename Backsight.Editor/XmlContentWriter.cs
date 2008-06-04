@@ -182,13 +182,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes out an internal ID
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="value">The value of the attribute</param>
+        internal void WriteId(string name, InternalIdValue value)
+        {
+            m_Writer.WriteAttributeString(name, value.ToString());
+        }
+
+        /// <summary>
         /// Writes out a reference to a previously existing spatial feature
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
         /// <param name="feature">The feature that's referenced</param>
         internal void WriteFeatureReference(string name, Feature feature)
         {
-            m_Writer.WriteAttributeString(name, feature.DataId);
+            if (feature!=null)
+                m_Writer.WriteAttributeString(name, feature.DataId);
         }
 
         /// <summary>
@@ -243,6 +254,22 @@ namespace Backsight.Editor
 
             foreach (string s in data)
                 m_Writer.WriteElementString(itemName, s);
+
+            m_Writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes an array element for the supplied content
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the complete array</param>
+        /// <param name="itemName">The element name for individual elements in the array</param>
+        /// <param name="data">The content to write out</param>
+        internal void WriteArray(string arrayName, string itemName, InternalIdValue[] data)
+        {
+            m_Writer.WriteStartElement(arrayName);
+
+            foreach (InternalIdValue id in data)
+                m_Writer.WriteElementString(itemName, id.ToString());
 
             m_Writer.WriteEndElement();
         }

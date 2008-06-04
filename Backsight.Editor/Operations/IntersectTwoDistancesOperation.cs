@@ -560,18 +560,16 @@ namespace Backsight.Editor.Operations
             base.WriteContent(writer);
 
             writer.WriteElement("Distance1", m_Distance1);
-            writer.WriteString("From1", m_From1.DataId);
+            writer.WriteFeatureReference("From1", m_From1);
             writer.WriteElement("Distance2", m_Distance2);
-            writer.WriteString("From2", m_From2.DataId);
+            writer.WriteFeatureReference("From2", m_From2);
             writer.WriteBool("IsDefault", m_Default);
 
             // Creations ...
 
             writer.WriteElement("To", new FeatureData(m_To));
-            if (m_Line1 != null)
-                writer.WriteElement("Line1", new FeatureData(m_Line1));
-            if (m_Line2 != null)
-                writer.WriteElement("Line2", new FeatureData(m_Line2));
+            writer.WriteElement("Line1", new FeatureData(m_Line1));
+            writer.WriteElement("Line2", new FeatureData(m_Line2));
         }
     }
 }

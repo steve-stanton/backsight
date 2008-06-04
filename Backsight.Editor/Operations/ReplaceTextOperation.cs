@@ -212,7 +212,7 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteString("OldText", m_OldText.DataId);
+            writer.WriteFeatureReference("OldText", m_OldText);
         }
     }
 }

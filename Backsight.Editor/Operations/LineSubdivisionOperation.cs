@@ -391,7 +391,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteFeatureReference("Line", m_Line);
 
             // TODO: The structure here is a bit weak. Needs to be revisited.
             LineSubdivisionFace[] faces = new LineSubdivisionFace[m_Faces.Count];

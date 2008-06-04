@@ -309,5 +309,31 @@ namespace Backsight.Editor
                 return (numOp==0 ? null : m_Operations[numOp-1]);
             }
         }
+
+        /// <summary>
+        /// The number of items (objects) created by the session
+        /// </summary>
+        internal uint NumItem
+        {
+            get { return m_Data.NumItem; }
+            set
+            {
+                Debug.Assert(value >= m_Data.NumItem);
+                m_Data.NumItem = value;
+            }
+        }
+
+        internal uint FeatureCount
+        {
+            get
+            {
+                uint result = 0;
+
+                foreach (Operation op in m_Operations)
+                    result += op.FeatureCount;
+
+                return result;
+            }
+        }
     }
 }

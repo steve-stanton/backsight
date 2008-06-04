@@ -526,17 +526,13 @@ namespace Backsight.Editor.Operations
 
             writer.WriteElement("Direction", m_Direction);
             writer.WriteElement("Distance", m_Distance);
-            writer.WriteString("From", m_From.DataId);
+            writer.WriteFeatureReference("From", m_From);
             writer.WriteBool("IsDefault", m_Default);
 
             // Creations...
             writer.WriteElement("To", new FeatureData(m_To));
-
-            if (m_DirLine != null)
-                writer.WriteElement("DirLine", new FeatureData(m_DirLine));
-
-            if (m_DistLine != null)
-                writer.WriteElement("DistLine", new FeatureData(m_DistLine));
+            writer.WriteElement("DirLine", new FeatureData(m_DirLine));
+            writer.WriteElement("DistLine", new FeatureData(m_DistLine));
         }
     }
 }

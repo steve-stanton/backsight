@@ -349,7 +349,7 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Line", m_Line.DataId);
+            writer.WriteFeatureReference("Line", m_Line);
             writer.WriteElement("Distance", m_Distance);
 
             // Creations ...

@@ -86,7 +86,7 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteString("TextFeature", m_Feature.DataId);
+            writer.WriteFeatureReference("TextFeature", m_Feature);
         }
     }
 }

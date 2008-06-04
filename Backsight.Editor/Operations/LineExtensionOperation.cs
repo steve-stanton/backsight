@@ -397,13 +397,12 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("ExtendLine", m_ExtendLine.DataId);
+            writer.WriteFeatureReference("ExtendLine", m_ExtendLine);
             writer.WriteBool("IsExtendFromEnd", m_IsExtendFromEnd);
             writer.WriteElement("Distance", m_Length);
 
             writer.WriteElement("NewPoint", new FeatureData(m_NewPoint));
-            if (m_NewLine != null)
-                writer.WriteElement("NewLine", new FeatureData(m_NewLine));
+            writer.WriteElement("NewLine", new FeatureData(m_NewLine));
         }
     }
 }

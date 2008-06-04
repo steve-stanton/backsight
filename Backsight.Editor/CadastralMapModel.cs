@@ -712,7 +712,7 @@ namespace Backsight.Editor
 
             // The circles found so far will be noted in an index that's keyed by the
             // internal ID of the point at the center of the circle.
-            Dictionary<string, List<Circle>> dic = new Dictionary<string, List<Circle>>();
+            Dictionary<InternalIdValue, List<Circle>> dic = new Dictionary<InternalIdValue, List<Circle>>();
 
             List<Circle> result = new List<Circle>(100);
 
@@ -724,7 +724,7 @@ namespace Backsight.Editor
 
                     if (c.Creator == f.Creator)
                     {
-                        string centerPointId = c.CenterPoint.DataId;
+                        InternalIdValue centerPointId = c.CenterPoint.InternalId;
                         bool addToResult = false;
                         List<Circle> circles;
 

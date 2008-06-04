@@ -357,7 +357,7 @@ namespace Backsight.Editor
         {
             writer.WriteLong("X", m_Position.Easting.Microns);
             writer.WriteLong("Y", m_Position.Northing.Microns);
-            writer.WriteInt("FontId", m_Font.Id);
+            writer.WriteInt("FontId", (m_Font==null ? 0 : m_Font.Id));
             writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
             writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
 

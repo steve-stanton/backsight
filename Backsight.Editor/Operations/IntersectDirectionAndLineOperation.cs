@@ -517,19 +517,15 @@ namespace Backsight.Editor.Operations
             base.WriteContent(writer);
 
             writer.WriteElement("Direction", m_Direction);
-            writer.WriteString("Line", m_Line.DataId);
-            writer.WriteString("CloseTo", m_CloseTo.DataId);
+            writer.WriteFeatureReference("Line", m_Line);
+            writer.WriteFeatureReference("CloseTo", m_CloseTo);
             writer.WriteBool("IsSplit", m_IsSplit);
 
             // Creations...
             writer.WriteElement("To", new FeatureData(m_Intersection));
-
-            if (m_DirLine != null)
-                writer.WriteElement("DirLine", new FeatureData(m_DirLine));
-            if (m_LineA != null)
-                writer.WriteElement("LineA", new FeatureData(m_LineA));
-            if (m_LineB != null)
-                writer.WriteElement("LineB", new FeatureData(m_LineB));
+            writer.WriteElement("DirLine", new FeatureData(m_DirLine));
+            writer.WriteElement("LineA", new FeatureData(m_LineA));
+            writer.WriteElement("LineB", new FeatureData(m_LineB));
         }
     }
 }

@@ -260,7 +260,7 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteString("Base", m_Base.DataId);
+            writer.WriteFeatureReference("Base", m_Base);
         }
     }
 }

@@ -224,9 +224,11 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
+            // The terminal points are written as attributes of the LineFeature that utilizes
+            // this geometry
             // TODO: ITerminal should define something more definitive for use with XML
-            writer.WriteString("From", m_Start.ToString());
-            writer.WriteString("To", m_End.ToString());
+            //writer.WriteString("From", m_Start.ToString());
+            //writer.WriteString("To", m_End.ToString());
         }
 
         #region IXmlContent Members

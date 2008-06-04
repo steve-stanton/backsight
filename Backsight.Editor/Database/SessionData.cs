@@ -427,6 +427,7 @@ namespace Backsight.Editor.Database
         internal uint NumItem
         {
             get { return m_NumItem; }
+            set { m_NumItem = value; }
         }
 
         /// <summary>

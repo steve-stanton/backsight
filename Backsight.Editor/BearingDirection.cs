@@ -136,7 +136,7 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteString("From", m_From.DataId);
+            writer.WriteFeatureReference("From", m_From);
             writer.WriteString("Observation", RadianValue.AsString(m_Observation));
         }
     }
