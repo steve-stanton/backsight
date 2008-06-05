@@ -194,7 +194,7 @@ namespace Backsight.Editor
                 return null;
 
             // Calculate exact positions for the arc endpoints
-            ILength radius = new Length(line.Radius);
+            double radius = line.Radius;
             ICircleGeometry cg = new CircleGeometry(pc, radius);
             IPosition bc = CircleGeometry.GetClosestPosition(cg, pts[0]);
             IPosition ec = CircleGeometry.GetClosestPosition(cg, pts[pts.Length-1]);
@@ -221,7 +221,7 @@ namespace Backsight.Editor
             #if DEBUG
             // Confirm the NTX data was valid (ensure it's consistent with what we've imported)...
 
-            double readRad = c.Radius.Meters;
+            double readRad = c.Radius;
             double calcRad = BasicGeom.Distance(c.Center, ps);
             Debug.Assert(Math.Abs(readRad-calcRad) < tol.Meters);
 
@@ -379,12 +379,12 @@ namespace Backsight.Editor
             return result;
         }
 
-        private Circle EnsureCircleExists(PointFeature center, ILength radius, ILength tol, Operation creator)
+        private Circle EnsureCircleExists(PointFeature center, double radius, ILength tol, Operation creator)
         {
             // The index refers to the data loaded from the current NTX file. It holds only
             // information for points & circles, so we should only find circles at this stage.
 
-            Position p = new Position(center.X, center.Y+radius.Meters);
+            Position p = new Position(center.X, center.Y+radius);
             ISpatialObject so = m_Index.QueryClosest(p, tol, SpatialType.Line);
             if (so==null)
             {

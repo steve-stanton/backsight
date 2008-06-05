@@ -353,7 +353,7 @@ namespace Backsight.Editor
                 return false;
 
             center = arc.Circle.Center;
-            double radius = arc.Circle.Radius.Meters;
+            double radius = arc.Circle.Radius;
             iscw = arc.IsClockwise;
 
             // Get the length of the arc extension, in meters on the ground.

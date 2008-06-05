@@ -293,7 +293,7 @@ namespace Backsight.Editor.Forms
 		        // Does the backsight point correspond to the centre of a
 		        // circle that passes through the from-point?
 
-                ILength radius = new Length(Geom.Distance(m_Backsight, m_From));
+                double radius = Geom.Distance(m_Backsight, m_From);
                 if (m_Backsight.GetCircle(radius)!=null)
                     m_WantCentre = true;
         	}

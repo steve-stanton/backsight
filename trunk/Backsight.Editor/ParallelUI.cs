@@ -616,7 +616,7 @@ namespace Backsight.Editor
             {
                 ArcFeature arc = (line as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius.Meters;
+                double radius = circle.Radius;
                 IPosition centre = circle.Center;
                 bool iscw = arc.IsClockwise;
 
@@ -688,7 +688,7 @@ namespace Backsight.Editor
                 // Get the curve info
                 ArcFeature arc = (refline as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius.Meters;
+                double radius = circle.Radius;
                 IPosition centre = circle.Center;
                 bool iscw = arc.IsClockwise;
 
@@ -770,7 +770,7 @@ namespace Backsight.Editor
             {
 		        // Get the (planar) radial offset from the circle to one of the parallel positions.
                 ArcFeature arc = (m_Line as ArcFeature);
-                double radius = arc.Circle.Radius.Meters;
+                double radius = arc.Circle.Radius;
                 IPosition center = arc.Circle.Center;
                 return Math.Abs(Geom.Distance(center, m_Par1) - radius);
             }
@@ -809,7 +809,7 @@ namespace Backsight.Editor
             {
                 ArcFeature arc = (line as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius.Meters;
+                double radius = circle.Radius;
                 IPointGeometry centre = circle.Center;
                 bool iscw = arc.IsClockwise;
 
@@ -895,7 +895,7 @@ namespace Backsight.Editor
             {
                 ArcFeature arc = (refline as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius.Meters;
+                double radius = circle.Radius;
                 IPointGeometry centre = circle.Center;
                 bool iscw = arc.IsClockwise;
 

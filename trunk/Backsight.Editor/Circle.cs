@@ -31,9 +31,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The radius of the circle.
+        /// The radius of the circle, in meters
         /// </summary>
-        private ILength m_Radius;
+        private double m_Radius;
 
         /// <summary>
         /// The center of the circle. This may be quite remote from the main body of the map.
@@ -53,11 +53,19 @@ namespace Backsight.Editor
         /// Creates a new <c>Circle</c> with the specified center and radius.
         /// </summary>
         /// <param name="center">The point at the center of the circle.</param>
-        /// <param name="radius">The radius of the circle.</param>
-        internal Circle(PointFeature center, ILength radius)
+        /// <param name="radius">The radius of the circle, in meters</param>
+        internal Circle(PointFeature center, double radius)
         {
             m_Center = center;
             m_Radius = radius;
+            m_Arcs = new List<ArcFeature>();
+        }
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public Circle()
+        {
             m_Arcs = new List<ArcFeature>();
         }
 
@@ -122,7 +130,7 @@ namespace Backsight.Editor
             get { return m_Center; }
         }
 
-        public ILength Radius
+        public double Radius
         {
             get { return m_Radius; }
             internal set { m_Radius = value; }
@@ -131,9 +139,9 @@ namespace Backsight.Editor
         #endregion
 
         // Not sure about this. Should it be disallowed?
-        internal void ChangeRadius(ArcFeature arc, ILength newRadius)
+        internal void ChangeRadius(ArcFeature arc, double newRadius)
         {
-            if (Math.Abs(m_Radius.Meters - newRadius.Meters) > Constants.TINY)
+            if (Math.Abs(m_Radius - newRadius) > Constants.TINY)
             {
                 OnPreMove(arc);
                 m_Radius = newRadius;
@@ -235,12 +243,10 @@ namespace Backsight.Editor
         /// <returns>The area (in square meters on the (projected) ground)</returns>
         internal double GetQuadrantArea(Quadrant quadrant)
         {
-            double rm = m_Radius.Meters;
-
             if (quadrant==Quadrant.NE || quadrant==Quadrant.SE)
-                return (rm * (m_Center.X + rm*MathConstants.PIDIV4));
+                return (m_Radius * (m_Center.X + m_Radius * MathConstants.PIDIV4));
             else
-        		return -(rm * (m_Center.X - rm*MathConstants.PIDIV4));
+                return -(m_Radius * (m_Center.X - m_Radius * MathConstants.PIDIV4));
         }
 
         /// <summary>
@@ -249,7 +255,7 @@ namespace Backsight.Editor
         /// <returns>The most easterly position</returns>
         internal IPosition GetEastPoint()
         {
-            return new Position(m_Center.X + m_Radius.Meters, m_Center.Y);
+            return new Position(m_Center.X + m_Radius, m_Center.Y);
         }
 
         /// <summary>
@@ -288,8 +294,8 @@ namespace Backsight.Editor
         /// Updates the definition of this circle.
         /// </summary>
         /// <param name="center">The point at the center of the circle.</param>
-        /// <param name="radius">The radius of the circle, on the ground.</param>
-        internal void MoveCircle(PointFeature center, ILength radius)
+        /// <param name="radius">The radius of the circle, on the ground, in meters</param>
+        internal void MoveCircle(PointFeature center, double radius)
         {
             // Remove this circle (and attached arcs) from the spatial index
             foreach (ArcFeature a in m_Arcs)
@@ -360,15 +366,28 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            // TODO: Need some ID for the circle itself
-
             writer.WriteFeatureReference("Center", m_Center);
-            //writer.WriteAttributeString("FirstArc", 
+            writer.WriteDouble("Radius", m_Radius);
         }
 
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
             m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
+            m_Radius = reader.ReadDouble("Radius");
+        }
+
+        /// <summary>
+        /// The first arc associated with this circle
+        /// </summary>
+        internal ArcFeature FirstArc
+        {
+            get { return (m_Arcs.Count > 0 ? m_Arcs[0] : null); }
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Backsight.Editor
                 return c.Center;
 
             // Get the factor for projecting the position.
-	        double factor = c.Radius.Meters/dist;
+	        double factor = c.Radius/dist;
 
 	        // Figure out the position on the circle.
             double x = cx + dx*factor;

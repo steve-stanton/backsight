@@ -22,6 +22,7 @@ using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.IdDataSetTableAdapters;
 using System.Diagnostics;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -102,7 +103,7 @@ namespace Backsight.Editor
             List<IdRange> ranges = map.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
-            Person curuser = new Person();
+            User curuser = Session.CurrentSession.User;
             DateTime curtime = DateTime.Now;
             string fname = Path.GetFileNameWithoutExtension(map.Name);
             Debug.Assert(!String.IsNullOrEmpty(fname));

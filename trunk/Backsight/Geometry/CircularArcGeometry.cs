@@ -76,7 +76,7 @@ namespace Backsight.Geometry
         /// <param name="ec">The end of the arc (assumed to coincide with the circle)</param>
         /// <param name="isClockwise">Is the arc directed clockwise?</param>
         public CircularArcGeometry(IPointGeometry center, IPosition bc, IPosition ec, bool isClockwise)
-            : this(new CircleGeometry(center, new Length(BasicGeom.Distance(center, bc))), bc, ec, isClockwise)
+            : this(new CircleGeometry(center, BasicGeom.Distance(center, bc)), bc, ec, isClockwise)
         {
         }
 
@@ -295,7 +295,7 @@ namespace Backsight.Geometry
             if (IsInSector(g, p, 0.0))
             {
                 double dist = BasicGeom.Distance(p, g.Circle.Center);
-                double radius = g.Circle.Radius.Meters;
+                double radius = g.Circle.Radius;
                 return (dist-radius)*(dist-radius);
             }
             else
@@ -333,7 +333,7 @@ namespace Backsight.Geometry
             // If we have a linear tolerance, figure out the angular equivalent.
             if (lintol > MathConstants.TINY)
             {
-                double angtol = lintol/g.Circle.Radius.Meters;
+                double angtol = lintol/g.Circle.Radius;
                 return BasicGeom.IsInSector(pos, centre, start, end, angtol);
             }
             else
@@ -411,7 +411,7 @@ namespace Backsight.Geometry
         public static ILength GetLength(ICircularArcGeometry g, IPosition asFarAs)
         {
             ICircleGeometry circle = g.Circle;
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
 
             if (asFarAs==null)
                 return new Length(radius * g.SweepAngleInRadians);
@@ -442,7 +442,7 @@ namespace Backsight.Geometry
         {
             // Get info about the circle the curve lies on.
             IPosition center = g.Circle.Center;
-            double radius = g.Circle.Radius.Meters;
+            double radius = g.Circle.Radius;
 
             // Determine the change in bearing which will satisfy the specified tolerance
             // (if no tolerance has been specified, arbitrarily use a tolerance of 1mm on the ground).
@@ -548,7 +548,7 @@ namespace Backsight.Geometry
             // Get the bearing of the BC
             ICircleGeometry circle = g.Circle;
             IPosition c = circle.Center;
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
             double bearing = BasicGeom.BearingInRadians(c, g.BC);
 
             // Add the angle that subtends the required distance (or

@@ -423,7 +423,7 @@ namespace Backsight.Editor
             // Add the circle (checks if it's already there).
             // This will cross-reference the center point to the circle.
             PointFeature centerPoint = creator.EnsurePointExists(span.Center, createdPoints);
-            m_Circle = creator.MapModel.AddCircle(centerPoint, new Length(span.ScaledRadius));
+            m_Circle = creator.MapModel.AddCircle(centerPoint, span.ScaledRadius);
             return m_Circle;
         }
 
@@ -1374,7 +1374,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             // Ensure the radius is correct.
             if (m_Circle!=null)
-                m_Circle.Radius = new Length(span.ScaledRadius);
+                m_Circle.Radius = span.ScaledRadius;
         }
 
         /// <summary>

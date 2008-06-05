@@ -22,6 +22,7 @@ using System.Data.SqlClient;
 
 using Backsight.Editor.IdDataSetTableAdapters;
 using Backsight.Data;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -412,7 +413,7 @@ namespace Backsight.Editor
             CadastralMapModel map = CadastralMapModel.Current;
             List<IdRange> mapRanges = map.IdRanges;
 
-	        Person curuser = new Person();      // Name of the current user
+            User curuser = Session.CurrentSession.User;
             DateTime curtime = DateTime.Now;    // The current time
             string fname = Path.GetFileNameWithoutExtension(map.Name);
 

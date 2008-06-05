@@ -321,8 +321,8 @@ namespace Backsight.Editor.Operations
                 // Define geometry based on the circle's centre and the position
                 // of the start of the parallel. If the circles don't match, either
                 // adjust the circle, or add a replacement one.
-                Length parrad = new Length(Geom.Distance(circle.Center, spar));
-                if (Math.Abs(circle.Radius.Meters - parrad.Meters) > Constants.XYRES)
+                double parrad = Geom.Distance(circle.Center, spar);
+                if (Math.Abs(circle.Radius - parrad) > Constants.XYRES)
                 {
                     // Ensure the parallel is known to have moved.
                     m_ParLine.IsMoved = true;
@@ -427,12 +427,12 @@ namespace Backsight.Editor.Operations
             {
                 ArcFeature arc = (refLine as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius.Meters;
+                double radius = circle.Radius;
                 PointFeature centre = circle.CenterPoint;
                 bool iscw = arc.IsClockwise;
 
                 // Need to add a circle first.
-                ILength parRadius = new Length(Geom.Distance(centre, spar));
+                double parRadius = Geom.Distance(centre, spar);
                 Circle parCircle = map.AddCircle(centre, parRadius);
 
                 // Use the reverse arc direction if specified.

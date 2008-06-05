@@ -317,7 +317,7 @@ namespace Backsight.Editor
 
             // Get the centre of the circle & its radius.
             IPosition center = circle.Center;
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
 
             // The equation of each line is given in parametric form as:
             //

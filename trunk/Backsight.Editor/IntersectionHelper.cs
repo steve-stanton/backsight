@@ -305,7 +305,7 @@ namespace Backsight.Editor
 
             // Get circle definition.
             IPointGeometry centre = circle.Center;
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
 
             // Get up to 2 intersections with the circle.
             IPosition x1, x2;
@@ -452,7 +452,7 @@ namespace Backsight.Editor
             // location is the one and only intersection. Allow a tolerance
             // that is consistent with the resolution of data (3 microns).
             IPointGeometry centre = circle.Center;
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
             double minrad = (radius-Constants.XYTOL);
             double minrsq = (minrad*minrad);
             double othdsq = Geom.DistanceSquared(othend, centre);
@@ -626,7 +626,7 @@ namespace Backsight.Editor
 
         internal static uint Intersect(IntersectionResult result, ILineSegmentGeometry seg, ICircleGeometry circle)
         {
-            return Intersect(result, seg.Start, seg.End, circle.Center, circle.Radius.Meters);
+            return Intersect(result, seg.Start, seg.End, circle.Center, circle.Radius);
         }
 
         /// <summary>
@@ -908,7 +908,7 @@ namespace Backsight.Editor
 
             IPointGeometry[] segs = line.Data;
             IPointGeometry c = circle.Center;
-            double r = circle.Radius.Meters;
+            double r = circle.Radius;
 
             for (int i=1; i<segs.Length; i++)
                 nx += Intersect(results, segs[i-1], segs[i], c, r);
@@ -1091,7 +1091,7 @@ namespace Backsight.Editor
         internal static uint Intersect(ICircleGeometry a, ICircleGeometry b, out IPosition x1, out IPosition x2)
         {
             // Get the intersections (if any).
-            uint nx = Geom.IntersectCircles(a.Center, a.Radius.Meters, b.Center, b.Radius.Meters, out x1, out x2);
+            uint nx = Geom.IntersectCircles(a.Center, a.Radius, b.Center, b.Radius, out x1, out x2);
 
             // Return if 0 or 1 intersection.
             if (nx<2)
@@ -1150,8 +1150,8 @@ namespace Backsight.Editor
             // The two curves sit on different circles, so do a precise intersection of the circles.
             IPointGeometry c1 = xCircle.Center;
             IPointGeometry c2 = circle.Center;
-            double r1 = xCircle.Radius.Meters;
-            double r2 = circle.Radius.Meters;
+            double r1 = xCircle.Radius;
+            double r2 = circle.Radius;
             IPosition x1, x2;
             uint nx = Geom.IntersectCircles(c1, r1, c2, r2, out x1, out x2);
 
@@ -1356,14 +1356,14 @@ namespace Backsight.Editor
             IPointGeometry centre;
             double minrad;
 
-            if (c.Radius.Meters < arcCircle.Radius.Meters)
+            if (c.Radius < arcCircle.Radius)
             {
-                minrad = c.Radius.Meters;
+                minrad = c.Radius;
                 centre = c.Center;
             }
             else
             {
-                minrad = arcCircle.Radius.Meters;
+                minrad = arcCircle.Radius;
                 centre = arcCircle.Center;
             }
 
@@ -1409,8 +1409,8 @@ namespace Backsight.Editor
         {
             IPointGeometry centre1 = a.Center;
             IPointGeometry centre2 = b.Center;
-            double radius1 = a.Radius.Meters;
-            double radius2 = b.Radius.Meters;
+            double radius1 = a.Radius;
+            double radius2 = b.Radius;
 
             // The following looks pretty similar to Geom.IntersectCircles (some tolerance values are
             // a bit more relaxed here).

@@ -643,7 +643,6 @@
     <Compile Include="Operations\RadialOperation.cs" />
     <Compile Include="MultiSegmentGeometry.cs" />
     <Compile Include="ParallelDirection.cs" />
-    <Compile Include="Person.cs" />
     <Compile Include="PointFeature.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="PolygonBuilder.cs" />

@@ -78,7 +78,7 @@ namespace Backsight.Editor
             {
                 // Confirm the circle is truly within tolerance
                 Circle c = (item as Circle);
-                double rad = c.Radius.Meters;
+                double rad = c.Radius;
                 double dist = Geom.Distance(c.Center, m_Position);
                 if (Math.Abs(rad-dist) < m_Tolerance)
                     m_Result.Add(c);
