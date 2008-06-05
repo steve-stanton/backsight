@@ -351,8 +351,8 @@ namespace Backsight.Editor.Operations
             xsect = xsect1 = xsect2 = null;
 
             // Get the distance.
-            ILength dist = distance.GetDistance(from);
-            if (dist.Meters < Constants.TINY)
+            double dist = distance.GetDistance(from).Meters;
+            if (dist < Constants.TINY)
                 return false;
 
             // Form circle with a radius that matches the observed distance.
@@ -385,7 +385,7 @@ namespace Backsight.Editor.Operations
 
             // Reduce observed distance to the mapping plane.
             ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
-            dist = new Length(dist.Meters * sys.GetLineScaleFactor(from, xsect));
+            dist = dist * sys.GetLineScaleFactor(from, xsect);
 
             // And calculate the exact intersection (like above)...
             // Form circle with a radius that matches the reduced distance.

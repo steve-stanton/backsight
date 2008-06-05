@@ -121,8 +121,7 @@ namespace Backsight.Editor
         // Circle
         internal uint Intersect(IPointGeometry center, double radius)
         {
-            ILength r = new Length(radius);
-            ICircleGeometry circle = new CircleGeometry(center, r);
+            ICircleGeometry circle = new CircleGeometry(center, radius);
             return m_IntersectedObject.LineGeometry.IntersectCircle(this, circle);
         }
 

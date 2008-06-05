@@ -34,7 +34,7 @@ namespace Backsight.Editor.Forms
 
             public override string ToString()
             {
-                return String.Format("Radius={0} meters", m_Circle.Radius.Meters);
+                return String.Format("Radius={0} meters", m_Circle.Radius);
             }
         }
 

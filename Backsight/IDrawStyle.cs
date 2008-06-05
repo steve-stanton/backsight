@@ -80,8 +80,8 @@ namespace Backsight
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="center">The position of the center of the circle</param>
-        /// <param name="radius">The radius of the circle</param>
-        void Render(ISpatialDisplay display, IPosition center, ILength radius);
+        /// <param name="radius">The radius of the circle, in meters on the ground</param>
+        void Render(ISpatialDisplay display, IPosition center, double radius);
 
         /// <summary>
         /// Fills a polygon, possibly including holes.

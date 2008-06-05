@@ -153,7 +153,7 @@ namespace Backsight.Editor
 	        double dy = this.Y - circle.Center.Y;
 
             // No intersections if the delta-Y exceeds the radius
-            double radius = circle.Radius.Meters;
+            double radius = circle.Radius;
 	        if (Math.Abs(dy) > radius)
                 return 0;
 

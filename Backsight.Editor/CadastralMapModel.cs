@@ -1014,9 +1014,9 @@ namespace Backsight.Editor
         /// center point will be modified to refer to it.
         /// </summary>
         /// <param name="c">The point at the center.</param>
-        /// <param name="radius">The radius (on the ground)</param>
+        /// <param name="radius">The radius (on the ground), in meters</param>
         /// <returns></returns>
-        internal Circle AddCircle(PointFeature c, ILength radius)
+        internal Circle AddCircle(PointFeature c, double radius)
         {
             // Try to match the center point with an existing circle with
             // the specified radius.
@@ -1037,13 +1037,13 @@ namespace Backsight.Editor
         /// Adds a circular arc that corresponds to a complete circle.
         /// </summary>
         /// <param name="center">The point at the center of the circle.</param>
-        /// <param name="radius">The radius of the circle (on the ground).</param>
+        /// <param name="radius">The radius of the circle (on the ground), in meters</param>
         /// <param name="start">The point (if any) that should be regarded as the
         /// "start" of the circle. If null, an arbitrary start point at the top of
         /// the circle will be used.</param>
         /// <param name="creator">The operation creating the arc</param>
         /// <returns>The newly created line</returns>
-        internal ArcFeature AddCompleteCircularArc(PointFeature center, ILength radius, PointFeature start,
+        internal ArcFeature AddCompleteCircularArc(PointFeature center, double radius, PointFeature start,
                                                     Operation creator)
         {
             // Do we already have a suitable circle object? If not, create one.
@@ -1060,7 +1060,7 @@ namespace Backsight.Editor
             PointFeature bc = start;
             if (bc==null)
             {
-                IPosition p = new Position(center.X, center.Y+radius.Meters);
+                IPosition p = new Position(center.X, center.Y+radius);
                 bc = AddPoint(p, e, creator);
             }
 

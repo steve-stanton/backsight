@@ -198,7 +198,7 @@ namespace Backsight.Editor
 
             // Add the angle that subtends the orientation distance (or
             // subtract if the arc goes anti-clockwise).
-            double radius = Circle.Radius.Meters;
+            double radius = Circle.Radius;
 
             if (m_IsClockwise)
                 bearing += (dist/radius);
@@ -268,7 +268,7 @@ namespace Backsight.Editor
 
                 // Express the BC & EC as quadrant coordinates, ordered clockwise.
                 IPosition center = m_Circle.Center;
-                double radius = m_Circle.Radius.Meters;
+                double radius = m_Circle.Radius;
                 QuadVertex start, end;
 
                 if (m_IsClockwise)
@@ -439,7 +439,7 @@ namespace Backsight.Editor
 
             if (result==Side.Right)
             {
-                double maxnorth = center.Y + Circle.Radius.Meters;
+                double maxnorth = center.Y + Circle.Radius;
                 if (Math.Abs(maxnorth - hr.Y) < Constants.TINY)
                     result = Side.Left;
             }
@@ -550,7 +550,7 @@ namespace Backsight.Editor
             double dist = Geom.Distance(center, p);
 
             // Return if the search point is beyond tolerance.
-            double radius = m_Circle.Radius.Meters;
+            double radius = m_Circle.Radius;
             double diff = Math.Abs(dist-radius);
             if (diff > tol.Meters)
                 return null;
@@ -591,7 +591,7 @@ namespace Backsight.Editor
             // Get the position of the centre of the circle for this curve,
             // along with the stored radius.
             IPosition centre = m_Circle.Center;
-            double radius = m_Circle.Radius.Meters;
+            double radius = m_Circle.Radius;
 
             // Define reference directions to the start and end of curve,
             // ordered clockwise.
@@ -710,7 +710,14 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteBool("Clockwise", m_IsClockwise);
-            writer.WriteElement("Circle", m_Circle);
+
+            // If this is the first arc associated with the circle, write out
+            // the circle geometry
+            ArcFeature firstArc = m_Circle.FirstArc;
+            if (Object.ReferenceEquals(firstArc, this))
+                writer.WriteElement("Circle", m_Circle);
+            else
+                writer.WriteId("FirstArc", firstArc.InternalId);
         }
 
         /// <summary>
@@ -723,7 +730,14 @@ namespace Backsight.Editor
         {
             base.ReadContent(reader);
             m_IsClockwise = reader.ReadBool("Clockwise");
-            m_Circle = reader.ReadElement<Circle>("Circle");
+
+            if (reader.HasAttribute("FirstArc"))
+            {
+                ArcFeature firstArc = reader.ReadFeatureByReference<ArcFeature>("FirstArc");
+                m_Circle = firstArc.Circle;
+            }
+            else
+                m_Circle = reader.ReadElement<Circle>("Circle");
         }
     }
 }

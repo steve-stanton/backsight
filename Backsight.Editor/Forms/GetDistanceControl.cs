@@ -372,7 +372,7 @@ namespace Backsight.Editor.Forms
         bool CirclesMatch(Circle c1, Circle c2)
         {
             return (c1.CenterPoint == c2.CenterPoint &&
-                    Math.Abs(c1.Radius.Meters - c2.Radius.Meters) < Double.Epsilon);
+                    Math.Abs(c1.Radius - c2.Radius) < Double.Epsilon);
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace Backsight.Editor.Forms
                     radius = m_Distance.Meters;
 
                 // Construct the circle
-                result = new Circle(m_From, new Length(radius));
+                result = new Circle(m_From, radius);
 
                 // Create the appropriate distance observation (this is what
                 // gets picked up when we actually go to work out the

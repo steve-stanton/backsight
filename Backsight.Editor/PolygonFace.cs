@@ -250,10 +250,10 @@ namespace Backsight.Editor
                 // Get the curve parameters...
 
                 IPosition prevcen = prevArc.Circle.Center;
-                double prevrad = prevArc.Circle.Radius.Meters;
+                double prevrad = prevArc.Circle.Radius;
 
                 IPosition thiscen = thisArc.Circle.Center;
-                double thisrad = thisArc.Circle.Radius.Meters;
+                double thisrad = thisArc.Circle.Radius;
 
                 // We only need to know the sense for one of the arcs
                 bool iscw = thisArc.IsClockwise;
@@ -348,7 +348,7 @@ namespace Backsight.Editor
                     Debug.Assert(m_Divider.Line.LineGeometry is ICircularArcGeometry);
                     ICircularArcGeometry arc = (m_Divider.Line.LineGeometry as ICircularArcGeometry);
                     centre = arc.Circle.Center;
-                    radius = arc.Circle.Radius.Meters;
+                    radius = arc.Circle.Radius;
                     iscw = arc.IsClockwise;
                     angle = 0.0;
                 }

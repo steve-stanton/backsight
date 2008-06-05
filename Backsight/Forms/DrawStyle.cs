@@ -252,7 +252,7 @@ namespace Backsight.Forms
             IWindow extent = CircleGeometry.GetExtent(circle);
             float topLeftX = display.EastingToDisplay(extent.Min.X);
             float topLeftY = display.NorthingToDisplay(extent.Max.Y);
-            float size = 2.0f * display.LengthToDisplay(circle.Radius.Meters);
+            float size = 2.0f * display.LengthToDisplay(circle.Radius);
             float startAngle = (float)(arc.StartBearingInRadians * MathConstants.RADTODEG - 90.0);
             float sweepAngle = (float)(arc.SweepAngleInRadians * MathConstants.RADTODEG);
             display.Graphics.DrawArc(m_Pen, topLeftX, topLeftY, size, size, startAngle, sweepAngle);
@@ -319,12 +319,12 @@ namespace Backsight.Forms
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="center">The position of the center of the circle</param>
-        /// <param name="radius">The radius of the circle</param>
-        public void Render(ISpatialDisplay display, IPosition center, ILength radius)
+        /// <param name="radius">The radius of the circle, in meters on the ground</param>
+        public void Render(ISpatialDisplay display, IPosition center, double radius)
         {
             float xc = display.EastingToDisplay(center.X);
             float yc = display.NorthingToDisplay(center.Y);
-            float r = display.LengthToDisplay(radius.Meters);
+            float r = display.LengthToDisplay(radius);
             float sz = r+r;
             display.Graphics.DrawEllipse(m_Pen, xc-r, yc-r, sz, sz);
         }

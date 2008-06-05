@@ -307,7 +307,7 @@ namespace Backsight.Editor.Forms
                     radius = m_RadiusDistance.Meters;
 
                 // Create the circle
-                result = new Circle(m_Center, new Length(radius));
+                result = new Circle(m_Center, radius);
 
                 // Create the appropriate distance observation.
                 // (not sure why these were needed, it certainly looks out of place as

@@ -26,9 +26,9 @@ namespace Backsight.Geometry
         #region Class data
 
         /// <summary>
-        /// The radius of the circle.
+        /// The radius of the circle, in meters
         /// </summary>
-        private readonly ILength m_Radius;
+        private readonly double m_Radius;
 
         /// <summary>
         /// The center of the circle.
@@ -39,7 +39,7 @@ namespace Backsight.Geometry
 
         #region Constructors
 
-        public CircleGeometry(IPointGeometry center, ILength radius)
+        public CircleGeometry(IPointGeometry center, double radius)
         {
             m_Center = center;
             m_Radius = radius;
@@ -58,7 +58,7 @@ namespace Backsight.Geometry
             get { return m_Center; }
         }
 
-        public ILength Radius
+        public double Radius
         {
             get { return m_Radius; }
         }
@@ -82,7 +82,7 @@ namespace Backsight.Geometry
         {
             double xc = g.Center.X;
             double yc = g.Center.Y;
-            double r = g.Radius.Meters;
+            double r = g.Radius;
             return new Window(xc-r, yc-r, xc+r, yc+r);
         }
 
@@ -100,7 +100,7 @@ namespace Backsight.Geometry
         public static ILength Distance(ICircleGeometry g, IPosition p)
         {
             double d = BasicGeom.Distance(g.Center, p);
-            return new Length(Math.Abs(d - g.Radius.Meters));
+            return new Length(Math.Abs(d - g.Radius));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Backsight.Geometry
         public static bool IsCoincident(ICircleGeometry a, ICircleGeometry b, double radiusTol)
         {
             return (a.Center.IsCoincident(b.Center) &&
-                    Math.Abs(a.Radius.Meters - b.Radius.Meters)<radiusTol);
+                    Math.Abs(a.Radius - b.Radius)<radiusTol);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Backsight.Geometry
             get
             {
                 return new PositionGeometry(m_Center.Easting.Meters,
-                                            m_Center.Northing.Meters + m_Radius.Meters);
+                                            m_Center.Northing.Meters + m_Radius);
             }
         }
 
@@ -160,7 +160,7 @@ namespace Backsight.Geometry
         /// <returns>The perimeter length of the circle.</returns>
         public static ILength GetLength(ICircleGeometry g)
         {
-            return new Length(g.Radius.Meters * MathConstants.PIMUL2);
+            return new Length(g.Radius * MathConstants.PIMUL2);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Backsight.Geometry
                 return null;
 
             // Get the factor for projecting the position.
-            double factor = g.Radius.Meters/dist;
+            double factor = g.Radius/dist;
 
             // Figure out the position on the circle.
             return new Position(c.X + dx*factor, c.Y + dy*factor);

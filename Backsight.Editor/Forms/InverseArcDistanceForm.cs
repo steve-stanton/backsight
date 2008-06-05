@@ -173,7 +173,7 @@ namespace Backsight.Editor.Forms
                 }
 
                 // Get the arc distance and display it.
-                double metric = angle * circle.Radius.Meters;
+                double metric = angle * circle.Radius;
                 distanceTextBox.Text = Format(metric, m_Point1, m_Point2);
 
                 // Remember the geometry that corresponds to the displayed distance (this

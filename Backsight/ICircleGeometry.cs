@@ -29,8 +29,8 @@ namespace Backsight
         IPointGeometry Center { get; }
 
         /// <summary>
-        /// The radius of the circle.
+        /// The radius of the circle, in meters
         /// </summary>
-        ILength Radius { get; }
+        double Radius { get; }
     }
 }

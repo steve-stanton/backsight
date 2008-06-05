@@ -373,9 +373,9 @@ namespace Backsight.Editor.Operations
             xsect = xsect1 = xsect2 = null;
 
             // Get the 2 distances.
-            ILength d1 = dist1.GetDistance(from1);
-            ILength d2 = dist2.GetDistance(from2);
-            if (d1.Meters < Constants.TINY || d2.Meters < Constants.TINY)
+            double d1 = dist1.GetDistance(from1).Meters;
+            double d2 = dist2.GetDistance(from2).Meters;
+            if (d1 < Constants.TINY || d2 < Constants.TINY)
                 return false;
 
             // Form circles with radii that match the observed distances.
@@ -412,10 +412,10 @@ namespace Backsight.Editor.Operations
             ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
 
             if (offset1==null)
-                d1 = new Length(d1.Meters * sys.GetLineScaleFactor(from1, xsect));
+                d1 = d1 * sys.GetLineScaleFactor(from1, xsect);
 
             if (offset2!=null)
-                d2 = new Length(d2.Meters * sys.GetLineScaleFactor(from2, xsect));
+                d2 = d2 * sys.GetLineScaleFactor(from2, xsect);
 
             // And calculate the exact intersection (like above)...
             // Form circles with radii that match the observed distances.

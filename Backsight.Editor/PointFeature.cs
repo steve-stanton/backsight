@@ -104,11 +104,11 @@ namespace Backsight.Editor
         ///	This method is intended for locations that appear at the center
         ///	of a circle.
         /// </summary>
-        /// <param name="radius">The radius to search for (null to
+        /// <param name="radius">The radius to search for (0 or less to
         /// search for ANY circle). A fixed tolerance of 0.001 meters on
         /// the ground is used.</param>
         /// <returns>The attached circle (null if no such circle).</returns>
-        internal Circle GetCircle(ILength radius)
+        internal Circle GetCircle(double radius)
         {
             List<IFeatureDependent> deps = this.Dependents;
             if (deps == null)
@@ -119,10 +119,10 @@ namespace Backsight.Editor
                 if (d is Circle)
                 {
                     Circle c = (d as Circle);
-                    if (radius==null)
+                    if (radius<Double.Epsilon)
                         return c;
 
-                    if (Math.Abs(c.Radius.Meters - radius.Meters) < 0.001)
+                    if (Math.Abs(c.Radius - radius) < 0.001)
                         return c;
                 }
             }

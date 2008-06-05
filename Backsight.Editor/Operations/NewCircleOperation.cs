@@ -132,8 +132,8 @@ namespace Backsight.Editor.Operations
             Circle circle = (Circle)curve.Circle;
 
             // Get the new radius (on the ground).
-            ILength rad = m_Radius.GetDistance(m_Center);
-            if (rad.Meters < Constants.TINY)
+            double rad = m_Radius.GetDistance(m_Center).Meters;
+            if (rad < Constants.TINY)
                 throw new RollforwardException(this, "NewCircleOperation.Rollforward - New radius is too small.");
 
             // Mark the circle as moved (force CleanEdit to re-intersect).
@@ -175,7 +175,7 @@ namespace Backsight.Editor.Operations
             {
                 // Get the new start location for the curve and shift the
                 // BC/EC point
-                IPosition newstart = new Position(m_Center.X, m_Center.Y + rad.Meters);
+                IPosition newstart = new Position(m_Center.X, m_Center.Y + rad);
                 line.StartPoint.Move(newstart);
             }
 
@@ -205,8 +205,8 @@ namespace Backsight.Editor.Operations
             m_Center = center;
 
             // Get the radius, in meters on the ground.
-            ILength rad = radius.GetDistance(center);
-            if (rad.Meters < Constants.TINY)
+            double rad = radius.GetDistance(center).Meters;
+            if (rad < Constants.TINY)
                 throw new Exception("NewCircleOperation.Execute - Radius is too close to zero.");
 
             // If the radius was specified as an offset point, make the circle
