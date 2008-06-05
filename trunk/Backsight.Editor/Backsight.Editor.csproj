@@ -52,7 +52,6 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
-    <Compile Include="Database\BulkEditLoader.cs" />
     <Compile Include="Database\DbUtil.cs" />
     <Compile Include="Database\Job.cs" />
     <Compile Include="Database\SessionData.cs" />
