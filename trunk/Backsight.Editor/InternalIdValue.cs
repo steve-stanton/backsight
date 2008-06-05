@@ -33,7 +33,7 @@ namespace Backsight.Editor
     /// internal ID will generally be hidden from users, whereas <c>FeatureId</c> is a user-
     /// specified ID.
     /// </summary>
-    struct InternalIdValue
+    struct InternalIdValue : IEquatable<InternalIdValue>
     {
         #region Class data
 
@@ -132,5 +132,14 @@ namespace Backsight.Editor
         {
             return ((int)(m_Session<<16) | (int)(m_Item&0x0000FFFF));
         }
+
+        #region IEquatable<InternalIdValue> Members
+
+        public bool Equals(InternalIdValue that)
+        {
+            return (this.m_Session==that.m_Session && this.m_Item==that.m_Item);
+        }
+
+        #endregion
     }
 }

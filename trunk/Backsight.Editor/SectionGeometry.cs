@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -31,7 +32,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The line that the section is based on.
         /// </summary>
-        readonly LineFeature m_Base;
+        LineFeature m_Base; // readonly
 
         #endregion
 
@@ -261,6 +262,21 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteFeatureReference("Base", m_Base);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            // Grab the line this section is based on
+            m_Base = reader.ReadFeatureByReference<LineFeature>("Base");
+
         }
     }
 }

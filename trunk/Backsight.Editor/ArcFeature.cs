@@ -46,6 +46,13 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public ArcFeature()
+        {
+        }
+
         #endregion
 
         /// <summary>

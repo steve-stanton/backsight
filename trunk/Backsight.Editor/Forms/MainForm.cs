@@ -52,6 +52,7 @@ namespace Backsight.Editor.Forms
 
         public MainForm(string[] args)
         {
+            InitializeComponent();
             /*
             StreamWriter output = new StreamWriter(@"C:\Temp\Dump.txt");
 
@@ -71,40 +72,12 @@ namespace Backsight.Editor.Forms
             */
 
             // If user double-clicked on a file, it should appear as an argument. In that
-            // case, remember it as the last map (the controller will pick it up later
-            // during startup)
-            //if (args!=null && args.Length>0 && File.Exists(args[0]))
-            //    Settings.Default.LastMap = args[0];
+            // case, remember it as the last map (it gets picked up in MainForm_Shown)
+            if (args!=null && args.Length>0)
+                Settings.Default.LastMap = args[0];
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
-
-            try
-            {
-                if (args != null && args.Length > 0)
-                    m_Controller.OpenJob(args[0]);
-                else
-                    m_Controller.OpenJob(null);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                MessageBox.Show(ex.StackTrace);
-                return;
-            }
-
-            uint numSess = 0;
-            uint numFeat = 0;
-            foreach (Session s in CadastralMapModel.Current.Sessions)
-            {
-                numSess++;
-                numFeat += s.FeatureCount;
-            }
-            MessageBox.Show("Number of sessions loaded="+numSess);
-            MessageBox.Show("Number of features="+numFeat);
-
-            InitializeComponent();
 
             string regkey = @"Software\Backsight\Editor\MRU";
             m_MruMenu = new MruStripMenuInline(mnuFile, mnuFileRecent, new MruStripMenu.ClickedHandler(OnMruFile), regkey, 10);
@@ -129,6 +102,37 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            try           
+            {
+                string lastMap = Settings.Default.LastMap;
+                if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
+                {
+                    // Display the map name in the dialog title (nice to see what's loading
+                    // rather than the default "Map Title" text)
+                    this.Text = lastMap;
+                    m_Controller.OpenJob(lastMap);
+                }
+                else
+                    m_Controller.OpenJob(null);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
+                return;
+            }
+
+            uint numSess = 0;
+            uint numFeat = 0;
+            foreach (Session s in CadastralMapModel.Current.Sessions)
+            {
+                numSess++;
+                numFeat += s.FeatureCount;
+            }
+            MessageBox.Show("Number of sessions loaded="+numSess);
+            MessageBox.Show("Number of features="+numFeat);
+
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
             try

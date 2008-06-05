@@ -115,6 +115,13 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        protected LineFeature()
+        {
+        }
+
         #endregion
 
         /// <summary>
@@ -1197,7 +1204,35 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             base.WriteContent(writer);
             writer.WriteFeatureReference("From", StartPoint);
             writer.WriteFeatureReference("To", EndPoint);
-            writer.WriteElement("Geometry", m_Geom);
+
+            // Since 80% of lines are simple line segments (in a Cadastral application at least),
+            // it's a bit verbose to output an empty geometry in that case. Just output a
+            // flag in that case. Rather than writing out a true|false value, write a number,
+            // since I'm not sure if there could be other simple types (sections perhaps?)
+            if (m_Geom is SegmentGeometry)
+                writer.WriteUnsignedInt("Simple", 1);
+            else
+                writer.WriteElement("Geometry", m_Geom);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            PointFeature from = reader.ReadFeatureByReference<PointFeature>("From");
+            PointFeature to = reader.ReadFeatureByReference<PointFeature>("To");
+
+            uint simple = reader.ReadUnsignedInt("Simple"); // 0 if it's not there
+            if (simple == 1)
+                m_Geom = new SegmentGeometry(from, to);
+            else
+                m_Geom = reader.ReadElement<LineGeometry>("Geometry");
+
         }
     }
 }

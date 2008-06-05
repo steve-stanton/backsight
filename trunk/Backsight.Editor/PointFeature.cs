@@ -331,7 +331,11 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteElement("Geometry", m_Geom);
+
+            // Just output position as attributes (yes, I know geometry could theoretically
+            // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
+            // This isn't really significant here, but it matters in the ReadContent method.
+            m_Geom.WriteContent(writer);
         }
 
         /// <summary>
@@ -343,7 +347,17 @@ namespace Backsight.Editor
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
-            m_Geom = reader.ReadElement<PointGeometry>("Geometry");
+
+            // Since we didn't write out the geometry as an element, we need to cover
+            // the types of geometry that are supported.
+            if (reader.HasAttribute("Z"))
+            {
+                // Just a matter of defining a PointGeometry3D class, but I'm too lazy
+                // to do it today.
+                throw new NotSupportedException("Points will elevation are not currently supported");
+            }
+            else
+                m_Geom = new PointGeometry(reader);
         }
 
     }

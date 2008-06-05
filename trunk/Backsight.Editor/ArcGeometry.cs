@@ -712,5 +712,18 @@ namespace Backsight.Editor
             writer.WriteBool("Clockwise", m_IsClockwise);
             writer.WriteElement("Circle", m_Circle);
         }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_IsClockwise = reader.ReadBool("Clockwise");
+            m_Circle = reader.ReadElement<Circle>("Circle");
+        }
     }
 }
