@@ -714,7 +714,7 @@ namespace Backsight.Editor
             // If this is the first arc associated with the circle, write out
             // the circle geometry
             ArcFeature firstArc = m_Circle.FirstArc;
-            if (Object.ReferenceEquals(firstArc, this))
+            if (Object.ReferenceEquals(firstArc.Geometry, this))
                 writer.WriteElement("Circle", m_Circle);
             else
                 writer.WriteId("FirstArc", firstArc.InternalId);

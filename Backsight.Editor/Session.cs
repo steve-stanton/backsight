@@ -80,6 +80,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly List<Operation> m_Operations;
 
+        /// <summary>
+        /// The item count when the session was last saved
+        /// </summary>
+        uint m_LastSavedItem;
+
         #endregion
 
         #region Constructors
@@ -107,6 +112,7 @@ namespace Backsight.Editor
             m_Job = job;
             m_Layer = null;
             m_Operations = new List<Operation>();
+            m_LastSavedItem = 0;
         }
 
         #endregion
@@ -311,7 +317,8 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The number of items (objects) created by the session
+        /// The number of items (objects) created by the session. This gets
+        /// called by <see cref="Operation.Complete"/>.
         /// </summary>
         internal uint NumItem
         {
@@ -334,6 +341,50 @@ namespace Backsight.Editor
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Have edits performed as part of this session been "saved" (as far as
+        /// the user is concerned). Each time a user performs an edit, the database
+        /// will always get updated -- this is done mainly to ensure that work will
+        /// not get lost due to things like power failures, or unexpected crashes.
+        /// <para/>
+        /// In an attempt to simulate a file-based system (which users will probably
+        /// be more familiar with), the Editor checks whether the user has actually
+        /// used the File-Save command to save changes. If they have not, the application
+        /// is expected to ask the user whether they want to keep their changes or not.
+        /// If no, the data already saved needs to be discarded.
+        /// <para/>
+        /// This isn't exactly thorough (e.g. if the Editor really does crash, your
+        /// changes will have been saved - so be glad).
+        /// </summary>
+        internal bool IsSaved
+        {
+            get { return m_LastSavedItem == m_Data.NumItem; }
+        }
+
+        /// <summary>
+        /// Records the fact that this session has been "saved". This doesn't actually
+        /// save anything, since that happens each time you perform an edit.
+        /// </summary>
+        internal void SaveChanges()
+        {
+            // Update the number of the last saved item (as far as the user's session
+            // is concerned). Note that m_Data.NumItem corresponds to what's already
+            // been saved in the database (well, it should).
+            m_LastSavedItem = m_Data.NumItem;
+
+            // Save the job file for good measure. If the user looks at the file
+            // timestamp, this will reassure them that something really has been done!
+            EditingController.Current.JobFile.Save();
+        }
+
+        /// <summary>
+        /// Gets rid of edits that the user has not explicitly saved.
+        /// </summary>
+        internal void DiscardChanges()
+        {
+            m_Data.DiscardEdits(m_LastSavedItem);
         }
     }
 }

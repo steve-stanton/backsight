@@ -139,6 +139,11 @@ namespace Backsight.Editor.Forms
 
             try
             {
+                // Ensure edit gets the next item number
+                uint numItem = Session.CurrentSession.NumItem;
+                Operation.CurrentEditSequence = numItem + 1;
+                Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
+
                 i = new Import();
                 NtxImport ni = new NtxImport(ntxFile, this);
                 i.Execute(ni);

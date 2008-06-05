@@ -50,7 +50,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileNew = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileShowChanges = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -351,7 +350,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileNew,
             this.mnuFileOpen,
             this.mnuFileSave,
-            this.mnuFileSaveAs,
             this.toolStripSeparator3,
             this.mnuFileShowChanges,
             this.toolStripSeparator1,
@@ -395,13 +393,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileSave.Size = new System.Drawing.Size(193, 22);
             this.mnuFileSave.Text = "&Save";
             this.mnuFileSave.ToolTipText = "Save the current map";
-            // 
-            // mnuFileSaveAs
-            // 
-            this.mnuFileSaveAs.Name = "mnuFileSaveAs";
-            this.mnuFileSaveAs.Size = new System.Drawing.Size(193, 22);
-            this.mnuFileSaveAs.Text = "Save &As...";
-            this.mnuFileSaveAs.ToolTipText = "Save the current map with a new name";
             // 
             // toolStripSeparator3
             // 
@@ -2374,7 +2365,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuFileNew;
         private System.Windows.Forms.ToolStripMenuItem mnuFileOpen;
         private System.Windows.Forms.ToolStripMenuItem mnuFileSave;
-        private System.Windows.Forms.ToolStripMenuItem mnuFileSaveAs;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mnuFileExit;
         private System.Windows.Forms.StatusStrip statusStrip;

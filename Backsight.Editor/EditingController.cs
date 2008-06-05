@@ -19,6 +19,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Forms;
@@ -28,10 +31,7 @@ using Backsight.Environment;
 using Backsight.SqlServer;
 using Backsight.Geometry;
 using Backsight.Editor.Database;
-using System.Collections.Generic;
 using Backsight.Data;
-using System.Data.SqlClient;
-using System.Data;
 
 namespace Backsight.Editor
 {
@@ -1275,6 +1275,30 @@ namespace Backsight.Editor
                 return s_Chains;
 
             return null;
+        }
+
+        /// <summary>
+        /// Checks whether the current job file needs to be saved or not.
+        /// If it hasn't been saved, the user will be asked. If the user
+        /// decided not to save, any edits performed since the last save
+        /// will be discarded. This should be called when the Editor
+        /// application is being closed.
+        /// </summary>
+        internal void CheckSave()
+        {
+            // The session probably SHOULD be defined
+            Session s = Session.CurrentSession;
+            if (s == null)
+                return;
+
+            if (s.IsSaved)
+                return;
+
+            if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
+                == DialogResult.Yes)
+                s.SaveChanges();
+            else
+                s.DiscardChanges();
         }
     }
 }

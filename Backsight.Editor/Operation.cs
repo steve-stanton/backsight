@@ -324,7 +324,6 @@ namespace Backsight.Editor
                 numItem++;
                 feats[i].CreatorSequence = numItem;
             }
-            Session.CurrentSession.NumItem = numItem;
 
             // Point referenced features to this editing operation
             AddReferences();
@@ -335,6 +334,9 @@ namespace Backsight.Editor
 
             // Ensure the map structure has been updated to account for the new data.
             MapModel.CleanEdit();
+
+            // Ensure the item count for the session has been updated
+            Session.CurrentSession.NumItem = numItem;
         }
 
         /// <summary>
