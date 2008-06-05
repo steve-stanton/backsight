@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Geometry;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -224,21 +225,28 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
-            // The terminal points are written as attributes of the LineFeature that utilizes
-            // this geometry
-            // TODO: ITerminal should define something more definitive for use with XML
-            //writer.WriteString("From", m_Start.ToString());
-            //writer.WriteString("To", m_End.ToString());
+            // TODO: There's something not quite right here. Although this class contains
+            // references to two terminals, they don't get written here. They get written
+            // by the LineFeature that makes use of this geometry (that being the case,
+            // it probably makes better sense to hold a reference to the LineFeature here).
         }
 
-        #region IXmlContent Members
-
-
-        public void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader.ReadElement"/>
+        /// if the content object has a default constructor.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
+            // Locate the feature that's being read (I don't expect any LineGeometry instance
+            // to be written unless it's in the context of a LineFeature)
+            LineFeature f = reader.FindParent<LineFeature>();
+            Debug.Assert(f!=null);
 
-        #endregion
+            // Define the positions that define the ends of this line
+            m_Start = f.StartPoint;
+            m_End = f.EndPoint;
+        }
     }
 }

@@ -784,7 +784,7 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteUnsignedInt("CreationSequence", m_CreatorSequence);
+            writer.WriteUnsignedInt("Item", m_CreatorSequence);
             writer.WriteInt("EntityId", m_What.Id);
 
             string s = FormattedKey;
@@ -800,7 +800,10 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public virtual void ReadContent(XmlContentReader reader)
         {
-            m_CreatorSequence = reader.ReadUnsignedInt("CreationSequence");
+            m_Creator = reader.FindParent<Operation>();
+            Debug.Assert(m_Creator!=null);
+
+            m_CreatorSequence = reader.ReadUnsignedInt("Item");
             int entId = reader.ReadInt("EntityId");
             m_What = EnvironmentContainer.FindEntityById(entId);
 

@@ -34,7 +34,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader.ReadContent"/>
+        /// <see cref="XmlContentReader.ReadElement"/>
         /// if the content object has a default constructor.
         /// <para/>
         /// In situations where a class contains readonly members (i.e. members that

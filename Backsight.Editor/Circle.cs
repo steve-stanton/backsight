@@ -366,14 +366,9 @@ namespace Backsight.Editor
             //writer.WriteAttributeString("FirstArc", 
         }
 
-        #region IXmlContent Members
-
-
         public void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
         }
-
-        #endregion
     }
 }

@@ -35,17 +35,6 @@ namespace Backsight.Editor.Database
         #region Static
 
         /// <summary>
-        /// The current editing session.
-        /// </summary>
-        static SessionData s_CurrentSession = null;
-
-        internal static SessionData CurrentSession
-        {
-            get { return s_CurrentSession; }
-            set { s_CurrentSession = value; }
-        }
-
-        /// <summary>
         /// Loads session data for a job (for the user who is currently running the application).
         /// </summary>
         /// <param name="model">The model to load</param>
@@ -124,7 +113,7 @@ namespace Backsight.Editor.Database
                         SqlXml data = reader.GetSqlXml(2);
                         using (XmlReader xr = data.CreateReader())
                         {
-                            xcr.LoadOperation(curSession, editSequence, xr);
+                            xcr.LoadOperation(editSequence, xr);
                         }
                     }
                 }

@@ -46,6 +46,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<InternalIdValue, Feature> m_Features;
 
+        /// <summary>
+        /// The elements that are currently being read
+        /// </summary>
+        readonly Stack<IXmlContent> m_Elements;
+
         #endregion
 
         #region Constructors
@@ -61,6 +66,7 @@ namespace Backsight.Editor
             m_Reader = null;
             m_Types = new Dictionary<string, ConstructorInfo>();
             m_Features = new Dictionary<InternalIdValue, Feature>((int)numItem);
+            m_Elements = new Stack<IXmlContent>(10);
         }
 
         #endregion
@@ -132,6 +138,17 @@ namespace Backsight.Editor
             return (s == null ? 0 : Int64.Parse(s));
         }
 
+        /// <summary>
+        /// Reads a boolean attribute
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The value of the attribute (false if the attribute isn't there)</returns>
+        public bool ReadBool(string name)
+        {
+            string s = m_Reader[name];
+            return (s == null ? false : Boolean.Parse(s));
+        }
+
         public double ReadDouble(string name)
         {
             string s = m_Reader[name];
@@ -152,26 +169,6 @@ namespace Backsight.Editor
                 return new InternalIdValue(s);
         }
 
-        /*
-        public IXmlContent ReadElement(string name)
-        {
-            // Read the next node if we're at the start
-            if (m_Reader.NodeType == XmlNodeType.None)
-            {
-                if (!m_Reader.Read())
-                    return null;
-            }
-
-            m_Reader.Read();
-
-            // I'm not 100% sure what to expect, this is what I think I'll have...
-            Debug.Assert(m_Reader.NodeType == XmlNodeType.Element);
-            Console.WriteLine("Name="+m_Reader.Name);
-            //Debug.Assert(m_Reader.Name == name);
-
-            return ReadContent();
-        }
-        */
         public T ReadElement<T>(string name) where T : IXmlContent
         {
             // Ensure we're at an element
@@ -181,12 +178,10 @@ namespace Backsight.Editor
                     return default(T);
             }
 
-            // If there's no type declaration, treat as empty element (since XmlReader.IsEmptyElement
-            // is always returning true)
+            // There should ALWAYS be a type declaration
             string typeName = m_Reader["xsi:type"];
             if (String.IsNullOrEmpty(typeName))
-                return default(T);
-            //throw new Exception("Content does not contain xsi:type attribute");
+                throw new Exception("Content does not contain xsi:type attribute");
 
             // If we haven't previously encountered the type, look up an appropriate
             // constructor (where possible, go for a constructor that accepts an
@@ -201,27 +196,43 @@ namespace Backsight.Editor
                 if (t.FindInterfaces(Module.FilterTypeName, "IXmlContent").Length == 0)
                     throw new Exception("IXmlContent not implemented by type: " + t.FullName);
 
-                ConstructorInfo ci = t.GetConstructor(new Type[] { typeof(XmlContentReader) });
+                // Locate default constructor
+                ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
                 if (ci == null)
-                    ci = t.GetConstructor(Type.EmptyTypes);
-
-                if (ci == null)
-                    throw new Exception("Cannot locate suitable constructor for type: " + t.FullName);
+                    throw new Exception("Cannot locate default constructor for type: " + t.FullName);
 
                 m_Types.Add(typeName, ci);
             }
 
+            // Create the instance
             ConstructorInfo c = m_Types[typeName];
-            T result;
-            if (c.GetParameters().Length == 0)
+            T result = (T)c.Invoke(new object[0]);
+
+            // Load the instance
+            try
             {
-                result = (T)c.Invoke(new object[0]);
-                //throw new NotImplementedException("Need to uncomment IXmlContent.ReadContent");
+                m_Elements.Push(result);
                 result.ReadContent(this);
             }
-            else
+
+            finally
             {
-                result = (T)c.Invoke(new object[] { this });
+                m_Elements.Pop();
+            }
+
+            // If we've just read a spatial feature, remember it
+            if (result is Feature)
+            {
+                Feature f = (result as Feature);
+                try
+                {
+                    m_Features.Add(f.InternalId, f);
+                }
+
+                catch
+                {
+                    throw new Exception("Failed to index feature "+f.DataId);
+                }
             }
 
             return result;
@@ -281,6 +292,7 @@ namespace Backsight.Editor
             {
                 T item = ReadElement<T>(itemName);
                 result.Add(item);
+                m_Reader.Read();
             }
 
             return result.ToArray();
@@ -304,21 +316,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of an editing operation
+        /// Loads the content of an editing operation. Prior to call, the current editing session
+        /// must be defined using the <see cref="Session.CurrentSession"/> property.
         /// </summary>
-        /// <param name="session">The session the edit is part of</param>
         /// <param name="editSequence">The item sequence for the edit</param>
         /// <param name="data">The data that describes the edit</param>
         /// <returns>The created editing object</returns>
-        internal Operation LoadOperation(SessionData session, uint editSequence, XmlReader data)
+        internal Operation LoadOperation(uint editSequence, XmlReader data)
         {
-            // Remember the session and sequence number of the edit that's being loaded
-            SessionData.CurrentSession = session;
+            // Remember the sequence number of the edit that's being loaded
             Operation.CurrentEditSequence = editSequence;
 
             try
             {
                 m_Reader = data;
+                Debug.Assert(m_Elements.Count==0);
                 return ReadElement<Operation>("Edit");
             }
 
@@ -337,6 +349,25 @@ namespace Backsight.Editor
         internal bool HasAttribute(string name)
         {
             return (m_Reader[name] != null);
+        }
+
+        /// <summary>
+        /// Scans back through parent nodes to attempt to locate a node with a specific
+        /// type. For example, if you're processing a node for <c>LineGeometry</c>, you should
+        /// be able to find the enclosing <c>LineFeature</c> instance using this technique.
+        /// </summary>
+        /// <typeparam name="T">The type of element to look for</typeparam>
+        /// <returns>The first ancestor node with the specified type (null if not found)</returns>
+        internal T FindParent<T>() where T : IXmlContent
+        {
+            // This works back from the last element that was pushed onto the stack
+            foreach (IXmlContent e in m_Elements)
+            {
+                if (e is T)
+                    return (T)e;
+            }
+
+            return default(T);
         }
     }
 }

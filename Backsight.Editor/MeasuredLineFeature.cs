@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The observed length of the line (on the ground).
         /// </summary>
-        readonly Distance m_ObservedLength;
+        Distance m_ObservedLength; // readonly
 
         #endregion
 
@@ -54,13 +54,10 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <c>MeasuredLineFeature</c>
+        /// Default constructor (for serialization)
         /// </summary>
-        /// <param name="reader">The reader that holds the definition of this object</param>
-        internal MeasuredLineFeature(XmlContentReader reader)
+        public MeasuredLineFeature()
         {
-            m_ObservedLength = reader.ReadElement<Distance>("Distance");
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
         }
 
         #endregion
@@ -102,7 +99,8 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
-            throw new InvalidOperationException("Use constructor that accepts XmlContentReader");
+            m_ObservedLength = reader.ReadElement<Distance>("Distance");
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
         }
     }
 }

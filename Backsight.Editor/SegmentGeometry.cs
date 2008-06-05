@@ -25,7 +25,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Geometry for a line that connects two points.
     /// </summary>
-    [Serializable]
     class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
     {
         #region Class data
@@ -442,6 +441,20 @@ namespace Backsight.Editor
             }
         
             return rotation;
+        }
+
+        public override void WriteContent(XmlContentWriter writer)
+        {
+            // This should never get called, since simple line segments are serialized
+            // using special code in the LineFeature class.
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteContent");
+        }
+
+        public override void ReadContent(XmlContentReader reader)
+        {
+            // This should never get called, since simple line segments are deserialized
+            // using special code in the LineFeature class.
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadContent");
         }
     }
 }

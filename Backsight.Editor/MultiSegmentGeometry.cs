@@ -40,7 +40,7 @@ namespace Backsight.Editor
         /// The data after that consists of the low-order bytes for the X,Y positions
         /// defining the line.
         /// </summary>
-        readonly byte[] m_Data;
+        byte[] m_Data; // readonly
 
         #endregion
 
@@ -68,6 +68,17 @@ namespace Backsight.Editor
             if (!end.IsCoincident(positions[positions.Length-1]))
                 throw new ArgumentException("End point doesn't coincide with last position");
 
+            SetPackedData(positions);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Defines the packed data that defines this geometry
+        /// </summary>
+        /// <param name="positions">The expanded positions to pack</param>
+        void SetPackedData(IPointGeometry[] positions)
+        {
             // Express ground positions as arrays of micron values
             long[] x = new long[positions.Length];
             long[] y = new long[positions.Length];
@@ -107,7 +118,7 @@ namespace Backsight.Editor
             for (int i=0; i<x.Length; i++)
             {
                 ToByteArray(x[i], ref data);
-                for(int j=commonX.Length; j<8; j++)
+                for (int j=commonX.Length; j<8; j++)
                 {
                     m_Data[to] = data[j];
                     to++;
@@ -123,10 +134,6 @@ namespace Backsight.Editor
 
             Debug.Assert(m_Data.Length==to);
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Convert this data into a series of ground positions.
@@ -309,8 +316,6 @@ namespace Backsight.Editor
 
             return result;
         }
-
-        #endregion
 
         public override ILength Distance(IPosition point)
         {
@@ -1127,6 +1132,33 @@ namespace Backsight.Editor
 
             PointGeometry[] data = GetUnpackedData();
             writer.WriteArray("PositionArray", "Position", data);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            // Locate the feature that's being read
+            LineFeature f = reader.FindParent<LineFeature>();
+            Debug.Assert(f!=null);
+
+            // Read in the positions of the line
+            PointGeometry[] data = reader.ReadArray<PointGeometry>("PositionArray", "Position");
+            Debug.Assert(data.Length>2);
+
+            // Confirm that the terminal positions match the position of the line end points (assumes
+            // that the line feature has picked up the end points before parsing the geometry)
+            Debug.Assert(data[0].IsCoincident(f.StartPoint));
+            Debug.Assert(data[data.Length-1].IsCoincident(f.EndPoint));
+
+            // Pack the data
+            SetPackedData(data);
         }
     }
 }
