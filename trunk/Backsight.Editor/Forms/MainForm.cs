@@ -19,13 +19,13 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
+using System.Xml;
 
 using Backsight.Editor.Operations;
 using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Editor.Database;
-using System.Xml;
 
 namespace Backsight.Editor.Forms
 {
@@ -161,7 +161,6 @@ namespace Backsight.Editor.Forms
             AddAction(new ToolStripItem[] { mnuFileNew, toolFileNew }, IsFileNewEnabled, FileNew);
             AddAction(new ToolStripItem[] { mnuFileOpen, toolFileOpen }, IsFileOpenEnabled, FileOpen);
             AddAction(new ToolStripItem[] { mnuFileSave, toolFileSave }, IsFileSaveEnabled, FileSave);
-            AddAction(new ToolStripItem[] { mnuFileSaveAs }, IsFileSaveAsEnabled, FileSaveAs);
             m_MruMenu.LoadFromRegistry();
             AddAction(mnuFileShowChanges, IsFileShowChangesEnabled, FileShowChanges);
             AddAction(mnuFileStatistics, IsFileStatisticsEnabled, FileStatistics);
@@ -421,24 +420,11 @@ namespace Backsight.Editor.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             CadastralMapModel map = CadastralMapModel.Current;
-            /*
-            if (map!=null && String.IsNullOrEmpty(map.Name) && !map.IsEmpty)
+            if (map != null)
             {
-                if (MessageBox.Show("Do you want to save the current map?", "Map not saved", MessageBoxButtons.YesNo)
-                    == DialogResult.Yes)
-                {
-                    string name = AskForFileName();
-                    if (!String.IsNullOrEmpty(name))
-                        map.Name = name;
-                    else
-                        m_Controller.DiscardModel();
-                }
-                else
-                    m_Controller.DiscardModel();
-            }
-            */
-            if (map!=null && !String.IsNullOrEmpty(map.Name))
                 AddRecentFile(map.Name);
+                EditingController.Current.CheckSave();
+            }
 
             m_Controller.Close();
             Application.Idle -= OnIdle;
@@ -640,32 +626,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsFileSaveEnabled()
         {
-            CadastralMapModel mm = CadastralMapModel.Current;
-            return (mm!=null && !String.IsNullOrEmpty(mm.Name));
+            Session s = Session.CurrentSession;
+            return (s==null ? false : !s.IsSaved);
         }
 
         private void FileSave(IUserAction action)
         {
-            MessageBox.Show(action.Title);
-            //CadastralMapModel.Current.Write();
-        }
-
-        private bool IsFileSaveAsEnabled()
-        {
-            return true;
-        }
-
-        private void FileSaveAs(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
-            /*
-            string name = EditingController.AskForFileName("Save as");
-            if (name!=null)
-            {
-                CadastralMapModel.Current.Write(name);
-                AddRecentFile(name);
-            }
-             */
+            Session s = Session.CurrentSession;
+            Debug.Assert(s != null);
+            s.SaveChanges();
         }
 
         void OnMruFile(int number, string filename)

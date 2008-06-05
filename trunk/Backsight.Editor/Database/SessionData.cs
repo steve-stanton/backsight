@@ -465,5 +465,28 @@ namespace Backsight.Editor.Database
             m_NumItem++;
             return m_NumItem;
         }
+
+        /// <summary>
+        /// Gets rid of edits that the user has not explicitly saved. This gets rid of the edits,
+        /// but does not revert the item count of update time that is stored in the <c>Sessions</c>
+        /// table (that isn't considered to be bad).
+        /// </summary>
+        /// <param name="lastItemToKeep">The item number of the last thing that needs
+        /// to be kept</param>
+        internal void DiscardEdits(uint lastItemToKeep)
+        {
+            Transaction.Execute(delegate
+            {
+                // Get rid of the edits
+                string sql = String.Format("DELETE FROM [dbo].[Edits] WHERE [SessionId]={0} AND [EditSequence]>{1}",
+                                                m_SessionId, lastItemToKeep);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                cmd.ExecuteNonQuery();
+
+                // Go back to the old item count (and update session time)
+                m_NumItem = lastItemToKeep;
+                UpdateEndTime();
+            });
+        }
     }
 }
