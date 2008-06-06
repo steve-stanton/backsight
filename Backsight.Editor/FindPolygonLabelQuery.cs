@@ -15,18 +15,18 @@
 
 using System;
 
-
 namespace Backsight.Editor
 {
-    /// <written by="Steve Stanton" on="05-FEB-2008" />
+    /// <written by="Steve Stanton" on="06-JUN-2008" />
     /// <summary>
     /// Query spatial index to locate a label inside a polygon. This is an experiment to see
     /// if it's faster to locate the label, given the polygon (since the alternative approach
-    /// (locate the polygon, given the label) seems to be a bit slow).
-    /// <para/>
-    /// To be used in conjunction with the other approach. This technique makes sense when
-    /// dealing with things like property lots, but not if you're dealing with huge street
-    /// network polygons. For that reason, it will ignore polygons that contain any islands.
+    /// (locate the polygon, given the label) seems to be a bit slow)... it's about 10x (perhaps
+    /// 20x faster), but needs to be used in conjunction with the other approach, since it
+    /// ignores polygons that containing islands (when dealing with things like property lots,
+    /// many polygons will be almost square so there will tend to be very few text labels in the
+    /// vicinity; however, if you're dealing with huge street network polygons, there will be
+    /// zillions of labels that overlap the polygon window).
     /// </summary>
     class FindPolygonLabelQuery
     {

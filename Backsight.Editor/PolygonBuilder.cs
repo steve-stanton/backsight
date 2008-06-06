@@ -166,7 +166,12 @@ namespace Backsight.Editor
         /// </summary>
         void BuildLabels()
         {
-            // TEST:
+            // Scan unlabelled polygons to find enclosed labels. This is significantly
+            // faster than scanning the labels to find enclosing polygons (which is
+            // what we'll do below). However, it won't be faster when dealing with
+            // more complicated polygons, so it purposefully ignored polygons that
+            // contain any islands. That's why we do the alternate scan below. Taking
+            // this approach improved performance between 10x and 20x.
             m_Model.Index.QueryWindow(null, SpatialType.Polygon, FindLabelForPolygon);
 
             // Not sure if restricting it to the new polygon extent is valid (what if
@@ -177,7 +182,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Delegate called to process each text feature found within the build window.
-        /// Called by <c>BuildLabels</c>
+        /// Called by <see cref="BuildLabels"/>.
         /// </summary>
         /// <param name="o">An item found in the spatial index.</param>
         /// <returns>True (always), indicating that the spatial query should keep going.</returns>
@@ -189,27 +194,35 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// Delegate called to process every polygon in the map.
+        /// Called by <see cref="BuildLabels"/>.
+        /// </summary>
+        /// <param name="o">A polygon ring in the spatial index</param>
+        /// <returns>True (always), to force examination of the entire spatial index</returns>
         bool FindLabelForPolygon(ISpatialObject o)
         {
             Debug.Assert(o is Ring);
-            if (!(o is Polygon))
-                return true;
 
-            // Don't attempt to process polygons that contain islands
-            Polygon p = (Polygon)o;
-            if (p.HasAnyIslands)
-                return true;
+            if (o is Polygon)
+            {
+                // Only process polygons that don't already have a label, and which
+                // don't contain any islands (polygons with islands tend to cover
+                // much larget areas, so trying to find the label this way will
+                // probably not be very efficient).
 
-            // Ignore polygons that already have a label
-            if (p.Label!=null)
-                return true;
+                Polygon p = (Polygon)o;
+                if (p.Label == null && !p.HasAnyIslands)
+                {
+                    TextFeature label = new FindPolygonLabelQuery(m_Model.Index, p).Result;
+                    if (label != null)
+                    {
+                        p.ClaimLabel(label);
+                        label.SetBuilt(true);
+                    }
+                }
+            }
 
-            TextFeature label = new FindPolygonLabelQuery(m_Model.Index, p).Result;
-            if (label==null)
-                return true;
-
-            p.ClaimLabel(label);
-            label.SetBuilt(true);
             return true;
         }
 	}
