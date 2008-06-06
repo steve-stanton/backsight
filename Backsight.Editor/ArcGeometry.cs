@@ -50,6 +50,13 @@ namespace Backsight.Editor
             m_IsClockwise = isClockwise;
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public ArcGeometry()
+        {
+        }
+
         #endregion
 
         #region ICircularArcGeometry Members

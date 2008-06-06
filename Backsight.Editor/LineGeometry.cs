@@ -57,6 +57,13 @@ namespace Backsight.Editor
             m_End = end;
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        protected LineGeometry()
+        {
+        }
+
         #endregion
 
         public IPointGeometry Start

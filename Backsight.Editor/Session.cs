@@ -386,5 +386,16 @@ namespace Backsight.Editor
         {
             m_Data.DiscardEdits(m_LastSavedItem);
         }
+
+        /// <summary>
+        /// Reserves an item number for use with the current session. It is a lightweight
+        /// request, because it just increments a counter. The database gets updated
+        /// when an edit completes.
+        /// </summary>
+        /// <returns>The reserved item number</returns>
+        internal static uint ReserveNextItem()
+        {
+            return s_CurrentSession.m_Data.ReserveNextItem();
+        }
     }
 }
