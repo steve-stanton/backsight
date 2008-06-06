@@ -66,13 +66,30 @@ namespace Backsight.Editor
         /// </summary>
         internal void Build()
         {
-            Trace.Write("Building network");
-            m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
-            Trace.Write("Processing island polygons");
-            BuildIslands();
-            Trace.Write("Associating polygon labels");
-            BuildLabels();
-            //(m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
+            using (System.IO.StreamWriter output = System.IO.File.CreateText(@"C:\Temp\Build.txt"))
+            {
+                Stopwatch sw = Stopwatch.StartNew();
+
+                Trace.Write("Building network");
+                m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
+                sw.Stop();
+                output.WriteLine("Build network: "+sw.ElapsedMilliseconds);
+
+                sw.Reset();
+                sw.Start();
+                Trace.Write("Processing island polygons");
+                BuildIslands();
+                sw.Stop();
+                output.WriteLine("Build islands: "+sw.ElapsedMilliseconds);
+
+                sw.Reset();
+                sw.Start();
+                Trace.Write("Associating polygon labels");
+                BuildLabels();
+                sw.Stop();
+                output.WriteLine("Build labels: "+sw.ElapsedMilliseconds);
+                //(m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
+            }
         }
 
         /// <summary>
@@ -149,6 +166,9 @@ namespace Backsight.Editor
         /// </summary>
         void BuildLabels()
         {
+            // TEST:
+            m_Model.Index.QueryWindow(null, SpatialType.Polygon, FindLabelForPolygon);
+
             // Not sure if restricting it to the new polygon extent is valid (what if
             // the user has just added labels, but no lines).
             //m_Model.Index.QueryWindow(m_NewPolygonExtent, SpatialType.Text, ProcessLabel);
@@ -166,6 +186,30 @@ namespace Backsight.Editor
             Debug.Assert(o is TextFeature);
             TextFeature f = (TextFeature)o;
             f.SetPolygon();
+            return true;
+        }
+
+        bool FindLabelForPolygon(ISpatialObject o)
+        {
+            Debug.Assert(o is Ring);
+            if (!(o is Polygon))
+                return true;
+
+            // Don't attempt to process polygons that contain islands
+            Polygon p = (Polygon)o;
+            if (p.HasAnyIslands)
+                return true;
+
+            // Ignore polygons that already have a label
+            if (p.Label!=null)
+                return true;
+
+            TextFeature label = new FindPolygonLabelQuery(m_Model.Index, p).Result;
+            if (label==null)
+                return true;
+
+            p.ClaimLabel(label);
+            label.SetBuilt(true);
             return true;
         }
 	}

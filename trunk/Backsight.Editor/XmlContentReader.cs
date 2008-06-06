@@ -178,6 +178,10 @@ namespace Backsight.Editor
                     return default(T);
             }
 
+            // For some reason, I'd read an ArcFeature with an embedded ArcGeometry, but the
+            // xsi:type attribute continues to say it's ArcFeature. So try to nudge it ahead.
+            m_Reader.MoveToFirstAttribute();
+
             // There should ALWAYS be a type declaration
             string typeName = m_Reader["xsi:type"];
             if (String.IsNullOrEmpty(typeName))
@@ -234,6 +238,10 @@ namespace Backsight.Editor
                     throw new Exception("Failed to index feature "+f.DataId);
                 }
             }
+
+            // Read the next node (if any), in case this element has an EndElement node. If it
+            // doesn't we should be all ready to start reading the next element.
+            m_Reader.Read();
 
             return result;
         }
@@ -292,7 +300,7 @@ namespace Backsight.Editor
             {
                 T item = ReadElement<T>(itemName);
                 result.Add(item);
-                m_Reader.Read();
+                //m_Reader.Read();
             }
 
             return result.ToArray();

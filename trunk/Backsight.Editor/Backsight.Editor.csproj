@@ -64,6 +64,7 @@
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
     <Compile Include="FeatureData.cs" />
+    <Compile Include="FindPolygonLabelQuery.cs" />
     <Compile Include="FontFacade.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">

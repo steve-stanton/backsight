@@ -21,7 +21,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Line geometry that <b>cannot</b> act as the base for <see cref="SectionGeometry"/>
     /// </summary>
-    [Serializable]
     abstract class UnsectionedLineGeometry : LineGeometry
     {
         #region Class data
@@ -39,6 +38,13 @@ namespace Backsight.Editor
         /// <param name="end">The end of the line.</param>
         protected UnsectionedLineGeometry(ITerminal start, ITerminal end)
             : base(start, end)
+        {
+        }
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        protected UnsectionedLineGeometry()
         {
         }
 

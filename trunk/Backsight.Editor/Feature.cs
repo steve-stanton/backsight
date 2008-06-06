@@ -422,7 +422,7 @@ namespace Backsight.Editor
         /// Marks a feature as "built" (meaning that all topological relationships have been defined).
         /// </summary>
         /// <param name="setting">True (default) to set the status. False to clear the status.</param>
-        protected void SetBuilt(bool setting)
+        internal void SetBuilt(bool setting)
         {
             SetFlag(FeatureFlag.Built, setting);
         }

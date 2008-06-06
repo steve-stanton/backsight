@@ -220,7 +220,7 @@ namespace Backsight.Editor
         /// Returns the reference position for this label.
         /// </summary>
         /// <returns>The reference position (null if this feature isn't a polygon label)</returns>
-        IPointGeometry GetPolPosition()
+        internal IPointGeometry GetPolPosition()
         {
             // Return if this is not a topological label.
             if (!IsTopological)

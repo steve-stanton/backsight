@@ -480,7 +480,7 @@ namespace Backsight.Editor.Database
                 // Get rid of the edits
                 string sql = String.Format("DELETE FROM [dbo].[Edits] WHERE [SessionId]={0} AND [EditSequence]>{1}",
                                                 m_SessionId, lastItemToKeep);
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                SqlCommand cmd = new SqlCommand(sql, Transaction.Connection.Value);
                 cmd.ExecuteNonQuery();
 
                 // Go back to the old item count (and update session time)

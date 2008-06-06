@@ -26,7 +26,6 @@ namespace Backsight.Editor
     /// </summary>
     /// <seealso cref="LineTopology"/>
     /// <seealso cref="SectionTopologyList"/>
-    [Serializable]
     abstract class SectionTopology : ISection, IDivider
     {
         #region Class data
