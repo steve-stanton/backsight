@@ -24,7 +24,6 @@ namespace Backsight.Editor
     /// <summary>
     /// An intersection of two or more lines.
     /// </summary>
-    [Serializable]
     class Intersection : PointGeometry, ITerminal, IPoint
     {
         #region Class data

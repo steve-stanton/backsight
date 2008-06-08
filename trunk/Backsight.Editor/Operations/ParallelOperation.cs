@@ -284,7 +284,7 @@ namespace Backsight.Editor.Operations
                 // and alter the parallel line so that it starts there
                 // instead.
 
-                IPointGeometry loc = m_ParLine.Start;
+                IPointGeometry loc = m_ParLine.StartPoint;
                 IPointGeometry wantLoc = PointGeometry.Create(spar);
 
                 if (!loc.IsCoincident(wantLoc))
@@ -299,7 +299,7 @@ namespace Backsight.Editor.Operations
                 pe.Move(epar);
             else
             {
-                IPointGeometry loc = m_ParLine.End;
+                IPointGeometry loc = m_ParLine.EndPoint;
                 IPointGeometry wantLoc = PointGeometry.Create(epar);
 
                 if (!loc.IsCoincident(wantLoc))

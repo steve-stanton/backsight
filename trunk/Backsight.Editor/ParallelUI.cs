@@ -606,8 +606,8 @@ namespace Backsight.Editor
             sres = eres = null;
 
             // Get the ends of the reference line.
-            IPosition spos = line.Start;
-            IPosition epos = line.End;
+            IPosition spos = line.StartPoint;
+            IPosition epos = line.EndPoint;
 
             ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
 
@@ -679,8 +679,8 @@ namespace Backsight.Editor
             sres = eres = null;
 
             // Get the ends of the reference line.
-            IPosition spos = refline.Start;
-            IPosition epos = refline.End;
+            IPosition spos = refline.StartPoint;
+            IPosition epos = refline.EndPoint;
 
             // If the reference line is a circular arc
             if (refline is ArcFeature)
@@ -776,8 +776,8 @@ namespace Backsight.Editor
             }
 
             // Get the ends of the reference line.
-            IPosition spos = m_Line.Start;
-            IPosition epos = m_Line.End;
+            IPosition spos = m_Line.StartPoint;
+            IPosition epos = m_Line.EndPoint;
 
             // And its bearing.
             double bearing = Geom.BearingInRadians(spos, epos);
@@ -918,8 +918,8 @@ namespace Backsight.Editor
             else
             {
                 // Get the bearing from the start to the end of the reference line.
-                IPosition spos = refline.Start;
-                IPosition epos = refline.End;
+                IPosition spos = refline.StartPoint;
+                IPosition epos = refline.EndPoint;
                 double bearing = Geom.BearingInRadians(spos, epos);
 
                 // Project the parallel line to positions that are a

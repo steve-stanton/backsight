@@ -43,6 +43,16 @@ namespace Backsight.Editor
         /// </summary>
         LineGeometry m_Geom;
 
+        /// <summary>
+        /// The point at the start of this line
+        /// </summary>
+        PointFeature m_From; // readonly
+
+        /// <summary>
+        /// The point at the end of this line
+        /// </summary>
+        PointFeature m_To; // readonly
+
         #endregion
 
         #region Constructors
@@ -55,12 +65,14 @@ namespace Backsight.Editor
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
         /// this constructor should always remain private.</note>
-        private LineFeature(IEntity e, Operation creator, LineGeometry g)
+        private LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
             : base(e, creator)
         {
             if (g==null)
                 throw new ArgumentNullException();
 
+            m_From = start;
+            m_To = end;
             m_Geom = g;
             m_Topology = null;
             AddReferences();
@@ -78,7 +90,7 @@ namespace Backsight.Editor
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end)
-            : this(e, creator, new SegmentGeometry(start, end))
+            : this(e, creator, start, end, new SegmentGeometry(start, end))
         {
         }
 
@@ -93,7 +105,7 @@ namespace Backsight.Editor
         /// coincide precisely with the supplied <paramref name="start"/>, and the last position
         /// must coincide precisely with <paramref name="end"/>. Expected to be more than two positions.</param>
         internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, IPointGeometry[] data)
-            : this(e, creator, new MultiSegmentGeometry(start, end, data))
+            : this(e, creator, start, end, new MultiSegmentGeometry(start, end, data))
         {
             Debug.Assert(data.Length>2);
             Debug.Assert(start.Geometry.IsCoincident(data[0]));
@@ -111,14 +123,14 @@ namespace Backsight.Editor
         /// <param name="ec">The point at the end of the arc</param>
         /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
         internal LineFeature(IEntity e, Operation creator, Circle c, PointFeature bc, PointFeature ec, bool isClockwise)
-            : this(e, creator, new ArcGeometry(c, bc, ec, isClockwise))
+            : this(e, creator, bc, ec, new ArcGeometry(c, bc, ec, isClockwise))
         {
         }
 
         /// <summary>
         /// Default constructor (for serialization)
         /// </summary>
-        protected LineFeature()
+        public LineFeature()
         {
         }
 
@@ -133,27 +145,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The position at the start of this line.
-        /// </summary>
-        public IPointGeometry Start
-        {
-            get { return m_Geom.Start; }
-        }
-
-        /// <summary>
         /// The point feature at the start of the line.
         /// </summary>
         internal PointFeature StartPoint
         {
-            get { return (PointFeature)Start; }
-        }
-
-        /// <summary>
-        /// The position at the end of this line.
-        /// </summary>
-        public IPointGeometry End
-        {
-            get { return m_Geom.End; }
+            get { return m_From; }
         }
 
         /// <summary>
@@ -161,7 +157,7 @@ namespace Backsight.Editor
         /// </summary>
         internal PointFeature EndPoint
         {
-            get { return (PointFeature)End; }
+            get { return m_To; }
         }
 
         /// <summary>
@@ -311,7 +307,7 @@ namespace Backsight.Editor
             get
             {
                 ICoordinateSystem sys = CoordinateSystem;
-                double sfac = sys.GetLineScaleFactor(Start, End);
+                double sfac = sys.GetLineScaleFactor(StartPoint, EndPoint);
                 ILength length = Length;
                 return new Length(length.Meters/sfac);
             }
@@ -349,9 +345,8 @@ namespace Backsight.Editor
             // Zero-length lines?
             if (!HasLength)
             {
-                IPosition s = this.Start;
                 string msg = String.Format("Ignoring zero-length line at {0:0.0000}N {1:0.0000}E",
-                                            s.Y, s.X);
+                                            m_From.Y, m_From.X);
                 throw new Exception(msg);
             }
 
@@ -413,10 +408,7 @@ namespace Backsight.Editor
                 // possible exception is a situation where a duplicate
                 // location has been added.
 
-                IPointGeometry s = Start;
-                IPointGeometry e = End;
-
-                if (s!=e && !s.IsCoincident(e))
+                if (m_From!=m_To && !m_From.IsCoincident(m_To))
                     return true;
 
                 // Do it the robust way
@@ -616,7 +608,10 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <returns>The new line</returns>
         internal LineFeature MakeSubSection(SectionGeometry section, Operation op) //const CeSubTheme* const pSubTheme
         {
-            LineFeature result = new LineFeature(this.EntityType, op, section);
+            PointFeature start = (PointFeature)section.Start;
+            PointFeature end = (PointFeature)section.End;
+
+            LineFeature result = new LineFeature(this.EntityType, op, start, end, section);
             DefineFeature(result);
 
             if (result.IsTopological)
@@ -1224,12 +1219,12 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
-            PointFeature from = reader.ReadFeatureByReference<PointFeature>("From");
-            PointFeature to = reader.ReadFeatureByReference<PointFeature>("To");
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
             uint simple = reader.ReadUnsignedInt("Simple"); // 0 if it's not there
             if (simple == 1)
-                m_Geom = new SegmentGeometry(from, to);
+                m_Geom = new SegmentGeometry(m_From, m_To);
             else
                 m_Geom = reader.ReadElement<LineGeometry>("Geometry");
 
