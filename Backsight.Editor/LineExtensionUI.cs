@@ -299,7 +299,7 @@ namespace Backsight.Editor
                 return false;
 
             // Get the point we're extending from.
-            start = (isFromEnd ? extendLine.End : extendLine.Start);
+            start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
 
             // Get the point we're extending to ...
 
@@ -371,7 +371,7 @@ namespace Backsight.Editor
                 iscw = !iscw;
 
             // Get the point we're extending from.
-            start = (isFromEnd ? extendLine.End : extendLine.Start);
+            start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
 
             // Get the point we're extending to ...
 

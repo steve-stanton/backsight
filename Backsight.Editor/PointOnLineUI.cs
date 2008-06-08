@@ -281,12 +281,12 @@ namespace Backsight.Editor
             LineGeometry g = line.LineGeometry;
             if (isFromEnd)
             {
-                start = line.End;
+                start = line.EndPoint;
                 g.GetPosition(new Length(maxlen-obsvlen), out approx);
             }
             else
             {
-                start = line.Start;
+                start = line.StartPoint;
                 g.GetPosition(new Length(obsvlen), out approx);
             }
 

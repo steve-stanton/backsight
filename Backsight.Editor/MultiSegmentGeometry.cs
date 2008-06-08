@@ -71,6 +71,13 @@ namespace Backsight.Editor
             SetPackedData(positions);
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public MultiSegmentGeometry()
+        {
+        }
+
         #endregion
 
         /// <summary>

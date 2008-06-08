@@ -169,18 +169,35 @@ namespace Backsight.Editor
                 return new InternalIdValue(s);
         }
 
-        public T ReadElement<T>(string name) where T : IXmlContent
+        bool ReadToElement(string name)
         {
-            // Ensure we're at an element
             while (m_Reader.NodeType != XmlNodeType.Element && m_Reader.Name != name)
             {
                 if (!m_Reader.Read())
-                    return default(T);
+                    return false;
             }
+
+            return true;
+        }
+
+        public T ReadElement<T>(string name) where T : IXmlContent
+        {
+            // Ensure we're at an element
+            if (!ReadToElement(name))
+                return default(T);
 
             // For some reason, I'd read an ArcFeature with an embedded ArcGeometry, but the
             // xsi:type attribute continues to say it's ArcFeature. So try to nudge it ahead.
+            if (!m_Reader.MoveToFirstAttribute())
+                return default(T);
+            /*
+            // After doing the above, we won't be at an element! Whoever wrote this XML
+            // reading code sure knew how to make it opaque!
+            if (!ReadToElement(name))
+                return default(T);
+
             m_Reader.MoveToFirstAttribute();
+            */
 
             // There should ALWAYS be a type declaration
             string typeName = m_Reader["xsi:type"];
@@ -300,7 +317,7 @@ namespace Backsight.Editor
             {
                 T item = ReadElement<T>(itemName);
                 result.Add(item);
-                //m_Reader.Read();
+                m_Reader.Read();
             }
 
             return result.ToArray();
@@ -319,7 +336,9 @@ namespace Backsight.Editor
             if (iid.IsEmpty)
                 return null;
 
-            Debug.Assert(m_Features.ContainsKey(iid));
+            if (!m_Features.ContainsKey(iid))
+                throw new Exception("Cannot find: " + iid);
+
             return (T)m_Features[iid];
         }
 

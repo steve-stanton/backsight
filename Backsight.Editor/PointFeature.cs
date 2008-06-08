@@ -357,7 +357,10 @@ namespace Backsight.Editor
                 throw new NotSupportedException("Points will elevation are not currently supported");
             }
             else
-                m_Geom = new PointGeometry(reader);
+            {
+                m_Geom = new PointGeometry();
+                m_Geom.ReadContent(reader);
+            }
         }
 
     }

@@ -101,11 +101,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <c>PointGeometry</c> during de-serialization from XML
+        /// Default constructor (for serialization)
         /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public PointGeometry(XmlContentReader reader)
-            : this(reader.ReadLong("X"), reader.ReadLong("Y"))
+        public PointGeometry()
         {
         }
 
@@ -197,7 +195,8 @@ namespace Backsight.Editor
 
         public virtual void ReadContent(XmlContentReader reader)
         {
-            throw new InvalidOperationException("Use constructor that accepts an XmlContentReader");
+            m_X = new MicronValue(reader.ReadLong("X"));
+            m_Y = new MicronValue(reader.ReadLong("Y"));
         }
 
         #endregion
