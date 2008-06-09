@@ -171,13 +171,17 @@ namespace Backsight.Editor
 
         bool ReadToElement(string name)
         {
+            return m_Reader.ReadToFollowing(name);
+            /*
             while (m_Reader.NodeType != XmlNodeType.Element && m_Reader.Name != name)
             {
                 if (!m_Reader.Read())
                     return false;
             }
 
+            m_Reader.MoveToElement();
             return true;
+             */
         }
 
         public T ReadElement<T>(string name) where T : IXmlContent
@@ -188,8 +192,9 @@ namespace Backsight.Editor
 
             // For some reason, I'd read an ArcFeature with an embedded ArcGeometry, but the
             // xsi:type attribute continues to say it's ArcFeature. So try to nudge it ahead.
-            if (!m_Reader.MoveToFirstAttribute())
-                return default(T);
+            //if (!m_Reader.MoveToFirstAttribute())
+            //    return default(T);
+
             /*
             // After doing the above, we won't be at an element! Whoever wrote this XML
             // reading code sure knew how to make it opaque!
@@ -258,7 +263,7 @@ namespace Backsight.Editor
 
             // Read the next node (if any), in case this element has an EndElement node. If it
             // doesn't we should be all ready to start reading the next element.
-            m_Reader.Read();
+            //m_Reader.Read();
 
             return result;
         }
@@ -296,14 +301,17 @@ namespace Backsight.Editor
          * Note that there's no EndElement node for the geometry (where everything
          * consists of attributes)
          */
-        public T[] ReadArray<T>(string arrayName, string itemName) where T : IXmlContent
+        public T[] ReadArray<T>(string arrayName, string itemName) where T : class, IXmlContent
         {
             // Ensure we're at an element
-            while (m_Reader.NodeType != XmlNodeType.Element || m_Reader.Name != arrayName)
-            {
-                if (!m_Reader.Read())
-                    throw new Exception("Array element not found");
-            }
+            if (!ReadToElement(arrayName))
+                throw new Exception("Array element not found");
+
+            //while (m_Reader.NodeType != XmlNodeType.Element || m_Reader.Name != arrayName)
+            //{
+            //    if (!m_Reader.Read())
+            //        throw new Exception("Array element not found");
+            //}
 
             // Pick up array size (optional nicety, may be inaccurate)
             uint capacity = 1000;
@@ -312,13 +320,39 @@ namespace Backsight.Editor
 
             List<T> result = new List<T>((int)capacity);
 
+            /*
             m_Reader.Read();
             while (m_Reader.NodeType != XmlNodeType.EndElement || m_Reader.Name != arrayName)
             {
                 T item = ReadElement<T>(itemName);
                 result.Add(item);
-                m_Reader.Read();
+                //m_Reader.Read();
             }
+            */
+
+            for (int i=0; i<capacity; i++)
+            {
+                T item = ReadElement<T>(itemName);
+                Debug.Assert(item!=null);
+                result.Add(item);
+            }
+
+            /*
+            //bool done = false;
+            T item = null;
+
+            do
+            {
+                item = ReadElement<T>(itemName);
+                if (item!=null)
+                    result.Add(item);
+
+            //} while (!(m_Reader.NodeType==XmlNodeType.EndElement && m_Reader.Name==arrayName));
+            } while (item!=null);
+
+            //m_Reader.Read();
+            //Debug.Assert(m_Reader.NodeType==XmlNodeType.EndElement && m_Reader.Name==arrayName);
+            */
 
             return result.ToArray();
         }

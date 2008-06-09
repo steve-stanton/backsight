@@ -49,6 +49,13 @@ namespace Backsight.Editor
             m_Text = text;
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public MiscText()
+        {
+        }
+
         #endregion
 
         /// <summary>
@@ -138,6 +145,18 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteString("Text", m_Text);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Text = reader.ReadString("Text");
         }
     }
 }

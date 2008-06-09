@@ -49,7 +49,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The annotation & style (font)
         /// </summary>
-        readonly TextGeometry m_Geom;
+        TextGeometry m_Geom; // readonly
 
         /// <summary>
         /// The polygon that encloses this text feature. Null if this feature isn't a polygon
@@ -77,6 +77,13 @@ namespace Backsight.Editor
         {
             m_Geom = text;
             m_Container = null;
+        }
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public TextFeature()
+        {
         }
 
         #endregion
@@ -301,6 +308,18 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteElement("Geometry", m_Geom);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Geom = reader.ReadElement<TextGeometry>("Geometry");
         }
     }
 }

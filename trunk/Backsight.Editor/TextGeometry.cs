@@ -79,6 +79,13 @@ namespace Backsight.Editor
             m_Rotation = new RadianValue((double)rotation);
         }
 
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        protected TextGeometry()
+        {
+        }
+
         #endregion
 
         /// <summary>
@@ -365,14 +372,19 @@ namespace Backsight.Editor
             writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
         }
 
-        #region IXmlContent Members
-
-
-        public void ReadContent(XmlContentReader reader)
+        public virtual void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
+            m_Position = new PointGeometry();
+            m_Position.ReadContent(reader);
+            m_Font = EnvironmentContainer.FindFontById(reader.ReadInt("FontId"));
+            m_Height = Single.Parse(reader.ReadString("Height"));
+            m_Width = Single.Parse(reader.ReadString("Width"));
 
-        #endregion
+            double rot;
+            if (RadianValue.TryParse(reader.ReadString("Rotation"), out rot))
+                m_Rotation = new RadianValue(rot);
+            else
+                throw new Exception("Cannot parse text rotation");
+        }
     }
 }

@@ -100,13 +100,24 @@ namespace Backsight.Editor.Forms
             m_Actions = new UserActionList();
         }
 
+        void ShowLoadProgress(string msg)
+        {
+            infoLabel.Text = msg;
+            statusStrip.Refresh();
+        }
+
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            try           
+            ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
+            Stopwatch sw = Stopwatch.StartNew();
+
+            try
             {
+                Trace.Listeners.Add(trace);
                 string lastMap = Settings.Default.LastMap;
                 if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
                 {
+                    Trace.Write("Loading "+lastMap);
                     // Display the map name in the dialog title (nice to see what's loading
                     // rather than the default "Map Title" text)
                     this.Text = lastMap;
@@ -123,6 +134,13 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
+            finally
+            {
+                sw.Stop();
+                Trace.Listeners.Remove(trace);
+                ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds/1000.0));
+            }
+/*
             uint numSess = 0;
             uint numFeat = 0;
             foreach (Session s in CadastralMapModel.Current.Sessions)
@@ -132,6 +150,7 @@ namespace Backsight.Editor.Forms
             }
             MessageBox.Show("Number of sessions loaded="+numSess);
             MessageBox.Show("Number of features="+numFeat);
+            */
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
