@@ -28,7 +28,6 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to attach a point to a line.
     /// </summary>
-    [Serializable]
     class AttachPointOperation : Operation
     {
         /// <summary>

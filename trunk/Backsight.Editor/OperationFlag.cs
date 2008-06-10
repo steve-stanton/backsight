@@ -21,7 +21,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Flag bits for the <c>Operation</c> class
     /// </summary>
-    [Serializable]
     [Flags]
     enum OperationFlag : byte
     {

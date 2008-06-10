@@ -1130,6 +1130,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// </summary>
         /// <param name="newStart">The new start point</param>
         /// <param name="newEnd">The new end point</param>
+        /// <remarks>TODO: This method is potentially dangerous and should be axed</remarks>
         internal virtual void ChangeEnds(PointFeature newStart, PointFeature newEnd)
         {
             // Return if there is no change to make.
@@ -1150,6 +1151,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                     StartPoint.CutReference(this);
                     newStart.AddReference(this);
                     m_Geom.StartTerminal = newStart;
+                    m_From = newStart;
                 }
 
                 if (!Object.ReferenceEquals(EndPoint, newEnd))
@@ -1157,6 +1159,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                     EndPoint.CutReference(this);
                     newEnd.AddReference(this);
                     m_Geom.EndTerminal = newEnd;
+                    m_To = newEnd;
                 }
             }
 
@@ -1228,6 +1231,16 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             else
                 m_Geom = reader.ReadElement<LineGeometry>("Geometry");
 
+            // Refer the start and end points to this line
+            AddReferences();
+
+            // If we're dealing with a topological line, mark it as "moved" so that
+            // it can be intersected once the model has been loaded
+            if (IsTopological)
+            {
+                SetTopology(true);
+                IsMoved = true;
+            }
         }
     }
 }

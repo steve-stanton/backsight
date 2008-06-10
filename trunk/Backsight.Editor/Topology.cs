@@ -25,7 +25,6 @@ namespace Backsight.Editor
     /// Topology for a line. Base class for <see cref="LineTopology"/> and
     /// <see cref="SectionTopologyList"/>
     /// </summary>
-    [Serializable]
     abstract class Topology : IEnumerable<IDivider>
     {
         #region Statics

@@ -33,7 +33,6 @@ namespace Backsight.Editor
     /// by the facade will correspond to default values).
     /// </para></summary>
     /// <typeparam name="D">The type for the associated object</typeparam>
-    [Serializable]
     class EnvironmentItemFacade<D> : DataStub where D : IEnvironmentItem
     {
         /// <summary>

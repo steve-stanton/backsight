@@ -27,7 +27,6 @@ namespace Backsight.Editor
     /// the <see cref="IDivider"/> objects that define the outer perimeter of the area,
     /// and a collection of any islands that may exist within the area.
     /// </summary>
-    [Serializable]
     class Polygon : Ring
     {
         #region Class data

@@ -26,7 +26,6 @@ namespace Backsight.Editor
     /// Base class for <see cref="LineDivider"/> and <see cref="LineOverlap"/>.
     /// </summary>
     /// <seealso cref="SectionTopology"/>
-    [Serializable]
     abstract class LineTopology : Topology, IDivider
     {
         #region Class data

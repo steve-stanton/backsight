@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// </summary>
         public ITerminal From
         {
-            get { return (ITerminal)Start; }
+            get { return StartTerminal; }
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Backsight.Editor
         /// </summary>
         public ITerminal To
         {
-            get { return (ITerminal)End; }
+            get { return EndTerminal; }
         }
 
         #endregion

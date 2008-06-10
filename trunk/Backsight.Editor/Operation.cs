@@ -135,9 +135,11 @@ namespace Backsight.Editor
         {
             //m_Sequence = container.MapModel.ReserveNextOpSequence();
 
+            /*
             Feature[] createdFeatures = this.Features;
             foreach (Feature f in createdFeatures)
                 f.OnLoad(this, true);
+             */
         }
 
         /// <summary>

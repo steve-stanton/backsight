@@ -26,7 +26,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Topology for a line that consists of at least two sections.
     /// </summary>
-    [Serializable]
     class SectionTopologyList : Topology
     {
         #region Class data

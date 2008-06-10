@@ -18,7 +18,6 @@ using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     class Row : IPossibleList<Row>
     {
         // The ID for the row

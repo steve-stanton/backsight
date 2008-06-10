@@ -17,7 +17,6 @@ using System;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     abstract class DataStub
     {
         #region Class data
