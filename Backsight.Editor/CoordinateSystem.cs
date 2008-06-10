@@ -19,7 +19,6 @@ using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
 {
-    [Serializable]
     public class CoordinateSystem : ICoordinateSystem
     {
         #region Class data

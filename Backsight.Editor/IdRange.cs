@@ -31,7 +31,6 @@ namespace Backsight.Editor
     /// Persistent class that records a range of allocated IDs. The <c>CadastralMapModel</c> class
     /// maintains a list of references to all the <c>IdRange</c> objects in a map.
     /// </summary>
-    [Serializable]
     public class IdRange
     {
         #region Class data

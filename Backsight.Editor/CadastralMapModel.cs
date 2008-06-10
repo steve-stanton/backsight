@@ -104,18 +104,6 @@ namespace Backsight.Editor
         readonly List<Session> m_Sessions;
 
         /// <summary>
-        /// Layers that have been utilized by the map (stubs that front information
-        /// obtained from the environment database).
-        /// </summary>
-        //List<LayerFacade> m_Layers;
-
-        /// <summary>
-        /// Fonts that have been utilized by the map (stubs that front information
-        /// obtained from the environment database).
-        /// </summary>
-        //List<FontFacade> m_Fonts;
-
-        /// <summary>
         /// The ID ranges associated with this map.
         /// </summary>
         readonly List<IdRange> m_IdRanges;
@@ -133,10 +121,7 @@ namespace Backsight.Editor
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
-            //m_Layers = new List<LayerFacade>();
-            //m_Fonts = new List<FontFacade>();
             m_IdRanges = new List<IdRange>();
-            //m_Index = null;
             m_Index = new EditingIndex();
         }
 
@@ -273,21 +258,6 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Adds a new session to this model.
-        /// </summary>
-        /// <returns>The newly created session.</returns>
-        /*
-        internal Session AddSession()
-        {
-            Person p = AddPerson();
-            Session s = new Session(this, (LayerFacade)ActiveLayer);
-            m_Sessions.Add(s);
-            s.Start(p);
-            return s;
-        }
-        */
-
-        /// <summary>
         /// Updates the end time of the current editing session (if there is one).
         /// </summary>
         /*
@@ -350,49 +320,6 @@ namespace Backsight.Editor
              */
         }
 
-        /*
-        LayerFacade GetRegisteredLayer(ILayer layer)
-        {
-            LayerFacade f = m_Layers.Find(delegate(LayerFacade d) { return d.Id==layer.Id; });
-            if (f==null)
-            {
-                f = new LayerFacade(layer);
-                m_Layers.Add(f);
-            }
-            return f;
-        }
-        */
-        /*
-        FontFacade GetRegisteredFont(IFont font)
-        {
-            FontFacade f = m_Fonts.Find(delegate(FontFacade ff) { return ff.Id==font.Id; });
-            if (f==null)
-            {
-                f = new FontFacade(font);
-                m_Fonts.Add(f);
-            }
-            return f;
-        }
-        */
-        /*
-        internal MapEntity GetRegisteredEntityType(IEntity entity)
-        {
-            if (entity==null)
-                return null;
-
-            if ((entity is MapEntity) && (entity as MapEntity).MapModel==this)
-                return (entity as MapEntity);
-
-            MapEntity me = m_Entities.Find(delegate(MapEntity e) { return e.Id==entity.Id; });
-            if (me==null)
-            {
-                me = new MapEntity(this, entity);
-                m_Entities.Add(me);
-            }
-
-            return me;
-        }
-        */
         /*
         internal void Write(string fileName)
         {
@@ -460,10 +387,6 @@ namespace Backsight.Editor
         /*
         private void OnOpen()
         {
-            // Ensure all entity type wrappers know that they're part of this model.
-            //foreach (MapEntity me in m_Entities)
-            //    me.MapModel = this;
-
             // Define information relating to the environment
             //AssignData(EnvironmentContainer.Current);
 
@@ -471,14 +394,6 @@ namespace Backsight.Editor
             foreach (Session s in m_Sessions)
             {
                 s.OnLoad(this);
-
-                // Ensure the session refers to the same layer data as this model
-          
-                //LayerFacade layerFacade = s.LayerFacade;
-                //if (layerFacade==null)
-                //    throw new Exception("Session is not associated with an editing layer");
-
-                //LayerFacade modelFacade = FindLayerById(layerFacade.Id);
             }
 
             // Generate a spatial index
@@ -530,28 +445,6 @@ namespace Backsight.Editor
                 return (numSession==0 ? null : m_Sessions[numSession-1]);
             }
         }
-
-        /// <summary>
-        /// Associates environment-related facades with information obtained from
-        /// the supplied environment container.
-        /// </summary>
-        /// <param name="ec">The container holding environment data (not null)</param>
-        /*
-        private void AssignData(IEnvironmentContainer ec)
-        {
-            if (ec==null)
-                throw new ArgumentNullException();
-
-            //foreach (MapEntity f in m_Entities)
-            //    f.Data = EnvironmentItemFacade<IEntity>.FindById(ec.EntityTypes, f.Id);
-
-            //foreach (LayerFacade f in m_Layers)
-            //    f.Data = EnvironmentItemFacade<ILayer>.FindById(ec.Layers, f.Id);
-
-            //foreach (FontFacade f in m_Fonts)
-            //    f.Data = EnvironmentItemFacade<IFont>.FindById(ec.Fonts, f.Id);
-        }
-        */
 
         public ISpatialSystem SpatialSystem
         {
@@ -1387,15 +1280,41 @@ namespace Backsight.Editor
             // Ensure everything is as expected (not sure if this is still needed)
             foreach (Session s in m_Sessions)
             {
-                s.OnLoad(this);
+                //s.OnLoad(this);
 
                 // Add the session to the spatial index. This also updates the overall
                 // extent that's stored as part of the model.
                 s.AddToIndex();
             }
 
+            // Intersect topological lines that aren't marked for deletion
+            Trace.Write("Intersecting lines");
+            m_Index.QueryWindow(null, SpatialType.Line, delegate (ISpatialObject item)
+            {
+                LineFeature line = (LineFeature)item;
+                line.IsMoved = false;
+                line.Split(null);
+                return true;
+            });
+
             // Now build the topology for the map
+            BuildPolygons();
         }
+
+        /*
+            List<LineFeature> trims = new List<LineFeature>();
+            int nMove = 0;
+
+            foreach(Feature f in moves)
+            {
+                f.IsMoved = false;
+                LineFeature line = (f as LineFeature);
+                if (line==null)
+                    continue;
+
+                nMove++;
+                line.Split(trims);
+         */
 
         /// <summary>
         /// Initializes the number of elements in this model's session list

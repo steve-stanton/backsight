@@ -30,7 +30,6 @@ namespace Backsight.Editor
     /// by searching the map model for the overlaps.
     /// </summary>
     /// <seealso cref="LineDivider"/>
-    [Serializable]
     class LineOverlap : LineTopology
     {
         #region Class data

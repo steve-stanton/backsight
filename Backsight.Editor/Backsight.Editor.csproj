@@ -56,16 +56,12 @@
     <Compile Include="Database\Job.cs" />
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
-    <Compile Include="editingschema.cs">
-      <DependentUpon>EditingSchema.xsd</DependentUpon>
-    </Compile>
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
     <Compile Include="FeatureData.cs" />
     <Compile Include="FindPolygonLabelQuery.cs" />
-    <Compile Include="FontFacade.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
       <SubType>Form</SubType>
@@ -358,7 +354,6 @@
     <Compile Include="DistanceUnit.cs" />
     <Compile Include="DistanceUnitType.cs" />
     <Compile Include="EditorResources.cs" />
-    <Compile Include="EntityFacade.cs" />
     <Compile Include="EnvironmentItemFacade.cs" />
     <Compile Include="ExtraLeg.cs" />
     <Compile Include="ExTranslation.cs" />
@@ -567,7 +562,6 @@
     <Compile Include="SectionGeometry.cs" />
     <Compile Include="SectionTopology.cs" />
     <Compile Include="SegmentGeometry.cs" />
-    <Compile Include="MapEntity.cs" />
     <Compile Include="MeasuredLineFeature.cs" />
     <Compile Include="Circle.cs" />
     <Compile Include="NewLineUI.cs" />
@@ -625,7 +619,6 @@
     <Compile Include="IntersectionType.cs" />
     <Compile Include="IntersectionFinder.cs" />
     <Compile Include="Key.cs" />
-    <Compile Include="LayerFacade.cs" />
     <Compile Include="LineAnnotationOptions.cs" />
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />
@@ -938,7 +931,6 @@
     <Compile Include="TaggedObject.cs" />
     <Compile Include="TextFeature.cs" />
     <Compile Include="TextGeometry.cs" />
-    <Compile Include="ThemeFacade.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="TranslationFile.cs" />
     <Compile Include="TrimLineUI.cs" />
@@ -1023,24 +1015,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="EditingSchema.xsd">
-      <SubType>Designer</SubType>
-      <CustomToolNamespace>http://backsight.org</CustomToolNamespace>
-    </None>
-    <None Include="EditingSchema.xsx">
-      <DependentUpon>EditingSchema.xsd</DependentUpon>
-    </None>
     <None Include="FeatureSchema.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="FeatureSchema.xsx">
       <DependentUpon>FeatureSchema.xsd</DependentUpon>
-    </None>
-    <None Include="GeometrySchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="GeometrySchema.xsx">
-      <DependentUpon>GeometrySchema.xsd</DependentUpon>
     </None>
     <None Include="IdDataSet.xsc">
       <DependentUpon>IdDataSet.xsd</DependentUpon>

@@ -23,6 +23,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
+using System.Globalization;
 
 namespace Backsight.Editor
 {
@@ -787,6 +788,16 @@ namespace Backsight.Editor
             writer.WriteUnsignedInt("Item", m_CreatorSequence);
             writer.WriteInt("EntityId", m_What.Id);
 
+            // Pick up only those flag bits that should be persisted. In most cases, the
+            // initial topological status is obtained through the entity type. If the
+            // data is brought in via an import, however, the initial status may be
+            // non-standard.
+            FeatureFlag ff = 0;
+            if (IsTopological)
+                ff |= FeatureFlag.Topol;
+
+            writer.WriteString("Flags", String.Format("{0:X}", ff));
+
             string s = FormattedKey;
             if (s.Length>0)
                 writer.WriteString("Key", FormattedKey);
@@ -806,6 +817,8 @@ namespace Backsight.Editor
             m_CreatorSequence = reader.ReadUnsignedInt("Item");
             int entId = reader.ReadInt("EntityId");
             m_What = EnvironmentContainer.FindEntityById(entId);
+            string flag = reader.ReadString("Flags");
+            m_Flag = (FeatureFlag)UInt16.Parse(flag, NumberStyles.AllowHexSpecifier);
 
             if (reader.HasAttribute("Key"))
             {

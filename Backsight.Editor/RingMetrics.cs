@@ -22,7 +22,6 @@ namespace Backsight.Editor
     /// <summary>
     /// The geometric parameters relating to a <see cref="Ring"/>
     /// </summary>
-    [Serializable]
     class RingMetrics
     {
         #region Class data

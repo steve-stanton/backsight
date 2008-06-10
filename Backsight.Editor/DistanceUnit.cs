@@ -24,7 +24,6 @@ namespace Backsight.Editor
     /// cadastral map model is created (for meters, feet, and chains). The resultant
     /// objects will be held as part of the model.
     /// </summary>
-    [Serializable]
     class DistanceUnit
     {
         #region Class data

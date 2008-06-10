@@ -19,7 +19,6 @@ namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="09-JUN-1999" />
     /// <summary>A deflection angle.</summary>
-    [Serializable]
     class DeflectionDirection : AngleDirection
     {
         #region Class data

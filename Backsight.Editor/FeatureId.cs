@@ -21,7 +21,6 @@ namespace Backsight.Editor
     /// <summary>
     /// An ID acts as a cross-reference between multiple features and multiple rows.
     /// </summary>
-    [Serializable]
     class FeatureId
     {
         #region Class data

@@ -25,7 +25,6 @@ namespace Backsight.Editor
     /// <summary>
     /// The exterior edge of an island polygon (sometimes refered to as a "phantom polygon").
     /// </summary>
-    [Serializable]
     class Island : Ring
     {
         #region Class data

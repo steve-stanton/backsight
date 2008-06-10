@@ -22,7 +22,6 @@ namespace Backsight.Editor
     /// Topology for a line section that seperates a pair of polygons.
     /// </summary>
     /// <seealso cref="LineDivider"/>
-    [Serializable]
     class SectionDivider : SectionTopology
     {
         #region Class data

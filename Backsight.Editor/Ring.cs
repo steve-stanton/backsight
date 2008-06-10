@@ -24,7 +24,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A series of connected dividers, forming the edge of a polygon.
     /// </summary>
-    [Serializable]
     abstract class Ring : RingMetrics, ISpatialObject
     {
         static int s_TotalRing = 0; // for testing

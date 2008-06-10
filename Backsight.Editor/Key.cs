@@ -23,7 +23,6 @@ namespace Backsight.Editor
     /// <summary>
     /// The key for spatial features. This is part of a feature's ID.
     /// </summary>
-    [Serializable]
     public class Key
     {
         #region Statics

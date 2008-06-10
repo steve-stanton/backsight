@@ -227,10 +227,12 @@ namespace Backsight.Editor
         /// <param name="container">The map model that contains this session</param>
         internal void OnLoad(CadastralMapModel container)
         {
+            /*
             Debug.Assert(m_Model==container);
 
             foreach (Operation op in m_Operations)
                 op.OnLoad(this);
+             */
         }
 
         /// <summary>

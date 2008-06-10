@@ -522,9 +522,9 @@ namespace Backsight.Editor
 
             // Initialize the model
             CadastralMapModel cmm = new CadastralMapModel();
+            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
             cmm.Load(m_JobData);
             cmm.CreateSession(m_JobData, u);
-            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
             InitializeIdManager();
         }
 

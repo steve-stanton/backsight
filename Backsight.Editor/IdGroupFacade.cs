@@ -23,7 +23,6 @@ namespace Backsight.Editor
     /// <summary>
     /// Fronts an instance of some object that implements <c>IIdGroup</c>.
     /// </summary>
-    [Serializable]
     class IdGroupFacade : EnvironmentItemFacade<IIdGroup>, IIdGroup
     {
         internal IdGroupFacade(IIdGroup data) : base(data)
@@ -70,10 +69,10 @@ namespace Backsight.Editor
             get { return (this.Data==null ? null : this.Data.EntityTypes); }
         }
 
-        [OnDeserialized]
-        void GetEnvironmentData(StreamingContext context)
-        {
-            this.Data = EnvironmentContainer.FindIdGroupById(this.Id);
-        }
+        //[OnDeserialized]
+        //void GetEnvironmentData(StreamingContext context)
+        //{
+        //    this.Data = EnvironmentContainer.FindIdGroupById(this.Id);
+        //}
     }
 }
