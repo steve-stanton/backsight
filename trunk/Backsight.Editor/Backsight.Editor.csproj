@@ -1015,12 +1015,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="FeatureSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="FeatureSchema.xsx">
-      <DependentUpon>FeatureSchema.xsd</DependentUpon>
-    </None>
     <None Include="IdDataSet.xsc">
       <DependentUpon>IdDataSet.xsd</DependentUpon>
     </None>

@@ -50,9 +50,6 @@ namespace Backsight.Editor
 
         #region Class data
 
-        // Connection to the database.
-        //private IIdDatabase m_DB;
-
         /// <summary>
         /// The ID groups in the database.
         /// </summary>
@@ -62,12 +59,6 @@ namespace Backsight.Editor
         /// Association of ID info with those entity types that can be assigned an ID.
         /// </summary>
         private IdEntity[] m_IdEntities;
-
-        /// <summary>
-        /// True if messages reporting that feature IDs cannot be assigned will be
-        /// displayed.
-        /// </summary>
-        private bool m_DisplayIDMessage;
 
         #endregion
 
@@ -82,9 +73,6 @@ namespace Backsight.Editor
 
 	        GetGroups();
 	        GetEntities();
-
-            // Default is to display ID Allocation Error Messages
-            m_DisplayIDMessage = true;
         }
 
         #endregion
@@ -92,12 +80,6 @@ namespace Backsight.Editor
         internal IdGroup[] IdGroups
         {
             get { return m_IdGroups; }
-        }
-
-        internal bool DisplayIDMessage
-        {
-            get { return m_DisplayIDMessage; }
-            private set { m_DisplayIDMessage = value; }
         }
 
         public void Dispose()
