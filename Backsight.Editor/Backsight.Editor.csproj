@@ -53,6 +53,8 @@
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="Database\DbUtil.cs" />
+    <Compile Include="Database\IdAllocation.cs" />
+    <Compile Include="Database\IdFree.cs" />
     <Compile Include="Database\Job.cs" />
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
@@ -575,11 +577,6 @@
     <Compile Include="RadialUI.cs" />
     <Compile Include="Geom.cs" />
     <Compile Include="HorizontalRay.cs" />
-    <Compile Include="IdDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IdDataSet.xsd</DependentUpon>
-    </Compile>
     <Compile Include="IdGroup.cs" />
     <Compile Include="IdGroupFacade.cs" />
     <Compile Include="IdHandle.cs" />
@@ -1014,17 +1011,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="IdDataSet.xsc">
-      <DependentUpon>IdDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="IdDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>IdDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="IdDataSet.xss">
-      <DependentUpon>IdDataSet.xsd</DependentUpon>
-    </None>
     <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>

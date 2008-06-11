@@ -249,38 +249,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Releases the unused portion of a specific ID range known to a specific ID group.
-        /// </summary>
-        /// <param name="group"></param>
-        /// <param name="minid"></param>
-        /// <param name="maxid"></param>
-        /// <returns>True if the range was found and successfully released (it may have already
-        /// been released). False if the range could not be found (an error message is displayed),
-        /// or the release failed for some reason.</returns>
-        /*
-        bool Release(IdGroup group, uint minid, uint maxid)
-        {
-            // Formerly passed down the database connection known to CeIdManager,
-            // so could probably do without this method.
-
-            return group.Release(minid, maxid);
-        }
-         */
-
-        /// <summary>
-        /// Returns a specific ID group
-        /// </summary>
-        /// <param name="index">The array index of the group.</param>
-        /// <returns>The group at the specified array index (null if out of range).</returns>
-        IdGroup GetGroup(uint index)
-        {
-            if (index < m_IdGroups.Length)
-                return m_IdGroups[index];
-            else
-                return null;
-        }
-
-        /// <summary>
         /// Returns the ID group that corresponds to a specific entity type.
         /// </summary>
         /// <param name="ent">The entity type to find.</param>

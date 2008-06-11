@@ -20,7 +20,6 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Data.SqlClient;
 
-using Backsight.Editor.IdDataSetTableAdapters;
 using Backsight.Data;
 using Backsight.Editor.Database;
 
