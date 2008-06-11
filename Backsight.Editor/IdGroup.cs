@@ -17,11 +17,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.IdDataSetTableAdapters;
-using System.Diagnostics;
 using Backsight.Editor.Database;
 
 namespace Backsight.Editor

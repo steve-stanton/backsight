@@ -580,7 +580,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IdDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="IdEntity.cs" />
     <Compile Include="IdGroup.cs" />
     <Compile Include="IdGroupFacade.cs" />
     <Compile Include="IdHandle.cs" />
