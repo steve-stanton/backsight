@@ -58,14 +58,27 @@ namespace Backsight.Editor.Database
         /// <returns>The inserted free range entry</returns>
         internal static IdFree Insert(IdGroup idGroup)
         {
+            return Insert(idGroup, idGroup.LowestId, idGroup.HighestId);
+        }
+
+        /// <summary>
+        /// Inserts a free range that refers to a portion of the range associated
+        /// with an ID group
+        /// </summary>
+        /// <param name="idGroup">The ID group</param>
+        /// <param name="lowestId">The lowest value in the free range</param>
+        /// <param name="highestId">The highest value in the free range</param>
+        /// <returns>The inserted free range entry</returns>
+        internal static IdFree Insert(IdGroup idGroup, int lowestId, int highestId)
+        {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
                 string sql = String.Format("INSERT INTO [dbo].[IdFree] ([GroupId], [LowestId], [HighestId])" +
-                                            " VALUES ({0}, {1}, {2})", idGroup.Id, idGroup.LowestId, idGroup.HighestId);
+                                            " VALUES ({0}, {1}, {2})", idGroup.Id, lowestId, highestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
 
-                return new IdFree(idGroup.Id, idGroup.LowestId, idGroup.HighestId);
+                return new IdFree(idGroup.Id, lowestId, highestId);
             }
         }
 

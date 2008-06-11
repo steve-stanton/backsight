@@ -172,7 +172,7 @@ namespace Backsight.Editor
                         ranges.Add(range);
 
                         // Insert a row into the IdAllocation table.
-                        IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime);
+                        IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime, 0);
                     }
 
                     // Increment the number of ranges we've added (extensions
