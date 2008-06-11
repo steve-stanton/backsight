@@ -222,9 +222,7 @@ namespace Backsight.Editor
                 Transaction.Execute(delegate
                 {
                     // Delete the row from the IdAllocation table.
-                    string sql = String.Format("delete from IdAllocation where LowestId={0}", m_LowestId);
-                    SqlCommand cmd = new SqlCommand(sql, Transaction.Connection.Value);
-                    nrows = cmd.ExecuteNonQuery();
+                    nrows = IdAllocation.Delete((int)m_LowestId);
 
                     // If we didn't delete anything, perhaps the row was
                     // successfully deleted on a previous attempt, so plough on
@@ -233,8 +231,8 @@ namespace Backsight.Editor
                         return;
 
                     // Insert a new row into the IdFree table.
-                    IdFreeTableAdapter fta = AdapterFactory.Create<IdFreeTableAdapter>();
-                    nrows = fta.Insert(group.Id, (int)m_LowestId, (int)m_HighestId);
+                    IdFree.Insert(group, (int)m_LowestId, (int)m_HighestId);
+                    nrows = 1;
                 });
 
                 if (nrows<0)
@@ -312,21 +310,20 @@ namespace Backsight.Editor
         int InsertFreeIds(IdGroup group)
         {
 	        int nfree=0;        // The number of inserts made
-	        uint start=0;       // Index of the start of free range
-	        uint end=0;         // Index of the end of free range
 
-            IdFreeTableAdapter fta = AdapterFactory.Create<IdFreeTableAdapter>();
-
-	        for (; GetNextFree(ref start, ref end); start=end+1)
+            Transaction.Execute(delegate
             {
-		        uint minid = m_LowestId + start;
-		        uint maxid = m_LowestId + end;
-                int nRows = fta.Insert(group.Id, (int)minid, (int)maxid);
-                if (nRows!=1)
-                    return -1;
+                uint start = 0;       // Index of the start of free range
+                uint end = 0;         // Index of the end of free range
 
-		        nfree++;
-	        }
+                for (; GetNextFree(ref start, ref end); start = end + 1)
+                {
+                    uint minid = m_LowestId + start;
+                    uint maxid = m_LowestId + end;
+                    IdFree.Insert(group, (int)minid, (int)maxid);
+                    nfree++;
+                }
+            });
 
 	        return nfree;
         }
@@ -411,6 +408,7 @@ namespace Backsight.Editor
             CadastralMapModel map = CadastralMapModel.Current;
             List<IdRange> mapRanges = map.IdRanges;
 
+            Job curjob = EditingController.Current.Job;
             User curuser = Session.CurrentSession.User;
             DateTime curtime = DateTime.Now;    // The current time
             string fname = Path.GetFileNameWithoutExtension(map.Name);
@@ -451,19 +449,10 @@ namespace Backsight.Editor
 				        newRange.m_Ids[i] = m_Ids[start+i];
 
         			// Insert the new range into the database.
-                    IdAllocationTableAdapter ata = AdapterFactory.Create<IdAllocationTableAdapter>();
-                    int nRows = ata.Insert( (int)minid
-                                          , (int)maxid
-                                          , fname
-                                          , group.Id
-                                          , curuser.Name
-                                          , curtime
-                                          , (int)newRange.m_NumUsed );
+                    IdAllocation.Insert(group, (int)minid, (int)maxid, curjob, curuser, curtime,
+                                          (int)newRange.m_NumUsed);
 
-			        if (nRows!=1)
-                        return -1;
-
-			        // Insert into the group's list of ID ranges.
+                    // Insert into the group's list of ID ranges.
 			        newRange.InsertAfter(last, group);
 
         			// Insert into the map's list of ID ranges.
@@ -663,8 +652,7 @@ namespace Backsight.Editor
 
 	        // Update the allocation recorded in the database. We do not
 	        // worry about the timestamp, or who made the allocation.
-            IdAllocationTableAdapter ta = AdapterFactory.Create<IdAllocationTableAdapter>();
-            if (ta.UpdateHighestId(maxid, (int)m_LowestId)!=1)
+            if (IdAllocation.UpdateHighestId((int)m_LowestId, maxid)!=1)
                 return false;
 
 	        // And update the max this object knows about!

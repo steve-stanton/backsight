@@ -52,11 +52,6 @@ namespace Backsight.Editor.Database
                 return result.ToArray();
             }
         }
-        /// <summary>
-        /// Inserts a free range that refers to the complete range of an ID group
-        /// </summary>
-        /// <param name="idGroup">The new ID group</param>
-        /// <returns>The inserted free range entry</returns>
 
         /// <summary>
         /// Inserts an ID allocation into the database
@@ -67,18 +62,53 @@ namespace Backsight.Editor.Database
         /// <param name="job">The job that the allocation is for</param>
         /// <param name="user">The user who made the allocation</param>
         /// <param name="insertTime"></param>
+        /// <param name="numUsed">The number of IDs already used</param>
         internal static IdAllocation Insert(IdGroup idGroup, int lowestId, int highestId,
-                                                Job job, User user, DateTime insertTime)
+                                                Job job, User user, DateTime insertTime, int numUsed)
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
                 StringBuilder sb = new StringBuilder(200);
                 sb.AppendFormat("INSERT INTO [dbo].[IdAllocation] ({0}) VALUES ", GetColumns());
-                sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, 0)",
-                    idGroup.Id, lowestId, highestId, job.JobId, user.UserId, DbUtil.GetDateTimeString(insertTime));        
+                sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+                    idGroup.Id, lowestId, highestId, job.JobId, user.UserId,
+                    DbUtil.GetDateTimeString(insertTime), numUsed);
                 SqlCommand cmd = new SqlCommand(sb.ToString(), ic.Value);
                 cmd.ExecuteNonQuery();
-                return new IdAllocation(idGroup.Id, lowestId, highestId, (int)job.JobId, (int)user.UserId, insertTime, 0);
+                return new IdAllocation(idGroup.Id, lowestId, highestId, (int)job.JobId, (int)user.UserId,
+                                            insertTime, numUsed);
+            }
+        }
+
+        /// <summary>
+        /// Deletes an ID allocation
+        /// </summary>
+        /// <param name="lowestId">The lowest value in the allocation (this is the primary key)</param>
+        /// <returns>The number of rows deleted (</returns>
+        internal static int Delete(int lowestId)
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("DELETE FROM [dbo].[IdAllocation] WHERE [LowestId]={0}", lowestId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Trims an ID allocation
+        /// </summary>
+        /// <param name="lowestId">The lowest value in the allocation (this is the primary key)</param>
+        /// <param name="highestId">The trimmed upper end of the allocation</param>
+        /// <returns>The number of rows updated (should be 1)</returns>
+        internal static int UpdateHighestId(int lowestId, int highestId)
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("UPDATE [dbo].[IdAllocation] SET [HighestId]={0}" +
+                                            " WHERE [LowestId]={1}", highestId, lowestId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                return cmd.ExecuteNonQuery();
             }
         }
 

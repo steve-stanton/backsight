@@ -103,11 +103,6 @@ namespace Backsight.Editor
         private CommandUI m_Command;
 
         /// <summary>
-        /// The edit the is currently being saved.
-        /// </summary>
-        //private Operation m_CurrentEdit;
-
-        /// <summary>
         /// Modeless dialog used to perform inverse calculations (null if dialog
         /// is not currently displayed).
         /// </summary>
@@ -132,11 +127,6 @@ namespace Backsight.Editor
         /// </summary>
         bool m_HasSelectionChanged;
 
-        /// <summary>
-        /// Any edits performed in update mode. Null if not in update mode.
-        /// </summary>
-        //List<Operation> m_Updates;
-
         #endregion
 
         #region Constructors
@@ -152,12 +142,10 @@ namespace Backsight.Editor
             m_ActiveLayer = null;
             m_Main = main;
             m_IsAutoSelect = 0;
-            //m_CurrentEdit = null;
             m_Inverse = null;
             m_Check = null;
             m_Sel = null;
             m_HasSelectionChanged = false;
-            //m_Updates = null;
         }
 
         #endregion
@@ -420,69 +408,6 @@ namespace Backsight.Editor
             }
         }
 
-        /*
-        internal void Create(ModelFileName modelName)
-        {
-            try
-            {
-                Close();
-                CadastralMapModel cmm = new CadastralMapModel();
-                this.MapModel = cmm;
-
-                // Ensure an editing layer is defined
-                //SetActiveLayer();
-
-                // Pick up any default entity types for points, lines, text, polygons
-                ILayer layer = ActiveLayer;
-                cmm.SetDefaultEntity(SpatialType.Point, layer.DefaultPointType);
-                cmm.SetDefaultEntity(SpatialType.Line, layer.DefaultLineType);
-                cmm.SetDefaultEntity(SpatialType.Polygon, layer.DefaultPolygonType);
-                cmm.SetDefaultEntity(SpatialType.Text, layer.DefaultTextType);
-
-                // Add initial session
-                cmm.AddSession();
-
-                InitializeIdManager();
-                m_AutoSaver.OnNew();
-            }
-
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-        */
-
-        /// <summary>
-        /// Attempts to open a map.
-        /// </summary>
-        /// <param name="connectionString">The file name of the map to open</param>
-        /// <returns>True if map opened ok. False if map couldn't be opened (in that case,
-        /// a brand new map gets created)</returns>
-        /*
-        public bool Open(string connectionString)
-        {
-            try
-            {
-                Close();
-                CadastralMapModel cmm = CadastralMapModel.Open(connectionString);
-                //cmm.AddSession();
-                //SetMapModel(cmm, cmm.DrawExtent);
-                InitializeIdManager();
-                return true;
-            }
-
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-                //MessageBox.Show("Creating new map");
-                //Create();
-            }
-
-            return false;
-        }
-        */
-
         /// <summary>
         /// Attempts to open a job
         /// </summary>
@@ -534,6 +459,7 @@ namespace Backsight.Editor
             cmm.Load(m_JobData);
             cmm.CreateSession(m_JobData, u);
             InitializeIdManager();
+            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
         }
 
         void InitializeIdManager()
