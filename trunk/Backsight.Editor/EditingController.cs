@@ -193,6 +193,14 @@ namespace Backsight.Editor
             get { return m_JobFile; }
         }
 
+        /// <summary>
+        /// Database information about the job
+        /// </summary>
+        internal Job Job
+        {
+            get { return m_JobData; }
+        }
+
         public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
             if (b == MouseButtons.Right)

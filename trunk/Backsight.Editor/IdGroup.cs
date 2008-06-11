@@ -21,7 +21,6 @@ using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Data;
-using Backsight.Editor.IdDataSetTableAdapters;
 using Backsight.Editor.Database;
 
 namespace Backsight.Editor
@@ -103,6 +102,7 @@ namespace Backsight.Editor
             List<IdRange> ranges = map.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
+            Job curjob = EditingController.Current.Job;
             User curuser = Session.CurrentSession.User;
             DateTime curtime = DateTime.Now;
             string fname = Path.GetFileNameWithoutExtension(map.Name);
@@ -118,22 +118,17 @@ namespace Backsight.Editor
                 // Create ranges based on what's in the free list. We keep creating until we've got
                 // the packet size demanded by this group. To keep things simple, just grab all rows
                 // in the IdFree table for this group.
-                IdFreeTableAdapter ta = AdapterFactory.Create<IdFreeTableAdapter>();
-                IdDataSet.IdFreeDataTable freeTab = ta.GetDataByGroupId(this.Id);
+                IdFree[] freeTab = IdFree.FindByGroupId(this.Id);
 
                 // If we didn't find ANYTHING, initialize the database with the complete
                 // range of this group.
-                if (freeTab.Rows.Count==0)
+                if (freeTab.Length==0)
                 {
-                    IdDataSet.IdFreeRow row = freeTab.NewIdFreeRow();
-                    row.GroupId = this.Id;
-                    row.LowestId = this.LowestId;
-                    row.HighestId = this.HighestId;
-                    freeTab.AddIdFreeRow(row);
-                    ta.Update(row);
+                    IdFree row = IdFree.Insert(this);
+                    freeTab = new IdFree[] { row };
                 }
 
-                foreach (IdDataSet.IdFreeRow row in freeTab.Rows)
+                foreach (IdFree row in freeTab)
                 {
                     if (ntoget<=0)
                         break;
@@ -177,9 +172,7 @@ namespace Backsight.Editor
                         ranges.Add(range);
 
                         // Insert a row into the IdAllocation table.
-                        IdAllocationTableAdapter ata = AdapterFactory.Create<IdAllocationTableAdapter>();
-                        if (ata.Insert(minid, maxid, fname, Id, curuser.Name, curtime, 0) != 1)
-                            throw new Exception("Failed to insert into IdAllocation table");
+                        IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime);
                     }
 
                     // Increment the number of ranges we've added (extensions
@@ -190,8 +183,6 @@ namespace Backsight.Editor
                     if (announce)
                         announcement += String.Format("{0}-{1}{2}", minid, maxid, System.Environment.NewLine);
                 }
-
-                ta.Update(freeTab);
             });
 
             // If the user should be informed, list out any ranges we created.
