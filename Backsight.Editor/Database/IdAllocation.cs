@@ -234,5 +234,29 @@ namespace Backsight.Editor.Database
         {
             get { return (m_HighestId-m_LowestId+1); }
         }
+
+        /// <summary>
+        /// The lowest value in the allocation (this is the primary key)
+        /// </summary>
+        internal int LowestId
+        {
+            get { return m_LowestId; }
+        }
+
+        /// <summary>
+        /// The highest value in the allocation
+        /// </summary>
+        internal int HighestId
+        {
+            get { return m_HighestId; }
+        }
+
+        /// <summary>
+        /// The number of IDs that have been used
+        /// </summary>
+        internal int NumUsed
+        {
+            get { return m_NumUsed; }
+        }
     }
 }

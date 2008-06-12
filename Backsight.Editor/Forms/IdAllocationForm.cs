@@ -170,22 +170,21 @@ namespace Backsight.Editor.Forms
                 DataGridViewRow row = grid.Rows[rowIndex];
                 row.Cells["dgcGroupName"].Value = group;
 
-                List<IdRange> ranges = group.IdRanges;
-                if (ranges!=null && ranges.Count>0)
+                IdPacket[] packets = group.IdPackets;
+                foreach (IdPacket packet in packets)
                 {
-                    foreach (IdRange range in group.IdRanges)
-                    {                        
-                        row.Cells["dgcAllocation"].Value = String.Format("{0}-{1}", range.Min, range.Max);
+                    row.Cells["dgcAllocation"].Value = String.Format("{0}-{1}", packet.Min, packet.Max);
 
-                        string s;
-                        if (range.IsReleased)
-                            s = String.Format("{0} (released)", range.NumUsed);
-                        else
-                            s = String.Format("{0} of {1}", range.NumUsed, range.Size);
+                    //string s;
+                    //if (range.IsReleased)
+                    //    s = String.Format("{0} (released)", range.NumUsed);
+                    //else
+                    //    s = String.Format("{0} of {1}", range.NumUsed, range.Size);
 
-                        row.Cells["dgcNumUsed"].Value = s;
-                        row.Cells["dgcRange"].Value = range;
-                    }
+                    string s = String.Format("{0} of {1}", packet.NumUsed, packet.Size);
+
+                    row.Cells["dgcNumUsed"].Value = s;
+                    row.Cells["dgcRange"].Value = range;
                 }
             }
 
