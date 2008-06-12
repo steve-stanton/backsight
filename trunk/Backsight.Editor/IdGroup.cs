@@ -62,6 +62,11 @@ namespace Backsight.Editor
             get { return m_IdRanges; }
         }
 
+        internal IdPacket[] IdPackets
+        {
+            get { return m_Packets.ToArray(); }
+        }
+
         /// <summary>
         /// Determines whether this group is the "owner" of an ID range. It owns the
         /// range if the group's range of IDs entirely encloses it.

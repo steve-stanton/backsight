@@ -117,5 +117,37 @@ namespace Backsight.Editor
             m_Ids[index] = null;
             return true;
         }
+
+        /// <summary>
+        /// The lowest value in the allocation
+        /// </summary>
+        public int Min
+        {
+            get { return m_Allocation.LowestId; }
+        }
+
+        /// <summary>
+        /// The highest value in the allocation
+        /// </summary>
+        public int Max
+        {
+            get { return m_Allocation.HighestId; }
+        }
+
+        /// <summary>
+        /// The number of IDs in the allocation
+        /// </summary>
+        internal int Size
+        {
+            get { return m_Allocation.Size; }
+        }
+
+        /// <summary>
+        /// The number of IDs that have been used
+        /// </summary>
+        internal int NumUsed
+        {
+            get { return m_Allocation.NumUsed; }
+        }
     }
 }
