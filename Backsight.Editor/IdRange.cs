@@ -49,11 +49,6 @@ namespace Backsight.Editor
         /// </summary>
         uint m_HighestId;
 
-        // The allocated size of the pointer array.
-        // If the range has been released, this may
-        // be LESS than the value returned by GetSize().
-        //UINT4 m_NumAlloc;
-
         /// <summary>
         /// The number of IDs that have been used (not necessarily sequential in the array). 
         /// Corresponds to the number of non-null references in the m_Ids array.
@@ -207,6 +202,7 @@ namespace Backsight.Editor
         /// the unused portion is not contiguous).</param>
         /// <returns>The number of ID left in the range. A value less than zero means
         /// an error occurred.</returns>
+        /*
         internal int Release(IdGroup group)
         {
 	        // Return if this range has already been released.
@@ -262,6 +258,7 @@ namespace Backsight.Editor
 	        // Return the number of used IDs we have left (if any).
 	        return (int)m_NumUsed;
         }
+        */
 
         /// <summary>
         /// Gets the range of IDs that have actually been used at any point in time
@@ -269,6 +266,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="minid">The lowest used ID (0 if nothing was used).</param>
         /// <param name="maxid">The highest used ID (0 if nothing was used).</param>
+        /*
         void GetMinMax(out uint minid, out uint maxid)
         {
 	        minid = maxid = 0;
@@ -301,12 +299,14 @@ namespace Backsight.Editor
                 }
             }
 		}
+        */
 
         /// <summary>
         /// Inserts any free ID ranges into the database.
         /// </summary>
         /// <param name="group">The ID group associated with this range.</param>
         /// <returns>The number of ranges that were inserted (-1 on error).</returns>
+        /*
         int InsertFreeIds(IdGroup group)
         {
 	        int nfree=0;        // The number of inserts made
@@ -327,6 +327,7 @@ namespace Backsight.Editor
 
 	        return nfree;
         }
+        */
 
         /// <summary>
         /// Gets the next free range (if any). This function is used by <c>InsertFreeIds</c>
@@ -341,6 +342,7 @@ namespace Backsight.Editor
         /// <param name="end">The index of the end of the next free range (if any).</param>
         /// <returns>True if a free range was found. False if no additional free ranges were
         /// found (in that case, the start and end index values are invalid).</returns>
+        /*
         bool GetNextFree(ref uint start, ref uint end)
         {
         	bool isFound=false;	// Set to true as soon as a free slot is found.
@@ -373,24 +375,14 @@ namespace Backsight.Editor
 
         	return isFound;
         }
-
-        /// <summary>
-        /// Obtains a string that you should be able to use when inserting into the database.
-        /// This currently does the same as the old CeTime::Format method, which may not be
-        /// compatible with the db! This needs to be re-visited (the fact that the DateTime
-        /// needs to be converted into a string is the issue -- the software using this method
-        /// should probably be using SQL parameters).
-        /// </summary>
-        string DatabaseTimeString(DateTime time)
-        {
-            return time.ToString("dd-MMM-yyyy HH:mm:ss");
-        }
+        */
 
         /// <summary>
         /// Inserts any used ID ranges into the database. The used ranges may not be contiguous.
         /// </summary>
         /// <param name="group">The ID group.</param>
         /// <returns>The number of used ranges that were found (-1 on error).</returns>
+        /*
         int InsertUsedIds(IdGroup group)
         {
 	        string sql;         // SQL statement
@@ -514,6 +506,7 @@ namespace Backsight.Editor
 
 	        return nused;
         }
+        */
 
         /// <summary>
         /// Gets the next range of used IDs (if any). This means ID slots that point
@@ -524,6 +517,7 @@ namespace Backsight.Editor
         /// <param name="end">The index of the end of the next used range (if any).</param>
         /// <returns>True if a used range was found. False if no additional used ranges were
         /// found (in that case, the start and end index values are invalid).</returns>
+        /*
         bool GetNextUsed(ref uint start, ref uint end)
         {
         	bool isFound = false;	// Set to true as soon as a used slot is found.
@@ -554,6 +548,7 @@ namespace Backsight.Editor
 
         	return isFound;
         }
+        */
 
         /// <summary>
         /// Inserts this range after a specific range that's already associated with an ID group.

@@ -117,7 +117,7 @@ namespace Backsight.Editor.Database
         #region Class data
 
         /// <summary>
-        /// The unique ID of the ID group
+        /// The unique ID of the ID group associated with this allocation
         /// </summary>
         int m_GroupId;
 
@@ -217,6 +217,22 @@ namespace Backsight.Editor.Database
             int numUsed = reader.GetInt32(6);
 
             return new IdAllocation(groupId, lowestId, highestId, jobId, userId, timeAllocated, numUsed);
+        }
+
+        /// <summary>
+        /// The unique ID of the ID group associated with this allocation
+        /// </summary>
+        internal int GroupId
+        {
+            get { return m_GroupId; }
+        }
+
+        /// <summary>
+        /// The number of IDs in this allocation
+        /// </summary>
+        internal int Size
+        {
+            get { return (m_HighestId-m_LowestId+1); }
         }
     }
 }

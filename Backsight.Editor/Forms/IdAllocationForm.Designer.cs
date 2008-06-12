@@ -44,14 +44,13 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.grid = new System.Windows.Forms.DataGridView();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.okButton = new System.Windows.Forms.Button();
-            this.releaseButton = new System.Windows.Forms.Button();
-            this.getButton = new System.Windows.Forms.Button();
             this.dgcGroupName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcAllocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcNumUsed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcRange = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.okButton = new System.Windows.Forms.Button();
+            this.getButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -77,60 +76,6 @@ namespace Backsight.Editor.Forms
             this.grid.Size = new System.Drawing.Size(574, 336);
             this.grid.TabIndex = 0;
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.grid);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.okButton);
-            this.splitContainer1.Panel2.Controls.Add(this.releaseButton);
-            this.splitContainer1.Panel2.Controls.Add(this.getButton);
-            this.splitContainer1.Size = new System.Drawing.Size(574, 386);
-            this.splitContainer1.SplitterDistance = 336;
-            this.splitContainer1.TabIndex = 1;
-            // 
-            // okButton
-            // 
-            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(487, 9);
-            this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 2;
-            this.okButton.Text = "OK";
-            this.okButton.UseVisualStyleBackColor = true;
-            this.okButton.Click += new System.EventHandler(this.okButton_Click);
-            // 
-            // releaseButton
-            // 
-            this.releaseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.releaseButton.Location = new System.Drawing.Point(93, 9);
-            this.releaseButton.Name = "releaseButton";
-            this.releaseButton.Size = new System.Drawing.Size(75, 23);
-            this.releaseButton.TabIndex = 1;
-            this.releaseButton.Text = "&Release allocation";
-            this.releaseButton.UseVisualStyleBackColor = true;
-            this.releaseButton.Click += new System.EventHandler(this.releaseButton_Click);
-            // 
-            // getButton
-            // 
-            this.getButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.getButton.Location = new System.Drawing.Point(12, 9);
-            this.getButton.Name = "getButton";
-            this.getButton.Size = new System.Drawing.Size(75, 23);
-            this.getButton.TabIndex = 0;
-            this.getButton.Text = "&Get Allocation";
-            this.getButton.UseVisualStyleBackColor = true;
-            this.getButton.Click += new System.EventHandler(this.getButton_Click);
             // 
             // dgcGroupName
             // 
@@ -163,6 +108,48 @@ namespace Backsight.Editor.Forms
             this.dgcRange.ReadOnly = true;
             this.dgcRange.Visible = false;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.grid);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.okButton);
+            this.splitContainer1.Panel2.Controls.Add(this.getButton);
+            this.splitContainer1.Size = new System.Drawing.Size(574, 386);
+            this.splitContainer1.SplitterDistance = 336;
+            this.splitContainer1.TabIndex = 1;
+            // 
+            // okButton
+            // 
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(487, 9);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.TabIndex = 2;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
+            // 
+            // getButton
+            // 
+            this.getButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.getButton.Location = new System.Drawing.Point(12, 9);
+            this.getButton.Name = "getButton";
+            this.getButton.Size = new System.Drawing.Size(75, 23);
+            this.getButton.TabIndex = 0;
+            this.getButton.Text = "&Get Allocation";
+            this.getButton.UseVisualStyleBackColor = true;
+            this.getButton.Click += new System.EventHandler(this.getButton_Click);
+            // 
             // IdAllocationForm
             // 
             this.AcceptButton = this.okButton;
@@ -186,7 +173,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.Button releaseButton;
         private System.Windows.Forms.Button getButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcGroupName;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcAllocation;

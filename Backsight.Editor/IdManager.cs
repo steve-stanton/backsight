@@ -23,6 +23,7 @@ using System.Data.SqlClient;
 using Backsight.Data;
 using Backsight.Data.BacksightDataSetTableAdapters;
 using Backsight.Environment;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -35,19 +36,6 @@ namespace Backsight.Editor
     /// </summary>
     class IdManager
     {
-        #region Statics
-
-        private static IdManager s_Manager;
-
-        internal static IdManager Current
-        {
-            get { return s_Manager; }
-            private set { s_Manager = value; }
-        }
-
-        #endregion
-
-
         #region Class data
 
         /// <summary>
@@ -70,8 +58,6 @@ namespace Backsight.Editor
         /// </summary>
         internal IdManager()
         {
-            IdManager.Current = this;
-
 	        m_IdGroups = GetGroups();
             m_EntityGroups = GetEntityGroups(m_IdGroups);
         }
@@ -159,28 +145,57 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Loads ID information for the specified job and user. This should be called
+        /// after edits have been loaded into the map model.
+        /// </summary>
+        /// <param name="map">The loaded model</param>
+        /// <param name="job">The job to load</param>
+        /// <param name="user">The user who is doing the load</param>
+        internal void Load(CadastralMapModel map, Job job, User user)
+        {
+            // Grab all defined allocations for the job and user
+            IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
+
+            // Attach each allocation to its group
+            foreach (IdAllocation a in allocs)
+            {
+                IdGroup g = Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup t)
+                                { return t.Id==a.GroupId; });
+                if (g==null)
+                    throw new Exception("Cannot locate ID group for allocation");
+
+                g.AddIdPacket(a);
+            }
+        }
+
+        /// <summary>
         /// Performs initialization that is required each time a different map is
         /// opened for editing.
         /// </summary>
         /// <param name="map">The map to do the setup for (null to reset).</param>
+        /*
         internal void MapOpen(CadastralMapModel map)
         {
             // Cross-reference each ID group with the applicable ID ranges.
             SetGroupRanges(map);
         }
+        */
 
         /// <summary>
         /// Resets stuff when a map is closed.
         /// </summary>
+        /*
         void MapClose()
         {
             MapOpen(null);
         }
+         */
 
         /// <summary>
         /// Cross-references each ID group with the ID ranges that are stored in a specific map.
         /// </summary>
         /// <param name="map">The map to do the setup for.</param>
+        /*
         void SetGroupRanges(CadastralMapModel map)
         {
             // Eliminate any ID ranges that may be known to each ID group.
@@ -205,6 +220,7 @@ namespace Backsight.Editor
                 Debug.Assert(rangeAdded==true);
             }
         }
+         */
 
         /// <summary>
         /// Gets a new allocation for a specific ID group.
@@ -241,12 +257,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Releases the unused portion of all ID ranges known to all ID groups.
         /// </summary>
+        /*
         internal void Release()
         {
             // Tell each group to truncate all ID ranges.
             foreach (IdGroup g in m_IdGroups)
                 g.ReleaseAll();
         }
+        */
 
         /// <summary>
         /// Returns the ID group that corresponds to a specific entity type.
@@ -334,35 +352,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Handles the very first time the map is saved.
+        /// Exhaustive search for the ID packet that refers to a specific ID. This method
+        /// should only be called in situations where something has gone astray.
         /// </summary>
-        void OnFirstSave()
+        /// <param name="fid">The ID to search for</param>
+        /// <returns>The packet that contains the specified object (null if not found)</returns>
+        internal IdPacket FindPacket(FeatureId fid)
         {
-        	// The map SHOULD be defined.
-            CadastralMapModel map = CadastralMapModel.Current;
-            if (map==null)
-                return;
-
-        	// Get the name that has been assigned to the map.
-            string fname = Path.GetFileNameWithoutExtension(map.Name);
-
-	        // Go through any ID allocations already known to the map,
-	        // and ensure the file name is stored in the IdAllocation
-	        // table.
-
-            List<IdRange> ranges = map.IdRanges;
-
-            Transaction.Execute(delegate
+            foreach (IdGroup g in m_IdGroups)
             {
-                foreach (IdRange range in ranges)
-                {
-                    string sql = String.Format("update IdAllocation set FileName='{0}' where LowestId={1}"
-                                    , fname, range.Min);
-                    SqlCommand cmd = new SqlCommand(sql, Transaction.Connection.Value);
-                    int nRows = cmd.ExecuteNonQuery();
-                    Debug.Assert(nRows==1);
-                }
-            });
+                IdPacket p = g.FindPacket(fid);
+                if (p!=null)
+                    return p;
+            }
+
+            return null;
         }
 	}
 }

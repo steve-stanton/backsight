@@ -59,6 +59,7 @@ namespace Backsight.Editor
         /// The ID range that contains the ID. Will be null if the group is null.
         /// </summary>
         private IdRange m_Range;
+        private IdPacket m_Packet;
 
         /// <summary>
         /// The entity type that the ID relates to.
@@ -125,7 +126,7 @@ namespace Backsight.Editor
                 // If there is no ID manager (e.g. the application does not need
                 // to work with "official" IDs), the group and range remain null.
 
-                IdManager idMan = IdManager.Current;
+                IdManager idMan = m_Feature.MapModel.IdManager;
                 if (idMan!=null)
                 {
                     // Try to find the ID group that applies to the feature's
@@ -209,7 +210,7 @@ namespace Backsight.Editor
         {
             // Get the ID manager to define the results.
 
-            IdManager idMan = IdManager.Current;
+            IdManager idMan = CadastralMapModel.Current.IdManager;
             if (idMan==null)
             {
                 this.Reset();
@@ -339,14 +340,18 @@ namespace Backsight.Editor
                 // 3. The calling function did not check whether the ID
                 //    was foreign.
 
+                if (m_Packet==null)
+                    m_Packet = CadastralMapModel.Current.IdManager.FindPacket(m_FeatureId); 
+                /*
                 if (m_Range==null)
                 {
                     List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
                     m_Range = ranges.Find(delegate(IdRange r) { return r.IsReferredTo(m_FeatureId); });
                 }
+                */
 
-                // If we still don't know the ID range, issue an error message and return.
-                if (m_Range==null)
+                // If we still don't know the ID packet, issue an error message and return.
+                if (m_Packet==null)
                 {
                     string errmsg = String.Format("Cannot free ID '{0}' (not found)", m_FeatureId.FormattedKey);
                     MessageBox.Show(errmsg);
@@ -355,8 +360,9 @@ namespace Backsight.Editor
 
                 // If the range has not been released, tell it to "delete"
                 // the pointer it has to the ID.
-                if (!m_Range.IsReleased)
-                    m_Range.DeleteId(m_FeatureId);
+                m_Packet.DeleteId(m_FeatureId);
+                //if (!m_Range.IsReleased)
+                //    m_Range.DeleteId(m_FeatureId);
             }
             else
             {
@@ -409,7 +415,7 @@ namespace Backsight.Editor
         /// <returns>The number of IDs that were added to the array.</returns>
         uint GetAvailIds(IEntity ent, List<uint> avail)
         {
-            IdManager idMan = IdManager.Current;
+            IdManager idMan = CadastralMapModel.Current.IdManager;
             return (idMan==null ? 0 : idMan.GetAvailIds(ent, avail));
         }
 
@@ -420,7 +426,7 @@ namespace Backsight.Editor
         /// <returns>True if this ID handle is suitable for the entity type.</returns>
         internal bool IsValidFor(IEntity ent)
         {
-            IdManager idMan = IdManager.Current;
+            IdManager idMan = CadastralMapModel.Current.IdManager;
             if (idMan==null)
                 return true;
 
@@ -508,7 +514,7 @@ namespace Backsight.Editor
             // called).
             m_Entity = m_Feature.EntityType;
 
-            IdManager idMan = IdManager.Current;
+            IdManager idMan = CadastralMapModel.Current.IdManager;
             if (idMan==null)
                 m_Group = null;
             else
@@ -566,7 +572,7 @@ namespace Backsight.Editor
             // of the pointer to it.
             if (!isForeign)
             {
-                IdManager idMan = IdManager.Current;
+                IdManager idMan = CadastralMapModel.Current.IdManager;
                 if (idMan==null)
                     return false;
 
