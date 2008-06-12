@@ -40,7 +40,7 @@ namespace Backsight.Editor.Forms
         internal IdAllocationForm()
         {
             InitializeComponent();
-            m_IdMan = IdManager.Current;
+            m_IdMan = CadastralMapModel.Current.IdManager;
 	        m_IsChange = false;
         }
 
@@ -105,6 +105,7 @@ namespace Backsight.Editor.Forms
 	        SetChanged();
         }
 
+        /*
         private void releaseButton_Click(object sender, EventArgs e)
         {
             DataGridViewSelectedRowCollection sel = grid.SelectedRows;
@@ -140,6 +141,7 @@ namespace Backsight.Editor.Forms
             RefreshList();
             SetChanged();
         }
+        */
 
         private void grid_DoubleClick(object sender, EventArgs e)
         {

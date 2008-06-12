@@ -79,7 +79,7 @@ namespace Backsight.Editor.Database
         /// registered in the database, they will be added.
         /// </summary>
         /// <returns>The ID of the current user</returns>
-        internal static uint GetUserId()
+        internal static User GetCurrentUser()
         {
             string userName = System.Environment.UserName;
             string sql = String.Format("SELECT [UserId] FROM [dbo].[Users] WHERE [Name]='{0}'", userName);
@@ -100,7 +100,8 @@ namespace Backsight.Editor.Database
                         throw new Exception("Failed to assign user ID");
                 }
 
-                return Convert.ToUInt32(result);
+                uint userId = Convert.ToUInt32(result);
+                return new User(userId, userName);
             }
         }
 

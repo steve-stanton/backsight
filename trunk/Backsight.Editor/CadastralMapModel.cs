@@ -104,9 +104,9 @@ namespace Backsight.Editor
         readonly List<Session> m_Sessions;
 
         /// <summary>
-        /// The ID ranges associated with this map.
+        /// Management of user-specified IDs
         /// </summary>
-        readonly List<IdRange> m_IdRanges;
+        readonly IdManager m_IdManager;
 
         #endregion
 
@@ -121,8 +121,8 @@ namespace Backsight.Editor
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
-            m_IdRanges = new List<IdRange>();
             m_Index = new EditingIndex();
+            m_IdManager = new IdManager();
         }
 
         #endregion
@@ -476,10 +476,12 @@ namespace Backsight.Editor
             //m_LabelShifts.RemoveAll();
         }
 
+        /*
         internal List<IdRange> IdRanges
         {
             get { return m_IdRanges; }
         }
+        */
 
         /*
         internal ILayer ActiveLayer
@@ -1272,10 +1274,11 @@ namespace Backsight.Editor
         /// Loads this model from the database
         /// </summary>
         /// <param name="job">The job to load</param>
-        internal void Load(Job job)
+        /// <param name="user">The user who is doing the load</param>
+        internal void Load(Job job, User user)
         {
             m_Sessions.Clear();
-            SessionData.Load(this, job);
+            SessionData.Load(this, job, user);
 
             // Ensure everything is as expected (not sure if this is still needed)
             foreach (Session s in m_Sessions)
@@ -1299,6 +1302,9 @@ namespace Backsight.Editor
 
             // Now build the topology for the map
             BuildPolygons();
+
+            // Initialize ID handling
+            m_IdManager.Load(this, job, user);
         }
 
         /*
@@ -1345,6 +1351,14 @@ namespace Backsight.Editor
             Session.CurrentSession = s;
             m_Sessions.Add(s);
             return s;
+        }
+
+        /// <summary>
+        /// The object that manages assignment of user-specified IDs
+        /// </summary>
+        internal IdManager IdManager
+        {
+            get { return m_IdManager; }
         }
     }
 }

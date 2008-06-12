@@ -35,17 +35,14 @@ namespace Backsight.Editor.Database
         #region Static
 
         /// <summary>
-        /// Loads session data for a job (for the user who is currently running the application).
+        /// Loads session data for a job (for the specified user).
         /// </summary>
         /// <param name="model">The model to load</param>
-        /// <param name="job"></param>
-        /// <returns></returns>
-        internal static void Load(CadastralMapModel model, Job job)
+        /// <param name="job">The job to load</param>
+        /// <param name="user">The user who is doing the load</param>
+        internal static void Load(CadastralMapModel model, Job job, User user)
         {
             List<SessionData> sessions = new List<SessionData>(1000);
-
-            // Get the ID of the current user
-            uint userId = User.GetUserId();
 
             // Grab information about all defined users
             User[] allUsers = User.FindAll();
@@ -59,10 +56,10 @@ namespace Backsight.Editor.Database
                 // Load information about the sessions involved
                 SqlConnection con = ic.Value;
                 LoadPublishedSessions(con, sessions, job);
-                LoadUnpublishedSessions(con, sessions, job, userId);
+                LoadUnpublishedSessions(con, sessions, job, user.UserId);
 
                 // Stuff the session IDs into a temp table and use it to load the edits
-                string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, userId);
+                string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, user.UserId);
                 CopySessionIdsToTable(con, sessions, sessionTable);
 
                 // Initialize session capacity in the model

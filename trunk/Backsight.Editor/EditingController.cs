@@ -61,9 +61,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The ID of the current user
+        /// The current user
         /// </summary>
-        uint m_UserId;
+        User m_User;
 
         /// <summary>
         /// Information about the current job file
@@ -137,7 +137,7 @@ namespace Backsight.Editor
             if (main==null)
                 throw new ArgumentNullException();
 
-            m_UserId = 0;
+            m_User = null;
             m_JobFile = null;
             m_ActiveLayer = null;
             m_Main = main;
@@ -416,7 +416,7 @@ namespace Backsight.Editor
         /// <exception cref="Exception">If a job could not be opened</exception>
         internal void OpenJob(string jobFileSpec)
         {
-            m_UserId = 0;
+            m_User = null;
             m_JobData = null;
             m_JobFile = null;
             m_ActiveLayer = null;
@@ -437,7 +437,7 @@ namespace Backsight.Editor
             // If you get here, the database connection string should now be
             // defined in the AdapterFactory.ConnectionString property.
 
-            m_UserId = s.UserId;
+            m_User = s.User;
             m_JobFile = s.JobFile;
             m_JobData = Job.FindByJobId(m_JobFile.Data.JobId);
 
@@ -450,28 +450,12 @@ namespace Backsight.Editor
             if (m_ActiveLayer == null)
                 throw new Exception("Cannot locate map layer associated with current job");
 
-            // Ensure we can read back the user info
-            User u = User.FindByPrimaryKey(m_UserId);
-
             // Initialize the model
             CadastralMapModel cmm = new CadastralMapModel();
             SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
-            cmm.Load(m_JobData);
-            cmm.CreateSession(m_JobData, u);
-            InitializeIdManager();
+            cmm.Load(m_JobData, m_User);
+            cmm.CreateSession(m_JobData, m_User);
             SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
-        }
-
-        void InitializeIdManager()
-        {
-            IdManager idMan = IdManager.Current;
-            if (idMan==null)
-            {
-                idMan = new IdManager();
-                Debug.Assert(IdManager.Current!=null);
-            }
-
-            idMan.MapOpen(CadastralMapModel);
         }
 
         internal bool AutoSelect

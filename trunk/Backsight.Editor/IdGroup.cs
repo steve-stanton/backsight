@@ -37,6 +37,7 @@ namespace Backsight.Editor
         /// Any IdRange objects already allocated for this group.
         /// </summary>
         private List<IdRange> m_IdRanges;
+        readonly List<IdPacket> m_Packets;
         
         /// <summary>
         /// Any IDs that have been reserved (but not yet allocated).
@@ -50,6 +51,7 @@ namespace Backsight.Editor
         internal IdGroup (IIdGroup data) : base(data)
         {
             m_IdRanges = new List<IdRange>();
+            m_Packets = new List<IdPacket>();
             m_ReservedIds = new List<uint>();
         }
 
@@ -66,10 +68,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="range">The ID range to check.</param>
         /// <returns>True if this group owns the specified ID range.</returns>
+        /*
         internal bool IsOwnerOf(IdRange range)
         {
 	        return (range.Min >= this.LowestId && range.Max <= this.HighestId);
         }
+        */
 
         /// <summary>
         /// Tries to associate an ID range with this group. This will only succeed if
@@ -77,6 +81,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="range">The ID range to add.</param>
         /// <returns>True if this group has taken possession of the range.</returns>
+        /*
         internal bool AddIdRange(IdRange range)
         {
             if (this.IsOwnerOf(range))
@@ -87,6 +92,7 @@ namespace Backsight.Editor
 
             return false;
         }
+        */
 
         /// <summary>
         /// Gets a new allocation for this ID group.
@@ -98,15 +104,12 @@ namespace Backsight.Editor
             string announcement = "Allocating extra IDs:" + System.Environment.NewLine + System.Environment.NewLine;
 
             // The new ranges will go in the current map.
-            CadastralMapModel map = CadastralMapModel.Current;
-            List<IdRange> ranges = map.IdRanges;
+            //List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
             Job curjob = EditingController.Current.Job;
             User curuser = Session.CurrentSession.User;
             DateTime curtime = DateTime.Now;
-            string fname = Path.GetFileNameWithoutExtension(map.Name);
-            Debug.Assert(!String.IsNullOrEmpty(fname));
 
 	        int ntoget = PacketSize;   // How many do we need to allocate?
 	        int minid=0;               // The low end of a new range.
@@ -167,12 +170,15 @@ namespace Backsight.Editor
                     if (!isExtension)
                     {
                         // Create a new range object and append it to this group and to the map.
-                        IdRange range = new IdRange((uint)minid, (uint)maxid, HasCheckDigit, KeyFormat);
-                        m_IdRanges.Add(range);
-                        ranges.Add(range);
+                        //IdRange range = new IdRange((uint)minid, (uint)maxid, HasCheckDigit, KeyFormat);
+                        //m_IdRanges.Add(range);
+                        //ranges.Add(range);
 
                         // Insert a row into the IdAllocation table.
-                        IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime, 0);
+                        IdAllocation ida = IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime, 0);
+
+                        // Remember it as part of this group
+                        AddIdPacket(ida);
                     }
 
                     // Increment the number of ranges we've added (extensions
@@ -200,6 +206,7 @@ namespace Backsight.Editor
         /// Releases unused portions of allocations that belong to this group (actually,
         /// it just trims the allocation).
         /// </summary>
+        /*
         internal void ReleaseAll()
         {
             List<IdRange> result = new List<IdRange>(m_IdRanges.Count);
@@ -222,6 +229,7 @@ namespace Backsight.Editor
 	        // Any reserved IDs are no good any more.
 	        m_ReservedIds.Clear();
         }
+        */
 
         /// <summary>
         /// Releases the unused portions of a specific ID range that belongs to this group.
@@ -231,6 +239,7 @@ namespace Backsight.Editor
         /// <returns>True if the range was found and successfully released (it may have
         /// already been released). False if the range could not be found (an error message
         /// is displayed), or the release failed for some reason.</returns>
+        /*
         internal bool Release(uint minid, uint maxid)
         {
 	        // Try to find the range to release.
@@ -255,6 +264,7 @@ namespace Backsight.Editor
 
         	return (nleft>=0);
         }
+        */
 
         /// <summary>
         /// Returns the ID range object that has a specific range.
@@ -262,10 +272,12 @@ namespace Backsight.Editor
         /// <param name="minid">The lowest ID in the range.</param>
         /// <param name="maxid">The highest ID in the range.</param>
         /// <returns>The ID range, or null if not found.</returns>
+        /*
         IdRange FindRange(uint minid, uint maxid)
         {
             return m_IdRanges.Find(delegate(IdRange range) { return (range.Min==minid && range.Max==maxid); });
         }
+        */
 
         /// <summary>
         /// Returns the ID range object (belonging to this group) that encloses a specific ID.
@@ -284,6 +296,7 @@ namespace Backsight.Editor
         /// <param name="range">The range to cut.</param>
         /// <returns>True if range was cut. False if it could not be found (considered to be an
         /// error, leading to a message).</returns>
+        /*
         bool CutRange(IdRange range)
         {
             bool isRemoved = m_IdRanges.Remove(range);
@@ -291,16 +304,19 @@ namespace Backsight.Editor
                 MessageBox.Show("IdGroup.CutRange - Could not find ID range.");
             return isRemoved;
         }
+        */
 
         /// <summary>
         /// Arbitrarily removes all ID ranges that have been associated with this group.
         /// IdManager calls this function whenever a new map is opened for editing.
         /// </summary>
+        /*
         internal void KillRanges()
         {
 	        m_IdRanges.Clear();
 	        m_ReservedIds.Clear();
         }
+        */
 
         /// <summary>
         /// Reserves an ID belonging to this ID group.
@@ -336,7 +352,7 @@ namespace Backsight.Editor
 		        // back to IdGroup.GetAllocation).
 		        if (range==null)
                 {
-			        IdManager man = IdManager.Current;
+                    IdManager man = CadastralMapModel.Current.IdManager;
 			        if (man.GetAllocation(this, true)==0)
                         return false;
 			        range = FindNextAvail();
@@ -559,6 +575,32 @@ namespace Backsight.Editor
         public override string ToString()
         {
             return this.Name;
+        }
+
+        /// <summary>
+        /// Associates an ID allocation with this group
+        /// </summary>
+        /// <param name="a">The allocation associated with this group</param>
+        internal void AddIdPacket(IdAllocation a)
+        {
+            m_Packets.Add(new IdPacket(this, a));
+        }
+
+        /// <summary>
+        /// Exhaustive search for the ID packet that refers to a specific ID. This method
+        /// should only be called in situations where something has gone astray.
+        /// </summary>
+        /// <param name="fid">The ID to search for</param>
+        /// <returns>The packet that contains the specified object (null if not found)</returns>
+        internal IdPacket FindPacket(FeatureId fid)
+        {
+            foreach (IdPacket p in m_Packets)
+            {
+                if (p.IsReferredTo(fid))
+                    return p;                
+            }
+
+            return null;
         }
     }
 }

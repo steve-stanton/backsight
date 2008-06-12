@@ -43,9 +43,9 @@ namespace Backsight.Editor
         JobFile m_JobFile;
 
         /// <summary>
-        /// The ID of the user involved (0 for no user)
+        /// The ID of the user involved (null for no user)
         /// </summary>
-        uint m_UserId;
+        User m_User;
 
         #endregion
 
@@ -69,7 +69,7 @@ namespace Backsight.Editor
         internal Starter(JobFile jobFile)
         {
             m_JobFile = jobFile;
-            m_UserId = 0;
+            m_User = null;
 
             /*
             if (m_JobFile == null)
@@ -137,7 +137,7 @@ namespace Backsight.Editor
             // If we get here, it means we have a valid database connection...
 
             // Get the ID of the current user
-            m_UserId = User.GetUserId();
+            m_User = User.GetCurrentUser();
 
             // Confirm that we can get the job info from the database
 
@@ -200,11 +200,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The ID of the current user (0 if not known)
+        /// The current user (null if not known)
         /// </summary>
-        internal uint UserId
+        internal User User
         {
-            get { return m_UserId; }
+            get { return m_User; }
         }
 
         /// <summary>
