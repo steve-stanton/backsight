@@ -96,7 +96,7 @@ namespace Backsight.Editor.Database
         }
 
         /// <summary>
-        /// Trims an ID allocation
+        /// Trims or extends an ID allocation
         /// </summary>
         /// <param name="lowestId">The lowest value in the allocation (this is the primary key)</param>
         /// <param name="highestId">The trimmed upper end of the allocation</param>
@@ -257,6 +257,19 @@ namespace Backsight.Editor.Database
         internal int NumUsed
         {
             get { return m_NumUsed; }
+        }
+
+        /// <summary>
+        /// Trims or extends an ID allocation
+        /// </summary>
+        /// <param name="highestId">The new upper end of the allocation</param>
+        /// <returns>The number of rows updated (should be 1)</returns>
+        internal int UpdateHighestId(int highestId)
+        {
+            int nRows = UpdateHighestId(m_LowestId, highestId);
+            if (nRows > 0)
+                m_HighestId = highestId;
+            return nRows;
         }
     }
 }

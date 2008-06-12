@@ -20,7 +20,7 @@ namespace Backsight.Editor
 	/// <written by="Steve Stanton" on="05-APR-2007" />
     /// <summary>
     /// A numeric ID that is potentially decorated according to some display format (as
-    /// defined through an associated <c>IdRange</c>).
+    /// defined through an associated <see cref="IdPacket"/>
     /// </summary>
     class DisplayId
     {
@@ -32,9 +32,9 @@ namespace Backsight.Editor
         uint m_Id;
 
         /// <summary>
-        /// The range the ID is part of
+        /// The packet the ID is part of
         /// </summary>
-        IdRange m_Range;
+        IdPacket m_Packet;
 
         #endregion
 
@@ -43,14 +43,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>DisplayId</c>
         /// </summary>
-        /// <param name="range">The range the ID is part of (holds formatting rules for the ID)</param>
+        /// <param name="packet">The packet the ID is part of (holds formatting rules for the ID)</param>
         /// <param name="rawId">The raw ID (undecorated with stuff like check digits)</param>
-        internal DisplayId(IdRange range, uint rawId)
+        internal DisplayId(IdPacket packet, uint rawId)
         {
-            if (range==null)
+            if (packet == null)
                 throw new ArgumentNullException();
 
-            m_Range = range;
+            m_Packet = packet;
             m_Id = rawId;
         }
 
@@ -62,15 +62,7 @@ namespace Backsight.Editor
         /// <returns>The result of a call to <c>IdRange.FormatId(RawId)</c></returns>
         public override string ToString()
         {
-            return m_Range.FormatId(m_Id);
-        }
-
-        /// <summary>
-        /// The range the ID is part of
-        /// </summary>
-        internal IdRange IdRange
-        {
-            get { return m_Range; }
+            return m_Packet.IdGroup.FormatId(m_Id);
         }
 
         /// <summary>

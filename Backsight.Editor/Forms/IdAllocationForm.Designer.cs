@@ -44,13 +44,12 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.grid = new System.Windows.Forms.DataGridView();
-            this.dgcGroupName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcAllocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcNumUsed = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcRange = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.okButton = new System.Windows.Forms.Button();
             this.getButton = new System.Windows.Forms.Button();
+            this.dgcGroupName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcAllocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgcNumUsed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -65,8 +64,7 @@ namespace Backsight.Editor.Forms
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dgcGroupName,
             this.dgcAllocation,
-            this.dgcNumUsed,
-            this.dgcRange});
+            this.dgcNumUsed});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 0);
             this.grid.Name = "grid";
@@ -76,37 +74,6 @@ namespace Backsight.Editor.Forms
             this.grid.Size = new System.Drawing.Size(574, 336);
             this.grid.TabIndex = 0;
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
-            // 
-            // dgcGroupName
-            // 
-            this.dgcGroupName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgcGroupName.FillWeight = 40F;
-            this.dgcGroupName.HeaderText = "Group";
-            this.dgcGroupName.Name = "dgcGroupName";
-            this.dgcGroupName.ReadOnly = true;
-            // 
-            // dgcAllocation
-            // 
-            this.dgcAllocation.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgcAllocation.FillWeight = 40F;
-            this.dgcAllocation.HeaderText = "Allocated range";
-            this.dgcAllocation.Name = "dgcAllocation";
-            this.dgcAllocation.ReadOnly = true;
-            // 
-            // dgcNumUsed
-            // 
-            this.dgcNumUsed.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgcNumUsed.FillWeight = 20F;
-            this.dgcNumUsed.HeaderText = "Number used";
-            this.dgcNumUsed.Name = "dgcNumUsed";
-            this.dgcNumUsed.ReadOnly = true;
-            // 
-            // dgcRange
-            // 
-            this.dgcRange.HeaderText = "Range";
-            this.dgcRange.Name = "dgcRange";
-            this.dgcRange.ReadOnly = true;
-            this.dgcRange.Visible = false;
             // 
             // splitContainer1
             // 
@@ -150,6 +117,30 @@ namespace Backsight.Editor.Forms
             this.getButton.UseVisualStyleBackColor = true;
             this.getButton.Click += new System.EventHandler(this.getButton_Click);
             // 
+            // dgcGroupName
+            // 
+            this.dgcGroupName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgcGroupName.FillWeight = 40F;
+            this.dgcGroupName.HeaderText = "Group";
+            this.dgcGroupName.Name = "dgcGroupName";
+            this.dgcGroupName.ReadOnly = true;
+            // 
+            // dgcAllocation
+            // 
+            this.dgcAllocation.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgcAllocation.FillWeight = 40F;
+            this.dgcAllocation.HeaderText = "Allocated range";
+            this.dgcAllocation.Name = "dgcAllocation";
+            this.dgcAllocation.ReadOnly = true;
+            // 
+            // dgcNumUsed
+            // 
+            this.dgcNumUsed.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgcNumUsed.FillWeight = 20F;
+            this.dgcNumUsed.HeaderText = "Number used";
+            this.dgcNumUsed.Name = "dgcNumUsed";
+            this.dgcNumUsed.ReadOnly = true;
+            // 
             // IdAllocationForm
             // 
             this.AcceptButton = this.okButton;
@@ -177,6 +168,5 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcGroupName;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcAllocation;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcNumUsed;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgcRange;
     }
 }

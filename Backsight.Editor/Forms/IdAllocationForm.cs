@@ -126,7 +126,7 @@ namespace Backsight.Editor.Forms
             {
                 foreach (DataGridViewRow row in sel)
                 {
-                    IdRange r = (IdRange)row.Cells["dgcRange"].Value;
+                    IdRange r = (IdRange)row.Tag;
 
                     // The range will be null if the user selected a group that didn't have
                     // any allocated ranges
@@ -184,7 +184,7 @@ namespace Backsight.Editor.Forms
                     string s = String.Format("{0} of {1}", packet.NumUsed, packet.Size);
 
                     row.Cells["dgcNumUsed"].Value = s;
-                    row.Cells["dgcRange"].Value = range;
+                    row.Tag = packet;
                 }
             }
 

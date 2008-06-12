@@ -95,10 +95,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Default constructor.
         /// </summary>
+        /*
         IdRange()
         {
             SetNoRange();
         }
+        */
 
         /// <summary>
         /// Constructor
@@ -107,6 +109,7 @@ namespace Backsight.Editor
         /// <param name="highest">The high end of the range (inclusive).</param>
         /// <param name="isCheckDigit">Should a check digit be appended to IDs in the range?</param>
         /// <param name="keyFormat">Any specialized key format.</param>
+        /*
         internal IdRange(uint lowest, uint highest, bool isCheckDigit, string keyFormat)
         {
             // Confirm highest really is higher!
@@ -126,6 +129,7 @@ namespace Backsight.Editor
             if (m_KeyFormat.Length==0)
                 m_KeyFormat = "{0}";
         }
+        */
 
         #endregion
 
@@ -133,6 +137,7 @@ namespace Backsight.Editor
         /// Sets everything to null values. Should be called only by constructors,
         /// because it does not check if the object already refers to stuff.
         /// </summary>
+        /*
         void SetNoRange()
         {
             m_LowestId = 0;
@@ -144,7 +149,9 @@ namespace Backsight.Editor
             m_IsCheckDigit = false;
             m_KeyFormat = String.Empty;
         }
+        */
 
+        /*
         public uint Min
         {
             get { return m_LowestId; }
@@ -159,7 +166,7 @@ namespace Backsight.Editor
         {
             get { return m_IsReleased; }
         }
-
+  
 	    internal uint NumUsed
         {
             get { return m_NumUsed; }
@@ -179,7 +186,7 @@ namespace Backsight.Editor
         {
             get { return m_IsCheckDigit; }
         }
-
+        */
         internal uint Size
         {
             get { return (m_HighestId-m_LowestId+1); }
@@ -190,10 +197,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="group">The ID group to check.</param>
         /// <returns>True if the group's range encloses this range.</returns>
+        /*
         bool IsEnclosedBy(IdGroup group)
         {
             return (group.LowestId<=m_LowestId && group.HighestId>=m_HighestId);
         }
+        */
 
         /// <summary>
         /// Releases any unused portion of this ID range.
@@ -556,15 +565,18 @@ namespace Backsight.Editor
         /// <param name="range">The range to insert after.</param>
         /// <param name="group">The ID group to insert into.</param>
         /// <returns>True if inserted ok.</returns>
+        /*
         bool InsertAfter(IdRange range, IdGroup group)
         {
             return group.InsertAfter(range, this);
         }
+        */
 
         /// <summary>
         /// Kills any unused space in the array of IDs. This should be called only
         /// when unused IDs are being released back to the database.
         /// </summary>
+        /*
         void Compress()
         {
 	        // There's nothing to do if the range has been released,
@@ -612,6 +624,7 @@ namespace Backsight.Editor
 	        // Toast the original array and replace with the new one.
         	m_Ids = newIds;
         }
+        */
 
         /// <summary>
         /// Checks whether this range can be extended with an additional range.
@@ -621,6 +634,7 @@ namespace Backsight.Editor
         /// <param name="maxid">The high end of the proposed extension.</param>
         /// <param name="keyFormat">The key format for the range.</param>
         /// <returns>True if the range has been extended.</returns>
+        /*
         internal bool Extend(int minid, int maxid, string keyFormat)
         {
 	        // Ranges that have been released cannot be extended.
@@ -668,6 +682,7 @@ namespace Backsight.Editor
 	        m_NumFree += nextra;
             return true;
         }
+        */
 
         /// <summary>
         /// Checks whether this range is available for generating one additional ID.
@@ -1076,6 +1091,7 @@ namespace Backsight.Editor
         /// <param name="id">The ID to format (may not actually lie within the
         /// limits of this range).</param>
         /// <returns>The formatted result.</returns>
+        /*
         internal string FormatId(uint id)
         {
             // Apply the format assuming no check digit.
@@ -1090,6 +1106,7 @@ namespace Backsight.Editor
 
             return key;
         }
+        */
 
         /// <summary>
         /// Check if this ID range refers to a specific feature ID.
@@ -1106,6 +1123,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="id">The raw ID to find.</param>
         /// <returns>The corresponding feature ID (if found).</returns>
+        /*
         FeatureId FindId(uint id)
         {
 	        // If this range has not been released, just get the array
@@ -1149,6 +1167,7 @@ namespace Backsight.Editor
 		        return null; // not found
 	        }
         }
+        */
 
         /// <summary>
         /// Deletes an ID pointer that this range points to. This nulls out the ID pointer,
@@ -1168,6 +1187,7 @@ namespace Backsight.Editor
         /// <param name="fid">The feature ID to remove. At call, it should be inactive (not
         /// referring to anything).</param>
         /// <returns>True if ID pointer has been nulled out.</returns>
+        /*
         internal bool DeleteId(FeatureId fid)
         {
             // Confirm the ID is inactive.
@@ -1193,6 +1213,7 @@ namespace Backsight.Editor
 
             return true;
         }
+        */
 
         /// <summary>
         /// Frees an ID pointer that this range points to. This confirms that this range
@@ -1205,6 +1226,7 @@ namespace Backsight.Editor
         /// <param name="fid">The feature ID to free. At call, it should be inactive (not
         /// referring to anything).</param>
         /// <returns>True if ID pointer was found.</returns>
+        /*
         bool FreeId(FeatureId fid)
         {
 	        // Confirm the ID is inactive.
@@ -1225,6 +1247,7 @@ namespace Backsight.Editor
 	        m_NumFree++;	
         	return true;
         }
+        */
 
         /// <summary>
         /// Restores an ID pointer that this range points to. This confirms that this
