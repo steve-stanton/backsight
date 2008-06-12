@@ -108,7 +108,7 @@ namespace Backsight.Editor
         {
             // Start off in a pristine state.
             m_Group = null;
-            m_Range = null;
+            m_Packet = null;
             m_Id = 0;
             m_FeatureId = null;
             m_Entity = null;
@@ -138,7 +138,7 @@ namespace Backsight.Editor
                     // If we got a group (and the ID if not foreign) try to find
                     // the ID range that refers to the feature's ID.
                     if (m_Group!=null && !m_Feature.IsForeignId)
-                        m_Range = m_Group.FindRange(m_FeatureId);
+                        m_Packet = m_Group.FindPacket(m_FeatureId);
                 }
             }
         }
@@ -170,8 +170,8 @@ namespace Backsight.Editor
                 // If an ID has been reserved, format that as a string.
                 // Otherwise it's blank.
 
-	            if (m_Id!=0 && m_Range!=null)
-		            return m_Range.FormatId(m_Id);
+	            if (m_Id!=0 && m_Packet!=null)
+                    return m_Packet.IdGroup.FormatId(m_Id);
                 else
                     return String.Empty;
             }
@@ -235,15 +235,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reserves a feature ID in a specific range of a specific ID group.
+        /// Reserves a feature ID in a specific ID packet
         /// </summary>
         /// <devnote>This function is called by LoadIdCombo</devnote>
-        /// <param name="group">The ID group the range falls in.</param>
-        /// <param name="range">The ID range containing the available ID.</param>
+        /// <param name="packet">The ID packet containing the available ID.</param>
         /// <param name="ent">The entity type that the ID is for.</param>
         /// <param name="id">The available ID to reserve.</param>
         /// <returns>True if the ID was successfully reserved.</returns>
-        internal bool ReserveId(IdGroup group, IdRange range, IEntity ent, uint id)
+        internal bool ReserveId(IdPacket packet, IEntity ent, uint id)
         {
             // Ensure that any currently reserved ID is released.
             if (!FreeId())
@@ -252,16 +251,11 @@ namespace Backsight.Editor
                 return false;
             }
 
-            // Just get the range to do it.
-
-            // @devnote This actually by-passes the entity hit count that
-            // is stored in the array of IdEntity objects known to the
-            // ID manager.
-
-            if (range.ReserveId(group, id))
+            // Just get the packet to do it.
+            if (packet.ReserveId(id))
             {
-                m_Group = group;
-                m_Range = range;
+                m_Group = packet.IdGroup;
+                m_Packet = packet;
                 m_Id = id;
                 m_Entity = ent;
                 return true;
@@ -297,15 +291,15 @@ namespace Backsight.Editor
                 return m_FeatureId;
             }
 
-            // The ID group and range has to be known.
-            if (m_Group==null || m_Range==null)
+            // The packet has to be known.
+            if (m_Group==null || m_Packet==null)
             {
                 MessageBox.Show("IdHandle.CreateId - No ID group or range");
                 return null;
             }
 
             // Get the ID group to do it.
-            return m_Group.CreateId(m_Id, m_Range, feature);
+            return m_Group.CreateId(m_Id, m_Packet, feature);
         }
 
         /// <summary>
@@ -372,7 +366,7 @@ namespace Backsight.Editor
             }
 
             m_Group = null;
-            m_Range = null;
+            m_Packet = null;
             m_Id = 0;
             m_Entity = null;
 
@@ -382,12 +376,11 @@ namespace Backsight.Editor
         /// <summary>
         /// Defines a newly reserved ID.
         /// </summary>
-        /// <param name="group">The ID group.</param>
-        /// <param name="range">The ID range.</param>
+        /// <param name="packet">The ID packet.</param>
         /// <param name="ent">The entity type for the ID.</param>
         /// <param name="id">The raw ID number.</param>
         /// <returns>True if the ID was valid.</returns>
-        internal bool Define(IdGroup group, IdRange range, IEntity ent, uint id)
+        internal bool Define(IdPacket packet, IEntity ent, uint id)
         {
             // You can NEVER use this handle to refer simultaneously to
             // an existing feature ID as well as a reserved ID.
@@ -399,8 +392,8 @@ namespace Backsight.Editor
                 return false;
 
             // Remember the supplied info.
-            m_Group = group;
-            m_Range = range;
+            m_Group = packet.IdGroup;
+            m_Packet = packet;
             m_Id = id;
             m_Entity = ent;
 
@@ -455,7 +448,7 @@ namespace Backsight.Editor
         void Reset()
         {
             m_Group = null;
-            m_Range = null;
+            m_Packet = null;
             m_Entity = null;
             m_Id = 0;
             m_FeatureId = null;
@@ -526,8 +519,8 @@ namespace Backsight.Editor
                 m_Group = idMan.GetGroup(m_Entity);
             }
 
-            // Foreign IDs cannot fall in ANY range.
-            m_Range = null;
+            // Foreign IDs cannot fall in ANY packet.
+            m_Packet = null;
 
             return m_FeatureId;
         }
@@ -632,15 +625,12 @@ namespace Backsight.Editor
 	        if (m_Feature.IsForeignId)
                 return true;
 
-	        if (m_Range==null)
-            {
-		        MessageBox.Show("IdHandle.RestoreId - ID range not found");
-		        return false;
-	        }
+	        if (m_Packet==null)
+                throw new Exception("IdHandle.RestoreId - ID range not found");
 
-	        // Tell the range that the ID has been restored (this just
+	        // Tell the packet that the ID has been restored (this just
 	        // decrements the free count).
-	        return m_Range.RestoreId(m_FeatureId);
+	        return m_Packet.RestoreId(m_FeatureId);
         }
     }
 }

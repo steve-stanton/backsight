@@ -106,16 +106,16 @@ namespace Backsight.Editor
             if (group==null)
                 return 0;
 
-            // Get the ID ranges for the group
-            List<IdRange> ranges = group.IdRanges;
-            List<uint> avail = new List<uint>(128);
+            // Get the ID packets for the group
+            IdPacket[] packets = group.IdPackets;
+            List<uint> avail = new List<uint>(1000);
 
             uint resid=0;		// The ID that has been reserved (if any).
 
-            foreach (IdRange range in ranges)
+            foreach (IdPacket packet in packets)
             {
                 avail.Clear();
-                if (range.GetAvailIds(avail, group)==0)
+                if (packet.GetAvailIds(avail) == 0)
                     continue;
 
                 DisplayId[] ids = new DisplayId[avail.Count];
@@ -126,10 +126,10 @@ namespace Backsight.Editor
                     if (resid==0 && handle!=null)
                     {
                         resid = avail[i];
-                        handle.ReserveId(group, range, ent, resid);
+                        handle.ReserveId(packet, ent, resid);
                     }
 
-                    ids[i] = new DisplayId(range, avail[i]);
+                    ids[i] = new DisplayId(packet, avail[i]);
                 }
 
                 box.Items.AddRange(ids);

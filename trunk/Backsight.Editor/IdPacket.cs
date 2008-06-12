@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Database;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -44,7 +45,7 @@ namespace Backsight.Editor
         /// happens, the reference is defined at the appropriate place in the array,
         /// m_NumUsed is incremented, and m_NumFree is decremented.
         /// </summary>
-        readonly FeatureId[] m_Ids;
+        FeatureId[] m_Ids;
 
         #endregion
 
@@ -94,6 +95,21 @@ namespace Backsight.Editor
         int GetIndex(FeatureId fid)
         {
             return Array.IndexOf<FeatureId>(m_Ids, fid);
+        }
+
+        /// <summary>
+        /// Returns the array index for a specific raw ID.
+        /// </summary>
+        /// <param name="id">The ID we want the index for.</param>
+        /// <returns>The index value, or -1 if the ID is out of range.</returns>
+        int GetIndex(uint id)
+        {
+            // Confirm that the specified id is in range.
+            if (id < Min || id > Max)
+                return -1;
+
+            // Return the index position.
+            return (int)(id - Min);
         }
 
         /// <summary>
@@ -148,6 +164,254 @@ namespace Backsight.Editor
         internal int NumUsed
         {
             get { return m_Allocation.NumUsed; }
+        }
+        /// <summary>
+        /// The number of IDs that are currently free. This is the total number of null
+        /// references in m_Ids PLUS the number of references to inactive IDs.
+        /// </summary>
+        uint GetNumFree()
+        {
+            uint result = 0;
+
+            foreach (FeatureId fid in m_Ids)
+            {
+                if (fid == null || fid.IsInactive)
+                    result++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// The ID group that contains this packet
+        /// </summary>
+        internal IdGroup IdGroup
+        {
+            get { return m_Group; }
+        }
+
+        /// <summary>
+        /// Reserves a specific ID in this packet.
+        /// </summary>
+        /// <param name="id">The raw ID to reserve</param>
+        /// <returns>True if the ID has been reserved successfully.</returns>
+        internal bool ReserveId(uint id)
+        {
+            // Get the index of the specified ID.
+            int index = GetIndex(id);
+            if (index < 0)
+                throw new Exception("IdPacket.ReserveId - Index out of range");
+
+            // Confirm that the ID is not already in use. It MAY have
+            // a defined ID pointer, but if it's inactive, that's ok.
+            if (m_Ids[index] != null)
+            {
+                if (!m_Ids[index].IsInactive)
+                    throw new Exception("IdPacket.ReserveId - ID already used");
+            }
+
+            // Get the group to reserve the ID.
+            return m_Group.ReserveId(id);
+        }
+
+        /// <summary>
+        /// Reserves the next available ID in this packet (if any).
+        /// </summary>
+        /// <returns>The reserved ID (null if an ID could not be obtained).</returns>
+        internal uint ReserveId()
+        {
+            // Return if the packet has been completely used up.
+            uint numFree = GetNumFree();
+            if (numFree == 0)
+                return 0;
+
+            // If the packet contains any inactive IDs, we will need to check for them.
+            int numnull = Size - NumUsed;
+            bool hasInactive = (numFree > numnull);
+
+            // Scan though the array of ID pointers, looking for a free slot.
+            // If we find one, get the group to confirm that it's ok to
+            // reserve it (if not, keep going).
+
+            for (uint i = 0; i < m_Ids.Length; i++)
+            {
+                if (m_Ids[i] == null)
+                {
+                    uint keynum = (uint)Min + i;
+                    if (m_Group.ReserveId(keynum))
+                        return keynum;
+                }
+                else
+                {
+                    if (hasInactive && m_Ids[i].IsInactive)
+                    {
+                        uint keynum = (uint)Min + i;
+                        if (m_Group.ReserveId(keynum))
+                            return keynum;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Loads a list with all the IDs that are available for this packet.
+        /// </summary>
+        /// <param name="avail">The list to load.</param>
+        /// <returns>The number of IDs that were added to the array.</returns>
+        internal uint GetAvailIds(List<uint> avail)
+        {
+            // Return if the packet has been completely used up.
+            uint numFree = GetNumFree();
+            if (numFree == 0)
+                return 0;
+
+            // If the range contains any inactive IDs, we will need to check for them.
+            int numnull = Size - NumUsed;
+            bool hasInactive = (numFree > numnull);
+
+            uint navail = 0; // Nothing found so far.
+
+            // Check if the group has any reserved IDs in THIS range.
+
+            uint nres = m_Group.GetReserveCount((uint)Min, (uint)Max);
+            if (nres == 0)
+            {
+                // No reserves, so just scan though the array of ID pointers,
+                // appending every free slot to the return array.
+
+                for (uint i = 0, keynum = (uint)Min; i < m_Ids.Length; i++, keynum++)
+                {
+                    if (m_Ids[i] == null)
+                    {
+                        avail.Add(keynum);
+                        navail++;
+                    }
+                    else
+                    {
+                        if (hasInactive && m_Ids[i].IsInactive)
+                        {
+                            avail.Add(keynum);
+                            navail++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Get the reserves
+                List<uint> reserves = new List<uint>((int)nres);
+                m_Group.GetReserveIds((uint)Min, (uint)Max, reserves);
+
+                // As above, scan through the array of ID pointers, looking
+                // for a free slot. But don't add in any IDs that have been
+                // reserved.
+
+                for (uint i = 0, keynum = (uint)Min; i < m_Ids.Length; i++, keynum++)
+                {
+                    uint tnum = 0;
+                    if (m_Ids[i] != null)
+                    {
+                        if (hasInactive && m_Ids[i].IsInactive)
+                            tnum = keynum;
+                    }
+                    else
+                        tnum = keynum;
+
+                    if (tnum != 0)
+                    {
+                        bool isReserved = false;
+
+                        for (int j = 0; j < nres && !isReserved; j++)
+                        {
+                            if (keynum == reserves[j])
+                                isReserved = true;
+                        }
+
+                        if (!isReserved)
+                        {
+                            avail.Add(keynum);
+                            navail++;
+                        }
+                    }
+                }
+            }
+
+            return navail;
+        }
+
+        /// <summary>
+        /// Checks whether this packet can be extended with an additional range.
+        /// </summary>
+        /// <param name="minid">The low end of the proposed extension.</param>
+        /// <param name="maxid">The high end of the proposed extension.</param>
+        /// <returns>True if the packet has been extended.</returns>
+        internal bool Extend(int minid, int maxid)
+        {
+            // The beginning of the extension MUST follow the existing range.
+            if (Max + 1 != minid)
+                return false;
+
+            // The extension must be valid!
+            if (maxid < minid)
+                return false;
+
+            // Update the allocation recorded in the database. We do not
+            // worry about the timestamp, or who made the allocation.
+            if (m_Allocation.UpdateHighestId(maxid) != 1)
+                return false;
+
+            // Extend the allocation of pointers that we have.
+            uint nextra = (uint)(maxid - minid + 1);
+            uint nalloc = (uint)(m_Ids.Length + nextra);
+            FeatureId[] newIds = new FeatureId[nalloc];
+
+            // Copy over what we had (the rest contains nulls)
+            Array.Copy(m_Ids, newIds, m_Ids.Length);
+
+            // Replace the old array with the new one
+            m_Ids = newIds;
+            return true;
+        }
+
+        /// <summary>
+        /// Checks whether this packet is available for generating one additional ID.
+        /// </summary>
+        /// <returns>True if the packet contains an available ID.</returns>
+        internal bool HasAvail()
+        {
+            // Return if nothing is free.
+            uint numFree = GetNumFree();
+            if (numFree == 0)
+                return false;
+
+            // If the packet contains any inactive IDs, we will need to check for them.
+            int numnull = Size - NumUsed;
+            bool hasInactive = (numFree > numnull);
+
+            // Scan the array looking for a free slot.
+
+            for (uint i = 0; i < m_Ids.Length; i++)
+            {
+                if (m_Ids[i] == null)
+                {
+                    uint keynum = (uint)Min + i;
+                    if (!m_Group.IsReserved(keynum))
+                        return true;
+                }
+                else
+                {
+                    if (hasInactive && m_Ids[i].IsInactive)
+                    {
+                        uint keynum = (uint)Min + i;
+                        if (!m_Group.IsReserved(keynum))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

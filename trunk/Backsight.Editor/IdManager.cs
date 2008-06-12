@@ -311,28 +311,28 @@ namespace Backsight.Editor
         /// <returns>True if the ID pointer was removed. False if it could not be found.</returns>
         internal bool DeleteId(FeatureId fid, IEntity ent)
         {
-        	IdRange range = null;		// Range not found so far.
+        	IdPacket packet = null;		// Packet not found so far.
 
 	        // Search the ID group that the ID SHOULD be in.
 	        IdGroup group = GetGroup(ent);
 	        if (group!=null)
-                range = group.FindRange(fid);
+                packet = group.FindPacket(fid);
 
 	        // If we didn't find it, we must have been supplied the wrong
-	        // entity type, so every group we know about (we'll repeat
+	        // entity type, so check every group we know about (we'll repeat
 	        // the above, but who cares).
-	        if (range==null)
+            if (packet == null)
             {
                 foreach (IdGroup g in m_IdGroups)
                 {
-                    range = g.FindRange(fid);
-                    if (range!=null)
+                    packet = g.FindPacket(fid);
+                    if (packet != null)
                         break;
                 }
 	        }
 
-        	// Issue an error message if we STILL haven't found the range.
-	        if (range==null)
+            // Issue an error message if we STILL haven't found the packet.
+            if (packet == null)
             {
 		        string errmsg = String.Format("Unable to delete ID '{0}'", fid.FormattedKey);
                 MessageBox.Show(errmsg);
@@ -344,7 +344,7 @@ namespace Backsight.Editor
 	        // known to the map ... later
 
 	        // Get the range to remove the pointer.
-	        return range.DeleteId(fid);
+            return packet.DeleteId(fid);
 
 	        // Note that the ID slot will only be re-used if the range
 	        // has not been released. If the range HAS been released, the

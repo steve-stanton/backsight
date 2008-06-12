@@ -161,15 +161,14 @@ namespace Backsight.Editor
                         ntoget -= nfree;
                     }
 
-                    // If the range we found is contiguous with an existing
-                    // range that has not been released, append to that range.
-                    // Otherwise add a new range.
+                    // If the packet we found is contiguous with an existing
+                    // packet, append to that packet. Otherwise add a new packet.
 
                     bool isExtension = false;
-                    for (int i=0; i<m_IdRanges.Count && !isExtension; i++)
+                    for (int i=0; i<m_Packets.Count && !isExtension; i++)
                     {
-                        IdRange oldRange = m_IdRanges[i];
-                        isExtension = oldRange.Extend(minid, maxid, this.KeyFormat);
+                        IdPacket oldPacket = m_Packets[i];
+                        isExtension = oldPacket.Extend(minid, maxid);
                     }
 
                     if (!isExtension)
@@ -289,9 +288,21 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="id">The ID to find.</param>
         /// <returns>The ID range, or null if not found.</returns>
+        /*
         IdRange FindRange(uint id)
         {
             return m_IdRanges.Find(delegate(IdRange range) { return (range.Min<=id && range.Max>=id); });
+        }
+        */
+
+        /// <summary>
+        /// Returns the ID packet (belonging to this group) that encloses a specific ID.
+        /// </summary>
+        /// <param name="id">The ID to find.</param>
+        /// <returns>The ID packet, or null if not found.</returns>
+        IdPacket FindPacket(uint id)
+        {
+            return m_Packets.Find(delegate(IdPacket p) { return (p.Min <= id && p.Max >= id); });
         }
 
         /// <summary>
@@ -336,44 +347,44 @@ namespace Backsight.Editor
         {
 	        if (id>0)
             {
-        		// Find the range that contains the specified ID.
-                IdRange range = FindRange(id);
-                if (range==null)
+        		// Find the packet that contains the specified ID.
+                IdPacket packet = FindPacket(id);
+                if (packet == null)
                 {
                     MessageBox.Show("IdGroup.ReserveId - Wrong ID group.");
 			        return false;
 		        }
 
 		        // Get the ID handle to reserve the ID.
-		        return idh.ReserveId(this, range, idh.Entity, id);
+                return idh.ReserveId(packet, idh.Entity, id);
 	        }
 	        else
             {
-        		// Find the range that contains the next available ID.
-		        IdRange range = FindNextAvail();
+        		// Find the packet that contains the next available ID.
+                IdPacket packet = FindNextAvail();
 
 		        // If we didn't find anything, ask the ID manager to make
 		        // a new allocation (most of the work actually gets passed
 		        // back to IdGroup.GetAllocation).
-		        if (range==null)
+                if (packet == null)
                 {
                     IdManager man = CadastralMapModel.Current.IdManager;
 			        if (man.GetAllocation(this, true)==0)
                         return false;
-			        range = FindNextAvail();
-			        if (range==null)
+                    packet = FindNextAvail();
+                    if (packet == null)
                         return false;
 		        }
 
-		        // Get the next ID from the range.
-		        uint nextid = range.ReserveId(this);
+                // Get the next ID from the packet.
+                uint nextid = packet.ReserveId();
 		        if (nextid==0)
                 {
                     MessageBox.Show("IdGroup.ReserveId - Range did not have any free IDs.");
 			        return false;
 		        }
 
-		        return idh.Define(this, range, idh.Entity, nextid);
+                return idh.Define(packet, idh.Entity, nextid);
 	        }
         }
 
@@ -398,19 +409,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Finds the first ID range that contains the next available ID.
+        /// Finds the first ID packet that contains the next available ID.
         /// </summary>
-        /// <returns>The ID range (if any) that contains the next available ID.</returns>
-        IdRange FindNextAvail()
+        /// <returns>The ID packet (if any) that contains the next available ID.</returns>
+        IdPacket FindNextAvail()
         {
-	        // We assume that ranges are ordered so that the earliest
-	        // ranges come first. We COULD scan from the end of the list,
+            // We assume that packets are ordered so that the earliest
+            // packets come first. We COULD scan from the end of the list,
 	        // but that would complicate it a bit, seeing how we'd have
-	        // to go back to the first range that does NOT have an
-	        // available ID. In any case, the chain of ID ranges shouldn't
+            // to go back to the first packet that does NOT have an
+            // available ID. In any case, the chain of ID packet shouldn't
 	        // be excessively long.
 
-            return m_IdRanges.Find(delegate(IdRange r) { return r.IsAvail(this); });
+            return m_Packets.Find(delegate(IdPacket p) { return p.HasAvail(); });
         }
 
         /// <summary>
@@ -457,10 +468,10 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="id">The ID key to use. Must be listed in this group as a reserved ID
         /// (if not, an error message will be issued).</param>
-        /// <param name="range">The ID range that the ID belongs to.</param>
+        /// <param name="packet">The ID packet that the ID belongs to.</param>
         /// <param name="feature">The feature which the new ID is to be assigned to.</param>
         /// <returns>The created feature ID (null on error).</returns>
-        internal FeatureId CreateId(uint id, IdRange range, Feature feature)
+        internal FeatureId CreateId(uint id, IdPacket packet, Feature feature)
         {
 	        // Confirm that the specified ID was previously reserved (if not,
 	        // see if it has already been created).
@@ -473,7 +484,7 @@ namespace Backsight.Editor
             }
 
         	// Get the range to create the ID.
-	        FeatureId fid = range.CreateId(id, feature);
+            FeatureId fid = packet.CreateId(id, feature);
 
 	        // If we successfully created the ID, clear the reserve status.
 	        if (fid!=null)
@@ -606,6 +617,27 @@ namespace Backsight.Editor
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Formats an ID number the way this ID group likes to see it.
+        /// </summary>
+        /// <param name="id">The raw ID to format (may not actually lie within the
+        /// limits of this packet).</param>
+        /// <returns>The formatted result.</returns>
+        internal string FormatId(uint id)
+        {
+            // Apply the format assuming no check digit.
+            string key = String.Format(KeyFormat, id);
+
+            // If there really is a check digit, work it out and append it.
+            if (HasCheckDigit)
+            {
+                uint cd = Key.GetCheckDigit(id);
+                key += cd.ToString();
+            }
+
+            return key;
         }
     }
 }
