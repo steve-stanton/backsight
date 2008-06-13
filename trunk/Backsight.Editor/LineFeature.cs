@@ -515,18 +515,30 @@ namespace Backsight.Editor
                 m_Topology.AddIncidentDividers(result, t);
         }
 
+        /// <summary>
+        /// The covering rectangle that encloses this feature.
+        /// </summary>
         public sealed override IWindow Extent
         {
             get { return m_Geom.Extent; }
         }
 
+        /// <summary>
+        /// The shortest distance between this object and the specified position.
+        /// </summary>
+        /// <param name="point">The position of interest</param>
+        /// <returns>
+        /// The shortest distance between the specified position and this object
+        /// </returns>
         public sealed override ILength Distance(IPosition point)
         {
             return m_Geom.Distance(point);
         }
 
-        //[Implements(IFeatureDependent)]
-        public virtual void AddReferences()
+        /// <summary>
+        /// Adds references to the points at the ends of this line.
+        /// </summary>
+        public virtual void AddReferences() // IFeatureDependent
         {
             StartPoint.AddReference(this);
             EndPoint.AddReference(this);

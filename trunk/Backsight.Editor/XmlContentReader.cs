@@ -51,6 +51,19 @@ namespace Backsight.Editor
         /// </summary>
         readonly Stack<IXmlContent> m_Elements;
 
+        /// <summary>
+        /// Index of feature IDs that are based on the Backsight numbering strategy (as opposed
+        /// to user-perceived IDs that originate from some foreign source). The key
+        /// is the raw ID, the value the created ID object.
+        /// </summary>
+        readonly Dictionary<int, NativeId> m_NativeIds;
+
+        /// <summary>
+        /// Index of all foreign IDs (typically IDs that get defined via import from some
+        /// alien data source).
+        /// </summary>
+        readonly Dictionary<string, ForeignId> m_ForeignIds;
+
         #endregion
 
         #region Constructors
@@ -67,6 +80,8 @@ namespace Backsight.Editor
             m_Types = new Dictionary<string, ConstructorInfo>();
             m_Features = new Dictionary<InternalIdValue, Feature>((int)numItem);
             m_Elements = new Stack<IXmlContent>(10);
+            m_NativeIds = new Dictionary<int, NativeId>(1000);
+            m_ForeignIds = new Dictionary<string, ForeignId>(1000);
         }
 
         #endregion
@@ -429,6 +444,16 @@ namespace Backsight.Editor
             }
 
             return default(T);
+        }
+
+        internal NativeId ReadNativeId(string name, Feature f)
+        {
+            return null;
+        }
+
+        internal ForeignId ReadForeignId(string name, Feature f)
+        {
+            return null;
         }
     }
 }

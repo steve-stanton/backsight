@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -21,14 +22,9 @@ namespace Backsight.Editor
     /// <summary>
     /// An ID acts as a cross-reference between multiple features and multiple rows.
     /// </summary>
-    class FeatureId
+    abstract class FeatureId
     {
         #region Class data
-
-        /// <summary>
-        /// The ID key.
-        /// </summary>
-        private Key m_Key;
 
         /// <summary>
         /// Either a reference to the single feature that has this key, or a reference to
@@ -46,56 +42,52 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        FeatureId(uint id)
+        protected FeatureId()
         {
-            m_Key = new Key(id);
             m_Features = null;
             m_Rows = null;
         }
 
+        #endregion
+
         /// <summary>
-        /// Creates a <c>FeatureId</c> that refers to a specific feature, but that doesn't
-        /// refer to any rows.
+        /// Relates this ID to the specified feature (and vice versa)
         /// </summary>
-        /// <param name="feature">The feature that this ID is for. The caller is
-        /// responsible for setting the ID reference in the feature.</param>
-        /// <param name="keystr">The string representing the key (the actual key created
-        /// may be converted to a numeric key if possible).</param>
-        /// <param name="tryNumeric">TRUE if we should try to represent the string as a
-        /// numeric value.</param>
-        internal FeatureId(Feature feature, string keystr, bool tryNumeric)
+        /// <param name="f">The feature that has this ID</param>
+        internal void Add(Feature f)
         {
-	        m_Key = new Key(keystr, tryNumeric);
-	        m_Features = feature;
-	        m_Rows = null;
+            if (f.Id != null)
+            {
+                if (f.Id == this)
+                    return;
+
+                f.Id.Cut(f);
+            }
+
+            AddReference(f);
+            f.SetId(this);
         }
 
-        #endregion
+        /// <summary>
+        /// Removes the association of this ID with the specified feature
+        /// </summary>
+        /// <param name="f">The feature that should be assigned a null ID</param>
+        internal void Cut(Feature f)
+        {
+            Debug.Assert(f.Id == this);
+            CutReference(f);
+            f.SetId(null);
+        }
 
         public override string ToString()
         {
             return FormattedKey;
         }
 
-        bool IsDefined
-        {
-            get { return m_Key.IsDefined; }
-        }
-
-        public bool Equals(FeatureId that)
-        {
-            return m_Key.Equals(that.m_Key);
-        }
-
-        public Key Key
-        {
-            get { return m_Key; }
-        }
-
-        public string FormattedKey
-        {
-            get { return m_Key.Format(); }
-        }
+        /// <summary>
+        /// The user-perceived ID value
+        /// </summary>
+        internal abstract string FormattedKey { get; }
 
         public bool IsInactive
         {
@@ -255,6 +247,8 @@ namespace Backsight.Editor
         /// <returns>The extract ID that was created.</returns>
         FeatureId Extract(ExTranslation xref, Feature exFeat)
         {
+            throw new NotImplementedException("FeatureId.Extract");
+         /*
         	// Create a new ID.
 	        FeatureId ex = new FeatureId(0);
 
@@ -286,6 +280,7 @@ namespace Backsight.Editor
 
 	        // Return the ID we created.
 	        return ex;
+          */
         }
 
         /// <summary>
@@ -413,9 +408,11 @@ namespace Backsight.Editor
         /// Logs this ID as part of a map comparison.
         /// </summary>
         /// <param name="cc">The comparison tool</param>
+        /*
         void Log(Comparison cc)
         {
             m_Key.Log(cc);
         }
+         */
     }
 }

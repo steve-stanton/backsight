@@ -74,7 +74,7 @@ namespace Backsight.Editor.Operations
             SetOldLabel();
 
             // Add the new label on the current editing layer.
-            CreateLabel(vtx, ent, fid, m_OldText.IsForeignId, pol, height, width, rotation);
+            CreateLabel(vtx, ent, fid, pol, height, width, rotation);
         }
 
         /// <summary>
@@ -83,19 +83,18 @@ namespace Backsight.Editor.Operations
         /// <param name="vtx">The reference position of the label.</param>
         /// <param name="ent">The entity type for the new label.</param>
         /// <param name="id">The ID for the new label.</param>
-        /// <param name="isForeign">Is the ID foreign?</param>
         /// <param name="pol">The polygon that the label relates to.</param>
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
-        void CreateLabel(IPosition vtx, IEntity ent, FeatureId id, bool isForeign, Polygon pol,
+        void CreateLabel(IPosition vtx, IEntity ent, FeatureId id, Polygon pol,
                             double height, double width, double rotation)
         {
             // Get the map to add a new label to the current editing layer (without any ID).
             TextFeature label = MapModel.AddKeyLabel(this, ent, vtx, height, width, rotation);
 
             // Relate the new label to the specified ID and vice versa.
-            label.SetId(id, isForeign);
+            label.SetId(id);
             id.AddReference(label);
 
             // The label MUST be topological, so make sure it's marked as such.
@@ -157,7 +156,7 @@ namespace Backsight.Editor.Operations
             TextFeature label = MapModel.AddRowLabel(this, ent, vtx, row, atemplate, height, width, rotation);
 
             // Relate the new label to the specified ID and vice versa.
-            label.SetId(id, isForeign);
+            label.SetId(id);
             id.AddReference(label);
 
             // Relate the row to the ID and vice versa.

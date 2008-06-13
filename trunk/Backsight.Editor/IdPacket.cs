@@ -42,10 +42,10 @@ namespace Backsight.Editor
         /// References to allocated IDs. The  first element corresponds to m_LowestId,
         /// while the last corresponds to m_HighestId. When created, all ID references
         /// will be null. They get defined only when a user makes use of ID. When that
-        /// happens, the reference is defined at the appropriate place in the array,
-        /// m_NumUsed is incremented, and m_NumFree is decremented.
+        /// happens, the reference is defined at the appropriate place in the array, and
+        /// m_NumUsed is incremented.
         /// </summary>
-        FeatureId[] m_Ids;
+        NativeId[] m_Ids;
 
         #endregion
 
@@ -68,7 +68,7 @@ namespace Backsight.Editor
 
             m_Group = group;
             m_Allocation = alloc;
-            m_Ids = new FeatureId[m_Allocation.Size];
+            m_Ids = new NativeId[m_Allocation.Size];
         }
 
         #endregion
@@ -365,7 +365,7 @@ namespace Backsight.Editor
             // Extend the allocation of pointers that we have.
             uint nextra = (uint)(maxid - minid + 1);
             uint nalloc = (uint)(m_Ids.Length + nextra);
-            FeatureId[] newIds = new FeatureId[nalloc];
+            NativeId[] newIds = new NativeId[nalloc];
 
             // Copy over what we had (the rest contains nulls)
             Array.Copy(m_Ids, newIds, m_Ids.Length);
@@ -466,7 +466,7 @@ namespace Backsight.Editor
             // Confirm that the packet does not already refer to an active ID.
             int index = (int)id - Min;
             bool reuse = false;
-            FeatureId fid = m_Ids[index];
+            NativeId fid = m_Ids[index];
 
             if (fid!=null)
             {
@@ -504,7 +504,8 @@ namespace Backsight.Editor
                 }
 
                 // Create the new ID (and point it to the feature).
-                fid = new FeatureId(feature, keystr, isNumeric);
+                fid = new NativeId(m_Group, id);
+                fid.Add(feature);
 
                 // Remember the new ID and increment the usage count.
                 m_Ids[index] = fid;
@@ -516,8 +517,8 @@ namespace Backsight.Editor
                 fid.AddReference(feature);
             }
 
-            // Point the feature back to the ID (not foreign).
-            feature.SetId(fid, false);
+            // Point the feature back to the ID
+            feature.SetId(fid);
             return fid;
         }
     }
