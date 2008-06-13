@@ -46,8 +46,11 @@ namespace Backsight.Editor.Database
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    IdAllocation item = ParseSelect(reader);
-                    result.Add(item);
+                    while (reader.Read())
+                    {
+                        IdAllocation item = ParseSelect(reader);
+                        result.Add(item);
+                    }
                 }
                 return result.ToArray();
             }

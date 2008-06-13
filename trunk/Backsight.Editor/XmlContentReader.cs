@@ -56,7 +56,7 @@ namespace Backsight.Editor
         /// to user-perceived IDs that originate from some foreign source). The key
         /// is the raw ID, the value the created ID object.
         /// </summary>
-        readonly Dictionary<int, NativeId> m_NativeIds;
+        readonly Dictionary<uint, NativeId> m_NativeIds;
 
         /// <summary>
         /// Index of all foreign IDs (typically IDs that get defined via import from some
@@ -80,7 +80,7 @@ namespace Backsight.Editor
             m_Types = new Dictionary<string, ConstructorInfo>();
             m_Features = new Dictionary<InternalIdValue, Feature>((int)numItem);
             m_Elements = new Stack<IXmlContent>(10);
-            m_NativeIds = new Dictionary<int, NativeId>(1000);
+            m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
         }
 
@@ -446,14 +446,42 @@ namespace Backsight.Editor
             return default(T);
         }
 
-        internal NativeId ReadNativeId(string name, Feature f)
+        /// <summary>
+        /// Obtains a native ID for a feature
+        /// </summary>
+        /// <param name="group">The ID group the ID is part of</param>
+        /// <param name="rawId">The raw ID to look for</param>
+        /// <returns>The ID assigned to the feature</returns>
+        internal NativeId FindNativeId(IdGroup group, uint rawId)
         {
-            return null;
+            NativeId result;
+
+            if (!m_NativeIds.TryGetValue(rawId, out result))
+            {
+                result = new NativeId(group, rawId);
+                m_NativeIds.Add(rawId, result);
+            }
+
+            return result;
         }
 
-        internal ForeignId ReadForeignId(string name, Feature f)
+        /// <summary>
+        /// Obtains a foreign ID for a feature
+        /// </summary>
+        /// <param name="name">The name of the attribute holding the foreign ID string</param>
+        /// <param name="f">The feature that will receive the ID</param>
+        /// <returns>The ID assigned to the feature</returns>
+        internal ForeignId FindForeignId(string key)
         {
-            return null;
+            ForeignId result;
+
+            if (!m_ForeignIds.TryGetValue(key, out result))
+            {
+                result = new ForeignId(key);
+                m_ForeignIds.Add(key, result);
+            }
+
+            return result;
         }
     }
 }
