@@ -515,11 +515,28 @@ namespace Backsight.Editor
             {
                 // Refer the old ID to the feature.
                 fid.AddReference(feature);
+
+                // Point the feature back to the ID
+                feature.SetId(fid);
             }
 
-            // Point the feature back to the ID
-            feature.SetId(fid);
             return fid;
+        }
+
+        /// <summary>
+        /// Records an ID if it belongs to this ID packet
+        /// </summary>
+        /// <param name="nid">The ID that may belong to this packet</param>
+        /// <returns>True if the supplied ID has been recorded as part of
+        /// this packet</returns>
+        internal bool SetId(NativeId nid)
+        {
+            int index = GetIndex(nid.RawId);
+            if (index < 0)
+                return false;
+
+            m_Ids[index] = nid;
+            return true;
         }
     }
 }

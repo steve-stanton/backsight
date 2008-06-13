@@ -1303,8 +1303,17 @@ namespace Backsight.Editor
             // Now build the topology for the map
             BuildPolygons();
 
-            // Initialize ID handling
+            // Initialize ID handling. This associates ID allocations with their
+            // corresponding ID group.
             m_IdManager.Load(this, job, user);
+
+            // Now go through the sessions to notify the ID manager about IDs
+            // that have been used
+            foreach (Session s in m_Sessions)
+            {
+                if (s.Job == job && s.User == user)
+                    s.LoadUsedIds(m_IdManager);
+            }
         }
 
         /*

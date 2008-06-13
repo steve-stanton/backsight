@@ -527,7 +527,7 @@ namespace Backsight.Editor
             // Get the position
 	        Ntx.Position pos = symbol.Position;
             IPointGeometry g = new PointGeometry(pos.Easting, pos.Northing);
-            return new PointFeature(g, what, creator);
+            PointFeature p = new PointFeature(g, what, creator);
             /*
 
 	static LOGICAL warned=FALSE;	// debug
@@ -560,15 +560,17 @@ namespace Backsight.Editor
 	// point at the specified location.
 
 	CePoint* pPoint = pMap->AddPoint((CeLocation* const)pLoc,pEntity);
+            */
 
-	// Define foreign ID (if any) ...
+            // Define foreign ID (if any) ...
+            string keystr = symbol.Key;
+            if (!String.IsNullOrEmpty(keystr))
+            {
+                ForeignId fid = new ForeignId(keystr);
+                fid.Add(p);
+            }
 
-	const CHARS* keystr = Symbol.GetpKey();
-	if ( strlen(keystr) ) {
-		CeIdHandle idh(pPoint);
-		idh.CreateForeignId(keystr);
-	}
-             */
+            return p;
         }
     }
 }

@@ -776,15 +776,7 @@ namespace Backsight.Editor
             writer.WriteUnsignedInt("Item", m_CreatorSequence);
             writer.WriteInt("EntityId", m_What.Id);
 
-            // Pick up only those flag bits that should be persisted. In most cases, the
-            // initial topological status is obtained through the entity type. If the
-            // data is brought in via an import, however, the initial status may be
-            // non-standard.
-            string flags = String.Empty;
-            if (IsTopological)
-                flags += "T";
-
-            writer.WriteString("Flags", flags);
+            // Flags are written by derived classes
 
             if (m_Id is NativeId)
                 writer.WriteUnsignedInt("Id", (m_Id as NativeId).RawId);
@@ -806,10 +798,6 @@ namespace Backsight.Editor
             m_CreatorSequence = reader.ReadUnsignedInt("Item");
             int entId = reader.ReadInt("EntityId");
             m_What = EnvironmentContainer.FindEntityById(entId);
-
-            string flags = reader.ReadString("Flags");
-            if (flags.Contains("T"))
-                SetTopology(true);
 
             FeatureId fid = null;
             if (reader.HasAttribute("Id"))

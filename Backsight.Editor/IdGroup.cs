@@ -41,6 +41,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Any IDs that have been reserved (but not yet allocated).
         /// </summary>
+        /// TODO: I think this would be cleaner within the packets
         readonly List<uint> m_ReservedIds;        
 
         #endregion

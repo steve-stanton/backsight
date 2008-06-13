@@ -307,6 +307,10 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
+
+            if (!IsTopological)
+                writer.WriteString("Flags", "N");
+
             writer.WriteElement("Geometry", m_Geom);
         }
 
@@ -319,6 +323,16 @@ namespace Backsight.Editor
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
+
+            string flags = reader.ReadString("Flags");
+            if (flags == null)
+                flags = String.Empty;
+
+            if (flags.Contains("N"))
+                SetTopology(false);
+            else
+                SetTopology(true);
+
             m_Geom = reader.ReadElement<TextGeometry>("Geometry");
         }
     }
