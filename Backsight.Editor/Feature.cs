@@ -23,7 +23,6 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
-using System.Globalization;
 
 namespace Backsight.Editor
 {
@@ -330,38 +329,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Points this feature to a foreign ID (as created by <c>IdHandle.CreateForeignId</c>)
-        /// If this feature already had an ID, that ID will be modified so that it no longer
-        /// references this feature.
-        /// </summary>
-        /// <param name="id">The foreign ID for this feature (the caller is responsible for
-        /// pointing the ID to this feature).</param>
-        public void SetForeignId(FeatureId id)
-        {
-            // If this feature already has an ID, clear it's pointer to this feature.
-            if (m_Id!=null)
-                m_Id.CutReference(this);
-
-            // Point to the foreign ID.
-            m_Id = id;
-
-            // Set flag bit to denote foreign ID.
-            this.IsForeignId = true;
-        }
-
-        /// <summary>
         /// Records the feature ID for this feature. This function is called by
-        /// <c>IdRange.CreateId</c> and <c>IdHandle.DeleteId</c>.
-        /// 
+        /// <c>IdPacket.CreateId</c> and <c>IdHandle.DeleteId</c>.
+        /// <para/>
         /// If a not-null ID is supplied, it will throw an exception if the feature
         /// already has an ID. To avoid that, the original ID must be successfully
         /// deleted via a prior call to <c>IdHandle.DeleteId</c>.
         /// </summary>
         /// <param name="fid">The ID to remember (may be null).</param>
-        /// <param name="isForeign">Is it a foreign ID? If the specified ID is null, anything
-        /// you say for this will be ignored, and the feature will be marked as NOT having a
-        /// foreign ID.</param>
-        public void SetId(FeatureId fid, bool isForeign)
+        internal void SetId(FeatureId fid)
         {
         	if (fid!=null)
             {
@@ -374,7 +350,7 @@ namespace Backsight.Editor
 		        // a foreign ID or not.
 
 		        m_Id = fid;
-                this.IsForeignId = isForeign;
+                this.IsForeignId = (fid is ForeignId);
         	}
 	        else
             {
@@ -578,7 +554,16 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         abstract public void Render(ISpatialDisplay display, IDrawStyle style);
 
+        /// <summary>
+        /// The covering rectangle that encloses this feature.
+        /// </summary>
         abstract public IWindow Extent { get; }
+
+        /// <summary>
+        /// The shortest distance between this object and the specified position.
+        /// </summary>
+        /// <param name="point">The position of interest</param>
+        /// <returns>The shortest distance between the specified position and this object</returns>
         abstract public ILength Distance(IPosition point);
 
         public void PreMove()
@@ -759,6 +744,9 @@ namespace Backsight.Editor
                 newFeature.SetBuilt(true);
         }
 
+        /// <summary>
+        /// The layer associated with this feature's entity type.
+        /// </summary>
         internal ILayer BaseLayer
         {
             get { return (m_What==null ? null : m_What.Layer);  }
@@ -792,15 +780,16 @@ namespace Backsight.Editor
             // initial topological status is obtained through the entity type. If the
             // data is brought in via an import, however, the initial status may be
             // non-standard.
-            FeatureFlag ff = 0;
+            string flags = String.Empty;
             if (IsTopological)
-                ff |= FeatureFlag.Topol;
+                flags += "T";
 
-            writer.WriteString("Flags", String.Format("{0:X}", ff));
+            writer.WriteString("Flags", flags);
 
-            string s = FormattedKey;
-            if (s.Length>0)
-                writer.WriteString("Key", FormattedKey);
+            if (m_Id is NativeId)
+                writer.WriteUnsignedInt("Id", (m_Id as NativeId).RawId);
+            else if (m_Id is ForeignId)
+                writer.WriteString("Key", m_Id.FormattedKey);
         }
 
         /// <summary>
@@ -817,17 +806,19 @@ namespace Backsight.Editor
             m_CreatorSequence = reader.ReadUnsignedInt("Item");
             int entId = reader.ReadInt("EntityId");
             m_What = EnvironmentContainer.FindEntityById(entId);
-            string flag = reader.ReadString("Flags");
-            m_Flag = (FeatureFlag)UInt16.Parse(flag, NumberStyles.AllowHexSpecifier);
 
-            if (reader.HasAttribute("Key"))
+            string flags = reader.ReadString("Flags");
+            if (flags.Contains("T"))
+                SetTopology(true);
+
+            if (reader.HasAttribute("Id"))
             {
-                string key = reader.ReadString("Key");
-
-                // TODO: The FeatureId instance may have been loaded already (since
-                // multiple features can share the same ID) => XmlContentReader
-                // should have a lookup by user key.
-                //m_Id = 
+                m_Id = reader.ReadNativeId("Id", this);
+            }
+            else if (reader.HasAttribute("Key"))
+            {
+                m_Id = reader.ReadForeignId("Key", this);
+                IsForeignId = true;
             }
         }
 

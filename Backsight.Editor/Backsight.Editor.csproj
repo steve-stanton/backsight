@@ -65,6 +65,7 @@
     <Compile Include="FeatureData.cs" />
     <Compile Include="FindPolygonLabelQuery.cs" />
     <Compile Include="FontInfo.cs" />
+    <Compile Include="ForeignId.cs" />
     <Compile Include="Forms\AdjustmentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -298,6 +299,7 @@
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
+    <Compile Include="NativeId.cs" />
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
@@ -620,7 +622,6 @@
     <Compile Include="IntersectionResult.cs" />
     <Compile Include="IntersectionType.cs" />
     <Compile Include="IntersectionFinder.cs" />
-    <Compile Include="Key.cs" />
     <Compile Include="LineAnnotationOptions.cs" />
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />

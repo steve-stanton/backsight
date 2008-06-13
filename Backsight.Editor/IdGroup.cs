@@ -633,7 +633,7 @@ namespace Backsight.Editor
             // If there really is a check digit, work it out and append it.
             if (HasCheckDigit)
             {
-                uint cd = Key.GetCheckDigit(id);
+                uint cd = NativeId.GetCheckDigit(id);
                 key += cd.ToString();
             }
 
@@ -663,7 +663,7 @@ namespace Backsight.Editor
                 return id;
 
             // Work out the check digit and append it to the raw ID.
-            uint checkdig = Key.GetCheckDigit(id);
+            uint checkdig = NativeId.GetCheckDigit(id);
             return (id*10 + checkdig);
         }
 

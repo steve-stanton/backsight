@@ -117,7 +117,7 @@ namespace Backsight.Editor
             if (m_Feature!=null)
             {
                 // Get the current ID (if any).
-                m_FeatureId = (FeatureId)m_Feature.Id;
+                m_FeatureId = m_Feature.Id;
 
                 // Note the feature's entity type.
                 m_Entity = m_Feature.EntityType;
@@ -135,7 +135,7 @@ namespace Backsight.Editor
                     m_Group = idMan.GetGroup(m_Entity);
 
                     // If we got a group (and the ID if not foreign) try to find
-                    // the ID range that refers to the feature's ID.
+                    // the ID packet that refers to the feature's ID.
                     if (m_Group!=null && !m_Feature.IsForeignId)
                         m_Packet = m_Group.FindPacket(m_FeatureId);
                 }
@@ -492,14 +492,9 @@ namespace Backsight.Editor
 
             m_Id = 0;	// NOT a reserved ID.
 
-            // Create the new ID (and point it to the feature). Permit
-            // auto-conversion to numeric.
-            m_FeatureId = new FeatureId(m_Feature, keystr, true);
-
-            // Point the feature back to the ID (if the feature previously
-            // had an ID, that old ID's pointer to the feature will be cut).
-            // @devnote May want to call SetpId here instead.
-            m_Feature.SetForeignId(m_FeatureId);
+            // Create the new ID (and point it to the feature).
+            m_FeatureId = new ForeignId(keystr);
+            m_FeatureId.Add(m_Feature);
 
             // Make sure we have the latest entity type for the feature (it
             // could conceivably have changed since the constructor was
@@ -554,7 +549,7 @@ namespace Backsight.Editor
             // And null the pointer from the feature to the ID, declaring
             // that it no longer has "foreign ID" status.
             bool isForeign = m_Feature.IsForeignId;
-            m_Feature.SetId(null, false);
+            m_Feature.SetId(null);
 
             // If the ID still refers to anything, it can't be deleted.
             if (!m_FeatureId.IsInactive)

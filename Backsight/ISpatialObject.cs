@@ -45,7 +45,7 @@ namespace Backsight
         /// The shortest distance between this object and the specified position.
         /// </summary>
         /// <param name="point">The position of interest</param>
-        /// <returns>The shortest distance between the specified position & this object</returns>
+        /// <returns>The shortest distance between the specified position and this object</returns>
         ILength Distance(IPosition point);
     }
 }
