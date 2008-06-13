@@ -811,15 +811,22 @@ namespace Backsight.Editor
             if (flags.Contains("T"))
                 SetTopology(true);
 
+            FeatureId fid = null;
             if (reader.HasAttribute("Id"))
             {
-                m_Id = reader.ReadNativeId("Id", this);
+                IdGroup group = CadastralMapModel.Current.IdManager.GetGroup(m_What);
+                uint id = reader.ReadUnsignedInt("Id");
+                fid = reader.FindNativeId(group, id);
             }
             else if (reader.HasAttribute("Key"))
             {
-                m_Id = reader.ReadForeignId("Key", this);
-                IsForeignId = true;
+                string key = reader.ReadString("Key");
+                fid = reader.FindForeignId(key);
             }
+
+            // If an ID has been obtained, ensure it knows about this feature, and vice versa
+            if (fid!=null)
+                fid.Add(this);
         }
 
         #endregion
