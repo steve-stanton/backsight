@@ -260,6 +260,16 @@ namespace Backsight.Editor.Database
         }
 
         /// <summary>
+        /// Increments the number of used IDs.
+        /// </summary>
+        /// <remarks>TODO: This doesn't update the database. Either need to make sure it
+        /// happens, or revisit whether it should actually be stored in the db</remarks>
+        internal void IncrementNumUsed()
+        {
+            m_NumUsed++;
+        }
+
+        /// <summary>
         /// Trims or extends an ID allocation
         /// </summary>
         /// <param name="highestId">The new upper end of the allocation</param>

@@ -56,9 +56,8 @@ namespace Backsight.Editor
         private IdGroup m_Group;
 
         /// <summary>
-        /// The ID range that contains the ID. Will be null if the group is null.
+        /// The ID packet that contains the ID. Will be null if the group is null.
         /// </summary>
-        private IdRange m_Range;
         private IdPacket m_Packet;
 
         /// <summary>

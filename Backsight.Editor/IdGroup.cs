@@ -34,15 +34,14 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// Any IdRange objects already allocated for this group.
+        /// Any ID packets allocated for this group.
         /// </summary>
-        private List<IdRange> m_IdRanges;
         readonly List<IdPacket> m_Packets;
         
         /// <summary>
         /// Any IDs that have been reserved (but not yet allocated).
         /// </summary>
-        private readonly List<uint> m_ReservedIds;        
+        readonly List<uint> m_ReservedIds;        
 
         #endregion
 
@@ -50,18 +49,15 @@ namespace Backsight.Editor
 
         internal IdGroup (IIdGroup data) : base(data)
         {
-            m_IdRanges = new List<IdRange>();
             m_Packets = new List<IdPacket>();
             m_ReservedIds = new List<uint>();
         }
 
         #endregion
 
-        internal List<IdRange> IdRanges
-        {
-            get { return m_IdRanges; }
-        }
-
+        /// <summary>
+        /// Any ID packets allocated for this group.
+        /// </summary>
         internal IdPacket[] IdPackets
         {
             get { return m_Packets.ToArray(); }
@@ -500,12 +496,12 @@ namespace Backsight.Editor
         /// <returns>The number of IDs that were added to the list.</returns>
         internal uint GetAvailIds(List<uint> avail)
         {
-	        // Loop through the ID ranges that have already been allocated,
+	        // Loop through the ID packets that have already been allocated,
 	        // adding free IDs into the array.
 
         	uint nid=0;
-            foreach(IdRange range in m_IdRanges)
-                nid += range.GetAvailIds(avail, this);
+            foreach(IdPacket packet in m_Packets)
+                nid += packet.GetAvailIds(avail);
 
         	return nid;
         }
@@ -558,6 +554,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="fid">The feature ID to find.</param>
         /// <returns>The ID range, or null if not found.</returns>
+        /*
         internal IdRange FindRange(FeatureId fid)
         {
 	        // If the feature ID is null, it doesn't belong to anything.
@@ -566,6 +563,7 @@ namespace Backsight.Editor
 
             return m_IdRanges.Find(delegate(IdRange range) { return range.IsReferredTo(fid); });
         }
+         */
 
         /// <summary>
         /// Inserts an additional ID range into this group.
@@ -573,6 +571,7 @@ namespace Backsight.Editor
         /// <param name="after">The range to insert after.</param>
         /// <param name="insert">The range to insert.</param>
         /// <returns>True if inserted ok.</returns>
+        /*
         internal bool InsertAfter(IdRange after, IdRange insert)
         {
         	// Find the range we're supposed to insert after.
@@ -587,6 +586,7 @@ namespace Backsight.Editor
             m_IdRanges.Insert(index+1, insert);
             return true;
         }
+        */
 
         public override string ToString()
         {
@@ -638,6 +638,51 @@ namespace Backsight.Editor
             }
 
             return key;
+        }
+
+        /// <summary>
+        /// Tries to produce a numeric key.
+        /// </summary>
+        /// <param name="id">The raw ID to use (without any check digit).</param>
+        /// <returns>The numeric key value (0 if a numeric key cannot be generated).</returns>
+        internal uint GetNumericKey(uint id)
+        {
+            // If a check digit is required, and the raw ID exceeds 200
+            // million, it means that the numeric key wouldn't fit in
+            // a 32-bit value.
+            if (HasCheckDigit && id > 200000000)
+                return 0;
+
+            // If the key format is not completely numeric, we can't do it.
+            if (!IsNumericKey())
+                return 0;
+
+            // If a check digit is not required, the supplied raw ID is
+            // the numeric key we want to store.
+            if (!HasCheckDigit)
+                return id;
+
+            // Work out the check digit and append it to the raw ID.
+            uint checkdig = Key.GetCheckDigit(id);
+            return (id*10 + checkdig);
+        }
+
+        /// <summary>
+        /// Checks if this ID group has numeric keys. This means that if the raw ID (without
+        /// any check digit) is formatted, does it produce a right-justified string that
+        /// contains just numeric digits.
+        /// <para/>
+        /// Note that a numeric key may actually need to be stored as a string if a check
+        /// digit causes the resulting number to exceed 2 billion.
+        /// </summary>
+        /// <returns>True if the keys are numeric.</returns>
+        bool IsNumericKey()
+        {
+            // Use the key format string to parse the value "1"
+            string str = String.Format(KeyFormat, 1);
+
+            // If we got just 1 character, it's numeric.
+            return (str.Length==1);
         }
     }
 }

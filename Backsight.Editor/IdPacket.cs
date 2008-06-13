@@ -413,5 +413,112 @@ namespace Backsight.Editor
 
             return false;
         }
+
+        /// <summary>
+        /// Restores an ID pointer that this range points to. This confirms that this
+        /// packet really does point to the ID and, if so, the number of free IDs will
+        /// be decremented.
+        /// <para/>
+        /// This function undoes a call to FreeId, and is called when a user-perceived
+        /// deletion is being rolled back.
+        /// </summary>
+        /// <param name="fid">The feature ID to restore.</param>
+        /// <returns>True if ID pointer was found.</returns>
+        /// <remarks>TODO: This method now does nothing, since m_NumFree is no longer
+        /// noted explicitly. Should look into calls. However, the other thing to also
+        /// note is that FreeId is no longer called, so perhaps other things are amiss
+        /// in the undo logic.</remarks>
+        internal bool RestoreId(FeatureId fid)
+        {
+            // TODO: No need to do anything, since m_NumFree is no longer 
+            /*
+            // Get the array index of the ID.
+            int index = GetIndex(fid);
+
+            // Return if not found.
+            if (index < 0)
+                throw new Exception("IdPacket.RestoreId - ID not found");
+
+            // Decrement the number of free slots (DON'T accidentally
+            // decrement past zero, because that's a BIG number).
+            if (m_NumFree>0)
+                m_NumFree--;
+            */
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a new feature ID.
+        /// </summary>
+        /// <param name="id">The ID to create.</param>
+        /// <param name="feature">The feature to assign the ID to.</param>
+        /// <returns>The created feature ID (null on error).</returns>
+        internal FeatureId CreateId(uint id, Feature feature)
+        {
+            // Confirm that the specified ID falls within this range.
+            if (id<(uint)Min || id>(uint)Max)
+                throw new Exception("IdPacket.CreateId - New ID is not in range!");
+
+            // Confirm that the feature does not already have an ID.
+            if (feature.Id!=null)
+                throw new Exception("IdPacket.CreateId - Feature already has an ID.");
+
+            // Confirm that the packet does not already refer to an active ID.
+            int index = (int)id - Min;
+            bool reuse = false;
+            FeatureId fid = m_Ids[index];
+
+            if (fid!=null)
+            {
+                if (fid.IsInactive)
+                    reuse = true;
+                else
+                    throw new Exception("IdPacket.CreateId - ID slot has already been used.");
+            }
+
+            // If we're not re-using an old ID, create one.
+            if (!reuse)
+            {
+                string keystr;      // The key string
+                bool isNumeric;     // Should FeatureId try to make it numeric?
+
+                // Try to get a numeric key.
+                uint keyval = m_Group.GetNumericKey(id);
+
+                if (keyval!=0)
+                {
+                    // If we got one, we still need to represent it as a string (for
+                    // the FeatureId constructor). However, we need to let the
+                    // constructor know that it's ok to convert it back to numeric!
+
+                    keystr = keyval.ToString();
+                    isNumeric = true;
+                }
+                else
+                {
+                    // Format the ID using the key format (+ possible check digit)
+                    keystr = m_Group.FormatId(id);
+
+                    // Remember that it's not to be converted to numeric.
+                    isNumeric = false;
+                }
+
+                // Create the new ID (and point it to the feature).
+                fid = new FeatureId(feature, keystr, isNumeric);
+
+                // Remember the new ID and increment the usage count.
+                m_Ids[index] = fid;
+                m_Allocation.IncrementNumUsed();
+            }
+            else
+            {
+                // Refer the old ID to the feature.
+                fid.AddReference(feature);
+            }
+
+            // Point the feature back to the ID (not foreign).
+            feature.SetId(fid, false);
+            return fid;
+        }
     }
 }
