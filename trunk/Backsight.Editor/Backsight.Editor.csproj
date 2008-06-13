@@ -589,7 +589,6 @@
     <Compile Include="IdHandle.cs" />
     <Compile Include="IdHelper.cs" />
     <Compile Include="IdManager.cs" />
-    <Compile Include="IdRange.cs" />
     <Compile Include="IEditingAction.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
