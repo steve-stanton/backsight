@@ -1215,13 +1215,20 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             writer.WriteFeatureReference("From", StartPoint);
             writer.WriteFeatureReference("To", EndPoint);
 
-            // Since 80% of lines are simple line segments (in a Cadastral application at least),
-            // it's a bit verbose to output an empty geometry in that case. Just output a
-            // flag in that case. Rather than writing out a true|false value, write a number,
-            // since I'm not sure if there could be other simple types (sections perhaps?)
+            string flags = String.Empty;
             if (m_Geom is SegmentGeometry)
-                writer.WriteUnsignedInt("Simple", 1);
-            else
+                flags += "S";
+
+            if (!IsTopological)
+                flags += "N";
+
+            if (flags.Length > 0)
+                writer.WriteString("Flags", flags);
+
+            // Since 80% of lines are simple line segments (in a Cadastral application at least),
+            // it's a bit verbose to output an empty geometry, so a flag letter is written in
+            // that case.
+            if (!(m_Geom is SegmentGeometry))
                 writer.WriteElement("Geometry", m_Geom);
         }
 
@@ -1237,8 +1244,16 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            uint simple = reader.ReadUnsignedInt("Simple"); // 0 if it's not there
-            if (simple == 1)
+            string flags = reader.ReadString("Flags");
+            if (flags==null)
+                flags = String.Empty;
+
+            if (flags.Contains("N"))
+                SetTopology(false);
+            else
+                SetTopology(true);
+
+            if (flags.Contains("S"))
                 m_Geom = new SegmentGeometry(m_From, m_To);
             else
                 m_Geom = reader.ReadElement<LineGeometry>("Geometry");

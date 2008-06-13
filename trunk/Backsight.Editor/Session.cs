@@ -258,6 +258,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The job the session is associated with
+        /// </summary>
+        internal Job Job
+        {
+            get { return m_Job; }
+        }
+
+        /// <summary>
         /// Rolls back the last operation in this session. The operation will be removed from
         /// the session's operation list.
         /// </summary>
@@ -398,6 +406,25 @@ namespace Backsight.Editor
         internal static uint ReserveNextItem()
         {
             return s_CurrentSession.m_Data.ReserveNextItem();
+        }
+
+        /// <summary>
+        /// Scans this session to note the native IDs that have been used.
+        /// Before calling this method, you must make a call to <see cref="Load"/>
+        /// to obtain the relevant allocations.
+        /// </summary>
+        /// <param name="m">The ID manager, previously initialized with relevant
+        /// ID allocations</param>
+        internal void LoadUsedIds(IdManager m)
+        {
+            IdPacket p = null;
+
+            foreach (Operation op in m_Operations)
+            {
+                Feature[] fa = op.Features;
+                foreach (Feature f in fa)
+                    p = m.AddUsedId(f, p);
+            }
         }
     }
 }

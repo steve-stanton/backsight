@@ -368,5 +368,40 @@ namespace Backsight.Editor
 
             return null;
         }
+
+        /// <summary>
+        /// Records any ID utilized by a feature
+        /// </summary>
+        /// <param name="f">The feature to examine</param>
+        /// <param name="hint">The ID packet that may well contain the ID in
+        /// question (null for no hint)</param>
+        /// <returns>The ID packet that actually contains the ID (null if not found)</returns>
+        internal IdPacket AddUsedId(Feature f, IdPacket hint)
+        {
+            // We only care about features with native IDs
+            NativeId nid = (f.Id as NativeId);
+            if (nid == null)
+                return hint;
+
+            if (hint!=null && hint.SetId(nid))
+                return hint;
+
+            // Try the ID group for the feature's entity type. If we can't find it
+            // that way (we probably should), make an exhaustive search
+            IdPacket p = null;
+            IdGroup g;
+            if (m_EntityGroups.TryGetValue(f.EntityType.Id, out g))
+                p = g.FindPacket(nid);
+            else
+                p = FindPacket(nid);
+
+            // Just in case...
+            if (p == null)
+                return null;
+
+            bool set = p.SetId(nid);
+            Debug.Assert(set);
+            return p;
+        }
 	}
 }

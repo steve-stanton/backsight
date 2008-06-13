@@ -111,10 +111,10 @@ namespace Ntx
         /// act as a primary key in an associated database table where additional
         /// attributes get held.
         /// </summary>
-        internal string Key
+        public string Key
         {
             get { return m_Key; }
-            set { m_Key = value; }
+            internal set { m_Key = value; }
         }
 
         /// <summary>
