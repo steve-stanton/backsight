@@ -773,15 +773,20 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteUnsignedInt("Item", m_CreatorSequence);
-            writer.WriteInt("EntityId", m_What.Id);
+            WriteContent(writer, this);
+        }
+
+        internal static void WriteContent(XmlContentWriter writer, Feature f)
+        {
+            writer.WriteUnsignedInt("Item", f.m_CreatorSequence);
+            writer.WriteInt("EntityId", f.m_What.Id);
 
             // Flags are written by derived classes
 
-            if (m_Id is NativeId)
-                writer.WriteUnsignedInt("Id", (m_Id as NativeId).RawId);
-            else if (m_Id is ForeignId)
-                writer.WriteString("Key", m_Id.FormattedKey);
+            if (f.m_Id is NativeId)
+                writer.WriteUnsignedInt("Id", (f.m_Id as NativeId).RawId);
+            else if (f.m_Id is ForeignId)
+                writer.WriteString("Key", f.m_Id.FormattedKey);
         }
 
         /// <summary>

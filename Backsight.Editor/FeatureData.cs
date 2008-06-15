@@ -26,6 +26,12 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The feature of interest (may be null)
+        /// </summary>
+        Feature m_Feature;
+
+        /*
+        /// <summary>
         /// The 1-based creation sequence of the feature within the creating edit. A value
         /// of 0 means the sequence still needs to be defined.
         /// </summary>
@@ -39,8 +45,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Any user-defined key for the feature (may be null)
         /// </summary>
-        string m_Key;
-
+        FeatureId m_Id;
+        */
         #endregion
 
         #region Constructors
@@ -50,30 +56,20 @@ namespace Backsight.Editor
         /// </summary>
         public FeatureData()
         {
-            m_CreationSequence = 0;
-            m_EntityId = 0;
-            m_Key = null;
+            m_Feature = null;
+            //m_CreationSequence = 0;
+            //m_EntityId = 0;
+            //m_Id = null;
         }
 
         /// <summary>
         /// Creates a new <c>FeatureData</c> that's initialized with the information
         /// in the supplied feature.
         /// </summary>
-        /// <param name="f">The feature of interest</param>
+        /// <param name="f">The feature of interest (may be null)</param>
         internal FeatureData(Feature f)
         {
-            if (f==null)
-            {
-                m_CreationSequence = 0;
-                m_EntityId = 0;
-                m_Key = null;
-            }
-            else
-            {
-                m_CreationSequence = f.CreatorSequence;
-                m_EntityId = f.EntityType.Id;
-                m_Key = f.FormattedKey;
-            }
+            m_Feature = f;
         }
 
         #endregion
@@ -89,24 +85,47 @@ namespace Backsight.Editor
         public void WriteContent(XmlContentWriter writer)
         {
             // Don't write out any attributes if we had a null Feature
-            if (m_CreationSequence>0)
-            {
-                writer.WriteUnsignedInt("CreationSequence", m_CreationSequence);
-                writer.WriteInt("EntityId", m_EntityId);
-                writer.WriteString("Key", m_Key);
-            }
+            if (m_Feature!=null)
+                Feature.WriteContent(writer, m_Feature);
         }
 
         public void ReadContent(XmlContentReader reader)
         {
             if (reader.HasAttribute("CreationSequence"))
             {
-                m_CreationSequence = reader.ReadUnsignedInt("CreationSequence");
-                m_EntityId = reader.ReadInt("EntityId");
-                m_Key = reader.ReadString("Key");
+                //m_CreationSequence = reader.ReadUnsignedInt("CreationSequence");
+                //m_EntityId = reader.ReadInt("EntityId");
+                //m_Key = reader.ReadString("Key");
             }
         }
 
         #endregion
+
+        /*
+        /// <summary>
+        /// The 1-based creation sequence of the feature within the creating edit. A value
+        /// of 0 means the sequence still needs to be defined.
+        /// </summary>
+        internal uint CreationSequence
+        {
+            get { return m_CreationSequence; }
+        }
+
+        /// <summary>
+        /// The ID of the entity type for the feature
+        /// </summary>
+        internal int EntityId
+        {
+            get { return m_EntityId; }
+        }
+
+        /// <summary>
+        /// Any user-defined key for the feature (may be null)
+        /// </summary>
+        internal string Key
+        {
+            get { return m_Key; }
+        }
+         */
     }
 }
