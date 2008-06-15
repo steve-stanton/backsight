@@ -479,6 +479,7 @@ namespace Backsight.Editor.Forms
             }
 
             mnuEditAutoHighlight.Checked = m_Controller.AutoSelect;
+            mnuEditAutoNumber.Checked = m_Controller.IsAutoNumber;
 
             mnuViewPosition.Checked = positionLabel.Visible;
             mnuViewPropertiesWindow.Checked = !vSplitContainer.Panel2Collapsed;
@@ -645,8 +646,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsFileSaveEnabled()
         {
-            Session s = Session.CurrentSession;
-            return (s==null ? false : !s.IsSaved);
+            return !m_Controller.IsSaved;
         }
 
         private void FileSave(IUserAction action)
@@ -884,12 +884,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsEditAutoNumberEnabled()
         {
-            return false;
+            return this.HasMap;
         }
 
         private void EditAutoNumber(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            m_Controller.ToggleAutoNumber();
         }
 
         private bool IsEditPreferencesEnabled()

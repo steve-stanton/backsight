@@ -309,13 +309,13 @@ namespace Backsight.Editor
         /// <param name="fid">The ID to search for.</param>
         /// <param name="ent">The entity type for the ID.</param>
         /// <returns>True if the ID pointer was removed. False if it could not be found.</returns>
-        internal bool DeleteId(FeatureId fid, IEntity ent)
+        internal bool DeleteId(NativeId fid, IEntity ent)
         {
         	IdPacket packet = null;		// Packet not found so far.
 
 	        // Search the ID group that the ID SHOULD be in.
 	        IdGroup group = GetGroup(ent);
-	        if (group!=null)
+            if (group != null)
                 packet = group.FindPacket(fid);
 
 	        // If we didn't find it, we must have been supplied the wrong
@@ -357,11 +357,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="fid">The ID to search for</param>
         /// <returns>The packet that contains the specified object (null if not found)</returns>
-        internal IdPacket FindPacket(FeatureId fid)
+        internal IdPacket FindPacket(NativeId nid)
         {
             foreach (IdGroup g in m_IdGroups)
             {
-                IdPacket p = g.FindPacket(fid);
+                IdPacket p = g.FindPacket(nid);
                 if (p!=null)
                     return p;
             }

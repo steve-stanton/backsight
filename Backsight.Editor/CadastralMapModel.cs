@@ -1311,7 +1311,7 @@ namespace Backsight.Editor
             // that have been used
             foreach (Session s in m_Sessions)
             {
-                if (s.Job == job && s.User == user)
+                if (s.Job.JobId == job.JobId && s.User.UserId == user.UserId)
                     s.LoadUsedIds(m_IdManager);
             }
         }

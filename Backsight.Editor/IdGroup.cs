@@ -609,12 +609,14 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="fid">The ID to search for</param>
         /// <returns>The packet that contains the specified object (null if not found)</returns>
-        internal IdPacket FindPacket(FeatureId fid)
+        internal IdPacket FindPacket(NativeId fid)
         {
+            uint rawId = fid.RawId;
+
             foreach (IdPacket p in m_Packets)
             {
-                if (p.IsReferredTo(fid))
-                    return p;                
+                if (p.Contains(rawId))
+                    return p;
             }
 
             return null;

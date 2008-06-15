@@ -350,13 +350,11 @@ namespace Backsight.Editor.Forms
             }
             else
             {
-                /*
-                m_PointId = new IdHandle();
-                m_PointId.Entity = (IEntity)entityTypeComboBox.SelectedItem;
+                IEntity ent = entityTypeComboBox.SelectedEntityType;
+                m_PointId.Entity = ent;
                 DisplayId did = (DisplayId)idComboBox.SelectedItem;
-                if (did!=null)
-                m_PointId.ReserveId(
-                */
+                if (did != null)
+                    m_PointId.ReserveId(ent, did.RawId);
                 ok = save.Execute(m_Position, m_PointId);
             }
 
@@ -373,8 +371,7 @@ namespace Backsight.Editor.Forms
 
         private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            IEntity ent = (IEntity)entityTypeComboBox.SelectedItem;
-            //uint nid = IdHelper.LoadIdCombo(idComboBox, ent, m_PointId, true);
+            IEntity ent = entityTypeComboBox.SelectedEntityType;
             idComboBox.Enabled = (ent!=null && ent.IdGroup!=null);
             if (idComboBox.Enabled)
             {

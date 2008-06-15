@@ -125,6 +125,12 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("NewPoint", m_NewPoint);
         }
 
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);

@@ -86,8 +86,6 @@ namespace Backsight.Editor
 
         #endregion
 
-        //internal void LoadSession(SessionData session, 
-
         /// <summary>
         /// Attempts to locate the <c>Type</c> corresponding to the supplied type name
         /// </summary>
@@ -224,9 +222,8 @@ namespace Backsight.Editor
             if (String.IsNullOrEmpty(typeName))
                 throw new Exception("Content does not contain xsi:type attribute");
 
-            // If we haven't previously encountered the type, look up an appropriate
-            // constructor (where possible, go for a constructor that accepts an
-            // XmlContentReader parameter).
+            // If we haven't previously encountered the type, look up a
+            // default constructor
             if (!m_Types.ContainsKey(typeName))
             {
                 Type t = FindType(typeName);
@@ -407,7 +404,9 @@ namespace Backsight.Editor
             {
                 m_Reader = data;
                 Debug.Assert(m_Elements.Count==0);
-                return ReadElement<Operation>("Edit");
+                Operation result = ReadElement<Operation>("Edit");
+                result.AddReferences();
+                return result;
             }
 
             finally
