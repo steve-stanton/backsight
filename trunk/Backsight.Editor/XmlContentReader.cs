@@ -482,5 +482,18 @@ namespace Backsight.Editor
 
             return result;
         }
+
+        /// <summary>
+        /// Reads back a calculated point feature
+        /// </summary>
+        /// <param name="elementName">The name of the element containing the fields
+        /// desribing the basic feature</param>
+        /// <param name="p">The calculated position of the point</param>
+        /// <returns>The created point</returns>
+        internal PointFeature ReadCalculatedPoint(string elementName, IPosition p)
+        {
+
+            FeatureData fd = ReadElement<FeatureData>(elementName);
+        }
     }
 }

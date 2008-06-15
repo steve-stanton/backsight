@@ -72,18 +72,6 @@ namespace Backsight.Editor
             m_Geom = (PointGeometry)g;
         }
 
-        /// <summary>
-        /// Creates a a new <c>PointFeature</c> (for use during de-serializaion)
-        /// </summary>
-        internal PointFeature(XmlContentReader reader, string name)
-        {
-            FeatureData fd = reader.ReadElement<FeatureData>(name);
-            //IPosition pos = Calculate();
-            Operation creator = reader.FindParent<Operation>();
-            creator.Load(fd, name);
-        }
-
-
         #endregion
 
         public double X

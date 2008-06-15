@@ -237,6 +237,7 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("Line", m_Line);
             writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
             writer.WriteElement("Point", new FeatureData(m_Point));
+            writer.WriteCalculatedPoint("Point", m_Point);
         }
 
         /// <summary>
@@ -251,9 +252,13 @@ namespace Backsight.Editor.Operations
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
             m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
 
-            FeatureData fd = reader.ReadElement<FeatureData>("Point");
-            IPosition pos = Calculate();
-            //m_Point = new PointFeature(reader, "Point");
+            m_Point = reader.ReadCalculatedPoint("Point", Calculate());
+
+            //FeatureData fd = reader.ReadElement<FeatureData>("Point");
+            //IPointGeometry p = PointGeometry.Create(Calculate());
+            //IEntity e = EnvironmentContainer.FindEntityById(fd.EntityId);
+            //m_Point = new PointFeature(p, e, reader.FindParent<Operation>());
+            //m_Point.CreatorSequence = fd.CreationSequence;
         }
     }
 }
