@@ -119,7 +119,7 @@ namespace Backsight.Editor
         /// <param name="fid">The feature ID to remove. At call, it should be inactive (not
         /// referring to anything).</param>
         /// <returns>True if ID reference has been nulled out.</returns>
-        internal bool DeleteId(FeatureId fid)
+        internal bool DeleteId(NativeId fid)
         {
             // Confirm the ID is inactive.
             if (!fid.IsInactive)
@@ -537,6 +537,16 @@ namespace Backsight.Editor
 
             m_Ids[index] = nid;
             return true;
+        }
+
+        /// <summary>
+        /// Does this ID packet enclose the supplied raw ID?
+        /// </summary>
+        /// <param name="rawId">The ID value to check</param>
+        /// <returns>True if the ID is between the allocation min/max</returns>
+        internal bool Contains(uint rawId)
+        {
+            return (Min <= rawId && rawId <= Max);
         }
     }
 }

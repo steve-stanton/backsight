@@ -238,5 +238,22 @@ namespace Backsight.Editor.Operations
             writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
             writer.WriteElement("Point", new FeatureData(m_Point));
         }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
+
+            FeatureData fd = reader.ReadElement<FeatureData>("Point");
+            IPosition pos = Calculate();
+            //m_Point = new PointFeature(reader, "Point");
+        }
     }
 }

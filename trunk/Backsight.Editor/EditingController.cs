@@ -93,11 +93,6 @@ namespace Backsight.Editor
         private int m_IsAutoSelect;
 
         /// <summary>
-        /// Are ID numbers selected automatically?
-        /// </summary>
-        private bool m_IsAutoNumber;
-
-        /// <summary>
         /// User interface for the command that is currently active (if any).
         /// </summary>
         private CommandUI m_Command;
@@ -759,22 +754,27 @@ namespace Backsight.Editor
                 display.MapPanel.Cursor = Cursors.Default;
         }
 
+        /// <summary>
+        /// Should feature IDs be assigned automatically? (false if the user must specify).
+        /// </summary>
         internal bool IsAutoNumber
         {
-            get { return m_IsAutoNumber; }
-            set { m_IsAutoNumber = value; }
+            get { return m_JobFile.Data.IsAutoNumber; }
+            set { m_JobFile.Data.IsAutoNumber = value; }
+        }
+
+        /// <summary>
+        /// Toggles the setting that says whether user-perceived IDs should be
+        /// assigned automatically or not.
+        /// </summary>
+        internal void ToggleAutoNumber()
+        {
+            IsAutoNumber = !IsAutoNumber;
         }
 
         void RemoveSelection()
         {
         }
-
-        /*
-        void SetChanged()
-        {
-            m_AutoSaver.SetChanged();
-        }
-        */
 
         /// <summary>
         /// Records the fact that update processing has been started.
@@ -934,7 +934,7 @@ namespace Backsight.Editor
         /// </summary>
         bool ArePointsDrawn
         {
-            get { return IsVisible(EditingController.Current.JobFile.Data.ShowPointScale); }
+            get { return IsVisible(m_JobFile.Data.ShowPointScale); }
         }
 
         /// <summary>
@@ -980,7 +980,6 @@ namespace Backsight.Editor
 
                 return result;
             }
-
         }
 
         /// <summary>
@@ -1124,6 +1123,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="title">Title for the dialog</param>
         /// <returns>The entered file name (null if not specified)</returns>
+        /*
         internal static string AskForFileName(string title)
         {
             SaveFileDialog dial = new SaveFileDialog();
@@ -1135,6 +1135,7 @@ namespace Backsight.Editor
 
             return null;
         }
+        */
 
         /// <summary>
         /// The units that should be used on display of observed lengths.
@@ -1146,7 +1147,6 @@ namespace Backsight.Editor
                 DistanceUnitType du = m_JobFile.Data.DisplayUnitType;
                 return GetUnits(du);
             }
-            //set { m_DisplayUnit = GetUnits(value.UnitType); }
         }
 
         internal DistanceUnit EntryUnit
@@ -1208,19 +1208,37 @@ namespace Backsight.Editor
         /// </summary>
         internal void CheckSave()
         {
-            // The session probably SHOULD be defined
-            Session s = Session.CurrentSession;
-            if (s == null)
+            if (IsSaved)
                 return;
 
-            if (s.IsSaved)
-                return;
+            Session s = Session.CurrentSession;
+            Debug.Assert(s != null);
 
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
                 == DialogResult.Yes)
+            {
+                m_JobFile.Save();
                 s.SaveChanges();
+            }
             else
                 s.DiscardChanges();
+        }
+
+        /// <summary>
+        /// Have all changes been saved? This refers to editing operations, as well
+        /// as more minor changes that are recorded in the job file.
+        /// </summary>
+        internal bool IsSaved
+        {
+            get
+            {
+                // The session probably SHOULD be defined
+                Session s = Session.CurrentSession;
+                if (s == null)
+                    return true;
+
+                return (s.IsSaved && m_JobFile.Data.IsSaved);
+            }
         }
     }
 }

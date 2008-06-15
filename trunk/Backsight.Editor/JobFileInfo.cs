@@ -370,5 +370,13 @@ namespace Backsight.Editor
             get { return m_DefaultTextType; }
             set { m_DefaultTextType = Set<int>(value); }
         }
+
+        /// <summary>
+        /// Has the information recorded in this instance been saved to disk?
+        /// </summary>
+        internal bool IsSaved
+        {
+            get { return !m_IsChanged; }
+        }
     }
 }

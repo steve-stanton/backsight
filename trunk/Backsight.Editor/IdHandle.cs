@@ -136,8 +136,11 @@ namespace Backsight.Editor
 
                     // If we got a group (and the ID if not foreign) try to find
                     // the ID packet that refers to the feature's ID.
-                    if (m_Group!=null && !m_Feature.IsForeignId)
-                        m_Packet = m_Group.FindPacket(m_FeatureId);
+                    if (m_Group != null && (m_FeatureId is NativeId))
+                    {
+                        NativeId nid = (m_FeatureId as NativeId);
+                        m_Packet = m_Group.FindPacket(nid);
+                    }
                 }
             }
         }
@@ -319,7 +322,8 @@ namespace Backsight.Editor
                     return false;
 
                 // Return if it's a foreign ID.
-                if (m_Feature.IsForeignId)
+                NativeId nid = (m_FeatureId as NativeId);
+                if (nid==null)
                     return false;
 
                 // The ID range SHOULD be known (see the constructor that
@@ -334,7 +338,7 @@ namespace Backsight.Editor
                 //    was foreign.
 
                 if (m_Packet==null)
-                    m_Packet = CadastralMapModel.Current.IdManager.FindPacket(m_FeatureId); 
+                    m_Packet = CadastralMapModel.Current.IdManager.FindPacket(nid); 
                 /*
                 if (m_Range==null)
                 {
@@ -353,7 +357,7 @@ namespace Backsight.Editor
 
                 // If the range has not been released, tell it to "delete"
                 // the pointer it has to the ID.
-                m_Packet.DeleteId(m_FeatureId);
+                m_Packet.DeleteId(nid);
                 //if (!m_Range.IsReleased)
                 //    m_Range.DeleteId(m_FeatureId);
             }
@@ -563,7 +567,7 @@ namespace Backsight.Editor
                 if (idMan==null)
                     return false;
 
-                if (!idMan.DeleteId(m_FeatureId, m_Entity))
+                if (!idMan.DeleteId((m_FeatureId as NativeId), m_Entity))
                     return false;
             }
 

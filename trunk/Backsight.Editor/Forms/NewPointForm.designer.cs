@@ -50,12 +50,12 @@ namespace Backsight.Editor.Forms
             this.northingTextBox = new System.Windows.Forms.TextBox();
             this.eastingTextBox = new System.Windows.Forms.TextBox();
             this.elevationTextBox = new System.Windows.Forms.TextBox();
-            this.entityTypeComboBox = new System.Windows.Forms.ComboBox();
             this.idComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -109,15 +109,6 @@ namespace Backsight.Editor.Forms
             this.elevationTextBox.Size = new System.Drawing.Size(96, 20);
             this.elevationTextBox.TabIndex = 2;
             // 
-            // entityTypeComboBox
-            // 
-            this.entityTypeComboBox.FormattingEnabled = true;
-            this.entityTypeComboBox.Location = new System.Drawing.Point(317, 22);
-            this.entityTypeComboBox.Name = "entityTypeComboBox";
-            this.entityTypeComboBox.Size = new System.Drawing.Size(232, 21);
-            this.entityTypeComboBox.TabIndex = 3;
-            this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
-            // 
             // idComboBox
             // 
             this.idComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -169,6 +160,16 @@ namespace Backsight.Editor.Forms
             this.label5.TabIndex = 12;
             this.label5.Text = "Entity type";
             // 
+            // entityTypeComboBox
+            // 
+            this.entityTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.entityTypeComboBox.FormattingEnabled = true;
+            this.entityTypeComboBox.Location = new System.Drawing.Point(317, 19);
+            this.entityTypeComboBox.Name = "entityTypeComboBox";
+            this.entityTypeComboBox.Size = new System.Drawing.Size(232, 24);
+            this.entityTypeComboBox.TabIndex = 13;
+            this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
+            // 
             // NewPointForm
             // 
             this.AcceptButton = this.okButton;
@@ -176,12 +177,12 @@ namespace Backsight.Editor.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(586, 124);
             this.ControlBox = false;
+            this.Controls.Add(this.entityTypeComboBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.idComboBox);
-            this.Controls.Add(this.entityTypeComboBox);
             this.Controls.Add(this.elevationTextBox);
             this.Controls.Add(this.eastingTextBox);
             this.Controls.Add(this.northingTextBox);
@@ -206,11 +207,11 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.TextBox northingTextBox;
         private System.Windows.Forms.TextBox eastingTextBox;
         private System.Windows.Forms.TextBox elevationTextBox;
-        private System.Windows.Forms.ComboBox entityTypeComboBox;
         private System.Windows.Forms.ComboBox idComboBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label label5;
+        private EntityTypeComboBox entityTypeComboBox;
     }
 }
