@@ -58,17 +58,29 @@ namespace Backsight.Editor.Operations
 
         #region Constructors
 
+        public AttachPointOperation()
+            : base()
+        {
+            SetInitialValues();
+        }
+
+        internal AttachPointOperation(Session s)
+            : base(s)
+        {
+            SetInitialValues();
+        }
+
+        #endregion
+
         /// <summary>
-        /// Creates a new <c>AttachPointOperation</c> with null values for everything.
+        /// Initializes class data with default values
         /// </summary>
-        internal AttachPointOperation()
+        void SetInitialValues()
         {
             m_Line = null;
             m_PositionRatio = 0;
             m_Point = null;
         }
-
-        #endregion
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -236,7 +248,6 @@ namespace Backsight.Editor.Operations
         {
             writer.WriteFeatureReference("Line", m_Line);
             writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
-            writer.WriteElement("Point", new FeatureData(m_Point));
             writer.WriteCalculatedPoint("Point", m_Point);
         }
 
@@ -251,14 +262,7 @@ namespace Backsight.Editor.Operations
             base.ReadContent(reader);
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
             m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
-
             m_Point = reader.ReadCalculatedPoint("Point", Calculate());
-
-            //FeatureData fd = reader.ReadElement<FeatureData>("Point");
-            //IPointGeometry p = PointGeometry.Create(Calculate());
-            //IEntity e = EnvironmentContainer.FindEntityById(fd.EntityId);
-            //m_Point = new PointFeature(p, e, reader.FindParent<Operation>());
-            //m_Point.CreatorSequence = fd.CreationSequence;
         }
     }
 }

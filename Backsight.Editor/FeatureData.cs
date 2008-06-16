@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -26,27 +27,21 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The feature of interest (may be null)
-        /// </summary>
-        Feature m_Feature;
-
-        /*
-        /// <summary>
         /// The 1-based creation sequence of the feature within the creating edit. A value
         /// of 0 means the sequence still needs to be defined.
         /// </summary>
         uint m_CreationSequence;
 
         /// <summary>
-        /// The ID of the entity type for the feature
+        /// The entity type for the feature
         /// </summary>
-        int m_EntityId;
+        IEntity m_Entity;
 
         /// <summary>
         /// Any user-defined key for the feature (may be null)
         /// </summary>
         FeatureId m_Id;
-        */
+
         #endregion
 
         #region Constructors
@@ -56,10 +51,9 @@ namespace Backsight.Editor
         /// </summary>
         public FeatureData()
         {
-            m_Feature = null;
-            //m_CreationSequence = 0;
-            //m_EntityId = 0;
-            //m_Id = null;
+            m_CreationSequence = 0;
+            m_Entity = null;
+            m_Id = null;
         }
 
         /// <summary>
@@ -69,7 +63,9 @@ namespace Backsight.Editor
         /// <param name="f">The feature of interest (may be null)</param>
         internal FeatureData(Feature f)
         {
-            m_Feature = f;
+            m_CreationSequence = f.CreatorSequence;
+            m_Entity = f.EntityType;
+            m_Id = f.Id;
         }
 
         #endregion
@@ -84,24 +80,42 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            // Don't write out any attributes if we had a null Feature
-            if (m_Feature!=null)
-                Feature.WriteContent(writer, m_Feature);
+            if (m_CreationSequence!=0)
+            {
+                writer.WriteUnsignedInt("Item", m_CreationSequence);
+                writer.WriteInt("EntityId", m_Entity.Id);
+
+                if (m_Id is NativeId)
+                    writer.WriteUnsignedInt("Id", (m_Id as NativeId).RawId);
+                else if (m_Id is ForeignId)
+                    writer.WriteString("Key", m_Id.FormattedKey);
+            }
         }
 
         public void ReadContent(XmlContentReader reader)
         {
-            if (reader.HasAttribute("CreationSequence"))
+            if (reader.HasAttribute("Item"))
             {
-                //m_CreationSequence = reader.ReadUnsignedInt("CreationSequence");
-                //m_EntityId = reader.ReadInt("EntityId");
-                //m_Key = reader.ReadString("Key");
+                m_CreationSequence = reader.ReadUnsignedInt("Item");
+                int entityId = reader.ReadInt("EntityId");
+                m_Entity = EnvironmentContainer.FindEntityById(entityId);
+
+                if (reader.HasAttribute("Id"))
+                {
+                    IdGroup g = CadastralMapModel.Current.IdManager.GetGroup(m_Entity);
+                    uint rawId = reader.ReadUnsignedInt("Id");
+                    m_Id = reader.FindNativeId(g, rawId);
+                }
+                else if (reader.HasAttribute("Key"))
+                {
+                    string key = reader.ReadString("Key");
+                    m_Id = reader.FindForeignId(key);
+                }
             }
         }
 
         #endregion
 
-        /*
         /// <summary>
         /// The 1-based creation sequence of the feature within the creating edit. A value
         /// of 0 means the sequence still needs to be defined.
@@ -112,20 +126,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The ID of the entity type for the feature
+        /// The entity type for the feature
         /// </summary>
-        internal int EntityId
+        internal IEntity EntityType
         {
-            get { return m_EntityId; }
+            get { return m_Entity; }
         }
 
         /// <summary>
         /// Any user-defined key for the feature (may be null)
         /// </summary>
-        internal string Key
+        internal FeatureId Id
         {
-            get { return m_Key; }
+            get { return m_Id; }
         }
-         */
     }
 }

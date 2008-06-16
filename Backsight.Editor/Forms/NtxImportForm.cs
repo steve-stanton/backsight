@@ -139,14 +139,9 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                // Ensure edit gets the next item number
-                Operation.CurrentEditSequence = Session.ReserveNextItem();
-
-                i = new Import();
+                i = new Import(Session.CurrentSession);
                 NtxImport ni = new NtxImport(ntxFile, this);
                 i.Execute(ni);
-                Trace.Write("Saving to database");
-                c.SaveOperation(i);
                 Trace.Write("Map model updates completed");
             }
 

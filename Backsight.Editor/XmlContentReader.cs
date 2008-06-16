@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Database;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -217,10 +218,11 @@ namespace Backsight.Editor
             m_Reader.MoveToFirstAttribute();
             */
 
-            // There should ALWAYS be a type declaration
+            // If there's no type declaration, assume we're dealing with a null object
             string typeName = m_Reader["xsi:type"];
             if (String.IsNullOrEmpty(typeName))
-                throw new Exception("Content does not contain xsi:type attribute");
+                return default(T);
+                //throw new Exception("Content does not contain xsi:type attribute");
 
             // If we haven't previously encountered the type, look up a
             // default constructor
@@ -492,8 +494,20 @@ namespace Backsight.Editor
         /// <returns>The created point</returns>
         internal PointFeature ReadCalculatedPoint(string elementName, IPosition p)
         {
-
+            // Pick up the information for the point
             FeatureData fd = ReadElement<FeatureData>(elementName);
+            if (fd==null)
+                return null;
+
+            IPointGeometry pg = PointGeometry.Create(p);
+            PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
+            result.CreatorSequence = fd.CreationSequence;
+
+            FeatureId fid = fd.Id;
+            if (fid!=null)
+                fid.Add(result);
+
+            return result;
         }
     }
 }

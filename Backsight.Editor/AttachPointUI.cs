@@ -181,7 +181,7 @@ namespace Backsight.Editor
 
             try
             {
-                op = new AttachPointOperation();
+                op = new AttachPointOperation(Session.CurrentSession);
                 op.Execute(m_Line, pos, m_PointType);
 
                 // Ensure the draw includes the extra point (perhaps a bit of overkill to

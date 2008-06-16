@@ -685,12 +685,6 @@ namespace Backsight.Editor
                 ActiveDisplay.PaintNow();
             }
 
-            // Save the last edit in the database
-            // TODO: There should really be something in the command object
-            // that provides the edit that got saved
-            Operation op = Session.CurrentSession.LastOperation;
-            SaveOperation(op);
-
             // Re-enable auto-highlighting if it was on before.
             if (m_IsAutoSelect<0)
                 m_IsAutoSelect = -m_IsAutoSelect;
@@ -705,43 +699,6 @@ namespace Backsight.Editor
 
             m_Command.Dispose();
             m_Command = null;
-        }
-
-        /// <summary>
-        /// Saves an editing operation in the database. This writes to the <c>Edits</c>
-        /// table and updates the timestamp in the <c>Sessions</c> table.
-        /// </summary>
-        /// <param name="op">The edit to save</param>
-        internal void SaveOperation(Operation op)
-        {
-            // Save the last edit in the database
-            // TODO: There should really be something in the command object
-            // that provides the edit that got saved
-            string x = op.ToXml();
-
-            using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
-            {
-                sw.Write(x);
-            }
-
-            Transaction.Execute(delegate
-            {
-                // Insert the edit
-                SqlCommand c = new SqlCommand();
-                c.Connection = Transaction.Connection.Value;
-                c.CommandText = "INSERT INTO [dbo].[Edits] ([SessionId], [EditSequence], [Data])" +
-                                    " VALUES (@sessionId, @editSequence, @data)";
-                c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Xml));
-                c.Parameters[0].Value = Session.CurrentSession.Id;
-                c.Parameters[1].Value = op.EditSequence;
-                c.Parameters[2].Value = x;
-                c.ExecuteNonQuery();
-
-                // Update the end-time associated with the session
-                Session.CurrentSession.UpdateEndTime();
-            });
         }
 
         /// <summary>
