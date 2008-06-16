@@ -30,14 +30,12 @@ namespace Backsight.Editor.Forms
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grid = new System.Windows.Forms.DataGridView();
-            this.StartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Who = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Layer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EditCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.detailsButton = new System.Windows.Forms.Button();
             this.closeButton = new System.Windows.Forms.Button();
             this.rollbackButton = new System.Windows.Forms.Button();
+            this.StartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EditCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -60,8 +58,8 @@ namespace Backsight.Editor.Forms
             this.splitContainer1.Panel2.Controls.Add(this.detailsButton);
             this.splitContainer1.Panel2.Controls.Add(this.closeButton);
             this.splitContainer1.Panel2.Controls.Add(this.rollbackButton);
-            this.splitContainer1.Size = new System.Drawing.Size(712, 275);
-            this.splitContainer1.SplitterDistance = 601;
+            this.splitContainer1.Size = new System.Drawing.Size(486, 275);
+            this.splitContainer1.SplitterDistance = 375;
             this.splitContainer1.TabIndex = 0;
             // 
             // grid
@@ -72,8 +70,6 @@ namespace Backsight.Editor.Forms
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.StartTime,
             this.EndTime,
-            this.Who,
-            this.Layer,
             this.EditCount});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 0);
@@ -82,50 +78,9 @@ namespace Backsight.Editor.Forms
             this.grid.ReadOnly = true;
             this.grid.RowHeadersVisible = false;
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.grid.Size = new System.Drawing.Size(601, 275);
+            this.grid.Size = new System.Drawing.Size(375, 275);
             this.grid.TabIndex = 0;
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
-            // 
-            // StartTime
-            // 
-            this.StartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.StartTime.DataPropertyName = "StartTime";
-            this.StartTime.HeaderText = "Start";
-            this.StartTime.Name = "StartTime";
-            this.StartTime.ReadOnly = true;
-            // 
-            // EndTime
-            // 
-            this.EndTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.EndTime.DataPropertyName = "EndTime";
-            this.EndTime.HeaderText = "Finish";
-            this.EndTime.Name = "EndTime";
-            this.EndTime.ReadOnly = true;
-            // 
-            // Who
-            // 
-            this.Who.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Who.DataPropertyName = "User";
-            this.Who.HeaderText = "Who";
-            this.Who.Name = "Who";
-            this.Who.ReadOnly = true;
-            // 
-            // Layer
-            // 
-            this.Layer.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Layer.DataPropertyName = "Layer";
-            this.Layer.HeaderText = "Layer";
-            this.Layer.Name = "Layer";
-            this.Layer.ReadOnly = true;
-            // 
-            // EditCount
-            // 
-            this.EditCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.EditCount.DataPropertyName = "OperationCount";
-            this.EditCount.FillWeight = 50F;
-            this.EditCount.HeaderText = "Edit count";
-            this.EditCount.Name = "EditCount";
-            this.EditCount.ReadOnly = true;
             // 
             // detailsButton
             // 
@@ -163,11 +118,33 @@ namespace Backsight.Editor.Forms
             this.rollbackButton.UseVisualStyleBackColor = true;
             this.rollbackButton.Click += new System.EventHandler(this.rollbackButton_Click);
             // 
+            // StartTime
+            // 
+            this.StartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.StartTime.HeaderText = "Start";
+            this.StartTime.Name = "StartTime";
+            this.StartTime.ReadOnly = true;
+            // 
+            // EndTime
+            // 
+            this.EndTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.EndTime.HeaderText = "Finish";
+            this.EndTime.Name = "EndTime";
+            this.EndTime.ReadOnly = true;
+            // 
+            // EditCount
+            // 
+            this.EditCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.EditCount.FillWeight = 50F;
+            this.EditCount.HeaderText = "Edit count";
+            this.EditCount.Name = "EditCount";
+            this.EditCount.ReadOnly = true;
+            // 
             // HistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(712, 275);
+            this.ClientSize = new System.Drawing.Size(486, 275);
             this.Controls.Add(this.splitContainer1);
             this.Name = "HistoryForm";
             this.Text = "Operation History";
@@ -190,8 +167,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.DataGridViewTextBoxColumn StartTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn EndTime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Who;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Layer;
         private System.Windows.Forms.DataGridViewTextBoxColumn EditCount;
     }
 }

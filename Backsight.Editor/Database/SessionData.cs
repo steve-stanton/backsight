@@ -408,6 +408,14 @@ namespace Backsight.Editor.Database
         }
 
         /// <summary>
+        /// When was the last edit performed?
+        /// </summary>
+        internal DateTime EndTime
+        {
+            get { return m_End; }
+        }
+
+        /// <summary>
         /// The number of items (objects) created by the session
         /// </summary>
         internal uint NumItem

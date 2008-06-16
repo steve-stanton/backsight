@@ -15,7 +15,6 @@
 
 using System;
 using System.Windows.Forms;
-using System.Collections.ObjectModel;
 
 namespace Backsight.Editor.Forms
 {
@@ -26,11 +25,6 @@ namespace Backsight.Editor.Forms
     public partial class HistoryForm : Form
     {
         #region Class data
-
-        /// <summary>
-        /// The data for the session grid
-        /// </summary>
-        BindingSource m_Binding;
 
         /// <summary>
         /// Have any edits been rolled back?
@@ -45,7 +39,6 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
             m_IsEdited = false;
-            m_Binding = null;
         }
 
         #endregion
@@ -57,17 +50,19 @@ namespace Backsight.Editor.Forms
 
         void LoadSessionList()
         {
-            m_Binding = new BindingSource();
-            ReadOnlyCollection<Session> s = CadastralMapModel.Current.Sessions;
-
-            // Display last session at top
-            Session[] r = new Session[s.Count];
-            for (int i=r.Length-1, j=0; i>=0; i--, j++)
-                r[j] = s[i];
-
-            m_Binding.DataSource = r;
-            grid.AutoGenerateColumns = false;
-            grid.DataSource = m_Binding;
+            Session[] sa = CadastralMapModel.Current.Sessions;
+            grid.ColumnCount = 3;
+            grid.RowCount = sa.Length;
+            int rowIndex = grid.RowCount;
+            for (int i = 0; i < sa.Length; i++)
+            {
+                rowIndex--;
+                DataGridViewRow row = grid.Rows[rowIndex];
+                row.Cells["StartTime"].Value = sa[i].StartTime;
+                row.Cells["EndTime"].Value = sa[i].EndTime;
+                row.Cells["EditCount"].Value = sa[i].OperationCount;
+                row.Tag = sa[i];
+            }
         }
 
         /// <summary>
@@ -114,7 +109,7 @@ namespace Backsight.Editor.Forms
                 return null;
 
             DataGridViewRow row = sel[0];
-            return (m_Binding[row.Index] as Session);
+            return (Session)row.Tag;
         }
 
         void ShowSession(Session s)
