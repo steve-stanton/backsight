@@ -29,6 +29,19 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        public NewPointOperation()
+            : base()
+        {
+            m_NewPoint = null;
+        }
+
+        internal NewPointOperation(Session s)
+            : base(s)
+        {
+            m_NewPoint = null;
+        }
+
         #endregion
 
         public PointFeature Point

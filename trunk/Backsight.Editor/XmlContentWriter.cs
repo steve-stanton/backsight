@@ -276,5 +276,16 @@ namespace Backsight.Editor
 
             m_Writer.WriteEndElement();
         }
+
+        /// <summary>
+        /// Writes out information for a point feature with geometry that will be
+        /// re-calculated on deserialization.
+        /// </summary>
+        /// <param name="elementName">The name of the element</param>
+        /// <param name="point">The point to write out</param>
+        internal void WriteCalculatedPoint(string elementName, PointFeature point)
+        {
+            WriteElement(elementName, new FeatureData(point));
+        }
     }
 }

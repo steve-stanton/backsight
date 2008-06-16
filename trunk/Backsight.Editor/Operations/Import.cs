@@ -36,10 +36,13 @@ namespace Backsight.Editor.Operations
 
         #region Constructors
 
-        /// <summary>
-        /// Creates a new <c>Import</c> in readiness for a data transfer.
-        /// </summary>
         public Import() : base()
+        {
+            m_Data = null;
+        }
+
+        internal Import(Session s)
+            : base(s)
         {
             m_Data = null;
         }
