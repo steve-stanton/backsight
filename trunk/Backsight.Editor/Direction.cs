@@ -661,10 +661,28 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Flags", m_Flag.ToString("X2"));
+            if (IsFixed)
+                writer.WriteString("Flags", "F");
 
-            if (m_Offset!=null)
-                writer.WriteElement("Offset", m_Offset);
+            writer.WriteElement("Offset", m_Offset);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            if (reader.HasAttribute("Flags"))
+            {
+                string flags = reader.ReadString("Flags");
+                if (flags.Contains("F"))
+                    SetFixed();
+            }
+
+            m_Offset = reader.ReadElement<Offset>("Offset");
         }
     }
 }

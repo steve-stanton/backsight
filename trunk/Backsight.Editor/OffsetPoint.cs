@@ -198,5 +198,16 @@ namespace Backsight.Editor
         {
             writer.WriteFeatureReference("Point", m_Point);
         }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            m_Point = reader.ReadFeatureByReference<PointFeature>("Point");
+        }
     }
 }

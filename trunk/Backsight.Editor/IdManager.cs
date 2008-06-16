@@ -273,7 +273,14 @@ namespace Backsight.Editor
         /// <returns>The matching group (null if no such group)</returns>
         internal IdGroup GetGroup(IEntity ent)
         {
-            return (ent==null ? null : m_EntityGroups[ent.Id]);
+            if (ent == null || ent.Id == 0)
+                return null;
+
+            IdGroup result;
+            if (m_EntityGroups.TryGetValue(ent.Id, out result))
+                return result;
+            else
+                return null;
         }
 
         /// <summary>

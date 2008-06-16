@@ -116,17 +116,7 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        //abstract public void ReadContent(XmlContentReader reader);
-
-        #endregion
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(XmlContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
+        abstract public void ReadContent(XmlContentReader reader);
 
         #endregion
     }
