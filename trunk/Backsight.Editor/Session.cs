@@ -426,5 +426,31 @@ namespace Backsight.Editor
                     p = m.AddUsedId(f, p);
             }
         }
+
+        /// <summary>
+        /// The number of edits performed in this session
+        /// </summary>
+        internal int OperationCount
+        {
+            get { return m_Operations.Count; }
+        }
+
+        /// <summary>
+        /// When was session started? 
+        /// </summary>
+        internal DateTime StartTime
+        {
+            get { return m_Data.StartTime; }
+        }
+
+        /// <summary>
+        /// When was the last edit performed?
+        /// </summary>
+        internal DateTime EndTime
+        {
+            get { return m_Data.EndTime; }
+        }
+
+
     }
 }

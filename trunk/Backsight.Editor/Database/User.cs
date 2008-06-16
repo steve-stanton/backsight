@@ -152,5 +152,13 @@ namespace Backsight.Editor.Database
             get { return m_Name; }
         }
 
+        /// <summary>
+        /// Provides a string for representing this object
+        /// </summary>
+        /// <returns>The <see cref="Name"/> property</returns>
+        public override string ToString()
+        {
+            return m_Name;
+        }
     }
 }

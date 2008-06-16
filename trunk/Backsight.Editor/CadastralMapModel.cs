@@ -201,9 +201,12 @@ namespace Backsight.Editor
             set { m_Rotation = value; }
         }
 
-        internal ReadOnlyCollection<Session> Sessions
+        /// <summary>
+        /// The editing sessions that define this model
+        /// </summary>
+        internal Session[] Sessions
         {
-            get { return m_Sessions.AsReadOnly(); }
+            get { return m_Sessions.ToArray(); }
         }
 
         #region ISpatialModel Members
