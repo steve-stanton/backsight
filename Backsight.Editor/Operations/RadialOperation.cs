@@ -61,17 +61,36 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
+        /// Default constructor, for use during deserialization
         /// </summary>
-        internal RadialOperation() : base()
+        public RadialOperation()
+            : base()
+        {
+            SetInitialValues();
+        }
+
+        /// <summary>
+        /// Creates a new <c>RadialOperation</c> as part of an editing session.
+        /// </summary>
+        /// <param name="s"></param>
+        internal RadialOperation(Session s)
+            : base(s)
+        {
+            SetInitialValues();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Initializes class data with default values
+        /// </summary>
+        void SetInitialValues()
         {
             m_Direction = null;
             m_Length = null;
             m_To = null;
             m_Line = null;
         }
-
-        #endregion
 
         bool CanCorrect
         {
@@ -411,10 +430,28 @@ void CeRadial::CreateAngleText ( CPtrList& text
             writer.WriteElement("Length", m_Length);
 
             // Creations ...
-
-            writer.WriteElement("To", new FeatureData(m_To));
+            writer.WriteCalculatedPoint("To", m_To);
             if (m_Line != null)
+            {
+                throw new NotImplementedException("RadialOperation.WriteContent");
                 writer.WriteElement("Line", new FeatureData(m_Line));
+            }
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Direction = reader.ReadElement<Direction>("Direction");
+            m_Length = reader.ReadElement<Observation>("Length");
+
+            IPosition to = RadialUI.Calculate(m_Direction, m_Length);
+            m_To = reader.ReadCalculatedPoint("To", to);
         }
     }
 }

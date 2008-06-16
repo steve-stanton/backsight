@@ -36,26 +36,22 @@ namespace Backsight.Editor
         /// <summary>
         /// A name for the unit of measurement.
         /// </summary>
-        [NonSerialized]
         private string m_UnitName;
 
         /// <summary>
         /// Accepted abbreviation (e.g. "ft"). May be an empty string (not null).
         /// </summary>
-        [NonSerialized]
         private string m_Abbreviation;
 
         /// <summary>
         /// Scaling factor to convert an entered unit of this type to meters (i.e. 0.3048
         /// for feet to meters).
         /// </summary>
-        [NonSerialized]
         private double m_Multiplier;
 
         /// <summary>
         /// The display colour.
         /// </summary>
-        [NonSerialized]
         private Color m_Colour;
 
         #endregion

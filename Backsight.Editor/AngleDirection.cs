@@ -29,21 +29,28 @@ namespace Backsight.Editor
         /// <summary>
         /// The angle in radians. A negated value indicates an anticlockwise angle.
         /// </summary>
-        private readonly double m_Observation;
+        private double m_Observation; // readonly
 
         /// <summary>
         /// The backsight point.
         /// </summary>
-        private readonly PointFeature m_Backsight;
+        private PointFeature m_Backsight; // readonly
 
         /// <summary>
         /// The occupied station.
         /// </summary>
-        private readonly PointFeature m_From;
+        private PointFeature m_From; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>AngleDirection</c>, for use during deserialization
+        /// </summary>
+        public AngleDirection()
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -175,9 +182,26 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
-            writer.WriteId("Backsight", m_Backsight.InternalId);
-            writer.WriteId("From", m_From.InternalId);
+            writer.WriteFeatureReference("Backsight", m_Backsight);
+            writer.WriteFeatureReference("From", m_From);
             writer.WriteString("Observation", RadianValue.AsString(m_Observation));
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Backsight = reader.ReadFeatureByReference<PointFeature>("Backsight");
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+
+            string obsv = reader.ReadString("Observation");
+            if (!RadianValue.TryParse(obsv, out m_Observation))
+                throw new Exception("AngleDirection.ReadContent - Cannot parse 'Observation'");
         }
     }
 }

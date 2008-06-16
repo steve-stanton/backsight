@@ -253,7 +253,7 @@ namespace Backsight.Editor
 		        }
 
 		        // Create empty persistent object (adds to current session)
-                RadialOperation pop = new RadialOperation();
+                RadialOperation pop = new RadialOperation(Session.CurrentSession);
 
 		        // Execute the operation.
 		        bool ok = pop.Execute(dir, len, idh, lineEnt );

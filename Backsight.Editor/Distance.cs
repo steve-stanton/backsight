@@ -62,7 +62,10 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        internal Distance()
+        /// <summary>
+        /// Creates a new <c>Distance</c>, for use during deserialization
+        /// </summary>
+        public Distance()
         {
 	        m_EnteredUnit = null;
 	        m_ObservedMetric = 0.0;
@@ -357,8 +360,22 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
-            writer.WriteString("MetricValue", m_ObservedMetric.ToString());
+            writer.WriteDouble("MetricValue", m_ObservedMetric);
             writer.WriteBool("IsFixed", m_IsFixed);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            DistanceUnitType unitType = (DistanceUnitType)reader.ReadInt("Unit");
+            m_EnteredUnit = EditingController.Current.GetUnits(unitType);
+            m_ObservedMetric = reader.ReadDouble("MetricValue");
+            m_IsFixed = reader.ReadBool("IsFixed");
         }
     }
 }
