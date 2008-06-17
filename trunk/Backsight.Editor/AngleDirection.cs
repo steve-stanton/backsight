@@ -181,10 +181,14 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
             writer.WriteFeatureReference("Backsight", m_Backsight);
             writer.WriteFeatureReference("From", m_From);
             writer.WriteString("Observation", RadianValue.AsString(m_Observation));
+
+            // Write base content at the end. This is a bit of a kludge, needed because
+            // the base may need to write a sub-element, and the writer requires that
+            // all attributes be written first. Should devise a better way!
+            base.WriteContent(writer);
         }
 
         /// <summary>
@@ -195,13 +199,14 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
-            base.ReadContent(reader);
             m_Backsight = reader.ReadFeatureByReference<PointFeature>("Backsight");
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
 
             string obsv = reader.ReadString("Observation");
             if (!RadianValue.TryParse(obsv, out m_Observation))
                 throw new Exception("AngleDirection.ReadContent - Cannot parse 'Observation'");
+
+            base.ReadContent(reader);
         }
     }
 }

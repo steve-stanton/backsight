@@ -684,5 +684,19 @@ namespace Backsight.Editor
 
             m_Offset = reader.ReadElement<Offset>("Offset");
         }
+
+        /// <summary>
+        /// Writes out the attributes for this object.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        //abstract internal void WriteAttributes(XmlContentWriter writer);
+
+        /// <summary>
+        /// Writes out any sub-elements for this object. This method is defined as
+        /// an abstract method to act as a reminder that embedded elements need to
+        /// be written after all attributes.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        //abstract internal void WriteElements(XmlContentWriter writer);
     }
 }

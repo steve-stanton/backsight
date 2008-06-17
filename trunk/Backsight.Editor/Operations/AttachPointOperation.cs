@@ -266,3 +266,4 @@ namespace Backsight.Editor.Operations
         }
     }
 }
+ 

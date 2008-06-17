@@ -211,5 +211,32 @@ namespace Backsight.Editor.Operations
 
             writer.WriteArray("IdArray", "Id", ids);
         }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            InternalIdValue[] ids = reader.ReadArray<InternalIdValue>("IdArray", "Id");
+
+            if (ids.Length==1)
+                m_Deletions = reader.ReadFeatureById(ids[0]);
+            else
+            {
+                List<Feature> feats = new List<Feature>(ids.Length);
+                foreach (InternalIdValue iid in ids)
+                    feats.Add(reader.ReadFeatureById(iid));
+
+                m_Deletions = new BasicList<Feature>(feats);
+            }
+
+            // Mark the features as deleted
+            foreach (Feature f in m_Deletions)
+                f.IsInactive = true;
+        }
     }
 }

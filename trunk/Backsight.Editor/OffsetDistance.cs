@@ -41,9 +41,9 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor creates an undefined offset.
+        /// Default constructor creates an undefined offset (for use during deserialization)
         /// </summary>
-        OffsetDistance()
+        public OffsetDistance()
         {
             m_Offset = new Distance();
             m_IsLeft = false;

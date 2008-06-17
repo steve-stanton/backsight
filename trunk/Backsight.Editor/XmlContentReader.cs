@@ -174,15 +174,6 @@ namespace Backsight.Editor
             return m_Reader[name];
         }
 
-        internal InternalIdValue ReadId(string name)
-        {
-            string s = m_Reader[name];
-            if (s==null)
-                return new InternalIdValue();
-            else
-                return new InternalIdValue(s);
-        }
-
         bool ReadToElement(string name)
         {
             return m_Reader.ReadToFollowing(name);
@@ -380,14 +371,27 @@ namespace Backsight.Editor
         internal T ReadFeatureByReference<T>(string name) where T : Feature
         {
             // Get the internal ID of the feature
-            InternalIdValue iid = ReadId(name);
-            if (iid.IsEmpty)
+            string s = m_Reader[name];
+            if (s==null)
                 return null;
 
-            if (!m_Features.ContainsKey(iid))
-                throw new Exception("Cannot find: " + iid);
+            InternalIdValue iid = new InternalIdValue(s);
+            return (T)ReadFeatureById(iid);
+        }
 
-            return (T)m_Features[iid];
+        /// <summary>
+        /// Obtains the spatial feature associated with the supplied internal ID.
+        /// </summary>
+        /// <param name="iid">The internal ID of the feature</param>
+        /// <returns>The corresponding feature</returns>
+        internal Feature ReadFeatureById(InternalIdValue iid)
+        {
+            // The corresponding feature SHOULD have been encountered already
+            Feature result;
+            if (m_Features.TryGetValue(iid, out result))
+                return result;
+
+            throw new Exception("Cannot find: " + iid);
         }
 
         /// <summary>
@@ -501,6 +505,32 @@ namespace Backsight.Editor
 
             IPointGeometry pg = PointGeometry.Create(p);
             PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
+            result.CreatorSequence = fd.CreationSequence;
+
+            FeatureId fid = fd.Id;
+            if (fid!=null)
+                fid.Add(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Reads back a "calculated" line feature (actually makes use of terminal
+        /// points that have been calculated).
+        /// </summary>
+        /// <param name="elementName">The name of the element containing the fields
+        /// desribing the basic feature</param>
+        /// <param name="from">The point at the start of the line</param>
+        /// <param name="to">The point at the end of the line</param>
+        /// <returns>The created line (defined by a simple line segment geometry)</returns>
+        internal LineFeature ReadCalculatedLine(string elementName, PointFeature from, PointFeature to)
+        {
+            // Pick up the information for the point
+            FeatureData fd = ReadElement<FeatureData>(elementName);
+            if (fd==null)
+                return null;
+
+            LineFeature result = new LineFeature(fd.EntityType, FindParent<Operation>(), from, to);
             result.CreatorSequence = fd.CreationSequence;
 
             FeatureId fid = fd.Id;
