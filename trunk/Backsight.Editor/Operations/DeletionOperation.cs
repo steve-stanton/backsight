@@ -220,6 +220,7 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
+            /*
             base.ReadContent(reader);
             InternalIdValue[] ids = reader.ReadArray<InternalIdValue>("IdArray", "Id");
 
@@ -237,6 +238,7 @@ namespace Backsight.Editor.Operations
             // Mark the features as deleted
             foreach (Feature f in m_Deletions)
                 f.IsInactive = true;
+             */
         }
     }
 }

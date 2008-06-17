@@ -292,6 +292,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="elementName">The name of the element</param>
         /// <param name="line">The line to write out</param>
+        /*
         internal void WriteCalculatedLine(string elementName, LineFeature line)
         {
             if (line==null)
@@ -299,5 +300,6 @@ namespace Backsight.Editor
             else
                 WriteElement(elementName, new FeatureData(line));
         }
+         */
     }
 }

@@ -39,7 +39,7 @@ namespace Backsight.Editor.Operations
         /// Default constructor creates a <c>NewLineOperation</c> that doesn't refer
         /// to any new line.
         /// </summary>
-        internal NewLineOperation()
+        public NewLineOperation()
         {
             m_NewLine = null;
         }
@@ -274,10 +274,25 @@ namespace Backsight.Editor.Operations
             // TODO: Is this right? - should writing the geometry for the new line
             // lead to the center and radius info when dealing with a NewCircleOperation?
 
+            /*
             if (this is NewCircleOperation)
                 writer.WriteElement("NewLine", new FeatureData(m_NewLine));
             else
                 writer.WriteElement("NewLine", m_NewLine);
+             */
+            writer.WriteElement("NewLine", m_NewLine);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_NewLine = reader.ReadElement<LineFeature>("NewLine");
         }
     }
 }
