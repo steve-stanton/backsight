@@ -45,7 +45,7 @@ namespace Backsight.Editor.Operations
         /// Default constructor creates a <c>NewCircleOperation</c> with
         /// everything set to null.
         /// </summary>
-        internal NewCircleOperation()
+        public NewCircleOperation()
         {
             m_Center = null;
             m_Radius = null;
@@ -307,10 +307,10 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
-
             writer.WriteFeatureReference("Center", m_Center);
             writer.WriteElement("Radius", m_Radius);
+
+            base.WriteContent(writer);
         }
     }
 }

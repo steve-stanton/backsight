@@ -63,7 +63,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>LineExtensionOperation</c> with everything set to null.
         /// </summary>
-        internal LineExtensionOperation()
+        public LineExtensionOperation()
         {
             m_ExtendLine = null;
             m_NewLine = null;
@@ -400,9 +400,24 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("ExtendLine", m_ExtendLine);
             writer.WriteBool("IsExtendFromEnd", m_IsExtendFromEnd);
             writer.WriteElement("Distance", m_Length);
+            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
+            writer.WriteElement("NewLine", m_NewLine);
+        }
 
-            writer.WriteElement("NewPoint", new FeatureData(m_NewPoint));
-            writer.WriteElement("NewLine", new FeatureData(m_NewLine));
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_ExtendLine = reader.ReadFeatureByReference<LineFeature>("ExtendLine");
+            m_IsExtendFromEnd = reader.ReadBool("IsExtendFromEnd");
+            m_Length = reader.ReadElement<Distance>("Distance");
+            m_NewPoint = reader.ReadCalculatedPoint("NewPoint", Calculate());
+            m_NewLine = reader.ReadElement<LineFeature>("NewLine");
         }
     }
 }

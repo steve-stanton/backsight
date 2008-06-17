@@ -252,25 +252,28 @@ namespace Backsight.Editor
             }
 
             // If we've just read a spatial feature, remember it
-            if (result is Feature)
-            {
-                Feature f = (result as Feature);
-                try
-                {
-                    m_Features.Add(f.InternalId, f);
-                }
-
-                catch
-                {
-                    throw new Exception("Failed to index feature "+f.DataId);
-                }
-            }
+            AddFeature(result as Feature);
 
             // Read the next node (if any), in case this element has an EndElement node. If it
             // doesn't we should be all ready to start reading the next element.
             //m_Reader.Read();
 
             return result;
+        }
+
+        /// <summary>
+        /// Records a new feature loaded by this reader. This indexes the
+        /// feature by it's internal ID.
+        /// </summary>
+        /// <param name="f">The feature that has been loaded (if null,
+        /// nothing gets done)</param>
+        void AddFeature(Feature f)
+        {
+            if (f != null)
+            {
+                try { m_Features.Add(f.InternalId, f); }
+                catch { throw new Exception("Failed to index feature " + f.DataId); }
+            }
         }
 
         /*
@@ -511,6 +514,7 @@ namespace Backsight.Editor
             if (fid!=null)
                 fid.Add(result);
 
+            AddFeature(result);
             return result;
         }
 
@@ -523,6 +527,7 @@ namespace Backsight.Editor
         /// <param name="from">The point at the start of the line</param>
         /// <param name="to">The point at the end of the line</param>
         /// <returns>The created line (defined by a simple line segment geometry)</returns>
+        /*
         internal LineFeature ReadCalculatedLine(string elementName, PointFeature from, PointFeature to)
         {
             // Pick up the information for the point
@@ -539,5 +544,6 @@ namespace Backsight.Editor
 
             return result;
         }
+         */
     }
 }
