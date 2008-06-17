@@ -431,11 +431,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             // Creations ...
             writer.WriteCalculatedPoint("To", m_To);
-            if (m_Line != null)
-            {
-                throw new NotImplementedException("RadialOperation.WriteContent");
-                writer.WriteElement("Line", new FeatureData(m_Line));
-            }
+            writer.WriteCalculatedLine("Line", m_Line);
         }
 
         /// <summary>
@@ -452,6 +448,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             IPosition to = RadialUI.Calculate(m_Direction, m_Length);
             m_To = reader.ReadCalculatedPoint("To", to);
+            m_Line = reader.ReadCalculatedLine("Line", m_Direction.From, m_To);
         }
     }
 }

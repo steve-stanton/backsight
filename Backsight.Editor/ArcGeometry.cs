@@ -724,7 +724,7 @@ namespace Backsight.Editor
             if (Object.ReferenceEquals(firstArc.Geometry, this))
                 writer.WriteElement("Circle", m_Circle);
             else
-                writer.WriteId("FirstArc", firstArc.InternalId);
+                writer.WriteFeatureReference("FirstArc", firstArc);
         }
 
         /// <summary>

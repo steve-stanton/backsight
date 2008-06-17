@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="9.75" />
+  <Class Name="Backsight.Editor.AngleDirection" Collapsed="true">
+    <Position X="5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>AngleDirection.cs</FileName>
+      <HashCode>AgAAAIICAQAAAAABgAAAAEAAAAQEBAAgAQAAEAAAAAQ=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Observation" Collapsed="true">
+    <Position X="3.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Observation.cs</FileName>
+      <HashCode>AAAAAABCAAAAAAAAAAAAAEAAAAAEBAAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.Direction" Collapsed="true">
+    <Position X="6.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Direction.cs</FileName>
+      <HashCode>EgIAAIIGEAAAAAABEAAEAEAIAAGMJAAAARAAEAAAwAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Distance" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Distance.cs</FileName>
+      <HashCode>AIEhAABGAAABAAQQgAAAAEABAAiEJAIAiAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.Offset" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Offset.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgAAAgAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.BearingDirection" Collapsed="true">
+    <Position X="7.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>BearingDirection.cs</FileName>
+      <HashCode>AgAAAIIAAQAAAAABgAAAAEAAAAAEBAAgAQAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.ParallelDirection" Collapsed="true">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>ParallelDirection.cs</FileName>
+      <HashCode>AgICAIIAACAAAAABgAAAAEAAAAAEBAAgAQAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.DeflectionDirection" Collapsed="true">
+    <Position X="5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>DeflectionDirection.cs</FileName>
+      <HashCode>AAAAAIIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.OffsetDistance" Collapsed="true">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>OffsetDistance.cs</FileName>
+      <HashCode>AAAAAAACAAAAgAAAiAAAAkAAAAAMJAAAgAAAEEAAgAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.OffsetPoint" Collapsed="true">
+    <Position X="2.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>OffsetPoint.cs</FileName>
+      <HashCode>AAAAAAAGAAAAgAAAgAAAAEAAAAAMBAQAABAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Ring" Collapsed="true">
+    <Position X="8.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Ring.cs</FileName>
+      <HashCode>AEgAAAAAAAAEAEAEAgAFAAAoAAAIBEBAAJAACQADQAE=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.Island" Collapsed="true">
+    <Position X="7.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Island.cs</FileName>
+      <HashCode>AAAAAAQAACAAAAAEAAAAAEAAAAAAAAQAABAACQAAQAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Polygon" Collapsed="true">
+    <Position X="9.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Polygon.cs</FileName>
+      <HashCode>AAAAAAEAEAAAAAAoAIBAAAAgQAAABAABABMACBLCQgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.RingMetrics" Collapsed="true">
+    <Position X="8.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>RingMetrics.cs</FileName>
+      <HashCode>GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAQIAAQA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Feature" Collapsed="true">
+    <Position X="3.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Feature.cs</FileName>
+      <HashCode>ECICYEAgAIAANxAEGzgiBMeqQFIEARRoUBAEAAAJYAE=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.LineFeature" Collapsed="true">
+    <Position X="0.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>LineFeature.cs</FileName>
+      <HashCode>EAwRAAACIBAIVAAAAhgmAEBCJggFUMBwARQQAoAAQIk=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.PointFeature" Collapsed="true">
+    <Position X="2.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>PointFeature.cs</FileName>
+      <HashCode>MAAAAIgEAIAAAAAEAgQSBEAAAAAEAEBAABQAAAAA4CA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.TextFeature" Collapsed="true">
+    <Position X="5.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>TextFeature.cs</FileName>
+      <HashCode>EAQAAAUAABAAAAAiAgAAAEAAAAAEAARAABQAAEAAQAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.ArcFeature" Collapsed="true">
+    <Position X="0.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>ArcFeature.cs</FileName>
+      <HashCode>AAAAAAACAIAAgAAAAAAAAAAAAAgAAAAAEBAAAAAAgAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operation" Collapsed="true">
+    <Position X="4.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operation.cs</FileName>
+      <HashCode>QA4gIABCAAAABQKGCAABAEWqQAAUJEAkBAAAEAAAAIA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Backsight.Editor.Operations.AttachPointOperation" Collapsed="true">
+    <Position X="0.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\AttachPointOperation.cs</FileName>
+      <HashCode>ACAAAABCAAgABBQAAAABAESAACAEAEUAAAAAEBABAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.DeletionOperation" Collapsed="true">
+    <Position X="2.75" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\DeletionOperation.cs</FileName>
+      <HashCode>ACAAAABCAAAABAQAAAABAEQACAAFAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.GetControlOperation" Collapsed="true">
+    <Position X="5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\GetControlOperation.cs</FileName>
+      <HashCode>AAAAAABCAAAABAQAIACBAEQAAAEAAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.Import" Collapsed="true">
+    <Position X="7.25" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\Import.cs</FileName>
+      <HashCode>AAAAAABCAAAABAQAAIABAEQAAAAEAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.IntersectOperation" Collapsed="true">
+    <Position X="9.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\IntersectOperation.cs</FileName>
+      <HashCode>hgAAAQBAAAAAAACAAACAAEAAAAAAAEAAAAAAAIIAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.LineExtensionOperation" Collapsed="true">
+    <Position X="1.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\LineExtensionOperation.cs</FileName>
+      <HashCode>AAAAAABmAAAADAQAAACBBERAACgAAEAAAAALEBAIAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.LineSubdivisionOperation" Collapsed="true">
+    <Position X="3.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\LineSubdivisionOperation.cs</FileName>
+      <HashCode>BAAAAABCAAgABAQAAACBQEQAASAAaEAAAAGAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.MoveTextOperation" Collapsed="true">
+    <Position X="5.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\MoveTextOperation.cs</FileName>
+      <HashCode>AAAAAABCQAAABgAAAAABAEQAAAEAAEAIAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.NewLineOperation" Collapsed="true">
+    <Position X="7.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\NewLineOperation.cs</FileName>
+      <HashCode>AAAAAABiAAAABAQAAAQBAEQAAAAAIEAAAAAAEAABAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.NewPointOperation" Collapsed="true">
+    <Position X="10" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\NewPointOperation.cs</FileName>
+      <HashCode>AAAAAABGAAAAhAQAAAABAEQAAAAEAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.NewTextOperation" Collapsed="true">
+    <Position X="2" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\NewTextOperation.cs</FileName>
+      <HashCode>AAAAAABCAAAABAQAAICBAEQAAAAAAEAAAAAAGAAAAgA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.ParallelOperation" Collapsed="true">
+    <Position X="4" Y="16.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\ParallelOperation.cs</FileName>
+      <HashCode>AEACAAhCAEAQRJRATASBAEQACCAAIEAAAAAAEJAIgAg=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.PathOperation" Collapsed="true">
+    <Position X="6.25" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\PathOperation.cs</FileName>
+      <HashCode>EAQAAABCADACRCYAAADDBMQAgQAWAMAgAAAAEABAAIg=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.PointOnLineOperation" Collapsed="true">
+    <Position X="8.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\PointOnLineOperation.cs</FileName>
+      <HashCode>BAAAAABGAAgwBAQAAACBAUQAAAAAAEBAAAAAEBAJAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.PolygonSubdivisionOperation" Collapsed="true">
+    <Position X="11" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\PolygonSubdivisionOperation.cs</FileName>
+      <HashCode>AAAAAABGAAAABAQgAAABAEQAAAAAAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.RadialOperation" Collapsed="true">
+    <Position X="2.75" Y="18.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\RadialOperation.cs</FileName>
+      <HashCode>AgAAAABCAAgAhBQAACCBAERAAAoEAMAAAAAAEAAJAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.SetTopologyOperation" Collapsed="true">
+    <Position X="4.75" Y="18.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\SetTopologyOperation.cs</FileName>
+      <HashCode>AAAAAABCAAgABAQAAAABAEQAAAAAAEAAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.TextRotationOperation" Collapsed="true">
+    <Position X="7" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\TextRotationOperation.cs</FileName>
+      <HashCode>AAAAAABCAAEABAQAAAABAEQCAAAAAEAAAAAAEAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Operations.TrimLineOperation" Collapsed="true">
+    <Position X="9.25" Y="18" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Operations\TrimLineOperation.cs</FileName>
+      <HashCode>AAAAAABGAAAABAQAgAABAEQAIAAAAEgAAAAAEAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+</ClassDiagram>

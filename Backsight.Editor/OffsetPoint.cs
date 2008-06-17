@@ -43,8 +43,9 @@ namespace Backsight.Editor
         /// <summary>
         /// Default constructor creates an offset point that doesn't refer to anything.
         /// You must use the <c>Point</c> property to subsequently define the offset point.
+        /// For use during deserialization.
         /// </summary>
-        OffsetPoint() : base()
+        public OffsetPoint() : base()
         {
             m_Point = null;
         }

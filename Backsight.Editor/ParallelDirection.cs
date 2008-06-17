@@ -30,21 +30,28 @@ namespace Backsight.Editor
         /// <summary>
         /// The origin of the direction.
         /// </summary>
-        private readonly PointFeature m_From;
+        private PointFeature m_From; // readonly
 
         /// <summary>
         /// Point defining start of parallel.
         /// </summary>
-        private readonly PointFeature m_Par1;
+        private PointFeature m_Par1; // readonly
 
         /// <summary>
         /// Point defining end of parallel.
         /// </summary>
-        private readonly PointFeature m_Par2;
+        private PointFeature m_Par2; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public ParallelDirection()
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -173,10 +180,26 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("Par1", m_Par1);
             writer.WriteFeatureReference("Par2", m_Par2);
+
+            base.WriteContent(writer);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_Par1 = reader.ReadFeatureByReference<PointFeature>("Par1");
+            m_Par2 = reader.ReadFeatureByReference<PointFeature>("Par2");
+
+            base.ReadContent(reader);
         }
     }
 }

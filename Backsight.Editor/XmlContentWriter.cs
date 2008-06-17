@@ -182,16 +182,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out an internal ID
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <param name="value">The value of the attribute</param>
-        internal void WriteId(string name, InternalIdValue value)
-        {
-            m_Writer.WriteAttributeString(name, value.ToString());
-        }
-
-        /// <summary>
         /// Writes out a reference to a previously existing spatial feature
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
@@ -209,9 +199,17 @@ namespace Backsight.Editor
         /// <param name="value">The value of the attribute</param>
         public void WriteBool(string name, bool value)
         {
-            m_Writer.WriteStartAttribute(name);
-            m_Writer.WriteValue(value);
-            m_Writer.WriteEndAttribute();
+            // There's no need to write out anything if the value is
+            // false, since that's what you'll get back if the attribute
+            // is undefined. Assumes that all boolean attributes are
+            // defined as optional.
+
+            if (value == true)
+            {
+                m_Writer.WriteStartAttribute(name);
+                m_Writer.WriteValue(value);
+                m_Writer.WriteEndAttribute();
+            }
         }
 
         /// <summary>
@@ -286,6 +284,20 @@ namespace Backsight.Editor
         internal void WriteCalculatedPoint(string elementName, PointFeature point)
         {
             WriteElement(elementName, new FeatureData(point));
+        }
+
+        /// <summary>
+        /// Writes out information for a line feature with geometry that will be
+        /// re-calculated on deserialization.
+        /// </summary>
+        /// <param name="elementName">The name of the element</param>
+        /// <param name="line">The line to write out</param>
+        internal void WriteCalculatedLine(string elementName, LineFeature line)
+        {
+            if (line==null)
+                m_Writer.WriteElementString(elementName, null);
+            else
+                WriteElement(elementName, new FeatureData(line));
         }
     }
 }

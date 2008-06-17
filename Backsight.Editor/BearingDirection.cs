@@ -28,16 +28,23 @@ namespace Backsight.Editor
         /// <summary>
         /// Angle from grid north, in range [0,2*PI].
         /// </summary>
-        private readonly double m_Observation;
+        private double m_Observation; // readonly
 
         /// <summary>
         /// The point which the bearing was taken.
         /// </summary>
-        private readonly PointFeature m_From;
+        private PointFeature m_From; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public BearingDirection()
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -135,9 +142,26 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
             writer.WriteFeatureReference("From", m_From);
             writer.WriteString("Observation", RadianValue.AsString(m_Observation));
+            base.WriteContent(writer);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+
+            string obsv = reader.ReadString("Observation");
+            if (!RadianValue.TryParse(obsv, out m_Observation))
+                throw new Exception("BearingDirection.ReadContent - Cannot parse 'Observation'");
+
+            base.ReadContent(reader);
         }
     }
 }
