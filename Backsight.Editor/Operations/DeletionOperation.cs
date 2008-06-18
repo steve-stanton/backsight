@@ -31,7 +31,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The features that were deleted.
         /// </summary>
-        IPossibleList<Feature> m_Deletions;
+        List<Feature> m_Deletions;
 
         #endregion
 
@@ -40,7 +40,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>DeletionOperation</c> that refers to nothing.
         /// </summary>
-        internal DeletionOperation()
+        public DeletionOperation()
         {
             m_Deletions = null;
         }
@@ -147,7 +147,10 @@ namespace Backsight.Editor.Operations
         /// <param name="f">The feature to add to the deletions list</param>
         internal void AddDeletion(Feature f)
         {
-            m_Deletions = (m_Deletions==null ? f : m_Deletions.Add(f));
+            if (m_Deletions==null)
+                m_Deletions = new List<Feature>(1);
+
+            m_Deletions.Add(f);
         }
 
         /// <summary>
@@ -162,7 +165,7 @@ namespace Backsight.Editor.Operations
                 throw new Exception("Deletion.Execute - Nothing to delete.");
 
             // Stick the features that were explicitly noted into the complete list
-            BasicList<Feature> all = new BasicList<Feature>(m_Deletions);
+            List<Feature> all = new List<Feature>(m_Deletions);
 
             // Loop through the features, checking for point features that
             // have attached lines.
@@ -205,11 +208,7 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            InternalIdValue[] ids = new InternalIdValue[m_Deletions.Count];
-            for (int i=0; i<ids.Length; i++)
-                ids[i] = m_Deletions[i].InternalId;
-
-            writer.WriteArray("IdArray", "Id", ids);
+            writer.WriteFeatureReferenceArray("IdArray", "Id", m_Deletions.ToArray());
         }
 
         /// <summary>
@@ -220,25 +219,13 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
-            /*
             base.ReadContent(reader);
-            InternalIdValue[] ids = reader.ReadArray<InternalIdValue>("IdArray", "Id");
-
-            if (ids.Length==1)
-                m_Deletions = reader.ReadFeatureById(ids[0]);
-            else
-            {
-                List<Feature> feats = new List<Feature>(ids.Length);
-                foreach (InternalIdValue iid in ids)
-                    feats.Add(reader.ReadFeatureById(iid));
-
-                m_Deletions = new BasicList<Feature>(feats);
-            }
+            Feature[] dels = reader.ReadFeatureReferenceArray<Feature>("IdArray", "Id");
+            m_Deletions = new List<Feature>(dels);
 
             // Mark the features as deleted
-            foreach (Feature f in m_Deletions)
-                f.IsInactive = true;
-             */
+            foreach (Feature f in dels)
+                f.Deactivate();
         }
     }
 }
