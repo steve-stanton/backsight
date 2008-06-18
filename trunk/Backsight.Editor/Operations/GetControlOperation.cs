@@ -40,7 +40,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Default constructor.
         /// </summary>
-        internal GetControlOperation()
+        public GetControlOperation()
         {
             m_Features = new List<PointFeature>();
         }
@@ -207,6 +207,20 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteArray("PointArray", "Point", m_Features.ToArray());
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            PointFeature[] points = reader.ReadArray<PointFeature>("PointArray", "Point");
+            m_Features.AddRange(points);
+
         }
     }
 }

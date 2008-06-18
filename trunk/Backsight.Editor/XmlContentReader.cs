@@ -339,6 +339,10 @@ namespace Backsight.Editor
             uint capacity = ReadUnsignedInt("Capacity");
             string[] result = new string[(int)capacity];
 
+            // Move to the first item (not sure why this is necessary, but otherwise
+            // I get an error with 1-element arrays)
+            m_Reader.Read();
+
             for (int i=0; i<capacity; i++)
                 result[i] = m_Reader.ReadElementString(itemName);
 
@@ -354,18 +358,6 @@ namespace Backsight.Editor
                 result[i] = (T)ReadFeatureById(ids[i]);
 
             return result;
-            /*
-            List<T> result = new List<T>((int)capacity);
-
-            for (int i=0; i<capacity; i++)
-            {
-                T item = ReadElement<T>(itemName);
-                Debug.Assert(item!=null);
-                result.Add(item);
-            }
-
-            return result.ToArray();
-             */
         }
 
         /// <summary>
@@ -521,33 +513,5 @@ namespace Backsight.Editor
             AddFeature(result);
             return result;
         }
-
-        /// <summary>
-        /// Reads back a "calculated" line feature (actually makes use of terminal
-        /// points that have been calculated).
-        /// </summary>
-        /// <param name="elementName">The name of the element containing the fields
-        /// desribing the basic feature</param>
-        /// <param name="from">The point at the start of the line</param>
-        /// <param name="to">The point at the end of the line</param>
-        /// <returns>The created line (defined by a simple line segment geometry)</returns>
-        /*
-        internal LineFeature ReadCalculatedLine(string elementName, PointFeature from, PointFeature to)
-        {
-            // Pick up the information for the point
-            FeatureData fd = ReadElement<FeatureData>(elementName);
-            if (fd==null)
-                return null;
-
-            LineFeature result = new LineFeature(fd.EntityType, FindParent<Operation>(), from, to);
-            result.CreatorSequence = fd.CreationSequence;
-
-            FeatureId fid = fd.Id;
-            if (fid!=null)
-                fid.Add(result);
-
-            return result;
-        }
-         */
     }
 }

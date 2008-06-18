@@ -227,5 +227,15 @@ namespace Backsight.Editor.Operations
             foreach (Feature f in dels)
                 f.Deactivate();
         }
+
+        /// <summary>
+        /// The number of features deleted by this edit.
+        /// </summary>
+        /// <remarks>This property is used by <see cref="SessionForm"/> to show
+        /// the number of feature involved in each edit.</remarks>
+        public override uint FeatureCount
+        {
+            get { return (uint)m_Deletions.Count; }
+        }
     }
 }

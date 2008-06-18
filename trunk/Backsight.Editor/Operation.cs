@@ -134,9 +134,13 @@ namespace Backsight.Editor
         abstract internal Feature[] Features { get; }
 
         /// <summary>
-        /// The number of features created by this edit.
+        /// The number of features created (or deleted) by this edit. This implementation
+        /// returns the number of created features - the <see cref="DeletionOperation"/>
+        /// class overrides
         /// </summary>
-        public uint FeatureCount
+        /// <remarks>This property is used by <see cref="SessionForm"/> to show
+        /// the number of feature involved in each edit.</remarks>
+        public virtual uint FeatureCount
         {
             get { return (uint)Features.Length; }
         }
