@@ -340,19 +340,6 @@ namespace Backsight.Editor
             }
         }
 
-        internal uint FeatureCount
-        {
-            get
-            {
-                uint result = 0;
-
-                foreach (Operation op in m_Operations)
-                    result += op.FeatureCount;
-
-                return result;
-            }
-        }
-
         /// <summary>
         /// Have edits performed as part of this session been "saved" (as far as
         /// the user is concerned). Each time a user performs an edit, the database

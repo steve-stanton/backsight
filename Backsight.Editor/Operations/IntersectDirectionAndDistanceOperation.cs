@@ -75,7 +75,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>IntersectDirectionAndDistanceOperation</c> with everything set to null.
         /// </summary>
-        internal IntersectDirectionAndDistanceOperation()
+        public IntersectDirectionAndDistanceOperation()
         {
             m_Direction = null;
             m_Distance = null;
@@ -524,15 +524,36 @@ namespace Backsight.Editor.Operations
         {
             base.WriteContent(writer);
 
-            writer.WriteElement("Direction", m_Direction);
-            writer.WriteElement("Distance", m_Distance);
             writer.WriteFeatureReference("From", m_From);
             writer.WriteBool("IsDefault", m_Default);
+            writer.WriteElement("Direction", m_Direction);
+            writer.WriteElement("Distance", m_Distance);
 
             // Creations...
-            writer.WriteElement("To", new FeatureData(m_To));
-            writer.WriteElement("DirLine", new FeatureData(m_DirLine));
-            writer.WriteElement("DistLine", new FeatureData(m_DistLine));
+            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteElement("DirLine", m_DirLine);
+            writer.WriteElement("DistLine", m_DistLine);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_Default = reader.ReadBool("IsDefault");
+            m_Direction = reader.ReadElement<Direction>("Direction");
+            m_Distance = reader.ReadElement<Observation>("Distance");
+
+            IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
+            m_To = reader.ReadCalculatedPoint("To", to);
+            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
+            m_DistLine = reader.ReadElement<LineFeature>("DistLine");
         }
     }
 }
