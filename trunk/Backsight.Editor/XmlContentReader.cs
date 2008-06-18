@@ -315,28 +315,47 @@ namespace Backsight.Editor
             if (!ReadToElement(arrayName))
                 throw new Exception("Array element not found");
 
-            //while (m_Reader.NodeType != XmlNodeType.Element || m_Reader.Name != arrayName)
-            //{
-            //    if (!m_Reader.Read())
-            //        throw new Exception("Array element not found");
-            //}
+            // Pick up array size
+            uint capacity = ReadUnsignedInt("Capacity");
+            T[] result = new T[(int)capacity];
 
-            // Pick up array size (optional nicety, may be inaccurate)
-            uint capacity = 1000;
-            if (HasAttribute("Capacity"))
-                capacity = ReadUnsignedInt("Capacity");
-
-            List<T> result = new List<T>((int)capacity);
-
-            /*
-            m_Reader.Read();
-            while (m_Reader.NodeType != XmlNodeType.EndElement || m_Reader.Name != arrayName)
+            for (int i=0; i<capacity; i++)
             {
                 T item = ReadElement<T>(itemName);
-                result.Add(item);
-                //m_Reader.Read();
+                Debug.Assert(item!=null);
+                result[i] = item;
             }
-            */
+
+            return result;
+        }
+
+        string[] ReadStringArray(string arrayName, string itemName)
+        {
+            // Ensure we're at an element
+            if (!ReadToElement(arrayName))
+                throw new Exception("Array element not found");
+
+            // Pick up array size
+            uint capacity = ReadUnsignedInt("Capacity");
+            string[] result = new string[(int)capacity];
+
+            for (int i=0; i<capacity; i++)
+                result[i] = m_Reader.ReadElementString(itemName);
+
+            return result;
+        }
+
+        internal T[] ReadFeatureReferenceArray<T>(string arrayName, string itemName) where T : Feature
+        {
+            string[] ids = ReadStringArray(arrayName, itemName);
+            T[] result = new T[ids.Length];
+
+            for (int i=0; i<ids.Length; i++)
+                result[i] = (T)ReadFeatureById(ids[i]);
+
+            return result;
+            /*
+            List<T> result = new List<T>((int)capacity);
 
             for (int i=0; i<capacity; i++)
             {
@@ -345,24 +364,8 @@ namespace Backsight.Editor
                 result.Add(item);
             }
 
-            /*
-            //bool done = false;
-            T item = null;
-
-            do
-            {
-                item = ReadElement<T>(itemName);
-                if (item!=null)
-                    result.Add(item);
-
-            //} while (!(m_Reader.NodeType==XmlNodeType.EndElement && m_Reader.Name==arrayName));
-            } while (item!=null);
-
-            //m_Reader.Read();
-            //Debug.Assert(m_Reader.NodeType==XmlNodeType.EndElement && m_Reader.Name==arrayName);
-            */
-
             return result.ToArray();
+             */
         }
 
         /// <summary>
@@ -378,17 +381,18 @@ namespace Backsight.Editor
             if (s==null)
                 return null;
 
-            InternalIdValue iid = new InternalIdValue(s);
-            return (T)ReadFeatureById(iid);
+            return (T)ReadFeatureById(s);
         }
 
         /// <summary>
         /// Obtains the spatial feature associated with the supplied internal ID.
         /// </summary>
-        /// <param name="iid">The internal ID of the feature</param>
+        /// <param name="sid">The internal ID of the feature</param>
         /// <returns>The corresponding feature</returns>
-        internal Feature ReadFeatureById(InternalIdValue iid)
+        Feature ReadFeatureById(string sid)
         {
+            InternalIdValue iid = new InternalIdValue(sid);
+
             // The corresponding feature SHOULD have been encountered already
             Feature result;
             if (m_Features.TryGetValue(iid, out result))

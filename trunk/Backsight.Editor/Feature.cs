@@ -486,6 +486,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Deactivates this feature.
+        /// </summary>
+        /// <remarks>This method is currently called when the model is getting loaded from
+        /// the database, and it hits a DeletionOperation. I'm not sure whether it should
+        /// be called during a "live" DeletionOperation</remarks>
+        internal void Deactivate()
+        {
+            IsInactive = true;
+            IsMoved = false;
+            SetBuilt(false);
+
+            // In the case of lines, this will first call the override that gets
+            // rid of any topological attachments
+            Clean();
+        }
+
+        /// <summary>
         /// Is the operation that created this feature being undone (see the <see cref="Undo"/> and
         /// <see cref="Restore"/> methods).
         /// </summary>

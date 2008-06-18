@@ -17,6 +17,7 @@ using System;
 using System.Xml;
 using System.Text;
 using System.Xml.Schema;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -247,15 +248,13 @@ namespace Backsight.Editor
         /// <param name="arrayName">The name for the element representing the complete array</param>
         /// <param name="itemName">The element name for individual elements in the array</param>
         /// <param name="data">The content to write out</param>
-        public void WriteArray(string arrayName, string itemName, string[] data)
+        internal void WriteFeatureReferenceArray(string arrayName, string itemName, Feature[] data)
         {
-            m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Capacity", (uint)data.Length);
+            string[] ids = new string[data.Length];
+            for (int i=0; i<data.Length; i++)
+                ids[i] = data[i].DataId;
 
-            foreach (string s in data)
-                m_Writer.WriteElementString(itemName, s);
-
-            m_Writer.WriteEndElement();
+            WriteStringArray(arrayName, itemName, ids);
         }
 
         /// <summary>
@@ -264,13 +263,13 @@ namespace Backsight.Editor
         /// <param name="arrayName">The name for the element representing the complete array</param>
         /// <param name="itemName">The element name for individual elements in the array</param>
         /// <param name="data">The content to write out</param>
-        internal void WriteArray(string arrayName, string itemName, InternalIdValue[] data)
+        void WriteStringArray(string arrayName, string itemName, string[] data)
         {
             m_Writer.WriteStartElement(arrayName);
             WriteUnsignedInt("Capacity", (uint)data.Length);
 
-            foreach (InternalIdValue id in data)
-                m_Writer.WriteElementString(itemName, id.ToString());
+            foreach (string s in data)
+                m_Writer.WriteElementString(itemName, s);
 
             m_Writer.WriteEndElement();
         }

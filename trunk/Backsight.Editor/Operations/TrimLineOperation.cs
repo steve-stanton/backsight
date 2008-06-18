@@ -272,17 +272,8 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            InternalIdValue[] lines = new InternalIdValue[m_Lines.Count];
-            for (int i = 0; i < lines.Length; i++)
-                lines[i] = m_Lines[i].InternalId;
-
-            writer.WriteArray("LineArray", "Id", lines);
-
-            InternalIdValue[] points = new InternalIdValue[m_Points.Count];
-            for (int i = 0; i < points.Length; i++)
-                points[i] = m_Points[i].InternalId;
-
-            writer.WriteArray("PointArray", "Id", points);
+            writer.WriteFeatureReferenceArray("LineArray", "Id", m_Lines.ToArray());
+            writer.WriteFeatureReferenceArray("PointArray", "Id", m_Points.ToArray());
         }
     }
 }
