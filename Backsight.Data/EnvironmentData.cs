@@ -101,7 +101,7 @@ namespace Backsight.Data
 
         public IEditEntity CreateEntity()
         {
-            EnvData.EntityRow row = EnvData.EntityRow.CreateEntityRow(m_Data);
+            EnvData.EntityTypeRow row = EnvData.EntityTypeRow.CreateEntityTypeRow(m_Data);
             row.EntityId = ReserveId();
             return row;
         }
@@ -191,7 +191,7 @@ namespace Backsight.Data
 
         public IEntity[] EntityTypes
         {
-            get { return (IEntity[])m_Data.Entity.Select(); }
+            get { return (IEntity[])m_Data.EntityType.Select(); }
         }
 
         public IFont[] Fonts

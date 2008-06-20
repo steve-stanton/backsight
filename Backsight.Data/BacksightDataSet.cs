@@ -41,7 +41,7 @@ namespace Backsight.Data
                 {
                     AdapterFactory.Create<FontTableAdapter>().Update(this.Font);
                     AdapterFactory.Create<IdGroupTableAdapter>().Update(this.IdGroup);
-                    AdapterFactory.Create<EntityTableAdapter>().Update(this.Entity);
+                    AdapterFactory.Create<EntityTypeTableAdapter>().Update(this.EntityType);
                     AdapterFactory.Create<ThemeTableAdapter>().Update(this.Theme);
                     AdapterFactory.Create<LayerTableAdapter>().Update(this.Layer);
                     AdapterFactory.Create<SysIdTableAdapter>().Update(this.SysId);
@@ -49,7 +49,7 @@ namespace Backsight.Data
                     AdapterFactory.Create<SchemaTableAdapter>().Update(this.Schema);
                     AdapterFactory.Create<TemplateTableAdapter>().Update(this.Template);
                     AdapterFactory.Create<SchemaTemplateTableAdapter>().Update(this.SchemaTemplate);
-                    AdapterFactory.Create<EntitySchemaTableAdapter>().Update(this.EntitySchema);
+                    AdapterFactory.Create<EntityTypeSchemaTableAdapter>().Update(this.EntityTypeSchema);
                     AdapterFactory.Create<ZoneTableAdapter>().Update(this.Zone);
                 });
             }
@@ -66,7 +66,7 @@ namespace Backsight.Data
             {
                 FontTableAdapter font = new FontTableAdapter();
                 IdGroupTableAdapter idGroup = new IdGroupTableAdapter();
-                EntityTableAdapter entity = new EntityTableAdapter();
+                EntityTypeTableAdapter entity = new EntityTypeTableAdapter();
                 ThemeTableAdapter theme = new ThemeTableAdapter();
                 LayerTableAdapter layer = new LayerTableAdapter();
                 SysIdTableAdapter sysid = new SysIdTableAdapter();
@@ -74,7 +74,7 @@ namespace Backsight.Data
                 SchemaTableAdapter schema = new SchemaTableAdapter();
                 TemplateTableAdapter template = new TemplateTableAdapter();
                 SchemaTemplateTableAdapter schemaTemplate = new SchemaTemplateTableAdapter();
-                EntitySchemaTableAdapter entitySchema = new EntitySchemaTableAdapter();
+                EntityTypeSchemaTableAdapter entityTypeSchema = new EntityTypeSchemaTableAdapter();
                 ZoneTableAdapter zone = new ZoneTableAdapter();
 
                 font.Connection =
@@ -87,12 +87,12 @@ namespace Backsight.Data
                 schema.Connection =
                 template.Connection =
                 schemaTemplate.Connection =
-                entitySchema.Connection =
+                entityTypeSchema.Connection =
                 zone.Connection = ic.Value;
 
                 font.Fill(this.Font);
                 idGroup.Fill(this.IdGroup);
-                entity.Fill(this.Entity);
+                entity.Fill(this.EntityType);
                 theme.Fill(this.Theme);
                 layer.Fill(this.Layer);
                 sysid.Fill(this.SysId);
@@ -100,7 +100,7 @@ namespace Backsight.Data
                 schema.Fill(this.Schema);
                 template.Fill(this.Template);
                 schemaTemplate.Fill(this.SchemaTemplate);
-                entitySchema.Fill(this.EntitySchema);
+                entityTypeSchema.Fill(this.EntityTypeSchema);
                 zone.Fill(this.Zone);
             }
         }
@@ -123,7 +123,7 @@ namespace Backsight.Data
             // Insert initial values for accommodating foreign key constraints
             Font.AddEmptyRow();
             IdGroup.AddEmptyRow();
-            Entity.AddEmptyRow();
+            EntityType.AddEmptyRow();
             Theme.AddEmptyRow();
             Layer.AddEmptyRow();
 

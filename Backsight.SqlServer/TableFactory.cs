@@ -106,7 +106,7 @@ namespace Backsight.SqlServer
         /// <returns>True if the entity table exists</returns>
         public bool DoTablesExist()
         {
-            string testTable = new BacksightDataSet().Entity.TableName;
+            string testTable = new BacksightDataSet().EntityType.TableName;
             return m_Database.Tables.Contains(testTable);
         }
 
@@ -132,8 +132,8 @@ namespace Backsight.SqlServer
             // Add simple checks (unfortunately, this info isn't held as part of the
             // generated DataSet, so need to explicitly identify each table involved)
 
-            AddSimpleChecks(logger, ds.Entity, ds.Entity.Checks);
-            AddSimpleChecks(logger, ds.EntitySchema, ds.EntitySchema.Checks);
+            AddSimpleChecks(logger, ds.EntityType, ds.EntityType.Checks);
+            AddSimpleChecks(logger, ds.EntityTypeSchema, ds.EntityTypeSchema.Checks);
             AddSimpleChecks(logger, ds.Font, ds.Font.Checks);
             AddSimpleChecks(logger, ds.IdAllocation, ds.IdAllocation.Checks);
             AddSimpleChecks(logger, ds.IdFree, ds.IdFree.Checks);
