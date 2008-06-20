@@ -63,7 +63,7 @@ namespace Backsight.Data
             {
                 get
                 {
-                    LayerRow[] result = this.GetLayerRows();
+                    LayerRow[] result = this.GetLayersRows();
                     Array.Sort<LayerRow>(result, delegate(LayerRow a, LayerRow b)
                                 { return a.ThemeSequence.CompareTo(b.ThemeSequence); });
                     return result;

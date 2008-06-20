@@ -67,7 +67,7 @@ namespace Backsight.Data
 
             public IEntity[] EntityTypes
             {
-                get { return (IEntity[])this.GetEntityRows(); }
+                get { return (IEntity[])this.GetEntityTypesRows(); }
             }
         }
     }

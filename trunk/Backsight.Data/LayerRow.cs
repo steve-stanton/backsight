@@ -62,25 +62,25 @@ namespace Backsight.Data
 
             public IEntity DefaultPointType
             {
-                get { return this.EntityRowByLayerEntityForeignKey1; }
+                get { return this.EntityTypesRowByFK_Layer_EntityType1; }
                 set { DefaultPointId = (value==null ? 0 : value.Id); }
             }
 
             public IEntity DefaultLineType
             {
-                get { return this.EntityRowByLayerEntityForeignKey2; }
+                get { return this.EntityTypesRowByFK_Layer_EntityType2; }
                 set { DefaultLineId = (value==null ? 0 : value.Id); }
             }
 
             public IEntity DefaultTextType
             {
-                get { return this.EntityRowByLayerEntityForeignKey4; }
+                get { return this.EntityTypesRowByFK_Layer_EntityType4; }
                 set { DefaultTextId = (value==null ? 0 : value.Id); }
             }
 
             public IEntity DefaultPolygonType
             {
-                get { return this.EntityRowByLayerEntityForeignKey3; }
+                get { return this.EntityTypesRowByFK_Layer_EntityType3; }
                 set { DefaultPolygonId = (value==null ? 0 : value.Id); }
             }
 

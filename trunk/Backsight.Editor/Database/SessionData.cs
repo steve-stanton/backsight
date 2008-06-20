@@ -151,7 +151,7 @@ namespace Backsight.Editor.Database
             if (t==null)
                 layerClause = String.Format("[LayerId]={0}", layer.Id);
             else
-                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [dbo].[Layer] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
+                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [dbo].[Layers] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
                                         t.Id, layer.ThemeSequence);
 
             // Define where clause for picking up the relevant published sessions
