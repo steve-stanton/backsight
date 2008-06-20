@@ -33,7 +33,7 @@ namespace Backsight.Editor.Forms
             this.repeatCheckBox = new System.Windows.Forms.CheckBox();
             this.defaultCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.entityComboBox = new System.Windows.Forms.ComboBox();
+            this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,7 +85,7 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.entityComboBox);
+            this.groupBox1.Controls.Add(this.entityTypeComboBox);
             this.groupBox1.Controls.Add(this.defaultCheckBox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
@@ -95,14 +95,16 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Point Type";
             // 
-            // entityComboBox
+            // entityTypeComboBox
             // 
-            this.entityComboBox.FormattingEnabled = true;
-            this.entityComboBox.Location = new System.Drawing.Point(31, 29);
-            this.entityComboBox.Name = "entityComboBox";
-            this.entityComboBox.Size = new System.Drawing.Size(310, 24);
-            this.entityComboBox.TabIndex = 0;
-            this.entityComboBox.SelectedValueChanged += new System.EventHandler(this.entityComboBox_SelectedValueChanged);
+            this.entityTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.entityTypeComboBox.FormattingEnabled = true;
+            this.entityTypeComboBox.Location = new System.Drawing.Point(31, 29);
+            this.entityTypeComboBox.Name = "entityTypeComboBox";
+            this.entityTypeComboBox.ShowBlankEntityType = false;
+            this.entityTypeComboBox.Size = new System.Drawing.Size(313, 24);
+            this.entityTypeComboBox.TabIndex = 5;
+            this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityComboBox_SelectedValueChanged);
             // 
             // AttachPointForm
             // 
@@ -131,6 +133,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.CheckBox repeatCheckBox;
         private System.Windows.Forms.CheckBox defaultCheckBox;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox entityComboBox;
+        private EntityTypeComboBox entityTypeComboBox;
     }
 }

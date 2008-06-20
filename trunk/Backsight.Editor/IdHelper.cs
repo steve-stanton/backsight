@@ -84,7 +84,8 @@ namespace Backsight.Editor
         /// Load an ID combo box with all the available IDs for a specific entity type.
         /// </summary>
         /// <param name="box">The combo box (not null)</param>
-        /// <param name="ent">The entity type that the combo is for (not null)</param>
+        /// <param name="ent">The entity type that the combo is for (if null, the combo will
+        /// be empty)</param>
         /// <param name="handle">The ID handle that should be defined to correspond with the
         /// first available ID (may be null). If there are no available IDs for the specified
         /// entity type, any ID previously reserved will be released.</param>
@@ -93,11 +94,14 @@ namespace Backsight.Editor
         /// <returns>The number of IDs that were loaded into the combo (if any)</returns>
         internal static int LoadIdCombo(ComboBox box, IEntity ent, IdHandle handle, bool canAllocate)
         {
-            if (box==null || ent==null)
+            if (box==null)
                 throw new ArgumentNullException();
 
             // Clear out anything that was in the combo before.
             box.Items.Clear();
+
+            if (ent==null)
+                return 0;
 
             // Get a list of all the available IDs for the specified entity type...
 

@@ -33,11 +33,18 @@ namespace Backsight.Editor.Operations
         /// The text label that was superseded as a consequence of adding
         /// an extra label to a derived layer.
         /// </summary>
-        readonly TextFeature m_OldText;
+        TextFeature m_OldText; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public ReplaceTextOperation()
+        {
+        }
 
         /// <summary>
         /// Creates a new <c>ReplaceTextOperation</c> that refers to the text that's
@@ -210,8 +217,24 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
             writer.WriteFeatureReference("OldText", m_OldText);
+            base.WriteContent(writer);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            // TODO: I believe the old text should be getting deactivated when the
+            // replacement text becomes known. However, the Execute method doesn't
+            // appear to do that, so for the time being, I won't do it here either.
+
+            m_OldText = reader.ReadFeatureByReference<TextFeature>("OldText");
+            base.ReadContent(reader);
         }
     }
 }

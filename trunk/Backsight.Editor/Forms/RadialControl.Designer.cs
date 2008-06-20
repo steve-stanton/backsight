@@ -61,7 +61,7 @@ namespace Backsight.Editor.Forms
             this.addLineCheckBox = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.pointIdComboBox = new System.Windows.Forms.ComboBox();
-            this.entityTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -118,8 +118,8 @@ namespace Backsight.Editor.Forms
             this.backsightTextBox.Name = "backsightTextBox";
             this.backsightTextBox.Size = new System.Drawing.Size(100, 20);
             this.backsightTextBox.TabIndex = 0;
-            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
             this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
+            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
             // 
             // angleTextBox
             // 
@@ -127,8 +127,8 @@ namespace Backsight.Editor.Forms
             this.angleTextBox.Name = "angleTextBox";
             this.angleTextBox.Size = new System.Drawing.Size(100, 20);
             this.angleTextBox.TabIndex = 1;
-            this.angleTextBox.Enter += new System.EventHandler(this.angleTextBox_Enter);
             this.angleTextBox.TextChanged += new System.EventHandler(this.angleTextBox_TextChanged);
+            this.angleTextBox.Enter += new System.EventHandler(this.angleTextBox_Enter);
             // 
             // lengthTextBox
             // 
@@ -136,8 +136,8 @@ namespace Backsight.Editor.Forms
             this.lengthTextBox.Name = "lengthTextBox";
             this.lengthTextBox.Size = new System.Drawing.Size(100, 20);
             this.lengthTextBox.TabIndex = 2;
-            this.lengthTextBox.Enter += new System.EventHandler(this.lengthTextBox_Enter);
             this.lengthTextBox.TextChanged += new System.EventHandler(this.lengthTextBox_TextChanged);
+            this.lengthTextBox.Enter += new System.EventHandler(this.lengthTextBox_Enter);
             // 
             // centreOfCurveCheckBox
             // 
@@ -196,11 +196,11 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.entityTypeComboBox);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.addLineCheckBox);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.pointIdComboBox);
-            this.groupBox1.Controls.Add(this.entityTypeComboBox);
             this.groupBox1.Location = new System.Drawing.Point(345, 16);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(363, 97);
@@ -251,14 +251,14 @@ namespace Backsight.Editor.Forms
             // 
             // entityTypeComboBox
             // 
-            this.entityTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.entityTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.entityTypeComboBox.FormattingEnabled = true;
-            this.entityTypeComboBox.Location = new System.Drawing.Point(58, 22);
+            this.entityTypeComboBox.Location = new System.Drawing.Point(59, 19);
             this.entityTypeComboBox.Name = "entityTypeComboBox";
-            this.entityTypeComboBox.Size = new System.Drawing.Size(274, 21);
-            this.entityTypeComboBox.TabIndex = 3;
-            this.entityTypeComboBox.TabStop = false;
-            this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
+            this.entityTypeComboBox.ShowBlankEntityType = false;
+            this.entityTypeComboBox.Size = new System.Drawing.Size(282, 24);
+            this.entityTypeComboBox.TabIndex = 16;
+            this.entityTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
             // 
             // RadialControl
             // 
@@ -305,10 +305,10 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Button offsetButton;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox entityTypeComboBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox pointIdComboBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.CheckBox addLineCheckBox;
+        private EntityTypeComboBox entityTypeComboBox;
     }
 }

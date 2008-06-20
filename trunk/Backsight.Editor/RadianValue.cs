@@ -286,17 +286,6 @@ namespace Backsight.Editor
             m_Value = value;
         }
 
-        /// <summary>
-        /// Creates a new <c>RadianValue</c> during deserialization from XML.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public RadianValue(XmlContentReader reader)
-        {
-            string s = reader.ReadString("Value");
-            if (!TryParse(s, out m_Value))
-                throw new Exception("RadianValue: Cannot parse " + s);
-        }
-
         #endregion
 
         /// <summary>
@@ -350,32 +339,5 @@ namespace Backsight.Editor
         {
             return (radianValue * MathConstants.RADTODEG);
         }
-
-        #region IXmlContent Members
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteString("Value", AsString(m_Value));
-        }
-
-        /// <summary>
-        /// Loads the content of this class using the supplied reader.
-        /// </summary>
-        /// <param name="reader">The reading tool.</param>
-        /// <exception cref="InvalidOperationException">Always thrown. This struct involves
-        /// readonly members, so the constructor that accepts am <c>XmlContentReader</c> should
-        /// be used.</exception>
-        public void ReadContent(XmlContentReader reader)
-        {
-            throw new InvalidOperationException();
-        }
-
-        #endregion
     }
 }

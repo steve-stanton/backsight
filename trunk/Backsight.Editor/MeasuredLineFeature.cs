@@ -87,8 +87,8 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
+            writer.WriteElement("Line", m_Line);
             writer.WriteElement("Distance", m_ObservedLength);
-            writer.WriteFeatureReference("Line", m_Line);
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
+            m_Line = reader.ReadElement<LineFeature>("Line");
             m_ObservedLength = reader.ReadElement<Distance>("Distance");
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
         }
     }
 }

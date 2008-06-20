@@ -422,6 +422,9 @@ namespace Backsight.Editor
         /// <returns>True if this ID handle is suitable for the entity type.</returns>
         internal bool IsValidFor(IEntity ent)
         {
+            if (ent==null)
+                return false;
+
             IdManager idMan = CadastralMapModel.Current.IdManager;
             if (idMan==null)
                 return true;

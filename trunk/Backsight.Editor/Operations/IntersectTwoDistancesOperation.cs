@@ -79,7 +79,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>IntersectTwoDistancesOperation</c> with everything set to null.
         /// </summary>
-        internal IntersectTwoDistancesOperation()
+        public IntersectTwoDistancesOperation()
         {
             m_Distance1 = null;
             m_From1 = null;
@@ -333,6 +333,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the position of the intersection (if any).
+        /// </summary>
+        /// <returns>The position of the intersection (null if it cannot be calculated).</returns>
+        IPosition Calculate()
+        {
+            return Calculate(m_Distance1, m_From1, m_Distance2, m_From2, m_Default);
+        }
+
+        /// <summary>
         /// Calculates the intersection point.
         /// </summary>
         /// <param name="dist1">1st distance observation.</param>
@@ -559,17 +568,38 @@ namespace Backsight.Editor.Operations
         {
             base.WriteContent(writer);
 
-            writer.WriteElement("Distance1", m_Distance1);
             writer.WriteFeatureReference("From1", m_From1);
-            writer.WriteElement("Distance2", m_Distance2);
             writer.WriteFeatureReference("From2", m_From2);
             writer.WriteBool("IsDefault", m_Default);
+            writer.WriteElement("Distance1", m_Distance1);
+            writer.WriteElement("Distance2", m_Distance2);
 
             // Creations ...
+            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteElement("Line1", m_Line1);
+            writer.WriteElement("Line2", m_Line2);
+        }
 
-            writer.WriteElement("To", new FeatureData(m_To));
-            writer.WriteElement("Line1", new FeatureData(m_Line1));
-            writer.WriteElement("Line2", new FeatureData(m_Line2));
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_From1 = reader.ReadFeatureByReference<PointFeature>("From1");
+            m_From2 = reader.ReadFeatureByReference<PointFeature>("From2");
+            m_Default = reader.ReadBool("IsDefault");
+            m_Distance1 = reader.ReadElement<Distance>("Distance1");
+            m_Distance2 = reader.ReadElement<Distance>("Distance2");
+
+            IPosition p = Calculate();
+            m_To = reader.ReadCalculatedPoint("To", p);
+            m_Line1 = reader.ReadElement<LineFeature>("Line1");
+            m_Line2 = reader.ReadElement<LineFeature>("Line2");
         }
     }
 }

@@ -82,7 +82,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>IntersectDirectionAndLineOperation</c> with everything set to null.
         /// </summary>
-        internal IntersectDirectionAndLineOperation()
+        public IntersectDirectionAndLineOperation()
         {
             m_Direction = null;
             m_Line = null;
@@ -317,6 +317,20 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the position of the intersection
+        /// </summary>
+        /// <returns>The calculated position (null if the direction doesn't intersect the line)</returns>
+        IPosition Calculate()
+        {
+            IPosition xsect;
+            PointFeature closest;
+            if (m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
+                return xsect;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="dir">The direction to intersect.</param>
@@ -516,16 +530,38 @@ namespace Backsight.Editor.Operations
         {
             base.WriteContent(writer);
 
-            writer.WriteElement("Direction", m_Direction);
             writer.WriteFeatureReference("Line", m_Line);
             writer.WriteFeatureReference("CloseTo", m_CloseTo);
             writer.WriteBool("IsSplit", m_IsSplit);
+            writer.WriteElement("Direction", m_Direction);
 
             // Creations...
-            writer.WriteElement("To", new FeatureData(m_Intersection));
-            writer.WriteElement("DirLine", new FeatureData(m_DirLine));
-            writer.WriteElement("LineA", new FeatureData(m_LineA));
-            writer.WriteElement("LineB", new FeatureData(m_LineB));
+            writer.WriteCalculatedPoint("To", m_Intersection);
+            writer.WriteElement("DirLine", m_DirLine);
+            writer.WriteElement("LineA", m_LineA);
+            writer.WriteElement("LineB", m_LineB);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
+            m_IsSplit = reader.ReadBool("IsSplit");
+            m_Direction = reader.ReadElement<Direction>("Direction");
+
+            IPosition p = Calculate();
+            m_Intersection = reader.ReadCalculatedPoint("To", p);
+            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
+            m_LineA = reader.ReadElement<LineFeature>("LineA");
+            m_LineB = reader.ReadElement<LineFeature>("LineB");
         }
     }
 }

@@ -42,7 +42,15 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
+        /// Default constructor sets everything to null, for use in deserialization
+        /// </summary>
+        public MoveTextOperation()
+        {
+            m_Text = null;
+            m_OldPosition = null;
+        }
+
+        /// <summary>
         /// Creates a new <c>MoveTextOperation</c>
         /// </summary>
         internal MoveTextOperation(TextFeature text, PointGeometry oldPosition)

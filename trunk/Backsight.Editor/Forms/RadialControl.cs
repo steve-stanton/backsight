@@ -623,7 +623,7 @@ namespace Backsight.Editor.Forms
             if (IsUpdate)
             {
                 // Load the entity combo box with a list for point features.
-                m_Cmd.LoadEntityCombo(entityTypeComboBox, SpatialType.Point);
+                entityTypeComboBox.Load(SpatialType.Point);
 
                 ShowUpdate();
 
@@ -633,7 +633,7 @@ namespace Backsight.Editor.Forms
             else
             {
                 // Load the entity combo box with a list for point features.
-                IEntity ent = m_Cmd.LoadEntityCombo(entityTypeComboBox, SpatialType.Point);
+                IEntity ent = entityTypeComboBox.Load(SpatialType.Point);
 
                 // If the from point does not lie on a curve, make the
                 // "use centre" checkbox invisible.
@@ -920,8 +920,10 @@ namespace Backsight.Editor.Forms
 
         private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            // Get the new point type.
-            IEntity ent = (IEntity)entityTypeComboBox.SelectedItem;
+            // Get the new point type (it might be null while the control is loading)
+            IEntity ent = entityTypeComboBox.SelectedEntityType;
+            if (ent==null)
+                return;
 
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).
@@ -1309,7 +1311,7 @@ namespace Backsight.Editor.Forms
             // Then disable the combo.
             IEntity ent = op.Point.EntityType;
             if (ent!=null)
-                entityTypeComboBox.SelectedIndex = entityTypeComboBox.FindStringExact(ent.Name);
+                entityTypeComboBox.SelectEntity(ent);
             entityTypeComboBox.Enabled = false;
 
             // Display the point key (if any) and disable it.
@@ -1393,7 +1395,7 @@ namespace Backsight.Editor.Forms
             // Scroll combo to the entity type of the sideshot point that was created.
             IEntity ent = m_Recall.Point.EntityType;
             if (ent!=null)
-                entityTypeComboBox.SelectedIndex = entityTypeComboBox.FindStringExact(ent.Name);
+                entityTypeComboBox.SelectEntity(ent);
 
             // Set the check box that says whether a line was added.
             addLineCheckBox.Checked = m_WantLine;
