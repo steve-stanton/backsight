@@ -135,7 +135,7 @@ namespace Backsight.Editor.Forms
         {
             // Initialize combo box with a list of all point entity types
             // for the currently active layer.
-            IEntity ent = m_Cmd.LoadEntityCombo(pointTypeComboBox, SpatialType.Point);
+            IEntity ent = pointTypeComboBox.Load(SpatialType.Point);
 
             // If we are doing an update select the previously defined
             // entity type, and show the key that was assigned to the point.
@@ -182,8 +182,10 @@ namespace Backsight.Editor.Forms
 
         private void pointTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            // Get the new point type.
-            IEntity ent = (IEntity)pointTypeComboBox.SelectedItem;
+            // Get the new point type (it might be null while the control is loading)
+            IEntity ent = pointTypeComboBox.SelectedEntityType;
+            if (ent==null)
+                return;
 
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).
@@ -310,7 +312,7 @@ namespace Backsight.Editor.Forms
             // Scroll the entity combo to the previously defined
             // entity type for the extension point.
             if (ent!=null)
-                pointTypeComboBox.SelectedIndex = pointTypeComboBox.FindStringExact(ent.Name);
+                pointTypeComboBox.SelectEntity(ent);
 
             // Disable the entity combo, as well as the check box that
             // says whether a line should be added. All the user can

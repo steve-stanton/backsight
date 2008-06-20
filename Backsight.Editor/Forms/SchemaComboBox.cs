@@ -37,18 +37,6 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Loads this combo with schemas relating to the current
-        /// editing layer, sorting the list by table name.
-        /// </summary>
-        /// <param name="type">The type of spatial object the schemas must be associated with</param>
-        /// <returns>The default schema in the combo (if any)</returns>
-        public ITable Load(SpatialType type)
-        {
-            ILayer layer = EditingController.Current.ActiveLayer;
-            return Load(type, layer);
-        }
-
-        /// <summary>
         /// Loads this combo with schemas relating to a specific entity type
         /// </summary>
         /// <param name="ent">The entity type</param>
@@ -77,13 +65,13 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Loads this combo with schemas relating to a specific editing layer, sorting the list by table name.
+        /// Loads this combo with schemas relating to a specific type of geometry
         /// </summary>
         /// <param name="type">The spatial type(s) of interest</param>
-        /// <param name="layer">The layer of interest</param>
         /// <returns>The default schema in the combo (if any)</returns>
-        public ITable Load(SpatialType type, ILayer layer)
+        public ITable Load(SpatialType type)
         {
+            ILayer layer = EditingController.Current.ActiveLayer;
             ITable[] schemas = EnvironmentContainer.Schemas(type, layer);
             Array.Sort<ITable>(schemas, delegate(ITable a, ITable b)
                                     { return a.TableName.CompareTo(b.TableName); });
@@ -95,7 +83,8 @@ namespace Backsight.Editor.Forms
             if (type == 0)
                 return null;
 
-            IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
+            //IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
+            IEntity ent = CadastralMapModel.Current.GetDefaultEntity(type);
             if (ent!=null)
             {
                 ITable[] tabs = ent.DefaultTables;

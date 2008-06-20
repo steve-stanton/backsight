@@ -78,7 +78,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line that was subdivided.
         /// </summary>
-        readonly LineFeature m_Line;
+        LineFeature m_Line; // readonly
 
         /// <summary>
         /// The face(s) for the subdivided line. It is anticipated that there will usually be
@@ -92,6 +92,15 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor sets everything to null, for use in deserialization
+        /// </summary>
+        public LineSubdivisionOperation()
+        {
+            m_Line = null;
+            m_Faces = null;
+        }
 
         /// <summary>
         /// Creates a new <c>LineSubdivision</c> for the supplied line.
@@ -394,11 +403,35 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("Line", m_Line);
 
             // TODO: The structure here is a bit weak. Needs to be revisited.
+            /*
             LineSubdivisionFace[] faces = new LineSubdivisionFace[m_Faces.Count];
             for (int i=0; i<faces.Length; i++)
                 faces[i] = m_Faces[i];
 
             writer.WriteArray("FaceArray", "Face", faces);
+             */
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+
+            /*
+            LineSubdivisionFace[] faces = reader.ReadArray<LineSubdivisionFace>("FaceArray", "Face");
+
+            if (faces.Length==1)
+                m_Faces = faces[0];
+            else
+                m_Faces = new BasicList<LineSubdivisionFace>(faces);
+             */
         }
     }
 }

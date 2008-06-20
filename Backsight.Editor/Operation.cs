@@ -158,16 +158,16 @@ namespace Backsight.Editor
         /// Any overrides should call this version up front.
         /// </summary>
         /// <param name="container">The editing session that contains this operation</param>
+        /*
         internal virtual void OnLoad(Session container)
         {
-            //m_Sequence = container.MapModel.ReserveNextOpSequence();
+            m_Sequence = container.MapModel.ReserveNextOpSequence();
 
-            /*
             Feature[] createdFeatures = this.Features;
             foreach (Feature f in createdFeatures)
                 f.OnLoad(this, true);
-             */
         }
+        */
 
         /// <summary>
         /// The session in which this operation was originally defined.

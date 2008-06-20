@@ -64,7 +64,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>IntersectTwoDirectionsOperation</c> with everything set to null.
         /// </summary>
-        internal IntersectTwoDirectionsOperation()
+        public IntersectTwoDirectionsOperation()
         {
             m_Direction1 = null;
             m_Direction2 = null;
@@ -392,12 +392,28 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Direction2", m_Direction2);
 
             // Creations ...
+            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteElement("Line1", m_Line1);
+            writer.WriteElement("Line2", m_Line2);
+        }
 
-            writer.WriteElement("To", new FeatureData(m_To));
-            if (m_Line1 != null)
-                writer.WriteElement("Line1", new FeatureData(m_Line1));
-            if (m_Line2 != null)
-                writer.WriteElement("Line2", new FeatureData(m_Line2));
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            
+            m_Direction1 = reader.ReadElement<Direction>("Direction1");
+            m_Direction2 = reader.ReadElement<Direction>("Direction2");
+
+            IPosition p = Calculate();
+            m_To = reader.ReadCalculatedPoint("To", p);
+            m_Line1 = reader.ReadElement<LineFeature>("Line1");
+            m_Line2 = reader.ReadElement<LineFeature>("Line2");
         }
     }
 }

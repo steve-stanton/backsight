@@ -83,7 +83,7 @@ namespace Backsight.Editor.Forms
         private void AttachPointForm_Shown(object sender, EventArgs e)
         {
             // Load the entity combo box with a list for point features.
-            m_PointType = m_Cmd.LoadEntityCombo(entityComboBox, SpatialType.Point);
+            m_PointType = entityTypeComboBox.Load(SpatialType.Point);
 
             // The option to make the selected type the default for
             // this command is ALWAYS set by default
@@ -98,7 +98,7 @@ namespace Backsight.Editor.Forms
                 IEntity ent = EnvironmentContainer.FindEntityById(entId);
                 if (ent!=null)
                 {
-                    entityComboBox.SelectedIndex = entityComboBox.FindStringExact(ent.Name);
+                    entityTypeComboBox.SelectEntity(ent);
                     defaultCheckBox.Enabled = false;
                     m_PointType = ent;
                 }
@@ -131,7 +131,7 @@ namespace Backsight.Editor.Forms
         private void okButton_Click(object sender, EventArgs e)
         {
             // Get the selected point type.
-            m_PointType = (IEntity)entityComboBox.SelectedItem;
+            m_PointType = entityTypeComboBox.SelectedEntityType;
 
             // Ensure the currently selected repeat option is saved in the registry
             if (defaultCheckBox.Checked)

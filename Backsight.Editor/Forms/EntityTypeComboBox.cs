@@ -30,12 +30,13 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The text of any item that represents the null entity type. If null,
-        /// the combo won't contain a null entity.
+        /// Should entity types with blank names be displayed?
         /// </summary>
-        //string m_NullItemName;
+        bool m_ShowBlankEntityType;
 
         #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Creates an empty <c>EntityTypeComboBox</c>. Before making use of the
@@ -43,21 +44,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         public EntityTypeComboBox()
         {
+            m_ShowBlankEntityType = true;
             InitializeComponent();
         }
 
-        /// <summary>
-        /// The text that should appear alongside the "null" entity type. If the name
-        /// is null, the null entity type will not appear in the combo (if blank, you
-        /// get an item with no text).
-        /// </summary>
-        /*
-        public string NullItemName
-        {
-            get { return m_NullItemName; }
-            set { m_NullItemName = value; }
-        }
-        */
+        #endregion
 
         /// <summary>
         /// Loads this combo with entity types relating to the current
@@ -83,9 +74,15 @@ namespace Backsight.Editor.Forms
             IEntity[] entities = EnvironmentContainer.EntityTypes(type, layer);
             Array.Sort<IEntity>(entities, delegate(IEntity a, IEntity b)
                                     { return a.Name.CompareTo(b.Name); });
+
+            // If we're not supposed to show blank entities, weed them out
+            if (!m_ShowBlankEntityType)
+                entities = Array.FindAll(entities, delegate(IEntity e)
+                                        { return e.Name.Length>0; });
             this.DataSource = entities;
 
-            IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
+            //IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
+            IEntity ent = CadastralMapModel.Current.GetDefaultEntity(type);
             if (ent==null)
                 return null;
 
@@ -140,6 +137,15 @@ namespace Backsight.Editor.Forms
                 else
                     return e;
             }
+        }
+
+        /// <summary>
+        /// Should entity types with blank names be displayed?
+        /// </summary>
+        public bool ShowBlankEntityType
+        {
+            get { return m_ShowBlankEntityType; }
+            set { m_ShowBlankEntityType = value; }
         }
     }
 }

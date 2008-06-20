@@ -116,7 +116,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Default constructor.
         /// </summary>
-        internal ParallelOperation()
+        public ParallelOperation()
             : base()
         {
             // Input ...
@@ -641,12 +641,14 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("RefLine", m_RefLine);
-            writer.WriteElement("Offset", m_Offset);
-            writer.WriteUnsignedInt("Flags", m_Flags);
             writer.WriteFeatureReference("Term1", m_Term1);
             writer.WriteFeatureReference("Term2", m_Term2);
             writer.WriteFeatureReference("Near1", m_Near1);
             writer.WriteFeatureReference("Near2", m_Near2);
+            writer.WriteElement("Offset", m_Offset);
+
+            if (IsArcReversed)
+                writer.WriteBool("ArcReversed", true);
 
             // Created features ...
             writer.WriteElement("ParLine", new FeatureData(m_ParLine));
@@ -654,6 +656,31 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Term1b", new FeatureData(m_Term1b));
             writer.WriteElement("Term2a", new FeatureData(m_Term2a));
             writer.WriteElement("Term2b", new FeatureData(m_Term2b));
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_RefLine = reader.ReadFeatureByReference<LineFeature>("RefLine");
+            m_Term1 = reader.ReadFeatureByReference<LineFeature>("Term1");
+            m_Term2 = reader.ReadFeatureByReference<LineFeature>("Term2");
+            m_Near1 = reader.ReadFeatureByReference<PointFeature>("Near1");
+            m_Near2 = reader.ReadFeatureByReference<PointFeature>("Near2");
+            m_Offset = reader.ReadElement<Observation>("Offset");
+
+            bool isArcReversed = reader.ReadBool("ArcReversed");
+            if (isArcReversed)
+                m_Flags = 1;
+
+            // TODO: not sure about how to handle points at ends of parallel
+            throw new NotImplementedException("ParallelOperation.ReadContent");
         }
     }
 }

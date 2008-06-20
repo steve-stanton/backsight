@@ -38,6 +38,14 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
+        /// Default constructor sets everything to null, for use in deserialization
+        /// </summary>
+        public LineSubdivisionFace()
+        {
+            m_Sections = null;
+        }
+
+        /// <summary>
         /// Creates a <c>LineSubdivisionFace</c> that holds the definition of
         /// observed distances, but not the corresponding line sections.
         /// </summary>
@@ -272,14 +280,16 @@ namespace Backsight.Editor.Operations
             writer.WriteArray("SectionArray", "Section", m_Sections.ToArray());
         }
 
-        #region IXmlContent Members
-
-
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            MeasuredLineFeature[] sections = reader.ReadArray<MeasuredLineFeature>("SectionArray", "Section");
+            m_Sections = new List<MeasuredLineFeature>(sections);
         }
-
-        #endregion
     }
 }

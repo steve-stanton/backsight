@@ -28,11 +28,18 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line altered by the edit.
         /// </summary>
-        readonly LineFeature m_Line;
+        LineFeature m_Line; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
+        public SetTopologyOperation()
+        {
+        }
 
         /// <summary>
         /// Creates a new <c>SetTopologyOperation</c> that refers to the specified line.
@@ -136,6 +143,20 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Line", m_Line);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            base.ReadContent(reader);
+
+            m_Line.SwitchTopology();
         }
     }
 }

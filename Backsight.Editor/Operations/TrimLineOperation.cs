@@ -102,7 +102,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>TrimLineOperation</c> with everything set to null.
         /// </summary>
-        internal TrimLineOperation()
+        public TrimLineOperation()
         {
             m_Lines = null;
             m_Points = null;
@@ -274,6 +274,31 @@ namespace Backsight.Editor.Operations
         {
             writer.WriteFeatureReferenceArray("LineArray", "Id", m_Lines.ToArray());
             writer.WriteFeatureReferenceArray("PointArray", "Id", m_Points.ToArray());
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            LineFeature[] lines = reader.ReadFeatureReferenceArray<LineFeature>("LineArray", "Id");
+            PointFeature[] points = reader.ReadFeatureReferenceArray<PointFeature>("PointArray", "Id");
+
+            m_Lines = new List<LineFeature>(lines);
+            m_Points = new List<PointFeature>(points);
+
+            base.ReadContent(reader);
+
+            // Modify the referenced features...
+
+            foreach (LineFeature line in m_Lines)
+                line.IsTrimmed = true;
+
+            foreach (PointFeature point in m_Points)
+                point.IsTrimmed = true;
         }
     }
 }

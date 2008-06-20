@@ -63,7 +63,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>PointOnLineOperation</c> with everything set to null.
         /// </summary>
-        internal PointOnLineOperation()
+        public PointOnLineOperation()
         {
             m_Line = null;
             m_Distance = null;
@@ -101,6 +101,18 @@ namespace Backsight.Editor.Operations
         bool CanCorrect
         {
             get { return true; }
+        }
+
+        /// <summary>
+        /// Calculates the position of the point
+        /// </summary>
+        /// <returns>The calculated position (null if the distance is longer than the line being subdivided,
+        /// or supplied information is incomplete)</returns>
+        IPosition Calculate()
+        {
+            Distance d = new Distance(m_Distance);
+            bool isFromEnd = d.SetPositive();
+            return PointOnLineUI.Calculate(m_Line, d, isFromEnd);
         }
 
         /// <summary>
@@ -353,10 +365,28 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             writer.WriteElement("Distance", m_Distance);
 
             // Creations ...
+            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
 
-            writer.WriteElement("NewLine1", new FeatureData(m_NewLine1));
-            writer.WriteElement("NewPoint", new FeatureData(m_NewPoint));
-            writer.WriteElement("NewLine2", new FeatureData(m_NewLine2));
+            // The lines are implied, taking the entity type of the parent line
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            m_Distance = reader.ReadElement<Distance>("Distance");
+
+            IPosition p = Calculate();
+            m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
+            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
+            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
         }
     }
 }

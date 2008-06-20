@@ -41,6 +41,14 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor, for use in deserialization
+        /// </summary>
+        public PolygonSubdivisionOperation()
+        {
+        }
+
         #endregion
 
 
@@ -158,6 +166,20 @@ namespace Backsight.Editor.Operations
         {
             writer.WriteFeatureReference("DeactivatedLabel", m_Label);
             writer.WriteArray("LineArray", "Line", m_Lines);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_Label = reader.ReadFeatureByReference<TextFeature>("DeactivatedLabel");
+            m_Lines = reader.ReadArray<LineFeature>("LineArray", "Line");
         }
     }
 }

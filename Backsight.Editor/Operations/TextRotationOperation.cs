@@ -42,7 +42,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>TextRotationOperation</c> with everything set to zero.
         /// </summary>
-        internal TextRotationOperation()
+        public TextRotationOperation()
         {
             m_Rotation = m_PrevRotation = 0.0;
         }
@@ -145,8 +145,28 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteDouble("NewRotation", m_Rotation);
-            writer.WriteDouble("OldRotation", m_PrevRotation); // TODO: Is this needed?
+            writer.WriteString("NewRotation", RadianValue.AsShortString(m_Rotation));
+            writer.WriteString("OldRotation", RadianValue.AsShortString(m_PrevRotation)); // TODO: Is this needed?
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            if (!RadianValue.TryParse(reader.ReadString("NewRotation"), out m_Rotation))
+                throw new Exception("Cannot parse NewRotation attribute");
+
+            if (!RadianValue.TryParse(reader.ReadString("OldRotation"), out m_PrevRotation))
+                throw new Exception("Cannot parse OldRotation attribute");
+
+            base.ReadContent(reader);
+
+            // Remember the new rotation as part of the map model
+            MapModel.DefaultTextRotation = m_Rotation;
         }
 
         /// <summary>
@@ -155,10 +175,12 @@ namespace Backsight.Editor.Operations
         /// part of the enclosing model.
         /// </summary>
         /// <param name="container">The editing session that contains this operation</param>
+        /*
         internal override void OnLoad(Session container)
         {
             base.OnLoad(container);
             container.MapModel.DefaultTextRotation = m_Rotation;
         }
+         */
     }
 }

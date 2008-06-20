@@ -40,7 +40,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>NewTextOperation</c> that doesn't refer to any new text.
         /// </summary>
-        internal NewTextOperation()
+        public NewTextOperation()
         {
             m_NewText = null;
         }
@@ -469,6 +469,18 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteElement("NewText", m_NewText);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_NewText = reader.ReadElement<TextFeature>("NewText");
         }
     }
 }

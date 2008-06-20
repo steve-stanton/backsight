@@ -90,7 +90,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a new <c>IntersectTwoLinesOperation</c> with everything set to null.
         /// </summary>
-        internal IntersectTwoLinesOperation()
+        public IntersectTwoLinesOperation()
         {
             m_Line1 = null;
             m_Line2 = null;
@@ -319,6 +319,20 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the position of the intersection (if any).
+        /// </summary>
+        /// <returns>The position of the intersection (null if it cannot be calculated).</returns>
+        IPosition Calculate()
+        {
+            IPosition xsect;
+            PointFeature closest;
+            if (m_Line1.Intersect(m_Line2, m_CloseTo, out xsect, out closest))
+                return xsect;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="line1">The 1st line to intersect.</param>
@@ -478,11 +492,47 @@ namespace Backsight.Editor.Operations
             writer.WriteBool("IsSplit2", m_IsSplit2);
 
             // Creations...
-            writer.WriteElement("To", new FeatureData(m_Intersection));
-            writer.WriteElement("Line1a", new FeatureData(m_Line1a));
-            writer.WriteElement("Line1b", new FeatureData(m_Line1b));
-            writer.WriteElement("Line2a", new FeatureData(m_Line2a));
-            writer.WriteElement("Line2b", new FeatureData(m_Line2b));
+            writer.WriteCalculatedPoint("To", m_Intersection);
+            if (m_IsSplit1)
+            {
+                writer.WriteElement("Line1a", m_Line1a);
+                writer.WriteElement("Line1b", m_Line1b);
+            }
+            if (m_IsSplit2)
+            {
+                writer.WriteElement("Line2a", m_Line2a);
+                writer.WriteElement("Line2b", m_Line2b);
+            }
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            
+            m_Line1 = reader.ReadFeatureByReference<LineFeature>("Line1");
+            m_Line2 = reader.ReadFeatureByReference<LineFeature>("Line2");
+            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
+            m_IsSplit1 = reader.ReadBool("IsSplit1");
+            m_IsSplit2 = reader.ReadBool("IsSplit2");
+
+            IPosition p = Calculate();
+            m_Intersection = reader.ReadCalculatedPoint("To", p);
+            if (m_IsSplit1)
+            {
+                m_Line1a = reader.ReadElement<LineFeature>("Line1a");
+                m_Line1b = reader.ReadElement<LineFeature>("Line1b");
+            }
+            if (m_IsSplit2)
+            {
+                m_Line2a = reader.ReadElement<LineFeature>("Line2a");
+                m_Line2b = reader.ReadElement<LineFeature>("Line2b");
+            }
         }
     }
 }
