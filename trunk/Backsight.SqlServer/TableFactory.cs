@@ -118,9 +118,26 @@ namespace Backsight.SqlServer
         /// <param name="logger">Something to display progress messages (not null)</param>
         public void CreateTables(ILog logger)
         {
-            if (logger==null)
-                throw new ArgumentNullException();
+            try
+            {
+                if (logger == null)
+                    throw new ArgumentNullException();
 
+                //Transaction.Execute(delegate
+                //{
+                    CreateBacksightTables(logger);
+                //});
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogMessage(ex.Message);
+                throw ex;
+            }
+        }
+
+        void CreateBacksightTables(ILog logger)
+        {
             DropForeignKeyConstraints();
 
             // Create the ced schema
@@ -131,7 +148,7 @@ namespace Backsight.SqlServer
             BacksightDataSet ds = new BacksightDataSet();
             foreach (DataTable dt in ds.Tables)
             {
-                logger.LogMessage("CREATE TABLE "+dt.TableName);
+                logger.LogMessage("CREATE TABLE " + GetTableName(dt));
                 CreateTable(s, dt);
             }
 
@@ -161,9 +178,10 @@ namespace Backsight.SqlServer
 
         void AddSimpleChecks(ILog logger, DataTable dt, string[] checks)
         {
-            Smo.Table t = m_Database.Tables[dt.TableName];
+            string tableName = GetTableName(dt);
+            Smo.Table t = m_Database.Tables[tableName, "ced"];
             if (t==null)
-                throw new Exception("Cannot locate table "+dt.TableName);
+                throw new Exception("Cannot locate table ced."+tableName);
 
             for (int i=0; i<checks.Length; i++)
             {
@@ -182,8 +200,11 @@ namespace Backsight.SqlServer
                 DataTable parent = dr.ParentTable;
                 DataTable child = dr.ChildTable;
 
-                Smo.Table parentTable = m_Database.Tables[parent.TableName];
-                Smo.Table childTable = m_Database.Tables[child.TableName];
+                string parentTableName = GetTableName(parent);
+                string childTableName = GetTableName(child);
+
+                Smo.Table parentTable = m_Database.Tables[parentTableName, "ced"];
+                Smo.Table childTable = m_Database.Tables[childTableName, "ced"];
 
                 if (parentTable!=null && childTable!=null)
                 {
@@ -202,7 +223,8 @@ namespace Backsight.SqlServer
 
             foreach (DataTable dt in ds.Tables)
             {
-                Smo.Table t = m_Database.Tables[dt.TableName];
+                string tableName = GetTableName(dt);
+                Smo.Table t = m_Database.Tables[tableName, "ced"];
                 if (t!=null)
                 {
                     foreach (Smo.ForeignKey fk in t.ForeignKeys)
@@ -217,12 +239,13 @@ namespace Backsight.SqlServer
         void CreateTable(Smo.Schema s, DataTable dt)
         {
             // Drop any previously created version of the table
-            Smo.Table t = m_Database.Tables[dt.TableName];
+            string tableName = GetTableName(dt);
+            Smo.Table t = m_Database.Tables[tableName, "ced"];
             if (t!=null)
                 t.Drop();
 
             // Create the table
-            t = new Smo.Table(m_Database, dt.TableName);
+            t = new Smo.Table(m_Database, tableName);
             t.Schema = s.Name;
             foreach (DataColumn c in dt.Columns)
                 AddColumn(t, c);
@@ -234,6 +257,32 @@ namespace Backsight.SqlServer
 
             // Define pk & any unique constraints
             CreateIndexes(t, dt);
+        }
+
+        /// <summary>
+        /// Obtains the table name that corresponds to the supplied <c>DataTable</c>
+        /// </summary>
+        /// <param name="dt">The data table of interest</param>
+        /// <returns>The corresponding table name (frequently the plural form of
+        /// the name associated with the supplied data table). Not decorated with
+        /// any enclosing brackets. Without any database schema name.</returns>
+        string GetTableName(DataTable dt)
+        {
+            // The DataTable holds the singular name, I want the plural. But
+            // there are a few exceptions (sigh).
+            // TODO: Might be simpler just to provide a script for db creation...
+
+            string tableName = dt.TableName;
+
+            if (tableName == "IdFree" ||
+                tableName == "LastRevision" ||
+                tableName == "SysId")
+                return tableName;
+
+            if (tableName == "Property")
+                return "Properties";
+
+            return tableName + "s";
         }
 
         Smo.Column AddColumn(Smo.Table t, string columnName, Smo.DataType dt, bool isNullable)
@@ -301,11 +350,13 @@ namespace Backsight.SqlServer
             if (parent.Length!=1 || child.Length!=1)
                 throw new Exception("Unsupported data relation: "+dr.RelationName);
 
-            Smo.Table pt = m_Database.Tables[dr.ParentTable.TableName];
+            string parentTableName = GetTableName(dr.ParentTable);
+            Smo.Table pt = m_Database.Tables[parentTableName, "ced"];
             if (pt==null)
                 throw new Exception("Cannot locate parent table for relation: "+dr.RelationName);
 
-            Smo.Table ct = m_Database.Tables[dr.ChildTable.TableName];
+            string childTableName = GetTableName(dr.ChildTable);
+            Smo.Table ct = m_Database.Tables[childTableName, "ced"];
             if (ct==null)
                 throw new Exception("Cannot locate child table for relation: "+dr.RelationName);
 
@@ -328,6 +379,13 @@ namespace Backsight.SqlServer
 
             if (t == typeof(System.DateTime))
                 return Smo.DataType.DateTime;
+
+            // Need special code to handle XML column, which the DataSet
+            // regards as String with MaxLength=2**32-1 (meanwhile, Smo.Table
+            // only handles columns with the older MaxLength=8000)
+
+            if (dc.Table.TableName == "Edit" && dc.ColumnName == "Data")
+                return new Smo.DataType(SqlDataType.Xml);
 
             if (t == typeof(System.String))
             {
@@ -424,10 +482,9 @@ namespace Backsight.SqlServer
 
                 foreach (DataTable dt in ds.Tables)
                 {
-                    // Not sure why, but it complains if you don't specify the table schema
-                    // at this point. Assume "dbo", since I don't see any DataTable.SchemaName
-                    // property.
-                    string sql = String.Format("DELETE FROM [{0}].[{1}]", "dbo", dt.TableName);
+                    // Assume the "ced" schema, since I don't see any DataTable.SchemaName property.
+                    string tableName = GetTableName(dt);
+                    string sql = String.Format("DELETE FROM [ced].[{0}]", tableName);
                     SqlCommand cmd = new SqlCommand(sql, c);
                     cmd.ExecuteNonQuery();
                 }
@@ -450,7 +507,8 @@ namespace Backsight.SqlServer
                     if (dt.Rows.Count > 0)
                     {
                         SqlBulkCopy bc = new SqlBulkCopy(c);
-                        bc.DestinationTableName = dt.TableName;
+                        string tableName = "[ced].[" + GetTableName(dt) + "]";
+                        bc.DestinationTableName = tableName;
                         bc.BatchSize = dt.Rows.Count;
                         bc.WriteToServer(dt);
                     }
@@ -483,7 +541,10 @@ namespace Backsight.SqlServer
             DataTableCollection dtc = ds.Tables;
             List<string> result = new List<string>(dtc.Count);
             foreach (DataTable dt in dtc)
-                result.Add(dt.TableName);
+            {
+                string tableName = GetTableName(dt);
+                result.Add(tableName);
+            }
 
             return result.ToArray();
         }

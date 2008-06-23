@@ -72,7 +72,7 @@ namespace Backsight.Editor.Database
             using (IConnection ic = AdapterFactory.GetConnection())
             {
                 StringBuilder sb = new StringBuilder(200);
-                sb.AppendFormat("INSERT INTO [dbo].[IdAllocations] ({0}) VALUES ", GetColumns());
+                sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
                 sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, {6})",
                     idGroup.Id, lowestId, highestId, job.JobId, user.UserId,
                     DbUtil.GetDateTimeString(insertTime), numUsed);
@@ -92,7 +92,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("DELETE FROM [dbo].[IdAllocations] WHERE [LowestId]={0}", lowestId);
+                string sql = String.Format("DELETE FROM [ced].[IdAllocations] WHERE [LowestId]={0}", lowestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 return cmd.ExecuteNonQuery();
             }
@@ -108,7 +108,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("UPDATE [dbo].[IdAllocations] SET [HighestId]={0}" +
+                string sql = String.Format("UPDATE [ced].[IdAllocations] SET [HighestId]={0}" +
                                             " WHERE [LowestId]={1}", highestId, lowestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 return cmd.ExecuteNonQuery();
@@ -199,7 +199,7 @@ namespace Backsight.Editor.Database
         /// <returns>The SQL select statement (with no where clause)</returns>
         static string GetSelectString()
         {
-            return String.Format("SELECT {0} FROM [dbo].[IdAllocations]", GetColumns());
+            return String.Format("SELECT {0} FROM [ced].[IdAllocations]", GetColumns());
         }
 
         /// <summary>
