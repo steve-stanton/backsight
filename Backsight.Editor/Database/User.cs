@@ -36,7 +36,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = "SELECT [UserId], [Name] FROM [dbo].[Users] ORDER BY [Name]";
+                string sql = "SELECT [UserId], [Name] FROM [ced].[Users] ORDER BY [Name]";
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 List<User> result = new List<User>(1000);
 
@@ -64,7 +64,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("SELECT [Name] FROM [dbo].[Users] WHERE [UserId]={0}", userId);
+                string sql = String.Format("SELECT [Name] FROM [ced].[Users] WHERE [UserId]={0}", userId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 object o = cmd.ExecuteScalar();
                 if (o==null)
@@ -82,7 +82,7 @@ namespace Backsight.Editor.Database
         internal static User GetCurrentUser()
         {
             string userName = System.Environment.UserName;
-            string sql = String.Format("SELECT [UserId] FROM [dbo].[Users] WHERE [Name]='{0}'", userName);
+            string sql = String.Format("SELECT [UserId] FROM [ced].[Users] WHERE [Name]='{0}'", userName);
 
             using (IConnection ic = AdapterFactory.GetConnection())
             {
@@ -90,7 +90,7 @@ namespace Backsight.Editor.Database
                 object result = cmd.ExecuteScalar();
                 if (result==null)
                 {
-                    sql = String.Format("INSERT INTO [dbo].[Users] ([Name]) VALUES ('{0}')", userName);
+                    sql = String.Format("INSERT INTO [ced].[Users] ([Name]) VALUES ('{0}')", userName);
                     cmd = new SqlCommand(sql, ic.Value);
                     cmd.ExecuteNonQuery();
 

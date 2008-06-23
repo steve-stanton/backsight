@@ -36,7 +36,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = "SELECT [JobId], [Name], [ZoneId], [LayerId] FROM [dbo].[Jobs] ORDER BY [Name]";
+                string sql = "SELECT [JobId], [Name], [ZoneId], [LayerId] FROM [ced].[Jobs] ORDER BY [Name]";
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 List<Job> result = new List<Job>(1000);
 
@@ -63,7 +63,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = "SELECT [Name], [ZoneId], [LayerId] FROM [dbo].[Jobs] WHERE [JobId]="+jobId;
+                string sql = "SELECT [Name], [ZoneId], [LayerId] FROM [ced].[Jobs] WHERE [JobId]="+jobId;
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
@@ -89,7 +89,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("INSERT INTO [dbo].[Jobs] ([Name], [ZoneId], [LayerId]) VALUES ('{0}', {1}, {2})",
+                string sql = String.Format("INSERT INTO [ced].[Jobs] ([Name], [ZoneId], [LayerId]) VALUES ('{0}', {1}, {2})",
                                             jobName, zoneId, layerId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();

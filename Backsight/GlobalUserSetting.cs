@@ -31,15 +31,6 @@ namespace Backsight
     public static class GlobalUserSetting
     {
         /// <summary>
-        /// The last database connection string (blank if never defined)
-        /// </summary>
-        public static string LastConnection
-        {
-            get { return Read("LastConnection"); }
-            set { Write("LastConnection", value); }
-        }
-
-        /// <summary>
         /// The registry key for user-specific settings.
         /// </summary>
         static string s_UserRoot = Registry.CurrentUser + @"\Software\Backsight";

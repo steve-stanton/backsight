@@ -59,7 +59,7 @@ namespace Backsight.SqlServer
 
         private void ConnectionForm_Shown(object sender, EventArgs e)
         {
-            string s = GlobalUserSetting.LastConnection;
+            string s = LastDatabase.ConnectionString;
             if (String.IsNullOrEmpty(s))
             {
                 // For the time being, assume localhost is valid
@@ -112,7 +112,7 @@ namespace Backsight.SqlServer
                 sb.UserID = userNameTextBox.Text;
                 sb.Password = passwordTextBox.Text;
                 sb.InitialCatalog = dbName;
-                GlobalUserSetting.LastConnection = sb.ToString();
+                LastDatabase.ConnectionString = sb.ToString();
 
                 this.DialogResult = DialogResult.OK;
                 Close();

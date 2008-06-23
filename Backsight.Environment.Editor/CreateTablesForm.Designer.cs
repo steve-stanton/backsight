@@ -58,7 +58,7 @@ namespace Backsight.Environment.Editor
             this.label2.Size = new System.Drawing.Size(553, 16);
             this.label2.TabIndex = 1;
             this.label2.Text = "Click the Create button to create them now, or Cancel if you wish to use some oth" +
-                "er database.";
+    "er database.";
             // 
             // splitContainer
             // 

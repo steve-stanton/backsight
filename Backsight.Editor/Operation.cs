@@ -393,7 +393,7 @@ namespace Backsight.Editor
                 // Insert the edit
                 SqlCommand c = new SqlCommand();
                 c.Connection = Transaction.Connection.Value;
-                c.CommandText = "INSERT INTO [dbo].[Edits] ([SessionId], [EditSequence], [Data])" +
+                c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
                                     " VALUES (@sessionId, @editSequence, @data)";
                 c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));

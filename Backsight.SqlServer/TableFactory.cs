@@ -106,8 +106,9 @@ namespace Backsight.SqlServer
         /// <returns>True if the entity table exists</returns>
         public bool DoTablesExist()
         {
-            string testTable = new BacksightDataSet().EntityType.TableName;
-            return m_Database.Tables.Contains(testTable);
+            //string testTable = new BacksightDataSet().EntityType.TableName;
+            //return m_Database.Tables.Contains(testTable);
+            return m_Database.Schemas.Contains("ced");
         }
 
         /// <summary>
@@ -122,11 +123,16 @@ namespace Backsight.SqlServer
 
             DropForeignKeyConstraints();
 
+            // Create the ced schema
+            logger.LogMessage("CREATE SCHEMA ced");
+            Smo.Schema s = new Smo.Schema(m_Database, "ced");
+            s.Create();
+
             BacksightDataSet ds = new BacksightDataSet();
             foreach (DataTable dt in ds.Tables)
             {
                 logger.LogMessage("CREATE TABLE "+dt.TableName);
-                CreateTable(dt);
+                CreateTable(s, dt);
             }
 
             // Add simple checks (unfortunately, this info isn't held as part of the
@@ -208,7 +214,7 @@ namespace Backsight.SqlServer
                 fk.Drop();
         }
 
-        void CreateTable(DataTable dt)
+        void CreateTable(Smo.Schema s, DataTable dt)
         {
             // Drop any previously created version of the table
             Smo.Table t = m_Database.Tables[dt.TableName];
@@ -217,6 +223,7 @@ namespace Backsight.SqlServer
 
             // Create the table
             t = new Smo.Table(m_Database, dt.TableName);
+            t.Schema = s.Name;
             foreach (DataColumn c in dt.Columns)
                 AddColumn(t, c);
 

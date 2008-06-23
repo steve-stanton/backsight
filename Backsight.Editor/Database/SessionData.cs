@@ -72,7 +72,7 @@ namespace Backsight.Editor.Database
                 // Load information about the edits involved
                 StringBuilder sb = new StringBuilder(200);
                 sb.Append("SELECT [SessionId], [EditSequence], [Data]");
-                sb.Append(" FROM [dbo].[Edits] WHERE [SessionId] IN");
+                sb.Append(" FROM [ced].[Edits] WHERE [SessionId] IN");
                 sb.AppendFormat(" (SELECT [SessionId] FROM {0})", sessionTable);
                 sb.Append(" ORDER BY [SessionId], [EditSequence]");
                 SqlCommand cmd = new SqlCommand(sb.ToString(), con);
@@ -151,14 +151,14 @@ namespace Backsight.Editor.Database
             if (t==null)
                 layerClause = String.Format("[LayerId]={0}", layer.Id);
             else
-                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [dbo].[Layers] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
+                layerClause = String.Format("[LayerId] IN (SELECT [LayerId] FROM [ced].[Layers] WHERE [ThemeId]={0} AND [ThemeSequence]<={1})",
                                         t.Id, layer.ThemeSequence);
 
             // Define where clause for picking up the relevant published sessions
             StringBuilder sb = new StringBuilder(200);
             sb.Append(GetSelectFromSessions());
             sb.Append(" WHERE [Revision]>0 AND [JobId] IN");
-            sb.Append(" (SELECT [JobId] FROM [dbo].[Jobs]");
+            sb.Append(" (SELECT [JobId] FROM [ced].[Jobs]");
             sb.AppendFormat(" WHERE [ZoneId]={0} AND {1})", job.ZoneId, layerClause);
             sb.Append(" ORDER BY [Revision]");
 
@@ -194,7 +194,7 @@ namespace Backsight.Editor.Database
         /// a call to <see cref="ParseSelectFromSessions"/>.</returns>
         static string GetSelectFromSessions()
         {
-            return "SELECT " + GetColumnNames() + "  FROM [dbo].[Sessions]";
+            return "SELECT " + GetColumnNames() + "  FROM [ced].[Sessions]";
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Backsight.Editor.Database
                 DateTime now = DateTime.Now;
                 string nowString = DbUtil.GetDateTimeString(now);
 
-                string sql = String.Format("INSERT INTO [dbo].[Sessions]" +
+                string sql = String.Format("INSERT INTO [ced].[Sessions]" +
                     " ([JobId], [UserId], [Revision], [StartTime], [EndTime], [NumItem])" +
                     " VALUES ({0}, {1}, 0, {2}, {3}, 0)", jobId, userId, nowString, nowString);
 
@@ -432,7 +432,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("DELETE FROM [dbo].[Sessions] WHERE [SessionId]={0}",
+                string sql = String.Format("DELETE FROM [ced].[Sessions] WHERE [SessionId]={0}",
                                                 m_SessionId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
@@ -449,7 +449,7 @@ namespace Backsight.Editor.Database
             {
                 DateTime now = DateTime.Now;
                 string nowString = DbUtil.GetDateTimeString(now);
-                string sql = String.Format("UPDATE [dbo].[Sessions] SET [EndTime]={0}, [NumItem]={1}" +
+                string sql = String.Format("UPDATE [ced].[Sessions] SET [EndTime]={0}, [NumItem]={1}" +
                                             " WHERE [SessionId]={2}", nowString, m_NumItem, m_SessionId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
@@ -483,7 +483,7 @@ namespace Backsight.Editor.Database
             Transaction.Execute(delegate
             {
                 // Get rid of the edits
-                string sql = String.Format("DELETE FROM [dbo].[Edits] WHERE [SessionId]={0} AND [EditSequence]>{1}",
+                string sql = String.Format("DELETE FROM [ced].[Edits] WHERE [SessionId]={0} AND [EditSequence]>{1}",
                                                 m_SessionId, lastItemToKeep);
                 SqlCommand cmd = new SqlCommand(sql, Transaction.Connection.Value);
                 cmd.ExecuteNonQuery();
