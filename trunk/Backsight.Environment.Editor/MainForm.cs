@@ -76,7 +76,7 @@ namespace Backsight.Environment.Editor
             // If a database connection isn't defined, see if a database called 'Backsight' exists
             // on the local server. If not, ask the user to locate a database.
 
-            string lastConn = GlobalUserSetting.LastConnection;
+            string lastConn = LastDatabase.ConnectionString;
             bool lookedForDefault = false;
 
             if (String.IsNullOrEmpty(lastConn))
@@ -85,7 +85,7 @@ namespace Backsight.Environment.Editor
                 lookedForDefault = true;
 
                 if (!String.IsNullOrEmpty(lastConn))
-                    GlobalUserSetting.LastConnection = lastConn;
+                    LastDatabase.ConnectionString = lastConn;
             }
 
             if (String.IsNullOrEmpty(lastConn) && lookedForDefault)
@@ -162,20 +162,9 @@ namespace Backsight.Environment.Editor
             if (dial.ShowDialog() == DialogResult.OK)
             {
                 Database db = dial.Database;
-
-                // If the database doesn't contain a table for entity types (a core table),
-                // tell the user that Backsight system tables need to be created.
-
                 TableFactory tf = new TableFactory(db);
-
-                if (!tf.DoTablesExist())
-                {
-                    CreateTablesForm ctf = new CreateTablesForm(tf);
-                    bool isCreatedOk = (ctf.ShowDialog()==DialogResult.OK);
-                    ctf.Dispose();
-                    if (!isCreatedOk)
-                        return null;
-                }
+                if (!ConfirmTablesExist(tf))
+                    return null;
 
                 return OpenDatabase(tf.ConnectionString);
             }
@@ -188,9 +177,13 @@ namespace Backsight.Environment.Editor
         {
             try
             {
+                TableFactory tf = new TableFactory(connectionString);
+                if (!ConfirmTablesExist(tf))
+                    throw new Exception("Cannot load Backsight system tables");
+
                 m_Data = new EnvironmentDatabase(connectionString);
                 EnvironmentContainer.Current = m_Data;
-                GlobalUserSetting.LastConnection = connectionString;
+                LastDatabase.ConnectionString = connectionString;
                 return m_Data;
             }
 
@@ -200,6 +193,26 @@ namespace Backsight.Environment.Editor
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Confirms that Backsight system tables exist. This checks whether a database schema
+        /// called "ced" has been created.
+        /// </summary>
+        /// <param name="tf">The factory that can be used to create database tables in an
+        /// associated database.</param>
+        bool ConfirmTablesExist(TableFactory tf)
+        {
+            if (tf==null)
+                return false;
+
+            if (tf.DoTablesExist())
+                return true;
+
+            CreateTablesForm ctf = new CreateTablesForm(tf);
+            bool isCreatedOk = (ctf.ShowDialog()==DialogResult.OK);
+            ctf.Dispose();
+            return isCreatedOk;
         }
 
         private void fileSaveMenuItem_Click(object sender, EventArgs e)

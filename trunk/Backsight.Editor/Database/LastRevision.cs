@@ -41,10 +41,10 @@ namespace Backsight.Editor.Database
             Transaction.Execute(delegate
             {
                 SqlConnection con = Transaction.Connection.Value;
-                SqlCommand cmd = new SqlCommand("DELETE FROM [dbo].[LastRevision]", con);
+                SqlCommand cmd = new SqlCommand("DELETE FROM [ced].[LastRevision]", con);
                 cmd.ExecuteNonQuery();
 
-                cmd = new SqlCommand("INSERT INTO [dbo].[LastRevision] (RevisionTime) VALUES (GETDATE())", con);
+                cmd = new SqlCommand("INSERT INTO [ced].[LastRevision] (RevisionTime) VALUES (GETDATE())", con);
                 cmd.ExecuteNonQuery();
 
                 result = DbUtil.GetLastId(con);

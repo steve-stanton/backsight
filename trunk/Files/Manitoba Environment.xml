@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <Manitoba_x0020_Environment.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
-  <Entity>
+  <EntityType>
     <EntityId>0</EntityId>
     <Name />
     <IsPoint>y</IsPoint>
@@ -11,8 +11,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>25</EntityId>
     <Name>Integrated Point</Name>
     <IsPoint>y</IsPoint>
@@ -23,8 +23,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>26</EntityId>
     <Name>Monumented Point</Name>
     <IsPoint>y</IsPoint>
@@ -35,8 +35,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>27</EntityId>
     <Name>Computed Point</Name>
     <IsPoint>y</IsPoint>
@@ -47,8 +47,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>22</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>28</EntityId>
     <Name>Control Point</Name>
     <IsPoint>y</IsPoint>
@@ -59,8 +59,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>29</EntityId>
     <Name>Dummy Point</Name>
     <IsPoint>y</IsPoint>
@@ -71,8 +71,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>30</EntityId>
     <Name>Property Line</Name>
     <IsPoint>n</IsPoint>
@@ -83,8 +83,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>31</EntityId>
     <Name>Plan Parcel or Lot</Name>
     <IsPoint>n</IsPoint>
@@ -95,8 +95,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>32</EntityId>
     <Name>Lot/Parcel Number Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -107,8 +107,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>33</EntityId>
     <Name>Certificate of Title Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -119,8 +119,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>21</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>35</EntityId>
     <Name>Assessment Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -131,8 +131,8 @@
     <FontId>0</FontId>
     <LayerId>12</LayerId>
     <GroupId>18</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>36</EntityId>
     <Name>Hydro Easement Polygon</Name>
     <IsPoint>n</IsPoint>
@@ -143,8 +143,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>20</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>37</EntityId>
     <Name>Public Lane Line</Name>
     <IsPoint>n</IsPoint>
@@ -155,8 +155,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>38</EntityId>
     <Name>Public Walk Line</Name>
     <IsPoint>n</IsPoint>
@@ -167,8 +167,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>39</EntityId>
     <Name>Current Water Boundary</Name>
     <IsPoint>n</IsPoint>
@@ -179,8 +179,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>40</EntityId>
     <Name>Estimated C/L of O H W M</Name>
     <IsPoint>n</IsPoint>
@@ -191,8 +191,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>41</EntityId>
     <Name>Historic Water Boundary</Name>
     <IsPoint>n</IsPoint>
@@ -203,8 +203,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>42</EntityId>
     <Name>Street Line</Name>
     <IsPoint>n</IsPoint>
@@ -215,8 +215,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>43</EntityId>
     <Name>Street Closing Line</Name>
     <IsPoint>n</IsPoint>
@@ -227,8 +227,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>44</EntityId>
     <Name>Public Walk and Street Line</Name>
     <IsPoint>n</IsPoint>
@@ -239,8 +239,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>45</EntityId>
     <Name>Public Walk and Public Lane Line</Name>
     <IsPoint>n</IsPoint>
@@ -251,8 +251,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>46</EntityId>
     <Name>Public Lane Line and Street</Name>
     <IsPoint>n</IsPoint>
@@ -263,8 +263,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>47</EntityId>
     <Name>Construction Line</Name>
     <IsPoint>n</IsPoint>
@@ -275,8 +275,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>48</EntityId>
     <Name>Border of Dataset</Name>
     <IsPoint>n</IsPoint>
@@ -287,8 +287,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>49</EntityId>
     <Name>DLS Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -299,8 +299,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>50</EntityId>
     <Name>Parish Lot Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -311,8 +311,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>51</EntityId>
     <Name>Special Plot Plan Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -323,8 +323,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>52</EntityId>
     <Name>Street Polygon - LARGE</Name>
     <IsPoint>n</IsPoint>
@@ -335,8 +335,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>53</EntityId>
     <Name>Judge's Order Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -347,8 +347,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>54</EntityId>
     <Name>Street Polygon - Regular</Name>
     <IsPoint>n</IsPoint>
@@ -359,8 +359,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>55</EntityId>
     <Name>Legal Instrument Parcel</Name>
     <IsPoint>n</IsPoint>
@@ -371,8 +371,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>56</EntityId>
     <Name>Public Walk</Name>
     <IsPoint>n</IsPoint>
@@ -383,8 +383,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>57</EntityId>
     <Name>Street Polygon - small</Name>
     <IsPoint>n</IsPoint>
@@ -395,8 +395,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>58</EntityId>
     <Name>Public Lane</Name>
     <IsPoint>n</IsPoint>
@@ -407,8 +407,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>59</EntityId>
     <Name>Water Body</Name>
     <IsPoint>n</IsPoint>
@@ -419,8 +419,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>60</EntityId>
     <Name>Block Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -431,8 +431,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>21</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>61</EntityId>
     <Name>Survey Plan Number Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -443,8 +443,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>62</EntityId>
     <Name>Street Name Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -455,8 +455,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>63</EntityId>
     <Name>Quarter Section Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -467,8 +467,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>64</EntityId>
     <Name>Public Walk Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -479,8 +479,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>65</EntityId>
     <Name>Public Lane Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -491,8 +491,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>66</EntityId>
     <Name>Legal Instrument Annotation</Name>
     <IsPoint>n</IsPoint>
@@ -503,8 +503,8 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
-  </Entity>
-  <Entity>
+  </EntityType>
+  <EntityType>
     <EntityId>72</EntityId>
     <Name>Test on ownership only</Name>
     <IsPoint>y</IsPoint>
@@ -515,7 +515,7 @@
     <FontId>0</FontId>
     <LayerId>11</LayerId>
     <GroupId>19</GroupId>
-  </Entity>
+  </EntityType>
   <Font>
     <FontId>0</FontId>
     <TypeFace />

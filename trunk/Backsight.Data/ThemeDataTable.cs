@@ -19,7 +19,7 @@ namespace Backsight.Data
 {
     public partial class BacksightDataSet
     {
-        public partial class ThemeDataTable
+        partial class ThemeDataTable
         {
             internal ThemeRow AddEmptyRow()
             {

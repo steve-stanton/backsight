@@ -76,7 +76,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("INSERT INTO [dbo].[IdFree] ([GroupId], [LowestId], [HighestId])" +
+                string sql = String.Format("INSERT INTO [ced].[IdFree] ([GroupId], [LowestId], [HighestId])" +
                                             " VALUES ({0}, {1}, {2})", idGroup.Id, lowestId, highestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();
@@ -131,7 +131,7 @@ namespace Backsight.Editor.Database
         /// <returns>The SQL select statement (with no where clause)</returns>
         static string GetSelectString()
         {
-            return "SELECT [GroupId], [LowestId], [HighestId] FROM [dbo].[IdFree]";
+            return "SELECT [GroupId], [LowestId], [HighestId] FROM [ced].[IdFree]";
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Backsight.Editor.Database
             {
                 using (IConnection ic = AdapterFactory.GetConnection())
                 {
-                    string sql = String.Format("UPDATE [dbo].[IdFree] SET [LowestId]={0} WHERE [GroupId]={1} AND [LowestId]={2}",
+                    string sql = String.Format("UPDATE [ced].[IdFree] SET [LowestId]={0} WHERE [GroupId]={1} AND [LowestId]={2}",
                                                 value, m_GroupId, m_LowestId);
                     SqlCommand cmd = new SqlCommand(sql, ic.Value);
                     cmd.ExecuteNonQuery();
@@ -193,7 +193,7 @@ namespace Backsight.Editor.Database
         {
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                string sql = String.Format("DELETE FROM [dbo].[IdFree] WHERE [GroupId]={0} AND [LowestId]={1}",
+                string sql = String.Format("DELETE FROM [ced].[IdFree] WHERE [GroupId]={0} AND [LowestId]={1}",
                                             m_GroupId, m_LowestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 cmd.ExecuteNonQuery();

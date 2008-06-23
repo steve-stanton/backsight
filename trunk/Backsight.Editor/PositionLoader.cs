@@ -36,7 +36,7 @@ namespace Backsight.Editor
         internal PositionLoader(CadastralMapModel map)
         {
             m_Map = map;
-            m_Table = new DataTable("[dbo].[Positions]");
+            m_Table = new DataTable("[ced].[Positions]");
             m_Table.Columns.Add(new DataColumn("PositionId", typeof(int)));
             m_Table.Columns.Add(new DataColumn("Lat", typeof(double)));
             m_Table.Columns.Add(new DataColumn("Lon", typeof(double)));
@@ -50,7 +50,7 @@ namespace Backsight.Editor
 
             using (IConnection ic = AdapterFactory.GetConnection())
             {
-                SqlCommand cmd = new SqlCommand("SELECT [PositionId], [Lat], [Lon] FROM [dbo].[Positions]",
+                SqlCommand cmd = new SqlCommand("SELECT [PositionId], [Lat], [Lon] FROM [ced].[Positions]",
                                                     ic.Value);
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {

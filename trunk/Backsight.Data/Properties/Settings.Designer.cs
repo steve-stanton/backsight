@@ -23,27 +23,14 @@ namespace Backsight.Data.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost\\SQLEXPRESS;Initial Catalog=Backsight;Integrated Security=Tr" +
-            "ue")]
-        public string BacksightConnectionString {
-            get {
-                return ((string)(this["BacksightConnectionString"]));
-            }
-            set {
-                this["BacksightConnectionString"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost\\SQLEXPRESS;Initial Catalog=Backsight;Integrated Security=Tr" +
             "ue")]
-        public string BacksightConnectionString1 {
+        public string BacksightConnectionString {
             get {
-                return ((string)(this["BacksightConnectionString1"]));
+                return ((string)(this["BacksightConnectionString"]));
             }
         }
     }

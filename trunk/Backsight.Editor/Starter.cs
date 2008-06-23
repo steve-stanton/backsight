@@ -172,12 +172,7 @@ namespace Backsight.Editor
 
         string GetConnectionString()
         {
-            string hklm = Registry.LocalMachine + @"\Software\Backsight";
-            object o = Registry.GetValue(hklm, "ConnectionString", String.Empty);
-            string cs = (o == null ? String.Empty : o.ToString());
-
-            if (!String.IsNullOrEmpty(cs))
-                GlobalUserSetting.LastConnection = cs;
+            string cs = String.Empty;
 
             ConnectionForm dial = new ConnectionForm();
             if (dial.ShowDialog() == DialogResult.OK)
@@ -185,8 +180,6 @@ namespace Backsight.Editor
                 cs = dial.ConnectionString;
                 SetConnectionString(cs);
             }
-            else
-                cs = String.Empty;
 
             dial.Dispose();
             return cs;
@@ -195,8 +188,7 @@ namespace Backsight.Editor
         void SetConnectionString(string cs)
         {
             AdapterFactory.ConnectionString = cs;
-            string hklm = Registry.LocalMachine + @"\Software\Backsight";
-            Registry.SetValue(hklm, "ConnectionString", cs);
+            LastDatabase.ConnectionString = cs;
         }
 
         /// <summary>
