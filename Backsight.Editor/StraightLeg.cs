@@ -42,6 +42,14 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Default constructor sets everything to null, for use in deserialization
+        /// </summary>
+        public StraightLeg()
+            : this(0)
+        {
+        }
+
+        /// <summary>
         /// Creates a new <c>StraightLeg</c>
         /// </summary>
         /// <param name="nspan">The number of spans for the leg.</param>
@@ -705,8 +713,20 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
             writer.WriteDouble("StartAngle", m_StartAngle);
+            base.WriteContent(writer);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            m_StartAngle = reader.ReadDouble("StartAngle");
+            base.ReadContent(reader);
         }
     }
 }

@@ -34,21 +34,31 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The point where the path starts.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From; // readonly
 
         /// <summary>
         /// The point where the path ends.
         /// </summary>
-        readonly PointFeature m_To;
+        PointFeature m_To; // readonly
 
         /// <summary>
         /// The legs that make up the path
         /// </summary>
-        readonly List<Leg> m_Legs;
+        List<Leg> m_Legs; // readonly
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor sets everything to null, for use in deserialization
+        /// </summary>
+        public PathOperation()
+        {
+            m_From = null;
+            m_To = null;
+            m_Legs = null;
+        }
 
         /// <summary>
         /// Creates a new <c>PathOperation</c>
@@ -995,6 +1005,23 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
             writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_To = reader.ReadFeatureByReference<PointFeature>("To");
+
+            Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
+            m_Legs = new List<Leg>(legs);
         }
     }
 }

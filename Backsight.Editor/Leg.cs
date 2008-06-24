@@ -1223,14 +1223,15 @@ void CeLeg::MakeText ( const CeVertex& bs
             writer.WriteArray("SpanArray", "Span", m_Spans);
         }
 
-        #region IXmlContent Members
-
-
-        public void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");
         }
-
-        #endregion
     }
 }
