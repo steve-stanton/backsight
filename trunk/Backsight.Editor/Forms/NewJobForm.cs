@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Backsight.Editor.Database;
 using Backsight.Environment;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Forms
 {
@@ -60,7 +61,9 @@ namespace Backsight.Editor.Forms
             IEnvironmentContainer ec = EnvironmentContainer.Current;
 
             // Load all defined zones
-            zoneComboBox.DataSource = ec.Zones;
+            List<IZone> zones = new List<IZone>(ec.Zones);
+            zones.Sort(delegate(IZone a, IZone b) { return a.Name.CompareTo(b.Name); });
+            zoneComboBox.DataSource = zones;
 
             // Load all defined editing layers
             layerComboBox.DataSource = ec.Layers;

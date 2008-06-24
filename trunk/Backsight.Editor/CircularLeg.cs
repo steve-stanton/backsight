@@ -63,10 +63,11 @@ namespace Backsight.Editor
 
         #region Constructors
 
+
         /// <summary>
-        /// Default constructor
+        /// Default constructor sets everything to null, for use in deserialization
         /// </summary>
-        CircularLeg()
+        public CircularLeg()
             : base(0)
         {
             m_Angle1 = 0.0;
@@ -1397,6 +1398,17 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // TODO: Circle has no ID
             throw new NotImplementedException("CircularLeg.WriteContent");
             //writer.WriteString("Circle", m_Circle.DataId);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
         }
     }
 }
