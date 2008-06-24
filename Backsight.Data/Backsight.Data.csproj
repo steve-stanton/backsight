@@ -60,11 +60,13 @@
     <Compile Include="EnvironmentData.cs" />
     <Compile Include="EnvironmentFile.cs" />
     <Compile Include="FontDataTable.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FontRow.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="BacksightDataSet.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IConnection.cs" />
     <Compile Include="IdAllocationDataTable.cs">
@@ -115,6 +117,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TemplateRow.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="ThemeDataTable.cs">
       <SubType>Component</SubType>

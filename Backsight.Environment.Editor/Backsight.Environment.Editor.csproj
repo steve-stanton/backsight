@@ -223,6 +223,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="CreateBacksightTables.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Minus.bmp" />
   </ItemGroup>
   <ItemGroup>
