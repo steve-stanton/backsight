@@ -131,6 +131,16 @@ namespace Backsight.Editor
         /// </summary>
         int m_DefaultTextType;
 
+        /// <summary>
+        /// Increment values used by the application's splash screen
+        /// </summary>
+        string m_SplashIncrements;
+
+        /// <summary>
+        /// The percentage completion values that correspond to each increment
+        /// </summary>
+        string m_SplashPercents;
+
         #endregion
 
         #region Constructors
@@ -157,6 +167,8 @@ namespace Backsight.Editor
             m_DefaultLineType = 0;
             m_DefaultPolygonType = 0;
             m_DefaultTextType = 0;
+            m_SplashIncrements = String.Empty;
+            m_SplashPercents = String.Empty;
         }
 
         #endregion
@@ -378,5 +390,20 @@ namespace Backsight.Editor
         {
             get { return !m_IsChanged; }
         }
+
+        [XmlElement]
+        public string SplashIncrements
+        {
+            get { return m_SplashIncrements; }
+            set { m_SplashIncrements = Set<string>(value); }
+        }
+
+        [XmlElement]
+        public string SplashPercents
+        {
+            get { return m_SplashPercents; }
+            set { m_SplashPercents = Set<string>(value); }
+        }
+
     }
 }

@@ -17,6 +17,8 @@ using System;
 using System.Windows.Forms;
 
 using Backsight.SqlServer;
+using System.Reflection;
+using System.IO;
 
 namespace Backsight.Environment.Editor
 {
