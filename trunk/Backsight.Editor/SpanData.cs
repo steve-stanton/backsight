@@ -140,6 +140,7 @@ namespace Backsight.Editor
         internal bool IsOmitPoint
         {
             get { return (m_Switches & LegItemFlag.OmitPoint)!=0; }
+            private set { SetFlag(LegItemFlag.OmitPoint, value); }
         }
 
         /// <summary>
@@ -191,10 +192,26 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("Switches", String.Format("{0:X2}", m_Switches));
+            string flags = String.Empty;
 
-            if (m_Distance!=null)
-                writer.WriteElement("Distance", m_Distance);
+            if (IsMissConnect)
+                flags += "M";
+            else if (IsOmitPoint)
+                flags += "P";
+
+            if (IsDeflection)
+                flags += "D";
+
+            if (IsFace1)
+                flags += "1";
+            else if (IsFace2)
+                flags += "2";
+
+            if (flags.Length > 0)
+                writer.WriteString("Flags", flags);
+
+            //writer.W
+            writer.WriteElement("Distance", m_Distance);
 
             // TODO: This is probably a derived item, so we should probably not store the geometry
             throw new NotImplementedException("SpanData.WriteContent");
@@ -202,14 +219,30 @@ namespace Backsight.Editor
             //    writer.WriteElement("Feature", m_Feature);
         }
 
-        #region IXmlContent Members
-
-
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
+            string flags = reader.ReadString("Flags");
 
-        #endregion
+            if (flags.Contains("M"))
+                IsMissConnect = true;
+            else if (flags.Contains("P"))
+                IsOmitPoint = true;
+
+            if (flags.Contains("D"))
+                IsDeflection = true;
+
+            if (flags.Contains("1"))
+                IsFace1 = true;
+            else if (flags.Contains("2"))
+                IsFace2 = true;
+
+            m_Distance = reader.ReadElement<Distance>("Distance");
+        }
     }
 }
