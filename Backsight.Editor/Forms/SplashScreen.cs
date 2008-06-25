@@ -438,7 +438,10 @@ namespace Backsight.Editor.Forms
 		{
 			if( m_bFirstLaunch == false && e.ClipRectangle.Width > 0 && m_iActualTicks > 1 )
 			{
-				LinearGradientBrush brBackground = new LinearGradientBrush(m_rProgress, Color.FromArgb(58, 96, 151), Color.FromArgb(181, 237, 254), LinearGradientMode.Horizontal);
+                // Originally a bluish gradient, but greeny-yellow works better with my background image
+                Color dark = Color.FromArgb(84, 155, 66); //(58, 96, 151);
+                Color light = Color.FromArgb(232, 254, 107); //(181, 237, 254);
+				LinearGradientBrush brBackground = new LinearGradientBrush(m_rProgress, dark, light, LinearGradientMode.Horizontal);
 				e.Graphics.FillRectangle(brBackground, m_rProgress);
 			}
 		}
