@@ -59,8 +59,8 @@ namespace Backsight.Editor.Forms
 		private ArrayList m_alPreviousCompletionFraction;
 		private ArrayList m_alActualTimes = new ArrayList();
 		private const string REG_KEY_INITIALIZATION = "Initialization";
-		private const string REGVALUE_PB_MILISECOND_INCREMENT = "Increment";
-		private const string REGVALUE_PB_PERCENTS = "Percents";
+		public const string REGVALUE_PB_MILISECOND_INCREMENT = "Increment";
+		public const string REGVALUE_PB_PERCENTS = "Percents";
 
 		private System.Windows.Forms.Label lblStatus;
 		private System.Windows.Forms.Label lblTimeRemaining;
@@ -71,6 +71,7 @@ namespace Backsight.Editor.Forms
         private PictureBox pictureBox;
         private Panel panel1;
         private Label label3;
+        private Panel panel2;
 		private System.ComponentModel.IContainer components;
 
 		/// <summary>
@@ -118,6 +119,7 @@ namespace Backsight.Editor.Forms
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -125,18 +127,18 @@ namespace Backsight.Editor.Forms
             // lblStatus
             // 
             this.lblStatus.BackColor = System.Drawing.Color.Transparent;
-            this.lblStatus.Location = new System.Drawing.Point(112, 116);
+            this.lblStatus.Location = new System.Drawing.Point(17, 345);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(279, 14);
+            this.lblStatus.Size = new System.Drawing.Size(321, 14);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
             // 
             // pnlStatus
             // 
             this.pnlStatus.BackColor = System.Drawing.Color.Transparent;
-            this.pnlStatus.Location = new System.Drawing.Point(346, 89);
+            this.pnlStatus.Location = new System.Drawing.Point(17, 362);
             this.pnlStatus.Name = "pnlStatus";
-            this.pnlStatus.Size = new System.Drawing.Size(223, 24);
+            this.pnlStatus.Size = new System.Drawing.Size(321, 24);
             this.pnlStatus.TabIndex = 1;
             this.pnlStatus.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
             this.pnlStatus.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlStatus_Paint);
@@ -144,9 +146,9 @@ namespace Backsight.Editor.Forms
             // lblTimeRemaining
             // 
             this.lblTimeRemaining.BackColor = System.Drawing.Color.Transparent;
-            this.lblTimeRemaining.Location = new System.Drawing.Point(343, 116);
+            this.lblTimeRemaining.Location = new System.Drawing.Point(14, 389);
             this.lblTimeRemaining.Name = "lblTimeRemaining";
-            this.lblTimeRemaining.Size = new System.Drawing.Size(226, 16);
+            this.lblTimeRemaining.Size = new System.Drawing.Size(324, 16);
             this.lblTimeRemaining.TabIndex = 2;
             this.lblTimeRemaining.Text = "Time remaining";
             this.lblTimeRemaining.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
@@ -160,7 +162,7 @@ namespace Backsight.Editor.Forms
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label2.Location = new System.Drawing.Point(342, 42);
+            this.label2.Location = new System.Drawing.Point(13, 39);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(153, 23);
             this.label2.TabIndex = 4;
@@ -171,7 +173,7 @@ namespace Backsight.Editor.Forms
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial Black", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label1.Location = new System.Drawing.Point(341, 12);
+            this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(128, 30);
             this.label1.TabIndex = 3;
@@ -181,7 +183,7 @@ namespace Backsight.Editor.Forms
             // 
             this.pictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-            this.pictureBox.Location = new System.Drawing.Point(22, 12);
+            this.pictureBox.Location = new System.Drawing.Point(17, 83);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(281, 201);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -192,35 +194,45 @@ namespace Backsight.Editor.Forms
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.panel1.Controls.Add(this.label3);
-            this.panel1.Location = new System.Drawing.Point(46, 82);
+            this.panel1.Location = new System.Drawing.Point(53, 128);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(282, 176);
+            this.panel1.Size = new System.Drawing.Size(285, 204);
             this.panel1.TabIndex = 7;
             // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.DarkKhaki;
-            this.label3.Location = new System.Drawing.Point(160, 145);
+            this.label3.Location = new System.Drawing.Point(162, 173);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(109, 16);
             this.label3.TabIndex = 3;
             this.label3.Text = "by Steve Stanton";
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Black;
+            this.panel2.Location = new System.Drawing.Point(17, 65);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(325, 5);
+            this.panel2.TabIndex = 8;
+            // 
             // SplashScreen
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.BackColor = System.Drawing.Color.DarkKhaki;
-            this.ClientSize = new System.Drawing.Size(594, 277);
+            this.ClientSize = new System.Drawing.Size(377, 428);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.pictureBox);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblTimeRemaining);
             this.Controls.Add(this.pnlStatus);
             this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "SplashScreen";
             this.ShowInTaskbar = false;
@@ -264,7 +276,6 @@ namespace Backsight.Editor.Forms
 		static private void ShowForm()
 		{
 			ms_frmSplash = new SplashScreen();
-            //ms_frmSplash.Show();
 			Application.Run(ms_frmSplash);
 		}
 
@@ -462,9 +473,29 @@ namespace Backsight.Editor.Forms
 		private const string COMPANY_NAME = "Backsight";
 		private const string APPLICATION_NAME = "CadastralEditor";
 
+        static string GetControllerValue(string key)
+        {
+            EditingController ec = EditingController.Current;
+            if (ec == null || ec.JobFile == null)
+                return null;
+
+            JobFileInfo fileInfo = ec.JobFile.Data;
+
+            if (key == SplashScreen.REGVALUE_PB_PERCENTS)
+                return fileInfo.SplashPercents;
+            else if (key == SplashScreen.REGVALUE_PB_MILISECOND_INCREMENT)
+                return fileInfo.SplashIncrements;
+
+            return null;
+        }
+
 		// Method for retrieving a Registry Value.
 		static public string GetStringRegistryValue(string key, string defaultValue)
 		{
+            string result = GetControllerValue(key);
+            if (result!=null)
+                return result;
+
 			RegistryKey rkCompany;
 			RegistryKey rkApplication;
 
@@ -489,7 +520,19 @@ namespace Backsight.Editor.Forms
 		// Method for storing a Registry Value.
 		static public void SetStringRegistryValue(string key, string stringValue)
 		{
-			RegistryKey rkSoftware;
+            if (key == SplashScreen.REGVALUE_PB_PERCENTS)
+            {
+                EditingController.Current.JobFile.Data.SplashPercents = stringValue;
+                return;
+            }
+
+            if (key == SplashScreen.REGVALUE_PB_MILISECOND_INCREMENT)
+            {
+                EditingController.Current.JobFile.Data.SplashIncrements = stringValue;
+                return;
+            }
+
+            RegistryKey rkSoftware;
 			RegistryKey rkCompany;
 			RegistryKey rkApplication;
 

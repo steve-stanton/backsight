@@ -23,6 +23,7 @@ using Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
 using Backsight.SqlServer;
+using System.Reflection;
 
 namespace Backsight.Environment.Editor
 {
@@ -70,6 +71,28 @@ namespace Backsight.Environment.Editor
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            // Locate the CreateTables.sql script
+            Assembly a = Assembly.GetExecutingAssembly();
+            string[] resNames = a.GetManifestResourceNames();
+            //Stream s = a.GetManifestResourceStream("CreateTables.sql");
+            try
+            {
+                Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources.CreateTables.sql");
+                //FileStream fs = a.GetFile("Backsight.Environment.Editor.Resources.CreateTables.sql");
+                if (fs == null)
+                    MessageBox.Show("null FileStream");
+                else
+                    MessageBox.Show("got a FileStream");
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+                    
+
+
+
             bool doClose = false;
             m_CurrentType = ItemType.Entity;
 

@@ -53,23 +53,6 @@ namespace Backsight.Editor.Forms
         public MainForm(string[] args)
         {
             InitializeComponent();
-            /*
-            StreamWriter output = new StreamWriter(@"C:\Temp\Dump.txt");
-
-            using (TextReader tr = new StreamReader(@"C:\Temp\LastEdit.txt"))
-            {
-                using (XmlReader r = XmlReader.Create(tr))
-                {
-                    while (r.Read())
-                    {
-                        output.WriteLine(String.Format("{0} {1}", r.Name, r.NodeType));
-                    }
-                }
-            }
-
-            output.Close();
-            return;
-            */
 
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, remember it as the last map (it gets picked up in MainForm_Shown)
@@ -114,6 +97,7 @@ namespace Backsight.Editor.Forms
 
             try
             {
+                SplashScreen.ShowSplashScreen();
                 Trace.Listeners.Add(trace);
                 string lastMap = Settings.Default.LastMap;
                 if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
@@ -146,6 +130,7 @@ namespace Backsight.Editor.Forms
                 this.Activate();
 
                 SplashScreen.CloseForm();
+                m_Controller.JobFile.Save();
             }
 /*
             uint numSess = 0;
