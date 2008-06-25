@@ -29,6 +29,7 @@ namespace Backsight.Editor
         [STAThread]
         static void Main(string[] args)
         {
+            SplashScreen.ShowSplashScreen();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm(args));

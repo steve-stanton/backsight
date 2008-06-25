@@ -274,11 +274,8 @@
     <Compile Include="Forms\SchemaComboBox.Designer.cs">
       <DependentUpon>SchemaComboBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SplashForm.cs">
+    <Compile Include="Forms\SplashScreen.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SplashForm.Designer.cs">
-      <DependentUpon>SplashForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\TextSizeAction.cs" />
     <Compile Include="Forms\UpdatePathForm.cs">
@@ -887,9 +884,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>SessionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SplashForm.resx">
+    <EmbeddedResource Include="Forms\SplashScreen.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>SplashForm.cs</DependentUpon>
+      <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TerminalControl.resx">
       <SubType>Designer</SubType>
