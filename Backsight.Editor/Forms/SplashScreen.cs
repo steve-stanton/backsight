@@ -220,7 +220,7 @@ namespace Backsight.Editor.Forms
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.Color.Black;
+            this.panel2.BackColor = System.Drawing.Color.DimGray;
             this.panel2.Location = new System.Drawing.Point(17, 65);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(325, 5);

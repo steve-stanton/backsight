@@ -80,6 +80,7 @@ namespace Backsight.Editor.Database
                 SessionData curSession = null;
                 User curUser = null;
                 Job curJob = null;
+                Trace.Write("Reading data...");
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
