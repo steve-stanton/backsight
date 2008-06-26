@@ -61,6 +61,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// Has the splash screen been displayed?
+        /// </summary>
+        bool m_SplashShown;
+
+        /// <summary>
         /// The current user
         /// </summary>
         User m_User;
@@ -141,6 +146,7 @@ namespace Backsight.Editor
             m_Check = null;
             m_Sel = null;
             m_HasSelectionChanged = false;
+            m_SplashShown = false;
         }
 
         #endregion
@@ -446,11 +452,34 @@ namespace Backsight.Editor
                 throw new Exception("Cannot locate map layer associated with current job");
 
             // Initialize the model
-            CadastralMapModel cmm = new CadastralMapModel();
-            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
-            cmm.Load(m_JobData, m_User);
-            cmm.CreateSession(m_JobData, m_User);
-            SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+            try
+            {
+                // If the splash screen has never been displayed, do it now
+                if (!m_SplashShown)
+                {
+                    SplashScreen.ShowSplashScreen(m_JobFile.Data);
+                    m_SplashShown = true;
+                }
+
+                CadastralMapModel cmm = new CadastralMapModel();
+                SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+                cmm.Load(m_JobData, m_User);
+                cmm.CreateSession(m_JobData, m_User);
+                SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+            }
+
+            finally
+            {
+                if (SplashScreen.SplashForm != null)
+                {
+                    SplashScreen.SplashForm.SaveSettings(m_JobFile.Data);
+                    m_JobFile.Save();
+
+                    SplashScreen.SplashForm.Owner = m_Main;
+                    m_Main.Activate();
+                    SplashScreen.CloseForm();
+                }
+            }
         }
 
         internal bool AutoSelect
