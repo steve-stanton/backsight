@@ -1179,7 +1179,7 @@ namespace Backsight.Forms
                 SetCenterAndScale(center.X, center.Y, scale, addToHistory);
         }
 
-        void SetCenterAndScale(double xc, double yc, double scale, bool addToHistory)
+        public void SetCenterAndScale(double xc, double yc, double scale, bool addToHistory)
         {
             // Get the extent of the client area, in meters.
             double width, height;

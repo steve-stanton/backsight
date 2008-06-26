@@ -166,7 +166,8 @@ namespace Backsight.Editor
                 cmm.Close();
 
             // Write out the job file
-            m_JobFile.Save();
+            if (m_JobFile!=null)
+                m_JobFile.Save();
         }
 
         public CadastralMapModel CadastralMapModel
@@ -452,6 +453,9 @@ namespace Backsight.Editor
                 throw new Exception("Cannot locate map layer associated with current job");
 
             // Initialize the model
+
+            CadastralMapModel cmm = null;
+
             try
             {
                 // If the splash screen has never been displayed, do it now
@@ -461,11 +465,10 @@ namespace Backsight.Editor
                     m_SplashShown = true;
                 }
 
-                CadastralMapModel cmm = new CadastralMapModel();
+                cmm = new CadastralMapModel();
                 SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
                 cmm.Load(m_JobData, m_User);
                 cmm.CreateSession(m_JobData, m_User);
-                SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
             }
 
             finally
@@ -492,6 +495,17 @@ namespace Backsight.Editor
                     // thread. It'll close itself "soon" (by which time, we should have been
                     // able to draw up the map).
                     SplashScreen.CloseForm();
+                }
+
+                // Need to first initialize overview extent before defining center and scale
+                if (cmm != null)
+                {
+                    SetMapModel(cmm, null);
+                    DrawInfo drawInfo = m_JobFile.Data.LastDraw;
+                    double cx = drawInfo.CenterX;
+                    double cy = drawInfo.CenterY;
+                    double mapScale = drawInfo.MapScale;
+                    (ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
                 }
             }
         }
