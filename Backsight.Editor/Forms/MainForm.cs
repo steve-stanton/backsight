@@ -97,7 +97,7 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                SplashScreen.ShowSplashScreen();
+                //SplashScreen.ShowSplashScreen();
                 Trace.Listeners.Add(trace);
                 string lastMap = Settings.Default.LastMap;
                 if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
@@ -124,13 +124,14 @@ namespace Backsight.Editor.Forms
                 sw.Stop();
                 Trace.Listeners.Remove(trace);
                 ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds/1000.0));
-
+                /*
                 if (SplashScreen.SplashForm != null)
                     SplashScreen.SplashForm.Owner = this;
                 this.Activate();
 
                 SplashScreen.CloseForm();
                 m_Controller.JobFile.Save();
+                 */
             }
 /*
             uint numSess = 0;

@@ -32,6 +32,11 @@ namespace Backsight.Editor.Forms
     /// </remarks>
 	public class SplashScreen : System.Windows.Forms.Form
 	{
+        /// <summary>
+        /// Information about the job being opened while splash screen displayed
+        /// </summary>
+        static JobFileInfo ms_JobFileInfo = null;
+
 		// Threading
 		static SplashScreen ms_frmSplash = null;
 		static Thread ms_oThread = null;
@@ -58,7 +63,7 @@ namespace Backsight.Editor.Forms
 		private int m_iActualTicks = 0;
 		private ArrayList m_alPreviousCompletionFraction;
 		private ArrayList m_alActualTimes = new ArrayList();
-		private const string REG_KEY_INITIALIZATION = "Initialization";
+		//private const string REG_KEY_INITIALIZATION = "Initialization";
 		public const string REGVALUE_PB_MILISECOND_INCREMENT = "Increment";
 		public const string REGVALUE_PB_PERCENTS = "Percents";
 
@@ -252,8 +257,11 @@ namespace Backsight.Editor.Forms
 
 		// A static method to create the thread and 
 		// launch the SplashScreen.
-		static public void ShowSplashScreen()
+		static public void ShowSplashScreen(JobFileInfo info)
 		{
+            // Remember information about the job that's being loaded
+            ms_JobFileInfo = info;
+
 			// Make sure it's only launched once.
 			if( ms_frmSplash != null )
 				return;
@@ -352,7 +360,7 @@ namespace Backsight.Editor.Forms
 		// splashscreen from the registry.
 		private void ReadIncrements()
 		{
-			string sPBIncrementPerTimerInterval = RegistryAccess.GetStringRegistryValue( REGVALUE_PB_MILISECOND_INCREMENT, "0.0015");
+            string sPBIncrementPerTimerInterval = GetIncrement();
 			double dblResult;
 
 			if( Double.TryParse(sPBIncrementPerTimerInterval, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out dblResult) == true )
@@ -360,7 +368,7 @@ namespace Backsight.Editor.Forms
 			else
 				m_dblPBIncrementPerTimerInterval = .0015;
 
-			string sPBPreviousPctComplete = RegistryAccess.GetStringRegistryValue( REGVALUE_PB_PERCENTS, "" );
+            string sPBPreviousPctComplete = GetPercents();
 
 			if( sPBPreviousPctComplete != "" )
 			{
@@ -385,6 +393,7 @@ namespace Backsight.Editor.Forms
 
 		// Method to store the intervals (in percent complete) from the current invocation of
 		// the splash screen to the registry.
+        /*
 		private void StoreIncrements()
 		{
 			string sPercent = "";
@@ -392,11 +401,13 @@ namespace Backsight.Editor.Forms
 			for( int i = 0; i < m_alActualTimes.Count; i++ )
 				sPercent += ((double)m_alActualTimes[i]/dblElapsedMilliseconds).ToString("0.####", System.Globalization.NumberFormatInfo.InvariantInfo) + " ";
 
-			RegistryAccess.SetStringRegistryValue( REGVALUE_PB_PERCENTS, sPercent );
+            SetPercents(sPercent);
 
 			m_dblPBIncrementPerTimerInterval = 1.0/(double)m_iActualTicks;
-			RegistryAccess.SetStringRegistryValue( REGVALUE_PB_MILISECOND_INCREMENT, m_dblPBIncrementPerTimerInterval.ToString("#.000000", System.Globalization.NumberFormatInfo.InvariantInfo));
+            string sIncrement = m_dblPBIncrementPerTimerInterval.ToString("#.000000", System.Globalization.NumberFormatInfo.InvariantInfo);
+            SetIncrement(sIncrement);
 		}
+        */
 
 		//********* Event Handlers ************
 
@@ -418,7 +429,7 @@ namespace Backsight.Editor.Forms
 					this.Opacity += m_dblOpacityIncrement;
 				else
 				{
-					StoreIncrements();
+					//StoreIncrements();
 					this.Close();
 					Debug.WriteLine("Called this.Close()");
 				}
@@ -462,90 +473,39 @@ namespace Backsight.Editor.Forms
 		{
 			CloseForm();
 		}
-	}
 
-	/// <summary>
-	/// A class for managing registry access.
-	/// </summary>
-	public class RegistryAccess
-	{
-		private const string SOFTWARE_KEY = "Software";
-		private const string COMPANY_NAME = "Backsight";
-		private const string APPLICATION_NAME = "CadastralEditor";
-
-        static string GetControllerValue(string key)
+        private string GetIncrement()
         {
-            EditingController ec = EditingController.Current;
-            if (ec == null || ec.JobFile == null)
-                return null;
+            string result = String.Empty;
+            if (ms_JobFileInfo!=null)
+                result = ms_JobFileInfo.SplashIncrement;
 
-            JobFileInfo fileInfo = ec.JobFile.Data;
-
-            if (key == SplashScreen.REGVALUE_PB_PERCENTS)
-                return fileInfo.SplashPercents;
-            else if (key == SplashScreen.REGVALUE_PB_MILISECOND_INCREMENT)
-                return fileInfo.SplashIncrements;
-
-            return null;
+            if (String.IsNullOrEmpty(result))
+                return "0.0015";
+            else
+                return result;
         }
 
-		// Method for retrieving a Registry Value.
-		static public string GetStringRegistryValue(string key, string defaultValue)
-		{
-            string result = GetControllerValue(key);
-            if (result!=null)
-                return result;
+        private string GetPercents()
+        {
+            string result = String.Empty;
+            if (ms_JobFileInfo!=null)
+                result = ms_JobFileInfo.SplashPercents;
+            return result;
+        }
 
-			RegistryKey rkCompany;
-			RegistryKey rkApplication;
+        internal void SaveSettings(JobFileInfo info)
+        {
+            string sPercent = "";
+            double dblElapsedMilliseconds = ElapsedMilliSeconds();
+            for (int i = 0; i < m_alActualTimes.Count; i++)
+                sPercent += ((double)m_alActualTimes[i]/dblElapsedMilliseconds).ToString("0.####", System.Globalization.NumberFormatInfo.InvariantInfo) + " ";
 
-			rkCompany = Registry.CurrentUser.OpenSubKey(SOFTWARE_KEY, false).OpenSubKey(COMPANY_NAME, false);
-			if( rkCompany != null )
-			{
-				rkApplication = rkCompany.OpenSubKey(APPLICATION_NAME, true);
-				if( rkApplication != null )
-				{
-					foreach(string sKey in rkApplication.GetValueNames())
-					{
-						if( sKey == key )
-						{
-							return (string)rkApplication.GetValue(sKey);
-						}
-					}
-				}
-			}
-			return defaultValue;
-		}
+            m_dblPBIncrementPerTimerInterval = 1.0/(double)m_iActualTicks;
+            string sIncrement = m_dblPBIncrementPerTimerInterval.ToString("#.000000", System.Globalization.NumberFormatInfo.InvariantInfo);
 
-		// Method for storing a Registry Value.
-		static public void SetStringRegistryValue(string key, string stringValue)
-		{
-            if (key == SplashScreen.REGVALUE_PB_PERCENTS)
-            {
-                EditingController.Current.JobFile.Data.SplashPercents = stringValue;
-                return;
-            }
-
-            if (key == SplashScreen.REGVALUE_PB_MILISECOND_INCREMENT)
-            {
-                EditingController.Current.JobFile.Data.SplashIncrements = stringValue;
-                return;
-            }
-
-            RegistryKey rkSoftware;
-			RegistryKey rkCompany;
-			RegistryKey rkApplication;
-
-			rkSoftware = Registry.CurrentUser.OpenSubKey(SOFTWARE_KEY, true);
-			rkCompany = rkSoftware.CreateSubKey(COMPANY_NAME);
-			if( rkCompany != null )
-			{
-				rkApplication = rkCompany.CreateSubKey(APPLICATION_NAME);
-				if( rkApplication != null )
-				{
-					rkApplication.SetValue(key, stringValue);
-				}
-			}
-		}
-	}
+            info.SplashPercents = sPercent;
+            info.SplashIncrement = sIncrement;
+        }
+    }
 }
