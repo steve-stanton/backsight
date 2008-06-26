@@ -470,13 +470,27 @@ namespace Backsight.Editor
 
             finally
             {
-                if (SplashScreen.SplashForm != null)
+                SplashScreen ss = SplashScreen.SplashForm;
+
+                if (ss != null)
                 {
-                    SplashScreen.SplashForm.SaveSettings(m_JobFile.Data);
+                    // Save the splash settings now. This is perhaps a little premature, since
+                    // the original splash screen implementation waited until the screen had
+                    // completely faded away. The drawback with that is that the job file would
+                    // then be rewritten on another thread, which could trample on things that
+                    // are happening here.
+                    ss.SaveSettings(m_JobFile.Data);
                     m_JobFile.Save();
 
-                    SplashScreen.SplashForm.Owner = m_Main;
+                    // Ensure the main window is regarded as the splash screen's parent (otherwise
+                    // some other window might come to the front when the splash screen finally
+                    // closes).
+                    ss.Owner = m_Main;
                     m_Main.Activate();
+
+                    // Closing the splash screen means you want it to fade away in its own
+                    // thread. It'll close itself "soon" (by which time, we should have been
+                    // able to draw up the map).
                     SplashScreen.CloseForm();
                 }
             }
