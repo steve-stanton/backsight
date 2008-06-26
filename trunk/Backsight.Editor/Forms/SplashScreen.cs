@@ -156,6 +156,7 @@ namespace Backsight.Editor.Forms
             this.lblTimeRemaining.Size = new System.Drawing.Size(324, 16);
             this.lblTimeRemaining.TabIndex = 2;
             this.lblTimeRemaining.Text = "Time remaining";
+            this.lblTimeRemaining.Visible = false;
             this.lblTimeRemaining.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
             // 
             // timer1
@@ -387,7 +388,7 @@ namespace Backsight.Editor.Forms
 			else
 			{
 				m_bFirstLaunch = true;
-				lblTimeRemaining.Text = "";
+				//lblTimeRemaining.Text = "";
 			}
 		}
 
@@ -446,11 +447,14 @@ namespace Backsight.Editor.Forms
 					m_rProgress = new Rectangle( x, y, width, height);
 					pnlStatus.Invalidate(m_rProgress);
 					int iSecondsLeft = 1 + (int)(TIMER_INTERVAL * ((1.0 - m_dblLastCompletionFraction)/m_dblPBIncrementPerTimerInterval)) / 1000;
+
+                    if (iSecondsLeft > 1 && !lblTimeRemaining.Visible)
+                        lblTimeRemaining.Visible = true;
+
 					if( iSecondsLeft == 1 )
 						lblTimeRemaining.Text = string.Format( "1 second remaining");
 					else
 						lblTimeRemaining.Text = string.Format( "{0} seconds remaining", iSecondsLeft);
-
 				}
 			}
 		}
