@@ -461,7 +461,7 @@ namespace Backsight.Editor
                 // If the splash screen has never been displayed, do it now
                 if (!m_SplashShown)
                 {
-                    SplashScreen.ShowSplashScreen(m_JobFile.Data);
+                    SplashScreen.ShowSplashScreen(m_Main, m_JobFile.Data);
                     m_SplashShown = true;
                 }
 
@@ -488,7 +488,7 @@ namespace Backsight.Editor
                     // Ensure the main window is regarded as the splash screen's parent (otherwise
                     // some other window might come to the front when the splash screen finally
                     // closes).
-                    ss.Owner = m_Main;
+                    //ss.Owner = m_Main;
                     m_Main.Activate();
 
                     // Closing the splash screen means you want it to fade away in its own
