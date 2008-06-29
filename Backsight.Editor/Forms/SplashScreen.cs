@@ -36,6 +36,7 @@ namespace Backsight.Editor.Forms
         /// Information about the job being opened while splash screen displayed
         /// </summary>
         static JobFileInfo ms_JobFileInfo = null;
+        static Form ms_ParentForm = null;
 
 		// Threading
 		static SplashScreen ms_frmSplash = null;
@@ -258,10 +259,11 @@ namespace Backsight.Editor.Forms
 
 		// A static method to create the thread and 
 		// launch the SplashScreen.
-		static public void ShowSplashScreen(JobFileInfo info)
+		static public void ShowSplashScreen(Form parent, JobFileInfo info)
 		{
             // Remember information about the job that's being loaded
             ms_JobFileInfo = info;
+            ms_ParentForm = parent;
 
 			// Make sure it's only launched once.
 			if( ms_frmSplash != null )
@@ -285,6 +287,7 @@ namespace Backsight.Editor.Forms
 		static private void ShowForm()
 		{
 			ms_frmSplash = new SplashScreen();
+            //ms_frmSplash.Owner = ms_ParentForm;
 			Application.Run(ms_frmSplash);
 		}
 
