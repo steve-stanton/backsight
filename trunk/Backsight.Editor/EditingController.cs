@@ -461,12 +461,19 @@ namespace Backsight.Editor
                 // If the splash screen has never been displayed, do it now
                 if (!m_SplashShown)
                 {
-                    SplashScreen.ShowSplashScreen(m_Main, m_JobFile.Data);
+                    string increment = m_JobFile.Data.SplashIncrement;
+                    string percents = m_JobFile.Data.SplashPercents;
+                    SplashScreen.ShowSplashScreen(increment, percents);
                     m_SplashShown = true;
                 }
 
                 cmm = new CadastralMapModel();
+
+                // The Load method will end up calling software that requires access to the
+                // current map model, so we need to set it now (we'll set it once more after
+                // the model has been loaded)
                 SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+
                 cmm.Load(m_JobData, m_User);
                 cmm.CreateSession(m_JobData, m_User);
             }
@@ -482,31 +489,38 @@ namespace Backsight.Editor
                     // completely faded away. The drawback with that is that the job file would
                     // then be rewritten on another thread, which could trample on things that
                     // are happening here.
-                    ss.SaveSettings(m_JobFile.Data);
+                    m_JobFile.Data.SplashIncrement = ss.GetIncrement();
+                    m_JobFile.Data.SplashPercents = ss.GetPercents();
                     m_JobFile.Save();
 
                     // Ensure the main window is regarded as the splash screen's parent (otherwise
                     // some other window might come to the front when the splash screen finally
                     // closes).
                     //ss.Owner = m_Main;
-                    m_Main.Activate();
+                    //m_Main.Activate();
 
                     // Closing the splash screen means you want it to fade away in its own
                     // thread. It'll close itself "soon" (by which time, we should have been
                     // able to draw up the map).
-                    SplashScreen.CloseForm();
+                    //SplashScreen.CloseForm();
                 }
 
                 // Need to first initialize overview extent before defining center and scale
                 if (cmm != null)
                 {
-                    SetMapModel(cmm, null);
+                    // Pick up the last draw info before defining the overview extent (really,
+                    // should modify SetMapModel so it accepts the DrawInfo rather than an extent).
                     DrawInfo drawInfo = m_JobFile.Data.LastDraw;
+                    SetMapModel(cmm, null);
+
                     double cx = drawInfo.CenterX;
                     double cy = drawInfo.CenterY;
                     double mapScale = drawInfo.MapScale;
                     (ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
+                    m_JobFile.Save();
                 }
+
+                SplashScreen.CloseForm();
             }
         }
 
