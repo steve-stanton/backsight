@@ -66,8 +66,6 @@ namespace Backsight.Editor
         /// Is this divider visible? (when dealing with trimmed dangles, dividers may
         /// be marked invisible).
         /// </summary>
-        /// <remarks>Trimming is not yet implemented, so implementations of this method
-        /// should always return a result of <c>true</c></remarks>
         bool IsVisible { get; }
     }
 }
