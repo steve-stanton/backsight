@@ -506,41 +506,7 @@ namespace Backsight.Editor.Forms
 		{
 			CloseForm();
 		}
-        /*
-        private string GetIncrement()
-        {
-            string result = String.Empty;
-            if (ms_JobFileInfo!=null)
-                result = ms_JobFileInfo.SplashIncrement;
 
-            if (String.IsNullOrEmpty(result))
-                return "0.0015";
-            else
-                return result;
-        }
-
-        private string GetPercents()
-        {
-            string result = String.Empty;
-            if (ms_JobFileInfo!=null)
-                result = ms_JobFileInfo.SplashPercents;
-            return result;
-        }
-
-        internal void SaveSettings(JobFileInfo info)
-        {
-            string sPercent = "";
-            double dblElapsedMilliseconds = ElapsedMilliSeconds();
-            for (int i = 0; i < m_alActualTimes.Count; i++)
-                sPercent += ((double)m_alActualTimes[i]/dblElapsedMilliseconds).ToString("0.####", System.Globalization.NumberFormatInfo.InvariantInfo) + " ";
-
-            m_dblPBIncrementPerTimerInterval = 1.0/(double)m_iActualTicks;
-            string sIncrement = m_dblPBIncrementPerTimerInterval.ToString("#.000000", System.Globalization.NumberFormatInfo.InvariantInfo);
-
-            info.SplashPercents = sPercent;
-            info.SplashIncrement = sIncrement;
-        }
-        */
         internal string GetIncrement()
         {
             m_dblPBIncrementPerTimerInterval = 1.0/(double)m_iActualTicks;
