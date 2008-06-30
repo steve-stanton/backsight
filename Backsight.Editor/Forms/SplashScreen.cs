@@ -20,7 +20,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Threading;
-using System.Diagnostics;
+//using System.Diagnostics;
 
 using Microsoft.Win32;
 
@@ -35,8 +35,10 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Information about the job being opened while splash screen displayed
         /// </summary>
-        static JobFileInfo ms_JobFileInfo = null;
-        static Form ms_ParentForm = null;
+        //static JobFileInfo ms_JobFileInfo = null;
+        //static Form ms_ParentForm = null;
+        static string ms_Increment = null;
+        static string ms_Percents = null;
 
 		// Threading
 		static SplashScreen ms_frmSplash = null;
@@ -259,15 +261,28 @@ namespace Backsight.Editor.Forms
 
 		// A static method to create the thread and 
 		// launch the SplashScreen.
-		static public void ShowSplashScreen(Form parent, JobFileInfo info)
+		static public void ShowSplashScreen(string increment, string percents)
 		{
             // Remember information about the job that's being loaded
-            ms_JobFileInfo = info;
-            ms_ParentForm = parent;
+            //ms_JobFileInfo = info;
+            //ms_ParentForm = parent;
+            if (String.IsNullOrEmpty(increment))
+                ms_Increment = "0.0015";
+            else
+                ms_Increment = increment;
+
+            if (String.IsNullOrEmpty(percents))
+                ms_Percents = String.Empty;
+            else
+                ms_Percents = percents;
 
 			// Make sure it's only launched once.
 			if( ms_frmSplash != null )
 				return;
+
+            // SS: Create the form in the calling thread?
+            //ms_frmSplash = new SplashScreen();
+
 			ms_oThread = new Thread( new ThreadStart(SplashScreen.ShowForm));
 			ms_oThread.IsBackground = true;
 			ms_oThread.ApartmentState = ApartmentState.STA;
@@ -289,6 +304,8 @@ namespace Backsight.Editor.Forms
 			ms_frmSplash = new SplashScreen();
             //ms_frmSplash.Owner = ms_ParentForm;
 			Application.Run(ms_frmSplash);
+            //ms_frmSplash.Show();
+            //Application.DoEvents();
 		}
 
 		// A static method to close the SplashScreen
@@ -299,6 +316,13 @@ namespace Backsight.Editor.Forms
 				// Make it start going away.
 				ms_frmSplash.m_dblOpacityIncrement = - ms_frmSplash.m_dblOpacityDecrement;
 			}
+
+            // SS: Ensure the correct main form comes to the fore when the splash screen
+            // finally fades away. Do it here to avoid cross-threading error. I tried doing
+            // this on creation of the instance, but for some reason, the splash screen
+            // doesn't show up in that case. Doing it here just works.
+            //ms_frmSplash.Owner = ms_ParentForm;
+
 			ms_oThread = null;	// we don't need these any more.
 			ms_frmSplash = null;
 		}
@@ -364,7 +388,7 @@ namespace Backsight.Editor.Forms
 		// splashscreen from the registry.
 		private void ReadIncrements()
 		{
-            string sPBIncrementPerTimerInterval = GetIncrement();
+            string sPBIncrementPerTimerInterval = ms_Increment;
 			double dblResult;
 
 			if( Double.TryParse(sPBIncrementPerTimerInterval, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out dblResult) == true )
@@ -372,7 +396,7 @@ namespace Backsight.Editor.Forms
 			else
 				m_dblPBIncrementPerTimerInterval = .0015;
 
-            string sPBPreviousPctComplete = GetPercents();
+            string sPBPreviousPctComplete = ms_Percents;
 
 			if( sPBPreviousPctComplete != "" )
 			{
@@ -435,7 +459,9 @@ namespace Backsight.Editor.Forms
 				{
 					//StoreIncrements();
 					this.Close();
-					Debug.WriteLine("Called this.Close()");
+
+                    // SS: Avoid cross-thread call
+					//Debug.WriteLine("Called this.Close()");
 				}
 			}
 			if( m_bFirstLaunch == false && m_dblLastCompletionFraction < m_dblCompletionFraction )
@@ -467,7 +493,7 @@ namespace Backsight.Editor.Forms
 		{
 			if( m_bFirstLaunch == false && e.ClipRectangle.Width > 0 && m_iActualTicks > 1 )
 			{
-                // Originally a bluish gradient, but greeny-yellow works better with my background image
+                // SS: Originally a bluish gradient, but greeny-yellow works better with my background
                 Color dark = Color.FromArgb(84, 155, 66); //(58, 96, 151);
                 Color light = Color.FromArgb(232, 254, 107); //(181, 237, 254);
 				LinearGradientBrush brBackground = new LinearGradientBrush(m_rProgress, dark, light, LinearGradientMode.Horizontal);
@@ -480,7 +506,7 @@ namespace Backsight.Editor.Forms
 		{
 			CloseForm();
 		}
-
+        /*
         private string GetIncrement()
         {
             string result = String.Empty;
@@ -513,6 +539,22 @@ namespace Backsight.Editor.Forms
 
             info.SplashPercents = sPercent;
             info.SplashIncrement = sIncrement;
+        }
+        */
+        internal string GetIncrement()
+        {
+            m_dblPBIncrementPerTimerInterval = 1.0/(double)m_iActualTicks;
+            return m_dblPBIncrementPerTimerInterval.ToString("#.000000", System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        internal string GetPercents()
+        {
+            string sPercent = "";
+            double dblElapsedMilliseconds = ElapsedMilliSeconds();
+            for (int i = 0; i < m_alActualTimes.Count; i++)
+                sPercent += ((double)m_alActualTimes[i]/dblElapsedMilliseconds).ToString("0.####", System.Globalization.NumberFormatInfo.InvariantInfo) + " ";
+
+            return sPercent;
         }
     }
 }
