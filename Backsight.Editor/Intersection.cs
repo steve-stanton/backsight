@@ -96,16 +96,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Go through each divider that is incident on this terminal, marking adjacent
-        /// polygons for deletion.
-        /// </summary>
-        public void MarkPolygons() // ITerminal
-        {
-            foreach (IDivider d in IncidentDividers())
-                Topology.MarkPolygons(d);
-        }
-
-        /// <summary>
         /// The spatial type of an intersection is <see cref="SpatialType.Point"/>
         /// </summary>
         public SpatialType SpatialType // ISpatialObject

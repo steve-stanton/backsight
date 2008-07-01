@@ -66,6 +66,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Goes through each divider that is incident on the supplied terminal, marking adjacent
+        /// polygons for deletion.
+        /// </summary>
+        /// <param name="t">The terminal position</param>
+        internal static void MarkPolygons(ITerminal t)
+        {
+            IDivider[] divs = t.IncidentDividers();
+
+            if (divs!=null)
+            {
+                foreach (IDivider d in divs)
+                    MarkPolygons(d);
+            }
+        }
+
+        /// <summary>
         /// Marks the left of a divider for deletion.
         /// </summary>
         /// <param name="d">The divider to process</param>

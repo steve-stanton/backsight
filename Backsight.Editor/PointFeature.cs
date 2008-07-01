@@ -311,18 +311,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Goes through each line that is incident on this point, and mark adjacent
-        /// polygons for deletion.
-        /// </summary>
-        public void MarkPolygons() // ITerminal
-        {
-            IDivider[] da = this.IncidentDividers();
-
-            foreach (IDivider d in da)
-                Topology.MarkPolygons(d);
-        }
-
-        /// <summary>
         /// Writes the content of this class. This is called by
         /// <see cref="XmlContentWriter.WriteElement"/>
         /// after the element name and class type (xsi:type) have been written.

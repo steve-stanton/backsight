@@ -831,10 +831,10 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             // that all polygons incident on the start location have
             // been marked for deletion. Same for the end.
             if (xres.IsStartGrazing)
-                StartPoint.MarkPolygons();
+                Topology.MarkPolygons(StartPoint);
 
             if (xres.IsEndGrazing)
-                EndPoint.MarkPolygons();
+                Topology.MarkPolygons(EndPoint);
 
             // Modify the intersection results so that the exit point
             // of each graze will be treated as a simple intersection.
@@ -933,8 +933,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                             throw new Exception("LineFeature.Cut - Multiple overlaps detected");
 
                         // Mark all polygons incident on the terminals.
-                        div.From.MarkPolygons();
-                        div.To.MarkPolygons();
+                        Topology.MarkPolygons(div.From);
+                        Topology.MarkPolygons(div.To);
 
                         // Define overlap for the entire divider
                         if (div is LineTopology)
@@ -950,7 +950,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                         Debug.Assert(from == div.From);
 
                         // Mark all polygons incident at the start terminal
-                        div.From.MarkPolygons();
+                        Topology.MarkPolygons(div.From);
 
                         // Create an overlap at the start of this divider
                         to = map.GetTerminal(x.P2);
@@ -974,7 +974,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                     else if (x.IsEndGraze)
                     {
                         // Mark all polygons incident on the end terminal
-                        div.To.MarkPolygons();
+                        Topology.MarkPolygons(div.To);
 
                         // Add a topological section up to the start of the graze
                         to = map.GetTerminal(x.P1);
