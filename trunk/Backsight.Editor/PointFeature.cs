@@ -38,7 +38,7 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        public static PointFeature Create(IPosition p, IEntity e, Operation creator)
+        internal static PointFeature Create(IPosition p, IEntity e, Operation creator)
         {
             if (p==null)
                 throw new ArgumentNullException("Position for new point feature cannot be null");
@@ -66,7 +66,7 @@ namespace Backsight.Editor
         /// <param name="g">The geometry for the point (not null)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        public PointFeature(IPointGeometry g, IEntity e, Operation creator)
+        internal PointFeature(IPointGeometry g, IEntity e, Operation creator)
             : base(e, creator)
         {
             m_Geom = (PointGeometry)g;
@@ -323,6 +323,17 @@ namespace Backsight.Editor
             // Just output position as attributes (yes, I know geometry could theoretically
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the ReadContent method.
+            /*
+            if (m_Geom.FirstPoint == this)
+            {
+                if (m_Geom.PointCount > 1)
+                    writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
+
+                m_Geom.WriteContent(writer);
+            }
+            else
+                writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
+            */
             m_Geom.WriteContent(writer);
         }
 
@@ -346,6 +357,22 @@ namespace Backsight.Editor
             }
             else
             {
+                /*
+                // If this point shares geometry with a preceding point, grab the geometry from there
+                if (reader.HasAttribute("FirstPoint"))
+                {
+                    PointFeature p = reader.ReadFeatureByReference<PointFeature>("FirstPoint");
+                    m_Geom = p.m_Geom;
+                }
+                else
+                {
+                    uint pointCount = Math.Max(1, reader.ReadUnsignedInt("PointCount"));
+                    m_Geom = new Node(pointCount);
+                    m_Geom.ReadContent(reader);
+                }
+
+                m_Geom.AddSharedPoint(this);
+                */
                 m_Geom = new PointGeometry();
                 m_Geom.ReadContent(reader);
             }
