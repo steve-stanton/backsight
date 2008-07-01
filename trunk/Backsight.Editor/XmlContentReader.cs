@@ -502,7 +502,7 @@ namespace Backsight.Editor
             if (fd==null)
                 return null;
 
-            IPointGeometry pg = PointGeometry.Create(p);
+            PointGeometry pg = PointGeometry.Create(p);
             PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
             result.CreatorSequence = fd.CreationSequence;
 
