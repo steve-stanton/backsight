@@ -187,13 +187,14 @@ namespace Backsight.Editor
 
         #region IXmlContent Members
 
-        public virtual void WriteContent(XmlContentWriter writer)
+        // Not virtual (don't want the Node class to override) - See PointFeature usage
+        public void WriteContent(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);
         }
 
-        public virtual void ReadContent(XmlContentReader reader)
+        public void ReadContent(XmlContentReader reader)
         {
             m_X = new MicronValue(reader.ReadLong("X"));
             m_Y = new MicronValue(reader.ReadLong("Y"));
