@@ -72,14 +72,6 @@ namespace Backsight.Editor
             return null;
         }
 
-        /// <summary>
-        /// Go through each divider that is incident on this terminal, marking adjacent
-        /// polygons for deletion. This implementation does nothing.
-        /// </summary>
-        public void MarkPolygons()
-        {
-        }
-
         #endregion
     }
 }
