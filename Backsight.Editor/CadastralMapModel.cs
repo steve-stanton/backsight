@@ -524,7 +524,8 @@ namespace Backsight.Editor
         /// <returns>The created point feature.</returns>
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
-            PointFeature f = PointFeature.Create(p, e, creator);
+            PointGeometry g = PointGeometry.Create(p);
+            PointFeature f = new PointFeature(g, e, creator);
             //m_Window.Union(p);
             //m_Index.Add(f);
             return f;

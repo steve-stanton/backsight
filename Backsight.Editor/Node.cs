@@ -112,9 +112,9 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of points associated with this node
         /// </summary>
-        internal int PointCount
+        internal uint PointCount
         {
-            get { return (m_Points==null ? 0 : m_Points.Count); }
+            get { return (m_Points==null ? 0 : (uint)m_Points.Count); }
         }
 
         /// <summary>

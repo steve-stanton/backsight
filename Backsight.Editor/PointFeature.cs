@@ -32,26 +32,16 @@ namespace Backsight.Editor
     {
         #region Class data
 
-        PointGeometry m_Geom;
+        /// <summary>
+        /// The geometry for this point. Could conceivably be shared by more
+        /// than one point (although it is expected that 99% of points will not
+        /// be shared).
+        /// </summary>
+        Node m_Geom;
 
         #endregion
 
         #region Constructors
-
-        internal static PointFeature Create(IPosition p, IEntity e, Operation creator)
-        {
-            if (p==null)
-                throw new ArgumentNullException("Position for new point feature cannot be null");
-
-            if (e==null)
-                throw new ArgumentNullException("Entity type for new point feature cannot be null");
-
-            IPointGeometry g = (p as IPointGeometry);
-            if (g==null)
-                g = new PointGeometry(p);
-
-            return new PointFeature(g, e, creator);
-        }
 
         /// <summary>
         /// Default constructor (for serialization)
@@ -61,15 +51,37 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <c>PointFeature</c>
+        /// Creates a new <c>PointFeature</c> with geometry that isn't shared
+        /// with any other point.
         /// </summary>
         /// <param name="g">The geometry for the point (not null)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        internal PointFeature(IPointGeometry g, IEntity e, Operation creator)
+        internal PointFeature(PointGeometry g, IEntity e, Operation creator)
             : base(e, creator)
         {
-            m_Geom = (PointGeometry)g;
+            if (g == null)
+                throw new ArgumentNullException("Position for new point feature cannot be null");
+
+            m_Geom = new Node(g);
+            m_Geom.AddSharedPoint(this);
+        }
+
+        /// <summary>
+        /// Creates a new <c>PointFeature</c> that is coincident with an existing
+        /// point. The new point will share the geometry of the existing point.
+        /// </summary>
+        /// <param name="f">The point feature that the new point coincides with (not null)</param>
+        /// <param name="e">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation that created the feature (not null)</param>
+        internal PointFeature(PointFeature f, IEntity e, Operation creator)
+            : base(e, creator)
+        {
+            if (f == null)
+                throw new ArgumentNullException("Cannot create shared point feature");
+
+            m_Geom = f.m_Geom;
+            m_Geom.AddSharedPoint(this);
         }
 
         #endregion
@@ -186,7 +198,7 @@ namespace Backsight.Editor
             // Move the geometry for this feature and re-insert into the index
             //(g as PointGeometry).Move(to);
             // alternatively, just assign the supplied geometry ?
-            m_Geom = to;
+            m_Geom = new Node(to);
             //index.Add(this);
 
             // Notify all dependents that this point has been moved (and add
@@ -200,6 +212,14 @@ namespace Backsight.Editor
         /// The geometry defining the position of this feature.
         /// </summary>
         public IPointGeometry Geometry // IPoint
+        {
+            get { return m_Geom; }
+        }
+
+        /// <summary>
+        /// The geometry defining the position of this feature.
+        /// </summary>
+        internal PointGeometry PointGeometry
         {
             get { return m_Geom; }
         }
@@ -293,12 +313,12 @@ namespace Backsight.Editor
         /// <param name="newPosition">The new position</param>
         /// <exception cref="InvalidOperationException">If the point is referenced by any
         /// other objects.</exception>
-        internal void ChangePosition(IPointGeometry newPosition)
+        internal void ChangePosition(PointGeometry newPosition)
         {
             if (HasDependents)
                 throw new InvalidOperationException("Cannot move point that has dependents");
 
-            m_Geom = PointGeometry.Create(newPosition);
+            m_Geom = new Node(newPosition);
         }
 
         /// <summary>
@@ -323,7 +343,7 @@ namespace Backsight.Editor
             // Just output position as attributes (yes, I know geometry could theoretically
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the ReadContent method.
-            /*
+
             if (m_Geom.FirstPoint == this)
             {
                 if (m_Geom.PointCount > 1)
@@ -333,8 +353,6 @@ namespace Backsight.Editor
             }
             else
                 writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
-            */
-            m_Geom.WriteContent(writer);
         }
 
         /// <summary>
@@ -357,7 +375,6 @@ namespace Backsight.Editor
             }
             else
             {
-                /*
                 // If this point shares geometry with a preceding point, grab the geometry from there
                 if (reader.HasAttribute("FirstPoint"))
                 {
@@ -372,9 +389,6 @@ namespace Backsight.Editor
                 }
 
                 m_Geom.AddSharedPoint(this);
-                */
-                m_Geom = new PointGeometry();
-                m_Geom.ReadContent(reader);
             }
         }
 

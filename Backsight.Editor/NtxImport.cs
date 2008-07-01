@@ -185,7 +185,7 @@ namespace Backsight.Editor
 
             // Add a point at the center of the circle
             Ntx.Position pos = line.Center;
-            IPointGeometry pc = new PointGeometry(pos.Easting, pos.Northing);
+            PointGeometry pc = new PointGeometry(pos.Easting, pos.Northing);
             PointFeature center = EnsurePointExists(pc, tol, creator);
 
             // Get positions defining the arc
@@ -200,8 +200,8 @@ namespace Backsight.Editor
             IPosition ec = CircleGeometry.GetClosestPosition(cg, pts[pts.Length-1]);
 
             // Round off to nearest micron
-            IPointGeometry bcg = PointGeometry.Create(bc);
-            IPointGeometry ecg = PointGeometry.Create(ec);
+            PointGeometry bcg = PointGeometry.Create(bc);
+            PointGeometry ecg = PointGeometry.Create(ec);
 
             // Ensure point features exist at both ends of the line.
             PointFeature ps = GetArcEndPoint(bcg, tol, creator);
@@ -235,7 +235,7 @@ namespace Backsight.Editor
             return arc;
         }
 
-        PointFeature GetArcEndPoint(IPointGeometry p, ILength tol, Operation creator)
+        PointFeature GetArcEndPoint(PointGeometry p, ILength tol, Operation creator)
         {
             // Ensure we've got a point at the required position
             PointFeature pt = EnsurePointExists(p, tol, creator);
@@ -281,7 +281,7 @@ namespace Backsight.Editor
 
             IEntity what = GetEntityType(line, SpatialType.Line);
 
-            IPointGeometry[] pts = GetPositions(line);
+            PointGeometry[] pts = GetPositions(line);
             if (pts.Length<2)
                 return null;
 
@@ -290,8 +290,8 @@ namespace Backsight.Editor
             PointFeature pe = EnsurePointExists(pts[pts.Length-1], tol, creator);
 
             // Force end positions to match
-            pts[0] = ps.Geometry;
-            pts[pts.Length-1] = pe.Geometry;
+            pts[0] = ps.PointGeometry;
+            pts[pts.Length-1] = pe.PointGeometry;
 
             // If we're dealing with a multi-segment, I have occasionally seen tiny glitches
             // at the end of the incoming lines (whether this is a real data problem, or an
@@ -317,14 +317,14 @@ namespace Backsight.Editor
             return result;
         }
 
-        private IPointGeometry[] CheckMultiSegmentEnds(IPointGeometry[] pts)
+        private PointGeometry[] CheckMultiSegmentEnds(PointGeometry[] pts)
         {
             if (pts.Length<=2)
                 return pts;
 
             //double tol = (Constants.XYRES * Constants.XYRES);
             double tol = (0.001 * 0.001);
-            IPointGeometry[] res = pts;
+            PointGeometry[] res = pts;
             bool doCheck = true;
 
             while (doCheck && res.Length>2)
@@ -335,7 +335,7 @@ namespace Backsight.Editor
                 // the second position.
                 if (BasicGeom.DistanceSquared(res[0].X, res[0].Y, res[1].X, res[1].Y, res[2].X, res[2].Y) < tol)
                 {
-                    IPointGeometry[] tmp = new IPointGeometry[res.Length-1];
+                    PointGeometry[] tmp = new PointGeometry[res.Length-1];
                     tmp[0] = res[0];
                     Array.Copy(res, 2, tmp, 1, res.Length-2);
                     res = tmp;
@@ -355,7 +355,7 @@ namespace Backsight.Editor
                 int last = res.Length-1;
                 if (BasicGeom.DistanceSquared(res[last].X, res[last].Y, res[last-1].X, res[last-1].Y, res[last-2].X, res[last-2].Y) < tol)
                 {
-                    IPointGeometry[] tmp = new IPointGeometry[res.Length-1];
+                    PointGeometry[] tmp = new PointGeometry[res.Length-1];
                     Array.Copy(res, 0, tmp, 0, res.Length-2);
                     tmp[tmp.Length-1] = res[last];
                     res = tmp;
@@ -366,7 +366,7 @@ namespace Backsight.Editor
             return res;
         }
 
-        private PointFeature EnsurePointExists(IPointGeometry p, ILength tol, Operation creator)
+        private PointFeature EnsurePointExists(PointGeometry p, ILength tol, Operation creator)
         {
             PointFeature result = (PointFeature)m_Index.QueryClosest(p, tol, SpatialType.Point);
             if (result==null)
@@ -526,7 +526,7 @@ namespace Backsight.Editor
 
             // Get the position
 	        Ntx.Position pos = symbol.Position;
-            IPointGeometry g = new PointGeometry(pos.Easting, pos.Northing);
+            PointGeometry g = new PointGeometry(pos.Easting, pos.Northing);
             PointFeature p = new PointFeature(g, what, creator);
             /*
 
