@@ -101,7 +101,7 @@ namespace Backsight.Editor
         /// <param name="p">The point making use of this node</param>
         /// <exception cref="ArgumentException">If the supplied point has a geometry that
         /// doesn't refer to this node</exception>
-        internal void AddSharedPoint(PointFeature p)
+        internal void AttachPoint(PointFeature p)
         {
             if (!Object.ReferenceEquals(p.Geometry, this))
                 throw new ArgumentException();
