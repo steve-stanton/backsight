@@ -64,7 +64,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException("Position for new point feature cannot be null");
 
             m_Geom = new Node(g);
-            m_Geom.AddSharedPoint(this);
+            m_Geom.AttachPoint(this);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException("Cannot create shared point feature");
 
             m_Geom = f.m_Geom;
-            m_Geom.AddSharedPoint(this);
+            m_Geom.AttachPoint(this);
         }
 
         #endregion
@@ -388,7 +388,7 @@ namespace Backsight.Editor
                     m_Geom.ReadContent(reader);
                 }
 
-                m_Geom.AddSharedPoint(this);
+                m_Geom.AttachPoint(this);
             }
         }
 

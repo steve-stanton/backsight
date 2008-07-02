@@ -22,8 +22,7 @@ using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
 {
-    // TO FINISH
-	/// <written by="Steve Stanton" on="01-OCT-1999" />
+	/// <written by="Steve Stanton" on="01-OCT-1999" was="CeArcParallel"/>
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
@@ -63,51 +62,12 @@ namespace Backsight.Editor.Operations
         /// </summary>
         uint m_Flags;
 
-        // Optional input (not currently used) ...
-
-        /// <summary>
-        /// The point closest to the intersection with <c>m_Term1</c>
-        /// </summary>
-        PointFeature m_Near1;
-
-        /// <summary>
-        /// The point closest to the intersection with <c>m_Term2</c>
-        /// </summary>
-        PointFeature m_Near2;
-
         // Created features ...
 
         /// <summary>
         /// The parallel that got created.
         /// </summary>
         LineFeature m_ParLine; // m_pParArc
-
-        /// <summary>
-        /// The portion of m_Term1 prior to the split point (may be null)
-        /// </summary>
-        LineFeature m_Term1a;
-        
-        /// <summary>
-        /// The portion of m_Term1 after the split point (may be null)
-        /// </summary>
-        LineFeature m_Term1b;
-
-        /// <summary>
-        /// The portion of m_Term2 prior to the split point (may be null)
-        /// </summary>
-        LineFeature m_Term2a;
-
-        /// <summary>
-        /// The portion of m_Term2 after the split point (may be null)
-        /// </summary>
-        LineFeature m_Term2b;
-
-        // Note that if m_Term1 == m_Term2, we may only get 3
-        // resultant sections. In that case, m_Term2b will be
-        // null if 2nd split occurred on m_Term1a. And m_Term2a
-        // will be null if 2nd split occurred on m_Term1b.
-        // Null values are also conceivable in situations where the
-        // parallel intersects a terminal exactly at an end point.
 
         #endregion
 
@@ -126,16 +86,10 @@ namespace Backsight.Editor.Operations
             m_Term1 = null;
             m_Term2 = null;
             m_Flags = 0;
-            m_Near1 = null;
-            m_Near2 = null;
 
             // Created features ...
 
             m_ParLine = null;
-            m_Term1a = null;
-            m_Term1b = null;
-            m_Term2a = null;
-            m_Term2b = null;
         }
 
         #endregion
@@ -184,26 +138,14 @@ namespace Backsight.Editor.Operations
                     // created by this op, append them too (inactive
                     // points should be considered).
 
-                    PointFeature ps = StartPoint;
+                    PointFeature ps = CreatedStartPoint;
                     if (ps!=null)
                         result.Add(ps);
 
-                    PointFeature pe = EndPoint;
+                    PointFeature pe = CreatedEndPoint;
                     if (pe!=null)
                         result.Add(pe);
                 }
-
-                if (m_Term1a!=null)
-                    result.Add(m_Term1a);
-
-                if (m_Term1b!=null)
-                    result.Add(m_Term1b);
-
-                if (m_Term2a!=null)
-                    result.Add(m_Term2a);
-
-                if (m_Term2b!=null)
-                    result.Add(m_Term2b);
 
                 return result.ToArray();
             }
@@ -230,8 +172,8 @@ namespace Backsight.Editor.Operations
 
             // Rollback the points at the end of the parallel (if they
 	        // were created by this operation).
-	        Rollback(StartPoint);
-	        Rollback(EndPoint);
+	        Rollback(CreatedStartPoint);
+	        Rollback(CreatedEndPoint);
 
 
             // Mark the parallel line as deleted.
@@ -271,8 +213,8 @@ namespace Backsight.Editor.Operations
             // Move the end points (in a situation where the end point
             // was not previously created by this operation, and the
             // end does not agree with what we want, add a new point!).
-            PointFeature ps = (PointFeature)StartPoint;
-            PointFeature pe = (PointFeature)EndPoint;
+            PointFeature ps = CreatedStartPoint;
+            PointFeature pe = CreatedEndPoint;
 
             if (ps!=null)
                 ps.Move(spar);
@@ -524,8 +466,6 @@ namespace Backsight.Editor.Operations
         {
             CadastralMapModel map = CadastralMapModel.Current;
 
-            // 12-JUN-07: Ignore the following for now, just add a new point...
-
             // Add the split point (with default entity type). If a
 	        // point already exists at the location, you'll get back
 	        // that point instead.
@@ -546,7 +486,7 @@ namespace Backsight.Editor.Operations
         /// The point created at the start of the parallel (null if the point
         /// previously existed).
         /// </summary>
-        PointFeature StartPoint
+        PointFeature CreatedStartPoint
         {
             get
             {
@@ -563,7 +503,7 @@ namespace Backsight.Editor.Operations
         /// The point created at the end of the parallel (null if the point
         /// previously existed).
         /// </summary>
-        PointFeature EndPoint
+        PointFeature CreatedEndPoint
         {
             get
             {
@@ -574,6 +514,17 @@ namespace Backsight.Editor.Operations
                 Debug.Assert(p!=null);
                 return (p.Creator==this ? p : null);
             }
+        }
+
+        /// <summary>
+        /// Calculates the position of the parallel points
+        /// </summary>
+        /// <param name="spar">The start of the parallel.</param>
+        /// <param name="epar">The end of the parallel.</param>
+        /// <returns>True if calculated ok.</returns>
+        bool Calculate(out IPosition spar, out IPosition epar)
+        {
+            return Calculate(m_RefLine, m_Offset, m_Term1, m_Term2, out spar, out epar);
         }
 
         /// <summary>
@@ -634,8 +585,6 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("RefLine", m_RefLine);
             writer.WriteFeatureReference("Term1", m_Term1);
             writer.WriteFeatureReference("Term2", m_Term2);
-            writer.WriteFeatureReference("Near1", m_Near1);
-            writer.WriteFeatureReference("Near2", m_Near2);
 
             if (IsArcReversed)
                 writer.WriteBool("ArcReversed", true);
@@ -644,12 +593,6 @@ namespace Backsight.Editor.Operations
 
             // Created features ...
             writer.WriteCalculatedLine("ParLine", m_ParLine);
-
-            // TODO: Think it should just write "IsSplit" values
-            writer.WriteCalculatedLine("Term1a", m_Term1a);
-            writer.WriteCalculatedLine("Term1b", m_Term1b);
-            writer.WriteCalculatedLine("Term2a", m_Term2a);
-            writer.WriteCalculatedLine("Term2b", m_Term2b);
         }
 
         /// <summary>
@@ -665,8 +608,6 @@ namespace Backsight.Editor.Operations
             m_RefLine = reader.ReadFeatureByReference<LineFeature>("RefLine");
             m_Term1 = reader.ReadFeatureByReference<LineFeature>("Term1");
             m_Term2 = reader.ReadFeatureByReference<LineFeature>("Term2");
-            m_Near1 = reader.ReadFeatureByReference<PointFeature>("Near1");
-            m_Near2 = reader.ReadFeatureByReference<PointFeature>("Near2");
 
             bool isArcReversed = reader.ReadBool("ArcReversed");
             if (isArcReversed)
@@ -674,8 +615,12 @@ namespace Backsight.Editor.Operations
 
             m_Offset = reader.ReadElement<Observation>("Offset");
 
-            // TODO: not sure about how to handle points at ends of parallel
-            throw new NotImplementedException("ParallelOperation.ReadContent");
+            // Calculate the end positions
+            IPosition spos, epos;
+            if (!Calculate(out spos, out epos))
+                throw new Exception("Failed to calculate parallel line positions");
+
+            m_ParLine = reader.ReadCalculatedLine("ParLine", spos, epos);
         }
     }
 }

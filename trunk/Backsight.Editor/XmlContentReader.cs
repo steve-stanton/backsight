@@ -513,5 +513,24 @@ namespace Backsight.Editor
             AddFeature(result);
             return result;
         }
+
+        /// <summary>
+        /// Reads back a calculated line feature
+        /// </summary>
+        /// <param name="elementName">The name of the element containing the fields
+        /// desribing the line (and its terminal points)</param>
+        /// <param name="from">The calculated position of the start of the line</param>
+        /// <param name="to">The calculated position of the end of the line</param>
+        /// <returns>The created line</returns>
+        internal LineFeature ReadCalculatedLine(string elementName, IPosition from, IPosition to)
+        {
+            // Pick up the information for the point
+            LineData lineData = ReadElement<LineData>(elementName);
+            if (lineData == null)
+                return null;
+
+            LineFeature result = null;
+            return result;
+        }
     }
 }
