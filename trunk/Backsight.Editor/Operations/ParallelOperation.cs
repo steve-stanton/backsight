@@ -530,24 +530,15 @@ namespace Backsight.Editor.Operations
 	        // point already exists at the location, you'll get back
 	        // that point instead.
 
-	        // We do this in case the user has foolishly decided to
+	        // We do this in case the user has decided to
 	        // terminate on a line connected to the offset point
 	        // that defines the offset to the parallel (which the
 	        // UI lets the user do).
 
-            /*
-	            CeVertex pos(loc);
-	            LOGICAL isold;
-	            CePoint* pPoint = pMap->AddPoint(pos,0,isold);
+            PointFeature p = map.EnsurePointExists(loc, this);
+            if (p.Creator == this)
+                p.SetNextId();
 
-	            // If we created the point, assign the new point the next
-	            // available ID.
-	            if ( !isold ) pPoint->SetNextId();
-             */
-
-            IEntity e = map.DefaultPointType;
-            PointFeature p = map.AddPoint(loc, e, this);
-            p.SetNextId();
             return p;
         }
 
@@ -645,17 +636,20 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("Term2", m_Term2);
             writer.WriteFeatureReference("Near1", m_Near1);
             writer.WriteFeatureReference("Near2", m_Near2);
-            writer.WriteElement("Offset", m_Offset);
 
             if (IsArcReversed)
                 writer.WriteBool("ArcReversed", true);
 
+            writer.WriteElement("Offset", m_Offset);
+
             // Created features ...
-            writer.WriteElement("ParLine", new FeatureData(m_ParLine));
-            writer.WriteElement("Term1a", new FeatureData(m_Term1a));
-            writer.WriteElement("Term1b", new FeatureData(m_Term1b));
-            writer.WriteElement("Term2a", new FeatureData(m_Term2a));
-            writer.WriteElement("Term2b", new FeatureData(m_Term2b));
+            writer.WriteCalculatedLine("ParLine", m_ParLine);
+
+            // TODO: Think it should just write "IsSplit" values
+            writer.WriteCalculatedLine("Term1a", m_Term1a);
+            writer.WriteCalculatedLine("Term1b", m_Term1b);
+            writer.WriteCalculatedLine("Term2a", m_Term2a);
+            writer.WriteCalculatedLine("Term2b", m_Term2b);
         }
 
         /// <summary>
@@ -673,11 +667,12 @@ namespace Backsight.Editor.Operations
             m_Term2 = reader.ReadFeatureByReference<LineFeature>("Term2");
             m_Near1 = reader.ReadFeatureByReference<PointFeature>("Near1");
             m_Near2 = reader.ReadFeatureByReference<PointFeature>("Near2");
-            m_Offset = reader.ReadElement<Observation>("Offset");
 
             bool isArcReversed = reader.ReadBool("ArcReversed");
             if (isArcReversed)
                 m_Flags = 1;
+
+            m_Offset = reader.ReadElement<Observation>("Offset");
 
             // TODO: not sure about how to handle points at ends of parallel
             throw new NotImplementedException("ParallelOperation.ReadContent");

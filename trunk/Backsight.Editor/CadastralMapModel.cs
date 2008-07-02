@@ -512,8 +512,8 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Creates a new point feature as part of this model. The caller is responsible for assigning
-        /// any ID that the new point should have.
+        /// Creates a new point feature as part of this model.
+        /// The caller is responsible for assigning any ID that the new point should have.
         /// </summary>
         /// <param name="p">The position for the point (not null). If it's an instance of
         /// IPointGeometry, it will be re-used as the geometry for the new feature (otherwise
@@ -533,6 +533,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Ensures a point feature exists at a specific location in this map model.
+        /// The caller is responsible for assigning any ID that the new point should have.
         /// </summary>
         /// <param name="p">The position where a point feature is required</param>
         /// <param name="creator">The operation that should be recorded as the creator
