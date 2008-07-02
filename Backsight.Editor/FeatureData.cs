@@ -63,9 +63,18 @@ namespace Backsight.Editor
         /// <param name="f">The feature of interest (may be null)</param>
         internal FeatureData(Feature f)
         {
-            m_CreationSequence = f.CreatorSequence;
-            m_Entity = f.EntityType;
-            m_Id = f.Id;
+            if (f==null)
+            {
+                m_CreationSequence = 0;
+                m_Entity = null;
+                m_Id = null;
+            }
+            else
+            {
+                m_CreationSequence = f.CreatorSequence;
+                m_Entity = f.EntityType;
+                m_Id = f.Id;
+            }
         }
 
         #endregion
@@ -92,6 +101,12 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         public void ReadContent(XmlContentReader reader)
         {
             if (reader.HasAttribute("Item"))
@@ -115,6 +130,14 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Does this represent an "empty" (null) feature?
+        /// </summary>
+        internal bool IsEmpty
+        {
+            get { return (m_CreationSequence==0); }
+        }
 
         /// <summary>
         /// The 1-based creation sequence of the feature within the creating edit. A value

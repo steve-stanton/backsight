@@ -284,5 +284,16 @@ namespace Backsight.Editor
         {
             WriteElement(elementName, new FeatureData(point));
         }
+
+        /// <summary>
+        /// Writes out information for a line feature with geometry that will be
+        /// re-calculated on deserialization.
+        /// </summary>
+        /// <param name="elementName">The name of the element</param>
+        /// <param name="line">The lineto write out</param>
+        internal void WriteCalculatedLine(string elementName, LineFeature line)
+        {
+            WriteElement(elementName, new LineData(line));
+        }
     }
 }
