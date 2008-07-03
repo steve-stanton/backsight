@@ -666,7 +666,11 @@ namespace Backsight.Editor
             // (and that any trimmed lines have been adjusted appropriately).
             //System.Windows.Forms.MessageBox.Show("starting intersect");
             //Stopwatch sw = Stopwatch.StartNew();
-            Intersect(cq.Moves);
+            //if (cq.Moves.Count > 0)
+            //{
+                Intersect(cq.Moves);
+            //    new CleanupQuery(this);
+            //}
             //sw.Stop();
             //System.Windows.Forms.MessageBox.Show(sw.Elapsed.ToString());
 

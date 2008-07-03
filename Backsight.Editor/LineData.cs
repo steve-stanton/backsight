@@ -150,27 +150,6 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Reads back an end point of the line
-        /// </summary>
-        /// <param name="p">The calculated position of the point</param>
-        /// <returns>The corresponding point (may actually be a previously existing point)</returns>
-        /*
-        internal PointFeature ReadCalculatedPoint(IPosition p)
-        {
-            PointGeometry pg = PointGeometry.Create(p);
-            PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
-            result.CreatorSequence = fd.CreationSequence;
-
-            FeatureId fid = fd.Id;
-            if (fid != null)
-                fid.Add(result);
-
-            AddFeature(result);
-            return result;
-        }
-        */
-
-        /// <summary>
         /// Obtains the point at the start of the line
         /// </summary>
         /// <param name="reader">The reading tool</param>
