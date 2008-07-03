@@ -501,28 +501,73 @@ namespace Backsight.Editor
             FeatureData fd = ReadElement<FeatureData>(elementName);
             if (fd==null)
                 return null;
+            else
+                return CreateCalculatedPoint(fd, p);
+        }
 
+        /// <summary>
+        /// Creates a calculated point feature
+        /// </summary>
+        /// <param name="fd">Information to assign to the created point</param>
+        /// <param name="p">The calculated position of the point</param>
+        /// <returns>The created point</returns>
+        internal PointFeature CreateCalculatedPoint(FeatureData fd, IPosition p)
+        {
             PointGeometry pg = PointGeometry.Create(p);
             PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
-            result.CreatorSequence = fd.CreationSequence;
-
-            FeatureId fid = fd.Id;
-            if (fid!=null)
-                fid.Add(result);
-
-            AddFeature(result);
+            InitializeFeature(result, fd);
             return result;
         }
 
         /// <summary>
-        /// Reads back a calculated line feature
+        /// Creates a calculated line feature (with the geometry for a simple line segment)
+        /// </summary>
+        /// <param name="fd">Information to assign to the created line</param>
+        /// <param name="from">The point feature at the start of the line</param>
+        /// <param name="to">The point feature at the end of the line</param>
+        /// <returns>The created line</returns>
+        internal LineFeature CreateCalculatedLine(FeatureData fd, PointFeature from, PointFeature to)
+        {
+            // Note that the LineFeature constructor will also modify the end points by
+            // referencing them to the created line.
+            LineFeature result = new LineFeature(fd.EntityType, FindParent<Operation>(), from, to);
+            InitializeFeature(result, fd);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs initialization upon creation of a calculated point or line.
+        /// </summary>
+        /// <param name="f">The feature that has just been created</param>
+        /// <param name="fd">Information to assign to the created point</param>
+        void InitializeFeature(Feature f, FeatureData fd)
+        {
+            // Ensure the created feature has the expected session item number
+            f.CreatorSequence = fd.CreationSequence;
+
+            // If the feature has a user-perceived ID, ensure the ID points to the
+            // feature and vice versa
+            FeatureId fid = fd.Id;
+            if (fid!=null)
+                fid.Add(f);
+
+            // Remember the new feature as part of this reader, since subsequent
+            // edits may make reference to it
+            AddFeature(f);
+        }
+
+        /// <summary>
+        /// Reads back a calculated line feature. This is suitable only for simple line
+        /// segments and circular arcs (not multi-segments).
         /// </summary>
         /// <param name="elementName">The name of the element containing the fields
         /// desribing the line (and its terminal points)</param>
         /// <param name="from">The calculated position of the start of the line</param>
         /// <param name="to">The calculated position of the end of the line</param>
+        /// <param name="isArc">Is the line a circular arc?</param>
         /// <returns>The created line</returns>
-        internal LineFeature ReadCalculatedLine(string elementName, IPosition from, IPosition to)
+        /*
+        internal LineFeature ReadCalculatedLine(string elementName, IPosition from, IPosition to, bool isArc)
         {
             // Pick up the information for the point
             LineData lineData = ReadElement<LineData>(elementName);
@@ -532,5 +577,6 @@ namespace Backsight.Editor
             LineFeature result = null;
             return result;
         }
+         */
     }
 }

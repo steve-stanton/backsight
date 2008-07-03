@@ -592,7 +592,7 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Offset", m_Offset);
 
             // Created features ...
-            writer.WriteCalculatedLine("ParLine", m_ParLine);
+            writer.WriteElement("ParLine", new LineData(m_ParLine));
         }
 
         /// <summary>
@@ -620,7 +620,46 @@ namespace Backsight.Editor.Operations
             if (!Calculate(out spos, out epos))
                 throw new Exception("Failed to calculate parallel line positions");
 
-            m_ParLine = reader.ReadCalculatedLine("ParLine", spos, epos);
+            // Pick up the information for the line
+            LineData lineData = reader.ReadElement<LineData>("ParLine");
+
+            // Ensure we have the end points
+            PointFeature from = lineData.GetFromPoint(reader, spos);
+            PointFeature to = lineData.GetToPoint(reader, epos);
+
+            // Create the parallel line
+            if (m_RefLine is ArcFeature)
+            {
+            }
+            else
+            {
+                m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
+            }
+            /*
+            if (refLine is ArcFeature)
+            {
+                ArcFeature arc = (refLine as ArcFeature);
+                Circle circle = arc.Circle;
+                double radius = circle.Radius;
+                PointFeature centre = circle.CenterPoint;
+                bool iscw = arc.IsClockwise;
+
+                // Need to add a circle first.
+                double parRadius = Geom.Distance(centre, spar);
+                Circle parCircle = map.AddCircle(centre, parRadius);
+
+                // Use the reverse arc direction if specified.
+                if (isArcReversed)
+                    iscw = !iscw;
+
+                // Add the circular arc
+                m_ParLine = map.AddCircularArc(parCircle, ps, pe, iscw, ent, this);
+            }
+            else
+            {
+                m_ParLine = map.AddLine(ps, pe, ent, this);
+            }
+             */
         }
     }
 }
