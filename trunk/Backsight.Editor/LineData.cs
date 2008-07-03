@@ -93,7 +93,7 @@ namespace Backsight.Editor
         /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
+        public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
 
@@ -133,7 +133,7 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadContent(XmlContentReader reader)
+        public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
 
@@ -171,15 +171,57 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Obtains the 
+        /// Obtains the point at the start of the line
         /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        /*
+        /// <param name="reader">The reading tool</param>
+        /// <param name="p">The expected position of the point</param>
+        /// <returns>The point at the start of the line (either a newly created point, or a point
+        /// that previously existed)</returns>
         internal PointFeature GetFromPoint(XmlContentReader reader, IPosition p)
         {
-            PointFeature result = reader.ReadCalculatedPoint(
+            return GetPoint(reader, p, m_FromPoint, m_FromId);
         }
-         */
+
+        /// <summary>
+        /// Obtains the point at the end of the line
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <param name="p">The expected position of the point</param>
+        /// <returns>The point at the end of the line (either a newly created point, or a point
+        /// that previously existed)</returns>
+        internal PointFeature GetToPoint(XmlContentReader reader, IPosition p)
+        {
+            return GetPoint(reader, p, m_ToPoint, m_ToId);
+        }
+
+        /// <summary>
+        /// Obtains the point at the start or end of the line
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <param name="p">The expected position of the point</param>
+        /// <param name="fd">Data for the point (null if <paramref name="id"/> should be
+        /// used to obtain the point)</param>
+        /// <param name="id">The internal ID of a previously created point that should
+        /// be returned (null if the point should be created here)</param>
+        /// <returns>The point at the start or end of the line (either a newly created point, or a point
+        /// that previously existed)</returns>
+        PointFeature GetPoint(XmlContentReader reader, IPosition p, FeatureData fd, string id)
+        {
+            // If there is no information about a created point, it must be a reference
+            // to a previously created point.
+
+            if (fd==null)
+            {
+                Debug.Assert(!String.IsNullOrEmpty(id));
+                PointFeature result = reader.ReadFeatureByReference<PointFeature>(id);
+                Debug.Assert(result!=null);
+                Debug.Assert(PointGeometry.Create(p).IsCoincident(result));
+                return result;
+            }
+
+            // Create a new point
+            Debug.Assert(String.IsNullOrEmpty(id));
+            return reader.CreateCalculatedPoint(fd, p);
+        }
     }
 }

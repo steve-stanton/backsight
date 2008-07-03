@@ -87,7 +87,7 @@ namespace Backsight.Editor
         /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
+        public virtual void WriteContent(XmlContentWriter writer)
         {
             if (m_CreationSequence!=0)
             {
@@ -107,7 +107,7 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadContent(XmlContentReader reader)
+        public virtual void ReadContent(XmlContentReader reader)
         {
             if (reader.HasAttribute("Item"))
             {
