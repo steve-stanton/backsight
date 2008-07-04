@@ -54,9 +54,13 @@ namespace Backsight.Editor
 
             if (from is Intersection)
                 (from as Intersection).Add(line);
+            else if (from is PointFeature)
+                (from as PointFeature).AddReference(line);
 
             if (to is Intersection)
                 (to as Intersection).Add(line);
+            else if (to is PointFeature)
+                (to as PointFeature).AddReference(line);
         }
 
         #endregion

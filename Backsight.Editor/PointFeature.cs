@@ -224,6 +224,14 @@ namespace Backsight.Editor
             get { return m_Geom; }
         }
 
+        /// <summary>
+        /// The geometry defining the position of this feature.
+        /// </summary>
+        internal Node Node
+        {
+            get { return m_Geom; }
+        }
+
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             if (!IsTrimPoint())
@@ -292,12 +300,19 @@ namespace Backsight.Editor
                             if (!d.IsOverlap)
                                 result.Add(d);
                         }
-                        else
+                        else if (line.EndPoint.IsCoincident(this))
                         {
-                            Debug.Assert(line.EndPoint.IsCoincident(this));
                             IDivider d = t.LastDivider;
                             if (!d.IsOverlap)
                                 result.Add(d);
+                        }
+                        else
+                        {
+                            // Cover a situation where this point is referenced to a line that
+                            // passes through (intersection).
+                            Debug.Assert(t is SectionTopologyList);
+                            SectionTopologyList sections = (t as SectionTopologyList);
+                            sections.AddIncidentDividers(result, this);
                         }
                     }
                 }
