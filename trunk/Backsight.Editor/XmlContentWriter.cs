@@ -46,11 +46,19 @@ namespace Backsight.Editor
             set { s_TargetNamespace = (value==null ? String.Empty : value); }
         }
 
-        public static string GetXml(string name, IXmlContent content)
+        /// <summary>
+        /// Converts an instance of <see cref="IXmlContent"/> into XML
+        /// </summary>
+        /// <param name="name">The name to assign to main content element</param>
+        /// <param name="indent">Should the XML be indented or not?</param>
+        /// <param name="content">The content to convert into XML</param>
+        /// <returns>The XML that corresponds to the supplied content</returns>
+        public static string GetXml(string name, bool indent, IXmlContent content)
         {
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.ConformanceLevel = ConformanceLevel.Fragment;
+            xws.Indent = indent;
 
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
             {

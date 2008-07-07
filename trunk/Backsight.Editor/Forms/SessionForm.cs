@@ -137,5 +137,28 @@ namespace Backsight.Editor.Forms
             if (m_Draw.Length>0)
                 EditingController.Current.RefreshAllDisplays();
         }
+
+        private void detailsButton_Click(object sender, EventArgs e)
+        {
+            Operation op = GetSelectedOperation();
+            if (op==null)
+                MessageBox.Show("You must first select an edit");
+            else
+                ShowDetails(op);
+        }
+
+        private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Operation op = GetSelectedOperation();
+            if (op!=null)
+                ShowDetails(op);
+        }
+
+        void ShowDetails(Operation op)
+        {
+            EditDetailsForm dial = new EditDetailsForm(op);
+            dial.ShowDialog();
+            dial.Dispose();
+        }
     }
 }

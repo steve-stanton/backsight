@@ -486,11 +486,19 @@ namespace Backsight.Editor
         /// <returns>The XML for this edit</returns>
         internal string ToXml()
         {
-            // This will end up calling the implementation of WriteContent
-            XmlContentWriter.TargetNamespace = "Backsight";
-            return XmlContentWriter.GetXml("Edit", this);
+            return ToXml(false);
         }
 
-
+        /// <summary>
+        /// Represents this editing operation in XML, with optional indentation of elements.
+        /// </summary>
+        /// <param name="indent">Should the XML be indented or not?</param>
+        /// <returns>The XML for this edit</returns>
+        internal string ToXml(bool indent)
+        {
+            // This will end up calling the implementation of WriteContent
+            XmlContentWriter.TargetNamespace = "Backsight";
+            return XmlContentWriter.GetXml("Edit", indent, this);
+        }
     }
 }
