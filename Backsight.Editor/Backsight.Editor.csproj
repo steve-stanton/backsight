@@ -109,6 +109,12 @@
     <Compile Include="Forms\DistanceForm.Designer.cs">
       <DependentUpon>DistanceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EditDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditDetailsForm.Designer.cs">
+      <DependentUpon>EditDetailsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EntityTypeComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -681,6 +687,10 @@
     <EmbeddedResource Include="Forms\DistanceForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DistanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditDetailsForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EditDetailsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EntityTranslationForm.resx">
       <SubType>Designer</SubType>
