@@ -986,8 +986,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Add a circular arc to the map, along with a line on the currently active editing layer,
-        /// along with terminal points.
+        /// Add a circular arc to the map
         /// </summary>
         /// <param name="circle">The circle on which the arc lies. This will be modified to refer
         /// to the newly created arc.</param>
@@ -1304,6 +1303,13 @@ namespace Backsight.Editor
             m_Index.QueryWindow(null, SpatialType.Line, delegate (ISpatialObject item)
             {
                 LineFeature line = (LineFeature)item;
+
+                string id = line.DataId;
+                if (id=="138.6754" || id=="174.2" || id=="138.7021")
+                {
+                    int junk=0;
+                }
+
                 line.IsMoved = false;
                 line.Split(null);
                 return true;

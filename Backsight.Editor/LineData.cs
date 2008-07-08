@@ -192,7 +192,7 @@ namespace Backsight.Editor
             if (fd==null)
             {
                 Debug.Assert(!String.IsNullOrEmpty(id));
-                PointFeature result = reader.ReadFeatureByReference<PointFeature>(id);
+                PointFeature result = reader.GetFeatureByReference<PointFeature>(id);
                 Debug.Assert(result!=null);
                 Debug.Assert(PointGeometry.Create(p).IsCoincident(result));
                 return result;

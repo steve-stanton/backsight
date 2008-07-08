@@ -1011,7 +1011,18 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             from = to;
             to = div.To;
             if (from != to)
+            {
+                // Just return if the terminals correspond to the two ends of this line. This
+                // is intended to cover the case where we have a single interesection at the
+                // start or end of the line.
+                if (from.IsCoincident(StartPoint) && to.IsCoincident(EndPoint))
+                {
+                    Debug.Assert(result.Count==0);
+                    return;
+                }
+
                 result.Add(new SectionDivider(this, from, to));
+            }
 
             // Refer the associated line to the new sections
             if (result.Count > 0)

@@ -369,11 +369,21 @@ namespace Backsight.Editor
         internal T ReadFeatureByReference<T>(string name) where T : Feature
         {
             // Get the internal ID of the feature
-            string s = m_Reader[name];
-            if (s==null)
+            string sid = m_Reader[name];
+            if (sid==null)
                 return null;
 
-            return (T)ReadFeatureById(s);
+            return (T)ReadFeatureById(sid);
+        }
+
+        /// <summary>
+        /// Obtains a previously loaded feature with a specific internal ID
+        /// </summary>
+        /// <param name="sid">A string representing the internal ID of the feature to get</param>
+        /// <returns>The corresponding feature</returns>
+        internal T GetFeatureByReference<T>(string sid) where T : Feature
+        {
+            return (T)ReadFeatureById(sid);
         }
 
         /// <summary>
@@ -528,9 +538,28 @@ namespace Backsight.Editor
         /// <returns>The created line</returns>
         internal LineFeature CreateCalculatedLine(FeatureData fd, PointFeature from, PointFeature to)
         {
-            // Note that the LineFeature constructor will also modify the end points by
+            // The LineFeature constructor will also modify the end points by
             // referencing them to the created line.
             LineFeature result = new LineFeature(fd.EntityType, FindParent<Operation>(), from, to);
+            InitializeFeature(result, fd);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a calculated line feature (with the geometry for a circular arc)
+        /// </summary>
+        /// <param name="fd">Information to assign to the created line</param>
+        /// <param name="from">The point feature at the start of the arc</param>
+        /// <param name="to">The point feature at the end of the arc</param>
+        /// <param name="circle">The circle on which the arc lies. This will be modified to refer
+        /// to the newly created arc.</param>
+        /// <param name="clockwise">True if the arc is clockwise.</param>
+        /// <returns>The created arc</returns>
+        internal ArcFeature CreateCalculatedArc(FeatureData fd, PointFeature from, PointFeature to, Circle circle, bool clockwise)
+        {
+            // The LineFeature constructor will also modify the end points by
+            // referencing them to the created line.
+            ArcFeature result = new ArcFeature(fd.EntityType, FindParent<Operation>(), circle, from, to, clockwise);
             InitializeFeature(result, fd);
             return result;
         }
