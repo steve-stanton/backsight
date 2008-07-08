@@ -369,13 +369,12 @@ namespace Backsight.Editor.Operations
             {
                 ArcFeature arc = (refLine as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius;
-                PointFeature centre = circle.CenterPoint;
+                PointFeature center = circle.CenterPoint;
                 bool iscw = arc.IsClockwise;
 
                 // Need to add a circle first.
-                double parRadius = Geom.Distance(centre, spar);
-                Circle parCircle = map.AddCircle(centre, parRadius);
+                double parRadius = Geom.Distance(center, spar);
+                Circle parCircle = map.AddCircle(center, parRadius);
 
                 // Use the reverse arc direction if specified.
                 if (isArcReversed)
@@ -630,36 +629,26 @@ namespace Backsight.Editor.Operations
             // Create the parallel line
             if (m_RefLine is ArcFeature)
             {
-            }
-            else
-            {
-                m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
-            }
-            /*
-            if (refLine is ArcFeature)
-            {
-                ArcFeature arc = (refLine as ArcFeature);
+                ArcFeature arc = (m_RefLine as ArcFeature);
                 Circle circle = arc.Circle;
-                double radius = circle.Radius;
-                PointFeature centre = circle.CenterPoint;
+                PointFeature center = circle.CenterPoint;
                 bool iscw = arc.IsClockwise;
 
                 // Need to add a circle first.
-                double parRadius = Geom.Distance(centre, spar);
-                Circle parCircle = map.AddCircle(centre, parRadius);
+                double parRadius = Geom.Distance(center, spos);
+                Circle parCircle = CadastralMapModel.Current.AddCircle(center, parRadius);
 
                 // Use the reverse arc direction if specified.
                 if (isArcReversed)
                     iscw = !iscw;
 
                 // Add the circular arc
-                m_ParLine = map.AddCircularArc(parCircle, ps, pe, iscw, ent, this);
+                m_ParLine = reader.CreateCalculatedArc(lineData, from, to, circle, iscw);
             }
             else
             {
-                m_ParLine = map.AddLine(ps, pe, ent, this);
+                m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
             }
-             */
         }
     }
 }

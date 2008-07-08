@@ -805,9 +805,9 @@ namespace Backsight.Editor
                 return null;
 
             // If the reference line is a circular arc, get the curve info.
-            if (line is ArcFeature)
+            if (m_Line is ArcFeature)
             {
-                ArcFeature arc = (line as ArcFeature);
+                ArcFeature arc = (m_Line as ArcFeature);
                 Circle circle = arc.Circle;
                 double radius = circle.Radius;
                 IPointGeometry centre = circle.Center;
