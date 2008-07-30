@@ -223,9 +223,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="CreateBacksightTables.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <EmbeddedResource Include="Resources\AddForeignKeys.sql" />
     <EmbeddedResource Include="Resources\CreateTables.sql" />
     <None Include="Resources\Minus.bmp" />
