@@ -71,34 +71,6 @@ namespace Backsight.Environment.Editor
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            // Locate the CreateTables.sql script
-            Assembly a = Assembly.GetExecutingAssembly();
-            string[] resNames = a.GetManifestResourceNames();
-            //Stream s = a.GetManifestResourceStream("CreateTables.sql");
-            try
-            {
-                Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources.CreateTables.sql");
-                //FileStream fs = a.GetFile("Backsight.Environment.Editor.Resources.CreateTables.sql");
-                if (fs == null)
-                    MessageBox.Show("null FileStream");
-                else
-                {
-                    byte[] data = new byte[fs.Length];
-                    fs.Read(data, 0, data.Length);
-                    File.WriteAllBytes(@"C:\Temp\Test.sql", data);
-
-                    MessageBox.Show("got a FileStream");
-                }
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-                    
-
-
-
             bool doClose = false;
             m_CurrentType = ItemType.Entity;
 
@@ -596,6 +568,29 @@ namespace Backsight.Environment.Editor
             PropertyListForm dial = new PropertyListForm();
             dial.ShowDialog();
             dial.Dispose();
+        }
+
+        private void helpAboutMenuItem_Click(object sender, EventArgs e)
+        {
+            string cmdFile = GetResourceFile("CreateBacksightTables.bat");
+            GetResourceFile("CreateTables.sql");
+            GetResourceFile("AddForeignKeys.sql");
+
+            CreateTablesForm dial = new CreateTablesForm(new TableFactory());
+            dial.ShowDialog();
+            dial.Dispose();
+        }
+
+        string GetResourceFile(string resourceName)
+        {
+            Assembly a = Assembly.GetExecutingAssembly();
+            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources." + resourceName);
+            byte[] data = new byte[fs.Length];
+            fs.Read(data, 0, data.Length);
+            string tmpDir = Path.GetTempPath();
+            string fileName = Path.Combine(tmpDir, resourceName);
+            File.WriteAllBytes(fileName, data);
+            return fileName;
         }
     }
 }
