@@ -80,6 +80,10 @@ namespace Backsight.Environment.Editor
             {
                 createButton.Enabled = false;
                 cancelButton.Enabled = false;
+
+                // Create batch file for initializing the database
+                string createFile = GetTableCreationScipt();
+
                 m_Factory.CreateTables(this);
                 m_IsCreated = true;
                 LogMessage("Done");
@@ -100,6 +104,31 @@ namespace Backsight.Environment.Editor
                 else
                     cancelButton.Enabled = true;
             }
+        }
+
+        string GetTableCreationScipt()
+        {
+            string tmpDir = Path.GetTempPath();
+            string result = Path.Combine(tmpDir, "CreateBacksightTables.sql");
+
+            // Copy the relevant resources to the temp file.
+            Assembly a = Assembly.GetExecutingAssembly();
+            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources.CreateTables.sql");
+            byte[] data = new byte[fs.Length];
+            fs.Read(data, 0, data.Length);
+            File.WriteAllBytes(result, data);
+
+            //string args = String.Format("-S {0} -v DBNAME=\"{1}\" -i \"{2}\"", 
+            string args = null;
+            batchRunnerControl.Completed += new EventHandler(batchRunnerControl_Completed);
+            batchRunnerControl.RunCommand("sqlcmd", args);
+
+            return result;
+        }
+
+        void batchRunnerControl_Completed(object sender, EventArgs e)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         private void CreateTablesForm_FormClosing(object sender, FormClosingEventArgs e)

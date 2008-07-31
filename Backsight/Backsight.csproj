@@ -70,6 +70,12 @@
     <Compile Include="Environment\ITheme.cs" />
     <Compile Include="Environment\IZone.cs" />
     <Compile Include="Forms\AdhocPropertyList.cs" />
+    <Compile Include="Forms\BatchRunnerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\BatchRunnerControl.Designer.cs">
+      <DependentUpon>BatchRunnerControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DrawInfo.cs" />
     <Compile Include="Forms\DrawStyle.cs" />
     <Compile Include="Forms\Fill.cs" />
@@ -184,6 +190,10 @@
     <Compile Include="ISpatialObject.cs" />
     <Compile Include="ISpatialSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\BatchRunnerControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BatchRunnerControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MagnifyForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MagnifyForm.cs</DependentUpon>
