@@ -1,5 +1,3 @@
-USE [$(DBNAME)]
-GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -8,6 +6,8 @@ GO
 --
 -- Define foreign keys
 --
+
+PRINT 'Adding foreign keys...';
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_Edit_Session]') AND parent_object_id = OBJECT_ID(N'[ced].[Edits]'))
 ALTER TABLE [ced].[Edits]  WITH CHECK ADD  CONSTRAINT [FK_Edit_Session] FOREIGN KEY([SessionId])

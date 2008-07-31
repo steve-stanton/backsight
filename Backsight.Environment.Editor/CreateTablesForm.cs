@@ -15,10 +15,10 @@
 
 using System;
 using System.Windows.Forms;
-
-using Backsight.SqlServer;
 using System.Reflection;
 using System.IO;
+
+using Backsight.SqlServer;
 
 namespace Backsight.Environment.Editor
 {
