@@ -82,7 +82,13 @@ namespace Backsight.Environment.Editor
                 if (fs == null)
                     MessageBox.Show("null FileStream");
                 else
+                {
+                    byte[] data = new byte[fs.Length];
+                    fs.Read(data, 0, data.Length);
+                    File.WriteAllBytes(@"C:\Temp\Test.sql", data);
+
                     MessageBox.Show("got a FileStream");
+                }
             }
 
             catch (Exception ex)
