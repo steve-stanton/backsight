@@ -33,7 +33,6 @@ namespace Backsight.Environment.Editor
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.cancelButton = new System.Windows.Forms.Button();
             this.createButton = new System.Windows.Forms.Button();
-            this.listBox = new System.Windows.Forms.ListBox();
             this.batchRunnerControl = new Backsight.Forms.BatchRunnerControl();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -71,7 +70,6 @@ namespace Backsight.Environment.Editor
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.listBox);
             this.splitContainer.Panel1.Controls.Add(this.cancelButton);
             this.splitContainer.Panel1.Controls.Add(this.createButton);
             this.splitContainer.Panel1.Controls.Add(this.label2);
@@ -104,14 +102,6 @@ namespace Backsight.Environment.Editor
             this.createButton.UseVisualStyleBackColor = true;
             this.createButton.Click += new System.EventHandler(this.createButton_Click);
             // 
-            // listBox
-            // 
-            this.listBox.FormattingEnabled = true;
-            this.listBox.Location = new System.Drawing.Point(499, 12);
-            this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(125, 56);
-            this.listBox.TabIndex = 0;
-            // 
             // batchRunnerControl
             // 
             this.batchRunnerControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -119,6 +109,7 @@ namespace Backsight.Environment.Editor
             this.batchRunnerControl.Name = "batchRunnerControl";
             this.batchRunnerControl.Size = new System.Drawing.Size(636, 196);
             this.batchRunnerControl.TabIndex = 0;
+            this.batchRunnerControl.Completed += new System.EventHandler(this.batchRunnerControl_Completed);
             // 
             // CreateTablesForm
             // 
@@ -145,7 +136,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button createButton;
-        private System.Windows.Forms.ListBox listBox;
         private Backsight.Forms.BatchRunnerControl batchRunnerControl;
     }
 }
