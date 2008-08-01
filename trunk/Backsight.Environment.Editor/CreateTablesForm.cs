@@ -19,6 +19,8 @@ using System.Reflection;
 using System.IO;
 
 using Backsight.SqlServer;
+using Backsight.Data;
+using System.Data.SqlClient;
 
 namespace Backsight.Environment.Editor
 {
@@ -81,12 +83,38 @@ namespace Backsight.Environment.Editor
                 createButton.Enabled = false;
                 cancelButton.Enabled = false;
 
-                // Create batch file for initializing the database
-                string createFile = GetTableCreationScipt();
+                // Ensure relevant files are in the working directory
+                //string cmdFile = GetResourceFile("CreateBacksightTables.bat");
+                string tabFile = GetResourceFile("CreateTables.sql"); 
+                string fkFile = GetResourceFile("AddForeignKeys.sql"); 
 
-                m_Factory.CreateTables(this);
-                m_IsCreated = true;
-                LogMessage("Done");
+                // Form command line arguments
+                string cs = AdapterFactory.ConnectionString;
+                SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(cs);
+                string serverName = csb.DataSource;
+                string dbName = csb.InitialCatalog;
+
+                string cmdFile = Path.GetTempFileName();
+                cmdFile = Path.ChangeExtension(cmdFile, ".bat");
+
+                dbName = "Test5";
+                using (StreamWriter sw = File.CreateText(cmdFile))
+                {
+                    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, tabFile));
+                    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, fkFile));
+                }
+                //rem sqlcmd -S "%DBSERVER%" -d %DBNAME% -i %WORKDIR%\CreateTables.sql
+                //rem sqlcmd -S "%DBSERVER%" -d %DBNAME% -i %WORKDIR%\AddForeignKeys.sql
+
+                // Arguments are server-name database-name working-dir
+                //string args = String.Format("{0} {1} {2}", serverName, dbName, Path.GetDirectoryName(cmdFile));
+                //batchRunnerControl.Completed += new EventHandler(batchRunnerControl_Completed);
+                //batchRunnerControl.RunCommand(cmdFile, args);
+                batchRunnerControl.RunCommand(cmdFile, String.Empty);
+
+                //m_Factory.CreateTables(this);
+                //m_IsCreated = true;
+                //LogMessage("Done");
             }
 
             catch (Exception ex)
@@ -94,6 +122,7 @@ namespace Backsight.Environment.Editor
                 MessageBox.Show(ex.Message);
             }
 
+                /*
             finally
             {
                 if (m_IsCreated)
@@ -104,31 +133,30 @@ namespace Backsight.Environment.Editor
                 else
                     cancelButton.Enabled = true;
             }
+                 */
         }
 
-        string GetTableCreationScipt()
+        string GetResourceFile(string resourceName)
         {
-            string tmpDir = Path.GetTempPath();
-            string result = Path.Combine(tmpDir, "CreateBacksightTables.sql");
-
-            // Copy the relevant resources to the temp file.
             Assembly a = Assembly.GetExecutingAssembly();
-            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources.CreateTables.sql");
+            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources." + resourceName);
             byte[] data = new byte[fs.Length];
             fs.Read(data, 0, data.Length);
-            File.WriteAllBytes(result, data);
-
-            //string args = String.Format("-S {0} -v DBNAME=\"{1}\" -i \"{2}\"", 
-            string args = null;
-            batchRunnerControl.Completed += new EventHandler(batchRunnerControl_Completed);
-            batchRunnerControl.RunCommand("sqlcmd", args);
-
-            return result;
+            string tmpDir = Path.GetTempPath();
+            string fileName = Path.Combine(tmpDir, resourceName);
+            File.WriteAllBytes(fileName, data);
+            return fileName;
         }
 
         void batchRunnerControl_Completed(object sender, EventArgs e)
         {
-            throw new Exception("The method or operation is not implemented.");
+            m_IsCreated = true;
+            LogMessage("Done");
+            createButton.Text = "OK";
+            createButton.Enabled = true;
+
+            // Make sure we're at the end
+            //batchRunnerControl.Refresh();
         }
 
         private void CreateTablesForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -138,8 +166,9 @@ namespace Backsight.Environment.Editor
 
         public void LogMessage(string message) // ILog
         {
-            int index = listBox.Items.Add(message);
-            listBox.SelectedIndex = index;
+            batchRunnerControl.ReportMessage(message);
+            //int index = listBox.Items.Add(message);
+            //listBox.SelectedIndex = index;
         }
     }
 }

@@ -55,6 +55,14 @@ namespace Backsight.Forms
         #endregion
 
         /// <summary>
+        /// Is a command currently running?
+        /// </summary>
+        public bool IsBusy
+        {
+            get { return (stdoutWorker.IsBusy || stderrWorker.IsBusy); }
+        }
+
+        /// <summary>
         /// Executes a command script. On completion, the <c>Completed</c> event
         /// will be fired.
         /// </summary>
@@ -65,7 +73,7 @@ namespace Backsight.Forms
         public void RunCommand(string cmdFile, string args)
         {
             // Disallow an attempt to run something if a prior call is still executing.
-            if (stdoutWorker.IsBusy || stderrWorker.IsBusy)
+            if (IsBusy)
                 throw new InvalidAsynchronousStateException();
 
             richTextBox.ScrollBars = RichTextBoxScrollBars.None;
@@ -126,7 +134,7 @@ namespace Backsight.Forms
 
         delegate void DoSomething();
 
-        void ReportMessage(string message)
+        public void ReportMessage(string message)
         {
             DoSomething d = delegate
             {
@@ -154,6 +162,5 @@ namespace Backsight.Forms
             richTextBox.Clear();
             m_Messages.Clear();
         }
-
     }
 }

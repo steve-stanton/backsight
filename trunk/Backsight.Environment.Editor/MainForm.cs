@@ -572,25 +572,9 @@ namespace Backsight.Environment.Editor
 
         private void helpAboutMenuItem_Click(object sender, EventArgs e)
         {
-            string cmdFile = GetResourceFile("CreateBacksightTables.bat");
-            GetResourceFile("CreateTables.sql");
-            GetResourceFile("AddForeignKeys.sql");
-
             CreateTablesForm dial = new CreateTablesForm(new TableFactory());
             dial.ShowDialog();
             dial.Dispose();
-        }
-
-        string GetResourceFile(string resourceName)
-        {
-            Assembly a = Assembly.GetExecutingAssembly();
-            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources." + resourceName);
-            byte[] data = new byte[fs.Length];
-            fs.Read(data, 0, data.Length);
-            string tmpDir = Path.GetTempPath();
-            string fileName = Path.Combine(tmpDir, resourceName);
-            File.WriteAllBytes(fileName, data);
-            return fileName;
         }
     }
 }
