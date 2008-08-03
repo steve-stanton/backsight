@@ -109,7 +109,6 @@ namespace Backsight.Environment.Editor
             this.batchRunnerControl.Name = "batchRunnerControl";
             this.batchRunnerControl.Size = new System.Drawing.Size(636, 196);
             this.batchRunnerControl.TabIndex = 0;
-            this.batchRunnerControl.Completed += new System.EventHandler(this.batchRunnerControl_Completed);
             // 
             // CreateTablesForm
             // 
