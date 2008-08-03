@@ -80,6 +80,7 @@
     <Compile Include="Forms\DrawStyle.cs" />
     <Compile Include="Forms\Fill.cs" />
     <Compile Include="Forms\HighlightStyle.cs" />
+    <Compile Include="Forms\IBatchRunner.cs" />
     <Compile Include="Forms\ISpatialDisplayTool.cs" />
     <Compile Include="Forms\IUserAction.cs" />
     <Compile Include="Forms\DisplayToolId.cs" />

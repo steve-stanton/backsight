@@ -17,10 +17,11 @@ using System;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
+using System.Data.SqlClient;
 
 using Backsight.SqlServer;
 using Backsight.Data;
-using System.Data.SqlClient;
+using Backsight.Forms;
 
 namespace Backsight.Environment.Editor
 {
@@ -29,7 +30,7 @@ namespace Backsight.Environment.Editor
     /// Dialog that gets displayed when the Environment Editor determines that Backsight
     /// system tables do not exist in a database.
     /// </summary>
-    public partial class CreateTablesForm : Form, ILog
+    public partial class CreateTablesForm : Form, ILog, IBatchRunner
     {
         #region Class data
 
@@ -84,7 +85,6 @@ namespace Backsight.Environment.Editor
                 cancelButton.Enabled = false;
 
                 // Ensure relevant files are in the working directory
-                //string cmdFile = GetResourceFile("CreateBacksightTables.bat");
                 string tabFile = GetResourceFile("CreateTables.sql"); 
                 string fkFile = GetResourceFile("AddForeignKeys.sql"); 
 
@@ -94,6 +94,7 @@ namespace Backsight.Environment.Editor
                 string serverName = csb.DataSource;
                 string dbName = csb.InitialCatalog;
 
+                // Create command script
                 string cmdFile = Path.GetTempFileName();
                 cmdFile = Path.ChangeExtension(cmdFile, ".bat");
 
@@ -103,37 +104,15 @@ namespace Backsight.Environment.Editor
                     sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, tabFile));
                     sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, fkFile));
                 }
-                //rem sqlcmd -S "%DBSERVER%" -d %DBNAME% -i %WORKDIR%\CreateTables.sql
-                //rem sqlcmd -S "%DBSERVER%" -d %DBNAME% -i %WORKDIR%\AddForeignKeys.sql
 
-                // Arguments are server-name database-name working-dir
-                //string args = String.Format("{0} {1} {2}", serverName, dbName, Path.GetDirectoryName(cmdFile));
-                //batchRunnerControl.Completed += new EventHandler(batchRunnerControl_Completed);
-                //batchRunnerControl.RunCommand(cmdFile, args);
-                batchRunnerControl.RunCommand(cmdFile, String.Empty);
-
-                //m_Factory.CreateTables(this);
-                //m_IsCreated = true;
-                //LogMessage("Done");
+                // Run the command script
+                batchRunnerControl.RunCommand(this, cmdFile);
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
-                /*
-            finally
-            {
-                if (m_IsCreated)
-                {
-                    createButton.Text = "OK";
-                    createButton.Enabled = true;
-                }
-                else
-                    cancelButton.Enabled = true;
-            }
-                 */
         }
 
         string GetResourceFile(string resourceName)
@@ -148,17 +127,6 @@ namespace Backsight.Environment.Editor
             return fileName;
         }
 
-        void batchRunnerControl_Completed(object sender, EventArgs e)
-        {
-            m_IsCreated = true;
-            LogMessage("Done");
-            createButton.Text = "OK";
-            createButton.Enabled = true;
-
-            // Make sure we're at the end
-            //batchRunnerControl.Refresh();
-        }
-
         private void CreateTablesForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             DialogResult = (m_IsCreated ? DialogResult.OK : DialogResult.Cancel);
@@ -170,5 +138,24 @@ namespace Backsight.Environment.Editor
             //int index = listBox.Items.Add(message);
             //listBox.SelectedIndex = index;
         }
+
+        #region IBatchRunner Members
+
+        public void RunCompleted(Exception e)
+        {
+            if (e == null)
+            {
+                m_IsCreated = true;
+                LogMessage("Done");
+                createButton.Text = "OK";
+                createButton.Enabled = true;
+            }
+            else
+            {
+                cancelButton.Enabled = true;
+            }
+        }
+
+        #endregion
     }
 }
