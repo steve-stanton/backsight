@@ -581,7 +581,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            NewJobForm dial = new NewJobForm(null);
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                JobFile jobFile = dial.NewJobFile;
+                m_Controller.OpenJob(jobFile.Name);
+                AddRecentFile(jobFile.Name);
+            }
+            dial.Dispose();
+
             /*
             string name = EditingController.AskForFileName("Create new map");
             if (name==null)

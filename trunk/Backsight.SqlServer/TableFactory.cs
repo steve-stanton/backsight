@@ -87,6 +87,11 @@ namespace Backsight.SqlServer
             sc.Connect();
             string dbName = csb.InitialCatalog;
             m_Database = new Smo.Server(sc).Databases[dbName];
+
+            // If you specify a non-existent database, the above doesn't create anything, and
+            // there's no exception!
+            if (m_Database==null)
+                throw new Exception("Unable to access database "+csb.InitialCatalog);
         }
 
         /// <summary>
@@ -116,6 +121,7 @@ namespace Backsight.SqlServer
         /// inserts initial rows, and defines constraints.
         /// </summary>
         /// <param name="logger">Something to display progress messages (not null)</param>
+        /*
         public void CreateTables(ILog logger)
         {
             try
@@ -135,7 +141,9 @@ namespace Backsight.SqlServer
                 throw ex;
             }
         }
+        */
 
+        /*
         void CreateBacksightTables(ILog logger)
         {
             DropForeignKeyConstraints();
@@ -175,7 +183,9 @@ namespace Backsight.SqlServer
             // Define foreign key constraints
             AddForeignKeyConstraints(logger);
         }
+        */
 
+        /*
         void AddSimpleChecks(ILog logger, DataTable dt, string[] checks)
         {
             string tableName = GetTableName(dt);
@@ -190,7 +200,9 @@ namespace Backsight.SqlServer
                 AddCheck(t, checkName, checks[i]);
             }
         }
+        */
 
+        /*
         void AddForeignKeyConstraints(ILog logger)
         {
             BacksightDataSet ds = new BacksightDataSet();
@@ -215,7 +227,9 @@ namespace Backsight.SqlServer
                 }
             }
         }
+         */
 
+        /*
         void DropForeignKeyConstraints()
         {
             BacksightDataSet ds = new BacksightDataSet();
@@ -235,6 +249,7 @@ namespace Backsight.SqlServer
             foreach (Smo.ForeignKey fk in fks)
                 fk.Drop();
         }
+        */
 
         void CreateTable(Smo.Schema s, DataTable dt)
         {
@@ -342,6 +357,7 @@ namespace Backsight.SqlServer
             return idx;
         }
 
+        /*
         void AddForeignKeyConstraint(DataRelation dr)
         {
             DataColumn[] parent = dr.ParentColumns;
@@ -366,6 +382,7 @@ namespace Backsight.SqlServer
             fk.ReferencedTable = pt.Name;
             fk.Create();
         }
+        */
 
         Smo.DataType GetDataType(DataColumn dc)
         {
@@ -446,10 +463,12 @@ namespace Backsight.SqlServer
             // Do it the heavy-handed way, since I'm still getting foreign key errors
             // after setting ForeignKey.IsEnabled to false.
 
+            /*
             if (enable)
                 AddForeignKeyConstraints(null);
             else
                 DropForeignKeyConstraints();
+             */
 
             /*
             BacksightDataSet ds = new BacksightDataSet();
@@ -464,6 +483,52 @@ namespace Backsight.SqlServer
                 }
             }
             */
+
+            string[] tables = GetCedTableNames();
+            string checkClause = (enable ? "CHECK" : "NOCHECK");
+
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                SqlConnection c = ic.Value;
+
+                foreach (string tableName in tables)
+                {
+                    string sql = String.Format("ALTER TABLE [ced].[{0}] {1} CONSTRAINT ALL", tableName, checkClause);
+                    SqlCommand cmd = new SqlCommand(sql, c);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtains a list of all database tables that are associated with the "ced" schema.
+        /// </summary>
+        /// <returns>The CED tables that exist in the database</returns>
+        string[] GetCedTableNames()
+        {
+            List<string> result = new List<string>();
+
+            /*
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='ced'";
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        result.Add(reader.GetString(0));
+                }
+            }
+             */
+
+            foreach (Smo.Table table in m_Database.Tables)
+            {
+                if (table.Schema.ToLower() == "ced")
+                    result.Add(table.Name);
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>

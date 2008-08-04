@@ -1268,5 +1268,40 @@ namespace Backsight.Editor
                 return (s.IsSaved && m_JobFile.Data.IsSaved);
             }
         }
+
+        /// <summary>
+        /// Saves a job file for the supplied job
+        /// </summary>
+        /// <param name="job">The job information that should be written to disk</param>
+        /// <returns>An object representing the saved job information (null if the user
+        /// cancelled from the <c>SaveFileDialog</c>)</returns>
+        internal JobFile SaveJobFile(Job job)
+        {
+            JobFile jobFile = null;
+
+            SaveFileDialog dial = new SaveFileDialog();
+            dial.Title = "Save As";
+            dial.DefaultExt = JobFileInfo.TYPE;
+            dial.FileName = job.Name + JobFileInfo.TYPE;
+            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
+
+            string lastMap = Settings.Default.LastMap;
+            if (!String.IsNullOrEmpty(lastMap))
+                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
+
+            if (dial.ShowDialog() == DialogResult.OK)
+            {
+                JobFileInfo jfi = new JobFileInfo();
+                jfi.ConnectionString = AdapterFactory.ConnectionString;
+                jfi.JobId = job.JobId;
+                jobFile = JobFile.SaveJobFile(dial.FileName, jfi);
+
+                Settings.Default.LastMap = dial.FileName;
+                Settings.Default.Save();
+            }
+
+            dial.Dispose();
+            return jobFile;
+        }
     }
 }
