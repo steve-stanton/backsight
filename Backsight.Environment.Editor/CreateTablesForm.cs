@@ -86,27 +86,28 @@ namespace Backsight.Environment.Editor
 
                 // Ensure relevant files are in the working directory
                 string tabFile = GetResourceFile("CreateTables.sql"); 
-                string fkFile = GetResourceFile("AddForeignKeys.sql"); 
+                //string fkFile = GetResourceFile("AddForeignKeys.sql"); 
 
                 // Form command line arguments
-                string cs = AdapterFactory.ConnectionString;
+                string cs = m_Factory.ConnectionString;
                 SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(cs);
                 string serverName = csb.DataSource;
                 string dbName = csb.InitialCatalog;
 
                 // Create command script
-                string cmdFile = Path.GetTempFileName();
-                cmdFile = Path.ChangeExtension(cmdFile, ".bat");
+                //string cmdFile = Path.GetTempFileName();
+                //cmdFile = Path.ChangeExtension(cmdFile, ".bat");
 
-                dbName = "Test5";
-                using (StreamWriter sw = File.CreateText(cmdFile))
-                {
-                    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, tabFile));
-                    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, fkFile));
-                }
+                //using (StreamWriter sw = File.CreateText(cmdFile))
+                //{
+                //    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, tabFile));
+                //    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, fkFile));
+                //}
 
                 // Run the command script
-                batchRunnerControl.RunCommand(this, cmdFile);
+                //batchRunnerControl.RunCommand(this, cmdFile);
+                string args = String.Format("-S {0} -d {1} -i {2}", serverName, dbName, tabFile);
+                batchRunnerControl.RunCommand(this, "sqlcmd", args);
             }
 
             catch (Exception ex)
@@ -146,9 +147,18 @@ namespace Backsight.Environment.Editor
             if (e == null)
             {
                 m_IsCreated = true;
+
+                // For some reason, the "Done" doesn't getting scrolled into view, so try logging
+                // a further empty line.
                 LogMessage("Done");
+                LogMessage(String.Empty); 
+
                 createButton.Text = "OK";
                 createButton.Enabled = true;
+
+                // Get rid of the command script (for now, we just leave the sql scripts
+                // lying around, since they could be useful if something went wrong)
+                //File.Delete(batchRunnerControl.LastCommand);
             }
             else
             {

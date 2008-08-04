@@ -569,12 +569,5 @@ namespace Backsight.Environment.Editor
             dial.ShowDialog();
             dial.Dispose();
         }
-
-        private void helpAboutMenuItem_Click(object sender, EventArgs e)
-        {
-            CreateTablesForm dial = new CreateTablesForm(new TableFactory());
-            dial.ShowDialog();
-            dial.Dispose();
-        }
     }
 }

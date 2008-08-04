@@ -55,6 +55,23 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
+        /// <summary>
+        /// All defined jobs
+        /// </summary>
+        internal Job[] Jobs
+        {
+            get { return m_AllJobs; }
+        }
+
+        /// <summary>
+        /// Selects a specific item in the job list
+        /// </summary>
+        /// <param name="job">The instance to select</param>
+        internal void SelectJob(Job job)
+        {
+            listBox.SelectedItem = job;
+        }
+
         private void GetJobForm_Shown(object sender, EventArgs e)
         {
             m_AllJobs = Job.FindAll();
@@ -86,6 +103,7 @@ namespace Backsight.Editor.Forms
         /// <param name="zone">The spatial zone the job covers (not null)</param>
         /// <param name="layer">The (base) map layer for the job (not null)</param>
         /// <returns>The created job file (null on any validation or database insert error)</returns>
+        /*
         internal JobFile CreateJob(string jobName, IZone zone, ILayer layer)
         {
             if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
@@ -121,6 +139,7 @@ namespace Backsight.Editor.Forms
             // Save a job file as well
             return SaveJobFile(job);
         }
+         */
 
         private void openButton_Click(object sender, EventArgs e)
         {
@@ -131,13 +150,14 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            if (SaveJobFile(j) != null)
+            if (EditingController.Current.SaveJobFile(j) != null)
             {
                 DialogResult = DialogResult.OK;
                 Close();
             }
         }
 
+        /*
         JobFile SaveJobFile(Job job)
         {
             m_JobFile = null;
@@ -165,6 +185,7 @@ namespace Backsight.Editor.Forms
 
             return m_JobFile;
         }
+        */
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
