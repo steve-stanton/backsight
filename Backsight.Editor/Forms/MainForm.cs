@@ -56,8 +56,10 @@ namespace Backsight.Editor.Forms
 
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, remember it as the last map (it gets picked up in MainForm_Shown)
-            if (args!=null && args.Length>0)
+            if (args != null && args.Length > 0)
                 Settings.Default.LastMap = args[0];
+            else
+                Settings.Default.LastMap = String.Empty;
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
@@ -92,38 +94,59 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
-            Stopwatch sw = Stopwatch.StartNew();
-
-            try
+            string lastMap = Settings.Default.LastMap;
+            if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
             {
-                Trace.Listeners.Add(trace);
-                string lastMap = Settings.Default.LastMap;
-                if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
+                ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
+                Stopwatch sw = Stopwatch.StartNew();
+
+                try
                 {
-                    Trace.Write("Loading "+lastMap);
+                    Trace.Listeners.Add(trace);
+                    Trace.Write("Loading " + lastMap);
                     // Display the map name in the dialog title (nice to see what's loading
                     // rather than the default "Map Title" text)
                     this.Text = lastMap;
                     m_Controller.OpenJob(lastMap);
                 }
-                else
-                    m_Controller.OpenJob(null);
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.StackTrace);
+                    //return;
+                }
+
+                finally
+                {
+                    sw.Stop();
+                    Trace.Listeners.Remove(trace);
+                    ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
+                }
             }
 
-            catch (Exception ex)
+            // If a model hasn't been obtained, ask
+            if (m_Controller.CadastralMapModel==null)
             {
-                MessageBox.Show(ex.Message);
-                MessageBox.Show(ex.StackTrace);
+                try { m_Controller.OpenJob(null); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    Close();
+                    return;
+                }
+            }
+
+            // If we still don't have a model, close
+            if (m_Controller.CadastralMapModel==null)
+            {
+                Close();
                 return;
             }
 
-            finally
-            {
-                sw.Stop();
-                Trace.Listeners.Remove(trace);
-                ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds/1000.0));
-            }
+            // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
+            string fullMapName = m_Controller.CadastralMapModel.Name;
+            m_MruMenu.AddFile(fullMapName);
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
@@ -134,10 +157,6 @@ namespace Backsight.Editor.Forms
 
                 InitializeActions();
 
-                // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
-                string fullMapName = m_Controller.CadastralMapModel.Name;
-                if (!String.IsNullOrEmpty(fullMapName))
-                    m_MruMenu.AddFile(fullMapName);
             }
 
             catch (Exception ex)

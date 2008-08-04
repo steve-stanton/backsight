@@ -124,7 +124,7 @@ namespace Backsight.Editor
         /// </summary>
         internal PointFeature FirstPoint
         {
-            get { return (m_Points==null ? null : m_Points[0]); }
+            get { return (PointCount==0 ? null : m_Points[0]); }
         }
     }
 }
