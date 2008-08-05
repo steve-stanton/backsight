@@ -600,7 +600,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
-            NewJobForm dial = new NewJobForm(null);
+            GetJobForm dial = new GetJobForm();
             if (dial.ShowDialog() == DialogResult.OK)
             {
                 JobFile jobFile = dial.NewJobFile;

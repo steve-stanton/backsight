@@ -21,6 +21,7 @@ using Backsight.Editor.Database;
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Properties;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Forms
 {
@@ -82,32 +83,30 @@ namespace Backsight.Editor.Forms
         {
             Job j = (Job)listBox.SelectedItem;
             if (j!=null)
-                MessageBox.Show("Open "+j);
+                SaveFileAndClose(j);
         }
 
         private void createButton_Click(object sender, EventArgs e)
         {
             NewJobForm dial = new NewJobForm(this);
-            DialogResult = dial.ShowDialog();
+            dial.ShowDialog();
             dial.Dispose();
-
-            if (DialogResult == DialogResult.OK)
-                Close();
         }
 
         /// <summary>
         /// Callback from <see cref="NewJobForm"/> that first validates the details for a new
         /// job, then records it in the database.
         /// </summary>
-        /// <param name="jobName">The user-perceived name for the job (not null or blank)</param>
+        /// <param name="jobFileName">The user-perceived name for the job (not null or blank)</param>
         /// <param name="zone">The spatial zone the job covers (not null)</param>
         /// <param name="layer">The (base) map layer for the job (not null)</param>
-        /// <returns>The created job file (null on any validation or database insert error)</returns>
-        /*
-        internal JobFile CreateJob(string jobName, IZone zone, ILayer layer)
+        /// <returns>The created job data (null on any validation or database insert error)</returns>
+        internal JobFile CreateJob(string jobFileName, IZone zone, ILayer layer)
         {
-            if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
+            if (String.IsNullOrEmpty(jobFileName) || zone==null || layer==null)
                 throw new ArgumentNullException();
+
+            string jobName = Path.GetFileNameWithoutExtension(jobFileName);
 
             // Confirm the job name is unique
             Job job = Array.Find<Job>(m_AllJobs, delegate(Job j)
@@ -136,56 +135,47 @@ namespace Backsight.Editor.Forms
             // this dialog to close momentarily.
             job = Job.Insert(jobName, zone.Id, layer.Id);
 
-            // Save a job file as well
-            return SaveJobFile(job);
-        }
-         */
+            // Include the new job in the list of all known jobs and select it
+            List<Job> tmp = new List<Job>(m_AllJobs.Length+1);
+            tmp.AddRange(m_AllJobs);
+            tmp.Add(job);
+            m_AllJobs = tmp.ToArray();
+            listBox.DataSource = m_AllJobs;
+            SelectJob(job);
 
-        private void openButton_Click(object sender, EventArgs e)
+            // Save the information in a job file
+            JobFileInfo jfi = new JobFileInfo();
+            jfi.ConnectionString = AdapterFactory.ConnectionString;
+            jfi.JobId = job.JobId;
+            JobFile jobFile = JobFile.SaveJobFile(jobFileName, jfi);
+
+            Settings.Default.LastMap = jobFileName;
+            Settings.Default.Save();
+
+            return jobFile;
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
         {
             Job j = (listBox.SelectedItem as Job);
             if (j==null)
             {
-                MessageBox.Show("You must first select the job to open");
+                MessageBox.Show("You must first select an editing job from the list");
                 return;
             }
 
-            if (EditingController.Current.SaveJobFile(j) != null)
+            SaveFileAndClose(j);
+        }
+
+        void SaveFileAndClose(Job job)
+        {
+            m_JobFile = EditingController.Current.SaveJobFile(job);
+            if (m_JobFile != null)
             {
                 DialogResult = DialogResult.OK;
                 Close();
             }
         }
-
-        /*
-        JobFile SaveJobFile(Job job)
-        {
-            m_JobFile = null;
-
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Title = "Save As";
-            dial.DefaultExt = JobFileInfo.TYPE;
-            dial.FileName = job.Name + JobFileInfo.TYPE;
-            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-
-            string lastMap = Settings.Default.LastMap;
-            if (!String.IsNullOrEmpty(lastMap))
-                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
-
-            if (dial.ShowDialog() == DialogResult.OK)
-            {
-                JobFileInfo jfi = new JobFileInfo();
-                jfi.ConnectionString = AdapterFactory.ConnectionString;
-                jfi.JobId = job.JobId;
-                m_JobFile = JobFile.SaveJobFile(dial.FileName, jfi);
-
-                Settings.Default.LastMap = dial.FileName;
-                Settings.Default.Save();
-            }
-
-            return m_JobFile;
-        }
-        */
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
@@ -194,11 +184,16 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// The selected job file (null if nothing was selected)
+        /// The new job file (created when user clicks on Save button)
         /// </summary>
-        internal JobFile JobFile
+        internal JobFile NewJobFile
         {
             get { return m_JobFile; }
+        }
+
+        private void GetJobForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            int junk=0;
         }
     }
 }
