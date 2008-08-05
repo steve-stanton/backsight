@@ -165,6 +165,7 @@ namespace Backsight.Editor.Forms
             this.unitsStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pointEntityStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.lineEntityStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.infoLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.vSplitContainer = new System.Windows.Forms.SplitContainer();
             this.hSplitContainer = new System.Windows.Forms.SplitContainer();
             this.toolStripContainer = new System.Windows.Forms.ToolStripContainer();
@@ -297,7 +298,6 @@ namespace Backsight.Editor.Forms
             this.ctxNewText25 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
-            this.infoLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.vSplitContainer.Panel1.SuspendLayout();
@@ -376,7 +376,7 @@ namespace Backsight.Editor.Forms
             this.mnuFileNew.Name = "mnuFileNew";
             this.mnuFileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.mnuFileNew.Size = new System.Drawing.Size(235, 22);
-            this.mnuFileNew.Text = "&New";
+            this.mnuFileNew.Text = "&New...";
             this.mnuFileNew.ToolTipText = "Create a new map";
             // 
             // mnuFileOpen
@@ -1252,6 +1252,13 @@ namespace Backsight.Editor.Forms
             this.lineEntityStatusLabel.Name = "lineEntityStatusLabel";
             this.lineEntityStatusLabel.Size = new System.Drawing.Size(104, 20);
             this.lineEntityStatusLabel.Text = "Default line type";
+            // 
+            // infoLabel
+            // 
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.Size = new System.Drawing.Size(64, 20);
+            this.infoLabel.Text = "Loading...";
+            this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // vSplitContainer
             // 
@@ -2296,13 +2303,6 @@ namespace Backsight.Editor.Forms
             this.ctxNewTextCancel.Name = "ctxNewTextCancel";
             this.ctxNewTextCancel.Size = new System.Drawing.Size(146, 22);
             this.ctxNewTextCancel.Text = "Cancel";
-            // 
-            // infoLabel
-            // 
-            this.infoLabel.Name = "infoLabel";
-            this.infoLabel.Size = new System.Drawing.Size(64, 20);
-            this.infoLabel.Text = "Loading...";
-            this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // MainForm
             // 

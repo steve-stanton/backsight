@@ -162,7 +162,7 @@ namespace Backsight.Editor
             {
                 GetJobForm dial = new GetJobForm();
                 if (dial.ShowDialog() == DialogResult.OK)
-                    m_JobFile = dial.JobFile;
+                    m_JobFile = dial.NewJobFile;
 
                 dial.Dispose();
             }
