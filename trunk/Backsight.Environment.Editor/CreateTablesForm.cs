@@ -84,9 +84,8 @@ namespace Backsight.Environment.Editor
                 createButton.Enabled = false;
                 cancelButton.Enabled = false;
 
-                // Ensure relevant files are in the working directory
+                // Ensure relevant file is in the working directory
                 string tabFile = GetResourceFile("CreateTables.sql"); 
-                //string fkFile = GetResourceFile("AddForeignKeys.sql"); 
 
                 // Form command line arguments
                 string cs = m_Factory.ConnectionString;
@@ -94,18 +93,7 @@ namespace Backsight.Environment.Editor
                 string serverName = csb.DataSource;
                 string dbName = csb.InitialCatalog;
 
-                // Create command script
-                //string cmdFile = Path.GetTempFileName();
-                //cmdFile = Path.ChangeExtension(cmdFile, ".bat");
-
-                //using (StreamWriter sw = File.CreateText(cmdFile))
-                //{
-                //    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, tabFile));
-                //    sw.WriteLine(String.Format("sqlcmd -S {0} -d {1} -i {2}", serverName, dbName, fkFile));
-                //}
-
-                // Run the command script
-                //batchRunnerControl.RunCommand(this, cmdFile);
+                // Run the command to create database tables
                 string args = String.Format("-S {0} -d {1} -i {2}", serverName, dbName, tabFile);
                 batchRunnerControl.RunCommand(this, "sqlcmd", args);
             }
@@ -133,15 +121,23 @@ namespace Backsight.Environment.Editor
             DialogResult = (m_IsCreated ? DialogResult.OK : DialogResult.Cancel);
         }
 
+        /// <summary>
+        /// Logs the specified message
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public void LogMessage(string message) // ILog
         {
             batchRunnerControl.ReportMessage(message);
-            //int index = listBox.Items.Add(message);
-            //listBox.SelectedIndex = index;
         }
 
         #region IBatchRunner Members
 
+        /// <summary>
+        /// Handler that will be called upon completion of batch command (initiated
+        /// via a call to <see cref="BatchRunnerControl.RunCommand"/>)
+        /// </summary>
+        /// <param name="e">Any exception denoting a failure (null if the command
+        /// completed successfully)</param>
         public void RunCompleted(Exception e)
         {
             if (e == null)
@@ -155,10 +151,6 @@ namespace Backsight.Environment.Editor
 
                 createButton.Text = "OK";
                 createButton.Enabled = true;
-
-                // Get rid of the command script (for now, we just leave the sql scripts
-                // lying around, since they could be useful if something went wrong)
-                //File.Delete(batchRunnerControl.LastCommand);
             }
             else
             {

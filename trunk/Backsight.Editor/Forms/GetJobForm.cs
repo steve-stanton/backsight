@@ -190,10 +190,5 @@ namespace Backsight.Editor.Forms
         {
             get { return m_JobFile; }
         }
-
-        private void GetJobForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            int junk=0;
-        }
     }
 }

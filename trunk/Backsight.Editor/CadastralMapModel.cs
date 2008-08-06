@@ -1303,13 +1303,6 @@ namespace Backsight.Editor
             m_Index.QueryWindow(null, SpatialType.Line, delegate (ISpatialObject item)
             {
                 LineFeature line = (LineFeature)item;
-
-                string id = line.DataId;
-                if (id=="138.6754" || id=="174.2" || id=="138.7021")
-                {
-                    int junk=0;
-                }
-
                 line.IsMoved = false;
                 line.Split(null);
                 return true;
