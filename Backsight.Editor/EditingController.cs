@@ -463,7 +463,11 @@ namespace Backsight.Editor
                 {
                     string increment = m_JobFile.Data.SplashIncrement;
                     string percents = m_JobFile.Data.SplashPercents;
-                    SplashScreen.ShowSplashScreen(increment, percents);
+
+                    // Don't show splash screen if it's a brand new file
+                    if (percents.Length > 0)
+                        SplashScreen.ShowSplashScreen(increment, percents);
+
                     m_SplashShown = true;
                 }
 

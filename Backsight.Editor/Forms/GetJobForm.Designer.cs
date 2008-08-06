@@ -96,7 +96,6 @@ namespace Backsight.Editor.Forms
             this.Name = "GetJobForm";
             this.Text = "Cadastral Editing Jobs";
             this.Shown += new System.EventHandler(this.GetJobForm_Shown);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GetJobForm_FormClosing);
             this.ResumeLayout(false);
 
         }

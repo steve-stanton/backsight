@@ -48,6 +48,12 @@ namespace Backsight.Editor.Forms
         /// </summary>
         readonly MruStripMenuInline m_MruMenu;
 
+        /// <summary>
+        /// The name of the job file used to launch the application (null if user didn't
+        /// double-click on a cedx file)
+        /// </summary>
+        readonly string m_InitialJobFile;
+
         #endregion
 
         public MainForm(string[] args)
@@ -55,11 +61,14 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             // If user double-clicked on a file, it should appear as an argument. In that
-            // case, remember it as the last map (it gets picked up in MainForm_Shown)
+            // case, remember it as the initial job file (it gets dealt with by MainForm_Shown)
             if (args != null && args.Length > 0)
-                Settings.Default.LastMap = args[0];
+                m_InitialJobFile = args[0];
             else
-                Settings.Default.LastMap = String.Empty;
+                m_InitialJobFile = null;
+
+
+            m_InitialJobFile = @"C:\Steve\Data\Crystal City.cedx"; // DEBUG!
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
@@ -94,8 +103,7 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            string lastMap = Settings.Default.LastMap;
-            if (!String.IsNullOrEmpty(lastMap) && File.Exists(lastMap))
+            if (!String.IsNullOrEmpty(m_InitialJobFile) && File.Exists(m_InitialJobFile))
             {
                 ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
                 Stopwatch sw = Stopwatch.StartNew();
@@ -103,11 +111,12 @@ namespace Backsight.Editor.Forms
                 try
                 {
                     Trace.Listeners.Add(trace);
-                    Trace.Write("Loading " + lastMap);
+                    Trace.Write("Loading " + m_InitialJobFile);
+
                     // Display the map name in the dialog title (nice to see what's loading
                     // rather than the default "Map Title" text)
-                    this.Text = lastMap;
-                    m_Controller.OpenJob(lastMap);
+                    this.Text = m_InitialJobFile;
+                    m_Controller.OpenJob(m_InitialJobFile);
                 }
 
                 catch (Exception ex)
@@ -128,12 +137,15 @@ namespace Backsight.Editor.Forms
             // If a model hasn't been obtained, ask
             if (m_Controller.CadastralMapModel==null)
             {
-                try { m_Controller.OpenJob(null); }
+                try
+                {
+                    if (!OpenFile())
+                        m_Controller.OpenJob(null);
+                }
+
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    Close();
-                    return;
                 }
             }
 
@@ -628,14 +640,22 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileOpen(IUserAction action)
         {
+            OpenFile();
+        }
+
+        bool OpenFile()
+        {
             OpenFileDialog dial = new OpenFileDialog();
             dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-
-            if (dial.ShowDialog() == DialogResult.OK)
+            bool isOk = (dial.ShowDialog() == DialogResult.OK);
+            if (isOk)
             {
                 m_Controller.OpenJob(dial.FileName);
                 AddRecentFile(dial.FileName);
             }
+
+            dial.Dispose();
+            return isOk;
         }
 
         void AddRecentFile(string fileName)

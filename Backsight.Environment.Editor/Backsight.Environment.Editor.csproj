@@ -223,7 +223,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <EmbeddedResource Include="Resources\AddForeignKeys.sql" />
     <EmbeddedResource Include="Resources\CreateTables.sql" />
     <None Include="Resources\Minus.bmp" />
   </ItemGroup>
