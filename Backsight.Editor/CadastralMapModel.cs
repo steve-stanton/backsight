@@ -1303,6 +1303,7 @@ namespace Backsight.Editor
             m_Index.QueryWindow(null, SpatialType.Line, delegate (ISpatialObject item)
             {
                 LineFeature line = (LineFeature)item;
+                Trace.Write(line.DataId);
                 line.IsMoved = false;
                 line.Split(null);
                 return true;

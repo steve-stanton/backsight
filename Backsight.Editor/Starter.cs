@@ -104,7 +104,11 @@ namespace Backsight.Editor
                 string cs = null;
                 if (m_JobFile == null)
                 {
-                    cs = GetConnectionString();
+                    cs = LastDatabase.ConnectionString;
+
+                    if (String.IsNullOrEmpty(cs))
+                        cs = GetConnectionString();
+
                     if (String.IsNullOrEmpty(cs))
                         return false;
                 }

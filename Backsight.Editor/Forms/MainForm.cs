@@ -140,7 +140,11 @@ namespace Backsight.Editor.Forms
                 try
                 {
                     if (!OpenFile())
-                        m_Controller.OpenJob(null);
+                    {
+                        if (MessageBox.Show("Do you want to create a new job file?",
+                                            "No job file", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            m_Controller.OpenJob(null);
+                    }
                 }
 
                 catch (Exception ex)

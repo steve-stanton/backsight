@@ -359,6 +359,11 @@ namespace Backsight.Editor
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the ReadContent method.
 
+            if (DataId.EndsWith(".29"))
+            {
+                int junk=0;
+            }
+
             if (m_Geom.FirstPoint == this)
             {
                 if (m_Geom.PointCount > 1)
