@@ -235,18 +235,23 @@ namespace Backsight.Editor
             return arc;
         }
 
-        PointFeature GetArcEndPoint(PointGeometry p, ILength tol, Operation creator)
+        PointFeature GetArcEndPoint(PointGeometry g, ILength tol, Operation creator)
         {
             // Ensure we've got a point at the required position
-            PointFeature pt = EnsurePointExists(p, tol, creator);
+            PointFeature pt = EnsurePointExists(g, tol, creator);
 
             // If it's not exactly coincident, we've picked up a previously loaded point
             // that happens to be within tolerance. If it's not already connected to any
             // lines, shift it to where we want it.
-            if (!pt.IsCoincident(p))
+            if (!pt.IsCoincident(g))
             {
                 if (!pt.HasDependents)
-                    pt.ChangePosition(p);
+                {
+                    m_Index.Remove(pt);
+                    PointFeature[] pts = pt.Node.Points;
+                    pt.Node = new Node(pts, g);
+                    m_Index.Add(pt);
+                }
             }
 
             return pt;

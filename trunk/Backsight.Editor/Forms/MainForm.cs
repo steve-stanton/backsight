@@ -67,9 +67,6 @@ namespace Backsight.Editor.Forms
             else
                 m_InitialJobFile = null;
 
-
-            m_InitialJobFile = @"C:\Steve\Data\Crystal City.cedx"; // DEBUG!
-
             // Define the controller for the application
             m_Controller = new EditingController(this);
 
@@ -107,30 +104,55 @@ namespace Backsight.Editor.Forms
             {
                 ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
                 Stopwatch sw = Stopwatch.StartNew();
+                JobFile jf = null;
 
                 try
                 {
+                    jf = new JobFile(m_InitialJobFile);
+                    string increment = jf.Data.SplashIncrement;
+                    string percents = jf.Data.SplashPercents;
+
+                    // Don't show splash screen if it's a brand new file
+                    //if (percents.Length > 0)
+                        SplashScreen.ShowSplashScreen(increment, percents);
+
                     Trace.Listeners.Add(trace);
                     Trace.Write("Loading " + m_InitialJobFile);
 
                     // Display the map name in the dialog title (nice to see what's loading
                     // rather than the default "Map Title" text)
                     this.Text = m_InitialJobFile;
-                    m_Controller.OpenJob(m_InitialJobFile);
+                    m_Controller.OpenJob(jf);
                 }
 
                 catch (Exception ex)
                 {
+                    SplashScreen.CloseForm();
                     MessageBox.Show(ex.Message);
-                    //MessageBox.Show(ex.StackTrace);
-                    //return;
+
+                    // Don't save any changes to the job file
+                    jf = null;
                 }
 
                 finally
                 {
                     sw.Stop();
-                    Trace.Listeners.Remove(trace);
                     ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
+                    Trace.Listeners.Remove(trace);
+                    SplashScreen ss = SplashScreen.SplashForm;
+                    SplashScreen.CloseForm();
+
+                    if (jf!=null && ss!=null)
+                    {                        
+                        // Save the splash settings now. This is perhaps a little premature, since
+                        // the original splash screen implementation waited until the screen had
+                        // completely faded away. The drawback with that is that the job file would
+                        // then be rewritten on another thread, which could trample on things that
+                        // are happening here.
+                        jf.Data.SplashIncrement = ss.GetIncrement();
+                        jf.Data.SplashPercents = ss.GetPercents();
+                        jf.Save();
+                    }
                 }
             }
 
@@ -620,7 +642,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (dial.ShowDialog() == DialogResult.OK)
             {
                 JobFile jobFile = dial.NewJobFile;
-                m_Controller.OpenJob(jobFile.Name);
+                m_Controller.OpenJob(jobFile);
                 AddRecentFile(jobFile.Name);
             }
             dial.Dispose();
@@ -654,7 +676,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             bool isOk = (dial.ShowDialog() == DialogResult.OK);
             if (isOk)
             {
-                m_Controller.OpenJob(dial.FileName);
+                JobFile jf = new JobFile(dial.FileName);
+                m_Controller.OpenJob(jf);
                 AddRecentFile(dial.FileName);
             }
 
@@ -684,11 +707,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             try
             {
-                m_Controller.OpenJob(filename);
+                JobFile jf = new JobFile(filename);
+                m_Controller.OpenJob(jf);
                 m_MruMenu.SetFirstFile(number);
             }
 
-            catch (Exception ex)
+            catch
             {
                 string msg = String.Format("Cannot access '{0}'", filename);
                 MessageBox.Show(msg);

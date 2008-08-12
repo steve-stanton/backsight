@@ -64,7 +64,7 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
-        private void NewJobForm_Shown(object sender, EventArgs e)
+        private void NewJobForm_Load(object sender, EventArgs e)
         {
             IEnvironmentContainer ec = EnvironmentContainer.Current;
 
@@ -75,6 +75,10 @@ namespace Backsight.Editor.Forms
 
             // Load all defined editing layers
             layerComboBox.DataSource = ec.Layers;
+        }
+
+        private void NewJobForm_Shown(object sender, EventArgs e)
+        {
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -186,17 +190,22 @@ namespace Backsight.Editor.Forms
 
         private void jobNameTextBox_Enter(object sender, EventArgs e)
         {
-            if (jobNameTextBox.Text.Length == 0)
+            if (jobNameTextBox.Text.Length == 0 && this.Visible)
             {
                 IZone zone = (zoneComboBox.SelectedItem as IZone);
                 if (zone == null || zone.Id==0)
                     return;
 
-                ILayer layer = (layerComboBox.SelectedItem as ILayer);
-                if (layer == null || layer.Id==0)
-                    return;
+                //ILayer layer = (layerComboBox.SelectedItem as ILayer);
+                //if (layer == null || layer.Id==0)
+                //    return;
 
-                string fileName = String.Format("{0}-{1}{2}", zone.Name, layer.Name, JobFileInfo.TYPE);
+                // Just default to the zone name, since appending the layer name is a bit verbose, and
+                // it's quite likely that everyone in a given shop will utilize the same layer. Using
+                // just the zone name is also consistent with the naming convention that was utilized
+                // in prehistoric (CEdit) times.
+                //string fileName = String.Format("{0}-{1}{2}", zone.Name, layer.Name, JobFileInfo.TYPE);
+                string fileName = String.Format("{0}{1}", zone.Name, JobFileInfo.TYPE);
                 string dirName;
                 string lastMap = Settings.Default.LastMap;
 

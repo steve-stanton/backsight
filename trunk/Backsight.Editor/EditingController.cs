@@ -61,11 +61,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// Has the splash screen been displayed?
-        /// </summary>
-        bool m_SplashShown;
-
-        /// <summary>
         /// The current user
         /// </summary>
         User m_User;
@@ -146,7 +141,6 @@ namespace Backsight.Editor
             m_Check = null;
             m_Sel = null;
             m_HasSelectionChanged = false;
-            m_SplashShown = false;
         }
 
         #endregion
@@ -413,24 +407,16 @@ namespace Backsight.Editor
         /// <summary>
         /// Attempts to open a job
         /// </summary>
-        /// <param name="jobFileSpec">The file specification of a job file (null if
-        /// the user should be asked)</param>
+        /// <param name="jf">The job file (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
-        internal void OpenJob(string jobFileSpec)
+        internal void OpenJob(JobFile jf)
         {
             m_User = null;
             m_JobData = null;
-            m_JobFile = null;
+            m_JobFile = jf;
             m_ActiveLayer = null;
 
-            // If a job file has been specified, attempt to open it
-            JobFile jf = null;
-            if (String.IsNullOrEmpty(jobFileSpec))
-                jf = null;
-            else
-                jf = new JobFile(jobFileSpec);
-
-            // Just pass it over to a dedicated starter instance
+            // Pass the job file (if any) over to a dedicated starter instance
             Starter s = new Starter(jf);
 
             if (!s.Open())
@@ -458,19 +444,6 @@ namespace Backsight.Editor
 
             try
             {
-                // If the splash screen has never been displayed, do it now
-                if (!m_SplashShown)
-                {
-                    string increment = m_JobFile.Data.SplashIncrement;
-                    string percents = m_JobFile.Data.SplashPercents;
-
-                    // Don't show splash screen if it's a brand new file
-                    if (percents.Length > 0)
-                        SplashScreen.ShowSplashScreen(increment, percents);
-
-                    m_SplashShown = true;
-                }
-
                 cmm = new CadastralMapModel();
 
                 // The Load method will end up calling software that requires access to the
@@ -484,31 +457,6 @@ namespace Backsight.Editor
 
             finally
             {
-                SplashScreen ss = SplashScreen.SplashForm;
-
-                if (ss != null)
-                {
-                    // Save the splash settings now. This is perhaps a little premature, since
-                    // the original splash screen implementation waited until the screen had
-                    // completely faded away. The drawback with that is that the job file would
-                    // then be rewritten on another thread, which could trample on things that
-                    // are happening here.
-                    m_JobFile.Data.SplashIncrement = ss.GetIncrement();
-                    m_JobFile.Data.SplashPercents = ss.GetPercents();
-                    m_JobFile.Save();
-
-                    // Ensure the main window is regarded as the splash screen's parent (otherwise
-                    // some other window might come to the front when the splash screen finally
-                    // closes).
-                    //ss.Owner = m_Main;
-                    //m_Main.Activate();
-
-                    // Closing the splash screen means you want it to fade away in its own
-                    // thread. It'll close itself "soon" (by which time, we should have been
-                    // able to draw up the map).
-                    //SplashScreen.CloseForm();
-                }
-
                 // Need to first initialize overview extent before defining center and scale
                 if (cmm != null)
                 {
@@ -521,10 +469,7 @@ namespace Backsight.Editor
                     double cy = drawInfo.CenterY;
                     double mapScale = drawInfo.MapScale;
                     (ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
-                    m_JobFile.Save();
                 }
-
-                SplashScreen.CloseForm();
             }
         }
 

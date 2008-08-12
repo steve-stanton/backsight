@@ -63,8 +63,7 @@ namespace Backsight.Editor
             if (g == null)
                 throw new ArgumentNullException("Position for new point feature cannot be null");
 
-            m_Geom = new Node(g);
-            m_Geom.AttachPoint(this);
+            m_Geom = new Node(this, g);
         }
 
         /// <summary>
@@ -167,10 +166,7 @@ namespace Backsight.Editor
         /// if the move wasn't necessary.</returns>
         internal bool Move(IPosition to)
         {
-            PointGeometry g = (to as PointGeometry);
-            if (g==null)
-                g = new PointGeometry(to);
-
+            PointGeometry g = PointGeometry.Create(to);
             return Move(g);
         }
 
@@ -198,7 +194,8 @@ namespace Backsight.Editor
             // Move the geometry for this feature and re-insert into the index
             //(g as PointGeometry).Move(to);
             // alternatively, just assign the supplied geometry ?
-            m_Geom = new Node(to);
+            PointFeature[] pts = m_Geom.Points;
+            m_Geom = new Node(pts, to);
             //index.Add(this);
 
             // Notify all dependents that this point has been moved (and add
@@ -230,6 +227,7 @@ namespace Backsight.Editor
         internal Node Node
         {
             get { return m_Geom; }
+            set { m_Geom = value; }
         }
 
         public override void Render(ISpatialDisplay display, IDrawStyle style)
@@ -328,13 +326,16 @@ namespace Backsight.Editor
         /// <param name="newPosition">The new position</param>
         /// <exception cref="InvalidOperationException">If the point is referenced by any
         /// other objects.</exception>
+        /*
         internal void ChangePosition(PointGeometry newPosition)
         {
             if (HasDependents)
                 throw new InvalidOperationException("Cannot move point that has dependents");
 
-            m_Geom = new Node(newPosition);
+            PointFeature[] pts = m_Geom.Points;
+            m_Geom = new Node(pts, newPosition);
         }
+        */
 
         /// <summary>
         /// Returns formatted position of this point.
@@ -359,16 +360,12 @@ namespace Backsight.Editor
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the ReadContent method.
 
-            if (DataId.EndsWith(".29"))
-            {
-                int junk=0;
-            }
-
             if (m_Geom.FirstPoint == this)
             {
                 if (m_Geom.PointCount > 1)
                     writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
 
+                // The Node class is NOT expected to override the PointGeometry implementation
                 m_Geom.WriteContent(writer);
             }
             else
@@ -400,15 +397,16 @@ namespace Backsight.Editor
                 {
                     PointFeature p = reader.ReadFeatureByReference<PointFeature>("FirstPoint");
                     m_Geom = p.m_Geom;
+                    m_Geom.AttachPoint(this);
                 }
                 else
                 {
-                    uint pointCount = Math.Max(1, reader.ReadUnsignedInt("PointCount"));
-                    m_Geom = new Node(pointCount);
-                    m_Geom.ReadContent(reader);
-                }
+                    PointGeometry g = new PointGeometry();
+                    g.ReadContent(reader);
 
-                m_Geom.AttachPoint(this);
+                    //uint pointCount = Math.Max(1, reader.ReadUnsignedInt("PointCount"));
+                    m_Geom = new Node(this, g);
+                }
             }
         }
 
