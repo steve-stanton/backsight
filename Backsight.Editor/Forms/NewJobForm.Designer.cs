@@ -149,6 +149,7 @@ namespace Backsight.Editor.Forms
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewJobForm";
             this.Text = "Create New Job";
+            this.Load += new System.EventHandler(this.NewJobForm_Load);
             this.Shown += new System.EventHandler(this.NewJobForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();

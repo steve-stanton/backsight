@@ -43,14 +43,44 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Node"/> class with sufficient space
-        /// to hold references to the specified number of points.
+        /// Initializes a new instance of the <see cref="Node"/> class that refers to
+        /// a specific point, with the specified location.
         /// </summary>
-        /// <param name="pointCount">The number of points that will be referenced</param>
-        internal Node(uint pointCount)
-            : base()
+        /// <param name="p">The point that will be assigned this geometry (not null).
+        /// Modified by referring its geometry to <c>this</c> node.</param>
+        /// </param>
+        /// <param name="g">The geometry for the point (not null)</param>
+        internal Node(PointFeature p, PointGeometry g)
+            : base(g)
         {
-            m_Points = new List<PointFeature>((int)pointCount);
+            if (p==null)
+                throw new ArgumentNullException();
+
+            m_Points = new List<PointFeature>(1);
+            m_Points.Add(p);
+
+            // Ensure the point is associated with this node
+            p.Node = this;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class that refers to
+        /// the supplied array of points, all associated with the specified location.
+        /// </summary>
+        /// <param name="pts">The points that will be assigned this geometry (not null).
+        /// Each point will be modified by referring its geometry to <c>this</c> node.</param>
+        /// <param name="g">The geometry for the point (not null)</param>
+        internal Node(PointFeature[] pts, PointGeometry g)
+            : base(g)
+        {
+            if (pts==null)
+                throw new ArgumentNullException();
+
+            m_Points = new List<PointFeature>(pts);
+
+            // Ensure every point is associated with this node
+            foreach (PointFeature p in pts)
+                p.Node = this;
         }
 
         /// <summary>
@@ -114,7 +144,7 @@ namespace Backsight.Editor
         /// </summary>
         internal uint PointCount
         {
-            get { return (m_Points==null ? 0 : (uint)m_Points.Count); }
+            get { return (uint)m_Points.Count; }
         }
 
         /// <summary>
@@ -125,6 +155,14 @@ namespace Backsight.Editor
         internal PointFeature FirstPoint
         {
             get { return (PointCount==0 ? null : m_Points[0]); }
+        }
+
+        /// <summary>
+        /// The points that share this node.
+        /// </summary>
+        internal PointFeature[] Points
+        {
+            get { return m_Points.ToArray(); }
         }
     }
 }
