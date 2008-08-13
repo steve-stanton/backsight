@@ -111,8 +111,12 @@ namespace Backsight.Environment.Editor
 
                     if (MessageBox.Show(msg, "Cannot access database", MessageBoxButtons.OKCancel)==DialogResult.Cancel)
                         doClose = true;
-                    else if (OpenDatabase()==null)
-                        doClose = true;
+                    else
+                    {
+                        LastDatabase.ConnectionString = String.Empty;
+                        if (OpenDatabase()==null)
+                            doClose = true;
+                    }
                 }
             }
 

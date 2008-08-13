@@ -85,7 +85,7 @@ namespace Backsight.Environment.Editor
                 cancelButton.Enabled = false;
 
                 // Ensure relevant file is in the working directory
-                string tabFile = GetResourceFile("CreateTables.sql"); 
+                string tabFile = GetResourceFile("CreateTables.sql");
 
                 // Form command line arguments
                 string cs = m_Factory.ConnectionString;
@@ -94,7 +94,7 @@ namespace Backsight.Environment.Editor
                 string dbName = csb.InitialCatalog;
 
                 // Run the command to create database tables
-                string args = String.Format("-S {0} -d {1} -i {2}", serverName, dbName, tabFile);
+                string args = String.Format("-S {0} -d {1} -i \"{2}\"", serverName, dbName, tabFile);
                 batchRunnerControl.RunCommand(this, "sqlcmd", args);
             }
 

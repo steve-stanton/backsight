@@ -197,6 +197,12 @@ namespace Backsight.SqlServer
         private void ProcessWindowsAuthentication()
         {
             userNameTextBox.Enabled = passwordTextBox.Enabled = (!windowsAuthenticationRadioButton.Checked);
+
+            // If the user has just selected Windows authentication, ensure any
+            // previously specified password has been cleared (since some software may
+            // get confused if it contains stuff)
+            if (!passwordTextBox.Enabled)
+                passwordTextBox.Text = String.Empty;
         }
     }
 }
