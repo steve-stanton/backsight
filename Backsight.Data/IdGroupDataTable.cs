@@ -21,6 +21,7 @@ namespace Backsight.Data
     {
         partial class IdGroupDataTable
         {
+            /*
             internal IdGroupRow AddEmptyRow()
             {
                 IdGroupRow result = NewIdGroupRow();
@@ -28,6 +29,7 @@ namespace Backsight.Data
                 AddIdGroupRow(result);
                 return result;
             }
+            */
 
             /// <summary>
             /// Any simple check constraints relating to columns in this table.

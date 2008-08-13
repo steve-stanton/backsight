@@ -46,84 +46,53 @@
     </Compile>
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="EntityTypeDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EntityTypeRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EntityTypeSchemaDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EntityTypeSchemaRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EnvironmentData.cs" />
     <Compile Include="EnvironmentFile.cs" />
     <Compile Include="FontDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FontRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="BacksightDataSet.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IConnection.cs" />
-    <Compile Include="IdAllocationDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="IdFreeDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="IdGroupDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IdGroupRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="LastDatabase.cs" />
     <Compile Include="LayerDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="LayerRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="ZoneRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="PropertyNaming.cs" />
     <Compile Include="PropertyRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SchemaDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SchemaRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SchemaTemplateDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SysIdDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SysIdRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SysIdTableAdapter.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="TemplateDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="TemplateRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="ThemeDataTable.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="ThemeRow.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

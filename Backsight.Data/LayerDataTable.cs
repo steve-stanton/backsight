@@ -21,6 +21,7 @@ namespace Backsight.Data
     {
         partial class LayerDataTable
         {
+            /*
             internal LayerRow AddEmptyRow()
             {
                 LayerRow result = NewLayerRow();
@@ -28,7 +29,7 @@ namespace Backsight.Data
                 AddLayerRow(result);
                 return result;
             }
-
+            */
             /// <summary>
             /// Any simple check constraints relating to columns in this table.
             /// </summary>

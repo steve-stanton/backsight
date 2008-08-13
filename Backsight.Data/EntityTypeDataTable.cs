@@ -21,6 +21,7 @@ namespace Backsight.Data
     {
         partial class EntityTypeDataTable
         {
+            /*
             internal EntityTypeRow AddEmptyRow()
             {
                 EntityTypeRow result = NewEntityTypeRow();
@@ -37,6 +38,7 @@ namespace Backsight.Data
                 AddEntityTypeRow(result);
                 return result;
             }
+             */
 
             /// <summary>
             /// Any simple check constraints relating to columns in this table.

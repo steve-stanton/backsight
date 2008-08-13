@@ -21,6 +21,7 @@ namespace Backsight.Data
     {
         partial class ThemeDataTable
         {
+            /*
             internal ThemeRow AddEmptyRow()
             {
                 ThemeRow result = NewThemeRow();
@@ -28,6 +29,7 @@ namespace Backsight.Data
                 AddThemeRow(result);
                 return result;
             }
+             */
 
             /// <summary>
             /// Any simple check constraints relating to columns in this table.

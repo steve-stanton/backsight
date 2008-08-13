@@ -118,6 +118,7 @@ namespace Backsight.Data
         /// <summary>
         /// Adds rows that should exist in an empty Backsight environment.
         /// </summary>
+        /*
         public void AddInitialRows()
         {
             // Insert initial values for accommodating foreign key constraints
@@ -130,6 +131,7 @@ namespace Backsight.Data
             // And for generating environment-related IDs
             SysId.AddEmptyRow();
         }
+        */
 
         /// <summary>
         /// Returns the data set for the supplied row (expected to be an item in
