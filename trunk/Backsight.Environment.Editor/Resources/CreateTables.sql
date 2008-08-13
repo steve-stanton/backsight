@@ -52,6 +52,7 @@ CREATE TABLE [ced].[EntityTypes]
 	[FontId] [int] NOT NULL,
 	[LayerId] [int] NOT NULL,
 	[GroupId] [int] NOT NULL,
+	[IsLineTrimmed] [char](1) NOT NULL CONSTRAINT DF_EntityTypes_1 DEFAULT ('n'),
 	
 	CONSTRAINT [EntityKey] PRIMARY KEY CLUSTERED ([EntityId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
