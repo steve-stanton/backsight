@@ -67,8 +67,6 @@
     <Compile Include="IdGroupRow.cs">
     </Compile>
     <Compile Include="LastDatabase.cs" />
-    <Compile Include="LayerDataTable.cs">
-    </Compile>
     <Compile Include="LayerRow.cs">
     </Compile>
     <Compile Include="ZoneRow.cs">
@@ -89,8 +87,6 @@
     <Compile Include="TemplateDataTable.cs">
     </Compile>
     <Compile Include="TemplateRow.cs">
-    </Compile>
-    <Compile Include="ThemeDataTable.cs">
     </Compile>
     <Compile Include="ThemeRow.cs">
     </Compile>
