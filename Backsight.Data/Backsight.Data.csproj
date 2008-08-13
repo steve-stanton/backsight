@@ -45,8 +45,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ConnectionWrapper.cs" />
-    <Compile Include="EntityTypeDataTable.cs">
-    </Compile>
     <Compile Include="EntityTypeRow.cs">
     </Compile>
     <Compile Include="EntityTypeSchemaDataTable.cs">
