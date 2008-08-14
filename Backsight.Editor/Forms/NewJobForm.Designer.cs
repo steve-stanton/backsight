@@ -36,12 +36,12 @@ namespace Backsight.Editor.Forms
             this.zoneComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.layerComboBox = new System.Windows.Forms.ComboBox();
-            this.browseButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(185, 174);
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cancelButton.Location = new System.Drawing.Point(185, 173);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -52,7 +52,8 @@ namespace Backsight.Editor.Forms
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(281, 174);
+            this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.saveButton.Location = new System.Drawing.Point(281, 173);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 3;
@@ -65,9 +66,9 @@ namespace Backsight.Editor.Forms
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(15, 126);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 16);
+            this.label1.Size = new System.Drawing.Size(68, 16);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Save As";
+            this.label1.Text = "Job name";
             // 
             // jobNameTextBox
             // 
@@ -75,7 +76,7 @@ namespace Backsight.Editor.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.jobNameTextBox.Location = new System.Drawing.Point(107, 123);
             this.jobNameTextBox.Name = "jobNameTextBox";
-            this.jobNameTextBox.Size = new System.Drawing.Size(318, 22);
+            this.jobNameTextBox.Size = new System.Drawing.Size(413, 22);
             this.jobNameTextBox.TabIndex = 2;
             this.jobNameTextBox.Enter += new System.EventHandler(this.jobNameTextBox_Enter);
             // 
@@ -95,7 +96,7 @@ namespace Backsight.Editor.Forms
             this.zoneComboBox.FormattingEnabled = true;
             this.zoneComboBox.Location = new System.Drawing.Point(108, 23);
             this.zoneComboBox.Name = "zoneComboBox";
-            this.zoneComboBox.Size = new System.Drawing.Size(317, 24);
+            this.zoneComboBox.Size = new System.Drawing.Size(412, 24);
             this.zoneComboBox.TabIndex = 0;
             this.zoneComboBox.SelectedValueChanged += new System.EventHandler(this.zoneComboBox_SelectedValueChanged);
             // 
@@ -115,27 +116,16 @@ namespace Backsight.Editor.Forms
             this.layerComboBox.FormattingEnabled = true;
             this.layerComboBox.Location = new System.Drawing.Point(107, 73);
             this.layerComboBox.Name = "layerComboBox";
-            this.layerComboBox.Size = new System.Drawing.Size(318, 24);
+            this.layerComboBox.Size = new System.Drawing.Size(413, 24);
             this.layerComboBox.TabIndex = 1;
             this.layerComboBox.SelectedValueChanged += new System.EventHandler(this.layerComboBox_SelectedValueChanged);
-            // 
-            // browseButton
-            // 
-            this.browseButton.Location = new System.Drawing.Point(440, 122);
-            this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(75, 23);
-            this.browseButton.TabIndex = 7;
-            this.browseButton.Text = "&Browse...";
-            this.browseButton.UseVisualStyleBackColor = true;
-            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // NewJobForm
             // 
             this.AcceptButton = this.saveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(540, 222);
-            this.Controls.Add(this.browseButton);
+            this.ClientSize = new System.Drawing.Size(547, 226);
             this.Controls.Add(this.layerComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.zoneComboBox);
@@ -145,12 +135,11 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.cancelButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewJobForm";
             this.Text = "Create New Job";
             this.Load += new System.EventHandler(this.NewJobForm_Load);
-            this.Shown += new System.EventHandler(this.NewJobForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,7 +155,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ComboBox zoneComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox layerComboBox;
-        private System.Windows.Forms.Button browseButton;
 
     }
 }

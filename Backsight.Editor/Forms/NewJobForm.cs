@@ -41,7 +41,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The new job file (created when user clicks on OK)
         /// </summary>
-        JobFile m_NewJob;
+        //JobFile m_NewJob;
+
+        /// <summary>
+        /// The newly created job (created when user clicks on OK)
+        /// </summary>
+        Job m_NewJob;
 
         #endregion
 
@@ -75,10 +80,6 @@ namespace Backsight.Editor.Forms
 
             // Load all defined editing layers
             layerComboBox.DataSource = ec.Layers;
-        }
-
-        private void NewJobForm_Shown(object sender, EventArgs e)
-        {
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -116,11 +117,10 @@ namespace Backsight.Editor.Forms
             }
         }
 
-
         /// <summary>
         /// The new job (created when user clicks on Save)
         /// </summary>
-        internal JobFile NewJob
+        internal Job NewJob
         {
             get { return m_NewJob; }
         }
@@ -205,6 +205,7 @@ namespace Backsight.Editor.Forms
                 // just the zone name is also consistent with the naming convention that was utilized
                 // in prehistoric (CEdit) times.
                 //string fileName = String.Format("{0}-{1}{2}", zone.Name, layer.Name, JobFileInfo.TYPE);
+                /*
                 string fileName = String.Format("{0}{1}", zone.Name, JobFileInfo.TYPE);
                 string dirName;
                 string lastMap = Settings.Default.LastMap;
@@ -215,9 +216,12 @@ namespace Backsight.Editor.Forms
                     dirName = Path.GetDirectoryName(lastMap);
 
                 jobNameTextBox.Text = Path.Combine(dirName, fileName);
+                 */
+                jobNameTextBox.Text = zone.Name;
             }
         }
 
+        /*
         private void browseButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dial = new SaveFileDialog();
@@ -234,5 +238,6 @@ namespace Backsight.Editor.Forms
 
             dial.Dispose();
         }
+         */
     }
 }

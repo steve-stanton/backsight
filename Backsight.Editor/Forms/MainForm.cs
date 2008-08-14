@@ -159,6 +159,10 @@ namespace Backsight.Editor.Forms
             // If a model hasn't been obtained, ask
             if (m_Controller.CadastralMapModel==null)
             {
+                StartupForm dial = new StartupForm(this);
+                dial.ShowDialog();
+                dial.Dispose();
+                /*
                 try
                 {
                     if (!OpenFile())
@@ -173,6 +177,7 @@ namespace Backsight.Editor.Forms
                 {
                     MessageBox.Show(ex.Message);
                 }
+                 */
             }
 
             // If we still don't have a model, close
@@ -638,25 +643,21 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
+            GetJob();
+        }
+
+        internal bool GetJob()
+        {
             GetJobForm dial = new GetJobForm();
-            if (dial.ShowDialog() == DialogResult.OK)
+            bool isOk = (dial.ShowDialog() == DialogResult.OK);
+            if (isOk)
             {
                 JobFile jobFile = dial.NewJobFile;
                 m_Controller.OpenJob(jobFile);
                 AddRecentFile(jobFile.Name);
             }
             dial.Dispose();
-
-            /*
-            string name = EditingController.AskForFileName("Create new map");
-            if (name==null)
-                return;
-
-            ModelFileName modelName = new ModelFileName(name);                                
-            m_Controller.Create(modelName);
-            CadastralMapModel.Current.Write(name);
-            AddRecentFile(name);
-             */
+            return isOk;
         }
 
         private bool IsFileOpenEnabled()
@@ -669,7 +670,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             OpenFile();
         }
 
-        bool OpenFile()
+        internal bool OpenFile()
         {
             OpenFileDialog dial = new OpenFileDialog();
             dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
