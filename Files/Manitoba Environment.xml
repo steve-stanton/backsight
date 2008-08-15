@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" standalone="yes"?>
+<?xml version="1.0" standalone="yes"?>
 <MB.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
   <EntityType>
     <EntityId>0</EntityId>
@@ -638,46 +638,6 @@
     <DefaultPolygonId>36</DefaultPolygonId>
     <DefaultTextId>0</DefaultTextId>
   </Layer>
-  <Layer>
-    <LayerId>67</LayerId>
-    <Name>1950</Name>
-    <ThemeId>71</ThemeId>
-    <ThemeSequence>1</ThemeSequence>
-    <DefaultPointId>0</DefaultPointId>
-    <DefaultLineId>0</DefaultLineId>
-    <DefaultPolygonId>0</DefaultPolygonId>
-    <DefaultTextId>0</DefaultTextId>
-  </Layer>
-  <Layer>
-    <LayerId>68</LayerId>
-    <Name>1960</Name>
-    <ThemeId>71</ThemeId>
-    <ThemeSequence>2</ThemeSequence>
-    <DefaultPointId>0</DefaultPointId>
-    <DefaultLineId>0</DefaultLineId>
-    <DefaultPolygonId>0</DefaultPolygonId>
-    <DefaultTextId>0</DefaultTextId>
-  </Layer>
-  <Layer>
-    <LayerId>69</LayerId>
-    <Name>1970</Name>
-    <ThemeId>71</ThemeId>
-    <ThemeSequence>3</ThemeSequence>
-    <DefaultPointId>0</DefaultPointId>
-    <DefaultLineId>0</DefaultLineId>
-    <DefaultPolygonId>0</DefaultPolygonId>
-    <DefaultTextId>0</DefaultTextId>
-  </Layer>
-  <Layer>
-    <LayerId>70</LayerId>
-    <Name>1980</Name>
-    <ThemeId>71</ThemeId>
-    <ThemeSequence>4</ThemeSequence>
-    <DefaultPointId>0</DefaultPointId>
-    <DefaultLineId>0</DefaultLineId>
-    <DefaultPolygonId>0</DefaultPolygonId>
-    <DefaultTextId>0</DefaultTextId>
-  </Layer>
   <SysId>
     <LastId>470</LastId>
   </SysId>
@@ -688,10 +648,6 @@
   <Theme>
     <ThemeId>15</ThemeId>
     <Name>Property</Name>
-  </Theme>
-  <Theme>
-    <ThemeId>71</ThemeId>
-    <Name>Years</Name>
   </Theme>
   <Zone>
     <ZoneId>201</ZoneId>
