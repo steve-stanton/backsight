@@ -1243,6 +1243,14 @@ namespace Backsight.Editor
                 JobFileInfo jfi = new JobFileInfo();
                 jfi.ConnectionString = AdapterFactory.ConnectionString;
                 jfi.JobId = job.JobId;
+
+                // Remember default entity types for points, lines, text, polygons
+                ILayer layer = EnvironmentContainer.FindLayerById(job.LayerId);
+                jfi.DefaultPointType = layer.DefaultPointType.Id;
+                jfi.DefaultLineType = layer.DefaultLineType.Id;
+                jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
+                jfi.DefaultTextType = layer.DefaultTextType.Id;
+
                 jobFile = JobFile.SaveJobFile(dial.FileName, jfi);
 
                 Settings.Default.LastMap = dial.FileName;
