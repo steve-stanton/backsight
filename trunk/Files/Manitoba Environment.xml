@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="yes"?>
+﻿<?xml version="1.0" standalone="yes"?>
 <MB.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
   <EntityType>
     <EntityId>0</EntityId>
@@ -1295,15 +1295,15 @@
   </Zone>
   <Zone>
     <ZoneId>351</ZoneId>
-    <Name>08-01-W1á</Name>
+    <Name>08-01-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>352</ZoneId>
-    <Name>09-01-W1á</Name>
+    <Name>09-01-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>353</ZoneId>
-    <Name>10-01-W1á </Name>
+    <Name>10-01-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>354</ZoneId>
@@ -1319,23 +1319,23 @@
   </Zone>
   <Zone>
     <ZoneId>357</ZoneId>
-    <Name>07-02-W1á</Name>
+    <Name>07-02-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>358</ZoneId>
-    <Name>08-02-W1á</Name>
+    <Name>08-02-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>359</ZoneId>
-    <Name>09-02-W1á</Name>
+    <Name>09-02-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>360</ZoneId>
-    <Name>10-02-W1á </Name>
+    <Name>10-02-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>361</ZoneId>
-    <Name>11-02-W1á </Name>
+    <Name>11-02-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>362</ZoneId>
@@ -1351,7 +1351,7 @@
   </Zone>
   <Zone>
     <ZoneId>365</ZoneId>
-    <Name>11-03-W1á</Name>
+    <Name>11-03-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>366</ZoneId>
@@ -1475,7 +1475,7 @@
   </Zone>
   <Zone>
     <ZoneId>396</ZoneId>
-    <Name>15-18-W1á</Name>
+    <Name>15-18-W1</Name>
   </Zone>
   <Zone>
     <ZoneId>397</ZoneId>
@@ -1627,27 +1627,27 @@
   </Zone>
   <Zone>
     <ZoneId>434</ZoneId>
-    <Name>East of Red-1á</Name>
+    <Name>East of Red-1</Name>
   </Zone>
   <Zone>
     <ZoneId>435</ZoneId>
-    <Name>East of Red-2á</Name>
+    <Name>East of Red-2</Name>
   </Zone>
   <Zone>
     <ZoneId>436</ZoneId>
-    <Name>East of Red-3á</Name>
+    <Name>East of Red-3</Name>
   </Zone>
   <Zone>
     <ZoneId>437</ZoneId>
-    <Name>West of Red-2á</Name>
+    <Name>West of Red-2</Name>
   </Zone>
   <Zone>
     <ZoneId>438</ZoneId>
-    <Name>West of Red-3á</Name>
+    <Name>West of Red-3</Name>
   </Zone>
   <Zone>
     <ZoneId>439</ZoneId>
-    <Name>West of Red-4á</Name>
+    <Name>West of Red-4</Name>
   </Zone>
   <Zone>
     <ZoneId>440</ZoneId>
