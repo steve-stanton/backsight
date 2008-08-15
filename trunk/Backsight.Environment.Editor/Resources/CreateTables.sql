@@ -350,7 +350,7 @@ BEGIN
 PRINT 'CREATE TABLE Zones';
 CREATE TABLE [ced].[Zones]
 (
-	[ZoneId] [int] IDENTITY(1,1) NOT NULL,
+	[ZoneId] [int] NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	
 	CONSTRAINT [PK_Zones] PRIMARY KEY CLUSTERED ([ZoneId] ASC)
