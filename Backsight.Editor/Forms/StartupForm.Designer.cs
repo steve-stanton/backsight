@@ -30,43 +30,29 @@ namespace Backsight.Editor.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.switchButton = new System.Windows.Forms.Button();
             this.openFileButton = new System.Windows.Forms.Button();
             this.newJobButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lastDatabaseLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.databaseButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.switchButton);
             this.groupBox1.Controls.Add(this.openFileButton);
             this.groupBox1.Controls.Add(this.newJobButton);
             this.groupBox1.Controls.Add(this.exitButton);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(314, 211);
+            this.groupBox1.Size = new System.Drawing.Size(314, 171);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "What do you want to do?";
-            // 
-            // switchButton
-            // 
-            this.switchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.switchButton.Location = new System.Drawing.Point(32, 120);
-            this.switchButton.Name = "switchButton";
-            this.switchButton.Size = new System.Drawing.Size(256, 25);
-            this.switchButton.TabIndex = 8;
-            this.switchButton.TabStop = false;
-            this.switchButton.Text = "Switch to another &database";
-            this.toolTip.SetToolTip(this.switchButton, "Specify connection settings for another database");
-            this.switchButton.UseVisualStyleBackColor = true;
-            this.switchButton.Click += new System.EventHandler(this.switchButton_Click);
             // 
             // openFileButton
             // 
@@ -84,21 +70,21 @@ namespace Backsight.Editor.Forms
             // newJobButton
             // 
             this.newJobButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.newJobButton.Location = new System.Drawing.Point(32, 78);
+            this.newJobButton.Location = new System.Drawing.Point(32, 79);
             this.newJobButton.Name = "newJobButton";
             this.newJobButton.Size = new System.Drawing.Size(256, 25);
             this.newJobButton.TabIndex = 6;
             this.newJobButton.TabStop = false;
             this.newJobButton.Text = "List &all registered jobs";
             this.toolTip.SetToolTip(this.newJobButton, "Look at all jobs that have been registered in the database (with option to create" +
-        " new jobs)");
+                    " new jobs)");
             this.newJobButton.UseVisualStyleBackColor = true;
             this.newJobButton.Click += new System.EventHandler(this.newJobButton_Click);
             // 
             // exitButton
             // 
             this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exitButton.Location = new System.Drawing.Point(32, 162);
+            this.exitButton.Location = new System.Drawing.Point(32, 122);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(256, 25);
             this.exitButton.TabIndex = 5;
@@ -112,7 +98,7 @@ namespace Backsight.Editor.Forms
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lastDatabaseLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 264);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 227);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(344, 22);
             this.statusStrip1.SizingGrip = false;
@@ -122,14 +108,29 @@ namespace Backsight.Editor.Forms
             // lastDatabaseLabel
             // 
             this.lastDatabaseLabel.Name = "lastDatabaseLabel";
-            this.lastDatabaseLabel.Size = new System.Drawing.Size(116, 17);
+            this.lastDatabaseLabel.Size = new System.Drawing.Size(100, 17);
             this.lastDatabaseLabel.Text = "Database unknown";
+            // 
+            // databaseButton
+            // 
+            this.databaseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.databaseButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.databaseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.databaseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.databaseButton.Location = new System.Drawing.Point(281, 227);
+            this.databaseButton.Name = "databaseButton";
+            this.databaseButton.Size = new System.Drawing.Size(63, 22);
+            this.databaseButton.TabIndex = 6;
+            this.databaseButton.Text = "Change...";
+            this.databaseButton.UseVisualStyleBackColor = true;
+            this.databaseButton.Click += new System.EventHandler(this.databaseButton_Click);
             // 
             // StartupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 286);
+            this.ClientSize = new System.Drawing.Size(344, 249);
+            this.Controls.Add(this.databaseButton);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -153,8 +154,8 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.Button newJobButton;
         private System.Windows.Forms.Button openFileButton;
-        private System.Windows.Forms.Button switchButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel lastDatabaseLabel;
+        private System.Windows.Forms.Button databaseButton;
     }
 }

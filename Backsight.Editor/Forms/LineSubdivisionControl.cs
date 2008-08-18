@@ -75,7 +75,7 @@ namespace Backsight.Editor.Forms
 
             if (op!=null)
             {
-                MeasuredLineFeature[] sections = op.FirstFace.Sections;
+                MeasuredLineFeature[] sections = op.Sections;
                 m_Distances = new List<Distance>(sections.Length);
                 foreach (MeasuredLineFeature s in sections)
                     m_Distances.Add(new Distance(s.ObservedLength));
@@ -139,8 +139,8 @@ namespace Backsight.Editor.Forms
             try
             {
                 op = new LineSubdivisionOperation(m_Line);
-                op.AddDistances(m_Distances);
-                op.Execute();
+                //op.AddDistances(m_Distances);
+                op.Execute(m_Distances);
                 return true;
             }
 

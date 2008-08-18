@@ -87,7 +87,7 @@ namespace Backsight.Editor.Forms
             }
         }
 
-        private void switchButton_Click(object sender, EventArgs e)
+        private void databaseButton_Click(object sender, EventArgs e)
         {
             ConnectionForm dial = new ConnectionForm();
             if (dial.ShowDialog() == DialogResult.OK)
