@@ -15,62 +15,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="23-OCT-1997" />
-    /// <change by="Steve Stanton" on="27-MAR-2002" why="Significant changes to accommodate secondary faces." />
     /// <summary>
     /// Operation to subdivide a line.
     /// </summary>
-    /// <remarks>
-    ///	When you subdivide a line that has the same base layer as the active editing layer,
-    ///	sections get created for each observed distance, and the original line gets de-activated.
-    ///
-    ///	Things get more complicated if the editing layer is derived from the line's base layer.
-    ///	For example, suppose the line that's getting subdivided is on layers 1 through 5 (where
-    ///	layer 1 is the base theme), but the editing layer is #2. In that case, the resultant
-    ///	sections relate only to layers 2-5. The original line is modified to refer only to
-    /// layer 1 (i.e. the portion of the theme hierarchy that did not get subdivided). Like this:
-    ///
-    ///	-------	Original line relates to 1-5
-    ///     
-    ///	Edit on layer 2 produces:
-    ///
-    ///  ------- Original line now relates only to layer 1
-    ///  ---X--- Two sections relating to layers 2-5
-    ///
-    ///	If you then change the editing layer to #1, you will only see the line that relates to
-    ///	layer#1, and you are at liberty to subdivide that too. In that scenario, the subdivision
-    ///	relates only to layer#1. The fact that the original line got subdivided on a derived
-    ///	layer is irrelevant.
-    ///
-    ///	Now suppose you change the editing layer to #5. The line on layer 1 will be invisible,
-    ///	but you will see the two sections that are shared by layers 2-5. At that stage, you decide
-    ///	to add a second face (which you can do via the update dialog). When you do that, additional
-    ///	sections get created that relate only to layer 5. Unlike the initially created sections,
-    ///	sections on a secondary face are marked as non-topological. The sections are only produced
-    ///	because concrete features must exist in order to annotate them with the associated distance
-    ///	(the sections are also assigned a "void" status, which means they are not meant to get written
-    ///	upon export to something like an AutoCad file). So what you have now looks like this:
-    ///
-    ///  ------- Line relating to layer 1
-    ///	---X--- Two sections relating to layer 2-5 (primary face)
-    ///  -X---X- Additional face for layer 5
-    ///
-    ///	Now change the editing layer to layer 3. Since the additional face was created on layer 5,
-    ///	it will not be apparent. So you can go on to define a secondary face once more. In that case,
-    ///	it might be acceptable to reference the secondary sections to layers 3-5. However, since
-    ///	layer 5 already has an invisible second face, it seems more sensible to restrict them to layers
-    ///	3-4. The end result will therefore consist of the following:
-    ///
-    ///  ------- Line relating to layer 1
-    ///	---X--- Two sections relating to layers 2-5 (primary face)
-    ///  --X---- Additional face for layers 3-4
-    ///  -X---X- Additional face for layer 5
-    /// </remarks>
     class LineSubdivisionOperation : Operation
     {
         #region Class data
@@ -81,13 +35,9 @@ namespace Backsight.Editor.Operations
         LineFeature m_Line; // readonly
 
         /// <summary>
-        /// The face(s) for the subdivided line. It is anticipated that there will usually be
-        /// only one face. You need two faces when dealing with "staggered" property lots,
-        /// so long as the 2nd face refers to the same editing layers as the primary face.
-        /// You need more than two faces if you have a "complex" staggered property lot,
-        /// where the staggering is different on different layers within a mapping theme.
+        /// The sections of the subdivided line.
         /// </summary>
-        IPossibleList<LineSubdivisionFace> m_Faces;
+        List<MeasuredLineFeature> m_Sections;
 
         #endregion
 
@@ -99,7 +49,7 @@ namespace Backsight.Editor.Operations
         public LineSubdivisionOperation()
         {
             m_Line = null;
-            m_Faces = null;
+            m_Sections = null;
         }
 
         /// <summary>
@@ -110,7 +60,7 @@ namespace Backsight.Editor.Operations
             : base()
         {
             m_Line = line;
-            m_Faces = null;
+            m_Sections = null;
         }
 
         #endregion
@@ -123,11 +73,6 @@ namespace Backsight.Editor.Operations
             get { return m_Line; }
         }
 
-        internal bool IsMultiFace
-        {
-            get { return (m_Faces.Count>1); }
-        }
-
         /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
@@ -137,66 +82,37 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds the distance observations for one face of the subdivided line. If any
-        /// distances are already defined, the distances relate to an additional face.
-        /// <para/>
-        /// This method should be called only ONCE prior to a call to <c>Execute</c>.
-        /// Additional faces are defined via the update mechanism, which ends up calling
-        /// <c>Rollforward</c>
+        /// Execute line subdivision.
         /// </summary>
-        /// <param name="distances">The distance observations</param>
-        /// <returns>
-        /// True if distances added. False if the number of distances is less than 2.
-        /// </returns>
-        internal bool AddDistances(List<Distance> distances)
+        internal void Execute(List<Distance> distances)
         {
             // Must have at least two distances
-            if (distances==null)
+            if (distances == null)
                 throw new ArgumentNullException();
 
-            if (distances.Count<2)
+            if (distances.Count < 2)
                 throw new ArgumentException();
 
-            LineSubdivisionFace face = new LineSubdivisionFace(distances);
-            m_Faces = (m_Faces==null ? face : m_Faces.Add(face));
-            return true;
-        }
-
-        /// <summary>
-        /// Execute line subdivision. This should be called only to process the initial
-        /// subdivision of a line. Any subsequent faces are handled via <c>Rollfoward</c>
-        /// </summary>
-        internal void Execute()
-        {
-            // Must only be one face
-            if (NumFace>1)
-                throw new InvalidOperationException("Attempt to add multiple faces during initial line subdivision.");
-
-            // There has to be at least 2 distances
-            if (NumFace==0)
-                throw new InvalidOperationException("Distance observation have not been assigned.");
-
-            LineSubdivisionFace face = m_Faces[0];
-            if (face.Sections.Length<2)
-                throw new InvalidOperationException("Line subdivision needs at least 2 observed distances.");
+            m_Sections = new List<MeasuredLineFeature>(distances.Count);
+            foreach (Distance d in distances)
+                m_Sections.Add(new MeasuredLineFeature(null, d));
 
             // Adjust the observed distances
-            double[] adjray = Adjust(face);
+            double[] adjray = Adjust();
 
             // If the active editing layer is derived from the subdivided line's base layer,...
-	        //CeSubTheme* pSubTheme = GetSubTheme(*m_pArc);
+            //CeSubTheme* pSubTheme = GetSubTheme(*m_pArc);
 
             // Create line sections
-            MeasuredLineFeature[] sections = face.Sections;
-	        double edist=0.0;		// Distance to end of section.
+            double edist = 0.0;		// Distance to end of section.
             PointFeature start = m_Line.StartPoint;
 
-        	for (int i=0; i<adjray.Length; i++)
-	        {
-		        edist += adjray[i];
-                sections[i].Line = MakeSection(start, edist);
-                start = sections[i].Line.EndPoint;
-	        }
+            for (int i = 0; i < adjray.Length; i++)
+            {
+                edist += adjray[i];
+                m_Sections[i].Line = MakeSection(start, edist);
+                start = m_Sections[i].Line.EndPoint;
+            }
 
             // De-activate the parent line
             m_Line.IsInactive = true;
@@ -205,19 +121,95 @@ namespace Backsight.Editor.Operations
             Complete();
         }
 
-        int NumFace
+        /// <summary>
+        /// Adjusts the observed distances for a line subdivision
+        /// </summary>
+        /// <returns>The adjusted distances (in meters) for each observed distance</returns>
+        double[] Adjust()
         {
-            get { return (m_Faces==null ? 0 : m_Faces.Count); }
+            ILength length = m_Line.Length;
+
+            // Stash the observed distances into the results array. Denote
+            // any fixed distances by negating the observed distance.
+            double[] result = new double[m_Sections.Count];
+            int nFix = 0;
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                Distance d = m_Sections[i].ObservedLength;
+                double m = d.Meters;
+
+                // Confirm that the distance is valid.
+                if (m <= 0.0)
+                    throw new Exception("Observed distances must be greater than 0.");
+
+                // If distance is fixed, hold it as a negated value.
+                if (d.IsFixed)
+                {
+                    nFix++;
+                    m = -m;
+                }
+
+                result[i] = m;
+            }
+
+            // Confirm we have at least one un-fixed distance.
+            if (nFix == m_Sections.Count)
+                throw new InvalidOperationException("All distances have been fixed. Cannot adjust.");
+
+            // Do the adjustment.
+            if (!Adjust(result, length.Meters))
+                throw new Exception("Unable to adjust observed lengths");
+
+            return result;
         }
 
         /// <summary>
-        /// Adjusts the observed distances for a line subdivision face.
+        /// Adjusts a set of distances so that they fit a specific length.
         /// </summary>
-        /// <param name="face">The face to adjust</param>
-        /// <returns>The adjusted distances (in meters) for each observed distance</returns>
-        double[] Adjust(LineSubdivisionFace face)
+        /// <param name="da">Array of input distances (in the same units as <paramref name="length"/>).
+        /// Any fixed distances in the list must be denoted using a negated value.</param>
+        /// <param name="length">The distance to fit to</param>
+        /// <returns>True if distances adjusted ok. False if all distances were fixed.</returns>
+        bool Adjust(double[] da, double length)
         {
-            return face.GetAdjustedLengths(m_Line.Length);
+            // Accumulate the total observed distance, and the total
+            // fixed distance.
+
+            double totobs = 0.0;
+            double totfix = 0.0;
+
+            foreach (double d in da)
+            {
+                if (d < 0.0)
+                {
+                    totfix -= d; // i.e. add
+                    totobs -= d;
+                }
+                else
+                    totobs += d;
+            }
+
+            double diff = length - totobs;	// How much are we out?
+            double play = totobs - totfix;	// How much do we have to play with?
+
+            // Confirm we have something to play with.
+            if (play < Double.Epsilon)
+                return false;
+
+            // Calculate the adjustment factor
+            double factor = (play + diff) / play;
+
+            // Generate adjusted distances.
+            for (int i = 0; i < da.Length; i++)
+            {
+                if (da[i] < 0.0)
+                    da[i] = -da[i];
+                else
+                    da[i] *= factor;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -227,16 +219,13 @@ namespace Backsight.Editor.Operations
         /// <returns>The corresponding distance (null if not found)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            if (line==null || m_Faces==null)
+            if (line==null || m_Sections==null)
                 return null;
 
-            foreach (LineSubdivisionFace face in m_Faces)
+            foreach (MeasuredLineFeature mf in m_Sections)
             {
-                foreach (MeasuredLineFeature mf in face.Sections)
-                {
-                    if (Object.ReferenceEquals(mf.Line, line))
-                        return mf.ObservedLength;
-                }
+                if (Object.ReferenceEquals(mf.Line, line))
+                    return mf.ObservedLength;
             }
 
             return null;
@@ -249,24 +238,20 @@ namespace Backsight.Editor.Operations
         {
             get
             {
-                if (m_Faces==null)
+                if (m_Sections==null)
                     return new Feature[0];
 
-                List<Feature> result = new List<Feature>(100);
+                List<Feature> result = new List<Feature>(m_Sections.Count);
 
-                foreach (LineSubdivisionFace face in m_Faces)
+                foreach (MeasuredLineFeature mf in m_Sections)
                 {
-                    foreach (MeasuredLineFeature mf in face.Sections)
-                    {
-                        result.Add(mf.Line);
+                    result.Add(mf.Line);
 
-                        // If the point feature at the end of the section was created
-                        // by this op, append that too. Take care to avoid any
-                        // duplicates in situations where more than one face is involved.
-                        PointFeature pf = mf.Line.EndPoint;
-                        if (pf.Creator == this && !result.Contains(pf))
-                            result.Add(pf);
-                    }
+                    // If the point feature at the end of the section was created
+                    // by this op, append that too.
+                    PointFeature pf = mf.Line.EndPoint;
+                    if (pf.Creator == this)
+                        result.Add(pf);
                 }
 
                 return result.ToArray();
@@ -282,8 +267,8 @@ namespace Backsight.Editor.Operations
         {
             m_Line.AddOp(this);
 
-            foreach (LineSubdivisionFace face in m_Faces)
-                face.AddReferences(this);
+            foreach (MeasuredLineFeature m in m_Sections)
+                m.ObservedLength.AddReferences(this);
         }
 
         /// <summary>
@@ -296,14 +281,19 @@ namespace Backsight.Editor.Operations
 
             m_Line.CutOp(this);
 
-            // Process each face. Do it in reverse order, just in case
-            // subsequently created faces have some sort of dependency
-            // on the earlier faces.
-            int nFace = m_Faces.Count;
-            for (int i=nFace-1; i>=0; i--)
+            // Go through each section we created, marking each one as
+            // deleted. Also mark the point features at the start of each
+            // section, so long as it was created by this operation (should
+            // do nothing for the 1st section).
+
+            foreach (MeasuredLineFeature m in m_Sections)
             {
-                LineSubdivisionFace face = m_Faces[i];
-                face.Undo(this);
+                LineFeature line = m.Line;
+                line.Undo();
+
+                PointFeature point = line.StartPoint;
+                if (Object.ReferenceEquals(point.Creator, this))
+                    point.Undo();
             }
 
             // Restore the original line
@@ -321,8 +311,31 @@ namespace Backsight.Editor.Operations
             if (!IsChanged)
                 return base.OnRollforward();
 
-            foreach (LineSubdivisionFace face in m_Faces)
-                face.Rollforward(this);
+            // How many distances (it's at least 2).
+            int ndist = m_Sections.Count;
+
+            // Adjust the observed distances
+            double[] adjray = Adjust();
+            Debug.Assert(adjray.Length == m_Sections.Count);
+
+            double edist = 0.0; // Distance to end of section.
+
+            // Adjust the position of the end of each section (except the last one).
+            for (int i = 0; i < (adjray.Length - 1); i++)
+            {
+                // Get the distance from the start of the parent line.
+                edist += adjray[i];
+
+                // Get a position on the parent that is that distance along the line.
+                // It shouldn't fail.
+                IPosition to;
+                if (!m_Line.LineGeometry.GetPosition(new Length(edist), out to))
+                    throw new RollforwardException(this, "Cannot adjust line section");
+
+                // Move the point at the end of the section
+                MeasuredLineFeature section = m_Sections[i];
+                section.Line.EndPoint.Move(to);
+            }
 
             // Rollforward the base class.
             return base.OnRollforward();
@@ -385,11 +398,11 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The first face
+        /// The line sections associated with this subdivision
         /// </summary>
-        internal LineSubdivisionFace FirstFace
+        internal MeasuredLineFeature[] Sections
         {
-            get { return m_Faces[0]; }
+            get { return m_Sections.ToArray(); }
         }
 
         /// <summary>
@@ -401,15 +414,7 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Line", m_Line);
-
-            // TODO: The structure here is a bit weak. Needs to be revisited.
-            /*
-            LineSubdivisionFace[] faces = new LineSubdivisionFace[m_Faces.Count];
-            for (int i=0; i<faces.Length; i++)
-                faces[i] = m_Faces[i];
-
-            writer.WriteArray("FaceArray", "Face", faces);
-             */
+            writer.WriteArray("SectionArray", "Section", m_Sections.ToArray());
         }
 
         /// <summary>
@@ -421,17 +426,9 @@ namespace Backsight.Editor.Operations
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
-
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-
-            /*
-            LineSubdivisionFace[] faces = reader.ReadArray<LineSubdivisionFace>("FaceArray", "Face");
-
-            if (faces.Length==1)
-                m_Faces = faces[0];
-            else
-                m_Faces = new BasicList<LineSubdivisionFace>(faces);
-             */
+            MeasuredLineFeature[] sections = reader.ReadArray<MeasuredLineFeature>("SectionArray", "Section");
+            m_Sections = new List<MeasuredLineFeature>(sections);
         }
     }
 }
