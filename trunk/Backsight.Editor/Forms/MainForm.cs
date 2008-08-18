@@ -137,9 +137,16 @@ namespace Backsight.Editor.Forms
                 finally
                 {
                     sw.Stop();
-                    ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
                     Trace.Listeners.Remove(trace);
                     SplashScreen ss = SplashScreen.SplashForm;
+
+                    // If the splash screen has been displayed for less than two seconds, WAIT (block
+                    // this thread!)
+                    int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
+                    if (ss!=null && waitTime > 0)
+                        System.Threading.Thread.Sleep(waitTime);
+
+                    ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
                     SplashScreen.CloseForm();
 
                     if (jf!=null && ss!=null)
