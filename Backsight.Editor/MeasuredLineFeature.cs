@@ -21,7 +21,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Association between a measurement (observed length) and a line feature.
     /// </summary>
-    class MeasuredLineFeature : IXmlContent
+    class MeasuredLineFeature
     {
         #region Class data
 
@@ -77,30 +77,6 @@ namespace Backsight.Editor
         internal Distance ObservedLength
         {
             get { return m_ObservedLength; }
-        }
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteElement("Line", m_Line);
-            writer.WriteElement("Distance", m_ObservedLength);
-        }
-
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public void ReadContent(XmlContentReader reader)
-        {
-            m_Line = reader.ReadElement<LineFeature>("Line");
-            m_ObservedLength = reader.ReadElement<Distance>("Distance");
         }
     }
 }

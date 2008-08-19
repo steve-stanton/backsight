@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
         /// this constructor should always remain private.</note>
-        private LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
+        internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
             : base(e, creator)
         {
             if (g==null)

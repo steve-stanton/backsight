@@ -569,7 +569,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that has just been created</param>
         /// <param name="fd">Information to assign to the created point</param>
-        void InitializeFeature(Feature f, FeatureData fd)
+        internal void InitializeFeature(Feature f, FeatureData fd)
         {
             // Ensure the created feature has the expected session item number
             f.CreatorSequence = fd.CreationSequence;

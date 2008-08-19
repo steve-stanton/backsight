@@ -589,7 +589,6 @@
     <Compile Include="NewLineUI.cs" />
     <Compile Include="OperationFlag.cs" />
     <Compile Include="Operations\LineSubdivisionOperation.cs" />
-    <Compile Include="Operations\LineSubdivisionFace.cs" />
     <Compile Include="Operations\NewLineOperation.cs" />
     <Compile Include="Operations\ParallelOperation.cs" />
     <Compile Include="Orientation.cs" />
