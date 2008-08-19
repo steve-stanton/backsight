@@ -140,7 +140,7 @@ namespace Backsight.Editor.Forms
             {
                 op = new LineSubdivisionOperation(m_Line);
                 //op.AddDistances(m_Distances);
-                op.Execute(m_Distances);
+                op.Execute(m_Distances.ToArray());
                 return true;
             }
 
@@ -260,12 +260,10 @@ namespace Backsight.Editor.Forms
                 return null;
 
             // Get adjusted lengths for each section (on the map projection, not the ground)
-            LineSubdivisionFace face = new LineSubdivisionFace(m_Distances);
-            ILength mapLen = m_Line.Length;
-            double[] lens = face.GetAdjustedLengths(mapLen);
+            double[] lens = LineSubdivisionOperation.GetAdjustedLengths(m_Line, m_Distances.ToArray()); 
 
             List<IPosition> pts = new List<IPosition>(lens.Length);
-            double tot = (m_FromStart ? 0.0 : mapLen.Meters);
+            double tot = (m_FromStart ? 0.0 : m_Line.Length.Meters);
 
             foreach (double d in lens)
             {

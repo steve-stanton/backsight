@@ -84,24 +84,21 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Execute line subdivision.
         /// </summary>
-        internal void Execute(List<Distance> distances)
+        internal void Execute(Distance[] distances)
         {
             // Must have at least two distances
             if (distances == null)
                 throw new ArgumentNullException();
 
-            if (distances.Count < 2)
+            if (distances.Length < 2)
                 throw new ArgumentException();
 
-            m_Sections = new List<MeasuredLineFeature>(distances.Count);
+            m_Sections = new List<MeasuredLineFeature>(distances.Length);
             foreach (Distance d in distances)
                 m_Sections.Add(new MeasuredLineFeature(null, d));
 
             // Adjust the observed distances
-            double[] adjray = Adjust();
-
-            // If the active editing layer is derived from the subdivided line's base layer,...
-            //CeSubTheme* pSubTheme = GetSubTheme(*m_pArc);
+            double[] adjray = GetAdjustedLengths(m_Line, distances);
 
             // Create line sections
             double edist = 0.0;		// Distance to end of section.
@@ -122,21 +119,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adjusts the observed distances for a line subdivision
+        /// Adjusts a set of distances so that they fit the length of a line.
         /// </summary>
-        /// <returns>The adjusted distances (in meters) for each observed distance</returns>
-        double[] Adjust()
+        /// <param name="line">The line defining the required total distance</param>
+        /// <param name="distances">The observed distances</param>
+        /// <returns>The adjusted lengths (in meters).</returns>
+        /// <exception cref="Exception">If any observed distance is less than or equal to zero</exception>
+        /// <exception cref="InvalidOperationException">If all distances are tagged as fixed</exception>
+        internal static double[] GetAdjustedLengths(LineFeature line, Distance[] distances)
         {
-            ILength length = m_Line.Length;
+            ILength length = line.Length;
 
             // Stash the observed distances into the results array. Denote
             // any fixed distances by negating the observed distance.
-            double[] result = new double[m_Sections.Count];
+            double[] result = new double[distances.Length];
             int nFix = 0;
 
             for (int i = 0; i < result.Length; i++)
             {
-                Distance d = m_Sections[i].ObservedLength;
+                Distance d = distances[i];
                 double m = d.Meters;
 
                 // Confirm that the distance is valid.
@@ -154,7 +155,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Confirm we have at least one un-fixed distance.
-            if (nFix == m_Sections.Count)
+            if (nFix == distances.Length)
                 throw new InvalidOperationException("All distances have been fixed. Cannot adjust.");
 
             // Do the adjustment.
@@ -171,7 +172,7 @@ namespace Backsight.Editor.Operations
         /// Any fixed distances in the list must be denoted using a negated value.</param>
         /// <param name="length">The distance to fit to</param>
         /// <returns>True if distances adjusted ok. False if all distances were fixed.</returns>
-        bool Adjust(double[] da, double length)
+        static bool Adjust(double[] da, double length)
         {
             // Accumulate the total observed distance, and the total
             // fixed distance.
@@ -302,6 +303,23 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Obtains the distance observations associated with this operation.
+        /// </summary>
+        /// <returns>The distances attached to each line section</returns>
+        List<Distance> GetDistances()
+        {
+            if (m_Sections==null)
+                return new List<Distance>();
+
+            List<Distance> result = new List<Distance>(m_Sections.Count);
+
+            foreach (MeasuredLineFeature mf in m_Sections)
+                result.Add(mf.ObservedLength);
+
+            return result;
+        }
+
+        /// <summary>
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
         /// <returns>True if operation has been re-executed successfully</returns>
@@ -315,7 +333,8 @@ namespace Backsight.Editor.Operations
             int ndist = m_Sections.Count;
 
             // Adjust the observed distances
-            double[] adjray = Adjust();
+            List<Distance> distances = GetDistances();
+            double[] adjray = GetAdjustedLengths(m_Line, distances.ToArray());
             Debug.Assert(adjray.Length == m_Sections.Count);
 
             double edist = 0.0; // Distance to end of section.
@@ -356,7 +375,6 @@ namespace Backsight.Editor.Operations
         {
             SectionGeometry section = AddSection(start, edist);
             LineFeature newLine = m_Line.MakeSubSection(section, this);
-            //MapModel.EditingIndex.Add(newLine);
             return newLine;
         }
 
@@ -414,7 +432,16 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Line", m_Line);
-            writer.WriteArray("SectionArray", "Section", m_Sections.ToArray());
+            writer.WriteArray("DistanceArray", "Distance", GetDistances().ToArray());
+
+            // The created sections carry over the entity type and ID of the parent line.
+            // So the only thing we really need is info about the point features at
+            // the end of each span.
+            LineData[] spans = new LineData[m_Sections.Count];
+            for (int i=0; i<spans.Length; i++)
+                spans[i] = new LineData(m_Sections[i].Line);
+
+            writer.WriteArray("SectionArray", "Section", spans);
         }
 
         /// <summary>
@@ -427,8 +454,42 @@ namespace Backsight.Editor.Operations
         {
             base.ReadContent(reader);
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            MeasuredLineFeature[] sections = reader.ReadArray<MeasuredLineFeature>("SectionArray", "Section");
-            m_Sections = new List<MeasuredLineFeature>(sections);
+            Distance[] distances = reader.ReadArray<Distance>("DistanceArray", "Distance");
+            LineData[] spans = reader.ReadArray<LineData>("SectionArray", "Section");
+
+            // Adjust the observed distances
+            double[] adjray = GetAdjustedLengths(m_Line, distances);
+
+            // Create line sections
+            m_Sections = new List<MeasuredLineFeature>(distances.Length);
+            double edist = 0.0;		// Distance to end of section.
+            PointFeature start = m_Line.StartPoint;
+            for (int i = 0; i < adjray.Length; i++)
+            {
+                // Calculate the position at the end of the span
+                edist += adjray[i];
+                IPosition to;
+                if (!m_Line.LineGeometry.GetPosition(new Length(edist), out to))
+                    throw new Exception("Cannot adjust line section");
+
+                // Get the point feature at the end of the span
+                LineData span = spans[i];
+                PointFeature end = span.GetToPoint(reader, to);
+
+                // Create the section
+                SectionGeometry geom = new SectionGeometry(m_Line, start, end);
+                LineFeature section = m_Line.MakeSubSection(geom, this);
+                //LineFeature section = new LineFeature(span.EntityType, this, start, end, geom);
+                reader.InitializeFeature(section, span);
+                MeasuredLineFeature mf = new MeasuredLineFeature(section, distances[i]);
+                m_Sections.Add(mf);
+
+                // The end of the current span is the start of the next one
+                start = end;
+            }
+
+            // De-activate the parent line
+            m_Line.IsInactive = true;
         }
     }
 }
