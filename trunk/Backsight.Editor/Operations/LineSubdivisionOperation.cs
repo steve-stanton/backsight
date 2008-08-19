@@ -100,6 +100,10 @@ namespace Backsight.Editor.Operations
             // Adjust the observed distances
             double[] adjray = GetAdjustedLengths(m_Line, distances);
 
+            // Get the point features at the end of each section (we'll
+            // add the lines afterwards)
+            PointFeature[] endPoints = new PointFeature[m_Sections.Count];
+
             // Create line sections
             double edist = 0.0;		// Distance to end of section.
             PointFeature start = m_Line.StartPoint;
@@ -391,6 +395,21 @@ namespace Backsight.Editor.Operations
         /// <returns>The new section.</returns>
         SectionGeometry AddSection(PointFeature start, double edist)
         {
+            PointFeature ept = AddSectionEndPoint(start, edist);
+            SectionGeometry section = new SectionGeometry(m_Line, start, ept);
+            return section;
+        }
+
+        /// <summary>
+        /// Creates the point feature at the end of a subdivision section.
+        /// </summary>
+        /// <param name="start">The point at the start of the section</param>
+        /// <param name="edist">Distance from the start of the parent line to the end
+        /// of the section.</param>
+        /// <returns>The point at the end of the section (may be a previously
+        /// existing point)</returns>
+        PointFeature AddSectionEndPoint(PointFeature start, double edist)
+        {
             CadastralMapModel map = CadastralMapModel.Current;
 
             // Get the position for the end point.
@@ -402,17 +421,16 @@ namespace Backsight.Editor.Operations
             // did not previously exist, reference them to THIS operation.
 
             PointFeature ept = (end as PointFeature);
-            if (ept==null)
+            if (ept == null)
                 ept = (map.Index.QueryClosest(end, Length.Zero, SpatialType.Point) as PointFeature);
 
-            if (ept==null)
+            if (ept == null)
             {
                 ept = map.AddPoint(end, map.DefaultPointType, this);
                 ept.SetNextId();
             }
 
-            SectionGeometry section = new SectionGeometry(m_Line, start, ept);
-            return section;
+            return ept;
         }
 
         /// <summary>
@@ -436,7 +454,10 @@ namespace Backsight.Editor.Operations
 
             // The created sections carry over the entity type and ID of the parent line.
             // So the only thing we really need is info about the point features at
-            // the end of each span.
+            // the end of each span... but this assumes that the created line sections
+            // have item sequence numbers in a specific range.
+
+
             LineData[] spans = new LineData[m_Sections.Count];
             for (int i=0; i<spans.Length; i++)
                 spans[i] = new LineData(m_Sections[i].Line);
