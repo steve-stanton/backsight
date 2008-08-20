@@ -15,9 +15,10 @@
 
 using System;
 using System.Windows.Forms;
+using System.Data.SqlClient;
+
 using Backsight.SqlServer;
 using Backsight.Data;
-using System.Data.SqlClient;
 
 namespace Backsight.Editor.Forms
 {
@@ -43,7 +44,7 @@ namespace Backsight.Editor.Forms
         {
             string cs = LastDatabase.ConnectionString;
             SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder(cs);
-            lastDatabaseLabel.Text = String.Format(@"Database: {0}\{1}", sb.DataSource, sb.InitialCatalog);
+            lastDatabaseLabel.Text = String.Format(@"{0}\{1}", sb.DataSource, sb.InitialCatalog);
         }
 
         private void exitButton_Click(object sender, EventArgs e)
