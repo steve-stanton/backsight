@@ -77,6 +77,19 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// Creates a new <c>FeatureData</c> with the supplied parameters.
+        /// </summary>
+        /// <param name="creationSequence">The 1-based creation sequence of the feature within the creating edit.</param>
+        /// <param name="e">The entity type for the feature</param>
+        /// <param name="id">Any user-defined key for the feature (may be null)</param>
+        internal FeatureData(uint creationSequence, IEntity e, FeatureId id)
+        {
+            m_CreationSequence = creationSequence;
+            m_Entity = e;
+            m_Id = id;
+        }
+
         #endregion
 
         #region IXmlContent Members

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -450,19 +451,19 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Line", m_Line);
-            writer.WriteArray("DistanceArray", "Distance", GetDistances().ToArray());
 
             // The created sections carry over the entity type and ID of the parent line.
             // So the only thing we really need is info about the point features at
             // the end of each span... but this assumes that the created line sections
-            // have item sequence numbers in a specific range.
+            // have item sequence numbers in a specific range. Since that introduces a
+            // sensitivity to code elsewhere, express each span using a special class
+            // that is a bit easier to work with.
 
-
-            LineData[] spans = new LineData[m_Sections.Count];
+            SubdivisionSpanContent[] spans = new SubdivisionSpanContent[m_Sections.Count];
             for (int i=0; i<spans.Length; i++)
-                spans[i] = new LineData(m_Sections[i].Line);
+                spans[i] = new SubdivisionSpanContent(this, m_Sections[i]);
 
-            writer.WriteArray("SectionArray", "Section", spans);
+            writer.WriteArray("SpanArray", "Span", spans);
         }
 
         /// <summary>
@@ -475,33 +476,43 @@ namespace Backsight.Editor.Operations
         {
             base.ReadContent(reader);
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            Distance[] distances = reader.ReadArray<Distance>("DistanceArray", "Distance");
-            LineData[] spans = reader.ReadArray<LineData>("SectionArray", "Section");
+
+            // Read info about each span
+            SubdivisionSpanContent[] spans = reader.ReadArray<SubdivisionSpanContent>("SpanArray", "Span");
 
             // Adjust the observed distances
+            Distance[] distances = new Distance[spans.Length];
+            for (int i=0; i<distances.Length; i++)
+                distances[i] = spans[i].Length;
             double[] adjray = GetAdjustedLengths(m_Line, distances);
 
-            // Create line sections
+            // Create line sections (phew, seems a bit complicated...)
+
             m_Sections = new List<MeasuredLineFeature>(distances.Length);
             double edist = 0.0;		// Distance to end of section.
             PointFeature start = m_Line.StartPoint;
+            LineGeometry lineGeom = m_Line.LineGeometry;
+
             for (int i = 0; i < adjray.Length; i++)
             {
                 // Calculate the position at the end of the span
                 edist += adjray[i];
                 IPosition to;
-                if (!m_Line.LineGeometry.GetPosition(new Length(edist), out to))
+                if (!lineGeom.GetPosition(new Length(edist), out to))
                     throw new Exception("Cannot adjust line section");
 
                 // Get the point feature at the end of the span
-                LineData span = spans[i];
-                PointFeature end = span.GetToPoint(reader, to);
+                SubdivisionSpanContent span = spans[i];
+                PointFeature end = span.GetEndPoint(reader, to);
 
                 // Create the section
                 SectionGeometry geom = new SectionGeometry(m_Line, start, end);
                 LineFeature section = m_Line.MakeSubSection(geom, this);
-                //LineFeature section = new LineFeature(span.EntityType, this, start, end, geom);
-                reader.InitializeFeature(section, span);
+
+                // Ensure the new section has the right ID info, and register with the reader
+                FeatureData sectionData = new FeatureData(span.LineItemNumber, m_Line.EntityType, m_Line.Id);
+                reader.InitializeFeature(section, sectionData);
+
                 MeasuredLineFeature mf = new MeasuredLineFeature(section, distances[i]);
                 m_Sections.Add(mf);
 
