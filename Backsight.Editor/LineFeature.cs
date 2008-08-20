@@ -1280,5 +1280,19 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
                 IsMoved = true;
             }
         }
+
+        /// <summary>
+        /// Deactivates this line.
+        /// </summary>
+        /// <remarks>This method is currently used only during deactivation during
+        /// startup data loading, ensuring that any topological placeholder has been
+        /// nulled (removal of any associated Topology is normally done by cleaning
+        /// at the end of an edit, but startup doesn't involve cleaning). Should
+        /// revisit this.</remarks>
+        internal void Deactivate()
+        {
+            this.IsInactive = true;
+            RemoveTopology();
+        }
     }
 }

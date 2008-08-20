@@ -101,10 +101,6 @@ namespace Backsight.Editor.Operations
             // Adjust the observed distances
             double[] adjray = GetAdjustedLengths(m_Line, distances);
 
-            // Get the point features at the end of each section (we'll
-            // add the lines afterwards)
-            PointFeature[] endPoints = new PointFeature[m_Sections.Count];
-
             // Create line sections
             double edist = 0.0;		// Distance to end of section.
             PointFeature start = m_Line.StartPoint;
@@ -521,7 +517,7 @@ namespace Backsight.Editor.Operations
             }
 
             // De-activate the parent line
-            m_Line.IsInactive = true;
+            m_Line.Deactivate();
         }
     }
 }
