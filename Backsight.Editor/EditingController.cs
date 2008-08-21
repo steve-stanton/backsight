@@ -1260,5 +1260,46 @@ namespace Backsight.Editor
             dial.Dispose();
             return jobFile;
         }
+
+        /// <summary>
+        /// Can the current map model be published?
+        /// </summary>
+        /// <value>True if the current map model is an instance of <see cref="CadastralMapModel"/></value>
+        internal bool CanPublish
+        {
+            get { return (MapModel is CadastralMapModel); }
+        }
+
+        /// <summary>
+        /// Publishes the current map model
+        /// </summary>
+        /// <returns>The revision number assigned to the publication</returns>
+        internal uint Publish()
+        {
+            CadastralMapModel cmm = CadastralMapModel.Current;
+            if (cmm==null)
+                return 0;
+
+            // Get the next revision number
+            uint revision = LastRevision.ReserveValue();
+
+            // Close the current session
+            Session.WorkingSession.UpdateEndTime();
+
+            Transaction.Execute(delegate
+            {
+                // Update the sessions table
+
+                // Remember the publication for the current user & job
+            });
+
+            // Start a new session
+            Session s = cmm.AppendWorkingSession(m_JobData, m_User);
+
+            // Write a new job file (not sure if this is really necessary)
+            s.SaveChanges();
+
+            return revision;
+        }
     }
 }
