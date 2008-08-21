@@ -332,7 +332,7 @@ namespace Backsight.Editor.Forms
         internal PointFeature Save()
         {
             // Create an undefined operation.
-            NewPointOperation save = new NewPointOperation(Session.CurrentSession);
+            NewPointOperation save = new NewPointOperation(Session.WorkingSession);
 
             // Notify the controller that a save is starting
             //m_Cmd.Controller.CurrentEdit = save;

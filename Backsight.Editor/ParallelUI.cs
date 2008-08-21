@@ -548,7 +548,7 @@ namespace Backsight.Editor
                     ok = op.Execute(m_Line, new OffsetPoint(m_OffsetPoint), m_TermLine1, m_TermLine2, m_IsReversed);
 
                 if (!ok)
-                    Session.CurrentSession.Remove(op);
+                    Session.WorkingSession.Remove(op);
             }
 
             // Destroy the dialog(s).

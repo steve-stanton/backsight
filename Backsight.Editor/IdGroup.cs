@@ -110,7 +110,7 @@ namespace Backsight.Editor
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
             Job curjob = EditingController.Current.Job;
-            User curuser = Session.CurrentSession.User;
+            User curuser = Session.WorkingSession.User;
             DateTime curtime = DateTime.Now;
 
 	        int ntoget = PacketSize;   // How many do we need to allocate?

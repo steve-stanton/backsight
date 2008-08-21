@@ -257,7 +257,7 @@ namespace Backsight.Editor
 
                 catch (Exception ex)
                 {
-                    Session.CurrentSession.Remove(op);
+                    Session.WorkingSession.Remove(op);
                     MessageBox.Show(ex.Message);
                     return false;
                 }
