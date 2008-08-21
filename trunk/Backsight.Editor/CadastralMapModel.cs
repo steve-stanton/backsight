@@ -1306,10 +1306,14 @@ namespace Backsight.Editor
 
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
+
+            // First mark all lines as "moved" (they get ignored by the intersect
+            // finder until they have been intersected themselves)
+            MarkAllLinesMoved();
+
             m_Index.QueryWindow(null, SpatialType.Line, delegate (ISpatialObject item)
             {
                 LineFeature line = (LineFeature)item;
-                //Trace.Write(line.DataId);
                 line.IsMoved = false;
                 line.Split(null);
                 return true;
@@ -1329,6 +1333,21 @@ namespace Backsight.Editor
                 if (s.Job.JobId == job.JobId && s.User.UserId == user.UserId)
                     s.LoadUsedIds(m_IdManager);
             }
+        }
+
+        /// <summary>
+        /// Marks all spatially indexed lines as "moved". Lines marked in this way
+        /// will be ignored by intersect detection software until they themselves
+        /// have been intersected against the map.
+        /// </summary>
+        void MarkAllLinesMoved()
+        {
+            m_Index.QueryWindow(null, SpatialType.Line, delegate(ISpatialObject item)
+            {
+                LineFeature line = (LineFeature)item;
+                line.IsMoved = true;
+                return true;
+            });
         }
 
         /*

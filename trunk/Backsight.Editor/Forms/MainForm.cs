@@ -169,22 +169,6 @@ namespace Backsight.Editor.Forms
                 StartupForm dial = new StartupForm(this);
                 dial.ShowDialog();
                 dial.Dispose();
-                /*
-                try
-                {
-                    if (!OpenFile())
-                    {
-                        if (MessageBox.Show("Do you want to create a new job file?",
-                                            "No job file", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                            m_Controller.OpenJob(null);
-                    }
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                 */
             }
 
             // If we still don't have a model, close
@@ -206,7 +190,6 @@ namespace Backsight.Editor.Forms
                 new EntityUtil().Open();
 
                 InitializeActions();
-
             }
 
             catch (Exception ex)
@@ -227,6 +210,7 @@ namespace Backsight.Editor.Forms
             AddAction(mnuFileStatistics, IsFileStatisticsEnabled, FileStatistics);
             AddAction(mnuFileCoordinateSystem, IsFileCoordinateSystemEnabled, FileCoordinateSystem);
             AddAction(mnuFileCheck, IsFileCheckEnabled, FileCheck);
+            AddAction(mnuFilePublish, IsFilePublishEnabled, FilePublish);
             AddAction(mnuFileUpdateSchema, IsFileUpdateSchemaEnabled, FileUpdateSchema);
             AddAction(mnuFilePrintWindowRotated, IsFilePrintWindowRotatedEnabled, FilePrintWindowRotated);
             AddAction(mnuFilePrintWindow, IsFilePrintWindowEnabled, FilePrintWindow);
@@ -792,6 +776,16 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void FileCheck(IUserAction action)
         {
             EditingController.Current.StartCheck();
+        }
+
+        private bool IsFilePublishEnabled()
+        {
+            return (HasMap && m_Controller.CanPublish);
+        }
+
+        private void FilePublish(IUserAction action)
+        {
+            EditingController.Current.Publish();
         }
 
         private bool IsFileUpdateSchemaEnabled()
