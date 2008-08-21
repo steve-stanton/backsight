@@ -245,7 +245,7 @@ namespace Backsight.Editor
             bool ok = op.Execute(m_Start, end);
 
             if (!ok)
-                Session.CurrentSession.Remove(op);
+                Session.WorkingSession.Remove(op);
         }
 
         internal override void DialAbort(Control wnd)

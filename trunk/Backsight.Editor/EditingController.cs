@@ -452,7 +452,7 @@ namespace Backsight.Editor
                 SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
 
                 cmm.Load(m_JobData, m_User);
-                cmm.CreateSession(m_JobData, m_User);
+                cmm.AppendWorkingSession(m_JobData, m_User);
             }
 
             finally
@@ -1188,7 +1188,7 @@ namespace Backsight.Editor
             if (IsSaved)
                 return;
 
-            Session s = Session.CurrentSession;
+            Session s = Session.WorkingSession;
             Debug.Assert(s != null);
 
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
@@ -1210,7 +1210,7 @@ namespace Backsight.Editor
             get
             {
                 // The session probably SHOULD be defined
-                Session s = Session.CurrentSession;
+                Session s = Session.WorkingSession;
                 if (s == null)
                     return true;
 

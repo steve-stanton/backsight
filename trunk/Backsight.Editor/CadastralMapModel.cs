@@ -108,6 +108,12 @@ namespace Backsight.Editor
         /// </summary>
         readonly IdManager m_IdManager;
 
+        /// <summary>
+        /// The session that we are currently appending to. Defined on a call to
+        /// <see cref="AppendWorkingSession"/>
+        /// </summary>
+        Session m_WorkingSession;
+
         #endregion
 
         #region Constructors
@@ -371,7 +377,7 @@ namespace Backsight.Editor
 
         internal void Close()
         {
-            Session s = Session.CurrentSession;
+            Session s = Session.WorkingSession;
             if (s!=null)
             {
                 if (s.IsEmpty)
@@ -380,7 +386,7 @@ namespace Backsight.Editor
                     s.UpdateEndTime();
 
                 m_Sessions.Clear();
-                Session.CurrentSession = null;
+                Session.ClearCurrentSession();
             }
         }
 
@@ -1027,7 +1033,7 @@ namespace Backsight.Editor
 
             if (cursess)
             {
-                status = Session.CurrentSession.Rollback();
+                status = Session.WorkingSession.Rollback();
             }
             else
             {
@@ -1359,15 +1365,18 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new editing session and appends to this model
+        /// Creates a new editing session and appends to this model. This is called by
+        /// the editing controller to represent the latest session (as opposed to a historical
+        /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal Session CreateSession(Job job, User user)
+        internal Session AppendWorkingSession(Job job, User user)
         {
             SessionData data = SessionData.Insert(job.JobId, user.UserId);
-            Session s = new Session(this, data, user, job);
-            Session.CurrentSession = s;
-            m_Sessions.Add(s);
+
+            // Create the session (and remember as part of this model)
+            Session s = Session.CreateCurrentSession(this, data, user, job);
+            m_WorkingSession = s;
             return s;
         }
 
@@ -1377,6 +1386,17 @@ namespace Backsight.Editor
         internal IdManager IdManager
         {
             get { return m_IdManager; }
+        }
+
+        /// <summary>
+        /// The session that we are currently appending to. Defined on a call to
+        /// <see cref="AppendWorkingSession"/>.
+        /// </summary>
+        /// <remarks>As a convenience, you can also access this via the
+        /// static <see cref="Session.WorkingSession"/> property</remarks>
+        internal Session WorkingSession
+        {
+            get { return m_WorkingSession; }
         }
     }
 }

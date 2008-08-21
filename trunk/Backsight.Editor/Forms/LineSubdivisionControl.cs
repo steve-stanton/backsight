@@ -146,7 +146,7 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                Session.CurrentSession.Remove(op);
+                Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.Message);
             }
 

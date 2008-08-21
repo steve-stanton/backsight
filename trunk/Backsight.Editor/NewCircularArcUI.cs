@@ -295,7 +295,7 @@ namespace Backsight.Editor
             bool ok = op.Execute(StartPoint, end, m_NewArcCircle, m_IsShortArc);
 
             if (!ok)
-                Session.CurrentSession.Remove(op);
+                Session.WorkingSession.Remove(op);
         }
 
         /// <summary>

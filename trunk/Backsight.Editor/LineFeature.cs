@@ -805,10 +805,17 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (!IsTopological)
                 return;
 
+            if (m_Topology==null)
+                throw new Exception("LineFeature.Split - topology hasn't been initialized");
+
             // This method should only be called for complete lines (with no pre-existing
             // topological sections)
             if (!(m_Topology is LineTopology))
-                throw new Exception("LineFeature.Split - Line is associated with the wrong type of topology");
+            {
+                string msg = String.Format("LineFeature.Split - Line {0} is associated with the wrong type of topology ({1})",
+                    DataId, m_Topology.GetType().Name);
+                throw new Exception(msg);
+            }
             LineTopology lineTop = (LineTopology)m_Topology;
 
             // Intersect this line with the map (ignoring end to end intersects).

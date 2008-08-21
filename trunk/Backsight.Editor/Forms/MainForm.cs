@@ -706,7 +706,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSave(IUserAction action)
         {
-            Session s = Session.CurrentSession;
+            Session s = Session.WorkingSession;
             Debug.Assert(s != null);
             s.SaveChanges();
         }
@@ -1092,7 +1092,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsDataImportMapEnabled()
         {
-            return (Session.CurrentSession!=null);
+            return (Session.WorkingSession!=null);
         }
 
         private void DataImportMap(IUserAction action)

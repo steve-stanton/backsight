@@ -104,8 +104,8 @@ namespace Backsight.Editor.Database
                                             { return (j.JobId == curSession.JobId); });
                             Debug.Assert(curJob != null);
 
-                            Session.CurrentSession = new Session(model, curSession, curUser, curJob);
-                            model.AddSession(Session.CurrentSession);
+                            // Create the session (and append to the model)
+                            Session.CreateCurrentSession(model, curSession, curUser, curJob);
                         }
 
                         SqlXml data = reader.GetSqlXml(2);
@@ -467,7 +467,7 @@ namespace Backsight.Editor.Database
         /// <returns>The reserved item number</returns>
         internal uint ReserveNextItem()
         {
-            Debug.Assert(m_SessionId == Session.CurrentSession.Id);
+            Debug.Assert(m_SessionId == Session.WorkingSession.Id);
             m_NumItem++;
             return m_NumItem;
         }

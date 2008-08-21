@@ -37,12 +37,44 @@ namespace Backsight.Editor
         static Session s_CurrentSession = null;
 
         /// <summary>
-        /// The current editing session
+        /// The current editing session. During initial data loading, this may actually refer
+        /// to a historical session. To obtain the session to which brand new edits should
+        /// be appended, you should use the <see cref="WorkingSession"/> property.
         /// </summary>
         internal static Session CurrentSession
         {
             get { return s_CurrentSession; }
-            set { s_CurrentSession = value; }
+        }
+
+        internal static Session WorkingSession
+        {
+            get { return CadastralMapModel.Current.WorkingSession; }
+        }
+
+        /// <summary>
+        /// Creates a new session and remembers it as the "current" session.
+        /// </summary>
+        /// <param name="model">The object model containing this session. The newly created session will
+        /// be appended to this model.</param>
+        /// <param name="sessionData">The information selected from the database</param>
+        /// <param name="user">The user who performed the session</param>
+        /// <param name="job">The job the session is associated with</param>
+        /// <returns>The created session (can also be subsequently accessed through the
+        /// <see cref="CurrentSession"/> property</returns>
+        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, User user, Job job)
+        {
+            s_CurrentSession = new Session(model, sessionData, user, job);
+            model.AddSession(s_CurrentSession);
+            return s_CurrentSession;
+        }
+
+        /// <summary>
+        /// Nulls out the <see cref="CurrentSession"/> property. This should be called only when
+        /// the editing application is shuting down.
+        /// </summary>
+        internal static void ClearCurrentSession()
+        {
+            s_CurrentSession = null;
         }
 
         #endregion
@@ -90,15 +122,14 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a <c>Session</c> using information retrieved from the database.
-        /// This is called when historical sessions are loaded during loading of
-        /// the editing model.
+        /// Creates a new <c>Session</c> and defines it as the "current" session
         /// </summary>
         /// <param name="model">The object model containing this session</param>
         /// <param name="sessionData">The information selected from the database</param>
         /// <param name="user">The user who performed the session</param>
         /// <param name="job">The job the session is associated with</param>
-        internal Session(CadastralMapModel model, SessionData sessionData, User user, Job job)
+        /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
+        Session(CadastralMapModel model, SessionData sessionData, User user, Job job)
         {
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
@@ -437,7 +468,5 @@ namespace Backsight.Editor
         {
             get { return m_Data.EndTime; }
         }
-
-
     }
 }

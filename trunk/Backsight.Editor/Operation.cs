@@ -347,7 +347,7 @@ namespace Backsight.Editor
             MapModel.AddToIndex(feats);
 
             // Assign 1-based creation sequence to each created feature
-            uint numItem = Session.CurrentSession.NumItem;
+            uint numItem = Session.WorkingSession.NumItem;
             for (uint i = 0; i < feats.Length; i++)
             {
                 numItem++;
@@ -365,7 +365,7 @@ namespace Backsight.Editor
             MapModel.CleanEdit();
 
             // Ensure the item count for the session has been updated
-            Session.CurrentSession.NumItem = numItem;
+            Session.WorkingSession.NumItem = numItem;
 
             // Save the edit to the database
             SaveOperation();
@@ -398,13 +398,13 @@ namespace Backsight.Editor
                 c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@data", SqlDbType.Xml));
-                c.Parameters[0].Value = Session.CurrentSession.Id;
+                c.Parameters[0].Value = Session.WorkingSession.Id;
                 c.Parameters[1].Value = m_Sequence;
                 c.Parameters[2].Value = x;
                 c.ExecuteNonQuery();
 
                 // Update the end-time associated with the session
-                Session.CurrentSession.UpdateEndTime();
+                Session.WorkingSession.UpdateEndTime();
             });
         }
 
