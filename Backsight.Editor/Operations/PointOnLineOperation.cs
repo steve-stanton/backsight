@@ -362,12 +362,14 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Line", m_Line);
+
+            // The lines are implied, taking the entity type of the parent line. However,
+            // we need to know the item numbers that were assigned to them.
+            writer.WriteUnsignedInt("NewLine1", m_NewLine1.CreatorSequence);
+            writer.WriteUnsignedInt("NewLine2", m_NewLine2.CreatorSequence);
+
             writer.WriteElement("Distance", m_Distance);
-
-            // Creations ...
             writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
-
-            // The lines are implied, taking the entity type of the parent line
         }
 
         /// <summary>
@@ -381,12 +383,21 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             base.ReadContent(reader);
 
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            uint line1 = reader.ReadUnsignedInt("NewLine1");
+            uint line2 = reader.ReadUnsignedInt("NewLine2");
             m_Distance = reader.ReadElement<Distance>("Distance");
 
             IPosition p = Calculate();
             m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
             m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
+            m_NewLine1.CreatorSequence = line1;
             m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
+            m_NewLine2.CreatorSequence = line2;
+
+            // Register the new lines with the reader (in case subsequent edits
+            // have references to them)
+            reader.AddFeature(m_NewLine1);
+            reader.AddFeature(m_NewLine2);
 
             m_Line.Deactivate();
         }

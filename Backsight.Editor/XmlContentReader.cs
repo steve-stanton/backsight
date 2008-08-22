@@ -267,7 +267,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that has been loaded (if null,
         /// nothing gets done)</param>
-        void AddFeature(Feature f)
+        internal void AddFeature(Feature f)
         {
             if (f != null)
             {
