@@ -19,6 +19,9 @@ using System.Data.SqlClient;
 
 using Backsight.SqlServer;
 using Backsight.Data;
+using Backsight.Editor.Properties;
+using System.IO;
+using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
@@ -36,8 +39,19 @@ namespace Backsight.Editor.Forms
         internal StartupForm(MainForm parent)
         {
             InitializeComponent();
-            ShowDatabaseName();
             m_Parent = parent;
+        }
+
+        private void StartupForm_Load(object sender, EventArgs e)
+        {
+            ShowDatabaseName();
+
+            string lastFile = Settings.Default.LastMap;
+            openLastButton.Enabled = File.Exists(lastFile);
+            if (openLastButton.Enabled)
+                openLastButton.Text = "&Open " + Path.GetFileName(lastFile);
+            else
+                openLastButton.BackColor = SystemColors.Control;
         }
 
         void ShowDatabaseName()
@@ -98,6 +112,24 @@ namespace Backsight.Editor.Forms
             }
 
             dial.Dispose();
+        }
+
+        private void openLastButton_Click(object sender, EventArgs e)
+        {
+            string lastFile = Settings.Default.LastMap;
+
+            try
+            {
+                JobFile jf = new JobFile(lastFile);
+                EditingController.Current.OpenJob(jf);
+                Close();
+            }
+
+            catch
+            {
+                MessageBox.Show("Cannot access " + lastFile);
+                openLastButton.Enabled = false;
+            }
         }
     }
 }
