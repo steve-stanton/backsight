@@ -387,6 +387,8 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
             m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
             m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
+
+            m_Line.Deactivate();
         }
     }
 }

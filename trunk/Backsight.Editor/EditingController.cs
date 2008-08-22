@@ -1283,15 +1283,20 @@ namespace Backsight.Editor
             // Get the next revision number
             uint revision = LastRevision.ReserveValue();
 
-            // Close the current session
+            // Give the working session an end-time that matches time of publication
             Session.WorkingSession.UpdateEndTime();
 
             Transaction.Execute(delegate
             {
                 // Update the sessions table
+                SessionData.SetLastRevision(m_JobData, m_User, revision);
 
                 // Remember the publication for the current user & job
+                UserJobData.SetLastRevision(m_JobData, m_User, revision);
             });
+
+            // Modify the session objects
+            cmm.SetPublished(revision);
 
             // Start a new session
             Session s = cmm.AppendWorkingSession(m_JobData, m_User);
@@ -1300,6 +1305,14 @@ namespace Backsight.Editor
             s.SaveChanges();
 
             return revision;
+        }
+
+        /// <summary>
+        /// The current user
+        /// </summary>
+        internal User User
+        {
+            get { return m_User; }
         }
     }
 }

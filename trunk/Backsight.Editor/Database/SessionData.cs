@@ -310,6 +310,25 @@ namespace Backsight.Editor.Database
             }
         }
 
+        /// <summary>
+        /// Sets the revision number for unpublished sessions.
+        /// </summary>
+        /// <param name="job">The job that's being published</param>
+        /// <param name="user">The user who made the edits</param>
+        /// <param name="revision">The revision number to assign</param>
+        /// <returns>The number of sessions that were updated</returns>
+        internal static int SetLastRevision(Job job, User user, uint revision)
+        {
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("UPDATE [ced].[Sessions] SET [Revision]={0} "+
+                                           "WHERE [JobId]={1} AND [UserId]={2} AND [Revision]=0",
+                                           revision, job.JobId, user.UserId);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
         #endregion
 
         #region Class data
@@ -493,6 +512,15 @@ namespace Backsight.Editor.Database
                 m_NumItem = lastItemToKeep;
                 UpdateEndTime();
             });
+        }
+
+        /// <summary>
+        /// The revision number for the session (0 if the session has not been published)
+        /// </summary>
+        internal uint Revision
+        {
+            get { return m_Revision; }
+            set { m_Revision = value; }
         }
     }
 }

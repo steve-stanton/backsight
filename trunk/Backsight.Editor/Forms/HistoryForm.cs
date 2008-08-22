@@ -15,6 +15,8 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -26,10 +28,7 @@ namespace Backsight.Editor.Forms
     {
         #region Class data
 
-        /// <summary>
-        /// Have any edits been rolled back?
-        /// </summary>
-        bool m_IsEdited;
+        // none
 
         #endregion
 
@@ -38,7 +37,6 @@ namespace Backsight.Editor.Forms
         public HistoryForm()
         {
             InitializeComponent();
-            m_IsEdited = false;
         }
 
         #endregion
@@ -51,7 +49,7 @@ namespace Backsight.Editor.Forms
         void LoadSessionList()
         {
             Session[] sa = CadastralMapModel.Current.Sessions;
-            grid.ColumnCount = 3;
+            grid.ColumnCount = 4;
             grid.RowCount = sa.Length;
             int rowIndex = grid.RowCount;
             for (int i = 0; i < sa.Length; i++)
@@ -61,8 +59,14 @@ namespace Backsight.Editor.Forms
                 row.Cells["StartTime"].Value = sa[i].StartTime;
                 row.Cells["EndTime"].Value = sa[i].EndTime;
                 row.Cells["EditCount"].Value = sa[i].OperationCount;
+                row.Cells["Revision"].Value = sa[i].Revision;
                 row.Tag = sa[i];
+
+                //if (sa[i].Revision==0)
+                //    row.DefaultCellStyle.BackColor = Color.Orange;
             }
+
+            grid.CurrentCell = null;
         }
 
         /// <summary>
@@ -72,15 +76,43 @@ namespace Backsight.Editor.Forms
         /// <param name="e"></param>
         private void rollbackButton_Click(object sender, EventArgs e)
         {
-            uint rtype = CadastralMapModel.Current.Rollback(false);
-            if (rtype!=0)
+            // If the working session contains anything, rollback that
+            Session ws = Session.WorkingSession;
+            bool done = false;
+
+            if (ws.OperationCount > 0)
+                done = CadastralMapModel.Current.Rollback(ws);
+            else
             {
-                m_IsEdited = true;
+                Session[] sa = CadastralMapModel.Current.Sessions;
+                Debug.Assert(sa.Length>0);
+
+                if (sa.Length == 1)
+                {
+                    MessageBox.Show("Nothing to undo");
+                    Debug.Assert(sa[0] == ws);
+                    return;
+                }
+
+                // Get the session that precedes the working session
+                Session s = sa[sa.Length-2];
+
+                // Disallow if it's been published
+                if (s.Revision!=0)
+                {
+                    MessageBox.Show("Cannot undo any more because edits have been published");
+                    rollbackButton.Enabled = false;
+                    return;
+                }
+
+                done = CadastralMapModel.Current.Rollback(s);
+            }
+
+            if (done)
+            {
                 LoadSessionList();
                 EditingController.Current.RefreshAllDisplays();
             }
-            else
-                MessageBox.Show("Nothing to rollback.");
         }
 
         private void detailsButton_Click(object sender, EventArgs e)
@@ -122,16 +154,6 @@ namespace Backsight.Editor.Forms
         private void closeButton_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void HistoryForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // If we rolled back anything, save the map model
-            if (m_IsEdited)
-            {
-                MessageBox.Show("Save changes"); // TODO
-                //CadastralMapModel.Current.Write();
-            }
         }
     }
 }

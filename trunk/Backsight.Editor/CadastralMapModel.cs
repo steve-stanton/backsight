@@ -26,6 +26,7 @@ using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Index;
+using System.Data.SqlClient;
 
 namespace Backsight.Editor
 {
@@ -380,7 +381,7 @@ namespace Backsight.Editor
             Session s = Session.WorkingSession;
             if (s!=null)
             {
-                if (s.IsEmpty)
+                if (s.OperationCount==0)
                     s.Delete();
                 else
                     s.UpdateEndTime();
@@ -1017,6 +1018,7 @@ namespace Backsight.Editor
             return result;
         }
 
+        /*
         /// <summary>
         /// Rolls back the last operation known to this map. Does not save the map to disk.
         /// </summary>
@@ -1053,6 +1055,39 @@ namespace Backsight.Editor
             }
 
             return 0;
+        }
+        */
+
+        /// <summary>
+        /// Rolls back the last operation known to this map.
+        /// </summary>
+        /// <param name="s">The session to rollback (all subsequent sessions must be empty)</param>
+        /// <returns>True if rollback succeeded</returns>
+        internal bool Rollback(Session s)
+        {
+            if (s.Revision!=0)
+                return false;
+
+            int editSequence = s.Rollback();
+            if (editSequence <= 0)
+                return false;
+
+            CleanEdit();
+
+            // Remove the edit from the database
+            using (IConnection ic = AdapterFactory.GetConnection())
+            {
+                string sql = String.Format("DELETE FROM [ced].[Edits] WHERE [SessionId]={0} AND [EditSequence]={1}",
+                                s.Id, editSequence);
+                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+                cmd.ExecuteNonQuery();
+            }
+
+            // If the session is now empty, and it's not the working session, remove it from the model
+            if (s.OperationCount==0 && !Object.ReferenceEquals(s, Session.WorkingSession))
+                m_Sessions.Remove(s);
+
+            return true;
         }
 
         /// <summary>
@@ -1416,6 +1451,43 @@ namespace Backsight.Editor
         internal Session WorkingSession
         {
             get { return m_WorkingSession; }
+        }
+
+        /// <summary>
+        /// Scans the editing sessions that make up this model, counting up the number of
+        /// edits that have not been published.
+        /// </summary>
+        /// <returns>The number of unpublished edits</returns>
+        internal uint GetUnpublishedEditCount()
+        {
+            uint total = 0;
+
+            for (int i=m_Sessions.Count-1; i>=0; i--)
+            {
+                Session s = m_Sessions[i];
+                if (s.Revision!=0)
+                    break;
+
+                total += (uint)s.OperationCount;
+            }
+
+            return total;
+        }
+
+        /// <summary>
+        /// Marks unpublished sessions with the specified revision number.
+        /// </summary>
+        /// <param name="revision">The revision number of a publication</param>
+        internal void SetPublished(uint revision)
+        {
+            for (int i=m_Sessions.Count-1; i>=0; i--)
+            {
+                Session s = m_Sessions[i];
+                if (s.Revision!=0)
+                    break;
+
+                s.Revision = revision;
+            }
         }
     }
 }
