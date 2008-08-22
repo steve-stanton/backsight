@@ -47,8 +47,10 @@ namespace Backsight.Editor
         private Operation m_Creator;
 
         /// <summary>
-        /// The 1-based creation sequence of this feature within the creating edit. A value
-        /// of 0 means the sequence still needs to be defined.
+        /// The 1-based creation sequence of this feature within the session that
+        /// created it. A value of 0 means the sequence still needs to be defined
+        /// (during initial creation of features, the <see cref="Operation.Complete"/>
+        /// method is responsible for defining the sequence number).
         /// </summary>
         private uint m_CreatorSequence;
 
@@ -106,9 +108,10 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The 1-based creation sequence of this feature within the creating edit. A value
-        /// of 0 means the sequence still needs to be defined. The value will usually be
-        /// initialized to a non-zero value by the <see cref="Operation.Complete"/> method.
+        /// The 1-based creation sequence of this feature within the session that
+        /// created it. A value of 0 means the sequence still needs to be defined
+        /// (during initial creation of features, the <see cref="Operation.Complete"/>
+        /// method is responsible for defining the sequence number).
         /// </summary>
         internal uint CreatorSequence
         {

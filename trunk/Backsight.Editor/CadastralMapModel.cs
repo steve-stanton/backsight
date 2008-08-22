@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Data;
+using System.Data.SqlClient;
 
 using Backsight.Data;
 using Backsight.Editor.Database;
@@ -26,7 +27,6 @@ using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Index;
-using System.Data.SqlClient;
 
 namespace Backsight.Editor
 {
