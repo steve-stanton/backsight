@@ -58,6 +58,7 @@
     <Compile Include="Database\Job.cs" />
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
+    <Compile Include="Database\UserJobData.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
@@ -273,6 +274,12 @@
       <DependentUpon>PathForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
+    <Compile Include="Forms\PublishForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PublishForm.Designer.cs">
+      <DependentUpon>PublishForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ScaleSpecificPen.cs" />
     <Compile Include="Forms\SchemaComboBox.cs">
       <SubType>Component</SubType>
@@ -893,6 +900,10 @@
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PublishForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PublishForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SchemaComboBox.resx">
       <SubType>Designer</SubType>

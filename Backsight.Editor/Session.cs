@@ -188,10 +188,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Have any persistent objects been created via this editing session?
         /// </summary>
+        /*
         internal bool IsEmpty
         {
             get { return m_Data.NumItem==0; }
         }
+        */
 
         /// <summary>
         /// Deletes information about this session from the database.
@@ -301,9 +303,13 @@ namespace Backsight.Editor
         /// the session's operation list.
         /// </summary>
         /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
-        /// Otherwise the code number that specifies the operation type.</returns>
+        /// Otherwise the sequence number of the edit that was rolled back.</returns>
+        /// <exception cref="InvalidOperationException">If the session has been published</exception>
         internal int Rollback()
         {
+            if (Revision!=0)
+                throw new InvalidOperationException("Cannot rollback session because it has been published");
+
             // Return if there is nothing to rollback.
             if (m_Operations.Count==0)
                 return 0;
@@ -312,15 +318,15 @@ namespace Backsight.Editor
             int index = m_Operations.Count-1;
             Operation op = m_Operations[index];
 
-            // What sort of thing are we rolling back?
-            int type = (int)op.EditId;
+            // Remember the sequence number of the edit we're rolling back
+            uint editSequence = op.EditSequence;
 
             // Rollback the operation & remove from list
             if (!op.Undo())
                 return -1;
 
             m_Operations.RemoveAt(index);
-            return type;
+            return (int)editSequence;
         }
 
         /// <summary>
@@ -467,6 +473,15 @@ namespace Backsight.Editor
         internal DateTime EndTime
         {
             get { return m_Data.EndTime; }
+        }
+
+        /// <summary>
+        /// The revision number for the session (0 if the session has not been published)
+        /// </summary>
+        internal uint Revision
+        {
+            get { return m_Data.Revision; }
+            set { m_Data.Revision = value; }
         }
     }
 }

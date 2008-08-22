@@ -785,7 +785,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FilePublish(IUserAction action)
         {
-            EditingController.Current.Publish();
+            PublishForm dial = new PublishForm();
+            dial.ShowDialog();
+            dial.Dispose();
         }
 
         private bool IsFileUpdateSchemaEnabled()
