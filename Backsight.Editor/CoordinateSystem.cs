@@ -413,6 +413,9 @@ namespace Backsight.Editor
         ///	of UTM Coordinates - Distance Reductions" issued by the Ministry of Environment, Lands & Parks,
         ///	British Columbia. This may be slightly inconsistent with similar calculations done elsewhere in
         ///	this class.
+        /// <para/>
+        /// The monograph in question (by Vern Vogt) is mentioned on http://ilmbwww.gov.bc.ca/bmgs/gsr/gsr_papers.htm,
+        /// though I don't see a way to access it online.
         /// </summary>
         /// <param name="v">The positions defining a polygon, with the polygon always on the right-hand-side,
         /// and with the first position repeated at the end.</param>
