@@ -1023,5 +1023,10 @@ void CePath::CreateAngleText ( CPtrList& text
             Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
             m_Legs = new List<Leg>(legs);
         }
+
+        //Circle[] GetCreatedCircles()
+        //{
+        //    foreach (
+        //}
     }
 }
