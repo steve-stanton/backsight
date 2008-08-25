@@ -45,12 +45,14 @@ namespace Backsight.Editor
         double m_Angle2;
 
         /// <summary>
-        /// Observed radius.
+        /// Observed radius. There will be a slight difference betweeen this value and the
+        /// adjusted radius available via <see cref="m_Circle"/>
         /// </summary>
         Distance m_Radius;
 
         /// <summary>
-        /// The circle that this leg sits on.
+        /// The circle that this leg sits on. The radius defined as part of this instance is
+        /// the adjusted radius (see also <seealso cref="m_Radius"/>)
         /// </summary>
         Circle m_Circle;
 
