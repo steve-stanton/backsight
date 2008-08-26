@@ -34,6 +34,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The connection path that this leg is part of.
+        /// </summary>
+        PathOperation m_Path;
+
+        /// <summary>
         /// The data that defines each span on this leg (should always contain at least
         /// one element).
         /// </summary>
@@ -1220,7 +1225,11 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteArray("SpanArray", "Span", m_Spans);
+            SpanContent[] content = new SpanContent[m_Spans.Length];
+            for (int i=0; i<m_Spans.Length; i++)
+                content[i] = new SpanContent(m_Path, m_Spans[i]);
+
+            writer.WriteArray("SpanArray", "Span", content);
         }
 
         /// <summary>

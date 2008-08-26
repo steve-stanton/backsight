@@ -194,10 +194,12 @@ namespace Backsight.Editor
         {
             string flags = String.Empty;
 
+            /*
             if (IsMissConnect)
                 flags += "M";
             else if (IsOmitPoint)
                 flags += "P";
+             */
 
             if (IsDeflection)
                 flags += "D";
@@ -210,13 +212,9 @@ namespace Backsight.Editor
             if (flags.Length > 0)
                 writer.WriteString("Flags", flags);
 
-            //writer.W
             writer.WriteElement("Distance", m_Distance);
+            //writer.WriteElement("Span", new SpanContent(
 
-            // TODO: This is probably a derived item, so we should probably not store the geometry
-            throw new NotImplementedException("SpanData.WriteContent");
-            //if (m_Feature!=null)
-            //    writer.WriteElement("Feature", m_Feature);
         }
 
         /// <summary>
