@@ -453,6 +453,9 @@ namespace Backsight.Editor
 
                 cmm.Load(m_JobData, m_User);
                 cmm.AppendWorkingSession(m_JobData, m_User);
+
+                Settings.Default.LastMap = m_JobFile.Name;
+                Settings.Default.Save();
             }
 
             finally
