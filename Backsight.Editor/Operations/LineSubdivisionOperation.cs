@@ -455,9 +455,9 @@ namespace Backsight.Editor.Operations
             // sensitivity to code elsewhere, express each span using a special class
             // that is a bit easier to work with.
 
-            SubdivisionSpanContent[] spans = new SubdivisionSpanContent[m_Sections.Count];
+            SpanContent[] spans = new SpanContent[m_Sections.Count];
             for (int i=0; i<spans.Length; i++)
-                spans[i] = new SubdivisionSpanContent(this, m_Sections[i]);
+                spans[i] = new SpanContent(this, m_Sections[i]);
 
             writer.WriteArray("SpanArray", "Span", spans);
         }
@@ -474,7 +474,7 @@ namespace Backsight.Editor.Operations
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
 
             // Read info about each span
-            SubdivisionSpanContent[] spans = reader.ReadArray<SubdivisionSpanContent>("SpanArray", "Span");
+            SpanContent[] spans = reader.ReadArray<SpanContent>("SpanArray", "Span");
 
             // Adjust the observed distances
             Distance[] distances = new Distance[spans.Length];
@@ -498,7 +498,7 @@ namespace Backsight.Editor.Operations
                     throw new Exception("Cannot adjust line section");
 
                 // Get the point feature at the end of the span
-                SubdivisionSpanContent span = spans[i];
+                SpanContent span = spans[i];
                 PointFeature end = span.GetEndPoint(reader, to);
 
                 // Create the section

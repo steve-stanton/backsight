@@ -20,9 +20,10 @@ namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="20-AUG-2008" />
     /// <summary>
-    /// The database content relating to an individual section in a <see cref="LineSubdivisionOperation"/>
+    /// The database content relating to an individual section in a <see cref="LineSubdivisionOperation"/>,
+    /// or a span in a <see cref="PathOperation"/>
     /// </summary>
-    class SubdivisionSpanContent : IXmlContent
+    class SpanContent : IXmlContent
     {
         #region Class data
 
@@ -38,13 +39,13 @@ namespace Backsight.Editor.Operations
 
         /// <summary>
         /// The ID of the point at the end of the span (null if the point was created by the
-        /// subdivision operation)
+        /// editing operation)
         /// </summary>
         string m_ExistingEndPoint;
 
         /// <summary>
         /// The point that was created at the end of the span (null if the point existed
-        /// prior to the subdivision).
+        /// prior to the editing operation).
         /// </summary>
         FeatureData m_CreatedEndPoint;
 
@@ -55,7 +56,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Default constructor, for serialization.
         /// </summary>
-        public SubdivisionSpanContent()
+        public SpanContent()
         {
         }
 
@@ -66,7 +67,7 @@ namespace Backsight.Editor.Operations
         /// <param name="mf">Information about one of the spans created by the edit</param>
         /// <exception cref="ArgumentException">If <paramref name="mf"/> is not associated with
         /// a line feature</exception>
-        internal SubdivisionSpanContent(LineSubdivisionOperation op, MeasuredLineFeature mf)
+        internal SpanContent(LineSubdivisionOperation op, MeasuredLineFeature mf)
         {
             m_Length = mf.ObservedLength;
 
@@ -89,6 +90,55 @@ namespace Backsight.Editor.Operations
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubdivisionSpanContent"/> class for
+        /// an individual span in a connection path.
+        /// </summary>
+        /// <param name="op">The editing operation this content is for</param>
+        /// <param name="span">Information about one of the spans defining the connection path</param>
+        internal SpanContent(PathOperation op, SpanData span)
+        {
+            m_Length = span.ObservedDistance;
+
+            // The feature created to represent the span is either a line or a point (or null)...
+            Feature f = span.CreatedFeature;
+
+            if (f==null)
+            {
+                m_LineItem = 0;
+                m_ExistingEndPoint = null;
+                m_CreatedEndPoint = null;
+            }
+            else
+            {
+                PointFeature ep;
+
+                if (f is LineFeature)
+                {
+                    LineFeature line = (LineFeature)f;
+                    m_LineItem = line.CreatorSequence;
+                    ep = line.EndPoint;
+                }
+                else
+                {
+                    m_LineItem = 0;
+                    Debug.Assert(f is PointFeature);
+                    ep = (PointFeature)f;
+                }
+
+                if (Object.ReferenceEquals(ep.Creator, op))
+                {
+                    m_CreatedEndPoint = new FeatureData(ep);
+                    m_ExistingEndPoint = null;
+                }
+                else
+                {
+                    m_CreatedEndPoint = null;
+                    m_ExistingEndPoint = ep.DataId;
+                }
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -99,7 +149,9 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteUnsignedInt("Line", m_LineItem);
+            // No need to write line item number if there's no line
+            if (m_LineItem!=0)
+                writer.WriteUnsignedInt("Line", m_LineItem);
 
             if (m_ExistingEndPoint==null)
             {

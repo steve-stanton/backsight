@@ -322,7 +322,7 @@
     <Compile Include="Node.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
-    <Compile Include="Operations\SubdivisionSpanContent.cs" />
+    <Compile Include="Operations\SpanContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PointGeometry.cs" />
