@@ -16,12 +16,12 @@
 using System;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.IO;
+using System.Drawing;
 
 using Backsight.SqlServer;
 using Backsight.Data;
 using Backsight.Editor.Properties;
-using System.IO;
-using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
@@ -120,6 +120,11 @@ namespace Backsight.Editor.Forms
 
             try
             {
+                // Splash screen isn't shown here, so provide user with a visual cue
+                openLastButton.Text = "Opening "+Path.GetFileName(lastFile)+" ...";
+                openLastButton.BackColor = Color.Yellow;
+                openLastButton.Refresh();
+
                 JobFile jf = new JobFile(lastFile);
                 EditingController.Current.OpenJob(jf);
                 Close();
