@@ -1025,10 +1025,5 @@ void CePath::CreateAngleText ( CPtrList& text
 
             // Adjust the path and create stuff
         }
-
-        //Circle[] GetCreatedCircles()
-        //{
-        //    foreach (
-        //}
     }
 }

@@ -66,6 +66,16 @@ namespace Backsight.Editor
         /// </summary>
         internal void Build()
         {
+            Trace.Write("Building network");
+            m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
+
+            Trace.Write("Processing island polygons");
+            BuildIslands();
+
+            Trace.Write("Associating polygon labels");
+            BuildLabels();
+
+            /*
             using (System.IO.StreamWriter output = System.IO.File.CreateText(@"C:\Temp\Build.txt"))
             {
                 Stopwatch sw = Stopwatch.StartNew();
@@ -90,6 +100,7 @@ namespace Backsight.Editor
                 output.WriteLine("Build labels: "+sw.ElapsedMilliseconds);
                 //(m_Model.Index as Backsight.Index.SpatialIndex).DumpStats();
             }
+             */
         }
 
         /// <summary>

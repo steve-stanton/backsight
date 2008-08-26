@@ -34,11 +34,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The connection path that this leg is part of.
-        /// </summary>
-        PathOperation m_Path;
-
-        /// <summary>
         /// The data that defines each span on this leg (should always contain at least
         /// one element).
         /// </summary>
@@ -122,10 +117,12 @@ namespace Backsight.Editor
                 return sd.HasEndPoint;
         }
 
+        /*
         internal bool IsDeflection
         {
             get { return m_Spans[0].IsDeflection; }
         }
+        */
 
         bool IsCurve
         {
@@ -522,6 +519,7 @@ namespace Backsight.Editor
             return null;
         }
 
+        /*
         /// <summary>
         /// Marks this leg as having a deflection angle at the start. This applies only to
         /// straight legs. There must be a preceding leg for this to make any sense.
@@ -531,6 +529,7 @@ namespace Backsight.Editor
         {
             m_Spans[0].IsDeflection = set;
         }
+        */
 
         /// <summary>
         /// Checks if this leg will generate a line feature.
@@ -703,6 +702,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             // Replace original arrays with the new ones
             m_Spans = newSpans;
 
+            /*
             // If we inserted at the very start, ensure that any
             // deflection angle switch is still with the very first span.
             if (index==0 && (m_Spans[1].Flags & LegItemFlag.Deflection)!=0)
@@ -710,6 +710,7 @@ void CeLeg::MakeText ( const CeVertex& bs
                 m_Spans[0].Flags |= LegItemFlag.Deflection;
                 m_Spans[1].Flags &= (~LegItemFlag.Deflection);
             }
+             */
         }
 
         /// <summary>
@@ -1227,7 +1228,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         {
             SpanContent[] content = new SpanContent[m_Spans.Length];
             for (int i=0; i<m_Spans.Length; i++)
-                content[i] = new SpanContent(m_Path, m_Spans[i]);
+                content[i] = new SpanContent(writer.CurrentEdit, m_Spans[i]);
 
             writer.WriteArray("SpanArray", "Span", content);
         }
@@ -1240,7 +1241,18 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="reader">The reading tool</param>
         public virtual void ReadContent(XmlContentReader reader)
         {
-            m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");
+            SpanContent[] content = reader.ReadArray<SpanContent>("SpanArray", "Span");
+            m_Spans = new SpanData[content.Length];
+
+            // The problem is that while it's possible to create an empty SpanData,
+            // we lose info about the created line/end point (SpanData just tells
+            // us about their existence or otherwise) => need alternative
+
+            /*
+            for (int i=0; i<m_Spans.Length; i++)
+            {
+                m_Spans[i] = new SpanData(
+             */
         }
     }
 }

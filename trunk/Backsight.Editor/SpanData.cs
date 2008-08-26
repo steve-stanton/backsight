@@ -143,6 +143,7 @@ namespace Backsight.Editor
             private set { SetFlag(LegItemFlag.OmitPoint, value); }
         }
 
+        /*
         /// <summary>
         /// Does this span appear at the start of a deflection (determined via
         /// the relevant flag bit in the <see cref="Flags"/> property).
@@ -153,6 +154,7 @@ namespace Backsight.Editor
             get { return (m_Switches & LegItemFlag.Deflection)!=0; }
             set { SetFlag(LegItemFlag.Deflection, value); }
         }
+        */
 
         /// <summary>
         /// The leg this span is part of is staggered, and this span represents the first face. 
@@ -201,8 +203,8 @@ namespace Backsight.Editor
                 flags += "P";
              */
 
-            if (IsDeflection)
-                flags += "D";
+            //if (IsDeflection)
+            //    flags += "D";
 
             if (IsFace1)
                 flags += "1";
@@ -232,8 +234,8 @@ namespace Backsight.Editor
             else if (flags.Contains("P"))
                 IsOmitPoint = true;
 
-            if (flags.Contains("D"))
-                IsDeflection = true;
+            //if (flags.Contains("D"))
+            //    IsDeflection = true;
 
             if (flags.Contains("1"))
                 IsFace1 = true;
