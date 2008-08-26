@@ -40,20 +40,20 @@ namespace Backsight.Editor
         /// The target namespace that should be used when writing out the
         /// top-level element. Not null.
         /// </summary>
-        public static string TargetNamespace
+        internal static string TargetNamespace
         {
             get { return s_TargetNamespace; }
             set { s_TargetNamespace = (value==null ? String.Empty : value); }
         }
 
         /// <summary>
-        /// Converts an instance of <see cref="IXmlContent"/> into XML
+        /// Converts an editing operation into XML
         /// </summary>
         /// <param name="name">The name to assign to main content element</param>
         /// <param name="indent">Should the XML be indented or not?</param>
-        /// <param name="content">The content to convert into XML</param>
-        /// <returns>The XML that corresponds to the supplied content</returns>
-        public static string GetXml(string name, bool indent, IXmlContent content)
+        /// <param name="edit">The edit to convert into XML</param>
+        /// <returns>The XML that corresponds to the supplied edit</returns>
+        internal static string GetXml(string name, bool indent, Operation edit)
         {
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
@@ -62,7 +62,7 @@ namespace Backsight.Editor
 
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
             {
-                new XmlContentWriter(writer).WriteTopElement(name, content);
+                new XmlContentWriter(writer, edit).WriteTopElement(name, (IXmlContent)edit);
             }
             return sb.ToString();
         }
@@ -76,6 +76,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly XmlWriter m_Writer;
 
+        /// <summary>
+        /// The edit that is currently being written
+        /// </summary>
+        readonly Operation m_CurrentEdit;
+
         #endregion
 
         #region Constructors
@@ -85,9 +90,11 @@ namespace Backsight.Editor
         /// writing tool.
         /// </summary>
         /// <param name="writer">The object that actually does the writing.</param>
-        public XmlContentWriter(XmlWriter writer)
+        /// <param name="edit">The edit to convert into XML</param>
+        XmlContentWriter(XmlWriter writer, Operation edit)
         {
             m_Writer = writer;
+            m_CurrentEdit = edit;
         }
 
         #endregion
@@ -294,17 +301,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out information for a line feature with geometry that will be
-        /// re-calculated on deserialization. This is suitable only for simple line
-        /// segments and circular arcs (not multi-segments).
+        /// The edit that is currently being written
         /// </summary>
-        /// <param name="elementName">The name of the element</param>
-        /// <param name="line">The lineto write out</param>
-        /*
-        internal void WriteCalculatedLine(string elementName, LineFeature line)
+        internal Operation CurrentEdit
         {
-            WriteElement(elementName, new LineData(line));
+            get { return m_CurrentEdit; }
         }
-         */
     }
 }

@@ -44,7 +44,7 @@ namespace Backsight.Editor
         /// Angle at start of a straight leg is a deflection.
         /// This switch will be set ONLY for the first span in a straight leg.
         /// </summary>
-        Deflection = 0x04,
+        //Deflection = 0x04,
 
         /// <summary>
         /// Miss-connect should be replaced with a new line upon rollforward.

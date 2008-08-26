@@ -62,13 +62,13 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubdivisionSpanContent"/> class.
+        /// Initializes a new instance of the <see cref="SpanContent"/> class.
         /// </summary>
         /// <param name="op">The editing operation this content is for</param>
         /// <param name="mf">Information about one of the spans created by the edit</param>
         /// <exception cref="ArgumentException">If <paramref name="mf"/> is not associated with
         /// a line feature</exception>
-        internal SpanContent(LineSubdivisionOperation op, MeasuredLineFeature mf)
+        internal SpanContent(Operation op, MeasuredLineFeature mf)
         {
             m_Length = mf.ObservedLength;
 
@@ -92,12 +92,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubdivisionSpanContent"/> class for
+        /// Initializes a new instance of the <see cref="SpanContent"/> class for
         /// an individual span in a connection path.
         /// </summary>
         /// <param name="op">The editing operation this content is for</param>
         /// <param name="span">Information about one of the spans defining the connection path</param>
-        internal SpanContent(PathOperation op, SpanData span)
+        internal SpanContent(Operation op, SpanData span)
         {
             m_Length = span.ObservedDistance;
 

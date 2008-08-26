@@ -37,6 +37,11 @@ namespace Backsight.Editor
         /// </summary>
         double m_StartAngle;
 
+        /// <summary>
+        /// Is the angle at the start of this a deflection?
+        /// </summary>
+        bool m_IsDeflection;
+
         #endregion
 
         #region Constructors
@@ -57,6 +62,7 @@ namespace Backsight.Editor
             : base(nspan)
         {
             m_StartAngle = 0.0;
+            m_IsDeflection = false;
         }
 
         #endregion
@@ -101,7 +107,7 @@ namespace Backsight.Editor
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
             {
-                if (IsDeflection)
+                if (m_IsDeflection)
                     bearing += m_StartAngle;
                 else
                     bearing += (m_StartAngle - Math.PI);
@@ -132,7 +138,7 @@ namespace Backsight.Editor
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
             {
-                if (IsDeflection)
+                if (m_IsDeflection)
                     bearing += m_StartAngle;
                 else
                     bearing += (m_StartAngle - Math.PI);
@@ -195,7 +201,7 @@ namespace Backsight.Editor
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > MathConstants.TINY)
             {
-                if (IsDeflection)
+                if (m_IsDeflection)
                     bearing += m_StartAngle;
                 else
                     bearing += (m_StartAngle-Math.PI);
@@ -239,7 +245,7 @@ namespace Backsight.Editor
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > MathConstants.TINY)
             {
-                if (IsDeflection)
+                if (m_IsDeflection)
                     bearing += m_StartAngle;
                 else
                     bearing += (m_StartAngle-Math.PI);
@@ -541,7 +547,8 @@ void CeStraightLeg::DrawAngles ( const CePoint* const pFrom
 */
 
         /// <summary>
-        /// Records a deflection angle at the start of this leg.
+        /// Records a deflection angle at the start of this leg. There must be a preceding
+        /// leg for this to make any sense.
         /// </summary>
         /// <param name="value">The deflection, in radians. Negated values go
         /// counter-clockwise.</param>
@@ -551,7 +558,8 @@ void CeStraightLeg::DrawAngles ( const CePoint* const pFrom
             m_StartAngle = value;
 
             // Remember that it's a deflection (as opposed to a regular angle).
-	        base.SetDeflection(true);
+            m_IsDeflection = true;
+            //base.SetDeflection(true);
         }
         /*
 //	@mfunc	Create transient CeMiscText objects for any observed
@@ -714,6 +722,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteDouble("StartAngle", m_StartAngle);
+            writer.WriteBool("IsDeflection", m_IsDeflection);
             base.WriteContent(writer);
         }
 
@@ -726,7 +735,16 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         public override void ReadContent(XmlContentReader reader)
         {
             m_StartAngle = reader.ReadDouble("StartAngle");
+            m_IsDeflection = reader.ReadBool("IsDeflection");
             base.ReadContent(reader);
+        }
+
+        /// <summary>
+        /// Is the angle at the start of this a deflection?
+        /// </summary>
+        internal bool IsDeflection
+        {
+            get { return m_IsDeflection; }
         }
     }
 }
