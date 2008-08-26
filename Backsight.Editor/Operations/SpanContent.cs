@@ -21,7 +21,7 @@ namespace Backsight.Editor.Operations
     /// <written by="Steve Stanton" on="20-AUG-2008" />
     /// <summary>
     /// The database content relating to an individual section in a <see cref="LineSubdivisionOperation"/>,
-    /// or a span in a <see cref="PathOperation"/>
+    /// or a span in a <see cref="PathOperation"/>.
     /// </summary>
     class SpanContent : IXmlContent
     {
@@ -33,7 +33,8 @@ namespace Backsight.Editor.Operations
         Distance m_Length;
 
         /// <summary>
-        /// The item number of the line that was created to represent the span
+        /// The item number of the line that was created to represent the span (0 if no
+        /// line was created)
         /// </summary>
         uint m_LineItem;
 
@@ -153,16 +154,11 @@ namespace Backsight.Editor.Operations
             if (m_LineItem!=0)
                 writer.WriteUnsignedInt("Line", m_LineItem);
 
-            if (m_ExistingEndPoint==null)
-            {
-                Debug.Assert(m_CreatedEndPoint!=null);
-                writer.WriteElement("Point", m_CreatedEndPoint);
-            }
-            else
-            {
-                Debug.Assert(m_ExistingEndPoint!=null);
+            // You always get either To or Point
+            if (m_ExistingEndPoint!=null)
                 writer.WriteString("To", m_ExistingEndPoint);
-            }
+            else
+                writer.WriteElement("Point", m_CreatedEndPoint); // could be null
 
             writer.WriteElement("Length", m_Length);
         }
@@ -200,24 +196,22 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         /// <param name="p">The expected position of the point</param>
         /// <returns>The point at the start or end of the span (either a newly created point, or a point
-        /// that previously existed)</returns>
+        /// that previously existed). Null if the span wasn't associated with either a line or a point.
+        /// </returns>
         internal PointFeature GetEndPoint(XmlContentReader reader, IPosition p)
         {
-            // If there is no information about a created point, it must be a reference
-            // to a previously created point.
-
-            if (m_CreatedEndPoint==null)
+            if (!String.IsNullOrEmpty(m_ExistingEndPoint))
             {
-                Debug.Assert(!String.IsNullOrEmpty(m_ExistingEndPoint));
                 PointFeature result = reader.GetFeatureByReference<PointFeature>(m_ExistingEndPoint);
                 Debug.Assert(result!=null);
                 Debug.Assert(PointGeometry.Create(p).IsCoincident(result));
                 return result;
             }
 
-            // Create a new point
-            Debug.Assert(String.IsNullOrEmpty(m_ExistingEndPoint));
-            return reader.CreateCalculatedPoint(m_CreatedEndPoint, p);
+            if (m_CreatedEndPoint!=null)
+                return reader.CreateCalculatedPoint(m_CreatedEndPoint, p);
+
+            return null;
         }
 
         /// <summary>

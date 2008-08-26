@@ -123,9 +123,9 @@ namespace Backsight.Editor
         /// <summary>
         /// Writes out an element with the specified name
         /// </summary>
-        /// <param name="content">The content to write</param>
-        /// <param name="name">The name for the XML element. If a null value
-        /// is supplied, nothing will be written.</param>
+        /// <param name="name">The name for the XML element.</param>
+        /// <param name="content">The content to write. If a null value is supplied, an empty
+        /// element will be written.</param>
         public void WriteElement(string name, IXmlContent content)
         {
             if (content==null)
