@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// Information for defining a single span in a connection path. A span
     /// is part of a <see cref="Leg"/>.
     /// </summary>
-    class SpanData : IXmlContent
+    class SpanData
     {
         #region Class data
 
@@ -140,7 +140,7 @@ namespace Backsight.Editor
         internal bool IsOmitPoint
         {
             get { return (m_Switches & LegItemFlag.OmitPoint)!=0; }
-            private set { SetFlag(LegItemFlag.OmitPoint, value); }
+            set { SetFlag(LegItemFlag.OmitPoint, value); }
         }
 
         /*
@@ -156,6 +156,7 @@ namespace Backsight.Editor
         }
         */
 
+        /*
         /// <summary>
         /// The leg this span is part of is staggered, and this span represents the first face. 
         /// This switch will be set ONLY for the first span in a leg.
@@ -165,7 +166,9 @@ namespace Backsight.Editor
             get { return (m_Switches & LegItemFlag.Face1)!=0; }
             set { SetFlag(LegItemFlag.Face1, value); }
         }
+        */
 
+        /*
         /// <summary>
         /// The leg this span is part of is staggered, and this span represents the second face. 
         /// This switch will be set ONLY for the first span in a leg.
@@ -175,6 +178,7 @@ namespace Backsight.Editor
             get { return (m_Switches & LegItemFlag.Face2)!=0; }
             set { SetFlag(LegItemFlag.Face2, value); }
         }
+        */
 
         /// <summary>
         /// Is this span regarded as a miss-connect that should be replaced with a
@@ -184,65 +188,6 @@ namespace Backsight.Editor
         {
             get { return ((m_Switches & LegItemFlag.NewLine)!=0); }
             set { SetFlag(LegItemFlag.NewLine, value); }
-        }
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
-        {
-            string flags = String.Empty;
-
-            /*
-            if (IsMissConnect)
-                flags += "M";
-            else if (IsOmitPoint)
-                flags += "P";
-             */
-
-            //if (IsDeflection)
-            //    flags += "D";
-
-            if (IsFace1)
-                flags += "1";
-            else if (IsFace2)
-                flags += "2";
-
-            if (flags.Length > 0)
-                writer.WriteString("Flags", flags);
-
-            writer.WriteElement("Distance", m_Distance);
-            //writer.WriteElement("Span", new SpanContent(
-
-        }
-
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public void ReadContent(XmlContentReader reader)
-        {
-            string flags = reader.ReadString("Flags");
-
-            if (flags.Contains("M"))
-                IsMissConnect = true;
-            else if (flags.Contains("P"))
-                IsOmitPoint = true;
-
-            //if (flags.Contains("D"))
-            //    IsDeflection = true;
-
-            if (flags.Contains("1"))
-                IsFace1 = true;
-            else if (flags.Contains("2"))
-                IsFace2 = true;
-
-            m_Distance = reader.ReadElement<Distance>("Distance");
         }
     }
 }

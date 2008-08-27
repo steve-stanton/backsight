@@ -250,12 +250,34 @@ namespace Backsight.Editor
         {
             m_Writer.WriteStartElement(arrayName);
             WriteUnsignedInt("Capacity", (uint)data.Length);
+            //WriteArrayHeading(arrayName, (uint)data.Length);
 
             foreach (IXmlContent xc in data)
                 WriteElement(itemName, xc);
 
             m_Writer.WriteEndElement();
         }
+        /*
+        /// <summary>
+        /// Writes the header for an array.
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the array</param>
+        /// <param name="length">The number of array elements that will be written</param>
+        internal void WriteArrayHeading(string arrayName, uint length)
+        {
+            m_Writer.WriteStartElement(arrayName);
+            WriteUnsignedInt("Capacity", (uint)data.Length);
+        }
+
+        /// <summary>
+        /// Finishes off an array element that was previously started via a call to
+        /// <see cref="WriteArrayHeading"/>
+        /// </summary>
+        internal void WriteArrayTail()
+        {
+            m_Writer.WriteEndElement();
+        }
+        */
 
         /// <summary>
         /// Writes an array element for the supplied content

@@ -714,29 +714,23 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
+        /// Writes the definition of this leg (excluding information about the individual spans).
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
+        public void WriteLegContent(XmlContentWriter writer)
         {
             writer.WriteDouble("StartAngle", m_StartAngle);
             writer.WriteBool("IsDeflection", m_IsDeflection);
-            base.WriteContent(writer);
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Loads the content of this class.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public void ReadLegContent(XmlContentReader reader)
         {
             m_StartAngle = reader.ReadDouble("StartAngle");
             m_IsDeflection = reader.ReadBool("IsDeflection");
-            base.ReadContent(reader);
         }
 
         /// <summary>

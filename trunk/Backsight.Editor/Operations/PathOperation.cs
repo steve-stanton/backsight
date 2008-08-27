@@ -914,8 +914,8 @@ void CePath::CreateAngleText ( CPtrList& text
             // Insert the new leg into our array of legs.
             InsertLeg(after, newLeg);
 
-            after.SetStaggered(1);
-            newLeg.SetStaggered(2);
+            after.FaceNumber = 1;
+            newLeg.FaceNumber = 2;
 
             return newLeg;
         }
@@ -1004,7 +1004,12 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
-            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
+
+            LegContent[] legs = new LegContent[m_Legs.Count];
+            for (int i=0; i<legs.Length; i++)
+                legs[i] = new LegContent(this, m_Legs[i]);
+
+            writer.WriteArray("LegArray", "Leg", legs);
         }
 
         /// <summary>
@@ -1020,10 +1025,10 @@ void CePath::CreateAngleText ( CPtrList& text
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
-            m_Legs = new List<Leg>(legs);
+            LegContent[] legs = reader.ReadArray<LegContent>("LegArray", "Leg");
 
             // Adjust the path and create stuff
+            m_Legs = new List<Leg>(legs.Length);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
     /// and <see cref="CircularLeg"/>.
     /// </summary>
-    abstract class Leg : ILeg, IXmlContent
+    abstract class Leg : ILeg
     {
         #region Class data
 
@@ -38,6 +38,12 @@ namespace Backsight.Editor
         /// one element).
         /// </summary>
         SpanData[] m_Spans;
+
+        /// <summary>
+        /// The face number of this leg (if this leg is staggered). In the range [0,2]. A value
+        /// of zero means the leg is not staggered.
+        /// </summary>
+        byte m_FaceNumber;
 
         #endregion
 
@@ -49,6 +55,8 @@ namespace Backsight.Editor
             m_Spans = new SpanData[Math.Max(1, nspan)];
             for (int i = 0; i < m_Spans.Length; i++)
                 m_Spans[i] = new SpanData();
+
+            m_FaceNumber = 0;
         }
 
         #endregion
@@ -129,15 +137,25 @@ namespace Backsight.Editor
             get { return (this.Circle!=null); }
         }
 
+        /// <summary>
+        /// Does this leg contain a staggered face (with distances on both sides of the
+        /// underlying line)?
+        /// </summary>
         bool IsStaggered
         {
-            get { return (FaceNumber != 0); }
+            get { return (m_FaceNumber != 0); }
         }
 
-        uint FaceNumber
+        /// <summary>
+        /// The face number of this leg (if this leg is staggered). In the range [0,2]. A value
+        /// of zero means the leg is not staggered.
+        /// </summary>
+        internal uint FaceNumber
         {
             get
             {
+                return (uint)m_FaceNumber;
+                /*
                 if (m_Spans[0].IsFace1)
                     return 1;
 
@@ -145,6 +163,15 @@ namespace Backsight.Editor
                     return 2;
 
                 return 0;
+                 */
+            }
+
+            set
+            {
+                if (value>2)
+                    throw new ArgumentOutOfRangeException();
+
+                m_FaceNumber = (byte)value;
             }
         }
 
@@ -751,7 +778,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// The number of spans in this leg is the number of elements in the
         /// <see cref="m_Spans"/> array.
         /// </summary>
-        int NumSpan
+        internal int NumSpan
         {
             get { return m_Spans.Length; }
         }
@@ -887,6 +914,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
         }
 
+        /*
         /// <summary>
         /// Records that this leg is one of two legs that make up a staggered leg.
         /// </summary>
@@ -898,6 +926,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             else if (face==2)
                 m_Spans[0].IsFace2 = true;
         }
+        */
 
         /// <summary>
         /// Creates a set of line segments (and points) for this leg. This function is called
@@ -1210,49 +1239,12 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="index">The array index of the desired span</param>
         /// <returns>The corresponding span data (null if specified array index was
         /// out of bounds)</returns>
-        SpanData GetSpanData(int index)
+        internal SpanData GetSpanData(int index)
         {
             if (index<0 || index>=m_Spans.Length)
                 return null;
             else
                 return m_Spans[index];
-        }
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public virtual void WriteContent(XmlContentWriter writer)
-        {
-            SpanContent[] content = new SpanContent[m_Spans.Length];
-            for (int i=0; i<m_Spans.Length; i++)
-                content[i] = new SpanContent(writer.CurrentEdit, m_Spans[i]);
-
-            writer.WriteArray("SpanArray", "Span", content);
-        }
-
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public virtual void ReadContent(XmlContentReader reader)
-        {
-            SpanContent[] content = reader.ReadArray<SpanContent>("SpanArray", "Span");
-            m_Spans = new SpanData[content.Length];
-
-            // The problem is that while it's possible to create an empty SpanData,
-            // we lose info about the created line/end point (SpanData just tells
-            // us about their existence or otherwise) => need alternative
-
-            /*
-            for (int i=0; i<m_Spans.Length; i++)
-            {
-                m_Spans[i] = new SpanData(
-             */
         }
     }
 }

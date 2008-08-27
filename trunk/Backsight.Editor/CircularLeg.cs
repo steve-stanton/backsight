@@ -1371,12 +1371,10 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
+        /// Writes the definition of this leg (excluding information about the individual spans).
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
+        internal void WriteLegContent(XmlContentWriter writer)
         {
             string flags = String.Empty;
 
@@ -1397,10 +1395,13 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             if (IsTwoAngles)
                 writer.WriteDouble("Angle2", m_Angle2);
 
-            writer.WriteFeatureReference("Center", m_Circle.CenterPoint);
-            writer.WriteElement("Radius", m_Radius);
+            PointFeature center = m_Circle.CenterPoint;
+            if (Object.ReferenceEquals(writer.CurrentEdit, center.Creator))
+                writer.WriteCalculatedPoint("Center", center);
+            else
+                writer.WriteFeatureReference("ExistingCenter", m_Circle.CenterPoint);
 
-            base.WriteContent(writer);
+            writer.WriteElement("Radius", m_Radius);
         }
 
         /// <summary>
@@ -1409,7 +1410,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public void ReadLegContent(XmlContentReader reader)
         {
             string flags = reader.ReadString("Flags");
             m_Flag = 0;
@@ -1431,11 +1432,6 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             PointFeature c = reader.ReadFeatureByReference<PointFeature>("Center");
             Distance d = reader.ReadElement<Distance>("Radius");
             m_Circle = new Circle(c, d.Meters);
-
-            // Read in the spans
-            base.ReadContent(reader);
-
-            // Now need to calculate the stuff created along the leg...
         }
     }
 }
