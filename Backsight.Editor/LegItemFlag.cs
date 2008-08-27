@@ -55,13 +55,13 @@ namespace Backsight.Editor
         /// Leg is staggered, and this is the first face. 
         /// This switch will be set ONLY for the first span in a leg.
         /// </summary>
-        Face1 = 0x10,
+        //Face1 = 0x10,
 
         /// <summary>
         /// Leg is staggered, and this is the second face (the leg follows
         /// the first face in the enclosing <c>PathOperation</c> object).
         /// This switch will be set ONLY for the first span in a leg.
         /// </summary>
-        Face2 = 0x20,
+        //Face2 = 0x20,
     }
 }

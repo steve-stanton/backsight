@@ -231,20 +231,5 @@ namespace Backsight.Editor
             // Turn it over to the base leg.
             return m_Base.SaveFace(op, this);
         }
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            // TODO: The Leg class needs an ID
-            throw new NotImplementedException("ExtraLeg.WriteContent");
-            //writer.WriteElement("Base", m_Base);
-        }
     }
 }
