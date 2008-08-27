@@ -1007,7 +1007,7 @@ void CePath::CreateAngleText ( CPtrList& text
 
             LegContent[] legs = new LegContent[m_Legs.Count];
             for (int i=0; i<legs.Length; i++)
-                legs[i] = new LegContent(this, m_Legs[i]);
+                legs[i] = m_Legs[i].CreateContent();
 
             writer.WriteArray("LegArray", "Leg", legs);
         }

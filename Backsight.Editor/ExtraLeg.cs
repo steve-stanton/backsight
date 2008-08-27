@@ -231,5 +231,10 @@ namespace Backsight.Editor
             // Turn it over to the base leg.
             return m_Base.SaveFace(op, this);
         }
+
+        internal override LegContent CreateContent()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 }
