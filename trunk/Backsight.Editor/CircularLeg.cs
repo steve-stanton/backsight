@@ -1396,10 +1396,14 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
                 writer.WriteDouble("Angle2", m_Angle2);
 
             PointFeature center = m_Circle.CenterPoint;
-            if (Object.ReferenceEquals(writer.CurrentEdit, center.Creator))
-                writer.WriteCalculatedPoint("Center", center);
-            else
-                writer.WriteFeatureReference("ExistingCenter", m_Circle.CenterPoint);
+            writer.WriteString("Center", center.DataId);
+
+            // Write any face number here (it would be nice to do this in LegContent,
+            // but that would cause problems with CircularLeg, since the xml attributes
+            // and elements would get mixed up - to fix some other day)
+            uint faceNum = this.FaceNumber;
+            if (faceNum != 0)
+                writer.WriteUnsignedInt("Face", faceNum);
 
             writer.WriteElement("Radius", m_Radius);
         }
@@ -1410,7 +1414,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadLegContent(XmlContentReader reader)
+        internal void ReadLegContent(XmlContentReader reader)
         {
             string flags = reader.ReadString("Flags");
             m_Flag = 0;
@@ -1426,12 +1430,19 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             m_Angle1 = reader.ReadDouble("Angle1");
             m_Angle2 = reader.ReadDouble("Angle2"); // will default to 0 if not there
 
+            this.FaceNumber = reader.ReadUnsignedInt("Face");
+
             // Form the circle (used exclusively by this leg)
             // TODO - need to clarify this. Is it consistent with the original creation
             // logic? Will the circle end up in the spatial index?
             PointFeature c = reader.ReadFeatureByReference<PointFeature>("Center");
             Distance d = reader.ReadElement<Distance>("Radius");
             m_Circle = new Circle(c, d.Meters);
+        }
+
+        internal override LegContent CreateContent()
+        {
+            return new CircularLegContent(this);
         }
     }
 }

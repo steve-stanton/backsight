@@ -320,10 +320,12 @@
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="Operations\CircularLegContent.cs" />
     <Compile Include="Operations\LegContent.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\SpanContent.cs" />
+    <Compile Include="Operations\StraightLegContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PointGeometry.cs" />

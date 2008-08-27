@@ -1246,5 +1246,25 @@ void CeLeg::MakeText ( const CeVertex& bs
             else
                 return m_Spans[index];
         }
+
+        /// <summary>
+        /// Write the content of derived classes. This is abstract because basic leg
+        /// content gets written out via the <see cref="LegContent"/> class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        //abstract public void WriteContent(XmlContentWriter writer);
+
+        /// <summary>
+        /// Reads back the content of derived classes.  This is abstract because basic leg
+        /// content gets read via the <see cref="LegContent"/> class.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        //abstract public void ReadContent(XmlContentReader reader);
+
+        /// <summary>
+        /// Creates a content object that corresponds to the derived class.
+        /// </summary>
+        /// <returns>The content object</returns>
+        abstract internal LegContent CreateContent();
     }
 }

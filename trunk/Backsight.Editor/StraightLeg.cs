@@ -717,20 +717,28 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// Writes the definition of this leg (excluding information about the individual spans).
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteLegContent(XmlContentWriter writer)
+        internal void WriteLegContent(XmlContentWriter writer)
         {
             writer.WriteDouble("StartAngle", m_StartAngle);
             writer.WriteBool("IsDeflection", m_IsDeflection);
+
+            // Write any face number here (it would be nice to do this in LegContent,
+            // but that would cause problems with CircularLeg, since the xml attributes
+            // and elements would get mixed up - to fix some other day)
+            uint faceNum = this.FaceNumber;
+            if (faceNum != 0)
+                writer.WriteUnsignedInt("Face", faceNum);
         }
 
         /// <summary>
         /// Loads the content of this class.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadLegContent(XmlContentReader reader)
+        internal void ReadLegContent(XmlContentReader reader)
         {
             m_StartAngle = reader.ReadDouble("StartAngle");
             m_IsDeflection = reader.ReadBool("IsDeflection");
+            this.FaceNumber = reader.ReadUnsignedInt("Face");
         }
 
         /// <summary>
@@ -739,6 +747,11 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         internal bool IsDeflection
         {
             get { return m_IsDeflection; }
+        }
+
+        internal override LegContent CreateContent()
+        {
+            return new StraightLegContent(this);
         }
     }
 }
