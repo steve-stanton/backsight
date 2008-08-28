@@ -48,5 +48,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="reader">The reading tool</param>
         void ReadContent(XmlContentReader reader);
+
+        ContentElement GetContent(string name);
     }
 }

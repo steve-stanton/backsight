@@ -163,6 +163,12 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Length", m_Length);
         }
 
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
+
         /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just

@@ -255,5 +255,11 @@ namespace Backsight.Editor
             m_Start = f.StartPoint;
             m_End = f.EndPoint;
         }
+
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
     }
 }

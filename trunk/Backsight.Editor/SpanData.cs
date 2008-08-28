@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// Information for defining a single span in a connection path. A span
     /// is part of a <see cref="Leg"/>.
     /// </summary>
-    class SpanData
+    class SpanData : IXmlContent
     {
         #region Class data
 
@@ -189,5 +189,45 @@ namespace Backsight.Editor
             get { return ((m_Switches & LegItemFlag.NewLine)!=0); }
             set { SetFlag(LegItemFlag.NewLine, value); }
         }
+
+        #region IXmlContent Members
+
+        public void WriteContent(XmlContentWriter writer)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public ContentElement GetContent(string name)
+        {
+            ContentElement result = new ContentElement(name, this.GetType());
+
+            PointFeature ep;
+            if (m_Feature is LineFeature)
+            {
+                LineFeature line = (m_Feature as LineFeature);
+                result.AddAttribute<uint>("Line", line.CreatorSequence);
+                ep = line.EndPoint;
+            }
+            else
+            {
+                ep = (m_Feature as PointFeature);
+            }
+
+            if (ep != null)
+            {
+                // really need the edit that's being written (i.e. some sort of context)
+            }
+
+            result.AddChild<Distance>("Length", m_Distance);
+
+            return result;
+        }
+
+        #endregion
     }
 }

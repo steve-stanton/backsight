@@ -382,6 +382,12 @@ namespace Backsight.Editor
             m_Radius = reader.ReadDouble("Radius");
         }
 
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
+
         /// <summary>
         /// The first arc associated with this circle
         /// </summary>
