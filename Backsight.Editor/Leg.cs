@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
     /// and <see cref="CircularLeg"/>.
     /// </summary>
-    abstract class Leg : ILeg
+    abstract class Leg : ILeg, IXmlContent
     {
         #region Class data
 
@@ -1266,5 +1266,27 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// </summary>
         /// <returns>The content object</returns>
         abstract internal LegContent CreateContent();
+
+        #region IXmlContent Members
+
+        public void WriteContent(XmlContentWriter writer)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        abstract public ContentElement GetContent(string name);
+
+        protected void LoadContent(ContentElement content)
+        {
+            content.AddAttribute<byte>("Face", m_FaceNumber);
+            content.AddChildArray<SpanData>("SpanArray", "Span", m_Spans);
+        }
+
+        #endregion
     }
 }

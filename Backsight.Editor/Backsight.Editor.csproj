@@ -50,7 +50,6 @@
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
-    <Compile Include="ContentAttribute.cs" />
     <Compile Include="ContentElement.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />

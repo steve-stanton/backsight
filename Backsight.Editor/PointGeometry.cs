@@ -200,6 +200,12 @@ namespace Backsight.Editor
             m_Y = new MicronValue(reader.ReadLong("Y"));
         }
 
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
+
         #endregion
     }
 }

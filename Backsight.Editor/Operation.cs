@@ -502,5 +502,11 @@ namespace Backsight.Editor
             XmlContentWriter.TargetNamespace = "Backsight";
             return XmlContentWriter.GetXml("Edit", indent, this);
         }
+
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
     }
 }

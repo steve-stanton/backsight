@@ -753,5 +753,14 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         {
             return new StraightLegContent(this);
         }
+
+        public override ContentElement GetContent(string name)
+        {
+            ContentElement result = new ContentElement(name, this.GetType());
+            base.LoadContent(result);
+            result.AddAttribute<double>("StartAngle", m_StartAngle);
+            result.AddAttribute<bool>("IsDeflection", m_IsDeflection);
+            return result;
+        }
     }
 }

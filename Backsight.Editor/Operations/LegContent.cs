@@ -91,6 +91,12 @@ namespace Backsight.Editor.Operations
             m_Spans = reader.ReadArray<SpanContent>("SpanArray", "Span");
         }
 
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
+
         #endregion
     }
 }

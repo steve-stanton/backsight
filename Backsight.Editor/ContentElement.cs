@@ -22,54 +22,105 @@ namespace Backsight.Editor
     /// <summary>
     /// An XML element
     /// </summary>
-    class ContentElement
+    public class ContentElement
     {
+        #region Class data
+
+        /// <summary>
+        /// The name of the element
+        /// </summary>
         string m_Name;
-        ContentElement m_Parent;
-        XmlWriter m_Writer;
-        List<ContentAttribute> m_Attributes;
+
+        /// <summary>
+        /// The type of element (a class name). Null if the element represents
+        /// an array.
+        /// </summary>
+        string m_Type;
+
+        /// <summary>
+        /// The attributes of this element. The key is the attribute name,
+        /// the value is the er... value.
+        /// </summary>
+        Dictionary<string, string> m_Attributes;
+
+        /// <summary>
+        /// Any child elements
+        /// </summary>
         List<ContentElement> m_ChildNodes;
 
-        ContentElement(string name, Type t, XmlWriter writer)
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>ContentElement</c> with no attributes and
+        /// no child nodes.
+        /// </summary>
+        /// <param name="name">The name of the element</param>
+        /// <param name="t">The type of data the element represents (null if this
+        /// element represents an array header)</param>
+        internal ContentElement(string name, Type t)
         {
-            m_Parent = null;
-            m_Writer = writer;
-            m_Attributes = new List<ContentAttribute>();
+            m_Name = name;
+            m_Type = (t==null ? null : t.Name);
+            m_Attributes = new Dictionary<string, string>();
             m_ChildNodes = null;
         }
 
-        ContentElement(string name, ContentElement parent)
+        #endregion
+
+        /// <summary>
+        /// Adds an element that is contained by this one.
+        /// </summary>
+        /// <typeparam name="T">The data type of the child</typeparam>
+        /// <param name="name">The name of the child</param>
+        /// <param name="element"></param>
+        internal void AddChild<T>(string name, T data) where T : IXmlContent
         {
-            m_Parent = parent;
-            m_Writer = parent.m_Writer;
-            m_ChildNodes = null;
+            ContentElement element = data.GetContent(name);
+            AddChild(element);
         }
 
-        ContentElement AddChild(string name)
+        /// <summary>
+        /// Adds a child element to this one
+        /// </summary>
+        /// <param name="element">The content to append</param>
+        void AddChild(ContentElement element)
         {
-            ContentElement result = new ContentElement(name, this);
-            if (m_ChildNodes==null)
+            if (m_ChildNodes == null)
                 m_ChildNodes = new List<ContentElement>(1);
 
-            m_ChildNodes.Add(result);
-            return result;
+            m_ChildNodes.Add(element);
         }
 
-        void Flush(XmlWriter writer)
+        /// <summary>
+        /// Adds an array of elements as a child of this one
+        /// </summary>
+        /// <typeparam name="T">The data type</typeparam>
+        /// <param name="arrayName"></param>
+        /// <param name="itemName"></param>
+        /// <param name="array"></param>
+        internal void AddChildArray<T>(string arrayName, string itemName, T[] data) where T : IXmlContent
         {
-            // Output any attributes
-            foreach (ContentAttribute a in m_Attributes)
-                writer.WriteAttributeString(a.Name, a.Value);
+            ContentElement array = new ContentElement(arrayName, null);
 
-            // Flush each child
-            if (m_ChildNodes!=null)
-            {
-                foreach (ContentElement e in m_ChildNodes)
-                {
-                    e.Flush(writer);
-                }
-            }
+            foreach (T item in data)
+                array.AddChild(itemName, item);
 
+            AddChild(array);
+        }
+
+        /// <summary>
+        /// Adds an attribute to this element
+        /// </summary>
+        /// <typeparam name="T">The data type of the attribute</typeparam>
+        /// <param name="name">The name of the attribute</param>
+        /// <param name="value">The value of the attribute</param>
+        /// <exception cref="ArgumentException">If the specified attribute
+        /// has already been recorded for this element</exception>
+        internal void AddAttribute<T>(string name, T value)
+        {
+            m_Attributes.Add(name, value.ToString());
         }
     }
 }

@@ -745,7 +745,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// </summary>
         /// <param name="leg">The leg of interest.</param>
         /// <returns>The array index of the leg (-1 if not found).</returns>
-        int GetLegIndex(Leg leg)
+        internal int GetLegIndex(Leg leg)
         {
             return m_Legs.IndexOf(leg);
         }
@@ -1010,6 +1010,15 @@ void CePath::CreateAngleText ( CPtrList& text
                 legs[i] = m_Legs[i].CreateContent();
 
             writer.WriteArray("LegArray", "Leg", legs);
+        }
+
+        public override ContentElement GetContent(string name)
+        {
+            ContentElement result = new ContentElement(name, this.GetType());
+            result.AddAttribute<string>("From", m_From.DataId);
+            result.AddAttribute<string>("To", m_To.DataId);
+            result.AddChildArray<Leg>("LegArray", "Leg", m_Legs.ToArray());
+            return result;
         }
 
         /// <summary>

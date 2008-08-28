@@ -30,6 +30,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The editing operation that contains this leg.
+        /// </summary>
+        PathOperation m_Parent;
+
+        /// <summary>
         /// The leg that this extra leg coincides with.
         /// </summary>
         Leg m_Base;
@@ -235,6 +240,14 @@ namespace Backsight.Editor
         internal override LegContent CreateContent()
         {
             throw new Exception("The method or operation is not implemented.");
+        }
+
+        public override ContentElement GetContent(string name)
+        {
+            ContentElement result = new ContentElement(name, this.GetType());
+            base.LoadContent(result);
+            result.AddAttribute<int>("Leg", m_Parent.GetLegIndex(m_Base));
+            return result;
         }
     }
 }

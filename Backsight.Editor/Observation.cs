@@ -118,6 +118,12 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         abstract public void ReadContent(XmlContentReader reader);
 
+        // To make this abstract
+        public virtual ContentElement GetContent(string name)
+        {
+            return null;
+        }
+
         #endregion
     }
 }

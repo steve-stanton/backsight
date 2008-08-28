@@ -1444,5 +1444,36 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         {
             return new CircularLegContent(this);
         }
+
+        public override ContentElement GetContent(string name)
+        {
+            ContentElement result = new ContentElement(name, this.GetType());
+            base.LoadContent(result);
+
+            string flags = String.Empty;
+
+            if (IsCulDeSac)
+                flags += "S";
+
+            if (IsTwoAngles)
+                flags += "T";
+
+            if (IsClockwise)
+                flags += "W";
+            else
+                flags += "C";
+
+            result.AddAttribute<string>("Flags", flags);
+            result.AddAttribute<double>("Angle1", m_Angle1);
+
+            if (IsTwoAngles)
+                result.AddAttribute<double>("Angle2", m_Angle2);
+
+            PointFeature center = m_Circle.CenterPoint;
+            result.AddAttribute<string>("Center", center.DataId);
+            result.AddChild("Radius", m_Radius);
+
+            return result;
+        }
     }
 }
