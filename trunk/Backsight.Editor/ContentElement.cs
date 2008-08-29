@@ -41,7 +41,7 @@ namespace Backsight.Editor
         /// The attributes of this element. The key is the attribute name,
         /// the value is the er... value.
         /// </summary>
-        Dictionary<string, string> m_Attributes;
+        Dictionary<string, IConvertible> m_Attributes;
 
         /// <summary>
         /// Any child elements
@@ -63,7 +63,7 @@ namespace Backsight.Editor
         {
             m_Name = name;
             m_Type = (t==null ? null : t.Name);
-            m_Attributes = new Dictionary<string, string>();
+            m_Attributes = new Dictionary<string, IConvertible>();
             m_ChildNodes = null;
         }
 
@@ -118,9 +118,36 @@ namespace Backsight.Editor
         /// <param name="value">The value of the attribute</param>
         /// <exception cref="ArgumentException">If the specified attribute
         /// has already been recorded for this element</exception>
-        internal void AddAttribute<T>(string name, T value)
+        internal void AddAttribute<T>(string name, T value) where T : IConvertible
         {
-            m_Attributes.Add(name, value.ToString());
+            //m_Attributes.Add(name, value.ToString());
+            m_Attributes.Add(name, value);
+        }
+
+        /// <summary>
+        /// Gets a specific attribute of this element
+        /// </summary>
+        /// <typeparam name="T">The data type of the attribute</typeparam>
+        /// <param name="name">The name of the attribute</param>
+        /// <returns>The value of the attribute (if the attribute is not present, you
+        /// get the <c>default</c> value for the specified data type).</returns>
+        internal T GetAttribute<T>(string name) where T : IConvertible
+        {
+            IConvertible c;
+            if (m_Attributes.TryGetValue(name, out c))
+                return (T)c; //return (T)Convert.ChangeType(c, typeof(T));
+            else
+                return default(T);
+        }
+
+        /// <summary>
+        /// Checks whether a specific attribute is present.
+        /// </summary>
+        /// <param name="name">The name of the attribute to look for</param>
+        /// <returns>True if the attribute is recorded for this element, false if not present</returns>
+        internal bool HasAttribute(string name)
+        {
+            return m_Attributes.ContainsKey(name);
         }
     }
 }
