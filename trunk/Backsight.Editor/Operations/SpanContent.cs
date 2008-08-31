@@ -163,10 +163,9 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Length", m_Length);
         }
 
-        // To make this abstract
-        public virtual ContentElement GetContent(string name)
+        public void WriteContent(ContentWriter writer)
         {
-            return null;
+            throw new Exception("The method or operation is not implemented.");
         }
 
         /// <summary>

@@ -91,10 +91,9 @@ namespace Backsight.Editor.Operations
             m_Spans = reader.ReadArray<SpanContent>("SpanArray", "Span");
         }
 
-        // To make this abstract
-        public virtual ContentElement GetContent(string name)
+        public void WriteContent(ContentWriter writer)
         {
-            return null;
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

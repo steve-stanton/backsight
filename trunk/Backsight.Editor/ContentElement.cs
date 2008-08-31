@@ -70,18 +70,6 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Adds an element that is contained by this one.
-        /// </summary>
-        /// <typeparam name="T">The data type of the child</typeparam>
-        /// <param name="name">The name of the child</param>
-        /// <param name="element"></param>
-        internal void AddChild<T>(string name, T data) where T : IXmlContent
-        {
-            ContentElement element = data.GetContent(name);
-            AddChild(element);
-        }
-
-        /// <summary>
         /// Adds a child element to this one
         /// </summary>
         /// <param name="element">The content to append</param>
@@ -97,12 +85,11 @@ namespace Backsight.Editor
         /// Adds an array of elements as a child of this one
         /// </summary>
         /// <typeparam name="T">The data type</typeparam>
-        /// <param name="arrayName"></param>
         /// <param name="itemName"></param>
         /// <param name="array"></param>
-        internal void AddChildArray<T>(string arrayName, string itemName, T[] data) where T : IXmlContent
+        internal void AddChildArray<T>(string itemName, T[] data) where T : IXmlContent
         {
-            ContentElement array = new ContentElement(arrayName, null);
+            ContentElement array = new ContentElement(itemName+"Array", null);
 
             foreach (T item in data)
                 array.AddChild(itemName, item);

@@ -256,10 +256,9 @@ namespace Backsight.Editor
             m_End = f.EndPoint;
         }
 
-        // To make this abstract
-        public virtual ContentElement GetContent(string name)
+        public void WriteContent(ContentWriter writer)
         {
-            return null;
+            throw new Exception("The method or operation is not implemented.");
         }
     }
 }

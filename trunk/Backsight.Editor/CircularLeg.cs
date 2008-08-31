@@ -1445,10 +1445,10 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             return new CircularLegContent(this);
         }
 
-        public override ContentElement GetContent(string name)
+        public override void WriteContent(ContentWriter writer)
         {
-            ContentElement result = new ContentElement(name, this.GetType());
-            base.LoadContent(result);
+            base.WriteContent(writer);
+            ContentElement c = writer.CurrentElement;
 
             string flags = String.Empty;
 
@@ -1463,17 +1463,16 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             else
                 flags += "C";
 
-            result.AddAttribute<string>("Flags", flags);
-            result.AddAttribute<double>("Angle1", m_Angle1);
+            c.AddAttribute<string>("Flags", flags);
+            c.AddAttribute<double>("Angle1", m_Angle1);
 
             if (IsTwoAngles)
-                result.AddAttribute<double>("Angle2", m_Angle2);
+                c.AddAttribute<double>("Angle2", m_Angle2);
 
             PointFeature center = m_Circle.CenterPoint;
-            result.AddAttribute<string>("Center", center.DataId);
-            result.AddChild("Radius", m_Radius);
+            c.AddAttribute<string>("Center", center.DataId);
 
-            return result;
+            writer.AddChild("Radius", m_Radius);
         }
     }
 }

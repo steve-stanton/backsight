@@ -202,8 +202,10 @@ namespace Backsight.Editor
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public ContentElement GetContent(string name)
+        public void WriteContent(ContentWriter writer)
         {
+            ContentElement c = writer.CurrentElement;
+
             ContentElement result = new ContentElement(name, this.GetType());
 
             PointFeature ep;
@@ -223,9 +225,7 @@ namespace Backsight.Editor
                 // really need the edit that's being written (i.e. some sort of context)
             }
 
-            result.AddChild<Distance>("Length", m_Distance);
-
-            return result;
+            writer.AddChild("Length", m_Distance);
         }
 
         #endregion
