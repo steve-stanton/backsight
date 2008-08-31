@@ -45,12 +45,14 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Creates a new <c>ExtraLeg</c>
+        /// <param name="parent">The editing operation that contains this leg.</param>
         /// <param name="baseLeg">The leg this one is based on.</param>
         /// <param name="dists">The observed distances for this leg.</param>
         /// </summary>
-        internal ExtraLeg(Leg baseLeg, Distance[] dists)
+        internal ExtraLeg(PathOperation parent, Leg baseLeg, Distance[] dists)
             : base(dists.Length)
         {
+            m_Parent = parent;
             m_Base = baseLeg;
             
             // Hold the distance observations in the base class.
@@ -242,12 +244,11 @@ namespace Backsight.Editor
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public override ContentElement GetContent(string name)
+        public override void WriteContent(ContentWriter writer)
         {
-            ContentElement result = new ContentElement(name, this.GetType());
-            base.LoadContent(result);
-            result.AddAttribute<int>("Leg", m_Parent.GetLegIndex(m_Base));
-            return result;
+            base.WriteContent(writer);
+            ContentElement c = writer.CurrentElement;
+            c.AddAttribute<int>("Leg", m_Parent.GetLegIndex(m_Base));
         }
     }
 }

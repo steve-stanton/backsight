@@ -1012,13 +1012,13 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteArray("LegArray", "Leg", legs);
         }
 
-        public override ContentElement GetContent(string name)
+        public override void WriteContent(ContentWriter writer)
         {
-            ContentElement result = new ContentElement(name, this.GetType());
-            result.AddAttribute<string>("From", m_From.DataId);
-            result.AddAttribute<string>("To", m_To.DataId);
-            result.AddChildArray<Leg>("LegArray", "Leg", m_Legs.ToArray());
-            return result;
+            ContentElement c = writer.CurrentElement;
+
+            c.AddAttribute<string>("From", m_From.DataId);
+            c.AddAttribute<string>("To", m_To.DataId);
+            c.AddChildArray<Leg>("Leg", m_Legs.ToArray());
         }
 
         /// <summary>

@@ -1279,12 +1279,12 @@ void CeLeg::MakeText ( const CeVertex& bs
             throw new Exception("The method or operation is not implemented.");
         }
 
-        abstract public ContentElement GetContent(string name);
-
-        protected void LoadContent(ContentElement content)
+        public virtual void WriteContent(ContentWriter writer)
         {
-            content.AddAttribute<byte>("Face", m_FaceNumber);
-            content.AddChildArray<SpanData>("SpanArray", "Span", m_Spans);
+            ContentElement c = writer.CurrentElement;
+
+            c.AddAttribute<byte>("Face", m_FaceNumber);
+            c.AddChildArray<SpanData>("Span", m_Spans);
         }
 
         #endregion
