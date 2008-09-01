@@ -494,7 +494,7 @@ namespace Backsight.Editor
         /// <remarks>This method is currently called when the model is getting loaded from
         /// the database, and it hits a DeletionOperation. I'm not sure whether it should
         /// be called during a "live" DeletionOperation</remarks>
-        internal void Deactivate()
+        internal virtual void Deactivate()
         {
             IsInactive = true;
             IsMoved = false;
@@ -838,6 +838,16 @@ namespace Backsight.Editor
         }
 
         public void WriteContent(ContentWriter writer)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(ContentReader reader)
         {
             throw new Exception("The method or operation is not implemented.");
         }

@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace Backsight.Editor
         /// The type of element (a class name). Null if the element represents
         /// an array.
         /// </summary>
-        string m_Type;
+        IXmlContent m_Data;
 
         /// <summary>
         /// The attributes of this element. The key is the attribute name,
@@ -61,10 +61,11 @@ namespace Backsight.Editor
         /// <param name="name">The name of the element</param>
         /// <param name="t">The type of data the element represents (null if this
         /// element represents an array header)</param>
-        internal ContentElement(ContentElement parent, string name, Type t)
+        internal ContentElement(ContentElement parent, string name, IXmlContent data)
         {
             m_Name = name;
-            m_Type = (t==null ? null : t.Name);
+            //m_Type = (t==null ? null : t.Name);
+            m_Data = data;
             m_Attributes = new Dictionary<string, IConvertible>();
             m_ChildNodes = null;
 

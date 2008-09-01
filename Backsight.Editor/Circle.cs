@@ -394,5 +394,15 @@ namespace Backsight.Editor
         {
             get { return (m_Arcs.Count > 0 ? m_Arcs[0] : null); }
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(ContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

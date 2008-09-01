@@ -1317,5 +1317,24 @@ namespace Backsight.Editor
         {
             get { return m_User; }
         }
+
+        /// <summary>
+        /// Checks whether it is OK to undo the last edit in the current
+        /// editing session.
+        /// </summary>
+        /// <exception cref="Exception">If there is any reason why it's inappropriate
+        /// to undo at the present time</exception>
+        internal void CheckUndo()
+        {
+            // If a check is running, confirm that we can really rollback (you can only undo
+            // edits that you made since the check was started)
+            if (m_Check != null)
+            {
+                CadastralMapModel map = CadastralMapModel.Current;
+                uint lastop = map.LastOpSequence;
+                if (!m_Check.CanRollback(lastop))
+                    throw new Exception("Cannot undo prior to beginning of File-Check");
+            }
+        }
     }
 }

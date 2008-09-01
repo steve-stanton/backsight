@@ -480,7 +480,6 @@ namespace Backsight.Editor
             if (!reuse)
             {
                 string keystr;      // The key string
-                bool isNumeric;     // Should FeatureId try to make it numeric?
 
                 // Try to get a numeric key.
                 uint keyval = m_Group.GetNumericKey(id);
@@ -492,15 +491,11 @@ namespace Backsight.Editor
                     // constructor know that it's ok to convert it back to numeric!
 
                     keystr = keyval.ToString();
-                    isNumeric = true;
                 }
                 else
                 {
                     // Format the ID using the key format (+ possible check digit)
                     keystr = m_Group.FormatId(id);
-
-                    // Remember that it's not to be converted to numeric.
-                    isNumeric = false;
                 }
 
                 // Create the new ID (and point it to the feature).

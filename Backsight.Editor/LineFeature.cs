@@ -1296,9 +1296,10 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// nulled (removal of any associated Topology is normally done by cleaning
         /// at the end of an edit, but startup doesn't involve cleaning). Should
         /// revisit this.</remarks>
-        internal void Deactivate()
+        internal override void Deactivate()
         {
-            this.IsInactive = true;
+            //this.IsInactive = true;
+            base.Deactivate();
             RemoveTopology();
         }
     }
