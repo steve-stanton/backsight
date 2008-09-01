@@ -207,7 +207,7 @@ namespace Backsight.Editor.Operations
             // an insert will be taking its place).
 
             // Rollforward the base class.
-            return base.OnRollforward();
+            //return base.OnRollforward();
         }
 
         /*

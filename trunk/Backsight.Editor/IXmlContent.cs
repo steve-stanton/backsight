@@ -51,6 +51,6 @@ namespace Backsight.Editor
 
         //ContentElement GetContent(string name);
         void WriteContent(ContentWriter writer);
-        //void ReadContent(ContentReader reader);
+        void ReadContent(ContentReader reader);
     }
 }

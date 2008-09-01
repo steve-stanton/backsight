@@ -94,7 +94,7 @@ namespace Backsight.Editor
         // Default for oldLabel was null
         abstract internal TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel);
 
-        abstract internal bool Update(TextFeature label);
+        abstract internal bool UpdateLabel(TextFeature label);
 
         /// <summary>
         /// The entity type for the labels.

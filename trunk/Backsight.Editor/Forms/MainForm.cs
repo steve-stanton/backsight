@@ -37,13 +37,6 @@ namespace Backsight.Editor.Forms
         private readonly EditingController m_Controller;
 
         /// <summary>
-        /// File check command (null if not active).
-        /// </summary>
-        /// <remarks>Will probably be moved to EditingController when it's implemented for real.
-        /// </remarks>
-        FileCheckUI m_Check;
-
-        /// <summary>
         /// Most-recently used file list
         /// </summary>
         readonly MruStripMenuInline m_MruMenu;
@@ -867,18 +860,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void EditUndo(IUserAction action)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-
-            // If a check is running, confirm that we can really rollback (you can only undo
-            // edits that you made since the check was started)
-            if (m_Check!=null)
+            try
             {
-                uint lastop = map.LastOpSequence;
-                if (!m_Check.CanRollback(lastop))
-                {
-                    MessageBox.Show("Cannot undo prior to beginning of File-Check");
-                    return;
-                }
+                m_Controller.CheckUndo();
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
             }
 
             CommandUI cmd = new UndoUI(action);

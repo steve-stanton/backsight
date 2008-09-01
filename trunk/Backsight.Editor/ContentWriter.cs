@@ -82,7 +82,7 @@ namespace Backsight.Editor
             try
             {
                 ContentElement parent = this.CurrentElement;
-                ContentElement result = new ContentElement(parent, name, data.GetType());
+                ContentElement result = new ContentElement(parent, name, data);
                 m_Elements.Push(result);
                 data.WriteContent(this);
                 return result;

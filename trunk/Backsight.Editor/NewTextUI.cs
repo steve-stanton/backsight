@@ -293,7 +293,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="label">The previously added text.</param>
         /// <returns>TRUE if an update was made.</returns>
-        internal override bool Update(TextFeature label)
+        internal override bool UpdateLabel(TextFeature label)
         {
             // The label MUST be miscellaneous text.
             MiscText text = (label.TextGeometry as MiscText);

@@ -822,7 +822,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="label">The previously added label.</param>
         /// <returns>True if an update was made.</returns>
-        internal override bool Update(TextFeature label)
+        internal override bool UpdateLabel(TextFeature label)
         {
             // For the time being, "update" means updating the attributes
             // associated with the label. There's no way to update the

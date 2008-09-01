@@ -226,5 +226,15 @@ namespace Backsight.Editor.Operations
         {
             get { return m_LineItem; }
         }
+
+        #region IXmlContent Members
+
+
+        public void ReadContent(ContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }
