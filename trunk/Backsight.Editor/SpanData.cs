@@ -206,13 +206,11 @@ namespace Backsight.Editor
         {
             ContentElement c = writer.CurrentElement;
 
-            ContentElement result = new ContentElement(name, this.GetType());
-
             PointFeature ep;
             if (m_Feature is LineFeature)
             {
                 LineFeature line = (m_Feature as LineFeature);
-                result.AddAttribute<uint>("Line", line.CreatorSequence);
+                c.AddAttribute<uint>("Line", line.CreatorSequence);
                 ep = line.EndPoint;
             }
             else
@@ -222,7 +220,10 @@ namespace Backsight.Editor
 
             if (ep != null)
             {
-                // really need the edit that's being written (i.e. some sort of context)
+                if (Object.ReferenceEquals(ep.Creator, writer.CurrentEdit))
+                    writer.AddChild("Point", new FeatureData(ep));
+                else
+                    c.AddAttribute<string>("ExistingPoint", ep.DataId);
             }
 
             writer.AddChild("Length", m_Distance);

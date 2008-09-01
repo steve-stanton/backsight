@@ -1282,9 +1282,8 @@ void CeLeg::MakeText ( const CeVertex& bs
         public virtual void WriteContent(ContentWriter writer)
         {
             ContentElement c = writer.CurrentElement;
-
             c.AddAttribute<byte>("Face", m_FaceNumber);
-            c.AddChildArray<SpanData>("Span", m_Spans);
+            writer.AddChildArray<SpanData>("Span", m_Spans);
         }
 
         #endregion

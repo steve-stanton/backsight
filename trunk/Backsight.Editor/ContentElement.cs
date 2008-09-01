@@ -56,15 +56,20 @@ namespace Backsight.Editor
         /// Creates a new <c>ContentElement</c> with no attributes and
         /// no child nodes.
         /// </summary>
+        /// <param name="parent">The element that contains this one (null when dealing with
+        /// root element)</param>
         /// <param name="name">The name of the element</param>
         /// <param name="t">The type of data the element represents (null if this
         /// element represents an array header)</param>
-        internal ContentElement(string name, Type t)
+        internal ContentElement(ContentElement parent, string name, Type t)
         {
             m_Name = name;
             m_Type = (t==null ? null : t.Name);
             m_Attributes = new Dictionary<string, IConvertible>();
             m_ChildNodes = null;
+
+            if (parent!=null)
+                parent.AddChild(this);
         }
 
         #endregion
@@ -82,22 +87,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Adds an array of elements as a child of this one
-        /// </summary>
-        /// <typeparam name="T">The data type</typeparam>
-        /// <param name="itemName"></param>
-        /// <param name="array"></param>
-        internal void AddChildArray<T>(string itemName, T[] data) where T : IXmlContent
-        {
-            ContentElement array = new ContentElement(itemName+"Array", null);
-
-            foreach (T item in data)
-                array.AddChild(itemName, item);
-
-            AddChild(array);
-        }
-
-        /// <summary>
         /// Adds an attribute to this element
         /// </summary>
         /// <typeparam name="T">The data type of the attribute</typeparam>
@@ -107,7 +96,6 @@ namespace Backsight.Editor
         /// has already been recorded for this element</exception>
         internal void AddAttribute<T>(string name, T value) where T : IConvertible
         {
-            //m_Attributes.Add(name, value.ToString());
             m_Attributes.Add(name, value);
         }
 

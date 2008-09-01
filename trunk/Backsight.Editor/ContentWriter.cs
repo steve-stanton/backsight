@@ -48,7 +48,7 @@ namespace Backsight.Editor
         internal ContentWriter()
         {
             m_CurrentEdit = null;
-            m_Elements = new Stack<IXmlContent>(10);
+            m_Elements = new Stack<ContentElement>(10);
         }
 
         #endregion
@@ -81,9 +81,40 @@ namespace Backsight.Editor
         {
             try
             {
-                ContentElement result = new ContentElement(name, data.GetType());
+                ContentElement parent = this.CurrentElement;
+                ContentElement result = new ContentElement(parent, name, data.GetType());
                 m_Elements.Push(result);
                 data.WriteContent(this);
+                return result;
+            }
+
+            finally
+            {
+                m_Elements.Pop();
+            }
+        }
+
+        /// <summary>
+        /// Converts an array of data into an array of content elements. The array is a
+        /// child of the current content element.
+        /// </summary>
+        /// <typeparam name="T">The data type</typeparam>
+        /// <param name="itemName">The name to associate with the results that represent each
+        /// array item. The name of the array is defined as a concatenation of the item name
+        /// + 'Array'</param>
+        /// <param name="data">The data to convert</param>
+        /// <returns>The content that corresponds to the array</returns>
+        internal ContentElement AddChildArray<T>(string itemName, T[] data) where T : IXmlContent
+        {
+            try
+            {
+                ContentElement parent = this.CurrentElement;
+                ContentElement result = new ContentElement(parent, itemName+"Array", null);
+                m_Elements.Push(result);
+
+                foreach (T item in data)                    
+                    AddChild(itemName, item);
+
                 return result;
             }
 
