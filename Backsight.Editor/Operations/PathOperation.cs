@@ -906,7 +906,7 @@ void CePath::CreateAngleText ( CPtrList& text
                 return null;
 
             // Make an extra leg with the specified distances.
-            ExtraLeg newLeg = new ExtraLeg(after, dists);
+            ExtraLeg newLeg = new ExtraLeg(this, after, dists);
 
             // Create features for the extra leg.
             newLeg.MakeFeatures(this);
@@ -1015,10 +1015,10 @@ void CePath::CreateAngleText ( CPtrList& text
         public override void WriteContent(ContentWriter writer)
         {
             ContentElement c = writer.CurrentElement;
-
             c.AddAttribute<string>("From", m_From.DataId);
             c.AddAttribute<string>("To", m_To.DataId);
-            c.AddChildArray<Leg>("Leg", m_Legs.ToArray());
+
+            writer.AddChildArray<Leg>("Leg", m_Legs.ToArray());
         }
 
         /// <summary>

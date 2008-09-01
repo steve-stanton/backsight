@@ -1470,7 +1470,10 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
                 c.AddAttribute<double>("Angle2", m_Angle2);
 
             PointFeature center = m_Circle.CenterPoint;
-            c.AddAttribute<string>("Center", center.DataId);
+            if (Object.ReferenceEquals(center.Creator, writer.CurrentEdit))
+                writer.AddChild("Center", new FeatureData(center));
+            else
+                c.AddAttribute<string>("ExistingCenter", center.DataId);
 
             writer.AddChild("Radius", m_Radius);
         }

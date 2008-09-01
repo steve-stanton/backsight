@@ -51,6 +51,7 @@
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ContentElement.cs" />
+    <Compile Include="ContentReader.cs" />
     <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
