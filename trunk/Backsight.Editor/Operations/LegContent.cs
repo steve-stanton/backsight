@@ -96,11 +96,6 @@ namespace Backsight.Editor.Operations
             throw new Exception("The method or operation is not implemented.");
         }
 
-        #endregion
-
-        #region IXmlContent Members
-
-
         public void ReadContent(ContentReader reader)
         {
             throw new Exception("The method or operation is not implemented.");

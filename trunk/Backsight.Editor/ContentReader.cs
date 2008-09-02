@@ -176,5 +176,10 @@ namespace Backsight.Editor
                     return m_Elements.Peek();
             }
         }
+
+        internal string ReadString(string name)
+        {
+            return m_Reader[name];
+        }
     }
 }

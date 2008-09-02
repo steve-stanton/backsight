@@ -512,7 +512,7 @@ namespace Backsight.Editor
         #region IXmlContent Members
 
 
-        public void ReadContent(ContentReader reader)
+        public virtual void ReadContent(ContentReader reader)
         {
             throw new Exception("The method or operation is not implemented.");
         }
