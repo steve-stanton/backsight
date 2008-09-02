@@ -1039,5 +1039,12 @@ void CePath::CreateAngleText ( CPtrList& text
             // Adjust the path and create stuff
             m_Legs = new List<Leg>(legs.Length);
         }
+
+        public override void ReadContent(ContentReader reader)
+        {
+            ContentElement c = reader.CurrentElement;
+            c.AddAttribute<string>("From", reader.ReadString("From"));
+
+        }
     }
 }
