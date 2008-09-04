@@ -1005,11 +1005,13 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
 
+            /*
             LegContent[] legs = new LegContent[m_Legs.Count];
             for (int i=0; i<legs.Length; i++)
                 legs[i] = m_Legs[i].CreateContent();
 
             writer.WriteArray("LegArray", "Leg", legs);
+             */
         }
 
         public override void WriteContent(ContentWriter writer)

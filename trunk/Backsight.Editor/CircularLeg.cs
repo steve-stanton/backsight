@@ -1440,11 +1440,12 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             m_Circle = new Circle(c, d.Meters);
         }
 
+        /*
         internal override LegContent CreateContent()
         {
             return new CircularLegContent(this);
         }
-
+        */
         public override void WriteContent(ContentWriter writer)
         {
             base.WriteContent(writer);

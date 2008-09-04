@@ -1062,6 +1062,10 @@
     <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Backsight.Content\Backsight.Content.csproj">
+      <Project>{4CE4D0B8-24B6-43C7-A528-5A24CE553D1B}</Project>
+      <Name>Backsight.Content</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
       <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
       <Name>Backsight.Data</Name>
