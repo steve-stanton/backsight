@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,14 +14,20 @@
 // </remarks>
 
 using System;
+using System.Xml.Serialization;
 
-namespace Backsight.Editor
+namespace Backsight.Content
 {
-    public enum DistanceUnitType
+    [XmlRoot("Distance", Namespace="Backsight")]
+    public class DistanceContent
     {
-        Meters,
-        Feet,
-        Chains,
-        AsEntered,
+        [XmlAttribute]
+        public int Unit;
+
+        [XmlAttribute]
+        public double MetricValue;
+
+        [XmlAttribute]
+        public bool IsFixed;
     }
 }

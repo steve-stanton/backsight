@@ -749,11 +749,12 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             get { return m_IsDeflection; }
         }
 
+        /*
         internal override LegContent CreateContent()
         {
             return new StraightLegContent(this);
         }
-
+        */
         public override void WriteContent(ContentWriter writer)
         {
             base.WriteContent(writer);

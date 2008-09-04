@@ -239,11 +239,12 @@ namespace Backsight.Editor
             return m_Base.SaveFace(op, this);
         }
 
+        /*
         internal override LegContent CreateContent()
         {
             throw new Exception("The method or operation is not implemented.");
         }
-
+        */
         public override void WriteContent(ContentWriter writer)
         {
             base.WriteContent(writer);

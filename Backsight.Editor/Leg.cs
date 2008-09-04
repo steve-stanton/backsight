@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Content;
 
 namespace Backsight.Editor
 {
@@ -1265,7 +1266,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Creates a content object that corresponds to the derived class.
         /// </summary>
         /// <returns>The content object</returns>
-        abstract internal LegContent CreateContent();
+        //abstract internal LegContent CreateContent();
 
         #region IXmlContent Members
 

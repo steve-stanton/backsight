@@ -14,14 +14,25 @@
 // </remarks>
 
 using System;
+using System.Xml.Serialization;
 
-namespace Backsight.Editor
+namespace Backsight.Content
 {
-    public enum DistanceUnitType
+    [XmlInclude(typeof(StraightLegContent))]
+    abstract public class LegContent
     {
-        Meters,
-        Feet,
-        Chains,
-        AsEntered,
+        /// <summary>
+        /// The data that defines each span on this leg (should always contain at least
+        /// one element).
+        /// </summary>
+        [XmlArray]
+        SpanDataContent[] Spans;
+
+        /// <summary>
+        /// The face number of this leg (if this leg is staggered). In the range [0,2]. A value
+        /// of zero means the leg is not staggered.
+        /// </summary>
+        [XmlAttribute]
+        byte FaceNumber;
     }
 }
