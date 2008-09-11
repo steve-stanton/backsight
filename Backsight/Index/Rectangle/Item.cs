@@ -36,12 +36,6 @@ namespace Backsight.Index.Rectangle
         /// </summary>
         private readonly Extent m_Window;
 
-        /// <summary>
-        /// Has this item been provisionally inserted into the spatial index (this sort of
-        /// index entry is subject to re-location).
-        /// </summary>
-        //private bool m_IsProvisionalPlacement;
-
         #endregion
 
         #region Constructors

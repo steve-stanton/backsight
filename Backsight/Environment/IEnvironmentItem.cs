@@ -30,10 +30,5 @@ namespace Backsight.Environment
         /// </summary>
         [Browsable(false)]
         int Id { get; }
-
-        /// <summary>
-        /// Is this a new item (not yet saved in the database)?
-        /// </summary>
-        //bool IsNew { get; }
     }
 }

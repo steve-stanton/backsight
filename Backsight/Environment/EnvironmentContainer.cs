@@ -76,36 +76,6 @@ namespace Backsight.Environment
         }
 
         /// <summary>
-        /// Returns the default entity type for a type of geometry (this is the default
-        /// as far as the environment is concerned, which may be different from the
-        /// default for an editing job).
-        /// </summary>
-        /// <param name="type">The geometric type of interest</param>
-        /// <param name="layer">The layer of interest</param>
-        /// <returns>The default entity type (may be null)</returns>
-        /*
-        public static IEntity GetDefaultEntity(SpatialType type, ILayer layer)
-        {
-            switch (type)
-            {
-                case SpatialType.Point:
-                    return layer.DefaultPointType;
-
-                case SpatialType.Line:
-                    return layer.DefaultLineType;
-
-                case SpatialType.Text:
-                    return layer.DefaultTextType;
-
-                case SpatialType.Polygon:
-                    return layer.DefaultPolygonType;
-            }
-
-            return null;
-        }
-        */
-
-        /// <summary>
         /// The schemas that relate to the specified spatial type and mapping layer.
         /// </summary>
         /// <param name="t">The type(s) of interest</param>
