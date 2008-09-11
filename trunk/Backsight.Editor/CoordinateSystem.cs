@@ -76,7 +76,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The false northing.
         /// </summary>
-        double m_FalseNorthing;
+        //double m_FalseNorthing;
 
         #endregion
 
@@ -94,7 +94,7 @@ namespace Backsight.Editor
             m_A = 6378137.0;
             m_B = 6356752.3141;
             m_FalseEasting = 500000.0;
-            m_FalseNorthing = 0.0;
+            //m_FalseNorthing = 0.0;
             m_Zone = Settings.Default.Zone;
             m_CentralMeridian = ZoneToRadians(m_Zone);
             m_MeanElevation = Settings.Default.MeanElevation;

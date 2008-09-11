@@ -872,7 +872,6 @@ namespace Ntx
             // marking a padder used to align data on a 32-bit word.
             const int PADDER = -128;
 
-	        int     i;			// Loop counter
 	        int     word;		// Word sequence# in data
 	        int 	curpt;		// Current output point
 	        bool    hasz;		// True if data has Zs

@@ -33,7 +33,7 @@ namespace Backsight.Forms
         /// </summary>
         private MagnifyForm m_Window;
 
-        private Point[] m_Connection;
+        //private Point[] m_Connection;
 
         /// <summary>
         /// The current magnification scale
@@ -102,6 +102,7 @@ namespace Backsight.Forms
              */
         }
 
+        /*
         private void DrawConnection()
         {
             if (m_Connection!=null)
@@ -112,13 +113,14 @@ namespace Backsight.Forms
                     ControlPaint.DrawReversibleLine(m_Connection[i-1], m_Connection[i], col);
             }
         }
+        */
 
         public override void MouseMove(IPosition p, MouseButtons b)
         {
             if (!m_IsStarted)
                 return;
 
-            DrawConnection();
+            //DrawConnection();
             MapControl display = this.MapControl;
             int x = (int)display.EastingToDisplay(p.X);
             int y = (int)display.NorthingToDisplay(p.Y);
@@ -127,7 +129,7 @@ namespace Backsight.Forms
             m_Window.Location = screenPos;
             m_Window.Draw(p, m_Scale);
             CreateConnection();
-            DrawConnection();
+            //DrawConnection();
         }
 
         private void AdjustLocation(ref Point screenPos)
@@ -178,7 +180,7 @@ namespace Backsight.Forms
         {
             if (m_Window!=null)
             {
-                DrawConnection();
+                //DrawConnection();
                 m_Window.Close();
                 m_Window.Dispose();
                 m_Window = null;
