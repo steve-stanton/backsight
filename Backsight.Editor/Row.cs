@@ -27,7 +27,7 @@ namespace Backsight.Editor
         //private ISchema m_Schema;
 
         // Data for each column
-        private object[] m_Data;
+        //private object[] m_Data;
 
         #region Implement IPossibleList<Row>
 

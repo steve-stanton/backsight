@@ -40,7 +40,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of undo markers that have been set.
         /// </summary>
-        uint m_NumUndo;
+        //uint m_NumUndo;
 
         /// <summary>
         /// Dependent operations.

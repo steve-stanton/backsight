@@ -38,7 +38,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The circle (if any) that is being updated.
         /// </summary>
-        LineFeature m_Update;
+        //LineFeature m_Update;
 
         /// <summary>
         /// The control that has the focus.
