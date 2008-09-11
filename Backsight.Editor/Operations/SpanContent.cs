@@ -163,11 +163,6 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Length", m_Length);
         }
 
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
@@ -226,15 +221,5 @@ namespace Backsight.Editor.Operations
         {
             get { return m_LineItem; }
         }
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

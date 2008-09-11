@@ -153,19 +153,7 @@ namespace Backsight.Editor
         /// </summary>
         internal uint FaceNumber
         {
-            get
-            {
-                return (uint)m_FaceNumber;
-                /*
-                if (m_Spans[0].IsFace1)
-                    return 1;
-
-                if (m_Spans[0].IsFace2)
-                    return 2;
-
-                return 0;
-                 */
-            }
+            get { return (uint)m_FaceNumber; }
 
             set
             {
@@ -1249,19 +1237,37 @@ void CeLeg::MakeText ( const CeVertex& bs
         }
 
         /// <summary>
-        /// Write the content of derived classes. Implementations must call
-        /// <see cref="ReadAttributes"/> then <see cref="ReadElements"/> to
-        /// ensure the XML is well-formed.
+        /// Write the content of derived classes. This makes calls to
+        /// <see cref="WriteAttributes"/> followed by <see cref="WriteElements"/>.
+        /// While these methods are defined here, derived classes will probably
+        /// need to override them (calling the base implementations at the start).
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        abstract public void WriteContent(XmlContentWriter writer);
+        public void WriteContent(XmlContentWriter writer)
+        {
+            WriteAttributes(writer);
+            WriteElements(writer);
+        }
 
+        /// <summary>
+        /// Writes the attributes for this leg. Derived classes that contain
+        /// attributes must override, calling this base implementation at
+        /// the start.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
         protected virtual void WriteAttributes(XmlContentWriter writer)
         {
             if (m_FaceNumber>0)
                 writer.WriteUnsignedInt("Face", (uint)m_FaceNumber);
         }
 
+        /// <summary>
+        /// Writes any content elements for this leg. This implementation writes
+        /// out information about each span making up this leg. Derived classes
+        /// that contain elements must override, calling this base implementation
+        /// at the start. 
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
         protected virtual void WriteElements(XmlContentWriter writer)
         {
             writer.WriteArray("SpanArray", "Span", m_Spans);
@@ -1283,21 +1289,5 @@ void CeLeg::MakeText ( const CeVertex& bs
         {
             m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");
         }
-
-        #region IXmlContent Members
-
-        public virtual void WriteContent(ContentWriter writer)
-        {
-            ContentElement c = writer.CurrentElement;
-            c.AddAttribute<byte>("Face", m_FaceNumber);
-            writer.AddChildArray<SpanData>("Span", m_Spans);
-        }
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

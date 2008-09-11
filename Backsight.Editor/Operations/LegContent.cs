@@ -91,16 +91,6 @@ namespace Backsight.Editor.Operations
             m_Spans = reader.ReadArray<SpanContent>("SpanArray", "Span");
         }
 
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         #endregion
     }
 }

@@ -1005,25 +1005,8 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
 
-            // Write information about created features
-            Feature[] features = this.Features;
-            FeatureData[] fda = new FeatureData[features.Length];
-            for (int i=0; i<features.Length; i++)
-                fda[i] = new FeatureData(features[i]);
-
-            writer.WriteArray("FeatureArray", "Feature", fda);
-
-            // Write information about each leg (this excludes information about created features)
-            //writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
-        }
-
-        public override void WriteContent(ContentWriter writer)
-        {
-            ContentElement c = writer.CurrentElement;
-            c.AddAttribute<string>("From", m_From.DataId);
-            c.AddAttribute<string>("To", m_To.DataId);
-
-            writer.AddChildArray<Leg>("Leg", m_Legs.ToArray());
+            // Write information about each leg
+            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
 
         /// <summary>
@@ -1040,20 +1023,14 @@ void CePath::CreateAngleText ( CPtrList& text
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
             // Read back information about the features that were created
-            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+            //FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
 
-            // Read back information about the legs
+            // Read back information about the legs. This creates features that
+            // have no geometry!
             Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
 
             // Adjust the path and create stuff
             m_Legs = new List<Leg>(legs);
-        }
-
-        public override void ReadContent(ContentReader reader)
-        {
-            ContentElement c = reader.CurrentElement;
-            c.AddAttribute<string>("From", reader.ReadString("From"));
-
         }
     }
 }
