@@ -109,12 +109,5 @@ namespace Backsight
         /// </summary>
         /// <param name="sender">The display that has changed</param>
         void OnSetExtent(ISpatialDisplay sender);
-
-        /// <summary>
-        /// Perform any processing whenever a display has been painted (give
-        /// the controller the opportunity to draw on top of the regular display).
-        /// </summary>
-        /// <param name="sender">The display that was just painted</param>
-        //void OnPaint(ISpatialDisplay sender);
     }
 }

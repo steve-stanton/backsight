@@ -135,30 +135,5 @@ namespace Backsight
 	        else
 		        return angle;
         }
-
-        /// <summary>
-        /// Given a clockwise angle with respect to the reference orientation
-        /// defined by this object, return the bearing.
-        /// </summary>
-        /// <param name="angle">The angle to add, in radians. An angle greater
-        /// than zero is a clockwise angle. Less than zero for a counter-clockwise angle.
-        /// </param>
-        /// <returns>The bearing after the angle has been added. In the range [0,PIMUL2).</returns>
-        /*
-        double GetBearing(double angle)
-        {
-            // Get the return bearing
-	        double bearing = m_Bearing + angle;
-
-            // Force into the expected range.
-	        while (bearing > Constants.PIMUL2)
-                bearing -= Constants.PIMUL2;
-
-	        while (bearing < 0.0)
-                bearing += Constants.PIMUL2;
-
-	        return bearing;
-        }
-         */
     }
 }

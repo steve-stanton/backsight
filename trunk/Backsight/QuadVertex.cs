@@ -56,7 +56,7 @@ namespace Backsight
  
         /// <summary>
         /// Length of vector from origin to the position. If non-zero, the
-        // IJ values will be normalized.
+        /// IJ values will be normalized.
         /// </summary>
         double m_Length;
 
