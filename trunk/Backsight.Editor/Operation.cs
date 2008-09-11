@@ -154,6 +154,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The external ID of this edit is a concatenation of the
+        /// <see cref="Session.Id"/> and <see cref="EditSequence"/> properties
+        /// (seperated with a period).
+        /// </summary>
+        internal string DataId
+        {
+            get { return String.Format("{0}.{1}", m_Session.Id, m_Sequence); }
+        }
+
+        /// <summary>
         /// Initializes this operation upon loading of the session that contains it.
         /// Any overrides should call this version up front.
         /// </summary>
@@ -502,21 +512,5 @@ namespace Backsight.Editor
             XmlContentWriter.TargetNamespace = "Backsight";
             return XmlContentWriter.GetXml("Edit", indent, this);
         }
-
-        // To make this abstract
-        public virtual void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #region IXmlContent Members
-
-
-        public virtual void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

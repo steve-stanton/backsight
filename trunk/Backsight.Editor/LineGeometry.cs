@@ -255,20 +255,5 @@ namespace Backsight.Editor
             m_Start = f.StartPoint;
             m_End = f.EndPoint;
         }
-
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

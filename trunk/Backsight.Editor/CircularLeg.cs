@@ -1440,16 +1440,13 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             m_Circle = new Circle(c, d.Meters);
         }
 
-        /*
-        internal override LegContent CreateContent()
+        /// <summary>
+        /// Writes the attributes for this leg.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        protected override void WriteAttributes(XmlContentWriter writer)
         {
-            return new CircularLegContent(this);
-        }
-        */
-        public override void WriteContent(ContentWriter writer)
-        {
-            base.WriteContent(writer);
-            ContentElement c = writer.CurrentElement;
+            base.WriteAttributes(writer);
 
             string flags = String.Empty;
 
@@ -1464,19 +1461,32 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             else
                 flags += "C";
 
-            c.AddAttribute<string>("Flags", flags);
-            c.AddAttribute<double>("Angle1", m_Angle1);
+            writer.WriteString("Flags", flags);
+            writer.WriteDouble("Angle1", m_Angle1);
 
             if (IsTwoAngles)
-                c.AddAttribute<double>("Angle2", m_Angle2);
+                writer.WriteDouble("Angle2", m_Angle2);
 
-            PointFeature center = m_Circle.CenterPoint;
-            if (Object.ReferenceEquals(center.Creator, writer.CurrentEdit))
-                writer.AddChild("Center", new FeatureData(center));
-            else
-                c.AddAttribute<string>("ExistingCenter", center.DataId);
+            // If the circle this leg sits on existed prior to the edit,
+            // output the ID of the circle center point as an attribute
+            //PointFeature center = m_Circle.CenterPoint;
+            //writer.WriteString("Center", center.DataId);
+        }
 
-            writer.AddChild("Radius", m_Radius);
+        /// <summary>
+        /// Writes content elements for this leg.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        protected override void WriteElements(XmlContentWriter writer)
+        {
+            base.WriteElements(writer);
+            writer.WriteElement("Radius", m_Radius);
+            writer.WriteElement("Circle", m_Circle);
+        }
+
+        public override void ReadContent(XmlContentReader reader)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
     }
 }

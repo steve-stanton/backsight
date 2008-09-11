@@ -386,20 +386,5 @@ namespace Backsight.Editor
             else
                 throw new Exception("Cannot parse text rotation");
         }
-
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

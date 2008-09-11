@@ -749,18 +749,20 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             get { return m_IsDeflection; }
         }
 
-        /*
-        internal override LegContent CreateContent()
+        /// <summary>
+        /// Writes the attributes for this leg.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        protected override void WriteAttributes(XmlContentWriter writer)
         {
-            return new StraightLegContent(this);
+            base.WriteAttributes(writer);
+            writer.WriteDouble("StartAngle", m_StartAngle);
+            writer.WriteBool("IsDeflection", m_IsDeflection);
         }
-        */
-        public override void WriteContent(ContentWriter writer)
+
+        public override void ReadContent(XmlContentReader reader)
         {
-            base.WriteContent(writer);
-            ContentElement c = writer.CurrentElement;
-            c.AddAttribute<double>("StartAngle", m_StartAngle);
-            c.AddAttribute<bool>("IsDeflection", m_IsDeflection);
+            throw new Exception("The method or operation is not implemented.");
         }
     }
 }

@@ -382,11 +382,6 @@ namespace Backsight.Editor
             m_Radius = reader.ReadDouble("Radius");
         }
 
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         /// <summary>
         /// The first arc associated with this circle
         /// </summary>
@@ -394,15 +389,5 @@ namespace Backsight.Editor
         {
             get { return (m_Arcs.Count > 0 ? m_Arcs[0] : null); }
         }
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
     }
 }

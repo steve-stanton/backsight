@@ -118,21 +118,6 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         abstract public void ReadContent(XmlContentReader reader);
 
-        public void WriteContent(ContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         #endregion
     }
 }

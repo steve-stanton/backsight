@@ -201,7 +201,7 @@ namespace Backsight.Editor
         {
             throw new Exception("The method or operation is not implemented.");
         }
-
+/*
         public void WriteContent(ContentWriter writer)
         {
             ContentElement c = writer.CurrentElement;
@@ -228,16 +228,7 @@ namespace Backsight.Editor
 
             writer.AddChild("Length", m_Distance);
         }
-
-        #endregion
-
-        #region IXmlContent Members
-
-
-        public void ReadContent(ContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
+        */
 
         #endregion
     }

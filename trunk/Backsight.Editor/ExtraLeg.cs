@@ -239,17 +239,20 @@ namespace Backsight.Editor
             return m_Base.SaveFace(op, this);
         }
 
-        /*
-        internal override LegContent CreateContent()
+        /// <summary>
+        /// Writes the attributes for this leg.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        protected override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteString("Base", m_Parent.DataId);
+            writer.WriteInt("Leg", m_Parent.GetLegIndex(m_Base));
+        }
+
+        public override void ReadContent(XmlContentReader reader)
         {
             throw new Exception("The method or operation is not implemented.");
-        }
-        */
-        public override void WriteContent(ContentWriter writer)
-        {
-            base.WriteContent(writer);
-            ContentElement c = writer.CurrentElement;
-            c.AddAttribute<int>("Leg", m_Parent.GetLegIndex(m_Base));
         }
     }
 }
