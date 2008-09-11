@@ -1005,13 +1005,16 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
 
-            /*
-            LegContent[] legs = new LegContent[m_Legs.Count];
-            for (int i=0; i<legs.Length; i++)
-                legs[i] = m_Legs[i].CreateContent();
+            // Write information about created features
+            Feature[] features = this.Features;
+            FeatureData[] fda = new FeatureData[features.Length];
+            for (int i=0; i<features.Length; i++)
+                fda[i] = new FeatureData(features[i]);
 
-            writer.WriteArray("LegArray", "Leg", legs);
-             */
+            writer.WriteArray("FeatureArray", "Feature", fda);
+
+            // Write information about each leg (this excludes information about created features)
+            //writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
 
         public override void WriteContent(ContentWriter writer)
@@ -1036,10 +1039,14 @@ void CePath::CreateAngleText ( CPtrList& text
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            LegContent[] legs = reader.ReadArray<LegContent>("LegArray", "Leg");
+            // Read back information about the features that were created
+            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+
+            // Read back information about the legs
+            Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
 
             // Adjust the path and create stuff
-            m_Legs = new List<Leg>(legs.Length);
+            m_Legs = new List<Leg>(legs);
         }
 
         public override void ReadContent(ContentReader reader)

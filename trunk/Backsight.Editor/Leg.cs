@@ -21,7 +21,7 @@ using System.Diagnostics;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
-using Backsight.Content;
+//using Backsight.Content;
 
 namespace Backsight.Editor
 {
@@ -1249,36 +1249,42 @@ void CeLeg::MakeText ( const CeVertex& bs
         }
 
         /// <summary>
-        /// Write the content of derived classes. This is abstract because basic leg
-        /// content gets written out via the <see cref="LegContent"/> class.
+        /// Write the content of derived classes. Implementations must call
+        /// <see cref="ReadAttributes"/> then <see cref="ReadElements"/> to
+        /// ensure the XML is well-formed.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        //abstract public void WriteContent(XmlContentWriter writer);
+        abstract public void WriteContent(XmlContentWriter writer);
+
+        protected virtual void WriteAttributes(XmlContentWriter writer)
+        {
+            if (m_FaceNumber>0)
+                writer.WriteUnsignedInt("Face", (uint)m_FaceNumber);
+        }
+
+        protected virtual void WriteElements(XmlContentWriter writer)
+        {
+            writer.WriteArray("SpanArray", "Span", m_Spans);
+        }
 
         /// <summary>
-        /// Reads back the content of derived classes.  This is abstract because basic leg
-        /// content gets read via the <see cref="LegContent"/> class.
+        /// Reads back the content of derived classes. Implementations must call
+        /// <see cref="ReadAttributes"/> then <see cref="ReadElements"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        //abstract public void ReadContent(XmlContentReader reader);
+        abstract public void ReadContent(XmlContentReader reader);
 
-        /// <summary>
-        /// Creates a content object that corresponds to the derived class.
-        /// </summary>
-        /// <returns>The content object</returns>
-        //abstract internal LegContent CreateContent();
+        protected virtual void ReadAttributes(XmlContentReader reader)
+        {
+            m_FaceNumber = (byte)reader.ReadUnsignedInt("Face");
+        }
+
+        protected virtual void ReadElements(XmlContentReader reader)
+        {
+            m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");
+        }
 
         #region IXmlContent Members
-
-        public void WriteContent(XmlContentWriter writer)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public void ReadContent(XmlContentReader reader)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
 
         public virtual void WriteContent(ContentWriter writer)
         {
@@ -1286,11 +1292,6 @@ void CeLeg::MakeText ( const CeVertex& bs
             c.AddAttribute<byte>("Face", m_FaceNumber);
             writer.AddChildArray<SpanData>("Span", m_Spans);
         }
-
-        #endregion
-
-        #region IXmlContent Members
-
 
         public void ReadContent(ContentReader reader)
         {

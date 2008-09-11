@@ -15,7 +15,7 @@
 
 using System;
 
-using Backsight.Content;
+//using Backsight.Content;
 
 namespace Backsight.Editor
 {
@@ -364,11 +364,12 @@ namespace Backsight.Editor
             writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
             writer.WriteDouble("MetricValue", m_ObservedMetric);
             writer.WriteBool("IsFixed", m_IsFixed);
-
+            /*
             DistanceContent c = new DistanceContent();
             c.Unit = (int)m_EnteredUnit.UnitType;
             c.MetricValue = m_ObservedMetric;
             c.IsFixed = m_IsFixed;
+             */
         }
 
         /// <summary>
