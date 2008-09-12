@@ -250,9 +250,21 @@ namespace Backsight.Editor
             writer.WriteInt("Leg", m_Parent.GetLegIndex(m_Base));
         }
 
-        public override void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Reads the attributes for this leg.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        protected override void ReadAttributes(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.ReadAttributes(reader);
+            string baseId = reader.ReadString("Base");
+            int legIndex = reader.ReadInt("Leg");
+
+            // Locate the original edit in the model, then find the leg
+            // within that edit. Leave it for now, since I'm not 100% that
+            // extra legs will even be handled via this class.
+
+            throw new NotImplementedException("ExtraLeg.ReadAttributes");
         }
     }
 }

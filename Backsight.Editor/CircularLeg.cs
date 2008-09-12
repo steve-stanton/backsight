@@ -1371,76 +1371,6 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         }
 
         /// <summary>
-        /// Writes the definition of this leg (excluding information about the individual spans).
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal void WriteLegContent(XmlContentWriter writer)
-        {
-            string flags = String.Empty;
-
-            if (IsCulDeSac)
-                flags += "S";
-
-            if (IsTwoAngles)
-                flags += "T";
-
-            if (IsClockwise)
-                flags += "W";
-            else
-                flags += "C";
-
-            writer.WriteString("Flags", flags);
-            writer.WriteDouble("Angle1", m_Angle1);
-
-            if (IsTwoAngles)
-                writer.WriteDouble("Angle2", m_Angle2);
-
-            PointFeature center = m_Circle.CenterPoint;
-            writer.WriteString("Center", center.DataId);
-
-            // Write any face number here (it would be nice to do this in LegContent,
-            // but that would cause problems with CircularLeg, since the xml attributes
-            // and elements would get mixed up - to fix some other day)
-            uint faceNum = this.FaceNumber;
-            if (faceNum != 0)
-                writer.WriteUnsignedInt("Face", faceNum);
-
-            writer.WriteElement("Radius", m_Radius);
-        }
-
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal void ReadLegContent(XmlContentReader reader)
-        {
-            string flags = reader.ReadString("Flags");
-            m_Flag = 0;
-            IsCulDeSac = flags.Contains("S");
-            IsTwoAngles = flags.Contains("T");
-
-            // The flag is actually reversed, so do it a bit differently to avoid confusion
-            if (flags.Contains("W"))
-                IsClockwise = true;
-            else
-                IsClockwise = false;
-
-            m_Angle1 = reader.ReadDouble("Angle1");
-            m_Angle2 = reader.ReadDouble("Angle2"); // will default to 0 if not there
-
-            this.FaceNumber = reader.ReadUnsignedInt("Face");
-
-            // Form the circle (used exclusively by this leg)
-            // TODO - need to clarify this. Is it consistent with the original creation
-            // logic? Will the circle end up in the spatial index?
-            PointFeature c = reader.ReadFeatureByReference<PointFeature>("Center");
-            Distance d = reader.ReadElement<Distance>("Radius");
-            m_Circle = new Circle(c, d.Meters);
-        }
-
-        /// <summary>
         /// Writes the attributes for this leg.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -1466,11 +1396,29 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             if (IsTwoAngles)
                 writer.WriteDouble("Angle2", m_Angle2);
+        }
 
-            // If the circle this leg sits on existed prior to the edit,
-            // output the ID of the circle center point as an attribute
-            //PointFeature center = m_Circle.CenterPoint;
-            //writer.WriteString("Center", center.DataId);
+        /// <summary>
+        /// Reads the attributes for this leg.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        protected override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+
+            string flags = reader.ReadString("Flags");
+            m_Flag = 0;
+            IsCulDeSac = flags.Contains("S");
+            IsTwoAngles = flags.Contains("T");
+
+            // The flag is actually reversed, so do it a bit differently to avoid confusion
+            if (flags.Contains("W"))
+                IsClockwise = true;
+            else
+                IsClockwise = false;
+
+            m_Angle1 = reader.ReadDouble("Angle1");
+            m_Angle2 = reader.ReadDouble("Angle2"); // will default to 0 if not there
         }
 
         /// <summary>
@@ -1484,9 +1432,19 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             writer.WriteElement("Circle", m_Circle);
         }
 
-        public override void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Reads the elements for this leg.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        protected override void ReadElements(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.ReadElements(reader);
+            m_Radius = reader.ReadElement<Distance>("Radius");
+
+            // Form the circle (used exclusively by this leg)
+            // TODO - need to clarify this. Is it consistent with the original creation
+            // logic? Will the circle end up in the spatial index?
+            m_Circle = reader.ReadElement<Circle>("Circle");
         }
     }
 }
