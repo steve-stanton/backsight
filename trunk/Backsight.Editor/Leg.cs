@@ -1274,17 +1274,41 @@ void CeLeg::MakeText ( const CeVertex& bs
         }
 
         /// <summary>
-        /// Reads back the content of derived classes. Implementations must call
-        /// <see cref="ReadAttributes"/> then <see cref="ReadElements"/>.
+        /// Reads back the content of derived classes. This makes calls to
+        /// <see cref="ReadAttributes"/> followed by <see cref="ReadElements"/>.
+        /// While these methods are defined here, derived classes will probably
+        /// need to override them (calling the base implementations at the start).
+        /// <para/>
+        /// After reading the content, <c>Feature</c> objects will have been
+        /// created, but without any associated geometry. In order to create
+        /// the geometry, all legs in the enclosing connection path have to
+        /// be read in so that a suitable adjustment can be determined.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void ReadContent(XmlContentReader reader)
+        {
+            ReadAttributes(reader);
+            ReadElements(reader);
+        }
+
+        /// <summary>
+        /// Reads the attributes for this leg. Derived classes that contain
+        /// attributes must override, calling this base implementation at
+        /// the start.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        abstract public void ReadContent(XmlContentReader reader);
-
         protected virtual void ReadAttributes(XmlContentReader reader)
         {
             m_FaceNumber = (byte)reader.ReadUnsignedInt("Face");
         }
 
+        /// <summary>
+        /// Reads back any content elements for this leg. This implementation reads
+        /// information about each span making up this leg. Derived classes
+        /// that contain elements must override, calling this base implementation
+        /// at the start. 
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
         protected virtual void ReadElements(XmlContentReader reader)
         {
             m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");

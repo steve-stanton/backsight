@@ -714,34 +714,6 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         }
 
         /// <summary>
-        /// Writes the definition of this leg (excluding information about the individual spans).
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal void WriteLegContent(XmlContentWriter writer)
-        {
-            writer.WriteDouble("StartAngle", m_StartAngle);
-            writer.WriteBool("IsDeflection", m_IsDeflection);
-
-            // Write any face number here (it would be nice to do this in LegContent,
-            // but that would cause problems with CircularLeg, since the xml attributes
-            // and elements would get mixed up - to fix some other day)
-            uint faceNum = this.FaceNumber;
-            if (faceNum != 0)
-                writer.WriteUnsignedInt("Face", faceNum);
-        }
-
-        /// <summary>
-        /// Loads the content of this class.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal void ReadLegContent(XmlContentReader reader)
-        {
-            m_StartAngle = reader.ReadDouble("StartAngle");
-            m_IsDeflection = reader.ReadBool("IsDeflection");
-            this.FaceNumber = reader.ReadUnsignedInt("Face");
-        }
-
-        /// <summary>
         /// Is the angle at the start of this a deflection?
         /// </summary>
         internal bool IsDeflection
@@ -760,9 +732,15 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             writer.WriteBool("IsDeflection", m_IsDeflection);
         }
 
-        public override void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Reads the attributes for this leg.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        protected override void ReadAttributes(XmlContentReader reader)
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.ReadAttributes(reader);
+            m_StartAngle = reader.ReadDouble("StartAngle");
+            m_IsDeflection = reader.ReadBool("IsDeflection");
         }
     }
 }
