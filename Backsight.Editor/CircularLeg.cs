@@ -1444,6 +1444,10 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // Form the circle (used exclusively by this leg)
             // TODO - need to clarify this. Is it consistent with the original creation
             // logic? Will the circle end up in the spatial index?
+
+            // ...the implementation of Circle.ReadContent assumes the center
+            // point already exists. But it can't have any geometry, since we
+            // haven't worked out the path adjustment yet
             m_Circle = reader.ReadElement<Circle>("Circle");
         }
     }

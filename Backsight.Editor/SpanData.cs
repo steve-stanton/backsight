@@ -14,6 +14,7 @@
 /// </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -194,11 +195,12 @@ namespace Backsight.Editor
 
         public void WriteContent(XmlContentWriter writer)
         {
-            throw new Exception("The method or operation is not implemented.");
+            new SpanContent(writer.CurrentEdit, this).WriteContent(writer);
         }
 
         public void ReadContent(XmlContentReader reader)
         {
+            //SpanContent sc = reader.ReadElement<
             throw new Exception("The method or operation is not implemented.");
         }
 /*
