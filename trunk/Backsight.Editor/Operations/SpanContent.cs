@@ -221,5 +221,27 @@ namespace Backsight.Editor.Operations
         {
             get { return m_LineItem; }
         }
+
+        /// <summary>
+        /// Creates the end point for this span (with undefined geometry)
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <returns>The point at the start or end of the span (either a newly created point, or a point
+        /// that previously existed). Null if the span wasn't associated with either a line or a point.
+        /// </returns>
+        internal PointFeature CreateEndPoint(XmlContentReader reader)
+        {
+            if (!String.IsNullOrEmpty(m_ExistingEndPoint))
+            {
+                PointFeature result = reader.GetFeatureByReference<PointFeature>(m_ExistingEndPoint);
+                Debug.Assert(result!=null);
+                return result;
+            }
+
+            if (m_CreatedEndPoint!=null)
+                return reader.CreateCalculatedPoint(m_CreatedEndPoint, null);
+
+            return null;
+        }
     }
 }

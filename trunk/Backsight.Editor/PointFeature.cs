@@ -35,7 +35,8 @@ namespace Backsight.Editor
         /// <summary>
         /// The geometry for this point. Could conceivably be shared by more
         /// than one point (although it is expected that 99% of points will not
-        /// be shared).
+        /// be shared). This value could be null while in the process of deserializing
+        /// data.
         /// </summary>
         Node m_Geom;
 
@@ -54,16 +55,17 @@ namespace Backsight.Editor
         /// Creates a new <c>PointFeature</c> with geometry that isn't shared
         /// with any other point.
         /// </summary>
-        /// <param name="g">The geometry for the point (not null)</param>
+        /// <param name="g">The geometry for the point (may be null, although this is only really
+        /// expected during deserialization)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
         internal PointFeature(PointGeometry g, IEntity e, Operation creator)
             : base(e, creator)
         {
             if (g == null)
-                throw new ArgumentNullException("Position for new point feature cannot be null");
-
-            m_Geom = new Node(this, g);
+                m_Geom = null;
+            else
+                m_Geom = new Node(this, g);
         }
 
         /// <summary>
@@ -219,6 +221,13 @@ namespace Backsight.Editor
         internal PointGeometry PointGeometry
         {
             get { return m_Geom; }
+            set
+            {
+                if (value==null)
+                    throw new ArgumentNullException();
+
+                m_Geom = new Node(this, value);
+            }
         }
 
         /// <summary>
