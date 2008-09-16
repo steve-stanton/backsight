@@ -519,11 +519,11 @@ namespace Backsight.Editor
         /// Creates a calculated point feature
         /// </summary>
         /// <param name="fd">Information to assign to the created point</param>
-        /// <param name="p">The calculated position of the point</param>
+        /// <param name="p">The calculated position of the point (null if it will be calculated later)</param>
         /// <returns>The created point</returns>
         internal PointFeature CreateCalculatedPoint(FeatureData fd, IPosition p)
         {
-            PointGeometry pg = PointGeometry.Create(p);
+            PointGeometry pg = (p==null ? null : PointGeometry.Create(p));
             PointFeature result = new PointFeature(pg, fd.EntityType, FindParent<Operation>());
             InitializeFeature(result, fd);
             return result;

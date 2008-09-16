@@ -15,6 +15,7 @@
 
 using System;
 using Backsight.Editor.Operations;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -195,42 +196,36 @@ namespace Backsight.Editor
 
         public void WriteContent(XmlContentWriter writer)
         {
-            new SpanContent(writer.CurrentEdit, this).WriteContent(writer);
+            SpanContent sc = new SpanContent(writer.CurrentEdit, this);
+            writer.WriteElement("Span", sc);
         }
 
         public void ReadContent(XmlContentReader reader)
         {
-            //SpanContent sc = reader.ReadElement<
-            throw new Exception("The method or operation is not implemented.");
-        }
-/*
-        public void WriteContent(ContentWriter writer)
-        {
-            ContentElement c = writer.CurrentElement;
+            SpanContent sc = reader.ReadElement<SpanContent>("Span");
+            m_Distance = sc.Length;
 
-            PointFeature ep;
-            if (m_Feature is LineFeature)
+            PointFeature ep = sc.CreateEndPoint(reader);
+            if (ep==null)
             {
-                LineFeature line = (m_Feature as LineFeature);
-                c.AddAttribute<uint>("Line", line.CreatorSequence);
-                ep = line.EndPoint;
+                Debug.Assert(sc.LineItemNumber==0);
+                m_Feature = null;
+                IsOmitPoint = true;
             }
             else
             {
-                ep = (m_Feature as PointFeature);
-            }
-
-            if (ep != null)
-            {
-                if (Object.ReferenceEquals(ep.Creator, writer.CurrentEdit))
-                    writer.AddChild("Point", new FeatureData(ep));
+                uint lineNum = sc.LineItemNumber;
+                if (lineNum==0)
+                    IsMissConnect = true;
                 else
-                    c.AddAttribute<string>("ExistingPoint", ep.DataId);
+                {
+                    LineFeature line = new LineFeature();
+                    line.EntityType = CadastralMapModel.Current.DefaultLineType;
+                    line.CreatorSequence = lineNum;
+                    line.Creator = reader.FindParent<Operation>();
+                }
             }
-
-            writer.AddChild("Length", m_Distance);
         }
-        */
 
         #endregion
     }

@@ -308,6 +308,7 @@ namespace Backsight.Editor
         public Operation Creator
         {
             get { return m_Creator; }
+            set { m_Creator = value; }
         }
 
         public IEntity EntityType
