@@ -32,10 +32,10 @@ namespace Backsight.Editor
         /// <param name="str"></param>
         /// <returns>The items in the parsed path</returns>
         /// <exception cref="Exception">If any parsing problem is encountered</exception>
-        static internal List<PathItem> GetPathItems(string str)
+        static internal PathItem[] GetPathItems(string str)
         {
             PathParser pp = new PathParser(str);
-            return pp.m_Items;
+            return pp.m_Items.ToArray();
         }
 
         #endregion
@@ -90,6 +90,9 @@ namespace Backsight.Editor
 
             // Validate the path items
             ValidPath();
+
+            // Assign leg numbers to each path item.
+            SetLegs();
         }
 
         void ParseWord(string str)
@@ -752,6 +755,72 @@ namespace Backsight.Editor
                 return String.Empty;
 
             return s.Substring(0, nChar);
+        }
+
+        /// <summary>
+        /// Associates each path item with a leg sequence number.
+        /// </summary>
+        /// <returns>The number of legs found.</returns>
+        int SetLegs()
+        {
+            int nleg = 0;
+
+            // Note that PathItemType.Units may not get a leg number.
+
+            for (int i = 0; i < m_Items.Count; ) // not i++
+            {
+                PathItemType type = m_Items[i].ItemType;
+
+                if (type == PathItemType.Distance ||
+                    type == PathItemType.Angle ||
+                    type == PathItemType.Deflection ||
+                    type == PathItemType.BC)
+                {
+                    // If we have a distance or angle item, increment the leg 
+                    // sequence number until we hit an angle or a BC. In the case of
+                    // an angle, it always comes at the START of a leg.
+
+                    if (type == PathItemType.Distance ||
+                        type == PathItemType.Angle ||
+                        type == PathItemType.Deflection)
+                    {
+                        nleg++;
+                        m_Items[i].LegNumber = nleg;
+                        for (i++; i < m_Items.Count; i++)
+                        {
+                            if (m_Items[i].ItemType == PathItemType.Angle ||
+                                m_Items[i].ItemType == PathItemType.Deflection ||
+                                m_Items[i].ItemType == PathItemType.BC)
+                                break;
+
+                            m_Items[i].LegNumber = nleg;
+                        }
+                    }
+                    else
+                    {
+                        // We have a BC, so increment the leg sequence number
+                        // & scan until we hit the EC.
+
+                        nleg++;
+                        for (; i < m_Items.Count; i++)
+                        {
+                            m_Items[i].LegNumber = -nleg;	// negated
+                            if (m_Items[i].ItemType == PathItemType.EC)
+                            {
+                                i++;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    m_Items[i].LegNumber = nleg;
+                    i++;
+                }
+            }
+
+            return nleg;
         }
     }
 }
