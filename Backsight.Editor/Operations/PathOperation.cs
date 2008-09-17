@@ -46,6 +46,14 @@ namespace Backsight.Editor.Operations
         /// </summary>
         List<Leg> m_Legs; // readonly
 
+        /// <summary>
+        /// The default distance units when this edit was originally executed.
+        /// While each <c>Distance</c> observation holds the units, that is
+        /// not sufficient to re-create the original data entry string (starting
+        /// with something like "ft..."). 
+        /// </summary>
+        DistanceUnit m_DefaultEntryUnit;
+
         #endregion
 
         #region Constructors
@@ -58,6 +66,7 @@ namespace Backsight.Editor.Operations
             m_From = null;
             m_To = null;
             m_Legs = null;
+            m_DefaultEntryUnit = null;
         }
 
         /// <summary>
@@ -68,6 +77,7 @@ namespace Backsight.Editor.Operations
         {
             m_From = pd.FromPoint;
             m_To = pd.ToPoint;
+            m_DefaultEntryUnit = EditingController.Current.EntryUnit;
 
             // The legs should all be instances of CircularLeg or StraightLeg
             ILeg[] legs = pd.GetLegs();
@@ -876,12 +886,12 @@ void CePath::CreateAngleText ( CPtrList& text
         internal string GetString()
         {
             StringBuilder sb = new StringBuilder(m_Legs.Count * 20);
+            sb.Append(m_DefaultEntryUnit.Abbreviation);
+            sb.Append("...");
 
             for (int i = 0; i < m_Legs.Count; i++)
             {
-                if (i > 0)
-                    sb.Append(" ");
-
+                sb.Append(" ");
                 string legstr = m_Legs[i].DataString;
                 sb.Append(legstr);
             }
@@ -1027,7 +1037,9 @@ void CePath::CreateAngleText ( CPtrList& text
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
             string entryString = reader.ReadString("EntryString");
+            PathItem[] items = PathParser.GetPathItems(entryString);
             PathData pd = new PathData(m_From, m_To);
+            pd.Create(items);
 
             // Read back information about the features that were created
             //FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
