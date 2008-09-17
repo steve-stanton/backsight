@@ -1005,8 +1005,12 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
 
+            // Output a string like the string originally specified by the user
+            string entryString = GetString();
+            writer.WriteString("EntryString", entryString);
+
             // Write information about each leg
-            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
+            //writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
 
         /// <summary>
@@ -1021,6 +1025,9 @@ void CePath::CreateAngleText ( CPtrList& text
 
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
+
+            string entryString = reader.ReadString("EntryString");
+            PathData pd = new PathData(m_From, m_To);
 
             // Read back information about the features that were created
             //FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
