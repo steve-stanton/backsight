@@ -578,6 +578,20 @@ namespace Backsight.Editor.Forms
         /// <returns>True if the supplied string is understandable</returns>
         bool ParseString(string str)
         {
+            try
+            {
+                m_Items = PathParser.GetPathItems(str);
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            return false;
+
+            /*
             // Initialize list of path items.
             m_Items = new List<PathItem>();
 
@@ -591,8 +605,10 @@ namespace Backsight.Editor.Forms
 
             // Validate the path items
             return ValidPath();
+             */
         }
 
+        /*
         bool ParseWord(string str)
         {
             // Return if string is empty (could be empty if this function
@@ -826,14 +842,16 @@ namespace Backsight.Editor.Forms
                     return true;
             }
         }
+        */
 
+        /*
         /// <summary>
         /// Returns the numeric digits (if any) at the start of a string
         /// </summary>
         /// <param name="str">The string that should be starting with some digits (e.g. 1234abc)</param>
         /// <returns>The leading numeric digits (blank if the first character in the supplied
         /// string is not a digit)</returns>
-        string GetIntDigits(string str)
+        string GetIntDigits(string str) // used?
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -849,7 +867,9 @@ namespace Backsight.Editor.Forms
             // The entire string consists of numeric digits (or it's empty)
             return str;
         }
+        */
 
+        /*
         /// <summary>
         /// Returns a portion of a string that contains numeric characters
         /// </summary>
@@ -859,7 +879,7 @@ namespace Backsight.Editor.Forms
         /// a period, or a minus sign).</returns>
         /// <remarks>This may not handle i18n (e.g. decimal places may
         /// actually be commas).</remarks>
-        string GetDoubleDigits(string s)
+        string GetDoubleDigits(string s) // used?
         {
             int nChar = 0;
 
@@ -879,7 +899,9 @@ namespace Backsight.Editor.Forms
 
             return s.Substring(0, nChar);
         }
+        */
 
+        /*
         /// <summary>
         /// Repeats the last path item a specific number of times. The thing to
         /// repeat HAS to be of type PAT_VALUE (or possibly a PAT_MC that has been
@@ -919,6 +941,7 @@ namespace Backsight.Editor.Forms
                 AddItem(copy);
             }
         }
+        */
 
         /// <summary>
         /// Gets or sets the units for distance observations.
@@ -931,7 +954,8 @@ namespace Backsight.Editor.Forms
         /// <param name="makedef">True if the units obtained should be regarded as
         /// the new default. (default was false).</param>
         /// <returns>The corresponding units.</returns>
-        DistanceUnit GetUnits(string str, bool makedef)
+        /*
+        DistanceUnit GetUnits(string str, bool makedef) // used?
         {
             if (str != null)
             {
@@ -976,24 +1000,28 @@ namespace Backsight.Editor.Forms
                 return m_Units;
             }
         }
+        */
 
+        /*
         /// <summary>
         /// Converts a string that represents a distance unit abbreviation into
         /// a DistanceUnit reference (to one of the objects known to the enclosing map).
         /// </summary>
         /// <param name="abbrev">The units abbreviation.</param>
         /// <returns>The corresponding units (null if the abbreviation was not found).</returns>
-        DistanceUnit MatchUnits(string abbrev)
+        DistanceUnit MatchUnits(string abbrev) // used?
         {
             EditingController ec = EditingController.Current;
             return ec.GetUnit(abbrev);
         }
+        */
 
+        /*
         /// <summary>
         /// Holds on to an additional path item.
         /// </summary>
         /// <param name="item">The item to add.</param>
-        void AddItem(PathItem item)
+        void AddItem(PathItem item) // used?
         {
             if (m_Items == null)
                 m_Items = new List<PathItem>();
@@ -1026,18 +1054,22 @@ namespace Backsight.Editor.Forms
             if (type == PathItemType.OmitPoint)
                 m_Omit = true;
         }
+        */
 
+        /*
         /// <summary>
         /// Holds on to an additional path item. Good for items that
         /// do not have an associated value.
         /// </summary>
         /// <param name="type">The type of item to add.</param>
-        void AddItem(PathItemType type)
+        void AddItem(PathItemType type) // used?
         {
             PathItem item = new PathItem(type, null, 0.0);
             AddItem(item);
         }
+        */
 
+        /*
         /// <summary>
         /// Checks if the last path item is a BC.
         /// </summary>
@@ -1050,7 +1082,9 @@ namespace Backsight.Editor.Forms
             PathItem lastItem = m_Items[m_Items.Count - 1];
             return (lastItem.ItemType == PathItemType.BC);
         }
+        */
 
+        /*
         /// <summary>
         /// Validates path items. Prior to call, the path should be parsed by
         /// making a series of calls to ParseWord. This generates a set of
@@ -1319,6 +1353,7 @@ namespace Backsight.Editor.Forms
 
             return true;
         }
+        */
 
         /// <summary>
         /// Adjusts a validated path.

@@ -325,6 +325,7 @@
     <Compile Include="Operations\SpanContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
+    <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />
     <Compile Include="PositionLoader.cs" />
     <Compile Include="RadianValue.cs" />
