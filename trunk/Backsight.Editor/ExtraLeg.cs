@@ -96,9 +96,9 @@ namespace Backsight.Editor
         /// recalling a connection path. By returning an empty string, it means you
         /// don't actually recall the extra face.
         /// </summary>
-        internal override string DataString
+        internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
-            get { return String.Empty; }
+            return String.Empty;
         }
 
         /// <summary>

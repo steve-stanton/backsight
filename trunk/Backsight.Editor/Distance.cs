@@ -192,7 +192,10 @@ namespace Backsight.Editor
             get { return (m_EnteredUnit!=null); }
         }
 
-        DistanceUnit EntryUnit
+        /// <summary>
+        /// The way the distance was originally specified by the user.
+        /// </summary>
+        internal DistanceUnit EntryUnit
         {
             get { return m_EnteredUnit; }
         }
@@ -384,6 +387,14 @@ namespace Backsight.Editor
             m_EnteredUnit = EditingController.Current.GetUnits(unitType);
             m_ObservedMetric = reader.ReadDouble("MetricValue");
             m_IsFixed = reader.ReadBool("IsFixed");
+        }
+
+        /// <summary>
+        /// The observed distance value
+        /// </summary>
+        internal double ObservedValue
+        {
+            get { return GetDistance(m_EnteredUnit); }
         }
     }
 }

@@ -1268,52 +1268,53 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         */
 
         /// <summary>
-        /// Defines a string with the observations that make up this leg.
+        /// Generates a string that represents the definition of this leg
         /// </summary>
-        internal override string DataString
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// Formatted distances that were specified using these units will not contain the units
+        /// abbreviation</param>
+        /// <returns>A formatted representation of this leg</returns>
+        internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
-            get
+            StringBuilder sb = new StringBuilder();
+
+            // Initial angle
+            sb.Append("(");
+            sb.Append(RadianValue.AsShortString(m_Angle1));
+
+            // If it's a cul-de-sac, just append the "CA" characters.
+            // Otherwise we could have an exit angle as well.
+
+            if (IsCulDeSac)
+                sb.Append("ca ");
+            else
             {
-                StringBuilder sb = new StringBuilder();
-
-                // Initial angle
-                sb.Append("(");
-                sb.Append(RadianValue.AsShortString(m_Angle1));
-
-                // If it's a cul-de-sac, just append the "CA" characters.
-                // Otherwise we could have an exit angle as well.
-
-                if (IsCulDeSac)
-                    sb.Append("ca ");
-                else
+                if (IsTwoAngles)
                 {
-                    if (IsTwoAngles)
-                    {
-                        sb.Append(" ");
-                        sb.Append(RadianValue.AsShortString(m_Angle2));
-                    }
-
                     sb.Append(" ");
+                    sb.Append(RadianValue.AsShortString(m_Angle2));
                 }
 
-                // The observed radius.
-                sb.Append(m_Radius.Format());
-
-                // Is it counter-clockwise?
-                if (!IsClockwise)
-                    sb.Append(" cc");
-
-                // Append any observed distances if there are any.
-                if (Count > 0)
-                {
-                    sb.Append("/");
-                    AddToString(sb);
-                }
-
-                sb.Append(")");
-
-                return sb.ToString();
+                sb.Append(" ");
             }
+
+            // The observed radius.
+            sb.Append(m_Radius.Format());
+
+            // Is it counter-clockwise?
+            if (!IsClockwise)
+                sb.Append(" cc");
+
+            // Append any observed distances if there are any.
+            if (Count > 0)
+            {
+                sb.Append("/");
+                AddToString(sb, defaultEntryUnit);
+            }
+
+            sb.Append(")");
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -1419,6 +1420,8 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             m_Angle1 = reader.ReadDouble("Angle1");
             m_Angle2 = reader.ReadDouble("Angle2"); // will default to 0 if not there
+
+            // Read circle center point?
         }
 
         /// <summary>

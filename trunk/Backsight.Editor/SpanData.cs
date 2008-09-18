@@ -194,10 +194,32 @@ namespace Backsight.Editor
 
         #region IXmlContent Members
 
+        /// <summary>
+        /// Writes the content of this class. This is called by
+        /// <see cref="XmlContentWriter.WriteElement"/>
+        /// after the element name and class type (xsi:type) have been written.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
         public void WriteContent(XmlContentWriter writer)
         {
-            SpanContent sc = new SpanContent(writer.CurrentEdit, this);
-            writer.WriteElement("Span", sc);
+            // Unlike most other content classes, we only output basic information about
+            // the features that represent the span. This assumes that the other information
+            // has already been written as part of the PathOperation.WriteContent method.
+
+            if (m_Feature==null)
+                return;
+
+            PointFeature ep = (m_Feature as PointFeature);
+            if (ep == null)
+            {
+                // Output the sequence number of the created line
+                writer.WriteUnsignedInt("Line", m_Feature.CreatorSequence);
+
+                LineFeature line = (LineFeature)m_Feature;
+                ep = line.EndPoint;
+            }
+
+            writer.WriteString("To", ep.DataId);
         }
 
         public void ReadContent(XmlContentReader reader)

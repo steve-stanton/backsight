@@ -652,26 +652,27 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         }
 
         /// <summary>
-        /// A string representing the observations for this leg. 
+        /// Generates a string that represents the definition of this leg
         /// </summary>
-        internal override string DataString
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// Formatted distances that were specified using these units will not contain the units
+        /// abbreviation</param>
+        /// <returns>A formatted representation of this leg</returns>
+        internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
-            get
+            StringBuilder sb = new StringBuilder(100);
+
+            // The initial angle.
+            if (Math.Abs(m_StartAngle) > Double.Epsilon)
             {
-                StringBuilder sb = new StringBuilder(100);
-
-                // The initial angle.
-                if (Math.Abs(m_StartAngle) > Double.Epsilon)
-                {
-                    sb.Append(RadianValue.AsShortString(m_StartAngle));
-                    sb.Append(" ");
-                }
-
-                // The observed lengths.
-                AddToString(sb);
-
-                return sb.ToString();
+                sb.Append(RadianValue.AsShortString(m_StartAngle));
+                sb.Append(" ");
             }
+
+            // The observed lengths.
+            AddToString(sb, defaultEntryUnit);
+
+            return sb.ToString();
         }
 
         /// <summary>

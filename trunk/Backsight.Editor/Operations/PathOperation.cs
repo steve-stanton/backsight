@@ -50,7 +50,10 @@ namespace Backsight.Editor.Operations
         /// The default distance units when this edit was originally executed.
         /// While each <c>Distance</c> observation holds the units, that is
         /// not sufficient to re-create the original data entry string (starting
-        /// with something like "ft..."). 
+        /// with something like "ft...").  It's useful to include this in the
+        /// data entry string that gets persisted to the database, since the default
+        /// units on deserialization may not be the same as the default units that
+        /// prevailed when the edit was originally performed.
         /// </summary>
         DistanceUnit m_DefaultEntryUnit;
 
@@ -892,7 +895,7 @@ void CePath::CreateAngleText ( CPtrList& text
             for (int i = 0; i < m_Legs.Count; i++)
             {
                 sb.Append(" ");
-                string legstr = m_Legs[i].DataString;
+                string legstr = m_Legs[i].GetDataString(m_DefaultEntryUnit);
                 sb.Append(legstr);
             }
 
@@ -1019,8 +1022,16 @@ void CePath::CreateAngleText ( CPtrList& text
             string entryString = GetString();
             writer.WriteString("EntryString", entryString);
 
-            // Write information about each leg
-            //writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
+            // Output information about every created feature
+            Feature[] features = this.Features;
+            FeatureData[] fda = new FeatureData[features.Length];
+            for (int i=0; i<features.Length; i++)
+                fda[i] = new FeatureData(features[i]);
+
+            writer.WriteArray("FeatureArray", "Feature", fda);
+
+            // Finally information about each leg
+            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
         }
 
         /// <summary>
@@ -1036,13 +1047,17 @@ void CePath::CreateAngleText ( CPtrList& text
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
+            // Read back the data entry string
             string entryString = reader.ReadString("EntryString");
             PathItem[] items = PathParser.GetPathItems(entryString);
             PathData pd = new PathData(m_From, m_To);
             pd.Create(items);
 
+            // Adjust the path
+            pd.EnsureAdjusted();
+
             // Read back information about the features that were created
-            //FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
 
             // Read back information about the legs. This creates features that
             // have no geometry!
