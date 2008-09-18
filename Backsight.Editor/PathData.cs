@@ -174,7 +174,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>True if path data has been successfully adjusted. False if a
         /// call to <c>Adjust</c> failed.</returns>
-        bool EnsureAdjusted()
+        internal bool EnsureAdjusted()
         {
             if (m_IsAdjusted)
                 return true;
