@@ -311,6 +311,7 @@
     <Compile Include="IntersectUI.cs" />
     <Compile Include="IStraightLeg.cs" />
     <Compile Include="IXmlContent.cs" />
+    <Compile Include="IXmlContentHelper.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
@@ -324,6 +325,7 @@
     <Compile Include="Operations\ReplaceTextOperation.cs" />
     <Compile Include="Operations\SpanContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
+    <Compile Include="PathBuilder.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />

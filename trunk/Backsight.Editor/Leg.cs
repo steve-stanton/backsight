@@ -903,7 +903,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             {
                 SpanData sd = m_Spans[i];
                 Distance d = sd.ObservedDistance;
-                if (d == null)
+                if (d == null) // is this possible?
                     dists[i] = String.Empty;
                 else
                 {
@@ -979,7 +979,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             if (d.EntryUnit.UnitType == defaultEntryUnit.UnitType)
                 return str;
             else
-                return str + defaultEntryUnit.Abbreviation;
+                return str + d.EntryUnit.Abbreviation;
         }
 
         /*

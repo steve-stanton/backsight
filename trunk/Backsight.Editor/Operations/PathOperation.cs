@@ -1044,27 +1044,41 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             base.ReadContent(reader);
 
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-            m_To = reader.ReadFeatureByReference<PointFeature>("To");
+            try
+            {
+                // Attach a helper to the reader...
+                reader.Helper = new PathBuilder();
 
-            // Read back the data entry string
-            string entryString = reader.ReadString("EntryString");
-            PathItem[] items = PathParser.GetPathItems(entryString);
-            PathData pd = new PathData(m_From, m_To);
-            pd.Create(items);
+                m_From = reader.ReadFeatureByReference<PointFeature>("From");
+                m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            // Adjust the path
-            pd.EnsureAdjusted();
+                // Read back the data entry string
+                string entryString = reader.ReadString("EntryString");
+                PathItem[] items = PathParser.GetPathItems(entryString);
+                PathData pd = new PathData(m_From, m_To);
+                pd.Create(items);
 
-            // Read back information about the features that were created
-            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+                // Adjust the path
+                pd.EnsureAdjusted();
 
-            // Read back information about the legs. This creates features that
-            // have no geometry!
-            Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
+                // Read back information about the features that were created
+                FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
 
-            // Adjust the path and create stuff
-            m_Legs = new List<Leg>(legs);
+                // Read back information about the legs. This creates features that
+                // have no geometry!
+                Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
+
+                // Adjust the path and create stuff
+                m_Legs = new List<Leg>(legs);
+            }
+
+            finally
+            {
+                // Ensure we detach the helper (this isn't really vital, just
+                // keeps things tidy)
+
+                reader.Helper = null;
+            }
         }
     }
 }
