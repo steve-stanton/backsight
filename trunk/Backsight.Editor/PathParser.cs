@@ -236,7 +236,7 @@ namespace Backsight.Editor
             int starIndex = str.IndexOf('*');
             int slashIndex = str.IndexOf('/');
 
-            if (starIndex >= 0 || slashIndex >= 0)
+            if (starIndex >= 1 || slashIndex >= 0)
             {
                 int qualIndex = starIndex;
                 if (qualIndex < 0 || (slashIndex>=0 && qualIndex > slashIndex))
