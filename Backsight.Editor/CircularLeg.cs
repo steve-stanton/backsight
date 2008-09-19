@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A circular leg in a connection path.
     /// </summary>
-    class CircularLeg : Leg, ICircularLeg
+    class CircularLeg : Leg
     {
         #region Class data
 
@@ -111,7 +111,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The circle that this leg sits on.
         /// </summary>
-        public override Circle Circle // ILeg
+        public override Circle Circle
         {
             get { return m_Circle; }
         }
@@ -127,7 +127,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total length of this leg, in meters on the ground.
         /// </summary>
-        public override ILength Length // ILeg
+        public override ILength Length
         {
             get
             {
@@ -177,7 +177,7 @@ namespace Backsight.Editor
         /// <param name="ec">Position of the EC.</param>
         /// <param name="ebearing">Exit bearing.</param>
         public void GetPositions(IPosition bc, double sbearing, double sfac,
-                            out IPosition center, out double bear2bc, out IPosition ec, out double ebearing) // ICircularLeg
+                            out IPosition center, out double bear2bc, out IPosition ec, out double ebearing)
         {
             // Have we got a cul-de-sac?
             bool cul = IsCulDeSac;
@@ -1026,7 +1026,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// <summary>
         /// Is the leg directed clockwise?
         /// </summary>
-        public bool IsClockwise // ICircularLeg
+        public bool IsClockwise
         {
             get { return (m_Flag & CircularLegFlag.CounterClockwise) == 0; }
             set { SetFlag(CircularLegFlag.CounterClockwise, !value); }
@@ -1044,7 +1044,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// <summary>
         /// The observed radius, in meters
         /// </summary>
-        public double Radius // ICircularLeg
+        public double Radius
         {
             get { return (m_Radius == null ? 0.0 : m_Radius.Meters); }
         }
@@ -1114,7 +1114,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// <summary>
         /// Is the leg flagged as a cul-de-sac?
         /// </summary>
-        public bool IsCulDeSac // ICircularLeg
+        public bool IsCulDeSac
         {
             get { return (m_Flag & CircularLegFlag.CulDeSac) != 0; }
             private set { SetFlag(CircularLegFlag.CulDeSac, value); }
@@ -1392,11 +1392,18 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             else
                 flags += "C";
 
+            // In 99.99999% of cases, I expect it will NOT match an existing center point
+            PointFeature center = m_Circle.CenterPoint;
+            if (Object.ReferenceEquals(center.Creator, writer.CurrentEdit))
+                writer.WriteUnsignedInt("Center", center.CreatorSequence);
+            else
+                writer.WriteString("ExistingCenter", center.DataId);
+
             writer.WriteString("Flags", flags);
-            writer.WriteDouble("Angle1", m_Angle1);
+            writer.WriteAngle("Angle1", m_Angle1);
 
             if (IsTwoAngles)
-                writer.WriteDouble("Angle2", m_Angle2);
+                writer.WriteAngle("Angle2", m_Angle2);
         }
 
         /// <summary>
@@ -1418,40 +1425,12 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             else
                 IsClockwise = false;
 
-            m_Angle1 = reader.ReadDouble("Angle1");
-            m_Angle2 = reader.ReadDouble("Angle2"); // will default to 0 if not there
+            m_Angle1 = reader.ReadAngle("Angle1");
+            m_Angle2 = reader.ReadAngle("Angle2"); // will default to 0 if not there
 
-            // Read circle center point?
-        }
-
-        /// <summary>
-        /// Writes content elements for this leg.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected override void WriteElements(XmlContentWriter writer)
-        {
-            base.WriteElements(writer);
-            writer.WriteElement("Radius", m_Radius);
-            writer.WriteElement("Circle", m_Circle);
-        }
-
-        /// <summary>
-        /// Reads the elements for this leg.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected override void ReadElements(XmlContentReader reader)
-        {
-            base.ReadElements(reader);
-            m_Radius = reader.ReadElement<Distance>("Radius");
-
-            // Form the circle (used exclusively by this leg)
-            // TODO - need to clarify this. Is it consistent with the original creation
-            // logic? Will the circle end up in the spatial index?
-
-            // ...the implementation of Circle.ReadContent assumes the center
-            // point already exists. But it can't have any geometry, since we
-            // haven't worked out the path adjustment yet
-            m_Circle = reader.ReadElement<Circle>("Circle");
+            // Read circle center point
+            //string c = reader.ReadString(
+            // TODO
         }
     }
 }

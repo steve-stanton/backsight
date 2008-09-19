@@ -628,5 +628,24 @@ namespace Backsight.Editor
             get { return m_Helper; }
             set { m_Helper = value; }
         }
+
+        /// <summary>
+        /// Reads back an attribute representing an angle that
+        /// has been formatted using <see cref="XmlContentWriter.WriteAngle"/>
+        /// </summary>
+        /// <param name="name">The name of the attribute</param>
+        /// <returns>The angle in radians (0.0 if the attribute isn't there)</returns>
+        public double ReadAngle(string name)
+        {
+            string s = m_Reader[name];
+            if (s==null)
+                return 0.0;
+
+            double result;
+            if (RadianValue.TryParse(s, out result))
+                return result;
+
+            throw new Exception("Cannot parse angle: "+s);
+        }
     }
 }

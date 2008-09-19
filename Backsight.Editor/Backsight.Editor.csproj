@@ -304,12 +304,9 @@
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GetControlUI.cs" />
-    <Compile Include="ICircularLeg.cs" />
     <Compile Include="IdPacket.cs" />
-    <Compile Include="ILeg.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
-    <Compile Include="IStraightLeg.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="IXmlContentHelper.cs" />
     <Compile Include="JobFile.cs" />

@@ -45,7 +45,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The legs that make up the path
         /// </summary>
-        readonly List<ILeg> m_Legs;
+        readonly List<Leg> m_Legs;
 
         /// <summary>
         /// Has the <see cref="Adjust"/> method been successfully called. If true, the values
@@ -76,7 +76,7 @@ namespace Backsight.Editor
         {
             m_From = from;
             m_To = to;
-            m_Legs = new List<ILeg>();
+            m_Legs = new List<Leg>();
 
             m_IsAdjusted = false;
             m_Rotation = 0.0;
@@ -96,7 +96,7 @@ namespace Backsight.Editor
             m_To = pop.EndPoint;
 
             Leg[] legs = pop.GetLegs();
-            m_Legs = new List<ILeg>(legs);
+            m_Legs = new List<Leg>(legs);
 
             m_IsAdjusted = false;
             m_Rotation = 0.0;
@@ -124,7 +124,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The legs that make up the path
         /// </summary>
-        internal ILeg[] GetLegs()
+        internal Leg[] GetLegs()
         {
             return m_Legs.ToArray();
         }
@@ -149,7 +149,7 @@ namespace Backsight.Editor
             double bearing = m_Rotation;
 
             // Get each leg to draw itself
-            foreach (ILeg leg in m_Legs)
+            foreach (Leg leg in m_Legs)
                 leg.Render(display, ref gotend, ref bearing, m_ScaleFactor);
 
             // Re-draw the terminal points to ensure that their color is on top.
@@ -222,7 +222,7 @@ namespace Backsight.Editor
                     throw new Exception("PathData.Create -- Bad number of path legs.");
 
                 // Create the leg.
-                ILeg newLeg;
+                Leg newLeg;
                 if (items[si].ItemType == PathItemType.BC)
                     newLeg = CreateCircularLeg(items, si, out nexti);
                 else
@@ -263,7 +263,7 @@ namespace Backsight.Editor
         /// <param name="si">Index to the item where the leg data starts.</param>
         /// <param name="nexti">Index of the item where the next leg starts.</param>
         /// <returns>The new leg.</returns>
-        ILeg CreateCircularLeg(PathItem[] items, int si, out int nexti)
+        CircularLeg CreateCircularLeg(PathItem[] items, int si, out int nexti)
         {
             // Confirm that the first item refers to the BC.
             if (items[si].ItemType != PathItemType.BC)
@@ -390,7 +390,7 @@ namespace Backsight.Editor
         /// <param name="si">Index to the item where the leg data starts.</param>
         /// <param name="nexti">Index of the item where the next leg starts.</param>
         /// <returns>The new leg.</returns>
-        ILeg CreateStraightLeg(PathItem[] items, int si, out int nexti)
+        StraightLeg CreateStraightLeg(PathItem[] items, int si, out int nexti)
         {
             // Get the leg ID.
             int legnum = items[si].LegNumber;
@@ -468,7 +468,7 @@ namespace Backsight.Editor
 
             // Go through each leg, updating the end position, and getting
             // the total path length.
-            foreach (ILeg leg in m_Legs)
+            foreach (Leg leg in m_Legs)
             {
                 length += leg.Length.Meters;
                 leg.Project(ref gotend, ref bearing, sfac);

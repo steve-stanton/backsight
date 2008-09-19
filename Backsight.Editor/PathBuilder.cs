@@ -24,6 +24,12 @@ namespace Backsight.Editor
     class PathBuilder : IXmlContentHelper
     {
         #region Class data
+
+        /// <summary>
+        /// Information about the items defining the path
+        /// </summary>
+        PathData m_Data;
+
         #endregion
 
         #region Constructors

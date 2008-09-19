@@ -226,6 +226,7 @@ namespace Backsight.Editor
 
                 // Continue parsing after the repeat count.
                 ParseWord(str.Substring(1+num.Length));
+                return;
             }
 
             // If the string contains an embedded qualifier (a "*" or a "/"
@@ -236,7 +237,7 @@ namespace Backsight.Editor
             int starIndex = str.IndexOf('*');
             int slashIndex = str.IndexOf('/');
 
-            if (starIndex >= 1 || slashIndex >= 0)
+            if (starIndex >= 0 || slashIndex >= 0)
             {
                 int qualIndex = starIndex;
                 if (qualIndex < 0 || (slashIndex>=0 && qualIndex > slashIndex))

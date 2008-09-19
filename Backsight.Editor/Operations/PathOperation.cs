@@ -83,15 +83,8 @@ namespace Backsight.Editor.Operations
             m_DefaultEntryUnit = EditingController.Current.EntryUnit;
 
             // The legs should all be instances of CircularLeg or StraightLeg
-            ILeg[] legs = pd.GetLegs();
-            m_Legs = new List<Leg>(legs.Length);
-            foreach (ILeg leg in legs)
-            {
-                if (leg is StraightLeg || leg is CircularLeg)
-                    m_Legs.Add((Leg)leg);
-                else
-                    throw new ArgumentException("Unexpected leg in connection path: "+leg.GetType().Name);
-            }
+            Leg[] legs = pd.GetLegs();
+            m_Legs = new List<Leg>(legs);
         }
 
         #endregion
