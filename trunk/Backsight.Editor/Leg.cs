@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
     /// and <see cref="CircularLeg"/>.
     /// </summary>
-    abstract class Leg : ILeg, IXmlContent
+    abstract class Leg : IXmlContent
     {
         #region Class data
 
@@ -62,10 +62,10 @@ namespace Backsight.Editor
 
         #endregion
 
-        abstract public Circle Circle { get; } // ILeg
-        abstract public ILength Length { get; } // ILeg
+        abstract public Circle Circle { get; }
+        abstract public ILength Length { get; }
         abstract internal IPosition Center { get; }
-        abstract public void Project (ref IPosition pos, ref double bearing, double sfac); // ILeg
+        abstract public void Project (ref IPosition pos, ref double bearing, double sfac);
 
         /// <summary>
         /// Generates a string that represents the definition of this leg
@@ -85,7 +85,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac); // ILeg
+        abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac);
 
         abstract internal void Draw (bool preview);
 
@@ -112,7 +112,7 @@ namespace Backsight.Editor
         /// The number of observed distances (may be 0 when dealing with cul-de-sacs
         /// that are defined in terms on a center point and central angle).
         /// </summary>
-        public int Count // ILeg
+        public int Count
         {
             get
             {
@@ -124,7 +124,7 @@ namespace Backsight.Editor
             //get { return m_Distances.Length; }
         }
 
-        public bool HasEndPoint(int index) // ILeg
+        public bool HasEndPoint(int index)
         {
             SpanData sd = GetSpanData(index);
 
@@ -198,7 +198,7 @@ namespace Backsight.Editor
         /// Gets the total observed length of this leg
         /// </summary>
         /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        public double GetTotal() // ILeg
+        public double GetTotal()
         {
             double total = 0.0;
 
@@ -219,7 +219,7 @@ namespace Backsight.Editor
         /// <param name="index">Index of the required span.</param>
         /// <param name="sdist">Distance to the start of the span.</param>
         /// <param name="edist">Distance to the end of the span.</param>
-        public void GetDistances(int index, out double sdist, out double edist) // ILeg
+        public void GetDistances(int index, out double sdist, out double edist)
         {
             // Confirm required index is in range.
             if (index >= NumSpan)
@@ -560,7 +560,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="index">The index of the span in question.</param>
         /// <returns>True if line feature will be produced.</returns>
-        public bool HasLine(int index) // ILeg
+        public bool HasLine(int index)
         {
             // No feature if the span index is out of range.
             SpanData sd = GetSpanData(index);

@@ -145,8 +145,8 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteString("NewRotation", RadianValue.AsShortString(m_Rotation));
-            writer.WriteString("OldRotation", RadianValue.AsShortString(m_PrevRotation)); // TODO: Is this needed?
+            writer.WriteAngle("NewRotation", m_Rotation);
+            writer.WriteAngle("OldRotation", m_PrevRotation); // TODO: Is this needed?
         }
 
         /// <summary>
@@ -157,11 +157,8 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
-            if (!RadianValue.TryParse(reader.ReadString("NewRotation"), out m_Rotation))
-                throw new Exception("Cannot parse NewRotation attribute");
-
-            if (!RadianValue.TryParse(reader.ReadString("OldRotation"), out m_PrevRotation))
-                throw new Exception("Cannot parse OldRotation attribute");
+            m_Rotation = reader.ReadAngle("NewRotation");
+            m_PrevRotation = reader.ReadAngle("OldRotation");
 
             base.ReadContent(reader);
 

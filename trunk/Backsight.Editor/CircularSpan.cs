@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The leg this span relates to.
         /// </summary>
-        readonly ICircularLeg m_Leg;
+        readonly CircularLeg m_Leg;
 
         /// <summary>
         /// The scale factor to apply to distances on the leg.
@@ -129,7 +129,7 @@ namespace Backsight.Editor
         /// <param name="bc">Position of the BC.</param>
         /// <param name="bcbearing">Bearing at the BC.</param>
         /// <param name="sfac">The scale factor to apply to distances on the leg.</param>
-        internal CircularSpan(ICircularLeg leg, IPosition bc, double bcbearing, double sfac)
+        internal CircularSpan(CircularLeg leg, IPosition bc, double bcbearing, double sfac)
         {
             // Hold on to the supplied stuff.
             m_Leg = leg;

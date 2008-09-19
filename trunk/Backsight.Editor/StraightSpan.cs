@@ -30,7 +30,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The leg this span relates to.
         /// </summary>
-        IStraightLeg m_Leg;
+        StraightLeg m_Leg;
 
         /// <summary>
         /// Position of start of leg.
@@ -93,7 +93,7 @@ namespace Backsight.Editor
         /// <param name="start">The position of the start of the leg.</param>
         /// <param name="bearing">The bearing of the leg.</param>
         /// <param name="sfac">The scale factor to apply to distances on the leg.</param>
-        internal StraightSpan(IStraightLeg leg, IPosition start, double bearing, double sfac)
+        internal StraightSpan(StraightLeg leg, IPosition start, double bearing, double sfac)
         {
             // Hold on to the supplied stuff.
             m_Leg = leg;

@@ -393,12 +393,10 @@ namespace Backsight.Editor
             // Save the last edit in the database
             string x = this.ToXml();
 
-            /*
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
             {
                 sw.Write(x);
             }
-             */
 
             Transaction.Execute(delegate
             {

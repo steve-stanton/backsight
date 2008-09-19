@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The circle (if any) that this leg falls on.
         /// </summary>
-        public override Circle Circle // ILeg
+        public override Circle Circle
         {
             get { return m_Base.Circle; }
         }
@@ -73,7 +73,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total observed length of this leg, on the ground.
         /// </summary>
-        public override ILength Length // ILeg
+        public override ILength Length
         {
             get
             {

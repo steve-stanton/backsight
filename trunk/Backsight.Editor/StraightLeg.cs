@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A straight leg in a connection path.
     /// </summary>
-    class StraightLeg : Leg, IStraightLeg
+    class StraightLeg : Leg
     {
         #region Class data
 
@@ -76,7 +76,7 @@ namespace Backsight.Editor
             set { m_StartAngle = value; }
         }
 
-        public override Circle Circle // ILeg
+        public override Circle Circle
         {
             get { return null; }
         }
@@ -89,7 +89,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total observed length of this leg
         /// </summary>
-        public override ILength Length // ILeg
+        public override ILength Length
         {
             get { return new Length(GetTotal()); }
         }
@@ -729,7 +729,8 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         protected override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-            writer.WriteDouble("StartAngle", m_StartAngle);
+
+            writer.WriteAngle("StartAngle", m_StartAngle);
             writer.WriteBool("IsDeflection", m_IsDeflection);
         }
 
@@ -740,7 +741,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         protected override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
-            m_StartAngle = reader.ReadDouble("StartAngle");
+            m_StartAngle = reader.ReadAngle("StartAngle");
             m_IsDeflection = reader.ReadBool("IsDeflection");
         }
     }

@@ -329,5 +329,16 @@ namespace Backsight.Editor
         {
             get { return m_CurrentEdit; }
         }
+
+        /// <summary>
+        /// Writes out the supplied <c>Double</c> as an angle, expressed
+        /// in short D-M-S format (abbreviated where possible).
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="value">The value of the angle, in radians</param>
+        public void WriteAngle(string name, double value)
+        {
+            WriteString(name, RadianValue.AsShortString(value));
+        }
     }
 }
