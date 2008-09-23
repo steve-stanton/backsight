@@ -14,6 +14,8 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -26,13 +28,41 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The edit that's being deserialized
+        /// </summary>
+        readonly PathOperation m_Edit;
+
+        /// <summary>
         /// Information about the items defining the path
         /// </summary>
-        PathData m_Data;
+        readonly PathData m_Data;
+
+        /// <summary>
+        /// Information about features that were created as a result of a <see cref="PathOperation"/> edit.
+        /// The key in the creation sequence number.
+        /// </summary>
+        readonly Dictionary<uint, FeatureData> m_Features;
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Creates a new <c>PathBuilder</c>
+        /// </summary>
+        /// <param name="op">The editing operation that's being deserialized from the database</param>
+        /// <param name="pd">Information about the entered path</param>
+        /// <param name="features">Information about features created on the path</param>
+        internal PathBuilder(PathOperation op, PathData pd, FeatureData[] features)
+        {
+            m_Edit = op;
+            m_Data = pd;
+            m_Features = new Dictionary<uint, FeatureData>(features.Length);
+
+            foreach (FeatureData fd in features)
+                m_Features.Add(fd.CreationSequence, fd);
+        }
+
         #endregion
     }
 }

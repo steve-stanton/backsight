@@ -1037,31 +1037,32 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             base.ReadContent(reader);
 
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_To = reader.ReadFeatureByReference<PointFeature>("To");
+
+            //m_DefaultEntryUnit - TODO
+
+            // Read back the data entry string
+            string entryString = reader.ReadString("EntryString");
+            PathItem[] items = PathParser.GetPathItems(entryString);
+            PathData pd = new PathData(m_From, m_To);
+            pd.Create(items);
+
+            // Adjust the path
+            pd.EnsureAdjusted();
+
+            // Read back information about the features that were created
+            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+
+            // Getting back the legs is the tricky (painful) bit...
             try
             {
                 // Attach a helper to the reader...
-                reader.Helper = new PathBuilder();
-
-                m_From = reader.ReadFeatureByReference<PointFeature>("From");
-                m_To = reader.ReadFeatureByReference<PointFeature>("To");
-
-                // Read back the data entry string
-                string entryString = reader.ReadString("EntryString");
-                PathItem[] items = PathParser.GetPathItems(entryString);
-                PathData pd = new PathData(m_From, m_To);
-                pd.Create(items);
-
-                // Adjust the path
-                pd.EnsureAdjusted();
-
-                // Read back information about the features that were created
-                FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+                reader.Helper = new PathBuilder(this, pd, fda);
 
                 // Read back information about the legs. This creates features that
                 // have no geometry!
                 Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
-
-                // Adjust the path and create stuff
                 m_Legs = new List<Leg>(legs);
             }
 
