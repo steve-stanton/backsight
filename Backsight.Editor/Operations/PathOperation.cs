@@ -1040,13 +1040,14 @@ void CePath::CreateAngleText ( CPtrList& text
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            //m_DefaultEntryUnit - TODO
-
             // Read back the data entry string
             string entryString = reader.ReadString("EntryString");
             PathItem[] items = PathParser.GetPathItems(entryString);
             PathData pd = new PathData(m_From, m_To);
             pd.Create(items);
+
+            // Remember the initial entry units
+            m_DefaultEntryUnit = items[0].Units;
 
             // Adjust the path
             pd.EnsureAdjusted();
@@ -1064,6 +1065,22 @@ void CePath::CreateAngleText ( CPtrList& text
                 // have no geometry!
                 Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
                 m_Legs = new List<Leg>(legs);
+
+                /*
+                 * from Execute method...
+                // Initialize position to the start of the path.
+                IPosition gotend = m_From;
+
+                // Initial bearing is whatever the desired rotation is.
+                double bearing = rotation;
+
+                // Create a list for holding newly created points
+                List<PointFeature> createdPoints = new List<PointFeature>(100);
+
+                // Go through each leg, asking them to make features.
+                foreach (Leg leg in m_Legs)
+                    leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
+                 */
             }
 
             finally
