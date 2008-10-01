@@ -21,6 +21,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An ID that has been imported from some alien data source.
     /// </summary>
+    /// <seealso cref="NativeId"/>
     class ForeignId : FeatureId
     {
         #region Class data
