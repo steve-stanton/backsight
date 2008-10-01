@@ -19,8 +19,9 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="13-JUN-2008" />
     /// <summary>
-    /// An ID that has been imported from some alien data source.
+    /// An ID that corresponds to an item within an <see cref="IdGroup"/>
     /// </summary>
+    /// <seealso cref="ForeignId"/>
     class NativeId : FeatureId
     {
         #region Static

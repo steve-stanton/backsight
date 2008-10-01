@@ -67,7 +67,7 @@ namespace Backsight.Editor.Database
 
                 // Create the loader
                 uint numItem = SumItems(sessions);
-                XmlContentReader xcr = new XmlContentReader(numItem);
+                XmlContentReader xcr = new XmlContentReader(model, numItem);
 
                 // Load information about the edits involved
                 StringBuilder sb = new StringBuilder(200);

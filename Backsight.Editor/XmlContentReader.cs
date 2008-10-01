@@ -33,6 +33,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The model that's being loaded.
+        /// </summary>
+        readonly CadastralMapModel m_Model;
+
+        /// <summary>
         /// The object that actually does the reading.
         /// </summary>
         XmlReader m_Reader;
@@ -81,10 +86,12 @@ namespace Backsight.Editor
         /// Creates a new <c>XmlContentReader</c> that wraps the supplied
         /// reading tool.
         /// </summary>
+        /// <param name="model">The model to load</param>
         /// <param name="numItem">The estimated number of items that will be
         /// loaded (used to initialize an index of the loaded data)</param>
-        internal XmlContentReader(uint numItem)
+        internal XmlContentReader(CadastralMapModel model, uint numItem)
         {
+            m_Model = model;
             m_Reader = null;
             m_Types = new Dictionary<string, ConstructorInfo>();
             m_Features = new Dictionary<InternalIdValue, Feature>((int)numItem);
@@ -430,6 +437,11 @@ namespace Backsight.Editor
                 Debug.Assert(m_Elements.Count==0);
                 Operation result = ReadElement<Operation>("Edit");
                 result.AddReferences();
+
+                // Add created features to the model
+                Feature[] feats = result.Features;
+                m_Model.AddToIndex(feats);
+
                 return result;
             }
 
@@ -646,6 +658,14 @@ namespace Backsight.Editor
                 return result;
 
             throw new Exception("Cannot parse angle: "+s);
+        }
+
+        /// <summary>
+        /// The model that's being loaded.
+        /// </summary>
+        internal CadastralMapModel Model
+        {
+            get { return m_Model; }
         }
     }
 }

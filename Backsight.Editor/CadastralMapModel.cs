@@ -1329,6 +1329,7 @@ namespace Backsight.Editor
             m_Sessions.Clear();
             SessionData.Load(this, job, user);
 
+            /*
             // Ensure everything is as expected (not sure if this is still needed)
             foreach (Session s in m_Sessions)
             {
@@ -1338,6 +1339,7 @@ namespace Backsight.Editor
                 // extent that's stored as part of the model.
                 s.AddToIndex();
             }
+            */
 
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
