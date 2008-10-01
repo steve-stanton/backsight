@@ -171,7 +171,9 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                op = new PathOperation(m_PathData);
+                string str = GetEnteredPath();
+                op = new PathOperation(m_From, m_To, str);
+                //op = new PathOperation(m_PathData);
                 op.Execute();
                 Finish();
             }
@@ -557,12 +559,19 @@ namespace Backsight.Editor.Forms
             if (nchars < 0)
                 return false;
 
-            // Grab the entered path (without any embedded newlines) - not sure
-            // if they're there or not
-            string str = pathTextBox.Text;
-            str = str.Replace(System.Environment.NewLine, " ").Trim();
-
+            string str = GetEnteredPath();
             return ParseString(str);
+        }
+
+        /// <summary>
+        /// Grabs the entered path (without any embedded newlines) - not sure
+        /// if they're there or not
+        /// </summary>
+        /// <returns>The connection path, as entered by the user</returns>
+        string GetEnteredPath()
+        {
+            string str = pathTextBox.Text;
+            return str.Replace(System.Environment.NewLine, " ").Trim();
         }
 
         /// <summary>
