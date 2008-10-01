@@ -519,5 +519,29 @@ namespace Backsight.Editor
 
             return true;
         }
+
+        /// <summary>
+        /// Rotation for path (in radians)
+        /// </summary>
+        internal double RotationInRadians
+        {
+            get
+            {
+                EnsureAdjusted();
+                return m_Rotation;
+            }
+        }
+
+        /// <summary>
+        /// Scaling to apply to path distances
+        /// </summary>
+        internal double ScaleFactor
+        {
+            get
+            {
+                EnsureAdjusted();
+                return m_ScaleFactor;
+            }
+        }
     }
 }

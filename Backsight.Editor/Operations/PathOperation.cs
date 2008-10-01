@@ -42,6 +42,11 @@ namespace Backsight.Editor.Operations
         PointFeature m_To; // readonly
 
         /// <summary>
+        /// The data entry string that defines the connection path.
+        /// </summary>
+        string m_EntryString; // readonly
+
+        /// <summary>
         /// The legs that make up the path
         /// </summary>
         List<Leg> m_Legs; // readonly
@@ -72,6 +77,14 @@ namespace Backsight.Editor.Operations
             m_DefaultEntryUnit = null;
         }
 
+        internal PathOperation(PointFeature from, PointFeature to, string entryString)
+        {
+            m_From = from;
+            m_To = to;
+            m_EntryString = entryString;
+            m_DefaultEntryUnit = EditingController.Current.EntryUnit;
+        }
+
         /// <summary>
         /// Creates a new <c>PathOperation</c>
         /// </summary>
@@ -88,6 +101,40 @@ namespace Backsight.Editor.Operations
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates the features that represent this connection path
+        /// </summary>
+        void CreateFeatures()
+        {
+            PathItem[] items = PathParser.GetPathItems(m_EntryString);
+            PathData pd = new PathData(m_From, m_To);
+            pd.Create(items);
+
+            // Get the legs (without any attached features)
+            Leg[] legs = pd.GetLegs();
+            m_Legs = new List<Leg>(legs);
+
+            // Get the rotation & scale factor to apply.
+            double rotation = pd.RotationInRadians;
+            double sfac = pd.ScaleFactor;
+
+            // Go through each leg, adding features as required. This logic
+            // is basically the same as the Draw() logic ...
+
+            // Initialize position to the start of the path.
+            IPosition gotend = m_From;
+
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
+
+            // Create a list for holding newly created points
+            List<PointFeature> createdPoints = new List<PointFeature>(100);
+
+            // Go through each leg, asking them to make features.
+            foreach (Leg leg in m_Legs)
+                leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
+        }
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -1065,22 +1112,6 @@ void CePath::CreateAngleText ( CPtrList& text
                 // have no geometry!
                 Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
                 m_Legs = new List<Leg>(legs);
-
-                /*
-                 * from Execute method...
-                // Initialize position to the start of the path.
-                IPosition gotend = m_From;
-
-                // Initial bearing is whatever the desired rotation is.
-                double bearing = rotation;
-
-                // Create a list for holding newly created points
-                List<PointFeature> createdPoints = new List<PointFeature>(100);
-
-                // Go through each leg, asking them to make features.
-                foreach (Leg leg in m_Legs)
-                    leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
-                 */
             }
 
             finally
