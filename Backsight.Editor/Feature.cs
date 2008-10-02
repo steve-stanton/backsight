@@ -369,14 +369,17 @@ namespace Backsight.Editor
         /// </summary>
         internal void SetNextId()
         {
-        	// Disallow if this feature already has an ID.
-	        if (m_Id!=null)
-                throw new InvalidOperationException("Feature already has an ID");
+            if (Session.WorkingSession != null)
+            {
+                // Disallow if this feature already has an ID.
+                if (m_Id!=null)
+                    throw new InvalidOperationException("Feature already has an ID");
 
-            // If we can reserve a new ID, create it.
-            IdHandle idh = new IdHandle();
-            if (idh.ReserveId(m_What,0))
-                idh.CreateId(this);
+                // If we can reserve a new ID, create it.
+                IdHandle idh = new IdHandle();
+                if (idh.ReserveId(m_What, 0))
+                    idh.CreateId(this);
+            }
         }
 
         /// <summary>
