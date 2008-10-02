@@ -343,11 +343,12 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Performs processing that should be performed at the end of the <c>Execute
-        /// </c> method of each editing operation. Features that were created will initially
-        /// get indexed via a call to <see cref="CadastralMapModel.AddToIndex"/>. Followed
-        /// by calls to <see cref="AddReferences"/>,  <see cref="PrepareForIntersect"/>, and
-        /// <see cref="CadastralMapModel.CleanEdit"/>.
+        /// Performs processing that should be performed to conclude an editing operation
+        /// (either during initial execution, or when loading during application startup).
+        /// Features that were created will initially get indexed via a call to <see cref="CadastralMapModel.AddToIndex"/>.
+        /// Followed by calls to <see cref="AddReferences"/> and <see cref="PrepareForIntersect"/>.
+        /// If the call is being made as part of an editing session (not application startup), a call to
+        /// <see cref="CadastralMapModel.CleanEdit"/> will be made, and the edit will be saved to the database.
         /// </summary>
         protected void Complete()
         {
@@ -357,12 +358,15 @@ namespace Backsight.Editor
             MapModel.AddToIndex(feats);
 
             // Assign 1-based creation sequence to each created feature
-            uint numItem = Session.WorkingSession.NumItem;
+            uint numItem = m_Session.NumItem;
             for (uint i = 0; i < feats.Length; i++)
             {
                 numItem++;
                 feats[i].CreatorSequence = numItem;
             }
+
+            // Ensure the item count for the session has been updated
+            m_Session.NumItem = numItem;
 
             // Point referenced features to this editing operation
             AddReferences();
@@ -371,14 +375,14 @@ namespace Backsight.Editor
             // intersected with the map
             PrepareForIntersect(feats);
 
-            // Ensure the map structure has been updated to account for the new data.
-            MapModel.CleanEdit();
+            if (Object.ReferenceEquals(m_Session, Session.WorkingSession))
+            {
+                // Ensure the map structure has been updated to account for the new data.
+                MapModel.CleanEdit();
 
-            // Ensure the item count for the session has been updated
-            Session.WorkingSession.NumItem = numItem;
-
-            // Save the edit to the database
-            SaveOperation();
+                // Save the edit to the database
+                SaveOperation();
+            }
         }
 
         /// <summary>

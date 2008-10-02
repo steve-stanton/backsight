@@ -383,6 +383,7 @@ namespace Backsight.Editor.Operations
             if (m_From==null || m_To==null)
                 throw new Exception("PathOperation.Execute -- terminal(s) not defined.");
 
+            /*
             // Get the rotation & scale factor to apply.
             double rotation, sfac;
             GetAdjustment(out rotation, out sfac);
@@ -402,6 +403,9 @@ namespace Backsight.Editor.Operations
             // Go through each leg, asking them to make features.
             foreach (Leg leg in m_Legs)
                 leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
+            */
+
+            CreateFeatures();
 
             // Peform standard completion steps
             Complete();
@@ -1058,6 +1062,20 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteFeatureReference("From", m_From);
             writer.WriteFeatureReference("To", m_To);
 
+            // The default data entry units have a bearing on how the entry string should
+            // be interpreted
+            int unitType = (int)m_DefaultEntryUnit.UnitType;
+            if (unitType != 0)
+                writer.WriteInt("EntryUnit", unitType);
+
+            // Default entity types for points and lines
+
+            writer.WriteString("EntryString", m_EntryString);
+
+            // We also need any IDs assigned to created points
+            
+
+            /*
             // Output a string like the string originally specified by the user
             string entryString = GetString();
             writer.WriteString("EntryString", entryString);
@@ -1072,6 +1090,7 @@ void CePath::CreateAngleText ( CPtrList& text
 
             // Finally information about each leg
             writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
+             */
         }
 
         /// <summary>
@@ -1087,7 +1106,18 @@ void CePath::CreateAngleText ( CPtrList& text
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
+            int unitType = reader.ReadInt("EntryUnit");
+            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
+
             // Read back the data entry string
+            m_EntryString = reader.ReadString("EntryString");
+
+            CreateFeatures();
+            Complete();
+
+            // Assign IDs
+
+                /*
             string entryString = reader.ReadString("EntryString");
             PathItem[] items = PathParser.GetPathItems(entryString);
             PathData pd = new PathData(m_From, m_To);
@@ -1121,6 +1151,7 @@ void CePath::CreateAngleText ( CPtrList& text
 
                 reader.Helper = null;
             }
+                 */
         }
     }
 }
