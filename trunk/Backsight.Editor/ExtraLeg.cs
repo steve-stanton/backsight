@@ -96,10 +96,12 @@ namespace Backsight.Editor
         /// recalling a connection path. By returning an empty string, it means you
         /// don't actually recall the extra face.
         /// </summary>
+        /*
         internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
             return String.Empty;
         }
+        */
 
         /// <summary>
         /// Given the position of the start of this leg, along with an initial bearing,
@@ -237,34 +239,6 @@ namespace Backsight.Editor
         {
             // Turn it over to the base leg.
             return m_Base.SaveFace(op, this);
-        }
-
-        /// <summary>
-        /// Writes the attributes for this leg.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteString("Base", m_Parent.DataId);
-            writer.WriteInt("Leg", m_Parent.GetLegIndex(m_Base));
-        }
-
-        /// <summary>
-        /// Reads the attributes for this leg.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            string baseId = reader.ReadString("Base");
-            int legIndex = reader.ReadInt("Leg");
-
-            // Locate the original edit in the model, then find the leg
-            // within that edit. Leave it for now, since I'm not 100% that
-            // extra legs will even be handled via this class.
-
-            throw new NotImplementedException("ExtraLeg.ReadAttributes");
         }
     }
 }

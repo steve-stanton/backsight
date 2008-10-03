@@ -930,6 +930,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// this connection path.
         /// </summary>
         /// <returns>A string defining the complete path</returns>
+        /*
         internal string GetString()
         {
             StringBuilder sb = new StringBuilder(m_Legs.Count * 20);
@@ -944,6 +945,15 @@ void CePath::CreateAngleText ( CPtrList& text
             }
 
             return sb.ToString();
+        }
+        */
+
+        /// <summary>
+        /// The data entry string that defines the connection path.
+        /// </summary>
+        internal string EntryString
+        {
+            get { return m_EntryString; }
         }
 
         /// <summary>
@@ -1074,23 +1084,6 @@ void CePath::CreateAngleText ( CPtrList& text
 
             // We also need any IDs assigned to created points
             
-
-            /*
-            // Output a string like the string originally specified by the user
-            string entryString = GetString();
-            writer.WriteString("EntryString", entryString);
-
-            // Output information about every created feature
-            Feature[] features = this.Features;
-            FeatureData[] fda = new FeatureData[features.Length];
-            for (int i=0; i<features.Length; i++)
-                fda[i] = new FeatureData(features[i]);
-
-            writer.WriteArray("FeatureArray", "Feature", fda);
-
-            // Finally information about each leg
-            writer.WriteArray("LegArray", "Leg", m_Legs.ToArray());
-             */
         }
 
         /// <summary>
@@ -1101,57 +1094,32 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            uint itemCount = Session.CurrentSession.NumItem;
 
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-            m_To = reader.ReadFeatureByReference<PointFeature>("To");
-
-            int unitType = reader.ReadInt("EntryUnit");
-            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
-
-            // Read back the data entry string
-            m_EntryString = reader.ReadString("EntryString");
-
-            CreateFeatures();
-            Complete();
-
-            // Assign IDs
-
-                /*
-            string entryString = reader.ReadString("EntryString");
-            PathItem[] items = PathParser.GetPathItems(entryString);
-            PathData pd = new PathData(m_From, m_To);
-            pd.Create(items);
-
-            // Remember the initial entry units
-            m_DefaultEntryUnit = items[0].Units;
-
-            // Adjust the path
-            pd.EnsureAdjusted();
-
-            // Read back information about the features that were created
-            FeatureData[] fda = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
-
-            // Getting back the legs is the tricky (painful) bit...
             try
             {
-                // Attach a helper to the reader...
-                reader.Helper = new PathBuilder(this, pd, fda);
+                base.ReadContent(reader);
+                Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
 
-                // Read back information about the legs. This creates features that
-                // have no geometry!
-                Leg[] legs = reader.ReadArray<Leg>("LegArray", "Leg");
-                m_Legs = new List<Leg>(legs);
+                m_From = reader.ReadFeatureByReference<PointFeature>("From");
+                m_To = reader.ReadFeatureByReference<PointFeature>("To");
+
+                int unitType = reader.ReadInt("EntryUnit");
+                m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
+
+                // Read back the data entry string
+                m_EntryString = reader.ReadString("EntryString");
+
+                CreateFeatures();
+                Complete();
+
+                // Assign IDs
             }
 
             finally
             {
-                // Ensure we detach the helper (this isn't really vital, just
-                // keeps things tidy)
-
-                reader.Helper = null;
+                Session.CurrentSession.NumItem = itemCount;
             }
-                 */
         }
     }
 }

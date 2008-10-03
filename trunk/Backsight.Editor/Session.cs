@@ -372,7 +372,7 @@ namespace Backsight.Editor
             get { return m_Data.NumItem; }
             set
             {
-                Debug.Assert(value >= m_Data.NumItem);
+                //Debug.Assert(value >= m_Data.NumItem);
                 m_Data.NumItem = value;
             }
         }

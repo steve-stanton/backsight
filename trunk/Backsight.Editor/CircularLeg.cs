@@ -1274,6 +1274,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// Formatted distances that were specified using these units will not contain the units
         /// abbreviation</param>
         /// <returns>A formatted representation of this leg</returns>
+        /*
         internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
             StringBuilder sb = new StringBuilder();
@@ -1316,6 +1317,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             return sb.ToString();
         }
+        */
 
         /// <summary>
         /// Saves features for a second face that is based on this leg.
@@ -1369,68 +1371,6 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // Ensure the radius is correct.
             if (m_Circle!=null)
                 m_Circle.Radius = span.ScaledRadius;
-        }
-
-        /// <summary>
-        /// Writes the attributes for this leg.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            string flags = String.Empty;
-
-            if (IsCulDeSac)
-                flags += "S";
-
-            if (IsTwoAngles)
-                flags += "T";
-
-            if (IsClockwise)
-                flags += "W";
-            else
-                flags += "C";
-
-            // In 99.99999% of cases, I expect it will NOT match an existing center point
-            PointFeature center = m_Circle.CenterPoint;
-            if (Object.ReferenceEquals(center.Creator, writer.CurrentEdit))
-                writer.WriteUnsignedInt("Center", center.CreatorSequence);
-            else
-                writer.WriteString("ExistingCenter", center.DataId);
-
-            writer.WriteString("Flags", flags);
-            writer.WriteAngle("Angle1", m_Angle1);
-
-            if (IsTwoAngles)
-                writer.WriteAngle("Angle2", m_Angle2);
-        }
-
-        /// <summary>
-        /// Reads the attributes for this leg.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            string flags = reader.ReadString("Flags");
-            m_Flag = 0;
-            IsCulDeSac = flags.Contains("S");
-            IsTwoAngles = flags.Contains("T");
-
-            // The flag is actually reversed, so do it a bit differently to avoid confusion
-            if (flags.Contains("W"))
-                IsClockwise = true;
-            else
-                IsClockwise = false;
-
-            m_Angle1 = reader.ReadAngle("Angle1");
-            m_Angle2 = reader.ReadAngle("Angle2"); // will default to 0 if not there
-
-            // Read circle center point
-            //string c = reader.ReadString(
-            // TODO
         }
     }
 }

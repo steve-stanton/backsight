@@ -224,11 +224,11 @@ namespace Backsight.Editor.Operations
             m_Deletions = new List<Feature>(dels);
 
             // Mark the features as deleted and remove from spatial index
-            EditingIndex index = reader.Model.EditingIndex;
+            //EditingIndex index = reader.Model.EditingIndex;
             foreach (Feature f in dels)
             {
                 f.Deactivate();
-                index.Remove(f);
+                //index.Remove(f);
             }
         }
 
