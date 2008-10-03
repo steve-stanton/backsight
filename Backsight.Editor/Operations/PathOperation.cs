@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Text;
 
 using Backsight.Geometry;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -62,6 +63,16 @@ namespace Backsight.Editor.Operations
         /// </summary>
         DistanceUnit m_DefaultEntryUnit;
 
+        /// <summary>
+        /// The entity type assigned to created points
+        /// </summary>
+        IEntity m_PointType;
+
+        /// <summary>
+        /// The entity type assigned to created lines.
+        /// </summary>
+        IEntity m_LineType;
+
         #endregion
 
         #region Constructors
@@ -75,6 +86,8 @@ namespace Backsight.Editor.Operations
             m_To = null;
             m_Legs = null;
             m_DefaultEntryUnit = null;
+            m_PointType = null;
+            m_LineType = null;
         }
 
         internal PathOperation(PointFeature from, PointFeature to, string entryString)
@@ -83,6 +96,8 @@ namespace Backsight.Editor.Operations
             m_To = to;
             m_EntryString = entryString;
             m_DefaultEntryUnit = EditingController.Current.EntryUnit;
+            m_PointType = CadastralMapModel.Current.DefaultPointType;
+            m_LineType = CadastralMapModel.Current.DefaultLineType;
         }
 
         /// <summary>
@@ -1079,11 +1094,12 @@ void CePath::CreateAngleText ( CPtrList& text
                 writer.WriteInt("EntryUnit", unitType);
 
             // Default entity types for points and lines
+            writer.WriteInt("PointType", m_PointType.Id);
+            writer.WriteInt("LineType", m_LineType.Id);
 
             writer.WriteString("EntryString", m_EntryString);
 
             // We also need any IDs assigned to created points
-            
         }
 
         /// <summary>
@@ -1106,6 +1122,14 @@ void CePath::CreateAngleText ( CPtrList& text
 
                 int unitType = reader.ReadInt("EntryUnit");
                 m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
+
+                // Ensure default entity types have been set to the values they had when
+                // this edit was originally executed
+                m_PointType = EnvironmentContainer.FindEntityById(reader.ReadInt("PointType"));
+                m_LineType = EnvironmentContainer.FindEntityById(reader.ReadInt("LineType"));
+
+                CadastralMapModel.Current.DefaultPointType = m_PointType;
+                CadastralMapModel.Current.DefaultLineType = m_LineType;
 
                 // Read back the data entry string
                 m_EntryString = reader.ReadString("EntryString");
