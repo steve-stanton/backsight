@@ -686,7 +686,7 @@ namespace Backsight.Editor.Forms
                 return;
 
             // Get the data entry string.
-            string str = op.GetString();
+            string str = op.EntryString;
 
             // Display the data entry string (this takes care of word wrap).
             pathTextBox.Text = str;

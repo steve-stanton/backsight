@@ -504,6 +504,9 @@ namespace Backsight.Editor
             IsMoved = false;
             SetBuilt(false);
 
+            // Remove from spatial index
+            m_Creator.MapModel.EditingIndex.Remove(this);
+
             // In the case of lines, this will first call the override that gets
             // rid of any topological attachments
             Clean();

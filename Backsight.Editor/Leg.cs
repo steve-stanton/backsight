@@ -21,7 +21,6 @@ using System.Diagnostics;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
-//using Backsight.Content;
 
 namespace Backsight.Editor
 {
@@ -30,7 +29,7 @@ namespace Backsight.Editor
     /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
     /// and <see cref="CircularLeg"/>.
     /// </summary>
-    abstract class Leg : IXmlContent
+    abstract class Leg
     {
         #region Class data
 
@@ -66,15 +65,6 @@ namespace Backsight.Editor
         abstract public ILength Length { get; }
         abstract internal IPosition Center { get; }
         abstract public void Project (ref IPosition pos, ref double bearing, double sfac);
-
-        /// <summary>
-        /// Generates a string that represents the definition of this leg
-        /// </summary>
-        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
-        /// Formatted distances that were specified using these units will not contain the units
-        /// abbreviation</param>
-        /// <returns>A formatted representation of this leg</returns>
-        abstract internal string GetDataString(DistanceUnit defaultEntryUnit);
 
         /// <summary>
         /// Draws this leg
@@ -890,6 +880,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
         /// Formatted distances that were specified using these units will not contain the units
         /// abbreviation</param>
+        /*
         internal void AddToString(StringBuilder str, DistanceUnit defaultEntryUnit)
         {
             // Return if there are no observed spans.
@@ -961,6 +952,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             if (numDist>1)
                 str.Append("*"+numDist);
         }
+        */
 
         /// <summary>
         /// Formats a distance so that it can be persisted as a string. Unlike the various
@@ -1313,84 +1305,6 @@ void CeLeg::MakeText ( const CeVertex& bs
                 return null;
             else
                 return m_Spans[index];
-        }
-
-        /// <summary>
-        /// Write the content of derived classes. This makes calls to
-        /// <see cref="WriteAttributes"/> followed by <see cref="WriteElements"/>.
-        /// While these methods are defined here, derived classes will probably
-        /// need to override them (calling the base implementations at the start).
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
-        {
-            WriteAttributes(writer);
-            WriteElements(writer);
-        }
-
-        /// <summary>
-        /// Writes the attributes for this leg. Derived classes that contain
-        /// attributes must override, calling this base implementation at
-        /// the start.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected virtual void WriteAttributes(XmlContentWriter writer)
-        {
-            if (m_FaceNumber>0)
-                writer.WriteUnsignedInt("Face", (uint)m_FaceNumber);
-        }
-
-        /// <summary>
-        /// Writes any content elements for this leg. This implementation writes
-        /// out information about each span making up this leg. Derived classes
-        /// that contain elements must override, calling this base implementation
-        /// at the start. 
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected virtual void WriteElements(XmlContentWriter writer)
-        {
-            writer.WriteArray("SpanArray", "Span", m_Spans);
-        }
-
-        /// <summary>
-        /// Reads back the content of derived classes. This makes calls to
-        /// <see cref="ReadAttributes"/> followed by <see cref="ReadElements"/>.
-        /// While these methods are defined here, derived classes will probably
-        /// need to override them (calling the base implementations at the start).
-        /// <para/>
-        /// After reading the content, <c>Feature</c> objects will have been
-        /// created, but without any associated geometry. In order to create
-        /// the geometry, all legs in the enclosing connection path have to
-        /// be read in so that a suitable adjustment can be determined.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void ReadContent(XmlContentReader reader)
-        {
-            ReadAttributes(reader);
-            ReadElements(reader);
-        }
-
-        /// <summary>
-        /// Reads the attributes for this leg. Derived classes that contain
-        /// attributes must override, calling this base implementation at
-        /// the start.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected virtual void ReadAttributes(XmlContentReader reader)
-        {
-            m_FaceNumber = (byte)reader.ReadUnsignedInt("Face");
-        }
-
-        /// <summary>
-        /// Reads back any content elements for this leg. This implementation reads
-        /// information about each span making up this leg. Derived classes
-        /// that contain elements must override, calling this base implementation
-        /// at the start. 
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected virtual void ReadElements(XmlContentReader reader)
-        {
-            m_Spans = reader.ReadArray<SpanData>("SpanArray", "Span");
         }
     }
 }

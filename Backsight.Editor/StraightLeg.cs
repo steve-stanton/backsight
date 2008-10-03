@@ -658,6 +658,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// Formatted distances that were specified using these units will not contain the units
         /// abbreviation</param>
         /// <returns>A formatted representation of this leg</returns>
+        /*
         internal override string GetDataString(DistanceUnit defaultEntryUnit)
         {
             StringBuilder sb = new StringBuilder(100);
@@ -674,6 +675,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
 
             return sb.ToString();
         }
+        */
 
         /// <summary>
         /// Saves features for a second face that is based on this leg.
@@ -720,29 +722,6 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         internal bool IsDeflection
         {
             get { return m_IsDeflection; }
-        }
-
-        /// <summary>
-        /// Writes the attributes for this leg.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        protected override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            writer.WriteAngle("StartAngle", m_StartAngle);
-            writer.WriteBool("IsDeflection", m_IsDeflection);
-        }
-
-        /// <summary>
-        /// Reads the attributes for this leg.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        protected override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_StartAngle = reader.ReadAngle("StartAngle");
-            m_IsDeflection = reader.ReadBool("IsDeflection");
         }
     }
 }

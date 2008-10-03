@@ -70,14 +70,6 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<string, ForeignId> m_ForeignIds;
 
-        /// <summary>
-        /// Something that assists the content persistence mechanism. The
-        /// class that requires the helper must cast the helper to an
-        /// appropriate type (assuming that higher-level code creates the
-        /// right sort of helper).
-        /// </summary>
-        IXmlContentHelper m_Helper;
-
         #endregion
 
         #region Constructors
@@ -98,7 +90,6 @@ namespace Backsight.Editor
             m_Elements = new Stack<IXmlContent>(10);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
-            m_Helper = null;
         }
 
         #endregion
@@ -628,18 +619,6 @@ namespace Backsight.Editor
             return result;
         }
          */
-
-        /// <summary>
-        /// Something that assists the content persistence mechanism. The
-        /// class that requires the helper must cast the helper to an
-        /// appropriate type (assuming that higher-level code creates the
-        /// right sort of helper).
-        /// </summary>
-        internal IXmlContentHelper Helper
-        {
-            get { return m_Helper; }
-            set { m_Helper = value; }
-        }
 
         /// <summary>
         /// Reads back an attribute representing an angle that
