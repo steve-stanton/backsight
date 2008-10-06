@@ -1099,7 +1099,8 @@ void CePath::CreateAngleText ( CPtrList& text
 
             writer.WriteString("EntryString", m_EntryString);
 
-            // We also need any IDs assigned to created points
+            // Write information about created features
+            writer.WriteFeatureReferenceArray("FeatureArray", "Feature", this.Features);
         }
 
         /// <summary>
