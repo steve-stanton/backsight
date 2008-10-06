@@ -249,7 +249,7 @@ namespace Backsight.Editor
         public void WriteArray(string arrayName, string itemName, IXmlContent[] data)
         {
             m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Capacity", (uint)data.Length);
+            WriteUnsignedInt("Length", (uint)data.Length);
             //WriteArrayHeading(arrayName, (uint)data.Length);
 
             foreach (IXmlContent xc in data)
@@ -266,7 +266,7 @@ namespace Backsight.Editor
         internal void WriteArrayHeading(string arrayName, uint length)
         {
             m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Capacity", (uint)data.Length);
+            WriteUnsignedInt("Length", (uint)data.Length);
         }
 
         /// <summary>
@@ -293,6 +293,27 @@ namespace Backsight.Editor
 
             WriteStringArray(arrayName, itemName, ids);
         }
+
+        /// <summary>
+        /// Writes an array element for features that have an assigned ID
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the complete array</param>
+        /// <param name="itemName">The element name for individual elements in the array</param>
+        /// <param name="data">The features that may have assigned IDs (only those features
+        /// that have IDs will be represented in the output). Expected to relate to a
+        /// single editing operation.</param>
+        /*
+        internal void WriteFeatureIdArray(string arrayName, string itemName, Feature[] data)
+        {
+            // Grab those features that actually have an ID
+            List<Feature> idFeats = new List<Feature>(data.Length);
+            foreach (Feature f in data)
+            {
+                if (f.Id != null)
+                    idFeats.Add(f);
+            }
+        }
+         */
 
         /// <summary>
         /// Writes an array element for the supplied content
