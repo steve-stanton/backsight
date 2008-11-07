@@ -4,7 +4,7 @@ Backsight is used to build a cadastral database, using input that comes primaril
 
 _CEdit_ was developed using C++ on Windows NT. Object data was persisted in binary files using a product called PSE Pro (a more recent version is described [http://www.progress.com/objectstore/pse_pro/index.ssp here]). While this technology worked well 10 years ago, some of the components are now becoming dated, making it more difficult to continue development on modern computers. In addition, PSE now involves a run-time licence, making it problematic as part of an open-source project.
 
-Backsight is being developed using C# and targets Windows XP/Vista. Data is now stored in XML as part of a SqlServer database. The design builds on the experience that was gained during the development of _CEdit_. It also takes on board an inspired [http://cfis.savagexi.com/pages/technical_paper_4 technical paper] produced by Smallworld in the early 1990s.
+Backsight is being developed using C# and targets Windows XP/Vista. Data is now stored in XML as part of a SQLServer database. The design builds on the experience that was gained during the development of _CEdit_. It also takes on board an inspired [http://cfis.savagexi.com/pages/technical_paper_4 technical paper] produced by Smallworld in the early 1990s.
 
 The design philosophy and implementation can be summarized as follows:
 
