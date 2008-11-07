@@ -1,0 +1,5 @@
+Backsight is used to build a cadastral database, using input that comes primarily from hardcopy survey plans. It was originally developed in 1997-98 for the provincial government of Manitoba, Canada. That led to a cadastral data entry program called _CEdit_, which the province continues to use to this day.
+
+_CEdit_ was developed using C++ on Windows NT. Object data was persisted in binary files using a product called PSE Pro (http://www.progress.com/objectstore/pse_pro/index.ssp describes a more recent version). While this technology worked well 10 years ago, some of the components are now becoming dated, making it more difficult to continue development on modern computers. In addition, PSE now involves a run-time licence, making it problematic as part of an open-source project.
+
+
