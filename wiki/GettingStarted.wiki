@@ -10,7 +10,7 @@ Before you can use the Cadastral Editor, you need to use the Environment Editor 
 When you start the Environment Editor for the very first time, it will look for a database called Backsight on your computer. If it cannot find one, you get the following message:
 {{{
 
-   // The Environment Editor doesn't have a record of the database
+  // The Environment Editor doesn't have a record of the database
   // where information should be stored. Please pick an existing
   // database, or click Cancel to exit.
 
@@ -18,14 +18,14 @@ When you start the Environment Editor for the very first time, it will look for 
 Browse to the database you want to use and click the Connect button. Once you're connected, the Environment Editor checks that Backsight system tables have been created. If not (it's a brand new database), a dialog appears that contains the following message:
 {{{
 
-   // The selected database does not appear to contain Backsight system tables.
+  // The selected database does not appear to contain Backsight system tables.
   // Click the Create button to create them now, or Cancel if you wish to use some other database.
 
 }}}
 Click the Create button to create the database tables where the Environment Editor will store stuff. To load the database with a sample definition, you can use the File-Import command. When you do that, you get the message:
 {{{
 
-   // Importing will replace the content of current database.
+  // Importing will replace the content of current database.
   // Are you sure that's what you want to do?
 
 }}}
