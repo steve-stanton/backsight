@@ -31,7 +31,7 @@ Click the Create button to create the database tables where the Environment Edit
 }}}
 Click OK and you will be asked to locate a Backsight environment file. A sample called "Manitoba Environment.xml" is provided in the trunk/Files folder. Once you have located the file, click OK, and it will be loaded into your database. The Environment Editor will then display a list of all valid "entity types". Use the View menu to look at the various things the environment contains.
 
-Once you have got a defined environment, you can start the Cadastral Editor (it always works with the environment database you last opened). At the present time, the Cadastral Editor writes output to binary flat files with a file extension of ".ce"
+Once you have got a defined environment, you can start the Cadastral Editor (it always works with the environment database you last opened). Each time you perform an edit, a description of that edit gets saved in the database. A small preferences file (with a file extension of _.cedx_) is also written to the file system. Associating the _.cedx_ file extension with the Cadastral Editor makes it easy to relaunch the Editor.
 
   
   
