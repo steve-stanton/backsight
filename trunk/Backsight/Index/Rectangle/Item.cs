@@ -19,7 +19,11 @@ namespace Backsight.Index.Rectangle
 {
 	/// <written by="Steve Stanton" on="15-DEC-2006" />
     /// <summary>
-    /// An entry in the spatial index.
+    /// An entry in the spatial index, consisting of a reference to a spatial
+    /// object, as well as a reference to an object that represents its extent.
+    /// This is considered useful because it may be relatively expensive to
+    /// calculate the spatial object's extent (given that this will likely
+    /// be done very repetitively while working with the spatial index).
     /// </summary>
     class Item
     {
@@ -41,7 +45,7 @@ namespace Backsight.Index.Rectangle
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>IndexItem</c> for a spatial object. After
+        /// Creates a new <c>Item</c> for a spatial object. After
         /// creating an instance, the expectation is that you will add
         /// the item into a spatial index.
         /// </summary>
@@ -51,14 +55,6 @@ namespace Backsight.Index.Rectangle
         {
             m_Object = so;
             m_Window = new Extent(so.Extent);
-            //m_IsProvisionalPlacement = false;
-        }
-
-        internal Item(ISpatialObject so, Extent w)
-        {
-            m_Object = so;
-            m_Window = w;
-            //m_IsProvisionalPlacement = false;
         }
 
         #endregion
@@ -83,13 +79,5 @@ namespace Backsight.Index.Rectangle
         {
             get { return m_Object; }
         }
-
-        /*
-        internal bool HasProvisionalPlacement
-        {
-            get { return m_IsProvisionalPlacement; }
-            set { m_IsProvisionalPlacement = value; }
-        }
-         */
     }
 }
