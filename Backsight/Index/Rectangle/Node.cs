@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-
 namespace Backsight.Index.Rectangle
 {
 	/// <written by="Steve Stanton" on="15-DEC-2006" />
@@ -54,6 +53,11 @@ namespace Backsight.Index.Rectangle
 
         #endregion
 
+        /// <summary>
+        /// Queries the specified search extent.
+        /// </summary>
+        /// <param name="searchExtent">The search extent.</param>
+        /// <param name="itemHandler">The item handler.</param>
         internal virtual void Query(Extent searchExtent, ProcessItem itemHandler)
         {
             if (m_Items!=null)
@@ -70,19 +74,24 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// The covering rectangle of this node
+        /// </summary>
         internal Extent Window
         {
             get { return m_Window; }
         }
 
+        [Obsolete("Use AddItem instead")]
         internal virtual void Add(Item item)
         {
-            if (m_Items==null)
-                m_Items = new List<Item>(1);
-
-            m_Items.Add(item);
+            AddItem(item);
         }
 
+        /// <summary>
+        /// Add an item to this indexing node
+        /// </summary>
+        /// <param name="item">The item to reference as part of this node</param>
         internal virtual void AddItem(Item item)
         {
             if (m_Items==null)

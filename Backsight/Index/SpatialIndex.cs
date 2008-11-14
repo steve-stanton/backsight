@@ -30,15 +30,34 @@ namespace Backsight.Index
     {
         #region Class data
 
+        /// <summary>
+        /// Index of spatial objects with point geometry
+        /// </summary>
         private readonly PointIndex m_Points;
+
+        /// <summary>
+        /// Index of spatial objects with line geometry
+        /// </summary>
         private readonly RectangleIndex m_Lines;
+
+        /// <summary>
+        /// Index of spatial objects with text geometry (annotations)
+        /// </summary>
         private readonly RectangleIndex m_Text;
+
+        /// <summary>
+        /// Index of polygons
+        /// </summary>
         private readonly RectangleIndex m_Polygons;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpatialIndex"/> class
+        /// with nothing in it.
+        /// </summary>
         public SpatialIndex()
         {
             Extent all = new Extent();
@@ -53,6 +72,10 @@ namespace Backsight.Index
 
         #region IEditSpatialIndex Members
 
+        /// <summary>
+        /// Adds a spatial object into the index
+        /// </summary>
+        /// <param name="o">The object to add to the index</param>
         public void Add(ISpatialObject o)
         {
             // Points are handled using their own index. Unfortunately, they
@@ -82,6 +105,13 @@ namespace Backsight.Index
                 throw new NotSupportedException("Unexpected object type: "+o.SpatialType);
         }
 
+        /// <summary>
+        /// Removes a spatial object from the index
+        /// </summary>
+        /// <param name="o">The object to remove from the index</param>
+        /// <returns>
+        /// True if object removed. False if it couldn't be found.
+        /// </returns>
         public bool Remove(ISpatialObject o)
         {
             if (o is IPoint)
@@ -108,22 +138,26 @@ namespace Backsight.Index
 
         #endregion
 
-        public void Dump()
-        {
-            using (StreamWriter w = File.CreateText(@"C:\Temp\index.txt"))
-            {
-                w.WriteLine("Lines");
-                m_Lines.Dump(w, 0);
+        // <summary>
+        // Dumps out debug information relating to this index, creating
+        // a file called <c>C:\Temp\index.txt</c>
+        // </summary>
+        //public void Dump()
+        //{
+        //    using (StreamWriter w = File.CreateText(@"C:\Temp\index.txt"))
+        //    {
+        //        w.WriteLine("Lines");
+        //        m_Lines.Dump(w, 0);
 
-                w.WriteLine();
-                w.WriteLine("Text");
-                m_Text.Dump(w, 0);
+        //        w.WriteLine();
+        //        w.WriteLine("Text");
+        //        m_Text.Dump(w, 0);
 
-                w.WriteLine();
-                w.WriteLine("Polygons");
-                m_Polygons.Dump(w, 0);
-            }
-        }
+        //        w.WriteLine();
+        //        w.WriteLine("Polygons");
+        //        m_Polygons.Dump(w, 0);
+        //    }
+        //}
 
         /// <summary>
         /// Obtains the number of points in this index
@@ -136,6 +170,10 @@ namespace Backsight.Index
             return statPoints.PointCount;
         }
 
+        /// <summary>
+        /// Dumps out debug statistics relating to this index, creating
+        /// a file called <c>C:\Temp\indexStats.txt</c>
+        /// </summary>
         public void DumpStats()
         {            
             using (StreamWriter w = File.CreateText(@"C:\Temp\indexStats.txt"))
@@ -165,11 +203,29 @@ namespace Backsight.Index
             }
         }
 
+        /// <summary>
+        /// Locates the feature closest to a specific position. Ignores polygons.
+        /// </summary>
+        /// <param name="p">The search position</param>
+        /// <param name="radius">The search radius</param>
+        /// <param name="types">The type(s) of object to look for (if you include polygons as
+        /// an applicable type, they will be quietly ignored).</param>
+        /// <returns>
+        /// The closest feature of the requested type (null if nothing found)
+        /// </returns>
         public virtual ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
         {
             return new FindClosestQuery(this, p, radius, types).Result;           
         }
 
+        /// <summary>
+        /// Process items with a covering rectangle that overlaps a query window.
+        /// </summary>
+        /// <param name="extent">The extent of the query window</param>
+        /// <param name="types">The type(s) of object to look for</param>
+        /// <param name="itemHandler">The method that should be called for each query hit. A hit
+        /// is defined as anything with a covering rectangle that overlaps the query window (this
+        /// does not mean the hit actually intersects the window).</param>
         public void QueryWindow(IWindow extent, SpatialType types, ProcessItem itemHandler)
         {
             Extent w = (extent==null || extent.IsEmpty ? new Extent() : new Extent(extent));
@@ -187,7 +243,11 @@ namespace Backsight.Index
                 m_Polygons.Query(w, itemHandler);
         }
 
-        // For experimentation
+        /// <summary>
+        /// Draws a representation of the internal structure of this index, for
+        /// use in experimentation.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
         public void Draw(ISpatialDisplay display)
         {
             Backsight.Forms.DrawStyle style = new Backsight.Forms.DrawStyle();
@@ -197,11 +257,21 @@ namespace Backsight.Index
             m_Polygons.Render(display, style);
         }
 
+        /// <summary>
+        /// Is the index empty (containing nothing)?
+        /// </summary>
         public bool IsEmpty
         {
             get { return (m_Points.IsEmpty && m_Lines.IsEmpty && m_Text.IsEmpty && m_Polygons.IsEmpty); }
         }
 
+        /// <summary>
+        /// Utility method that converts a signed value to unsigned (the numbering
+        /// system that the spatial index is based on).
+        /// </summary>
+        /// <param name="val">The signed value to convert (most likely to be an X or Y
+        /// value in microns)</param>
+        /// <returns>The corresponding unsigned value</returns>
         internal static ulong ToUnsigned(long val)
         {
             return (ulong)(val) ^ 0x8000000000000000;

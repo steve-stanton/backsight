@@ -21,7 +21,8 @@ namespace Backsight.Index
 {
 	/// <written by="Steve Stanton" on="15-DEC-2006" />
     /// <summary>
-    /// Draws all features within a window.
+    /// Draws all features within a window. To provide feedback during longer draws,
+    /// the map display will be painted every 0.5 seconds.
     /// </summary>
     public class DrawQuery
     {
@@ -81,6 +82,13 @@ namespace Backsight.Index
 
         #endregion
 
+        /// <summary>
+        /// Timer event handler that gets called every 0.5 seconds during the
+        /// draw. This records that the map display should be painted when
+        /// <see cref="OnQueryHit"/> is next called.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             m_DoPaint = true;

@@ -23,6 +23,8 @@ namespace Backsight.Index.Rectangle
     /// </summary>
     class IndexStatistics
     {
+        #region Class data
+
         /// <summary>
         /// The total number of <c>Node</c> instances (includes parents)
         /// </summary>
@@ -53,11 +55,25 @@ namespace Backsight.Index.Rectangle
         /// </summary>
         uint m_NumEmptyNode;
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexStatistics"/> class.
+        /// Make calls to <see cref="Add"/> to accumulate statistics.
+        /// </summary>
         internal IndexStatistics()
         {
             m_MinSize = ulong.MaxValue;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Includes a spatial indexing node in these statistics
+        /// </summary>
+        /// <param name="n">The node to include</param>
         internal void Add(Node n)
         {
             m_NumNode++;
@@ -73,6 +89,10 @@ namespace Backsight.Index.Rectangle
             m_MinSize = Math.Min(m_MinSize, n.Window.Height);
         }
 
+        /// <summary>
+        /// Dumps statistics to a stream
+        /// </summary>
+        /// <param name="sw">The stream to write to</param>
         internal void Dump(StreamWriter sw)
         {
             sw.WriteLine("Total node count:     "+m_NumNode);

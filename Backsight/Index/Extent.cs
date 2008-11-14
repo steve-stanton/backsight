@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Geometry;
-
 namespace Backsight.Index
 {
     /// <written by="Steve Stanton" on="20-DEC-2006" />
@@ -28,7 +26,14 @@ namespace Backsight.Index
     {
         #region Class data
 
+        /// <summary>
+        /// The range of the extent in the east-west direction
+        /// </summary>
         private RangeValue m_X;
+
+        /// <summary>
+        /// The range of the extent in the north-south direction
+        /// </summary>
         private RangeValue m_Y;
 
         #endregion
@@ -36,23 +41,45 @@ namespace Backsight.Index
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>Window</c> that refers to the complete 64-bit space.
+        /// Initializes a new instance of the <see cref="Extent"/> class that refers
+        /// to the complete 64-bit space.
         /// </summary>
         internal Extent()
             : this(UInt64.MinValue, UInt64.MinValue, UInt64.MaxValue, UInt64.MaxValue)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Extent"/> class.
+        /// </summary>
+        /// <param name="minx">The western edge, in microns</param>
+        /// <param name="miny">The southern edge, in microns</param>
+        /// <param name="maxx">The eastern edge, in microns</param>
+        /// <param name="maxy">The northern edge, in microns</param>
         internal Extent(ulong minx, ulong miny, ulong maxx, ulong maxy)
         {
             m_X = new RangeValue(Dimension.X, minx, maxx);
             m_Y = new RangeValue(Dimension.Y, miny, maxy);
         }
 
-        internal Extent(ISpatialObject so) : this(so.Extent)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Extent"/> class that
+        /// has the same extent as a specific spatial object.
+        /// </summary>
+        /// <param name="so">The spatial object that will define the extent</param>
+        internal Extent(ISpatialObject so)
+            : this(so.Extent)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Extent"/> class that
+        /// corresponds to a window (where the coverage is expressed using floating
+        /// point values).
+        /// </summary>
+        /// <param name="extent">The covering rectangle (expressed using floating
+        /// point values)</param>
         internal Extent(IWindow extent)
         {
             m_X = new RangeValue(Dimension.X,
@@ -117,24 +144,42 @@ namespace Backsight.Index
             &&      other.m_Y.Max >= this.m_Y.Max);
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="Extent"/>.
+        /// </summary>
+        /// <returns>A string that contains the min-max values, suitable for use in debug output</returns>
         public override string ToString()
         {
             return String.Format("X={0}, Y={1}", m_X.ToString(), m_Y.ToString());
         }
 
-        // Not sure if these are really needed...
+        /// <summary>
+        /// The western edge, in microns
+        /// </summary>
         internal ulong MinX
-        {
+        {            
             get { return m_X.Min; }
         }
+
+        /// <summary>
+        /// The southern edge, in microns
+        /// </summary>
         internal ulong MinY
         {
             get { return m_Y.Min; }
         }
+
+        /// <summary>
+        /// The eastern edge, in microns
+        /// </summary>
         internal ulong MaxX
         {
             get { return m_X.Max; }
         }
+
+        /// <summary>
+        /// The northern edge, in microns
+        /// </summary>
         internal ulong MaxY
         {
             get { return m_Y.Max; }
@@ -148,11 +193,17 @@ namespace Backsight.Index
             get { return (this.Width==this.Height); }
         }
 
+        /// <summary>
+        /// The width of the extent, in microns
+        /// </summary>
         internal ulong Width
         {
             get { return m_X.Size; }
         }
 
+        /// <summary>
+        /// The height of the extent, in microns
+        /// </summary>
         internal ulong Height
         {
             get { return m_Y.Size; }
@@ -173,6 +224,10 @@ namespace Backsight.Index
 
         }
 
+        /// <summary>
+        /// The outline of this extent, expressed as a closed polyline (arranged
+        /// in a counter-clockwise order).
+        /// </summary>
         internal IPosition[] Outline
         {
             get
@@ -194,6 +249,11 @@ namespace Backsight.Index
 
         #region IEquatable<Window> Members
 
+        /// <summary>
+        /// Checks whether this extent is exactly coincident with another one.
+        /// </summary>
+        /// <param name="that">The extent to compare with</param>
+        /// <returns>True if the extents are spatially coincident</returns>
         public bool Equals(Extent that)
         {
             return (this.m_X.Min == that.m_X.Min
