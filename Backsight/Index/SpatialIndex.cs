@@ -96,11 +96,11 @@ namespace Backsight.Index
             SpatialType t = o.SpatialType;
 
             if (t == SpatialType.Line)
-                m_Lines.Add(item);
+                m_Lines.AddItem(item);
             else if (t == SpatialType.Text)
-                m_Text.Add(item);
+                m_Text.AddItem(item);
             else if (t == SpatialType.Polygon)
-                m_Polygons.Add(item);
+                m_Polygons.AddItem(item);
             else
                 throw new NotSupportedException("Unexpected object type: "+o.SpatialType);
         }

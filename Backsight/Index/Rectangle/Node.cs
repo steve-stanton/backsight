@@ -15,14 +15,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace Backsight.Index.Rectangle
 {
 	/// <written by="Steve Stanton" on="15-DEC-2006" />
-    /// <summary>A node in an index tree</summary>
-    /// <seealso cref="ParentNode"/>
+    /// <summary>A node in an index tree. This is the base class
+    /// for <see cref="RectangleIndex"/>.</summary>
     class Node
     {
         #region Class data
@@ -82,12 +81,6 @@ namespace Backsight.Index.Rectangle
             get { return m_Window; }
         }
 
-        [Obsolete("Use AddItem instead")]
-        internal virtual void Add(Item item)
-        {
-            AddItem(item);
-        }
-
         /// <summary>
         /// Add an item to this indexing node
         /// </summary>
@@ -100,6 +93,14 @@ namespace Backsight.Index.Rectangle
             m_Items.Add(item);
         }
 
+        /// <summary>
+        /// Calls <see cref="RemoveItem"/> if the supplied item is 
+        /// enclosed by the extent of this node.
+        /// </summary>
+        /// <param name="item">The item that may be inside the spatial extent
+        /// of this node</param>
+        /// <returns>True if <see cref="RemoveItem"/> was called. False if the
+        /// item is not completely enclosed by this node.</returns>
         internal virtual bool Remove(Item item)
         {
             if (item.Window.IsEnclosedBy(this.m_Window))
@@ -108,6 +109,14 @@ namespace Backsight.Index.Rectangle
                 return false;
         }
 
+        /// <summary>
+        /// Removes the index item that refers to a specific spatial object
+        /// </summary>
+        /// <param name="item">The item referencing the spatial object that needs
+        /// to be removed</param>
+        /// <returns>True if an item referring to the same spatial object was
+        /// removed. False if this node does not contain any items that refer
+        /// to the spatial object to be removed.</returns>
         protected bool RemoveItem(Item item)
         {
             if (m_Items==null)
@@ -128,6 +137,11 @@ namespace Backsight.Index.Rectangle
             return false;
         }
 
+        /// <summary>
+        /// Dumps out information about this indexing node.
+        /// </summary>
+        /// <param name="sw">The output stream to write to</param>
+        /// <param name="depth">The current node depth</param>
         internal virtual void Dump(StreamWriter sw, int depth)
         {
             string prefix = new String(' ', depth*2);
@@ -141,16 +155,30 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// Collects statistics relating to this indexing node, for use
+        /// in experimentation.
+        /// </summary>
+        /// <param name="stats">The statistics to add to</param>
         internal virtual void CollectStats(IndexStatistics stats)
         {
             stats.Add(this);
         }
 
+        /// <summary>
+        /// The number of items associated with this node.
+        /// </summary>
         internal uint ItemCount
         {
             get { return (m_Items==null ? 0 : (uint)m_Items.Count); }
         }
 
+        /// <summary>
+        /// Draws the outline of this indexing node to a specific display (so
+        /// long as the extent of the node isn't too big)
+        /// </summary>
+        /// <param name="display">The display to draw to.</param>
+        /// <param name="style">The style for the draw.</param>
         internal virtual void Render(ISpatialDisplay display, IDrawStyle style)
         {
             if (m_Window.Width < 0x0000010000000000)
@@ -160,6 +188,10 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// Does this indexing node contain any items (checks whether
+        /// the <see cref="ItemCount"/> property has a value of 0).
+        /// </summary>
         internal virtual bool IsEmpty
         {
             get { return (this.ItemCount==0); }
