@@ -84,6 +84,11 @@ namespace Backsight.Index.Rectangle
 
         #endregion
 
+        /// <summary>
+        /// Queries the specified search extent.
+        /// </summary>
+        /// <param name="searchExtent">The search extent.</param>
+        /// <param name="itemHandler">The item handler.</param>
         internal override void Query(Extent searchExtent, ProcessItem itemHandler)
         {
             base.Query(searchExtent, itemHandler);
@@ -98,26 +103,10 @@ namespace Backsight.Index.Rectangle
             }
         }
 
-        internal override void Add(Item item)
-        {
-            // If this node hasn't reached it's provisional capacity, just hold
-            // the item here (it will be re-located if we subsequently find that
-            // the node is too busy).
-
-            /*
-            if (base.IsAcceptingProvisionalPlacements)
-            {
-                item.HasProvisionalPlacement = true;
-                base.Add(item);
-            }
-            else
-            {
-                AddItem(item);
-            }
-            */
-            AddItem(item);
-        }
-
+        /// <summary>
+        /// Add an item to this indexing node
+        /// </summary>
+        /// <param name="item">The item to reference as part of this node</param>
         internal override void AddItem(Item item)
         {
             // Obtain a window that represents a child strip
@@ -140,7 +129,7 @@ namespace Backsight.Index.Rectangle
             if (child==null)
                 base.AddItem(item);
             else
-                child.Add(item);
+                child.AddItem(item);
         }
 
         internal override bool Remove(Item item)
@@ -273,6 +262,11 @@ namespace Backsight.Index.Rectangle
             return null;
         }
 
+        /// <summary>
+        /// Dumps out information about this indexing node.
+        /// </summary>
+        /// <param name="sw">The output stream to write to</param>
+        /// <param name="depth">The current node depth</param>
         internal override void Dump(StreamWriter sw, int depth)
         {
             base.Dump(sw, depth);
@@ -286,6 +280,11 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// Collects statistics relating to this indexing node, for use
+        /// in experimentation.
+        /// </summary>
+        /// <param name="stats">The statistics to add to</param>
         internal override void CollectStats(IndexStatistics stats)
         {
             base.CollectStats(stats);
@@ -297,6 +296,12 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// Draws the outline of this indexing node to a specific display, as
+        /// well as any child nodes.
+        /// </summary>
+        /// <param name="display">The display to draw to.</param>
+        /// <param name="style">The style for the draw.</param>
         internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             base.Render(display, style);
@@ -308,11 +313,18 @@ namespace Backsight.Index.Rectangle
             }
         }
 
+        /// <summary>
+        /// Does this indexing node contain any items (checks whether
+        /// this node refers to any items, and has no child nodes).
+        /// </summary>
         internal override bool IsEmpty
         {
             get { return (this.ItemCount==0 && this.ChildCount==0); }
         }
 
+        /// <summary>
+        /// The number of child nodes associated with this node.
+        /// </summary>
         private uint ChildCount
         {
             get { return (m_Children==null ? 0 : (uint)m_Children.Count); }
