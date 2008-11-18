@@ -32,27 +32,27 @@ namespace Backsight.Index
         /// <summary>
         /// The search position.
         /// </summary>
-        private readonly IPointGeometry m_Position;
+        readonly IPointGeometry m_Position;
 
         /// <summary>
         /// The search tolerance (expected to be greater than zero).
         /// </summary>
-        private readonly ILength m_Radius;
+        readonly ILength m_Radius;
 
         /// <summary>
         /// The type of objects to look for.
         /// </summary>
-        private readonly SpatialType m_Types;
+        readonly SpatialType m_Types;
 
         /// <summary>
         /// The distance to the closest feature found so far (never greater than m_Radius.Meters)
         /// </summary>
-        private double m_Distance;
+        double m_Distance;
 
         /// <summary>
         /// The closest feature (null if nothing has been found).
         /// </summary>
-        private ISpatialObject m_Result;
+        ISpatialObject m_Result;
 
         #endregion
 
@@ -98,7 +98,7 @@ namespace Backsight.Index
         /// <param name="item">The item to process (expected to be some sort of <c>IFeature</c>)</param>
         /// <returns>True if the query should continue. False if the item is exactly coincident with
         /// the query position.</returns>
-        private bool OnQueryHit(ISpatialObject item)
+        bool OnQueryHit(ISpatialObject item)
         {
             double d = item.Distance(m_Position).Meters;
             if (d<=m_Distance)

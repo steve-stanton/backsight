@@ -33,22 +33,22 @@ namespace Backsight.Index
         /// <summary>
         /// Index of spatial objects with point geometry
         /// </summary>
-        private readonly PointIndex m_Points;
+        readonly PointIndex m_Points;
 
         /// <summary>
         /// Index of spatial objects with line geometry
         /// </summary>
-        private readonly RectangleIndex m_Lines;
+        readonly RectangleIndex m_Lines;
 
         /// <summary>
         /// Index of spatial objects with text geometry (annotations)
         /// </summary>
-        private readonly RectangleIndex m_Text;
+        readonly RectangleIndex m_Text;
 
         /// <summary>
         /// Index of polygons
         /// </summary>
-        private readonly RectangleIndex m_Polygons;
+        readonly RectangleIndex m_Polygons;
 
         #endregion
 

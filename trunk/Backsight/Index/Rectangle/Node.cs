@@ -56,7 +56,9 @@ namespace Backsight.Index.Rectangle
         /// Queries the specified search extent.
         /// </summary>
         /// <param name="searchExtent">The search extent.</param>
-        /// <param name="itemHandler">The item handler.</param>
+        /// <param name="itemHandler">The method that should be called for each query hit. A hit
+        /// is defined as anything with a covering rectangle that overlaps the query window (this
+        /// does not mean the hit actually intersects the window).</param>
         internal virtual void Query(Extent searchExtent, ProcessItem itemHandler)
         {
             if (m_Items!=null)
@@ -82,7 +84,7 @@ namespace Backsight.Index.Rectangle
         }
 
         /// <summary>
-        /// Add an item to this indexing node
+        /// Adds an item to this indexing node
         /// </summary>
         /// <param name="item">The item to reference as part of this node</param>
         internal virtual void AddItem(Item item)

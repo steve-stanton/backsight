@@ -66,7 +66,7 @@ namespace Backsight.Index.Rectangle
         /// Child nodes (if any), in no particular order.
         /// The maximum number of child nodes is <c>MAX_CHILD_COUNT</c>.
         /// </summary>
-        private List<Node> m_Children;
+        List<Node> m_Children;
 
         #endregion
 
@@ -132,6 +132,15 @@ namespace Backsight.Index.Rectangle
                 child.AddItem(item);
         }
 
+        /// <summary>
+        /// Attempts to remove an item from this node.
+        /// </summary>
+        /// <param name="item">The item that may be inside the spatial extent
+        /// of this node</param>
+        /// <returns>
+        /// True if the item was removed (either from this instance, or one
+        /// of its child nodes). False if the item is not inside this node.
+        /// </returns>
         internal override bool Remove(Item item)
         {
             if (!item.Window.IsEnclosedBy(this.Window))
@@ -158,7 +167,7 @@ namespace Backsight.Index.Rectangle
         /// <param name="childStrip">The coverage of the first child of this node</param>
         /// <param name="itemWindow">The window of an item that is being added into this tree</param>
         /// <returns>The created child (null if the item cannot be accepted by any child node)</returns>
-        private Node AddChild(Extent childStrip, Extent itemWindow)
+        Node AddChild(Extent childStrip, Extent itemWindow)
         {
             for (int i=0; i<MAX_CHILD_COUNT; i++)
             {
@@ -171,7 +180,12 @@ namespace Backsight.Index.Rectangle
             return null;
         }
 
-        private void ShiftStrip(Extent w)
+        /// <summary>
+        /// Shifts a covering rectangle either east (for vertical strips),
+        /// or north (for horizontal strips).
+        /// </summary>
+        /// <param name="w">The extent to shift</param>
+        void ShiftStrip(Extent w)
         {
             // Shift vertical strips east; shift horizontal strips north
 
@@ -181,7 +195,14 @@ namespace Backsight.Index.Rectangle
                 w.Increase(0, (w.Height+1)/2);
         }
 
-        private Node CreateChild(Extent childWindow)
+        /// <summary>
+        /// Creates a child node, remembering it as as child of this node.
+        /// </summary>
+        /// <param name="childWindow">The spatial extent of the new child</param>
+        /// <returns>The created node is either an instance of <see cref="Node"/> (for
+        /// child nodes that are quite small), or a new (smaller) instance of
+        /// this class.</returns>
+        Node CreateChild(Extent childWindow)
         {
             // If the child is quite small, make it a leaf node (the number here
             // means we effectively ignore the 3 low-order bytes in X & Y, meaning
@@ -205,7 +226,7 @@ namespace Backsight.Index.Rectangle
         /// Returns a window with a coverage that corresponds to the first child strip
         /// </summary>
         /// <returns></returns>
-        private Extent CreateChildStrip()
+        Extent CreateChildStrip()
         {
             Extent w = this.Window;
 
@@ -248,7 +269,7 @@ namespace Backsight.Index.Rectangle
         /// <param name="w">The window of interest</param>
         /// <returns>The first child node that entirely encloses the window (null
         /// if nothing found)</returns>
-        private Node FindChild(Extent w)
+        Node FindChild(Extent w)
         {
             if (m_Children==null)
                 return null;
@@ -325,7 +346,7 @@ namespace Backsight.Index.Rectangle
         /// <summary>
         /// The number of child nodes associated with this node.
         /// </summary>
-        private uint ChildCount
+        uint ChildCount
         {
             get { return (m_Children==null ? 0 : (uint)m_Children.Count); }
         }
