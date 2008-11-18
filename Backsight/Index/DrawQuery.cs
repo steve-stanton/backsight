@@ -31,17 +31,17 @@ namespace Backsight.Index
         /// <summary>
         /// The display to draw to
         /// </summary>
-        private readonly ISpatialDisplay m_Display;
+        readonly ISpatialDisplay m_Display;
 
         /// <summary>
         /// The drawing style
         /// </summary>
-        private readonly IDrawStyle m_Style;
+        readonly IDrawStyle m_Style;
 
         /// <summary>
         /// Does the display need to be painted?
         /// </summary>
-        private bool m_DoPaint;
+        bool m_DoPaint;
 
         #endregion
 
@@ -89,7 +89,7 @@ namespace Backsight.Index
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             m_DoPaint = true;
         }
@@ -100,7 +100,7 @@ namespace Backsight.Index
         /// </summary>
         /// <param name="item">The item to process</param>
         /// <returns>True (always), meaning the query should continue.</returns>
-        private bool OnQueryHit(ISpatialObject item)
+        bool OnQueryHit(ISpatialObject item)
         {
             if (m_DoPaint)
             {

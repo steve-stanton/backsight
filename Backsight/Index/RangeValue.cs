@@ -28,17 +28,17 @@ namespace Backsight.Index
         /// <summary>
         /// The axis the range relates to.
         /// </summary>
-        private readonly Dimension m_Dimension;
+        readonly Dimension m_Dimension;
 
         /// <summary>
         /// The low end of the range (inclusive).
         /// </summary>
-        private ulong m_Min;
+        ulong m_Min;
 
         /// <summary>
         /// The high end of the range (inclusive).
         /// </summary>
-        private ulong m_Max;
+        ulong m_Max;
 
         #endregion
 

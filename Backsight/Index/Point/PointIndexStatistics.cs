@@ -24,6 +24,8 @@ namespace Backsight.Index.Point
     /// </summary>
     class PointIndexStatistics
     {
+        #region Class data
+
         /// <summary>
         /// The number of <c>DataNode</c> instances
         /// </summary>
@@ -54,11 +56,25 @@ namespace Backsight.Index.Point
         /// </summary>
         ulong m_MinSize;
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PointIndexStatistics"/> class.
+        /// Make calls to <see cref="Add"/> to accumulate statistics.
+        /// </summary>
         internal PointIndexStatistics()
         {
             m_MinSize = ulong.MaxValue;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Includes a spatial indexing node in these statistics
+        /// </summary>
+        /// <param name="n">The node to include</param>
         internal void Add(Node n)
         {
             if (n is DataNode)
@@ -76,6 +92,10 @@ namespace Backsight.Index.Point
             m_MinSize = Math.Min(m_MinSize, n.Window.Width);
         }
 
+        /// <summary>
+        /// Dumps statistics to a stream
+        /// </summary>
+        /// <param name="sw">The stream to write to</param>
         internal void Dump(StreamWriter sw)
         {
             sw.WriteLine("Number of index nodes: "+m_NumIndexNode);

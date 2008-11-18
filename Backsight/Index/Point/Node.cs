@@ -18,7 +18,8 @@ using System;
 namespace Backsight.Index.Point
 {
 	/// <written by="Steve Stanton" on="11-JAN-2007" />
-    /// <summary>A node in a point index tree</summary>
+    /// <summary>A node in a point index tree. Base class for
+    /// <see cref="IndexNode"/> and <see cref="DataNode"/></summary>
     abstract class Node
     {
         #region Constants
@@ -44,6 +45,9 @@ namespace Backsight.Index.Point
             ,   0x0000000000FFFFFF // 1 bit  => 2x2
             };
 
+        /// <summary>
+        /// The array index of the last element in the <c>SIZES</c> array
+        /// </summary>
         internal static int MAX_DEPTH = (SIZES.Length-1);
 
         #endregion
@@ -59,6 +63,10 @@ namespace Backsight.Index.Point
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// </summary>
+        /// <param name="w">The covering rectangle of the node</param>
         protected Node(Extent w)
         {
             m_Window = w;
@@ -66,20 +74,61 @@ namespace Backsight.Index.Point
 
         #endregion
 
+        /// <summary>
+        /// The covering rectangle of this node
+        /// </summary>
         internal Extent Window
         {
             get { return m_Window; }
         }
 
+        /// <summary>
+        /// Adds a point to this indexing node
+        /// </summary>
+        /// <param name="p">The point to add to the index</param>
+        /// <param name="depth">The 0-based depth of the current node (specify 0
+        /// when dealing with the root node)</param>
+        /// <returns>The node containing the node in which the point was stored (at
+        /// the next level of the spatial index).</returns>
         internal abstract Node Add(IPoint p, int depth);
+
+        /// <summary>
+        /// Removes a point from this indexing node (or a child of this node)
+        /// </summary>
+        /// <param name="p">The point to remove from the index</param>
+        /// <param name="depth">The 0-based depth of the current node (specify 0
+        /// when dealing with the root node)</param>
+        /// <returns>True if a point was removed. False if the supplied
+        /// instance was not found.</returns>
         internal abstract bool Remove(IPoint p, int depth);
+
+        /// <summary>
+        /// Is this node empty (containing no items)
+        /// </summary>
         internal abstract bool IsEmpty { get; }
+
+        /// <summary>
+        /// Queries the specified search extent.
+        /// </summary>
+        /// <param name="searchExtent">The search extent.</param>
+        /// <param name="itemHandler">The method that should be called for each query hit (any
+        /// node with an extent that overlaps the query window)</param>
         internal abstract void Query(Extent searchExtent, ProcessItem itemHandler);
+
+        /// <summary>
+        /// Processes every item related to this node (including any child nodes).
+        /// This will be called by the <see cref="Query"/> method in a situation
+        /// where the node is completely enclosed by a search extent.
+        /// </summary>
+        /// <param name="itemHandler">The method that should be called for every point</param>
+        /// <remarks>This method should really return a <c>bool</c>, by being sensitive to
+        /// the return value from the item handler (as it is, we may end up processing more
+        /// data than we need to)</remarks>
         internal abstract void PassAll(ProcessItem itemHandler);
 
         /// <summary>
         /// The number of items in this node. What consititutes an "item" depends on the
-        /// derived class.
+        /// derived class (it's either the number of points, or the number of child nodes).
         /// </summary>
         internal abstract uint Count { get; }
 
@@ -89,6 +138,12 @@ namespace Backsight.Index.Point
         /// <param name="stats">The stats to update</param>
         internal abstract void CollectStats(PointIndexStatistics stats);
 
+        /// <summary>
+        /// Draws the outline of this indexing node to a specific display (so
+        /// long as the extent of the node isn't too big)
+        /// </summary>
+        /// <param name="display">The display to draw to.</param>
+        /// <param name="style">The style for the draw.</param>
         internal virtual void Render(ISpatialDisplay display, IDrawStyle style)
         {
             if (m_Window.Width < 0x0000010000000000)

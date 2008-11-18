@@ -34,7 +34,7 @@ namespace Backsight.Index.Point
         /// The root node for the spatial index, corresponding to the complete
         /// 64-bit coordinate space.
         /// </summary>
-        private Node m_Root;
+        Node m_Root;
 
         #endregion
 
@@ -70,6 +70,9 @@ namespace Backsight.Index.Point
             return m_Root.Remove(p, 0);
         }
 
+        /// <summary>
+        /// Is this index empty (containing no points whatsoever)?
+        /// </summary>
         internal bool IsEmpty
         {
             get { return m_Root.IsEmpty; }
