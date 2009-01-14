@@ -19,6 +19,7 @@ using System.Diagnostics;
 
 using Backsight.Index.Point;
 using Backsight.Index.Rectangle;
+using Backsight.Forms;
 
 namespace Backsight.Index
 {
@@ -250,7 +251,7 @@ namespace Backsight.Index
         /// <param name="display">The display to draw to</param>
         public void Draw(ISpatialDisplay display)
         {
-            Backsight.Forms.DrawStyle style = new Backsight.Forms.DrawStyle();
+            DrawStyle style = new DrawStyle();
             style.Pen.Color = System.Drawing.Color.Crimson;
             //m_Points.Render(display, style);
             //m_Lines.Render(display, style, 0);
