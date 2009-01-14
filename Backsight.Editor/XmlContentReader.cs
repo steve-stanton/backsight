@@ -70,6 +70,16 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<string, ForeignId> m_ForeignIds;
 
+        /// <summary>
+        /// Information about the features created by the editing operation that
+        /// is currently being deserialized from the database. The key is the
+        /// sequence number of the created feature, the value holds the assigned
+        /// entity type (and perhaps the assigned ID too).
+        /// </summary>
+        /// <remarks>This is a bit of a hack, introduced in an attempt to overcome
+        /// problems with the deserialization of connection paths.</remarks>
+        Dictionary<uint, FeatureData> m_FeatureInfo;
+
         #endregion
 
         #region Constructors
@@ -424,6 +434,7 @@ namespace Backsight.Editor
 
             try
             {
+                m_Model.ContentReader = this;
                 m_Reader = data;
                 Debug.Assert(m_Elements.Count==0);
                 Operation result = ReadElement<Operation>("Edit");
@@ -439,6 +450,7 @@ namespace Backsight.Editor
             finally
             {
                 m_Reader = null;
+                m_Model.ContentReader = null;
             }
         }
 
@@ -645,6 +657,44 @@ namespace Backsight.Editor
         internal CadastralMapModel Model
         {
             get { return m_Model; }
+        }
+
+        /// <summary>
+        /// Saves (or clears) information about the features created by the edit
+        /// that is currently being deserialized
+        /// </summary>
+        /// <param name="info">Information about the features created by
+        /// the edit (specify null to clear)</param>
+        internal void SaveFeatureData(FeatureData[] info)
+        {
+            if (info == null)
+                m_FeatureInfo = null;
+            else
+            {
+                m_FeatureInfo = new Dictionary<uint, FeatureData>(info.Length);
+                foreach (FeatureData fd in info)
+                    m_FeatureInfo.Add(fd.CreationSequence, fd);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to obtain information about a specific feature created by
+        /// the edit that is being deserialized.
+        /// </summary>
+        /// <param name="creationSequence">The creation sequence number of the feature</param>
+        /// <returns>The corresponding information (null if the current edit does
+        /// not involve a special feature information cache, or the information cannot
+        /// be found)</returns>
+        internal FeatureData GetFeatureData(uint creationSequence)
+        {
+            if (m_FeatureInfo==null)
+                return null;
+
+            FeatureData result;
+            if (m_FeatureInfo.TryGetValue(creationSequence, out result))
+                return result;
+            else
+                return null;
         }
     }
 }

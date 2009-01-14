@@ -295,6 +295,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes an array of <see cref="FeatureData"/> objects constructed from
+        /// an array of spatial features.
+        /// </summary>
+        /// <param name="arrayName">The name for the element representing the complete array</param>
+        /// <param name="itemName">The element name for individual elements in the array</param>
+        /// <param name="data">The features that will be written as an array of <c>FeatureData</c></param>
+        internal void WriteFeatureDataArray(string arrayName, string itemName, Feature[] data)
+        {
+            FeatureData[] fda = new FeatureData[data.Length];
+            for (int i = 0; i < data.Length; i++)
+                fda[i] = new FeatureData(data[i]);
+
+            WriteArray(arrayName, itemName, fda);
+        }
+
+        /// <summary>
         /// Writes an array element for features that have an assigned ID
         /// </summary>
         /// <param name="arrayName">The name for the element representing the complete array</param>

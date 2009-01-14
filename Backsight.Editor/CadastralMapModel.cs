@@ -115,6 +115,14 @@ namespace Backsight.Editor
         /// </summary>
         Session m_WorkingSession;
 
+        /// <summary>
+        /// The content reader that is currently loading this model (null if
+        /// the model is not being deserialized). 
+        /// </summary>
+        /// <remarks>This is a bit of a hack, introduced in an attempt to overcome
+        /// problems with the deserialization of connection paths.</remarks>
+        XmlContentReader m_Reader;
+
         #endregion
 
         #region Constructors
@@ -130,6 +138,7 @@ namespace Backsight.Editor
             m_Sessions = new List<Session>();
             m_Index = new EditingIndex();
             m_IdManager = new IdManager();
+            m_Reader = null;
         }
 
         #endregion
@@ -1491,5 +1500,16 @@ namespace Backsight.Editor
                 s.Revision = revision;
             }
         }
+
+        /// <summary>
+        /// The content reader that is currently loading this model (null if
+        /// the model is not being deserialized). 
+        /// </summary>
+        internal XmlContentReader ContentReader
+        {
+            get { return m_Reader; }
+            set { m_Reader = value; }
+        }
+
     }
 }
