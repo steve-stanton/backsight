@@ -120,7 +120,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates the features that represent this connection path
         /// </summary>
-        void CreateFeatures()
+        /// <param name="featureInfo">Information about the features that will be created. This
+        /// will be defined only when deserializing the edit. Specify null when executing the
+        /// edit for the first time.</param>
+        void CreateFeatures(FeatureData[] featureInfo)
         {
             PathItem[] items = PathParser.GetPathItems(m_EntryString);
             PathData pd = new PathData(m_From, m_To);
@@ -420,7 +423,7 @@ namespace Backsight.Editor.Operations
                 leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
             */
 
-            CreateFeatures();
+            CreateFeatures(null);
 
             // Peform standard completion steps
             Complete();
@@ -1100,7 +1103,7 @@ void CePath::CreateAngleText ( CPtrList& text
             writer.WriteString("EntryString", m_EntryString);
 
             // Write information about created features
-            writer.WriteFeatureReferenceArray("FeatureArray", "Feature", this.Features);
+            writer.WriteFeatureDataArray("FeatureArray", "Feature", this.Features);
         }
 
         /// <summary>
@@ -1135,10 +1138,10 @@ void CePath::CreateAngleText ( CPtrList& text
                 // Read back the data entry string
                 m_EntryString = reader.ReadString("EntryString");
 
-                CreateFeatures();
+                // Read information about created features, then create them
+                FeatureData[] featureInfo = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+                CreateFeatures(featureInfo);
                 Complete();
-
-                // Assign IDs
             }
 
             finally
