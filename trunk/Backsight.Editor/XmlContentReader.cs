@@ -333,7 +333,7 @@ namespace Backsight.Editor
                 throw new Exception("Array element not found");
 
             // Pick up array size
-            uint capacity = ReadUnsignedInt("Capacity");
+            uint capacity = ReadUnsignedInt("Length");
             T[] result = new T[(int)capacity];
 
             for (int i=0; i<capacity; i++)
@@ -353,7 +353,7 @@ namespace Backsight.Editor
                 throw new Exception("Array element not found");
 
             // Pick up array size
-            uint capacity = ReadUnsignedInt("Capacity");
+            uint capacity = ReadUnsignedInt("Length");
             string[] result = new string[(int)capacity];
 
             // Move to the first item (not sure why this is necessary, but otherwise

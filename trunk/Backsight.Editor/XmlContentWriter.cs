@@ -340,7 +340,7 @@ namespace Backsight.Editor
         void WriteStringArray(string arrayName, string itemName, string[] data)
         {
             m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Capacity", (uint)data.Length);
+            WriteUnsignedInt("Length", (uint)data.Length);
 
             foreach (string s in data)
                 m_Writer.WriteElementString(itemName, s);

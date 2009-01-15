@@ -120,10 +120,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates the features that represent this connection path
         /// </summary>
-        /// <param name="featureInfo">Information about the features that will be created. This
-        /// will be defined only when deserializing the edit. Specify null when executing the
-        /// edit for the first time.</param>
-        void CreateFeatures(FeatureData[] featureInfo)
+        /// <returns>The points that were created</returns>
+        List<PointFeature> CreateFeatures()
         {
             PathItem[] items = PathParser.GetPathItems(m_EntryString);
             PathData pd = new PathData(m_From, m_To);
@@ -152,6 +150,8 @@ namespace Backsight.Editor.Operations
             // Go through each leg, asking them to make features.
             foreach (Leg leg in m_Legs)
                 leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
+
+            return createdPoints;
         }
 
         /// <summary>
@@ -423,7 +423,7 @@ namespace Backsight.Editor.Operations
                 leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
             */
 
-            CreateFeatures(null);
+            CreateFeatures();
 
             // Peform standard completion steps
             Complete();
@@ -1138,10 +1138,28 @@ void CePath::CreateAngleText ( CPtrList& text
                 // Read back the data entry string
                 m_EntryString = reader.ReadString("EntryString");
 
-                // Read information about created features, then create them
+                // Read back information about created features
                 FeatureData[] featureInfo = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
-                CreateFeatures(featureInfo);
+
+                // Create stuff
+                List<PointFeature> createdPoints = CreateFeatures();
                 Complete();
+
+                // Attach IDs to point features (need to do this after the Complete call, since
+                // that's where creation sequence is attached to points, which is what we need
+                // to pick up the associated FeatureData).
+
+                foreach (PointFeature p in createdPoints)
+                {
+                    FeatureData info = Array.Find<FeatureData>(featureInfo,
+                        delegate(FeatureData t) { return (t.CreationSequence==p.CreatorSequence); });
+
+                    if (info!=null)
+                    {
+                        FeatureId id = info.Id;
+                        p.SetId(id);
+                    }
+                }
             }
 
             finally
