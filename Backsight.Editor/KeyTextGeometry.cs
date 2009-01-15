@@ -38,6 +38,13 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Default constructor, for use during deserialization
+        /// </summary>
+        public KeyTextGeometry()
+        {
+        }
+
+        /// <summary>
         /// Creates a new <c>KeyTextGeometry</c> that isn't associated with a text feature. There is a chicken and egg
         /// problem here - an instance of KeyTextGeometry is expected to refer to a TextFeature, but the feature cannot
         /// be created until the geometry has been created. So after creating the KeyTextGeometry, you are expected to
@@ -87,6 +94,12 @@ namespace Backsight.Editor
         {
             base.WriteContent(writer);
             writer.WriteFeatureReference("TextFeature", m_Feature);
+        }
+
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            //m_Feature = reader.ReadFeatureByReference<TextFeature>("TextFeature");
         }
     }
 }

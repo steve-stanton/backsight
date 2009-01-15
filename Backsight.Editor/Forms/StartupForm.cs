@@ -22,6 +22,7 @@ using System.Drawing;
 using Backsight.SqlServer;
 using Backsight.Data;
 using Backsight.Editor.Properties;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -130,9 +131,10 @@ namespace Backsight.Editor.Forms
                 Close();
             }
 
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Cannot access " + lastFile);
+                MessageBox.Show(String.Format("Error reading {0} ({1})", lastFile, ex.Message));
+                Trace.Write(ex.StackTrace);
                 openLastButton.Enabled = false;
             }
         }

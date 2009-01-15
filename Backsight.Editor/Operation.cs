@@ -81,6 +81,12 @@ namespace Backsight.Editor
                 throw new ArgumentNullException("Editing session is not defined");
 
             m_Session.Add(this);
+
+            // Reserve a sequence number for the edit, so long as we are not
+            // in the process of deserializing from the database
+            if (m_Session.MapModel.ContentReader==null)
+                Operation.CurrentEditSequence = Session.ReserveNextItem();
+
             m_Sequence = s_CurrentEditSequence;
         }
 

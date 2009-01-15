@@ -645,7 +645,7 @@ namespace Backsight.Editor
 
             // Reserve an item number for any editing operation that gets created (it
             // may not get used if the user quits, but it's convenient to do it here)
-            Operation.CurrentEditSequence = Session.ReserveNextItem();
+            //Operation.CurrentEditSequence = Session.ReserveNextItem();
 
             m_Command = cmd;
             m_Command.Run();
