@@ -83,23 +83,5 @@ namespace Backsight.Editor
                 return (id==null ? "?" : id.FormattedKey);
             }
         }
-
-        /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-            writer.WriteFeatureReference("TextFeature", m_Feature);
-        }
-
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            //m_Feature = reader.ReadFeatureByReference<TextFeature>("TextFeature");
-        }
     }
 }

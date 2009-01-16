@@ -334,6 +334,10 @@ namespace Backsight.Editor
                 SetTopology(true);
 
             m_Geom = reader.ReadElement<TextGeometry>("Geometry");
+
+            // KeyText refers back to this feature (which provides the key)
+            if (m_Geom is KeyTextGeometry)
+                (m_Geom as KeyTextGeometry).Label = this;
         }
     }
 }
