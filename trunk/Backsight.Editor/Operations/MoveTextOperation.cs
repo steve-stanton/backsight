@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 
@@ -19,9 +19,9 @@ using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
 {
-    /// <written by="Steve Stanton" on="" />
+    /// <written by="Steve Stanton" on="12-DEC-1997" was="CeMoveLabel" />
     /// <summary>
-    /// 
+    /// Edit to move an item of text to a new position.
     /// </summary>
     class MoveTextOperation : Operation
     {
@@ -37,26 +37,23 @@ namespace Backsight.Editor.Operations
         /// </summary>
         PointGeometry m_OldPosition;
 
+        /// <summary>
+        /// Where the text was moved to.
+        /// </summary>
+        PointGeometry m_NewPosition;
+
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor sets everything to null, for use in deserialization
+        /// Creates a new <c>MoveTextOperation</c>
         /// </summary>
         public MoveTextOperation()
         {
             m_Text = null;
             m_OldPosition = null;
-        }
-
-        /// <summary>
-        /// Creates a new <c>MoveTextOperation</c>
-        /// </summary>
-        internal MoveTextOperation(TextFeature text, PointGeometry oldPosition)
-        {
-            m_Text = text;
-            m_OldPosition = oldPosition;
+            m_NewPosition = null;
         }
 
         #endregion
@@ -64,7 +61,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The feature that was moved.
         /// </summary>
-        internal TextFeature MovedText
+        internal TextFeature MovedText // was GetpLabel
         {
             get { return m_Text; }
         }
@@ -77,39 +74,94 @@ namespace Backsight.Editor.Operations
             get { return m_OldPosition; }
         }
 
+        /// <summary>
+        /// A user-perceived title for this operation.
+        /// </summary>
         public override string Name
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return "Move text"; }
         }
 
+        /// <summary>
+        /// Finds the observed length of a line that was created by this operation.
+        /// </summary>
+        /// <param name="line">The line to find</param>
+        /// <returns>Null (always)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
+        /// <summary>
+        /// The features created by this editing operation (an empty array)
+        /// </summary>
         internal override Feature[] Features
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return new Feature[0]; }
         }
 
+        /// <summary>
+        /// The unique identifier for this edit.
+        /// </summary>
         internal override EditingActionId EditId
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get { return EditingActionId.MoveLabel; }
         }
 
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
-            throw new Exception("The method or operation is not implemented.");
+            base.OnRollback();
+
+            // Move the label's text back to where it was originally.
+            m_Text.Move(m_OldPosition);
+
+            return true;
         }
 
+        /// <summary>
+        /// Rollforward this edit in response to some sort of update.
+        /// </summary>
+        /// <returns>
+        /// True if operation has been re-executed successfully
+        /// </returns>
         internal override bool Rollforward()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Return if this operation has not been marked as changed.
+            if (!IsChanged)
+                return base.OnRollforward();
+
+            // Nothing to do?
+
+            // Rollforward the base class.
+            return base.OnRollforward();
         }
 
+        /// <summary>
+        /// Adds references to existing features referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// <para/>
+        /// This is called by the <see cref="Complete"/> method, to ensure
+        /// that the referenced features are cross-referenced to the editing operations
+        /// that depend on them.
+        /// </summary>
         public override void AddReferences()
         {
-            throw new Exception("The method or operation is not implemented.");
+            // Do nothing -- although the edit refers to the text feature that's
+            // being moved, that reference doesn't have a bearing on any new feature
+        }
+
+        /// <summary>
+        /// Checks whether this operation makes reference to a specific feature.
+        /// </summary>
+        /// <param name="feat">The feature to check for.</param>
+        /// <returns>False (always), since this edit doesn't depend on anything</returns>
+        bool HasReference(Feature feat)
+        {
+            return false;
         }
 
         /// <summary>
@@ -121,7 +173,57 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Text", m_Text);
-            writer.WriteElement("NewPosition", PointGeometry.Create(m_Text.Position));
+            writer.WriteElement("OldPosition", m_OldPosition);
+            writer.WriteElement("NewPosition", m_NewPosition);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+            m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
+            m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
+            m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
+
+            // Ensure the text has been moved to the revised position
+            m_Text.Move(m_NewPosition);
+        }
+
+        /// <summary>
+        /// Attempts to locate a superseded (inactive) line that was the parent of
+        /// a specific line.
+        /// </summary>
+        /// <param name="line">The line of interest</param>
+        /// <returns>Null (always), since this operation doesn't create any lines.</returns>
+        internal LineFeature GetPredecessor(LineFeature line)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Executes the move operation.
+        /// </summary>
+        /// <param name="text">The text to be moved</param>
+        /// <param name="to">The position to move to</param>
+        internal void Execute(TextFeature text, PointGeometry to)
+        {
+	        // Remember the text being moved.
+	        m_Text = text;
+
+        	// Remember the old and new positions.
+            m_OldPosition = PointGeometry.Create(m_Text.Position);
+            m_NewPosition = to;
+
+            // Move the text
+            m_Text.Move(to);
+
+            // Peform standard completion steps
+            Complete();
         }
     }
 }

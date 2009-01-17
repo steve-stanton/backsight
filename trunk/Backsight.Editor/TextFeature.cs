@@ -339,5 +339,27 @@ namespace Backsight.Editor
             if (m_Geom is KeyTextGeometry)
                 (m_Geom as KeyTextGeometry).Label = this;
         }
+
+        /// <summary>
+        /// Moves this text to a new position
+        /// </summary>
+        /// <param name="to">The new position for the text</param>
+        /// <returns>True if the text was moved. False if the specified position is
+        /// coincident with the current position.</returns>
+        internal bool Move(PointGeometry to)
+        {
+            // Just return if the new location is at the same position
+            // as the old location.
+            if (m_Geom.Position.IsCoincident(to))
+                return false;
+
+            // Remove this feature from spatial index, move the text, 
+            // add back into the spatial index
+            OnPreMove(this);
+            m_Geom.Position = to;
+            OnPostMove(this);
+
+            return true;
+        }
     }
 }

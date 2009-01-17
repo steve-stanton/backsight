@@ -1650,12 +1650,27 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsTextMoveEnabled()
         {
-            return false;
+            return (SelectedText!=null && !m_Controller.IsCommandRunning);
         }
 
         private void TextMove(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Confirm that text is currently displayed
+            if (!IsTextDrawn)
+            {
+                MessageBox.Show("Text is not currently displayed. Use Edit-Preferences to change the scale at which text will be drawn");
+                return;
+            }
+
+            TextFeature text = SelectedText;
+            if (text == null)
+            {
+                MessageBox.Show("You must first select some text.");
+                return;
+            }
+
+            CommandUI cmd = new MoveTextUI(this, action, text);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsTextDefaultRotationAngleEnabled()
