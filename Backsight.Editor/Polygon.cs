@@ -38,9 +38,9 @@ namespace Backsight.Editor
         List<Island> m_Islands;
 
         /// <summary>
-        /// Associated insertion point (may be null)
+        /// Associated labels (may be null). This should ideally contain just one label.
         /// </summary>
-        TextFeature m_Label;
+        List<TextFeature> m_Labels;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace Backsight.Editor
         {
             Debug.Assert(rm.SignedArea > 0.0);
             m_Islands = null;
-            m_Label = null;
+            m_Labels = null;
         }
 
         #endregion
@@ -149,8 +149,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Associates this polygon with the specified label (any label that was
-        /// previously associated with this polygon will be released).
+        /// Associates this polygon with the specified label
         /// </summary>
         /// <param name="label">The label to associate with this polygon (usually appearing
         /// somewhere inside the polygon).</param>
@@ -170,10 +169,11 @@ namespace Backsight.Editor
             }
             */
 
-            // Associate this polygon with the supplied label, but only if this polygon
-            // isn't already associated with a label.
-            if (m_Label==null)
-                m_Label = label;
+            // Associate this polygon with the supplied label
+            if (m_Labels==null)
+                m_Labels = new List<TextFeature>(1);
+
+            m_Labels.Add(label);
         }
 
         /// <summary>
@@ -224,8 +224,11 @@ namespace Backsight.Editor
                         i.Container = null;
                 }
 
-                if (m_Label!=null && m_Label.Container==this)
-                    m_Label.OnPolygonDelete();
+                if (m_Labels!=null)
+                {
+                    foreach (TextFeature label in m_Labels)
+                        label.OnPolygonDelete();
+                }
             }
 
             base.Clean();
@@ -253,7 +256,21 @@ namespace Backsight.Editor
         /// </summary>
         public TextFeature Label
         {
-            get { return m_Label; }
+            get { return (m_Labels==null ? null : m_Labels[0]); }
+        }
+
+        /// <summary>
+        /// The text associated with the polygon <see cref="Label"/>
+        /// </summary>
+        /// <remarks>Primarily provided as a convenience, since it then shows as a top-level
+        /// property in a property grid.</remarks>
+        public string Text
+        {
+            get
+            {
+                TextFeature label = this.Label;
+                return (label==null ? String.Empty : label.TextGeometry.Text);
+            }
         }
 
         /// <summary>
@@ -342,13 +359,20 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The number of labels this polygon knows about. This implementation just returns 0 or 1,
-        /// depending on whether a label has been claimed. It does not currently handle situations
-        /// where multiple labels exist inside the polygon.
+        /// The number of labels that refer to this polygon.
         /// </summary>
-        internal int LabelCount
+        public int LabelCount
         {
-            get { return (m_Label==null ? 0 : 1); }
+            get { return (m_Labels==null ? 0 : m_Labels.Count); }
+        }
+
+        /// <summary>
+        /// All text labels that have been cross-referenced to this polygon.
+        /// </summary>
+        /// <returns></returns>
+        internal TextFeature[] GetAllLabels()
+        {
+            return (m_Labels==null ? null : m_Labels.ToArray());
         }
 
         /// <summary>
@@ -503,11 +527,12 @@ namespace Backsight.Editor
         internal FeatureId GetId()
         {
             // Return if this polygon does not have any labels.
-            if (m_Label == null)
+            TextFeature label = this.Label;
+            if (label == null)
                 return null;
 
             // Return the ID of the label.
-            return m_Label.Id;
+            return label.Id;
 
         }
 
@@ -525,7 +550,11 @@ namespace Backsight.Editor
         /// </summary>
         internal IEntity EntityType
         {
-            get { return (m_Label==null ? null : m_Label.EntityType); }
+            get
+            {
+                TextFeature label = this.Label;
+                return (label==null ? null : label.EntityType);
+            }
         }
 
         /// <summary>

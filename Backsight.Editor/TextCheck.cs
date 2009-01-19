@@ -226,20 +226,13 @@ namespace Backsight.Editor
                 if ((types & CheckType.MultiLabel)!=0)
                 {
                     sb.Append("More than one label for polygon" + System.Environment.NewLine);
-
-                    // Get the key for the problem label.
-                    string othkey = String.Empty;
-
-                    // Get the enclosing polygon.
                     Polygon enc = m_Label.Container;
-                    if (enc!=null)
+                    if (enc != null)
                     {
-                        TextFeature other = enc.Label;
-                        if (other!=null)
-                            othkey = other.FormattedKey;
+                        TextFeature[] labels = enc.GetAllLabels();
+                        foreach (TextFeature label in labels)
+                            sb.Append(label.TextGeometry.Text + System.Environment.NewLine);
                     }
-
-                    sb.Append(String.Format("-> {0} vs {1}", keystr, othkey));
                 }
 
                 return sb.ToString();

@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 
@@ -47,18 +47,15 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>FindOverlapsQuery</c> (and executes it). The result of the query
+        /// Creates a new <c>FindPolygonLabelQuery</c> (and executes it). The result of the query
         /// can then be obtained through the <c>Result</c> property.
         /// </summary>
         /// <param name="index">The spatial index to search</param>
-        /// <param name="closedShape">The closed shape defining the search area.</param>
-        /// <param name="spatialType">The type of objects to look for.</param>
+        /// <param name="polygon">The polygon that needs to be associated with a label</param>
         internal FindPolygonLabelQuery(ISpatialIndex index, Polygon polygon)
         {
             m_Polygon = polygon;
             m_Result = null;
-
-            // Could try closed shape...
 
             if (!polygon.HasAnyIslands)
                 index.QueryWindow(m_Polygon.Extent, SpatialType.Text, OnTextFound);
