@@ -84,7 +84,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.previousButton);
             this.Controls.Add(this.statusGroupBox);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "CheckReviewForm";
             this.Text = "File Check Review";
             this.TopMost = true;

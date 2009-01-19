@@ -56,10 +56,6 @@ namespace Backsight.Editor
         /// label, or the enclosing polygon has yet to be determined (in the latter case,
         /// the <c>IsBuilt</c> property will return false).
         /// </summary>
-        /// <remarks>
-        /// A polygon can only refer back to one label. If more than one label gets found,
-        /// the polygon will continue to refer to the initially found label.
-        /// </remarks>
         Polygon m_Container;
 
         #endregion
