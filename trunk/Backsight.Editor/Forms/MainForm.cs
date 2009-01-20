@@ -1709,8 +1709,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
             }
 
-            //CommandUI cmd = new MovePolygonPositionUI(this, action, text);
-            //m_Controller.StartCommand(cmd);
+            CommandUI cmd = new MovePolygonPositionUI(this, action, text);
+            m_Controller.StartCommand(cmd);
         }
 
         private bool IsTextDefaultRotationAngleEnabled()
