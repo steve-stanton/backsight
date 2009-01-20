@@ -379,8 +379,16 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuTextAddPolygonLabels, ctxTextAddPolygonLabels, toolTextAddPolygonLabels },
                 IsTextAddPolygonLabelsEnabled,
                 TextAddPolygonLabels);
-            AddAction(new ToolStripItem[] { mnuTextMove
-                                          , ctxTextMove }, IsTextMoveEnabled, TextMove);
+            AddEdit(
+                EditingActionId.MoveLabel,
+                new ToolStripItem[] { mnuTextMove, ctxTextMove },
+                IsTextMoveEnabled,
+                TextMove);
+            AddEdit(
+                EditingActionId.MovePolygonPosition,
+                new ToolStripItem[] { mnuTextMovePolygonPosition, ctxTextMovePolygonPosition },
+                IsTextMovePolygonPositionEnabled,
+                TextMovePolygonPosition);
             AddEdit(
                 EditingActionId.SetLabelRotation,
                 new ToolStripItem[] { mnuTextDefaultRotationAngle, toolTextDefaultRotationAngle },
@@ -1671,6 +1679,38 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
             CommandUI cmd = new MoveTextUI(this, action, text);
             m_Controller.StartCommand(cmd);
+        }
+
+        private bool IsTextMovePolygonPositionEnabled()
+        {
+            TextFeature t = SelectedText;
+            return (t!=null && t.IsTopological && !m_Controller.IsCommandRunning);
+        }
+
+        private void TextMovePolygonPosition(IUserAction action)
+        {
+            // Confirm that text is currently displayed
+            if (!IsTextDrawn)
+            {
+                MessageBox.Show("Text is not currently displayed. Use Edit-Preferences to change the scale at which text will be drawn");
+                return;
+            }
+
+            TextFeature text = SelectedText;
+            if (text == null)
+            {
+                MessageBox.Show("You must first select some text.");
+                return;
+            }
+
+            if (!text.IsTopological)
+            {
+                MessageBox.Show("Selected text is not marked as a polygon label");
+                return;
+            }
+
+            //CommandUI cmd = new MovePolygonPositionUI(this, action, text);
+            //m_Controller.StartCommand(cmd);
         }
 
         private bool IsTextDefaultRotationAngleEnabled()

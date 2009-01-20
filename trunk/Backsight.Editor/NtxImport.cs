@@ -511,7 +511,11 @@ namespace Backsight.Editor
             TextFeature t = new TextFeature(mt, entity, creator);
 
             if (name.IsLabel)
+            {
                 t.SetTopology(true);
+                Ntx.Position xp = name.RefPosition;
+                IPointGeometry pp = new PointGeometry(xp.Easting, xp.Northing);
+                t.SetPolPosition(pp);
 
                 // SHOULDN'T DO THIS, SINCE THIS WILL UPDATE SPATIAL INDEX AT THIS
                 // STAGE (DIFFERENT FROM LINE HANDLING)
@@ -520,7 +524,7 @@ namespace Backsight.Editor
 
                 // Ensure that is not marked as topological.
                 //t.SetTopology(false);
-            //}
+            }
 
             return t;
         }

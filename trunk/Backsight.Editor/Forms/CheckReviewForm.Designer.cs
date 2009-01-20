@@ -37,10 +37,13 @@ namespace Backsight.Editor.Forms
             // 
             // statusGroupBox
             // 
+            this.statusGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.statusGroupBox.Controls.Add(this.explanationLabel);
             this.statusGroupBox.Location = new System.Drawing.Point(14, 13);
             this.statusGroupBox.Name = "statusGroupBox";
-            this.statusGroupBox.Size = new System.Drawing.Size(269, 94);
+            this.statusGroupBox.Size = new System.Drawing.Size(285, 113);
             this.statusGroupBox.TabIndex = 0;
             this.statusGroupBox.TabStop = false;
             // 
@@ -55,7 +58,8 @@ namespace Backsight.Editor.Forms
             // 
             // previousButton
             // 
-            this.previousButton.Location = new System.Drawing.Point(62, 120);
+            this.previousButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.previousButton.Location = new System.Drawing.Point(70, 139);
             this.previousButton.Name = "previousButton";
             this.previousButton.Size = new System.Drawing.Size(75, 23);
             this.previousButton.TabIndex = 1;
@@ -66,7 +70,8 @@ namespace Backsight.Editor.Forms
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(161, 120);
+            this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.okButton.Location = new System.Drawing.Point(169, 139);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -80,7 +85,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(295, 155);
+            this.ClientSize = new System.Drawing.Size(311, 174);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.previousButton);
             this.Controls.Add(this.statusGroupBox);

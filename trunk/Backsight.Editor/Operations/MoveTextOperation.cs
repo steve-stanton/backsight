@@ -38,7 +38,12 @@ namespace Backsight.Editor.Operations
         PointGeometry m_OldPosition;
 
         /// <summary>
-        /// Where the text was moved to.
+        /// The old reference position (null if its identical to m_OldPosition)
+        /// </summary>
+        PointGeometry m_OldPolPosition;
+
+        /// <summary>
+        /// Where the text was moved to. This doubles as the new polygon reference position.
         /// </summary>
         PointGeometry m_NewPosition;
 
@@ -53,6 +58,7 @@ namespace Backsight.Editor.Operations
         {
             m_Text = null;
             m_OldPosition = null;
+            m_OldPolPosition = null;
             m_NewPosition = null;
         }
 
@@ -119,6 +125,10 @@ namespace Backsight.Editor.Operations
             // Move the label's text back to where it was originally.
             m_Text.Move(m_OldPosition);
 
+            // Move polygon reference position too if its defined
+            if (m_OldPolPosition!=null)
+                m_Text.SetPolPosition(m_OldPolPosition);
+
             return true;
         }
 
@@ -173,6 +183,13 @@ namespace Backsight.Editor.Operations
         public override void WriteContent(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Text", m_Text);
+
+            if (m_OldPolPosition!=null)
+            {
+                writer.WriteLong("X", m_OldPolPosition.Easting.Microns);
+                writer.WriteLong("Y", m_OldPolPosition.Northing.Microns);
+            }
+
             writer.WriteElement("OldPosition", m_OldPosition);
             writer.WriteElement("NewPosition", m_NewPosition);
         }
@@ -187,6 +204,14 @@ namespace Backsight.Editor.Operations
         {
             base.ReadContent(reader);
             m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
+
+            long x = reader.ReadLong("X");
+            long y = reader.ReadLong("Y");
+            if (x==0 && y==0)
+                m_OldPolPosition = null;
+            else
+                m_OldPolPosition = new PointGeometry(x, y);
+
             m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
             m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
 
@@ -217,6 +242,12 @@ namespace Backsight.Editor.Operations
 
         	// Remember the old and new positions.
             m_OldPosition = PointGeometry.Create(m_Text.Position);
+
+            // Remember old polygon reference position if it's different from the text position
+            m_OldPolPosition = PointGeometry.Create(m_Text.GetPolPosition());
+            if (m_OldPosition.IsCoincident(m_OldPolPosition))
+                m_OldPolPosition = null;
+
             m_NewPosition = to;
 
             // Move the text

@@ -67,10 +67,10 @@ namespace Ntx
 
         #endregion
 
-        internal Position RefPosition
+        public Position RefPosition
         {
             get { return m_RefPosition; }
-            set { m_RefPosition = value; }
+            internal set { m_RefPosition = value; }
         }
 
         public string Text

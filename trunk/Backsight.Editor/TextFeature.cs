@@ -18,6 +18,8 @@ using System;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
+using Backsight.Forms;
+using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -50,6 +52,13 @@ namespace Backsight.Editor
         /// The annotation & style (font)
         /// </summary>
         TextGeometry m_Geom; // readonly
+
+        /// <summary>
+        /// The reference position that should be used when attempting to locate
+        /// an enclosing polygon. Null if the top-left corner of the text should
+        /// be used. Applies only to text features that are flagged as topological.
+        /// </summary>
+        PointGeometry m_PolygonPosition;
 
         /// <summary>
         /// The polygon that encloses this text feature. Null if this feature isn't a polygon
@@ -169,8 +178,13 @@ namespace Backsight.Editor
         {
             m_Geom.Render(display, style);
 
-            if (s_DrawReferencePoints)
-                style.RenderPlus(display, m_Geom.Position);
+            if (s_DrawReferencePoints || style is HighlightStyle)
+            {
+                Color c = style.LineColor;
+                style.LineColor = Color.Gray;
+                style.RenderPlus(display, GetPolPosition());
+                style.LineColor = c;
+            }
         }
 
         public override IWindow Extent
@@ -229,21 +243,23 @@ namespace Backsight.Editor
             if (!IsTopological)
                 return null;
 
-            // If there is no alternate position, just use the regular position of the text
-            if (!HasDependents)
+            if (m_PolygonPosition != null)
+                return m_PolygonPosition;
+            else
                 return m_Geom.Position;
+        }
 
-            foreach (IFeatureDependent d in Dependents)
-            {
-                if (d is MoveTextOperation)
-                {
-                    MoveTextOperation mto = (d as MoveTextOperation);
-                    if (mto.MovedText == this)
-                        return mto.OldPosition;
-                }
-            }
-
-            return m_Geom.Position;
+        /// <summary>
+        /// Remembers a new polygon reference position for this label.
+        /// </summary>
+        /// <param name="p">The reference position. Specify null if the default reference
+        /// position should be used (the position associated with the text geometry).</param>
+        internal void SetPolPosition(IPointGeometry p)
+        {
+            if (p == null)
+                m_PolygonPosition = null;
+            else
+                m_PolygonPosition = PointGeometry.Create(p);
         }
 
         /// <summary>
@@ -307,6 +323,12 @@ namespace Backsight.Editor
             if (!IsTopological)
                 writer.WriteString("Flags", "N");
 
+            if (m_PolygonPosition!=null)
+            {
+                writer.WriteLong("X", m_PolygonPosition.Easting.Microns);
+                writer.WriteLong("Y", m_PolygonPosition.Northing.Microns);
+            }
+
             writer.WriteElement("Geometry", m_Geom);
         }
 
@@ -329,6 +351,14 @@ namespace Backsight.Editor
             else
                 SetTopology(true);
 
+            // Pick up any polygon reference position
+            long x = reader.ReadLong("X");
+            long y = reader.ReadLong("Y");
+            if (x==0 && y==0)
+                m_PolygonPosition = null;
+            else
+                m_PolygonPosition = new PointGeometry(x, y);
+
             m_Geom = reader.ReadElement<TextGeometry>("Geometry");
 
             // KeyText refers back to this feature (which provides the key)
@@ -349,10 +379,11 @@ namespace Backsight.Editor
             if (m_Geom.Position.IsCoincident(to))
                 return false;
 
-            // Remove this feature from spatial index, move the text, 
-            // add back into the spatial index
+            // Remove this feature from spatial index, move the text (and null the
+            // polygon reference position), add back into the spatial index
             OnPreMove(this);
             m_Geom.Position = to;
+            m_PolygonPosition = null;
             OnPostMove(this);
 
             return true;
