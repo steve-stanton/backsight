@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -15,35 +15,29 @@
 
 using System;
 
-using Backsight.Geometry;
-
 namespace Backsight.Editor.Operations
 {
-    /// <written by="Steve Stanton" on="12-DEC-1997" was="CeMoveLabel" />
+    /// <written by="Steve Stanton" on="21-JAN-2009"/>
     /// <summary>
-    /// Edit to move an item of text to a new position.
+    /// Edit to move the reference point for a polygon label
     /// </summary>
-    class MoveTextOperation : Operation
+    class MovePolygonPositionOperation : Operation
     {
         #region Class data
 
         /// <summary>
-        /// The feature that was moved.
+        /// The polygon label that was modified
         /// </summary>
-        TextFeature m_Text;
+        TextFeature m_Label;
 
         /// <summary>
-        /// Where the text used to be.
+        /// The original position of the reference point (null if the old position coincided
+        /// with the top-left corner of the text)
         /// </summary>
         PointGeometry m_OldPosition;
 
         /// <summary>
-        /// The old reference position (null if its identical to m_OldPosition)
-        /// </summary>
-        PointGeometry m_OldPolPosition;
-
-        /// <summary>
-        /// Where the text was moved to. This doubles as the new polygon reference position.
+        /// The revised position of the reference point.
         /// </summary>
         PointGeometry m_NewPosition;
 
@@ -52,54 +46,40 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>MoveTextOperation</c>
+        /// Creates a new <c>MovePolygonPositionOperation</c>
         /// </summary>
-        public MoveTextOperation()
+        public MovePolygonPositionOperation()
         {
-            m_Text = null;
+            m_Label = null;
             m_OldPosition = null;
-            m_OldPolPosition = null;
             m_NewPosition = null;
         }
 
         #endregion
 
         /// <summary>
-        /// The feature that was moved.
-        /// </summary>
-        internal TextFeature MovedText // was GetpLabel
-        {
-            get { return m_Text; }
-        }
-
-        /// <summary>
-        /// Where the text used to be.
-        /// </summary>
-        internal IPointGeometry OldPosition
-        {
-            get { return m_OldPosition; }
-        }
-
-        /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
         public override string Name
         {
-            get { return "Move text"; }
+            get { return "Move polygon reference position"; }
         }
 
         /// <summary>
         /// Finds the observed length of a line that was created by this operation.
         /// </summary>
         /// <param name="line">The line to find</param>
-        /// <returns>Null (always)</returns>
+        /// <returns>
+        /// The observed length of the line (null if this operation doesn't
+        /// reference the specified line)
+        /// </returns>
         internal override Distance GetDistance(LineFeature line)
         {
             return null;
         }
 
         /// <summary>
-        /// The features created by this editing operation (an empty array)
+        /// The features created by this editing operation - an empty array
         /// </summary>
         internal override Feature[] Features
         {
@@ -111,7 +91,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override EditingActionId EditId
         {
-            get { return EditingActionId.MoveLabel; }
+            get { return EditingActionId.MovePolygonPosition; }
         }
 
         /// <summary>
@@ -122,14 +102,8 @@ namespace Backsight.Editor.Operations
         {
             base.OnRollback();
 
-            // Move the label's text back to where it was originally.
-            m_Text.Move(m_OldPosition);
-
-            // Move polygon reference position too if its defined
-            if (m_OldPolPosition!=null)
-                m_Text.SetPolPosition(m_OldPolPosition);
-            else
-                m_Text.RecalculateEnclosingPolygon();
+            // Move the label's reference position back to where it was originally.
+            m_Label.SetPolPosition(m_OldPosition);
 
             return true;
         }
@@ -146,7 +120,7 @@ namespace Backsight.Editor.Operations
             if (!IsChanged)
                 return base.OnRollforward();
 
-            // Nothing to do?
+            // Nothing to do
 
             // Rollforward the base class.
             return base.OnRollforward();
@@ -167,16 +141,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Checks whether this operation makes reference to a specific feature.
-        /// </summary>
-        /// <param name="feat">The feature to check for.</param>
-        /// <returns>False (always), since this edit doesn't depend on anything</returns>
-        bool HasReference(Feature feat)
-        {
-            return false;
-        }
-
-        /// <summary>
         /// Writes the content of this class. This is called by
         /// <see cref="XmlContentWriter.WriteElement"/>
         /// after the element name and class type (xsi:type) have been written.
@@ -184,16 +148,16 @@ namespace Backsight.Editor.Operations
         /// <param name="writer">The writing tool</param>
         public override void WriteContent(XmlContentWriter writer)
         {
-            writer.WriteFeatureReference("Text", m_Text);
+            writer.WriteFeatureReference("Label", m_Label);
 
-            if (m_OldPolPosition!=null)
+            if (m_OldPosition!=null)
             {
-                writer.WriteLong("X", m_OldPolPosition.Easting.Microns);
-                writer.WriteLong("Y", m_OldPolPosition.Northing.Microns);
+                writer.WriteLong("OldX", m_OldPosition.Easting.Microns);
+                writer.WriteLong("OldY", m_OldPosition.Northing.Microns);
             }
 
-            writer.WriteElement("OldPosition", m_OldPosition);
-            writer.WriteElement("NewPosition", m_NewPosition);
+            writer.WriteLong("NewX", m_NewPosition.Easting.Microns);
+            writer.WriteLong("NewY", m_NewPosition.Northing.Microns);
         }
 
         /// <summary>
@@ -205,58 +169,42 @@ namespace Backsight.Editor.Operations
         public override void ReadContent(XmlContentReader reader)
         {
             base.ReadContent(reader);
-            m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
+            m_Label = reader.ReadFeatureByReference<TextFeature>("Label");
 
-            long x = reader.ReadLong("X");
-            long y = reader.ReadLong("Y");
+            long x = reader.ReadLong("OldX");
+            long y = reader.ReadLong("OldY");
             if (x==0 && y==0)
-                m_OldPolPosition = null;
+                m_OldPosition = null;
             else
-                m_OldPolPosition = new PointGeometry(x, y);
+                m_OldPosition = new PointGeometry(x, y);
 
-            m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
-            m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
-
-            // Ensure the text has been moved to the revised position
-            m_Text.Move(m_NewPosition);
-
-            // Should be no need to re-calculate enclosing polygon while deserializing
-        }
-
-        /// <summary>
-        /// Attempts to locate a superseded (inactive) line that was the parent of
-        /// a specific line.
-        /// </summary>
-        /// <param name="line">The line of interest</param>
-        /// <returns>Null (always), since this operation doesn't create any lines.</returns>
-        internal LineFeature GetPredecessor(LineFeature line)
-        {
-            return null;
+            x = reader.ReadLong("NewX");
+            y = reader.ReadLong("NewY");
+            m_NewPosition = new PointGeometry(x, y);
         }
 
         /// <summary>
         /// Executes the move operation.
         /// </summary>
-        /// <param name="text">The text to be moved</param>
-        /// <param name="to">The position to move to</param>
-        internal void Execute(TextFeature text, PointGeometry to)
+        /// <param name="label">The polygon label to modify</param>
+        /// <param name="to">The revised position of the reference point.</param>
+        internal void Execute(TextFeature label, PointGeometry to)
         {
-	        // Remember the text being moved.
-	        m_Text = text;
+            // Remember the label being moved.
+            m_Label = label;
 
-        	// Remember the old and new positions.
-            m_OldPosition = PointGeometry.Create(m_Text.Position);
-
-            // Remember old polygon reference position if it's different from the text position
-            m_OldPolPosition = PointGeometry.Create(m_Text.GetPolPosition());
-            if (m_OldPosition.IsCoincident(m_OldPolPosition))
-                m_OldPolPosition = null;
+            // Remember the old and new positions.
+            IPointGeometry txtPos = m_Label.Position;
+            IPointGeometry polPos = m_Label.GetPolPosition();
+            if (txtPos.IsCoincident(polPos))
+                m_OldPosition = null;
+            else
+                m_OldPosition = PointGeometry.Create(polPos);
 
             m_NewPosition = to;
 
-            // Move the text and ensure any enclosing polygon has been reworked
-            m_Text.Move(to);
-            m_Text.RecalculateEnclosingPolygon();
+            // Move the reference position (and rework any enclosing polygon)
+            m_Label.SetPolPosition(m_NewPosition);
 
             // Peform standard completion steps
             Complete();

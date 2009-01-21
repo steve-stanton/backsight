@@ -60,7 +60,10 @@ namespace Backsight.ShapeViewer
                 foreach (NTS.Geometry g in geoms)
                 {
                     g.UserData = row;
-                    index.Add(new GeometryWrapper(g));
+                    if (g is NTS.Point)
+                        index.Add(new PointWrapper((NTS.Point)g));
+                    else
+                        index.Add(new GeometryWrapper(g));
                 }
             }
 

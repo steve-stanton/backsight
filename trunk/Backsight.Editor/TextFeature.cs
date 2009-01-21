@@ -14,12 +14,13 @@
 /// </remarks>
 
 using System;
+using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
 using Backsight.Forms;
-using System.Drawing;
 
 namespace Backsight.Editor
 {
@@ -260,6 +261,44 @@ namespace Backsight.Editor
                 m_PolygonPosition = null;
             else
                 m_PolygonPosition = PointGeometry.Create(p);
+
+            // If the label was previously "built", re-calculate the relationship to any
+            // enclosing polygon
+            RecalculateEnclosingPolygon();
+        }
+
+        /// <summary>
+        /// Re-calculates the polygon that encloses this label. This should be called whenever
+        /// the polygon reference position gets changed (if a polygon reference position is
+        /// not explicit, this will arise when the text itself is moved). Does nothing if the
+        /// label is not currently marked as "built".
+        /// </summary>
+        internal void RecalculateEnclosingPolygon()
+        {
+            if (!IsBuilt)
+                return;
+
+            if (!IsTopological)
+                return;
+
+            // If a container was previously defined, first check whether it's still the
+            // enclosing polygon (if so, we're done).
+            IPointGeometry p = GetPolPosition();
+            if (m_Container!=null && m_Container.IsEnclosing(p))
+                return;
+
+            // If a container was previously defined, break the association with this label
+            if (m_Container!=null)
+            {
+                m_Container.ReleaseLabel(this);
+                Debug.Assert(m_Container==null);
+            }
+
+            // Figure out which polygon now encloses this label (if any)
+            ISpatialIndex index = CadastralMapModel.Current.Index;
+            Polygon enc = new FindPointContainerQuery(index, p).Result;
+            if (enc!=null)
+                enc.ClaimLabel(this);
         }
 
         /// <summary>

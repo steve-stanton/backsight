@@ -124,7 +124,7 @@ namespace Backsight.ShapeViewer
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
-        public void Render(ISpatialDisplay display, IDrawStyle style)
+        public virtual void Render(ISpatialDisplay display, IDrawStyle style)
         {
             if (m_Geometry is NTS.Polygon)
             {
@@ -164,6 +164,11 @@ namespace Backsight.ShapeViewer
         {
             double dsq = BasicGeom.MinDistanceSquared(PositionArray, point);
             return new Length(Math.Sqrt(dsq));
+        }
+
+        protected NTS.Geometry NtsGeometry
+        {
+            get { return m_Geometry; }
         }
     }
 }
