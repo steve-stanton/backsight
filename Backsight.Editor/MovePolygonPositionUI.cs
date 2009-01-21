@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2008 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,8 +14,10 @@
 // </remarks>
 
 using System;
+
 using Backsight.Editor.Forms;
 using Backsight.Forms;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -129,8 +131,8 @@ namespace Backsight.Editor
         /// <returns>True, indicating that the text was moved.</returns>
         internal override bool LButtonDown(IPosition p)
         {
-            //MoveTextOperation op = new MoveTextOperation();
-            //op.Execute(m_Text, PointGeometry.Create(p));
+            MovePolygonPositionOperation op = new MovePolygonPositionOperation();
+            op.Execute(m_Text, PointGeometry.Create(p));
             FinishCommand();
             return true;
         }

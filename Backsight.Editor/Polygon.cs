@@ -177,6 +177,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Breaks the association between this polygon and an enclosed label
+        /// </summary>
+        /// <param name="label">The label that was formerly enclosed by this polygon (the label's
+        /// <see cref="TextFeature.Container"/> property will be nulled)</param>
+        internal void ReleaseLabel(TextFeature label)
+        {
+            Debug.Assert(label!=null);
+            label.Container = null;
+
+            if (m_Labels!=null)
+            {
+                m_Labels.Remove(label);
+                if (m_Labels.Count==0)
+                    m_Labels = null;
+            }
+        }
+
+        /// <summary>
         /// Draws this polygon with the supplied style (usually a hatched fill).
         /// </summary>
         /// <param name="display">The display to draw to</param>
