@@ -18,12 +18,12 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Reflection;
 
 using Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
 using Backsight.SqlServer;
-using System.Reflection;
 
 namespace Backsight.Environment.Editor
 {
