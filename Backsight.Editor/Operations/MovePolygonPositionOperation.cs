@@ -120,7 +120,9 @@ namespace Backsight.Editor.Operations
             if (!IsChanged)
                 return base.OnRollforward();
 
-            // Nothing to do
+            // Nothing to do... I wonder if the enclosing polygon
+            // needs to be recalculated (what if the reference position
+            // is real close to a line that has moved)?
 
             // Rollforward the base class.
             return base.OnRollforward();
