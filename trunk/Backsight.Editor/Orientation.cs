@@ -301,7 +301,7 @@ namespace Backsight.Editor
             }
 
 		    string msg = String.Format("Orientation.SetOrient - Quadrant error at {0:0.0000}N {1:0.0000}E",
-                            loc.X, loc.Y);
+                            loc.Y, loc.X);
             throw new Exception(msg);
         }
     }

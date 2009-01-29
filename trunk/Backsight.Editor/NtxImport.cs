@@ -183,15 +183,17 @@ namespace Backsight.Editor
             Debug.Assert(line.IsCurve);
             IEntity what = GetEntityType(line, SpatialType.Line);
 
+            // Get positions defining the arc
+            PointGeometry[] pts = GetPositions(line);
+
+            // Ignore zero-length lines
+            if (HasZeroLength(pts))
+                return null;
+
             // Add a point at the center of the circle
             Ntx.Position pos = line.Center;
             PointGeometry pc = new PointGeometry(pos.Easting, pos.Northing);
             PointFeature center = EnsurePointExists(pc, tol, creator);
-
-            // Get positions defining the arc
-            IPointGeometry[] pts = GetPositions(line);
-            if (pts.Length<2)
-                return null;
 
             // Calculate exact positions for the arc endpoints
             double radius = line.Radius;
@@ -287,7 +289,9 @@ namespace Backsight.Editor
             IEntity what = GetEntityType(line, SpatialType.Line);
 
             PointGeometry[] pts = GetPositions(line);
-            if (pts.Length<2)
+
+            // Ignore zero-length lines
+            if (HasZeroLength(pts))
                 return null;
 
             // Ensure point features exist at both ends of the line.
@@ -297,6 +301,10 @@ namespace Backsight.Editor
             // Force end positions to match
             pts[0] = ps.PointGeometry;
             pts[pts.Length-1] = pe.PointGeometry;
+
+            // It's possible we've now produced a zero-length line
+            if (Object.ReferenceEquals(ps, pe) && HasZeroLength(pts))
+                return null;
 
             // If we're dealing with a multi-segment, I have occasionally seen tiny glitches
             // at the end of the incoming lines (whether this is a real data problem, or an
@@ -320,6 +328,27 @@ namespace Backsight.Editor
                 result.SetTopology(true);
 
             return result;
+        }
+
+        /// <summary>
+        /// Checks whether the supplied positions define a zero-length line
+        /// </summary>
+        /// <param name="pts">The positions for a line</param>
+        /// <returns>True if the supplied array contains fewer than 2 points, or all the points
+        /// are exactly coincident.</returns>
+        private bool HasZeroLength(PointGeometry[] pts)
+        {
+            if (pts.Length<2)
+                return true;
+
+            PointGeometry start = pts[0];
+            for (int i=1; i<pts.Length; i++)
+            {
+                if (!pts[i].IsCoincident(start))
+                    return false;
+            }
+
+            return true;
         }
 
         private PointGeometry[] CheckMultiSegmentEnds(PointGeometry[] pts)
