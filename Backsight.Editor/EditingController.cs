@@ -1244,7 +1244,7 @@ namespace Backsight.Editor
             if (dial.ShowDialog() == DialogResult.OK)
             {
                 JobFileInfo jfi = new JobFileInfo();
-                jfi.ConnectionString = AdapterFactory.ConnectionString;
+                jfi.ConnectionString = ConnectionFactory.ConnectionString;
                 jfi.JobId = job.JobId;
 
                 // Remember default entity types for points, lines, text, polygons

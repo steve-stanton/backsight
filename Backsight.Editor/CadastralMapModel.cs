@@ -1084,7 +1084,7 @@ namespace Backsight.Editor
             CleanEdit();
 
             // Remove the edit from the database
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("DELETE FROM [ced].[Edits] WHERE [SessionId]={0} AND [EditSequence]={1}",
                                 s.Id, editSequence);

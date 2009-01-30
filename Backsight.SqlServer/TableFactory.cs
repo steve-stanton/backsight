@@ -99,7 +99,7 @@ namespace Backsight.SqlServer
         /// the <see cref="AdapterFactory.ConnectionString"/> property.
         /// </summary>
         public TableFactory()
-            : this(AdapterFactory.ConnectionString)
+            : this(ConnectionFactory.ConnectionString)
         {
         }
 
@@ -487,7 +487,7 @@ namespace Backsight.SqlServer
             string[] tables = GetCedTableNames();
             string checkClause = (enable ? "CHECK" : "NOCHECK");
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlConnection c = ic.Value;
 
@@ -541,7 +541,7 @@ namespace Backsight.SqlServer
         {
             BacksightDataSet ds = new BacksightDataSet();
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlConnection c = ic.Value;
 
@@ -563,7 +563,7 @@ namespace Backsight.SqlServer
         /// <param name="ds">The dataset to import</param>
         public void Import(BacksightDataSet ds)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlConnection c = ic.Value;
 

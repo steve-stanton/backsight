@@ -57,6 +57,15 @@ namespace Backsight.Data
             }
 
             /// <summary>
+            /// The name of the column that corresponds to the user-perceived ID
+            /// associated with spatial features.
+            /// </summary>
+            public string FeatureIdColumnName
+            {
+                get { return "FeatureId"; }
+            }
+
+            /// <summary>
             /// Any text formatting templates associated with this table (may be an empty array)
             /// </summary>
             public ITemplate[] Templates

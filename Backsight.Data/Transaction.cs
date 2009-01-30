@@ -83,7 +83,7 @@ namespace Backsight.Data
                     {
                         if (s_Connection==null)
                         {
-                            string cs = AdapterFactory.ConnectionString;
+                            string cs = ConnectionFactory.ConnectionString;
                             if (String.IsNullOrEmpty(cs))
                                 throw new InvalidOperationException("Connection string hasn't been defined");
 

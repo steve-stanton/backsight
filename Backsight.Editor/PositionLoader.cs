@@ -48,7 +48,7 @@ namespace Backsight.Editor
             IDictionary<int, IPosition> result = new Dictionary<int, IPosition>();
             //ICoordinateSystem sys = m_Map.CoordinateSystem;
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlCommand cmd = new SqlCommand("SELECT [PositionId], [Lat], [Lon] FROM [ced].[Positions]",
                                                     ic.Value);
@@ -79,7 +79,7 @@ namespace Backsight.Editor
             ISpatialIndex index = CadastralMapModel.Current.Index;
             index.QueryWindow(null, SpatialType.Point, LoadData);
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlBulkCopy bcp = new SqlBulkCopy(ic.Value);
                 bcp.DestinationTableName = m_Table.TableName;

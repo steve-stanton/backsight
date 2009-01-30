@@ -96,9 +96,9 @@ namespace Backsight.Editor
         {
             // If a job file was specified, attempt to connect to the database.
 
-            AdapterFactory.ConnectionString = String.Empty;
+            ConnectionFactory.ConnectionString = String.Empty;
 
-            while (String.IsNullOrEmpty(AdapterFactory.ConnectionString))
+            while (String.IsNullOrEmpty(ConnectionFactory.ConnectionString))
             {
                 // If the job file isn't defined, get the database connection string
                 string cs = null;
@@ -191,7 +191,7 @@ namespace Backsight.Editor
 
         void SetConnectionString(string cs)
         {
-            AdapterFactory.ConnectionString = cs;
+            ConnectionFactory.ConnectionString = cs;
             LastDatabase.ConnectionString = cs;
         }
 

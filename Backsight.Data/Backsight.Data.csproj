@@ -44,6 +44,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ConnectionFactory.cs" />
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="EntityTypeRow.cs">
     </Compile>

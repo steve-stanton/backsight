@@ -36,7 +36,7 @@ namespace Backsight.Editor.Database
         /// the group has never been used)</returns>
         internal static IdFree[] FindByGroupId(int groupId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 List<IdFree> result = new List<IdFree>(1000);
                 string sql = String.Format("{0} WHERE [GroupId]={1}", GetSelectString(), groupId);
@@ -74,7 +74,7 @@ namespace Backsight.Editor.Database
         /// <returns>The inserted free range entry</returns>
         internal static IdFree Insert(IdGroup idGroup, int lowestId, int highestId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("INSERT INTO [ced].[IdFree] ([GroupId], [LowestId], [HighestId])" +
                                             " VALUES ({0}, {1}, {2})", idGroup.Id, lowestId, highestId);
@@ -166,7 +166,7 @@ namespace Backsight.Editor.Database
             get { return m_LowestId; }
             set
             {
-                using (IConnection ic = AdapterFactory.GetConnection())
+                using (IConnection ic = ConnectionFactory.Create())
                 {
                     string sql = String.Format("UPDATE [ced].[IdFree] SET [LowestId]={0} WHERE [GroupId]={1} AND [LowestId]={2}",
                                                 value, m_GroupId, m_LowestId);
@@ -191,7 +191,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         internal void Delete()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("DELETE FROM [ced].[IdFree] WHERE [GroupId]={0} AND [LowestId]={1}",
                                             m_GroupId, m_LowestId);

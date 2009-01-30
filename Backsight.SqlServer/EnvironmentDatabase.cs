@@ -43,7 +43,7 @@ namespace Backsight.SqlServer
                 throw new ArgumentNullException("No database connection string");
 
             m_ConnectionString = connectionString;
-            AdapterFactory.ConnectionString = m_ConnectionString;
+            ConnectionFactory.ConnectionString = m_ConnectionString;
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(connectionString);
             this.Name = String.Format(@"{0}\{1}", csb.DataSource, csb.InitialCatalog);
             Read();
@@ -71,7 +71,7 @@ namespace Backsight.SqlServer
         /// <param name="ed">The environment data to copy into this database</param>
         public void Replace(EnvironmentData ed)
         {
-            AdapterFactory.ConnectionString = m_ConnectionString;
+            ConnectionFactory.ConnectionString = m_ConnectionString;
             TableFactory tf = new TableFactory();
 
             try
