@@ -51,7 +51,7 @@ namespace Backsight.Editor.Database
             // TODO: This isn't very smart!
             Job[] allJobs = Job.FindAll();
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 // Load information about the sessions involved
                 SqlConnection con = ic.Value;
@@ -294,7 +294,7 @@ namespace Backsight.Editor.Database
         /// <returns></returns>
         internal static SessionData Insert(uint jobId, uint userId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 DateTime now = DateTime.Now;
                 string nowString = DbUtil.GetDateTimeString(now);
@@ -319,7 +319,7 @@ namespace Backsight.Editor.Database
         /// <returns>The number of sessions that were updated</returns>
         internal static int SetLastRevision(Job job, User user, uint revision)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("UPDATE [ced].[Sessions] SET [Revision]={0} "+
                                            "WHERE [JobId]={1} AND [UserId]={2} AND [Revision]=0",
@@ -450,7 +450,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         internal void Delete()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("DELETE FROM [ced].[Sessions] WHERE [SessionId]={0}",
                                                 m_SessionId);
@@ -465,7 +465,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         internal void UpdateEndTime()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 DateTime now = DateTime.Now;
                 string nowString = DbUtil.GetDateTimeString(now);

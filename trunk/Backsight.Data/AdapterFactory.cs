@@ -17,25 +17,15 @@ using System;
 using System.Data.SqlClient;
 using System.Reflection;
 
-using Backsight.Data.Properties;
-
 namespace Backsight.Data
 {
 	/// <written by="Steve Stanton" on="10-NOV-2006" />
     /// <summary>
     /// Creates database adapters that are associated with the database connection 
-    /// defined through the <c>ConnectionString</c> property.
+    /// defined through the <see cref="ConnectionFactory"/> class.
     /// </summary>
     public static class AdapterFactory
     {
-        static string s_ConnectionString;
-
-        public static string ConnectionString
-        {
-            get { return s_ConnectionString; }
-            set { s_ConnectionString = value; }
-        }
-
         /// <summary>
         /// Creates a new adapter and associates it with a database connection (<see>GetSqlConnection</see>)
         /// </summary>
@@ -43,30 +33,7 @@ namespace Backsight.Data
         /// <returns>The newly created adapter</returns>
         public static T Create<T>() where T : new()
         {
-            return Create<T>(GetConnection().Value);
-        }
-
-        /// <summary>
-        /// Returns a database connection for use with adapters or ad-hoc SQL.
-        /// </summary>
-        /// <returns>A wrapper on the connection to use. If a transaction is currently active (as defined via
-        /// use of the <c>Transaction</c> class), you get back a wrapper on the connection associated with
-        /// the transaction. Otherwise you get a wrapper on a new connection object based on the
-        /// <c>ConnectionString</c> property setting. In either case, the connection is open at return.
-        /// </returns>
-        public static IConnection GetConnection()
-        {
-            IConnection c = Transaction.Connection;
-            if (c!=null)
-                return c;
-
-            if (String.IsNullOrEmpty(s_ConnectionString))
-                throw new InvalidOperationException("Connection string hasn't been defined");
-
-            // Return a disposable connection wrapper
-            SqlConnection conn = new SqlConnection(s_ConnectionString);
-            conn.Open();
-            return new ConnectionWrapper(conn, true);
+            return Create<T>(ConnectionFactory.Create().Value);
         }
 
         /// <summary>

@@ -34,7 +34,7 @@ namespace Backsight.Editor.Database
         /// <returns>All defined users (may be an empty array, but never null)</returns>
         internal static User[] FindAll()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = "SELECT [UserId], [Name] FROM [ced].[Users] ORDER BY [Name]";
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -62,7 +62,7 @@ namespace Backsight.Editor.Database
         /// <returns>The corresponding user (null if not found)</returns>
         internal static User FindByPrimaryKey(uint userId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("SELECT [Name] FROM [ced].[Users] WHERE [UserId]={0}", userId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -84,7 +84,7 @@ namespace Backsight.Editor.Database
             string userName = System.Environment.UserName;
             string sql = String.Format("SELECT [UserId] FROM [ced].[Users] WHERE [Name]='{0}'", userName);
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
                 object result = cmd.ExecuteScalar();

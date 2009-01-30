@@ -78,7 +78,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <remarks>This is a bit of a hack, introduced in an attempt to overcome
         /// problems with the deserialization of connection paths.</remarks>
-        Dictionary<uint, FeatureData> m_FeatureInfo;
+        //Dictionary<uint, FeatureData> m_FeatureInfo;
 
         #endregion
 
@@ -665,17 +665,17 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="info">Information about the features created by
         /// the edit (specify null to clear)</param>
-        internal void SaveFeatureData(FeatureData[] info)
-        {
-            if (info == null)
-                m_FeatureInfo = null;
-            else
-            {
-                m_FeatureInfo = new Dictionary<uint, FeatureData>(info.Length);
-                foreach (FeatureData fd in info)
-                    m_FeatureInfo.Add(fd.CreationSequence, fd);
-            }
-        }
+        //internal void SaveFeatureData(FeatureData[] info)
+        //{
+        //    if (info == null)
+        //        m_FeatureInfo = null;
+        //    else
+        //    {
+        //        m_FeatureInfo = new Dictionary<uint, FeatureData>(info.Length);
+        //        foreach (FeatureData fd in info)
+        //            m_FeatureInfo.Add(fd.CreationSequence, fd);
+        //    }
+        //}
 
         /// <summary>
         /// Attempts to obtain information about a specific feature created by
@@ -685,16 +685,38 @@ namespace Backsight.Editor
         /// <returns>The corresponding information (null if the current edit does
         /// not involve a special feature information cache, or the information cannot
         /// be found)</returns>
-        internal FeatureData GetFeatureData(uint creationSequence)
-        {
-            if (m_FeatureInfo==null)
-                return null;
+        //internal FeatureData GetFeatureData(uint creationSequence)
+        //{
+        //    if (m_FeatureInfo==null)
+        //        return null;
 
-            FeatureData result;
-            if (m_FeatureInfo.TryGetValue(creationSequence, out result))
-                return result;
-            else
-                return null;
+        //    FeatureData result;
+        //    if (m_FeatureInfo.TryGetValue(creationSequence, out result))
+        //        return result;
+        //    else
+        //        return null;
+        //}
+
+        /// <summary>
+        /// Obtains the formatted keys of the <see cref="FeatureId"/> objects
+        /// that have been encountered during loading.
+        /// </summary>
+        /// <returns>The keys of all native and foreign IDs that have been
+        /// loaded (may be an empty list)</returns>
+        List<string> GetFeatureIdKeys()
+        {
+            int numNative = m_NativeIds.Count;
+            int numForeign = m_ForeignIds.Count;
+            List<string> result = new List<string>(numNative + numForeign);
+
+            foreach (NativeId nid in m_NativeIds.Values)
+                result.Add(nid.FormattedKey);
+
+            foreach (ForeignId fid in m_ForeignIds.Values)
+                result.Add(fid.FormattedKey);
+
+            return result;
         }
+
     }
 }

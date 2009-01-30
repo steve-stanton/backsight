@@ -29,6 +29,13 @@ namespace Backsight.Environment
         string TableName { get; }
 
         /// <summary>
+        /// The name of the column that corresponds to the user-perceived ID
+        /// associated with spatial features (this may or may not be the primary
+        /// key of the table).
+        /// </summary>
+        string FeatureIdColumnName { get; }
+
+        /// <summary>
         /// Any text formatting templates associated with the table (may be an empty array)
         /// </summary>
         ITemplate[] Templates { get; }

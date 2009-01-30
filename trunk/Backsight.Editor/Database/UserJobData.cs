@@ -38,7 +38,7 @@ namespace Backsight.Editor.Database
         /// publications have been made)</returns>
         internal static uint GetLastRevision(Job job, User user)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("SELECT [LastRevision] FROM [ced].[UserJobs] WHERE [UserId]={0} AND [JobId]={1}",
                                 user.UserId, job.JobId);
@@ -62,7 +62,7 @@ namespace Backsight.Editor.Database
         {
             // Try an update first. If that fails, do an insert.
 
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("UPDATE [ced].[UserJobs] SET [LastRevision]={0} WHERE [UserId]={1} AND [JobId]={2}",
                                 revision, user.UserId, job.JobId);

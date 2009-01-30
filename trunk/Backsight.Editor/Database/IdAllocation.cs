@@ -37,7 +37,7 @@ namespace Backsight.Editor.Database
         /// <returns>The rows identifying ID ranges that have been allocated</returns>
         internal static IdAllocation[] FindByJobUser(Job job, User user)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 List<IdAllocation> result = new List<IdAllocation>(1000);
                 string sql = String.Format("{0} WHERE [JobId]={1} AND [UserId]={2}",
@@ -69,7 +69,7 @@ namespace Backsight.Editor.Database
         internal static IdAllocation Insert(IdGroup idGroup, int lowestId, int highestId,
                                                 Job job, User user, DateTime insertTime, int numUsed)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 StringBuilder sb = new StringBuilder(200);
                 sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
@@ -90,7 +90,7 @@ namespace Backsight.Editor.Database
         /// <returns>The number of rows deleted (</returns>
         internal static int Delete(int lowestId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("DELETE FROM [ced].[IdAllocations] WHERE [LowestId]={0}", lowestId);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -106,7 +106,7 @@ namespace Backsight.Editor.Database
         /// <returns>The number of rows updated (should be 1)</returns>
         internal static int UpdateHighestId(int lowestId, int highestId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("UPDATE [ced].[IdAllocations] SET [HighestId]={0}" +
                                             " WHERE [LowestId]={1}", highestId, lowestId);

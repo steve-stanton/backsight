@@ -36,7 +36,7 @@ namespace Backsight.Data
         {
             try
             {
-                AdapterFactory.ConnectionString = connectionString;
+                ConnectionFactory.ConnectionString = connectionString;
                 Transaction.Execute(delegate
                 {
                     AdapterFactory.Create<FontTableAdapter>().Update(this.Font);
@@ -62,7 +62,7 @@ namespace Backsight.Data
 
         public void Load()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 FontTableAdapter font = new FontTableAdapter();
                 IdGroupTableAdapter idGroup = new IdGroupTableAdapter();

@@ -34,7 +34,7 @@ namespace Backsight.Editor.Database
         /// <returns>All defined jobs (may be an empty array, but never null)</returns>
         internal static Job[] FindAll()
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = "SELECT [JobId], [Name], [ZoneId], [LayerId] FROM [ced].[Jobs] ORDER BY [Name]";
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -61,7 +61,7 @@ namespace Backsight.Editor.Database
         /// <returns>The corresponding job (null if not found)</returns>
         internal static Job FindByJobId(uint jobId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = "SELECT [Name], [ZoneId], [LayerId] FROM [ced].[Jobs] WHERE [JobId]="+jobId;
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -87,7 +87,7 @@ namespace Backsight.Editor.Database
         /// <returns>The newly created job</returns>
         internal static Job Insert(string jobName, int zoneId, int layerId)
         {
-            using (IConnection ic = AdapterFactory.GetConnection())
+            using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("INSERT INTO [ced].[Jobs] ([Name], [ZoneId], [LayerId]) VALUES ('{0}', {1}, {2})",
                                             jobName, zoneId, layerId);
