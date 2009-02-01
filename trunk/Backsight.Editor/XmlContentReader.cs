@@ -698,6 +698,45 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
+        /// Attaches miscellaneous attribute data to the features that have been loaded.
+        /// </summary>
+        /// <remarks>
+        /// The current Backsight implementation deals primarily with the
+        /// definition of the geometry for spatial features. While it is intended to
+        /// provide basic attribute data entry, the overall design calls for a very
+        /// loose binding.
+        /// <para/>
+        /// To cover this design goal, there are no references to miscellaneous attributes
+        /// in any editing operation. This makes it possible to manipulate the attributes
+        /// using external systems, with minimal concern for the impact it could have
+        /// on Backsight (the only consequence of inadvertant attribute changes is
+        /// that instances of <see cref="RowTextGeometry"/> could be orphaned by
+        /// removing the associated attributes).
+        /// <para/>
+        /// While this simplifies the overall architecture, it is advisable to
+        /// make any attribute data easily available to the user, since that may well
+        /// guide the user regarding the relevance of spatial edits.
+        /// <para/>
+        /// This method will be called after the spatial features for a job have been
+        /// loaded from the database. It takes a very simple-minded approach, by attempting
+        /// to match features with every table associated with Backsight via the
+        /// Environment Editor application (hopefully there aren't TOO many).
+        /// This could potentially be overly time-consuming as part of the loading logic.
+        /// While some of this could be addressed by lazy loading, or perhaps some more
+        /// definitive layer->table associations, there is no proof that there is actually
+        /// an issue that needs solving. Without that proof, it is considered inappropriate
+        /// to code more complicated solutions that are based on heresay.
+        /// </remarks>
+        void AttachAssociateAttributes()
+        {
+            // Locate information about the tables associated with Backsight
+            ITable[] tables = EnvironmentContainer.Current.Tables;
+
+            // Grab the keys of all loaded featues, and copy them into a temp table
+            List<string> keys = GetFeatureIdKeys();
+        }
+
+        /// <summary>
         /// Obtains the formatted keys of the <see cref="FeatureId"/> objects
         /// that have been encountered during loading.
         /// </summary>
