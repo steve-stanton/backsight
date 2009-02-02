@@ -115,6 +115,9 @@ namespace Backsight.Editor.Database
                         }
                     }
                 }
+
+                Trace.Write("Attaching attributes...");
+                model.Attributes.Load(xcr.GetFeatureIdKeys());
             }
         }
 
