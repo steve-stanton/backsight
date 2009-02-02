@@ -35,6 +35,11 @@ namespace Backsight.Editor
         /// <summary>
         /// Either a reference to the single row that has this key, or a reference to
         /// a list of multiple rows that have the same key.
+        /// <para/>
+        /// There is no constraint that says the feature ID column has to be a unique
+        /// key within any given table (although that is desirable). In situations where
+        /// the ID is associated with more than one row, it is therefore possible that
+        /// multiple rows come from the same table.
         /// </summary>
         IPossibleList<Row> m_Rows;
 
@@ -113,7 +118,7 @@ namespace Backsight.Editor
         /// Adds a reference from this ID to a row. 
         /// </summary>
         /// <param name="row">The row to point to.</param>
-        void AddReference(Row row)
+        internal void AddReference(Row row)
         {
             m_Rows = (m_Rows==null ? row : m_Rows.Add(row));
         }

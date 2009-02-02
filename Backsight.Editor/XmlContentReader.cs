@@ -695,22 +695,21 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
-        /// Obtains the formatted keys of the <see cref="FeatureId"/> objects
-        /// that have been encountered during loading.
+        /// Obtains the feature IDs that have been encountered during loading.
         /// </summary>
-        /// <returns>The keys of all native and foreign IDs that have been
+        /// <returns>The native and foreign IDs that have been
         /// loaded (may be an empty array)</returns>
-        internal string[] GetFeatureIdKeys()
+        internal FeatureId[] GetFeatureIds()
         {
             int numNative = m_NativeIds.Count;
             int numForeign = m_ForeignIds.Count;
-            List<string> result = new List<string>(numNative + numForeign);
+            List<FeatureId> result = new List<FeatureId>(numNative + numForeign);
 
             foreach (NativeId nid in m_NativeIds.Values)
-                result.Add(nid.FormattedKey);
+                result.Add(nid);
 
             foreach (ForeignId fid in m_ForeignIds.Values)
-                result.Add(fid.FormattedKey);
+                result.Add(fid);
 
             return result.ToArray();
         }

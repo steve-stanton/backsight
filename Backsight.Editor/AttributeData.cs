@@ -28,43 +28,15 @@ namespace Backsight.Editor
     /// <summary>
     /// Miscellaneous attributes associated with spatial features.
     /// </summary>
-    class AttributeData
+    static class AttributeData
     {
-        #region Class data
-
-        /// <summary>
-        /// The database rows associated with spatial features.
-        /// The key is the formatted version of the feature ID (expected to be no longer than
-        /// 16 characters), while the value is the collection of database rows with that key.
-        /// <para/>
-        /// Spatial features that have no associated attributes will not appear in this
-        /// collection. For a spatial feature that does have attributes, rows can come from any
-        /// number of tables. Multiple rows may also come from a single database table,
-        /// since there is no constraint that says the feature ID column has to be a unique
-        /// key. Use the <see "System.Data.DataRow.Table.Name"/> property to determine where
-        /// the data came from.
         /// </summary>
-        Dictionary<string, List<DataRow>> m_Data;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AttributeData"/> class that
-        /// has no associated attributes.
-        /// </summary>
-        internal AttributeData()
-        {
-            m_Data = null;
-        }
-
-        #endregion
+        //Dictionary<FeatureId, IPossibleList<Row>> m_Data;
 
         /// <summary>
         /// Attaches miscellaneous attribute data to the features that have been loaded.
         /// </summary>
-        /// <param name="keys">The keys (formatted feature IDs) to look for</param>
+        /// <param name="fids">The feature IDs to look for</param>
         /// <returns>The number of rows that were found (-1 if no database tables have
         /// been associated with Backsight)</returns>
         /// <remarks>
@@ -94,7 +66,7 @@ namespace Backsight.Editor
         /// an issue that needs solving. Without that proof, it is considered inappropriate
         /// to code more complicated solutions that are based on heresay.
         /// </remarks>
-        internal int Load(string[] keys)
+        internal static int Load(FeatureId[] fids)
         {
             // Locate information about the tables associated with Backsight
             ITable[] tables = EnvironmentContainer.Current.Tables;
@@ -102,17 +74,21 @@ namespace Backsight.Editor
                 return -1;
 
             // Copy the required keys into a temp table
-            Trace.WriteLine(String.Format("Locating attributes for {0} features in {1} tables", keys.Length, tables.Length));
+            Trace.WriteLine(String.Format("Locating attributes for {0} features in {1} tables", fids.Length, tables.Length));
 
-            // Form the master table that combines the lot
-            m_Data = new Dictionary<string, List<DataRow>>(keys.Length);
+            // Cross-reference the supplied IDs to their formatted key (assumes that no
+            // two IDs have the same formatted key)
+            Dictionary<string, FeatureId> keyIds = new Dictionary<string, FeatureId>(fids.Length);
+            foreach (FeatureId fid in fids)
+                keyIds.Add(fid.FormattedKey, fid);
+
             int nFound = 0;
 
             using (IConnection ic = ConnectionFactory.Create())
             {
                 SqlConnection c = ic.Value;
-                const string KEYS_TABLE_NAME = "#Keys";
-                CopyKeysToTable(c, keys, KEYS_TABLE_NAME);
+                const string KEYS_TABLE_NAME = "#Ids";
+                CopyKeysToTable(c, fids, KEYS_TABLE_NAME);
 
                 foreach (ITable t in tables)
                 {
@@ -126,14 +102,8 @@ namespace Backsight.Editor
                     foreach (DataRow row in tab.Select())
                     {
                         string key = row[featureIdIndex].ToString();
-                        List<DataRow> rows;
-                        if (!m_Data.TryGetValue(key, out rows))
-                        {
-                            rows = new List<DataRow>(1);
-                            m_Data.Add(key, rows);
-                        }
-
-                        rows.Add(row);
+                        FeatureId fid = keyIds[key];
+                        Row r = new Row(fid, t, row);
                         nFound++;
                     }
                 }
@@ -150,7 +120,7 @@ namespace Backsight.Editor
         /// <param name="tableName">The name of the table to create and load. This will
         /// typically be a temporary table (a name starting with the "#" character
         /// in SqlServer systems).</param>
-        void CopyKeysToTable(SqlConnection con, string[] keys, string tableName)
+        static void CopyKeysToTable(SqlConnection con, FeatureId[] keys, string tableName)
         {
             // Stick session IDs into an array of row objects
             DataTable dt = new DataTable(tableName);
@@ -175,26 +145,6 @@ namespace Backsight.Editor
             bcp.BatchSize = rows.Length;
             bcp.DestinationTableName = tableName;
             bcp.WriteToServer(rows);
-        }
-
-        /// <summary>
-        /// Attempts to locate the attributes associated with a feature
-        /// </summary>
-        /// <param name="fid">The ID of interest</param>
-        /// <returns>The corresponding attributes (null if the <see cref="Load"/> method has not been
-        /// called, or no database tables are associated with Backsight). An empty array if no attributes
-        /// were found.</returns>
-        DataRow[] Find(FeatureId fid)
-        {
-            if (m_Data==null)
-                return null;
-
-            string key = fid.FormattedKey;
-            List<DataRow> result;
-            if (m_Data.TryGetValue(key, out result))
-                return result.ToArray();
-
-            return new DataRow[0];
         }
     }
 }

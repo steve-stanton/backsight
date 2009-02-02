@@ -123,11 +123,6 @@ namespace Backsight.Editor
         /// problems with the deserialization of connection paths.</remarks>
         XmlContentReader m_Reader;
 
-        /// <summary>
-        /// The database attributes associated with features in this model.
-        /// </summary>
-        readonly AttributeData m_Attributes;
-
         #endregion
 
         #region Constructors
@@ -144,7 +139,6 @@ namespace Backsight.Editor
             m_Index = new EditingIndex();
             m_IdManager = new IdManager();
             m_Reader = null;
-            m_Attributes = new AttributeData();
         }
 
         #endregion
@@ -1515,14 +1509,6 @@ namespace Backsight.Editor
         {
             get { return m_Reader; }
             set { m_Reader = value; }
-        }
-
-        /// <summary>
-        /// The database attributes associated with features in this model.
-        /// </summary>
-        internal AttributeData Attributes
-        {
-            get { return m_Attributes; }
         }
     }
 }
