@@ -59,5 +59,6 @@ namespace Backsight.Data
             conn.Open();
             return new ConnectionWrapper(conn, true);
         }
+
     }
 }
