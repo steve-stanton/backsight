@@ -342,6 +342,8 @@
     <Compile Include="PointGeometry.cs" />
     <Compile Include="PositionLoader.cs" />
     <Compile Include="RadianValue.cs" />
+    <Compile Include="RowTextContent.cs" />
+    <Compile Include="RowTextGeometry.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="NewCircleUI.cs" />
     <Compile Include="NewCircularArcUI.cs" />
