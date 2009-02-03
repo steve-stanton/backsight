@@ -275,6 +275,18 @@
       <DependentUpon>PathForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
+    <Compile Include="Forms\PropertyDisplayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\PropertyDisplayControl.Designer.cs">
+      <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PropertyPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\PropertyPage.Designer.cs">
+      <DependentUpon>PropertyPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PublishForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -902,6 +914,14 @@
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PropertyDisplayControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PropertyPage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PropertyPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PublishForm.resx">
       <SubType>Designer</SubType>

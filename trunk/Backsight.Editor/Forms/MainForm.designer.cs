@@ -147,6 +147,7 @@ namespace Backsight.Editor.Forms
             this.mnuTextAddMiscellaneousText = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTextAddPolygonLabels = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTextMove = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuTextMovePolygonPosition = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuTextDefaultRotationAngle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuIntersect = new System.Windows.Forms.ToolStripMenuItem();
@@ -179,7 +180,6 @@ namespace Backsight.Editor.Forms
             this.toolLineSubdividePolygon = new System.Windows.Forms.ToolStripButton();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage0 = new System.Windows.Forms.TabPage();
-            this.propertyGrid = new System.Windows.Forms.PropertyGrid();
             this.textToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolTextAddPolygonLabels = new System.Windows.Forms.ToolStripButton();
             this.toolTextDefaultRotationAngle = new System.Windows.Forms.ToolStripButton();
@@ -264,6 +264,7 @@ namespace Backsight.Editor.Forms
             this.ctxLineProperties = new System.Windows.Forms.ToolStripMenuItem();
             this.textContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxTextMove = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxTextMovePolygonPosition = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxTextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator31 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTextProperties = new System.Windows.Forms.ToolStripMenuItem();
@@ -299,8 +300,7 @@ namespace Backsight.Editor.Forms
             this.ctxNewText25 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuTextMovePolygonPosition = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxTextMovePolygonPosition = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertyDisplay = new Backsight.Editor.Forms.PropertyDisplayControl();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.vSplitContainer.Panel1.SuspendLayout();
@@ -1103,6 +1103,12 @@ namespace Backsight.Editor.Forms
             this.mnuTextMove.Text = "&Move";
             this.mnuTextMove.ToolTipText = "Move the item of text";
             // 
+            // mnuTextMovePolygonPosition
+            // 
+            this.mnuTextMovePolygonPosition.Name = "mnuTextMovePolygonPosition";
+            this.mnuTextMovePolygonPosition.Size = new System.Drawing.Size(277, 22);
+            this.mnuTextMovePolygonPosition.Text = "Move &Polygon Reference Position";
+            // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
@@ -1283,7 +1289,7 @@ namespace Backsight.Editor.Forms
             // 
             // vSplitContainer.Panel2
             // 
-            this.vSplitContainer.Panel2.Controls.Add(this.propertyGrid);
+            this.vSplitContainer.Panel2.Controls.Add(this.propertyDisplay);
             this.vSplitContainer.Size = new System.Drawing.Size(1088, 670);
             this.vSplitContainer.SplitterDistance = 744;
             this.vSplitContainer.TabIndex = 3;
@@ -1418,17 +1424,6 @@ namespace Backsight.Editor.Forms
             this.tabPage0.TabIndex = 0;
             this.tabPage0.Text = "Command";
             this.tabPage0.UseVisualStyleBackColor = true;
-            // 
-            // propertyGrid
-            // 
-            this.propertyGrid.BackColor = System.Drawing.SystemColors.Control;
-            this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid.Name = "propertyGrid";
-            this.propertyGrid.Size = new System.Drawing.Size(340, 670);
-            this.propertyGrid.TabIndex = 0;
-            this.propertyGrid.ToolbarVisible = false;
-            this.propertyGrid.ViewBackColor = System.Drawing.Color.White;
             // 
             // textToolStrip
             // 
@@ -2071,13 +2066,19 @@ namespace Backsight.Editor.Forms
             this.ctxTextProperties});
             this.textContextMenu.Name = "textContextMenu";
             this.textContextMenu.ShowImageMargin = false;
-            this.textContextMenu.Size = new System.Drawing.Size(253, 120);
+            this.textContextMenu.Size = new System.Drawing.Size(253, 98);
             // 
             // ctxTextMove
             // 
             this.ctxTextMove.Name = "ctxTextMove";
             this.ctxTextMove.Size = new System.Drawing.Size(252, 22);
             this.ctxTextMove.Text = "Move";
+            // 
+            // ctxTextMovePolygonPosition
+            // 
+            this.ctxTextMovePolygonPosition.Name = "ctxTextMovePolygonPosition";
+            this.ctxTextMovePolygonPosition.Size = new System.Drawing.Size(252, 22);
+            this.ctxTextMovePolygonPosition.Text = "Move Polygon Reference Position";
             // 
             // ctxTextDelete
             // 
@@ -2316,17 +2317,13 @@ namespace Backsight.Editor.Forms
             this.ctxNewTextCancel.Size = new System.Drawing.Size(146, 22);
             this.ctxNewTextCancel.Text = "Cancel";
             // 
-            // mnuTextMovePolygonPosition
+            // propertyDisplay
             // 
-            this.mnuTextMovePolygonPosition.Name = "mnuTextMovePolygonPosition";
-            this.mnuTextMovePolygonPosition.Size = new System.Drawing.Size(277, 22);
-            this.mnuTextMovePolygonPosition.Text = "Move &Polygon Reference Position";
-            // 
-            // ctxTextMovePolygonPosition
-            // 
-            this.ctxTextMovePolygonPosition.Name = "ctxTextMovePolygonPosition";
-            this.ctxTextMovePolygonPosition.Size = new System.Drawing.Size(252, 22);
-            this.ctxTextMovePolygonPosition.Text = "Move Polygon Reference Position";
+            this.propertyDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyDisplay.Location = new System.Drawing.Point(0, 0);
+            this.propertyDisplay.Name = "propertyDisplay";
+            this.propertyDisplay.Size = new System.Drawing.Size(340, 670);
+            this.propertyDisplay.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -2636,7 +2633,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuViewMagnify;
         private System.Windows.Forms.ToolStripMenuItem ctxViewMagnify;
         private System.Windows.Forms.ToolStripStatusLabel activeLayerStatusLabel;
-        private System.Windows.Forms.PropertyGrid propertyGrid;
         private System.Windows.Forms.ToolStripMenuItem mnuViewPropertiesWindow;
         private System.Windows.Forms.ToolStripStatusLabel unitsStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel pointEntityStatusLabel;
@@ -2649,6 +2645,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem mnuFilePublish;
         private System.Windows.Forms.ToolStripMenuItem mnuTextMovePolygonPosition;
         private System.Windows.Forms.ToolStripMenuItem ctxTextMovePolygonPosition;
+        private PropertyDisplayControl propertyDisplay;
     }
 }
 

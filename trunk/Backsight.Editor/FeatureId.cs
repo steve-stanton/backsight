@@ -99,7 +99,7 @@ namespace Backsight.Editor
             get { return (m_Rows==null && m_Features==null); }
         }
 
-        IPossibleList<Row> Rows
+        internal IPossibleList<Row> Rows
         {
             get { return m_Rows; }
         }

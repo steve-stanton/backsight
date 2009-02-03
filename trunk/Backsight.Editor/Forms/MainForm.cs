@@ -623,7 +623,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 vSplitContainer.Panel2Collapsed = false;
 
             ISpatialObject so = m_Controller.SpatialSelection.Item;
-            propertyGrid.SelectedObject = so;
+            propertyDisplay.SetSelectedObject(so);
         }
 
         #region File menu
@@ -1900,9 +1900,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (vSplitContainer.Panel2Collapsed)
                 return;
 
-            try { propertyGrid.SelectedObject = o; }
-            catch { propertyGrid.SelectedObject = null; }
-            propertyGrid.Refresh();
+            propertyDisplay.SetSelectedObject(o);
         }
 
         private void mnuPointDefaultEntity_Click(object sender, EventArgs e)
