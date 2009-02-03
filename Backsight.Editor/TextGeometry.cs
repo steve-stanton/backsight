@@ -22,10 +22,11 @@ using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
-	/// <written by="Steve Stanton" on="" />
+    /// <written by="Steve Stanton" on="12-MAY-1998" was="CeText"/>
     /// <summary>
     /// A text object is some sort of string that appears on a map. This is the base class for
-    //	MiscText, KeyText, RowText, and FeatureText.
+    ///	<see cref="MiscText"/>, <see cref="KeyTextGeometry"/>, <see cref="RowTextGeometry"/>,
+    /// and <see cref="FeatureText"/>.
     /// </summary>
     abstract public class TextGeometry : IString, IXmlContent
     {
