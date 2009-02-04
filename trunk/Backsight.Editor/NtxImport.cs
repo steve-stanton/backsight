@@ -565,6 +565,11 @@ namespace Backsight.Editor
             // Get the position
 	        Ntx.Position pos = symbol.Position;
             PointGeometry g = new PointGeometry(pos.Easting, pos.Northing);
+
+            // Ignore positions at 0,0!
+            if (g.Easting.Microns==0 && g.Northing.Microns==0)
+                return null;
+
             PointFeature p = new PointFeature(g, what, creator);
             /*
 

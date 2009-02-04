@@ -181,10 +181,14 @@ namespace Backsight.Editor
 
             if (s_DrawReferencePoints || style is HighlightStyle)
             {
-                Color c = style.LineColor;
-                style.LineColor = Color.Gray;
-                style.RenderPlus(display, GetPolPosition());
-                style.LineColor = c;
+                IPointGeometry p = GetPolPosition();
+                if (p!=null)
+                {
+                    Color c = style.LineColor;
+                    style.LineColor = Color.Gray;
+                    style.RenderPlus(display, p);
+                    style.LineColor = c;
+                }
             }
         }
 
