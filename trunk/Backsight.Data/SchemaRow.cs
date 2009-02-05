@@ -62,7 +62,7 @@ namespace Backsight.Data
             /// </summary>
             public string FeatureIdColumnName
             {
-                get { return "FeatureId"; }
+                get { return "PIN"; }
             }
 
             /// <summary>
