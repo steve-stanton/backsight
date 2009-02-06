@@ -30,8 +30,28 @@ namespace Backsight.Editor
     /// </summary>
     static class AttributeData
     {
+        /// <summary>
+        /// Attaches miscellaneous attribute data to features
         /// </summary>
-        //Dictionary<FeatureId, IPossibleList<Row>> m_Data;
+        /// <param name="features">The features to process (those that don't have a feature ID
+        /// will be ignored)</param>
+        /// <returns>The number of rows that were found (-1 if no database tables have
+        /// been associated with Backsight)</returns>
+        internal static int Load(Feature[] features)
+        {
+            List<FeatureId> fids = new List<FeatureId>(features.Length);
+            foreach (Feature f in features)
+            {
+                FeatureId fid = f.Id;
+                if (fid!=null)
+                    fids.Add(fid);
+            }
+
+            if (fids.Count == 0)
+                return 0;
+            else
+                return Load(fids.ToArray());
+        }
 
         /// <summary>
         /// Attaches miscellaneous attribute data to the features that have been loaded.
