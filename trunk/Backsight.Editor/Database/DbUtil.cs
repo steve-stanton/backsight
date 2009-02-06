@@ -57,7 +57,7 @@ namespace Backsight.Editor.Database
         /// <returns>The retrieved data</returns>
         public static DataTable ExecuteSelect(SqlConnection c, string sql)
         {
-            Trace.WriteLine(sql);
+            //Trace.WriteLine(sql);
             SqlCommand cmd = new SqlCommand(sql, c);
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();

@@ -506,56 +506,38 @@ namespace Backsight.Editor
 
             // Back up half a character to get the initial corner.
             PointGeometry topleft = new PointGeometry(Geom.Polar(above, hbear, 0.5 * (double)charwidth));
-            /*
+
+            IFont font = null;
+            double width = (double)text.Length * charwidth;
+            TextFeature result = null;
+
             if (name.IsLabel)
-            {            
-                    // Get the key string.
-                    CString keystr(Name.GetpName());
+            {
+                // Create key text
+                string keystr = name.Text;
+                KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
+                result = new TextFeature(kt, entity, creator);
+                kt.Label = result;
+                result.SetTopology(true);
 
-                    // Add a key text label.
-                    CeLabel* pLabel = pMap->AddKeyLabel
-                        (keystr,pEntity,topleft,height,spacing,rotation);
+                // Define the label's foreign ID and form a two-way association
+                FeatureId fid = new ForeignId(keystr);
+                fid.Add(result);
 
-                    // Ensure it is marked as topological.
-                    pLabel->SetTopology(TRUE);
-
-                    // Remember the reference position of the label.
-                    const CxPosition& refpos = Name.GetRefPosition();
-                    FLOAT8 refx = refpos.GetEasting();
-                    FLOAT8 refy = refpos.GetNorthing();
-                    CeVertex refvtx(refx,refy);
-
-                    // Use a TRANSIENT operation to record the original position.
-                    // We will construct persistent versions later if required.
-                    CeMoveLabel* pRef = new CeMoveLabel(*pLabel,refvtx);
-                    refs.AddTail(pRef);      
+                // Remember the reference position of the label.
+                Ntx.Position xp = name.RefPosition;
+                IPointGeometry pp = new PointGeometry(xp.Easting, xp.Northing);
+                result.SetPolPosition(pp);
             }
             else
             {
-                */
-                // Add a miscellaneous text label.
-            IFont font = null;
-            double width = (double)text.Length * charwidth;
-            MiscText mt = new MiscText(text, topleft, font, height, width, rotation);
-            TextFeature t = new TextFeature(mt, entity, creator);
-
-            if (name.IsLabel)
-            {
-                t.SetTopology(true);
-                Ntx.Position xp = name.RefPosition;
-                IPointGeometry pp = new PointGeometry(xp.Easting, xp.Northing);
-                t.SetPolPosition(pp);
-
-                // SHOULDN'T DO THIS, SINCE THIS WILL UPDATE SPATIAL INDEX AT THIS
-                // STAGE (DIFFERENT FROM LINE HANDLING)
-                //CadastralMapModel cmm = (CadastralMapModel)SpatialEnvironment.Model;
-                //TextFeature label = cmm.AddMiscLabel(text, entity, topleft, height, spacing, rotation);
-
-                // Ensure that is not marked as topological.
-                //t.SetTopology(false);
+                // Create a miscellaneous text label.
+                MiscText mt = new MiscText(text, topleft, font, height, width, rotation);
+                result = new TextFeature(mt, entity, creator);
+                result.SetTopology(false);
             }
 
-            return t;
+            return result;
         }
 
         private Feature ImportSymbol(Ntx.Symbol symbol, Operation creator)

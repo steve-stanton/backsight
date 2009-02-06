@@ -1848,12 +1848,16 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             loader.LoadDatabase();
              */
 
+            /*
             if (MessageBox.Show("Read point positions from db?", "Test", MessageBoxButtons.YesNo)
                     == DialogResult.No)
                 return;
 
             PositionLoader loader = new PositionLoader(CadastralMapModel.Current);
             IDictionary<int, IPosition> data = loader.ReadPositions();
+             */
+
+            MessageBox.Show(Application.ExecutablePath);
         }
 
         #endregion

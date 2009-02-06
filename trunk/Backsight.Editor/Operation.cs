@@ -358,9 +358,18 @@ namespace Backsight.Editor
         /// </summary>
         protected void Complete()
         {
+            // Is this method being called as part of application startup?
+            bool isStartup = !Object.ReferenceEquals(m_Session, Session.WorkingSession);
+
             // Index features that were created (and ensure the map extent has been
             // expanded to include the new features)
             Feature[] feats = Features;
+
+            // If we're not doing startup, attempt to associate new features with database attributes (when
+            // we're doing startup, we do all the deserialzation, then do all attribute matching in one big swoop)
+            if (!isStartup)
+                AttributeData.Load(feats);
+
             MapModel.AddToIndex(feats);
 
             // Assign 1-based creation sequence to each created feature
@@ -381,7 +390,7 @@ namespace Backsight.Editor
             // intersected with the map
             PrepareForIntersect(feats);
 
-            if (Object.ReferenceEquals(m_Session, Session.WorkingSession))
+            if (!isStartup)
             {
                 // Ensure the map structure has been updated to account for the new data.
                 MapModel.CleanEdit();
