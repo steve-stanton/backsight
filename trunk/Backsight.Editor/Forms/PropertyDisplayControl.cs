@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using System.Data;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Forms
 {
@@ -25,7 +26,9 @@ namespace Backsight.Editor.Forms
     public partial class PropertyDisplayControl : UserControl
     {
         /// <summary>
-        /// The name of the tab that was previously on top
+        /// The name of the tab that was previously on top (only pages that
+        /// are instances of <see cref="PropertyPage"/> are considered - the
+        /// standard properties page doesn't count).
         /// </summary>
         string m_LastPageName;
 
@@ -41,34 +44,42 @@ namespace Backsight.Editor.Forms
             {
                 string oldLastPage = m_LastPageName;
 
-                // Retain just the first tab page
-                while (tabControl.TabCount > 1)
-                    tabControl.TabPages.RemoveAt(1);
-
-                propertyGrid1.SelectedObject = so;
-
-                // Display any database attributes
+                // Create pages for any database attributes
+                List<PropertyPage> pages = new List<PropertyPage>();
                 Feature f = (so as Feature);
-                if (f==null && so is Polygon)
+                if (f == null && so is Polygon)
                     f = (so as Polygon).Label;
 
-                if (f!=null && f.Id!=null)
+                if (f != null && f.Id != null)
                 {
                     FeatureId fid = f.Id;
                     IPossibleList<Row> rows = fid.Rows;
                     if (rows != null)
                     {
                         foreach (Row r in rows)
-                        {
-                            TabPage page = new PropertyPage(r);
-                            tabControl.TabPages.Add(page);
-                        }
+                            pages.Add(new PropertyPage(r));
                     }
                 }
 
+                // Retain just the first tab page
+                while (tabControl.TabCount > 1)
+                    tabControl.TabPages.RemoveAt(1);
+
+                // Add back any pages for the new database rows
+                tabControl.TabPages.AddRange(pages.ToArray());
+
+                propertyGrid1.SelectedObject = so;
+
                 // If a non-standard tab was previously on top, and we still have
-                // a page at that location, bring it to the front
-                SelectPage(oldLastPage);
+                // a page with the same tab text, bring it to the front. Failing
+                // that, go for the first tab that shows any database attributes
+                // (since that info will likely have more relevance to the user).
+                if (!SelectPage(oldLastPage))
+                {
+                    if (tabControl.TabCount > 1)
+                        tabControl.SelectedIndex = 1;
+                }
+
             }
 
             catch
@@ -104,9 +115,7 @@ namespace Backsight.Editor.Forms
         private void tabControl_Selected(object sender, TabControlEventArgs e)
         {
             TabPage page = tabControl.SelectedTab;
-            if (page == null)
-                m_LastPageName = String.Empty;
-            else
+            if (page is PropertyPage)
                 m_LastPageName = page.Text;
         }
     }
