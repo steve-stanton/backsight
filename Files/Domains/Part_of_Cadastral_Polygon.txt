@@ -1,0 +1,2 @@
+PT	Part of Cadastral  Polygon	Is PART of original Cadastral  Polygon
+	Whole Cadastral  Polygon	Is ENTIRE original Cadastral  Polygon
