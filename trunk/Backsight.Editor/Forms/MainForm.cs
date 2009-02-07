@@ -1008,6 +1008,12 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             vSplitContainer.Panel2Collapsed = true;
         }
 
+        private void propertyDisplay_ControlClosed()
+        {
+            // Hide the property display
+            ClosePropertiesWindow();
+        }
+
         private bool IsViewAttributeStructureEnabled()
         {
             return true;

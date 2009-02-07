@@ -21,10 +21,18 @@ using System.Collections.Generic;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
+    /// Delegate for handling the <c>ControlClosed</c> event (raised when the
+    /// user cicks on the Close button)
+    /// </summary>
+    public delegate void OnControlClosed();
+
+    /// <summary>
     /// Display of properties associated with a spatial feature
     /// </summary>
     public partial class PropertyDisplayControl : UserControl
     {
+        public event OnControlClosed ControlClosed;
+
         /// <summary>
         /// The name of the tab that was previously on top (only pages that
         /// are instances of <see cref="PropertyPage"/> are considered - the
@@ -92,7 +100,7 @@ namespace Backsight.Editor.Forms
 
         private void closeButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("close");
+            ControlClosed();
         }
 
         bool SelectPage(string pageName)
