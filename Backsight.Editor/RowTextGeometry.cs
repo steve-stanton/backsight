@@ -51,12 +51,51 @@ namespace Backsight.Editor
 
         #endregion
 
+        // The format string specifies both alphanumeric characters and one or more
+        // of the fields in the table to be output as the annotation text. Each
+        // attribute field is enclosed in square brackets.
+        // 
+        //  character ‘%' indicates that an attribute field follows, the data
+        //  following the % char has the following rules:
+        //	    an integer following this specifies that the contents of the field
+        //	      be inserted into the output,
+        //	    a k character specifies that the value of the key be output
+        //	    a n character attached to a number indicates that the Name of the
+        //	      numbered field schema be output,
+        //	    a v character attached to a number indicates that the a Name
+        //	      associated with the value of the numbered field be output.
+        //	      The Name and the Field Value are contained in a List Domain that
+        //        must be attached to the Field Schema identified by the number
+        //        following the v character,
+        //	    a % character (i.e. %%) indicates that the % character is output
+        //	    
+        //  The Field Schemas are numbered from 1.
+        //  Examples:
+        //          "C.T. %1" specifies that the characters "C.T. " be followed by
+        //            the data contained in FieldSchema 1,
+        //          "%1 %v3 %2 Parish of  %v4" specifies the the contents of the
+        //            1st field be followed by a space then by the value in the
+        //            list domain associated with the contents of the 3rd field,
+        //            then by a space, then by the contents of the 2nd field, then
+        //            by a space and the word "Parish of", then by the value in the
+        //            list domain associated with the contents of the 4th field
+        //          "Public Lane" specifies that only this text be output
+
         /// <summary>
         /// The text string represented by this geometry
         /// </summary>
         public override string Text
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+                // Get the row's key (it MUST have one in order for the row text to exist at all).
+                FeatureId id = m_Row.Id;
+                if (id==null)
+                    return "ID not available";
+
+                //return m_Template.GetText(m_Row, id.FormattedKey);
+                return "?";
+            }
         }
 
         /// <summary>
