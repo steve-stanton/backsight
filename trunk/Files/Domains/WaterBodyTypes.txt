@@ -1,0 +1,3 @@
+R	River	River polygon
+C	Creek	Creek polygon
+L	Lake	Lake polygon

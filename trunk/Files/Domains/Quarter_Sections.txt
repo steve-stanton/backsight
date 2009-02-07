@@ -1,0 +1,4 @@
+NE	NE 1/4	NE 1/4 Section
+NW	NW 1/4	NW 1/4 Section
+SE	SE 1/4	SE 1/4 Section
+SW	SW 1/4	SW 1/4 Section

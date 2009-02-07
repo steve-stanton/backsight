@@ -1,0 +1,27 @@
+BO	Boissevain	Boissevain LTO
+B	Brandon	Brandon LTO
+C	Carman	Carman LTO
+D	Dauphin	Dauphin LTO
+DS	Director of Surveys	Director of Surveys Plan
+DU	Dufferin	Dufferin LTO
+DL	Dufferin-Lorne	Dufferin-Lorne LTO
+L	Lisgar	Lisgar LTO
+MN	Manchester	Manchester LTO
+ME	Marquette East	Marquette East LTO
+MW	Marquette West	Marquette West LTO
+M	Morden	Morden LTO
+MO	Morris	Morris LTO
+N	Neepawa	Neepawa LTO
+NO	Norfolk	Norfolk LTO
+PP	Portage (now in Winnipeg)	Portage (now in Winnipeg) LTO
+P	Portage	Portage LTO
+PR	Provenchier	Provenchier LTO
+RL	Rock Lake	Rock Lake LTO
+R	Rockwood	Rockwood LTO
+S	Selkirk	Selkirk LTO
+SL	Shoal Lake	Shoal Lake LTO
+SR	Souris River	Souris River LTO
+TM	Turtle Mountain	Turtle Mountain LTO
+V	Virden	Virden LTO
+W	Winnipeg Division	Winnipeg Division LTO
+	Unique Provincial Numbers	Unique Provincial Numbers

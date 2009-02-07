@@ -1,0 +1,3 @@
+	Standard	Ordinary Plan Polygon
+P	Public Park	Public Park polygon
+R	Public Reserve	Public Reserve polygon

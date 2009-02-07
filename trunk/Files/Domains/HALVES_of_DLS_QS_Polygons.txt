@@ -1,0 +1,5 @@
+	No Half QS	Polygon is some other type of 1/4-Sec-Twp-Range polygon
+N	North Half QS	Polygon is North Half of a Quarter Section
+S	South Half QS	Polygon is South Half of a Quarter Section
+E	East Half QS	Polygon is East Half of a Quarter Section
+W	West Half QS	Polygon is West Half of a Quarter Section
