@@ -43,11 +43,11 @@ namespace Backsight.Environment.Editor
             // 
             // cancelButton
             // 
-            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.cancelButton.Location = new System.Drawing.Point(316, 317);
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cancelButton.Location = new System.Drawing.Point(413, 366);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 28);
+            this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 23;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -55,11 +55,11 @@ namespace Backsight.Environment.Editor
             // 
             // okButton
             // 
-            this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.okButton.Location = new System.Drawing.Point(440, 317);
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.okButton.Location = new System.Drawing.Point(496, 366);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 28);
+            this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 22;
             this.okButton.Text = "OK";
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -75,9 +75,11 @@ namespace Backsight.Environment.Editor
             // 
             // nameTextBox
             // 
+            this.nameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.nameTextBox.Location = new System.Drawing.Point(142, 26);
             this.nameTextBox.Name = "nameTextBox";
-            this.nameTextBox.Size = new System.Drawing.Size(285, 22);
+            this.nameTextBox.Size = new System.Drawing.Size(521, 22);
             this.nameTextBox.TabIndex = 0;
             // 
             // label2
@@ -91,28 +93,30 @@ namespace Backsight.Environment.Editor
             // 
             // tableComboBox
             // 
+            this.tableComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableComboBox.FormattingEnabled = true;
             this.tableComboBox.Location = new System.Drawing.Point(142, 63);
             this.tableComboBox.Name = "tableComboBox";
-            this.tableComboBox.Size = new System.Drawing.Size(285, 24);
+            this.tableComboBox.Size = new System.Drawing.Size(521, 24);
             this.tableComboBox.TabIndex = 1;
             this.tableComboBox.SelectedValueChanged += new System.EventHandler(this.tableComboBox_SelectedValueChanged);
             // 
             // fieldsListBox
             // 
-            this.fieldsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.fieldsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.fieldsListBox.FormattingEnabled = true;
             this.fieldsListBox.ItemHeight = 16;
-            this.fieldsListBox.Location = new System.Drawing.Point(36, 138);
+            this.fieldsListBox.Location = new System.Drawing.Point(36, 137);
             this.fieldsListBox.Name = "fieldsListBox";
-            this.fieldsListBox.Size = new System.Drawing.Size(206, 212);
+            this.fieldsListBox.Size = new System.Drawing.Size(206, 260);
             this.fieldsListBox.TabIndex = 2;
             this.fieldsListBox.DoubleClick += new System.EventHandler(this.fieldsListBox_DoubleClick);
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.Location = new System.Drawing.Point(36, 111);
+            this.label3.Location = new System.Drawing.Point(36, 115);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(206, 13);
             this.label3.TabIndex = 29;
@@ -121,12 +125,13 @@ namespace Backsight.Environment.Editor
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(313, 229);
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label4.Location = new System.Drawing.Point(369, 278);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(242, 84);
             this.label4.TabIndex = 30;
             this.label4.Text = "Specify the text template. To append fields, select the field and then click the " +
-                "arrow button (or just double-click the field).";
+    "arrow button (or just double-click the field).";
             // 
             // selectButton
             // 
@@ -141,10 +146,13 @@ namespace Backsight.Environment.Editor
             // 
             // formatTextBox
             // 
+            this.formatTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.formatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.formatTextBox.Location = new System.Drawing.Point(316, 138);
             this.formatTextBox.Name = "formatTextBox";
-            this.formatTextBox.Size = new System.Drawing.Size(239, 77);
+            this.formatTextBox.Size = new System.Drawing.Size(347, 126);
             this.formatTextBox.TabIndex = 3;
             this.formatTextBox.Text = "";
             // 
@@ -154,7 +162,7 @@ namespace Backsight.Environment.Editor
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(595, 385);
+            this.ClientSize = new System.Drawing.Size(703, 434);
             this.Controls.Add(this.formatTextBox);
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.label4);

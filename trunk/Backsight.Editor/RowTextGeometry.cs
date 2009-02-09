@@ -14,6 +14,9 @@
 // </remarks>
 
 using System;
+using System.Text;
+using System.Diagnostics;
+using System.Data;
 
 using Backsight.Environment;
 
@@ -94,9 +97,208 @@ namespace Backsight.Editor
                     return "ID not available";
 
                 //return m_Template.GetText(m_Row, id.FormattedKey);
-                return "?";
+                return GetText(m_Row, id.FormattedKey, m_Template);
             }
         }
+
+        static string GetText(Row row, string key, ITemplate template)
+        {
+            // The row must have a defined schema (and presumably the same
+            // as the same as the template's schema, although we won't check).
+            ITable schema = row.Table;
+            if (schema == null)
+                return null;
+
+
+            StringBuilder result = new StringBuilder(100);
+            string fmt = template.Format;
+            int lastCopy = -1;
+            DataRow data = row.Data;
+
+            while ((lastCopy+1) < fmt.Length)
+            {
+                // Locate the start of the next field
+                int startField = fmt.IndexOf('[', lastCopy+1);
+
+                // If we didn't find any, ensure we copy the rest of the format to the output buffer
+                if (startField < 0)
+                {
+                    result.Append(fmt.Substring(lastCopy+1));
+                    lastCopy = fmt.Length;
+                }
+                else
+                {
+                    // If the start of the field is preceded by stuff that hasn't been copied, do it now
+                    if (startField > (lastCopy+1))
+                    {
+                        // TODO: Handle \n substrings...
+
+                        result.Append(fmt.Substring(lastCopy+1, startField-lastCopy-1));
+                    }
+
+                    // Locate the end bracket (and disallow something like "[]")
+                    int endField = fmt.IndexOf(']', startField);
+                    Debug.Assert(endField > startField);
+                    if (endField <= (startField+1))
+                        throw new FormatException("Cannot decode template format: "+fmt);
+
+                    // Grab the name of the relevant column
+                    string fieldName = fmt.Substring(startField+1, endField-startField-1);
+                    Debug.Assert(fieldName.Length > 0);
+
+                    // If the field name ends in a "+" character, it's shorthand to expand the value
+                    // according to the field's domain table.
+                    bool expand = fieldName.EndsWith("+");
+                    if (expand)
+                        fieldName = fieldName.Substring(0, fieldName.Length-1);
+
+                    // Grab the value from the row
+                    DataColumn dc = data.Table.Columns[fieldName];
+                    int columnIndex = dc.Ordinal;
+                    string s = (data.IsNull(columnIndex) ? String.Empty : data[columnIndex].ToString());
+                    result.Append(s);
+
+                    lastCopy = endField;
+                }
+            }
+
+
+            return result.ToString();
+        }
+        /*
+	CHARS* EntryName=0;
+	CHARS AChar;
+	LOGICAL IsOK = TRUE;
+	INT4 digit;
+	CHARS* charpos;
+	INT4 fieldnum = 0;
+	static CHARS* digits = "0123456789";
+
+	CHARS* pbuffer = new CHARS[strlen(m_pFormat)+1];
+	const UINT4 maxsize = pSchema->GetSchemaMemSize()+1;
+	CHARS* pfieldata = new CHARS[maxsize];
+	pbuffer[0]='\0';
+	UINT2 index = strcspn(m_pFormat,"%");
+	UINT2 numchars = index;
+	UINT2 startpos = 0;
+	UINT2 lastpos = strlen(m_pFormat);
+	LOGICAL OnField = (index < lastpos);
+	LOGICAL GetDigits;
+	text.Empty(); // clear out string at start
+	if(numchars)
+	{// have found other chars before the %, copy them to output string
+		strncpy(pbuffer,m_pFormat+startpos,numchars);
+		pbuffer[numchars] = '\0';
+		text += pbuffer;
+		pbuffer[0]='\0';
+	}
+	while( IsOK && index < lastpos)
+	{
+		AChar = ' ';
+		GetDigits = FALSE;
+		index++; // next char pos after %
+		if( m_pFormat[index]=='%') // next char is % - add it to output & go
+		// past it
+		{
+			text += "%";
+			index++;
+		}
+		else if ( m_pFormat[index]=='k'  ||
+				m_pFormat[index]=='K') // key char - add it to output & go past it
+		{
+			// If the row does not have an ID, get the key from the
+			// ID handle (if one was supplied).
+
+			text += keystr;
+			index++;
+		}
+		else if ( m_pFormat[index]=='v'  ||
+				m_pFormat[index]=='n') // a number is attached to 
+		{
+			if ( m_pFormat[index]=='v' ) AChar = 'v';
+			else AChar = 'n';
+			GetDigits = TRUE;
+			index++;
+		}
+		else // check for digit(s) and for them being in range
+			// of fieldschemas
+		{
+			AChar = ' ';
+			GetDigits = TRUE;
+		}
+
+		if(GetDigits)
+		{
+			fieldnum = 0;
+			startpos = index;
+			charpos = strchr(digits,m_pFormat[index]);
+			while( index < lastpos &&  charpos )
+			{
+				digit = (charpos - digits);
+				fieldnum = fieldnum*10 + digit;
+				index++;
+				charpos = strchr(digits,m_pFormat[index]);
+			}
+			if(index != startpos)
+			{ // have found a valid number - use it
+				fieldnum--; // change fieldnum to vector index
+				if(fieldnum >= 0)
+				{
+					IsOK = (fieldnum < pSchema->ReturnNumFieldSchemas());
+					OnField = FALSE;
+				}
+				else IsOK = FALSE;
+				if( IsOK )
+				{ // have got a valid fieldnumber , get the value specified
+					if( AChar == ' ' ) // just get the data stored in field
+					{
+						IsOK = row.GetFieldChars(pfieldata,maxsize,fieldnum);
+						if(IsOK) text += pfieldata;
+					}
+					else if( AChar == 'v' )
+					{ // get the name of the entry in a list domain
+						const CeDomain* pDomain =
+							pSchema->ReturnFieldSchema(fieldnum)->GetDomain();
+						IsOK = row.GetFieldChars(pfieldata,maxsize,fieldnum);
+						os_string Errmess;
+						IsOK = pDomain->GetEntryName(pfieldata,EntryName,Errmess);
+						if(IsOK) text += EntryName;
+						else ShowMessage(Errmess.c_str()); // output error
+					}
+					else if( AChar == 'n' ) // get the name of the field
+						text += 
+							pSchema->ReturnFieldSchema(fieldnum)->GetName();
+				}
+			}
+			else IsOK = FALSE; // next char is not a numeric char
+		}
+		if(index < lastpos)
+		{
+			startpos = index; // 1st char pos after field number
+			index += strcspn(m_pFormat+index,"%");
+			numchars = index - startpos;
+			if(numchars)
+			{// have found other chars before the %, copy them to output
+			//  string
+				strncpy(pbuffer,m_pFormat+startpos,numchars);
+				pbuffer[numchars] = '\0';
+				text += pbuffer;
+				pbuffer[0]='\0';
+			}
+		}
+		OnField = (index < lastpos);
+	}
+
+	delete [ ] pfieldata;
+	delete [ ] pbuffer;
+
+	if( IsOK )
+		return text.GetLength();
+	else {
+		text.Empty();
+		return 0;
+	}
+         */
 
         /// <summary>
         /// Writes the content of this class. This is called by
