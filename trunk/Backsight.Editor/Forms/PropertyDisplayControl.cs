@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 using System.Data;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -52,34 +53,35 @@ namespace Backsight.Editor.Forms
             {
                 string oldLastPage = m_LastPageName;
 
-                // Create pages for any database attributes
-                List<PropertyPage> pages = new List<PropertyPage>();
-                Feature f = (so as Feature);
-                if (f == null && so is Polygon)
-                    f = (so as Polygon).Label;
+                // Grab the attributes we'll be displaying
+                List<Row> rows = GetRows(so);
 
-                if (f != null && f.Id != null)
-                {
-                    FeatureId fid = f.Id;
-                    IPossibleList<Row> rows = fid.Rows;
-                    if (rows != null)
-                    {
-                        foreach (Row r in rows)
-                            pages.Add(new PropertyPage(r));
-                    }
-                }
-
-                // Retain just the first tab page
-                while (tabControl.TabCount > 1)
+                // Require a page for each attribute, plus 1 for standard properties.
+                // If we have an excess number of property pages, get rid of the redundant ones
+                while (tabControl.TabCount > (1+rows.Count))
                     tabControl.TabPages.RemoveAt(1);
 
-                // Add back any pages for the new database rows
-                tabControl.TabPages.AddRange(pages.ToArray());
+                // Reuse any remaining PropertyPages, add any additional pages
+                int toReuse = (tabControl.TabCount - 1);
+                foreach (Row r in rows)
+                {
+                    if (toReuse > 0)
+                    {
+                        PropertyPage pp = (tabControl.TabPages[toReuse] as PropertyPage);
+                        Debug.Assert(pp!=null);
+                        pp.SetRow(r);
+                        toReuse--;
+                    }
+                    else
+                    {
+                        tabControl.TabPages.Add(new PropertyPage(r));
+                    }
+                }
 
                 propertyGrid1.SelectedObject = so;
 
                 // If a non-standard tab was previously on top, and we still have
-                // a page with the same tab text, bring it to the front. Failing
+                // a page with the same tab text, ensure it's on top. Failing
                 // that, go for the first tab that shows any database attributes
                 // (since that info will likely have more relevance to the user).
                 if (!SelectPage(oldLastPage))
@@ -87,7 +89,6 @@ namespace Backsight.Editor.Forms
                     if (tabControl.TabCount > 1)
                         tabControl.SelectedIndex = 1;
                 }
-
             }
 
             catch
@@ -96,6 +97,33 @@ namespace Backsight.Editor.Forms
             }
 
             propertyGrid1.Refresh();
+        }
+
+        /// <summary>
+        /// Obtains any miscellaneous attribute data for a specific spatial object
+        /// </summary>
+        /// <param name="so">The object of interest</param>
+        /// <returns>Any attributes for the spatial object (never null, but may be an empty list)</returns>
+        List<Row> GetRows(ISpatialObject so)
+        {
+            List<Row> result = new List<Row>();
+
+            Feature f = (so as Feature);
+            if (f == null && so is Polygon)
+                f = (so as Polygon).Label;
+
+            if (f != null && f.Id != null)
+            {
+                FeatureId fid = f.Id;
+                IPossibleList<Row> rows = fid.Rows;
+                if (rows != null)
+                {
+                    foreach (Row r in rows)
+                        result.Add(r);
+                }
+            }
+
+            return result;
         }
 
         private void closeButton_Click(object sender, EventArgs e)
