@@ -27,7 +27,7 @@ namespace Backsight.Editor.Forms
     partial class PropertyPage : TabPage
     {
         internal PropertyPage(Row row)
-            : base(row.Table.TableName)
+            : base()
         {
             InitializeComponent();
             SetRow(row);
@@ -35,6 +35,9 @@ namespace Backsight.Editor.Forms
 
         internal void SetRow(Row row)
         {
+            // Set the text on the tab
+            this.Text = row.Table.TableName;
+
             // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
             // hard way (is there a better way?)
 
