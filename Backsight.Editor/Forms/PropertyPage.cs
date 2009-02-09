@@ -30,7 +30,11 @@ namespace Backsight.Editor.Forms
             : base(row.Table.TableName)
         {
             InitializeComponent();
+            SetRow(row);
+        }
 
+        internal void SetRow(Row row)
+        {
             // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
             // hard way (is there a better way?)
 
