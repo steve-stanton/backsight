@@ -638,16 +638,6 @@
     <DefaultPolygonId>36</DefaultPolygonId>
     <DefaultTextId>0</DefaultTextId>
   </Layer>
-  <Property>
-    <Name>EntityFile</Name>
-    <Value>C:\Steve\GoogleCode\Files\EntityFile.txt</Value>
-    <Description />
-  </Property>
-  <Property>
-    <Name>StyleFile</Name>
-    <Value>C:\Steve\GoogleCode\Files\Style.txt</Value>
-    <Description />
-  </Property>
   <Schema>
     <SchemaId>475</SchemaId>
     <Name />
