@@ -27,4 +27,3 @@ GOTO Exit
 ECHO Usage: Import [job-name] [database-name.schema]
 
 :Exit
-EXIT
