@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<MB.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
+<Manitoba_x0020_Environment.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
   <EntityType>
     <EntityId>0</EntityId>
     <Name />
@@ -638,9 +638,254 @@
     <DefaultPolygonId>36</DefaultPolygonId>
     <DefaultTextId>0</DefaultTextId>
   </Layer>
+  <Property>
+    <Name>EntityFile</Name>
+    <Value>C:\Steve\GoogleCode\Files\EntityFile.txt</Value>
+    <Description />
+  </Property>
+  <Property>
+    <Name>StyleFile</Name>
+    <Value>C:\Steve\GoogleCode\Files\Style.txt</Value>
+    <Description />
+  </Property>
+  <Schema>
+    <SchemaId>475</SchemaId>
+    <Name />
+    <TableName>PlanParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>477</SchemaId>
+    <Name />
+    <TableName>CertificateofTitleParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>478</SchemaId>
+    <Name />
+    <TableName>DLSParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>479</SchemaId>
+    <Name />
+    <TableName>JudgesOrderParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>480</SchemaId>
+    <Name />
+    <TableName>LegalInstrumentParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>481</SchemaId>
+    <Name />
+    <TableName>ParishLotParcelData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>482</SchemaId>
+    <Name />
+    <TableName>PropertyMapPolygonData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>483</SchemaId>
+    <Name />
+    <TableName>PublicLaneData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>484</SchemaId>
+    <Name />
+    <TableName>PublicWalkData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>485</SchemaId>
+    <Name />
+    <TableName>StreetData</TableName>
+  </Schema>
+  <Schema>
+    <SchemaId>486</SchemaId>
+    <Name />
+    <TableName>WaterBodyData</TableName>
+  </Schema>
+  <SchemaTemplate>
+    <SchemaId>477</SchemaId>
+    <TemplateId>487</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>488</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>489</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>479</SchemaId>
+    <TemplateId>490</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>480</SchemaId>
+    <TemplateId>491</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>492</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>493</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>494</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>495</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>483</SchemaId>
+    <TemplateId>496</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>484</SchemaId>
+    <TemplateId>497</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>485</SchemaId>
+    <TemplateId>498</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>499</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>500</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>501</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>502</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>503</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>504</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>486</SchemaId>
+    <TemplateId>505</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>486</SchemaId>
+    <TemplateId>506</TemplateId>
+  </SchemaTemplate>
   <SysId>
-    <LastId>470</LastId>
+    <LastId>506</LastId>
   </SysId>
+  <Template>
+    <TemplateId>487</TemplateId>
+    <Name>Certificate of Title Annotation</Name>
+    <TemplateFormat>C.T. [Certificate_of_Title_Name]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>488</TemplateId>
+    <Name>DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge</Name>
+    <TemplateFormat>[QS_VALUE] 1/4 Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>489</TemplateId>
+    <Name>PART DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge</Name>
+    <TemplateFormat>[PART] [QS_VALUE] 1/4 Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>490</TemplateId>
+    <Name>Judge's Order Parcel Annotation</Name>
+    <TemplateFormat>J.O. [Judges_Order_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>491</TemplateId>
+    <Name>Legal Instrument Parcel Annotation</Name>
+    <TemplateFormat>Inst. #[Legal_Instrument_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>492</TemplateId>
+    <Name>Parish Lot Parcel Annotation</Name>
+    <TemplateFormat>[Par_Lot_Type+] [Par_Lot_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>493</TemplateId>
+    <Name>PART Parish Lot Parcel Annotation</Name>
+    <TemplateFormat>[PART] [Par_Lot_Type+] [Par_Lot_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>494</TemplateId>
+    <Name>Complete Parish Lot Parcel Annotation</Name>
+    <TemplateFormat>[Par_Lot_Type+] [Par_Lot_ID] Parish of [Parish+]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>495</TemplateId>
+    <Name>Complete PART Parish Lot Parcel Annotation</Name>
+    <TemplateFormat>[PART] [Par_Lot_Type+] [Par_Lot_ID] Parish of [Parish+]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>496</TemplateId>
+    <Name>Public Lane Annotation</Name>
+    <TemplateFormat>Public Lane</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>497</TemplateId>
+    <Name>Public Walk Annotation</Name>
+    <TemplateFormat>Public Walk</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>498</TemplateId>
+    <Name>Street Name Annotation</Name>
+    <TemplateFormat>[Street_Name]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>499</TemplateId>
+    <Name>LOT - Survey Plan Annotation</Name>
+    <TemplateFormat>[Lot_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>500</TemplateId>
+    <Name>PART LOT - Survey Plan Annotation</Name>
+    <TemplateFormat>[PART] [Lot_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>501</TemplateId>
+    <Name>BLOCK - Survey Plan Annotation</Name>
+    <TemplateFormat>Block [Block_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>502</TemplateId>
+    <Name>PLAN - Survey Plan Annotation</Name>
+    <TemplateFormat>Plan [Plan_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>503</TemplateId>
+    <Name>PLAN - Survey Plan Annotation with LTO Office</Name>
+    <TemplateFormat>Plan [Plan_ID] [Original_Issuing_LTO+] LTO</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>504</TemplateId>
+    <Name>Public Reserve OR Public Park - Survey Plan Annotation</Name>
+    <TemplateFormat>[Parcel_Type+] [Lot_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>505</TemplateId>
+    <Name>Water Body Annotation, Name followed by Water Body Type(River or Lake)</Name>
+    <TemplateFormat>[WB_Name] [WB_Type+]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>506</TemplateId>
+    <Name>Other Lake Annotation (word Lake followed by Name)</Name>
+    <TemplateFormat>Lake [WB_Name]</TemplateFormat>
+  </Template>
   <Theme>
     <ThemeId>0</ThemeId>
     <Name />
@@ -1729,4 +1974,8 @@
     <ZoneId>470</ZoneId>
     <Name>AN29</Name>
   </Zone>
-</MB.xml>
+  <Zone>
+    <ZoneId>471</ZoneId>
+    <Name>Manitoba</Name>
+  </Zone>
+</Manitoba_x0020_Environment.xml>
