@@ -56,33 +56,29 @@ namespace Backsight.Editor
 
         // The format string specifies both alphanumeric characters and one or more
         // of the fields in the table to be output as the annotation text. Each
-        // attribute field is enclosed in square brackets.
+        // attribute field is enclosed in square brackets (e.g. [ID] means the
+        // value of the ID column should be substituted).
+        //
+        // If the column name ends with a "+" character, it means the data value
+        // should be used to perform a lookup on a domain table attached to that
+        // column.
+        //
+        // Newlines can be inserted by specifying the string "\n". The text on each
+        // successive line will be horizontally center-aligned.
         // 
-        //  character ‘%' indicates that an attribute field follows, the data
-        //  following the % char has the following rules:
-        //	    an integer following this specifies that the contents of the field
-        //	      be inserted into the output,
-        //	    a k character specifies that the value of the key be output
-        //	    a n character attached to a number indicates that the Name of the
-        //	      numbered field schema be output,
-        //	    a v character attached to a number indicates that the a Name
-        //	      associated with the value of the numbered field be output.
-        //	      The Name and the Field Value are contained in a List Domain that
-        //        must be attached to the Field Schema identified by the number
-        //        following the v character,
-        //	    a % character (i.e. %%) indicates that the % character is output
-        //	    
-        //  The Field Schemas are numbered from 1.
-        //  Examples:
-        //          "C.T. %1" specifies that the characters "C.T. " be followed by
-        //            the data contained in FieldSchema 1,
-        //          "%1 %v3 %2 Parish of  %v4" specifies the the contents of the
-        //            1st field be followed by a space then by the value in the
-        //            list domain associated with the contents of the 3rd field,
-        //            then by a space, then by the contents of the 2nd field, then
-        //            by a space and the word "Parish of", then by the value in the
-        //            list domain associated with the contents of the 4th field
-        //          "Public Lane" specifies that only this text be output
+        // TODO: Provide escape for []+ characters.
+        //
+        // Examples:
+        //
+        // "C.T. [Certificate_of_Title_Name]" specifies that the characters "C.T. " be followed by
+        // the data contained in the <c>Certificate_of_Title_Name</c> column.
+        //
+        // "[Par_Lot_Type+] [Par_Lot_ID]\nParish of [Parish+]" specifies that the content of
+        // the Par_Lot_Type column should be used to perform a lookup on an associated domain
+        // table, followed by a space, then the value of the Par_Lot_ID column. On the next
+        // line, the text "Parish of " will be followed by a lookup on the associated domain table.
+        //
+        //  "Public Lane" specifies that only this text be output
 
         /// <summary>
         /// The text string represented by this geometry
@@ -109,32 +105,27 @@ namespace Backsight.Editor
             if (schema == null)
                 return null;
 
-
             StringBuilder result = new StringBuilder(100);
             string fmt = template.Format;
-            int lastCopy = -1;
+            int startIndex = 0;
             DataRow data = row.Data;
 
-            while ((lastCopy+1) < fmt.Length)
+            while (startIndex < fmt.Length)
             {
                 // Locate the start of the next field
-                int startField = fmt.IndexOf('[', lastCopy+1);
+                int startField = fmt.IndexOf('[', startIndex);
 
                 // If we didn't find any, ensure we copy the rest of the format to the output buffer
                 if (startField < 0)
                 {
-                    result.Append(fmt.Substring(lastCopy+1));
-                    lastCopy = fmt.Length;
+                    AppendText(result, fmt.Substring(startIndex));
+                    startIndex = fmt.Length;
                 }
                 else
                 {
                     // If the start of the field is preceded by stuff that hasn't been copied, do it now
-                    if (startField > (lastCopy+1))
-                    {
-                        // TODO: Handle \n substrings...
-
-                        result.Append(fmt.Substring(lastCopy+1, startField-lastCopy-1));
-                    }
+                    if (startField > startIndex)
+                        AppendText(result, fmt.Substring(startIndex, startField-startIndex));
 
                     // Locate the end bracket (and disallow something like "[]")
                     int endField = fmt.IndexOf(']', startField);
@@ -158,13 +149,47 @@ namespace Backsight.Editor
                     string s = (data.IsNull(columnIndex) ? String.Empty : data[columnIndex].ToString());
                     result.Append(s);
 
-                    lastCopy = endField;
+                    startIndex = endField+1;
                 }
             }
 
-
             return result.ToString();
         }
+
+        /// <summary>
+        /// Appends plain text to a string buffer, expanding any "\n" substrings into
+        /// a newline character sequence.
+        /// </summary>
+        /// <param name="sb">The buffer to append to</param>
+        /// <param name="text">The text that might contain embedded newline tokens</param>
+        static void AppendText(StringBuilder sb, string text)
+        {
+            const string newLine = @"\n";
+            int slashIndex = text.IndexOf(newLine);
+
+            if (slashIndex < 0)
+            {
+                sb.Append(text);
+            }
+            else
+            {
+                int startIndex = 0;
+
+                while (slashIndex >= startIndex && startIndex < text.Length)
+                {
+                    if (startIndex < slashIndex)
+                        sb.Append(text.Substring(startIndex, slashIndex-startIndex));
+
+                    sb.Append(System.Environment.NewLine);
+                    startIndex = slashIndex+2;
+                    slashIndex = text.IndexOf(newLine, startIndex);
+                }
+
+                if (startIndex < text.Length)
+                    sb.Append(text.Substring(startIndex));
+            }
+        }
+
         /*
 	CHARS* EntryName=0;
 	CHARS AChar;
