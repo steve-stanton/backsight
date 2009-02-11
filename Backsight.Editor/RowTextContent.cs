@@ -15,6 +15,8 @@
 
 using System;
 
+using Backsight.Environment;
+
 namespace Backsight.Editor
 {
     /// <summary>
@@ -23,17 +25,50 @@ namespace Backsight.Editor
     /// </summary>
     class RowTextContent : RowTextGeometry
     {
+        #region Class data
+
+        /// <summary>
+        /// The formatted ID of the spatial feature
+        /// </summary>
         string m_Id;
+
+        /// <summary>
+        /// The Backsight ID for the database table
+        /// </summary>
         int m_TableId;
+
+        /// <summary>
+        /// The ID of the formatting template
+        /// </summary>
         int m_TemplateId;
 
-        internal RowTextContent(RowTextGeometry geom)
-        {
-        }
+        #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization)
+        /// </summary>
         public RowTextContent()
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RowTextContent"/> class.
+        /// </summary>
+        /// <param name="row">The row that contains the information to format</param>
+        /// <param name="template">How to form the text string out of the data in the row</param>
+        internal RowTextContent(Row row, ITemplate template)
+        {
+            if (row==null || template==null)
+                throw new ArgumentNullException();
+
+            m_Id = row.Id.FormattedKey;
+            m_TableId = row.Table.Id;
+            m_TemplateId = template.Id;
+        }
+
+        #endregion
 
         /// <summary>
         /// Writes the content of this class. This is called by
@@ -44,6 +79,25 @@ namespace Backsight.Editor
         public override void WriteContent(XmlContentWriter writer)
         {
             base.WriteContent(writer);
+
+            writer.WriteString("Id", m_Id);
+            writer.WriteInt("Table", m_TableId);
+            writer.WriteInt("Template", m_TemplateId);
+        }
+
+        /// <summary>
+        /// Loads the content of this class. This is called by
+        /// <see cref="XmlContentReader"/> during deserialization from XML (just
+        /// after the default constructor has been invoked).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadContent(XmlContentReader reader)
+        {
+            base.ReadContent(reader);
+
+            m_Id = reader.ReadString("Id");
+            m_TableId = reader.ReadInt("Table");
+            m_TemplateId = reader.ReadInt("Template");
         }
     }
 }
