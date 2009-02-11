@@ -32,7 +32,7 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The row that contains the text
+        /// The row that contains the information to format
         /// </summary>
         Row m_Row;
 
@@ -52,33 +52,29 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RowTextGeometry"/> class.
+        /// </summary>
+        /// <param name="row">The row that contains the information to format</param>
+        /// <param name="template">How to form the text string out of the data in the row</param>
+        /// <param name="pos">Position of the text's reference point (always the top left corner of the string).</param>
+        /// <param name="font">The text style (defines the type-face and the height of the text).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The total width of the text, in meters on the ground.</param>
+        /// <param name="rotation">Clockwise rotation from horizontal</param>
+        internal RowTextGeometry(Row row, ITemplate template,
+                                 PointGeometry pos, IFont font, double height, double width, float rotation)
+            : base(pos, font, height, width, rotation)
+        {
+            if (row==null || template==null)
+                throw new ArgumentNullException();
+
+            m_Row = row;
+            m_Template = template;
+        }
+
         #endregion
 
-        // The format string specifies both alphanumeric characters and one or more
-        // of the fields in the table to be output as the annotation text. Each
-        // attribute field is enclosed in square brackets (e.g. [ID] means the
-        // value of the ID column should be substituted).
-        //
-        // If the column name ends with a "+" character, it means the data value
-        // should be used to perform a lookup on a domain table attached to that
-        // column.
-        //
-        // Newlines can be inserted by specifying the string "\n". The text on each
-        // successive line will be horizontally center-aligned.
-        // 
-        // TODO: Provide escape for []+ characters.
-        //
-        // Examples:
-        //
-        // "C.T. [Certificate_of_Title_Name]" specifies that the characters "C.T. " be followed by
-        // the data contained in the <c>Certificate_of_Title_Name</c> column.
-        //
-        // "[Par_Lot_Type+] [Par_Lot_ID]\nParish of [Parish+]" specifies that the content of
-        // the Par_Lot_Type column should be used to perform a lookup on an associated domain
-        // table, followed by a space, then the value of the Par_Lot_ID column. On the next
-        // line, the text "Parish of " will be followed by a lookup on the associated domain table.
-        //
-        //  "Public Lane" specifies that only this text be output
 
         /// <summary>
         /// The text string represented by this geometry
@@ -92,18 +88,50 @@ namespace Backsight.Editor
                 if (id==null)
                     return "ID not available";
 
-                //return m_Template.GetText(m_Row, id.FormattedKey);
                 return GetText(m_Row, id.FormattedKey, m_Template);
             }
         }
 
+        /// <summary>
+        /// Generates the text that should be displayed for the supplied row and template
+        /// </summary>
+        /// <param name="row">The row containing the information to display</param>
+        /// <param name="key">The key of the feature (is this used?)</param>
+        /// <param name="template">The template that defines the output format</param>
+        /// <returns>The text that needs to be displayed</returns>
+        /// <remarks>
+        /// The format string specifies both alphanumeric characters and one or more
+        /// of the fields in the table to be output as the annotation text. Each
+        /// attribute field is enclosed in square brackets (e.g. [ID] means the
+        /// value of the ID column should be substituted).
+        /// <para/>
+        /// If the column name ends with a "+" character, it means the data value
+        /// should be used to perform a lookup on a domain table attached to that
+        /// column.
+        /// <para/>
+        /// Newlines can be inserted by specifying the string "\n". The text on each
+        /// successive line will be horizontally center-aligned.
+        /// <para/>
+        /// TODO: Provide escape for []+ characters.
+        /// <para/>
+        /// Examples:
+        /// <para/>
+        /// "C.T. [Certificate_of_Title_Name]" - specifies that the characters "C.T. " be followed by
+        /// the data contained in the <c>Certificate_of_Title_Name</c> column.
+        /// <para/>
+        /// "[Par_Lot_Type+] [Par_Lot_ID]\nParish of [Parish+]" - specifies that the content of
+        /// the <c>Par_Lot_Type</c> column should be used to perform a lookup on an associated domain
+        /// table, followed by a space, then the value of the <c>Par_Lot_ID</c> column. On the next
+        /// line, the text "Parish of " will be followed by a lookup on the associated domain table.
+        /// <para/>
+        /// "Public Lane" - specifies that only this text be output
+        /// </remarks>
         static string GetText(Row row, string key, ITemplate template)
         {
             // The row must have a defined schema (and presumably the same
             // as the same as the template's schema, although we won't check).
             ITable schema = row.Table;
-            if (schema == null)
-                return null;
+            Debug.Assert(schema!=null);
 
             StringBuilder result = new StringBuilder(100);
             string fmt = template.Format;
@@ -190,141 +218,6 @@ namespace Backsight.Editor
             }
         }
 
-        /*
-	CHARS* EntryName=0;
-	CHARS AChar;
-	LOGICAL IsOK = TRUE;
-	INT4 digit;
-	CHARS* charpos;
-	INT4 fieldnum = 0;
-	static CHARS* digits = "0123456789";
-
-	CHARS* pbuffer = new CHARS[strlen(m_pFormat)+1];
-	const UINT4 maxsize = pSchema->GetSchemaMemSize()+1;
-	CHARS* pfieldata = new CHARS[maxsize];
-	pbuffer[0]='\0';
-	UINT2 index = strcspn(m_pFormat,"%");
-	UINT2 numchars = index;
-	UINT2 startpos = 0;
-	UINT2 lastpos = strlen(m_pFormat);
-	LOGICAL OnField = (index < lastpos);
-	LOGICAL GetDigits;
-	text.Empty(); // clear out string at start
-	if(numchars)
-	{// have found other chars before the %, copy them to output string
-		strncpy(pbuffer,m_pFormat+startpos,numchars);
-		pbuffer[numchars] = '\0';
-		text += pbuffer;
-		pbuffer[0]='\0';
-	}
-	while( IsOK && index < lastpos)
-	{
-		AChar = ' ';
-		GetDigits = FALSE;
-		index++; // next char pos after %
-		if( m_pFormat[index]=='%') // next char is % - add it to output & go
-		// past it
-		{
-			text += "%";
-			index++;
-		}
-		else if ( m_pFormat[index]=='k'  ||
-				m_pFormat[index]=='K') // key char - add it to output & go past it
-		{
-			// If the row does not have an ID, get the key from the
-			// ID handle (if one was supplied).
-
-			text += keystr;
-			index++;
-		}
-		else if ( m_pFormat[index]=='v'  ||
-				m_pFormat[index]=='n') // a number is attached to 
-		{
-			if ( m_pFormat[index]=='v' ) AChar = 'v';
-			else AChar = 'n';
-			GetDigits = TRUE;
-			index++;
-		}
-		else // check for digit(s) and for them being in range
-			// of fieldschemas
-		{
-			AChar = ' ';
-			GetDigits = TRUE;
-		}
-
-		if(GetDigits)
-		{
-			fieldnum = 0;
-			startpos = index;
-			charpos = strchr(digits,m_pFormat[index]);
-			while( index < lastpos &&  charpos )
-			{
-				digit = (charpos - digits);
-				fieldnum = fieldnum*10 + digit;
-				index++;
-				charpos = strchr(digits,m_pFormat[index]);
-			}
-			if(index != startpos)
-			{ // have found a valid number - use it
-				fieldnum--; // change fieldnum to vector index
-				if(fieldnum >= 0)
-				{
-					IsOK = (fieldnum < pSchema->ReturnNumFieldSchemas());
-					OnField = FALSE;
-				}
-				else IsOK = FALSE;
-				if( IsOK )
-				{ // have got a valid fieldnumber , get the value specified
-					if( AChar == ' ' ) // just get the data stored in field
-					{
-						IsOK = row.GetFieldChars(pfieldata,maxsize,fieldnum);
-						if(IsOK) text += pfieldata;
-					}
-					else if( AChar == 'v' )
-					{ // get the name of the entry in a list domain
-						const CeDomain* pDomain =
-							pSchema->ReturnFieldSchema(fieldnum)->GetDomain();
-						IsOK = row.GetFieldChars(pfieldata,maxsize,fieldnum);
-						os_string Errmess;
-						IsOK = pDomain->GetEntryName(pfieldata,EntryName,Errmess);
-						if(IsOK) text += EntryName;
-						else ShowMessage(Errmess.c_str()); // output error
-					}
-					else if( AChar == 'n' ) // get the name of the field
-						text += 
-							pSchema->ReturnFieldSchema(fieldnum)->GetName();
-				}
-			}
-			else IsOK = FALSE; // next char is not a numeric char
-		}
-		if(index < lastpos)
-		{
-			startpos = index; // 1st char pos after field number
-			index += strcspn(m_pFormat+index,"%");
-			numchars = index - startpos;
-			if(numchars)
-			{// have found other chars before the %, copy them to output
-			//  string
-				strncpy(pbuffer,m_pFormat+startpos,numchars);
-				pbuffer[numchars] = '\0';
-				text += pbuffer;
-				pbuffer[0]='\0';
-			}
-		}
-		OnField = (index < lastpos);
-	}
-
-	delete [ ] pfieldata;
-	delete [ ] pbuffer;
-
-	if( IsOK )
-		return text.GetLength();
-	else {
-		text.Empty();
-		return 0;
-	}
-         */
-
         /// <summary>
         /// Writes the content of this class. This is called by
         /// <see cref="XmlContentWriter.WriteElement"/>
@@ -342,17 +235,9 @@ namespace Backsight.Editor
             // that it can pretend to be the real thing during ReadContent.
 
             if (this is RowTextContent)
-            {
                 base.WriteContent(writer);
-
-                writer.WriteString("Id", m_Row.Id.FormattedKey);
-                writer.WriteInt("Table", m_Row.Table.Id);
-                writer.WriteInt("Template", m_Template.Id);
-            }
             else
-            {
-                new RowTextContent(this).WriteContent(writer);
-            }
+                new RowTextContent(m_Row, m_Template).WriteContent(writer);
         }
 
         /// <summary>
@@ -363,9 +248,7 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public override void ReadContent(XmlContentReader reader)
         {
-            // Read back the proxy that was written by WriteContent, caching
-            // the result as part of the reader.
-
+            Debug.Assert(this is RowTextContent);
             base.ReadContent(reader);
         }
     }
