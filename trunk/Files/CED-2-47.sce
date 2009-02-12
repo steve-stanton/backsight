@@ -10,6 +10,49 @@
 //*             include Special Plot Plans in order to allow them to  *
 //*             be subdivided by ordinary survey plans                *
 //*                                                                   *
+//*  Modified:11-Oct-2000 - Bob Bruce                                 *
+//*           - added road widening annotation for annotating these   *
+//*             types of non-topological polygons                     *
+//*                                                                   *
+//*  Modified:12-Oct-2000 - Bob Bruce - version 2.4                   *
+//*           - added template to SCHEMA: "DLS Parcel Data to allow   *
+//*             the labelling of legal subdivision parcels            *
+//*                                                                   *
+//*  Modified:30-Nov-2000 - Bob Bruce - version 2.41                  *
+//*           - added Entity Parcel of Certificate of Title Parcel    *
+//*             added Schema Parcel of Certificate of Title Parcel    *
+//*             Data and added FieldSchema Parcel ID and Template     *
+//*             Parcel & Title Annotation in order to accommodate     *
+//*             Parcels in Certificates of Titles                     *
+//*                                                                   *
+//*  Modified:06-Feb-2001 - Bob Bruce - version 2.42                  *
+//*           - added Entity Parcel of Certificate of Title Parcel    *
+//*             added Schema Parcel of Certificate of Title Parcel    *
+//*                                                                   *
+//*  Modified:17-Jul-2002 - Bob Bruce - version 2.43                  *
+//*           - added Entity Property Map Polygon                     *
+//*                                                                   *
+//*  Modified:26-Sep-2002 - Bob Bruce - version 2.44                  *
+//*           - added Entities InProgress and Future Property Map     *
+//*             Polygons                                              *
+//*                                                                   *
+//*  Modified:18-Feb-2004 - Bob Bruce (my birthday - 50!)             *
+//*           - the conversion to Win XP produced a WIERD ERROR:      *
+//*             it crashes when CEdit starts up, the FieldSchema      *
+//*             Location had to be enclosed in " to make it work      *
+//*                                                                   *
+//*  Modified:27-Jul-2004 - Bob Bruce - version 2.45                  *
+//*           - added Entity Mining Claim Line-NonTopological for     *
+//*             displaying the edge of Mining Claims                  *
+//*                                                                   *
+//*  Modified:30-Nov-2006 - Bob Bruce - version 2.46                  *
+//*           - added Contour Lines to Registered Plan layer          *
+//*                                                                   *
+//*  Modified:16-Jan-2008 - Bob Bruce - version 2.47                  *
+//*           - the double quote problem reared it's ugly head again: *
+//*             it crashes when CEdit starts up, the FieldSchema      *
+//*             Datum had to be enclosed in " to make it work         *
+//*                                                                   *
 //*********************************************************************
 //
 // The following list of names is for the purpose of ensuring that all
@@ -20,7 +63,7 @@
 // The Header for the Attribute Structure must appear before any other non-comment data
 <ATTRIBUTESTRUCTURE: "Manitoba LIC Cadastral Schema"
   DESCRIPTION: "Specification of all entities & their attributes for the Manitoba LIC Cadastre"
-  VERSION: 2.0000
+  VERSION: 2.4700
 >
 
 //
@@ -136,6 +179,14 @@
   THEME: "Ownership"
   GRAPHICSTYPE: LINE
   TOPOLOGICAL: NO
+>
+
+<ENTITY: "Contour Line"
+  DESCRIPTION: "Contour Line with Elevation"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: NO
+  SCHEMA: "Contour Elevation"
 >
 
 <ENTITY: "Public Lane Line"
@@ -306,6 +357,75 @@
   TOPOLOGICAL: YES
 >
 
+<ENTITY: "Road Widening Line"
+  DESCRIPTION: "Street Edge of a polygon used to widen a road"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+<ENTITY: "Quarter Section Line"
+  DESCRIPTION: "Edge of a DLS Quarter Section Polygon"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Section Line"
+  DESCRIPTION: "Edge of a DLS Section Polygon"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Township Line"
+  DESCRIPTION: "Edge of a DLS Township polygon"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Town Limit"
+  DESCRIPTION: "Limits of a Town"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "City Limit"
+  DESCRIPTION: "Limits of a City"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Park Boundary"
+  DESCRIPTION: "Boundary of a Park"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Provincial Boundary"
+  DESCRIPTION: "Boundary of a Province"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Indian Reserve Boundary"
+  DESCRIPTION: "Boundary of an Indian Reserve"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: YES
+>
+
+<ENTITY: "Mining Claim Line-NonTopological"
+  DESCRIPTION: "Edge of a Mining Claim - non-topological"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: LINE
+  TOPOLOGICAL: NO
+>
+
 //*********************************************************************
 //*      Polygon Entity Features                                      *
 //*********************************************************************
@@ -315,6 +435,15 @@
   GRAPHICSTYPE: POLYGON
   TOPOLOGICAL: YES
   SCHEMA: "Certificate of Title Parcel Data"
+  FONT=(NAME="Arial" SIZE=6 BOLD )
+>
+
+<ENTITY: "Parcel of Certificate of Title"
+  DESCRIPTION: "Part of Certificate of Title Parcel"
+  THEME: "Ownership"
+  GRAPHICSTYPE: POLYGON
+  TOPOLOGICAL: YES
+  SCHEMA: "Parcel of Certificate of Title Parcel Data"
   FONT=(NAME="Arial" SIZE=6 BOLD )
 >
 
@@ -334,6 +463,24 @@
   TOPOLOGICAL: YES
   SCHEMA: "DLS Parcel Data"
   FONT=(NAME="ARIAL" SIZE=9 BOLD )
+>
+
+<ENTITY: "Future Property Map Polygon"
+  DESCRIPTION: "Polygon that delineates a FUTURE property mapping job"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: POLYGON
+  TOPOLOGICAL: YES
+  SCHEMA: "Mapping Area Polygon"
+  FONT=(NAME="Arial" SIZE=1000 ITALIC BOLD )
+>
+
+<ENTITY: "InProgress Property Map Polygon"
+  DESCRIPTION: "Polygon that delineates a property mapping job that is currently being done"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: POLYGON
+  TOPOLOGICAL: YES
+  SCHEMA: "Mapping Area Polygon"
+  FONT=(NAME="Arial" SIZE=1000 ITALIC BOLD )
 >
 
 <ENTITY: "Judge's Order Parcel"
@@ -498,6 +645,15 @@
   FONT=(NAME="Arial" SIZE=6 BOLD )
 >
 
+<ENTITY: "Property Map Polygon"
+  DESCRIPTION: "Polygon that delineates a property mapping job"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: POLYGON
+  TOPOLOGICAL: YES
+  SCHEMA: "Mapping Area Polygon"
+  FONT=(NAME="Arial" SIZE=1000 ITALIC BOLD )
+>
+
 <ENTITY: "Plan Parcel or Lot - Ownership"
   DESCRIPTION: "Cadastral polygon created on the ownership layer identified by (Director of Surveys, Standard Survey or Condominium Plan attributes"
   THEME: "Ownership"
@@ -532,6 +688,15 @@
   TOPOLOGICAL: YES
   SCHEMA: "Water Body Data"
   FONT=(NAME="ARIAL" SIZE=14 BOLD ITALIC)
+>
+
+<ENTITY: "Road Widening Parcel"
+  DESCRIPTION: "Cadastral polygon used to enlarge Rights-of-Way"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: POLYGON
+  TOPOLOGICAL: YES
+  SCHEMA: "Survey, Director of Survey & Condominum Plan Parcel Data"
+  FONT=(NAME="Arial" SIZE=6 BOLD )
 >
 
 //*********************************************************************
@@ -633,9 +798,84 @@
   FONT=(NAME="Arial"  SIZE=9 BOLD ITALIC )
 >
 
+<ENTITY: "Parish Lot Annotation"
+  DESCRIPTION: "Annotation for parish lot polygon"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="ARIAL" SIZE=9 BOLD )
+>
+
+<ENTITY: "Parish Lot Annotation - Ownership"
+  DESCRIPTION: "Annotation for parish lot polygon on the Ownership layer"
+  THEME: "Ownership"
+  GRAPHICSTYPE: ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="ARIAL" SIZE=9 BOLD )
+>
+
+<ENTITY: "Range Annotation"
+  DESCRIPTION: "DLS Range Annotation - Registered Plan Layer"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE:  ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="Times New Roman" SIZE=9  BOLD )
+>
+
+<ENTITY: "Section Annotation"
+  DESCRIPTION: "DLS Section Annotation - Registered Plan Layer"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE:  ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="Times New Roman" SIZE=9  BOLD )
+>
+
+<ENTITY: "Township Annotation"
+  DESCRIPTION: "DLS Township Annotation - Registered Plan Layer"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE:  ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="Times New Roman" SIZE=9  BOLD )
+>
+
+<ENTITY: "Road Widening  Annotation"
+  DESCRIPTION: "Annotation for non-topological polygon used to enlarge Rights-of-Way"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE: ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="ARIAL" SIZE=9 BOLD )
+>
+
+<ENTITY: "Water Body Annotation"
+  DESCRIPTION: "Annotation of a Water Body"
+  THEME: "Registered Plan"
+  GRAPHICSTYPE:  ANNOTATION
+  TOPOLOGICAL: NO
+  FONT=(NAME="ARIAL" SIZE=14 BOLD ITALIC)
+>
+
 //*********************************************************************
 //* Schema,FieldSchema,Domain & Template Features                     *
 //*********************************************************************
+<SCHEMA: "Contour Elevation"
+  DESCRIPTION: "Data that provides the elevation of the countour line"
+  FIELDSCHEMA: "Elevation"
+>
+
+<FIELDSCHEMA: "Elevation"
+  DESCRIPTION: "An elevation value"
+  ISLOCKED: NO
+  DOMAIN: ""
+  ISREQUIRED: YES
+  DATATYPE: dFLOAT4
+  DEFAULTVALUE: 0.0
+  MAXCHAR: 0
+  ISCOLLECTION: NO
+  AUTOSEQUENCED: NO
+  ISUNIQUE: NO
+  KEYSEQUENCE: 0
+>
+
 <SCHEMA: "Monument Data"
   DESCRIPTION: "Data that describes the survey monument placed in the field"
   FIELDSCHEMA: "Monument Field"
@@ -675,11 +915,11 @@
 
 <SCHEMA: "Control Data"
   DESCRIPTION: "Points which have been used as control points for cadastral mapping"
-  FIELDSCHEMA: Location
-  FIELDSCHEMA: Datum
+  FIELDSCHEMA: "Location"
+  FIELDSCHEMA: "Datum"
 >
 
-<FIELDSCHEMA: Location
+<FIELDSCHEMA: "Location"
   DESCRIPTION: "General location of point"
   ISLOCKED: YES
   DOMAIN: ""
@@ -693,7 +933,7 @@
   KEYSEQUENCE: 0
 >
 
-<FIELDSCHEMA: Datum
+<FIELDSCHEMA: "Datum"
   DESCRIPTION: "Datum/Adjustment of Point Computation"
   ISLOCKED: YES
   DOMAIN: ""
@@ -713,7 +953,7 @@
   DOMAIN: "PART of Cadastral Polygon"
   ISREQUIRED: NO
   DATATYPE: dCHARS
-  DEFAULTVALUE: "PT"
+  DEFAULTVALUE: "  "
   MAXCHAR: 2
   ISCOLLECTION: NO
   AUTOSEQUENCED: NO
@@ -792,6 +1032,8 @@
 "C"  "Carman" "Carman LTO" /
 "D"  "Dauphin" "Dauphin LTO" /
 "DS" "Director of Surveys" "Director of Surveys Plan" /
+"DU"  "Dufferin" "Dufferin LTO" /
+"DL"  "Dufferin-Lorne" "Dufferin-Lorne LTO" /
 "L"  "Lisgar" "Lisgar LTO" /
 "MN" "Manchester" "Manchester LTO" /
 "ME" "Marquette East" "Marquette East LTO" /
@@ -803,6 +1045,7 @@
 "PP" "Portage (now in Winnipeg)" "Portage (now in Winnipeg) LTO" /
 "P"  "Portage" "Portage LTO" /
 "PR" "Provenchier" "Provenchier LTO" /
+"RL"  "Rock Lake" "Rock Lake LTO" /
 "R"  "Rockwood" "Rockwood LTO" /
 "S"  "Selkirk" "Selkirk LTO" /
 "SL" "Shoal Lake" "Shoal Lake LTO" /
@@ -824,6 +1067,18 @@
   FORMAT: "C.T. %1"
 >
 
+<SCHEMA: "Parcel of Certificate of Title Parcel Data"
+  DESCRIPTION: "Data that describes the Parcel of Certificate of Title polygon"
+  FIELDSCHEMA: "Certificate of Title Name"
+  FIELDSCHEMA: "Parcel ID"
+  TEMPLATE: "Parcel & Title Annotation"
+>
+
+<TEMPLATE: "Parcel & Title Annotation"
+  DESCRIPTION: "Parcel Annotation that applies to C of T Parcels"
+  FORMAT: "Pcl. %2 C.T. %1"
+>
+
 <FIELDSCHEMA: "Certificate of Title Name"
   DESCRIPTION: "LTO Certificate of Title Value"
   ISLOCKED: NO
@@ -832,6 +1087,20 @@
   DATATYPE: dCHARS
   DEFAULTVALUE: NONE
   MAXCHAR: 12
+  ISCOLLECTION: NO
+  AUTOSEQUENCED: NO
+  ISUNIQUE: NO
+  KEYSEQUENCE: 0
+>
+
+<FIELDSCHEMA: "Parcel ID"
+  DESCRIPTION: "Parcel ID value for LTO Certificate of Title Value"
+  ISLOCKED: NO
+  DOMAIN: ""
+  ISREQUIRED: NO
+  DATATYPE: dCHARS
+  DEFAULTVALUE: NONE
+  MAXCHAR: 3
   ISCOLLECTION: NO
   AUTOSEQUENCED: NO
   ISUNIQUE: NO
@@ -852,6 +1121,13 @@
   FIELDSCHEMA: "MERIDIAN"
   TEMPLATE: "DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge"
   TEMPLATE: "PART DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge"
+  TEMPLATE: "PART Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "PART Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "Part Lot,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "Lot,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  TEMPLATE: "L.S.,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
 >
 
 <TEMPLATE: "PART DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge"
@@ -862,6 +1138,41 @@
 <TEMPLATE: "DLS Parcel Data - EPM or WPM - QS,Sec,Twp,Rge"
   DESCRIPTION: "Annotation that applies to EPM & WPM QS Parcels"
   FORMAT: "%6 1/4 Sec. %7\nTwp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "PART Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to Part EPM & WPM Section Parcels"
+  FORMAT: "%1 Sec. %7\nTwp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to EPM & WPM Section Parcels"
+  FORMAT: "Sec. %7\nTwp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "PART Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to EPM & WPM Part Lot Section Parcels"
+  FORMAT: "%1 Lot %4 Sec. %7\nTwp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to EPM & WPM Lot Section Parcels"
+  FORMAT: "Lot %4 Sec. %7\nTwp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "Part Lot,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to Part EPM & WPM DLS Lot Parcels"
+  FORMAT: "%1 Lot %4 Twp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "Lot,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to EPM & WPM DLS Lot Parcels"
+  FORMAT: "Lot %4 Twp. %8, Rge %9 %10.P.M."
+>
+
+<TEMPLATE: "L.S.,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM"
+  DESCRIPTION: "Annotation that applies to EPM & WPM Legal Subdivision Parcels"
+  FORMAT: "L.S. %5 Sec. %7 Twp. %8, Rge %9 %10.P.M."
 >
 
 <FIELDSCHEMA: "HALF"
@@ -940,7 +1251,7 @@
 
 <DOMAIN: "LEGAL SUB-DIVISION NUMBERS"
   DESCRIPTION: "Allowed Values of LEGAL SUB-DIVISION NUMBERS"
-   {INTRANGE: MINIMUM=1 MAXIMUM=16 INCREMENT=1}
+   {INTRANGE: MINIMUM=0 MAXIMUM=16 INCREMENT=1}
 >
 
 <FIELDSCHEMA: "QS VALUE"
@@ -971,7 +1282,7 @@
   ISLOCKED: NO
   DOMAIN: "Section Numbers"
   ISREQUIRED: YES
-  DATATYPE: dINT1sm
+  DATATYPE: dINT1
   DEFAULTVALUE: NONE
   MAXCHAR: 0
   ISCOLLECTION: NO
@@ -982,7 +1293,7 @@
 
 <DOMAIN: "Section Numbers"
   DESCRIPTION: "Allowed Values of Section Numbers"
-   {INTRANGE: MINIMUM=1 MAXIMUM=36 INCREMENT=1}
+   {INTRANGE: MINIMUM=0 MAXIMUM=36 INCREMENT=1}
 >
 
 <FIELDSCHEMA: "TOWNSHIP #"
@@ -1033,6 +1344,7 @@
 "10"  "Range 10"  "DLS Range 10 in Manitoba" /
 "10A"  "Range 10A"  "DLS Range 10A (Lac du Bonnet) in Manitoba" /
 "11"  "Range 11"  "DLS Range 11 in Manitoba" /
+"11A"  "Range 11A"  "DLS Range 11A (Lac du Bonnet) in Manitoba" /
 "12"  "Range 12"  "DLS Range 12 in Manitoba" /
 "13"  "Range 13"  "DLS Range 13 in Manitoba" /
 "14"  "Range 14"  "DLS Range 14 in Manitoba" /
@@ -1121,6 +1433,31 @@
   DATATYPE: dCHARS
   DEFAULTVALUE: NONE
   MAXCHAR: 11
+  ISCOLLECTION: NO
+  AUTOSEQUENCED: NO
+  ISUNIQUE: NO
+  KEYSEQUENCE: 0
+>
+
+<SCHEMA: "Mapping Area Polygon"
+  DESCRIPTION: "Label name for a property mapping job"
+  FIELDSCHEMA: "Property Mapping Name"
+  TEMPLATE: "Property Mapping Area Label"
+>
+
+<TEMPLATE: "Property Mapping Area Label"
+  DESCRIPTION: "Label for a property mapping area polygon"
+  FORMAT: "%1"
+>
+
+<FIELDSCHEMA: "Property Mapping Name"
+  DESCRIPTION: "Name of a Property Mapping Area Polygon"
+  ISLOCKED: NO
+  DOMAIN: ""
+  ISREQUIRED: YES
+  DATATYPE: dCHARS
+  DEFAULTVALUE: NONE
+  MAXCHAR: 25
   ISCOLLECTION: NO
   AUTOSEQUENCED: NO
   ISUNIQUE: NO
@@ -1235,6 +1572,7 @@
 "LO" "LORETTE" "Parish of LORETTE" /
 "MR" "MANIGOTAGAN RIVER" "Parish of MANIGOTAGAN RIVER" /
 "MH" "MANITOBA HOUSE" "Parish of MANITOBA HOUSE" /
+"NH" "NORWAY HOUSE" "NORWAY HOUSE Settlement" /
 "OI" "OAK ISLAND" "Parish of OAK ISLAND" /
 "OP" "OAK POINT" "Parish of OAK POINT" /
 "PQ" "PASQUIA" "Parish of PASQUIA" /
@@ -1312,8 +1650,11 @@
   TEMPLATE: "LOT - Survey Plan Annotation"
   TEMPLATE: "PART LOT - Survey Plan Annotation"
   TEMPLATE: "BLOCK - Survey Plan Annotation"
+  TEMPLATE: "PART BLOCK - Survey Plan Annotation"
   TEMPLATE: "PLAN - Survey Plan Annotation"
+  TEMPLATE: "PART PLAN - Survey Plan Annotation"
   TEMPLATE: "PLAN - Survey Plan Annotation with LTO Office"
+  TEMPLATE: "PART PLAN - Survey Plan Annotation with LTO Office"
   TEMPLATE: "Public Reserve OR Public Park - Survey Plan Annotation"
 >
 
@@ -1327,14 +1668,29 @@
   FORMAT: "%1 %2"
 >
 
+<TEMPLATE: "PART BLOCK - Survey Plan Annotation"
+  DESCRIPTION: "Annotation that places Part Block IDs on Survey Plan Parcels"
+  FORMAT: "%1 Block %3"
+>
+
 <TEMPLATE: "BLOCK - Survey Plan Annotation"
   DESCRIPTION: "Annotation that places Block IDs on Survey Plan Parcels"
   FORMAT: "Block %3"
 >
 
+<TEMPLATE: "PART PLAN - Survey Plan Annotation"
+  DESCRIPTION: "Annotation that places Plan IDs on Survey Plan Parcels"
+  FORMAT: "%1 Plan %4"
+>
+
 <TEMPLATE: "PLAN - Survey Plan Annotation"
   DESCRIPTION: "Annotation that places Plan IDs on Survey Plan Parcels"
   FORMAT: "Plan %4"
+>
+
+<TEMPLATE: "PART PLAN - Survey Plan Annotation with LTO Office"
+  DESCRIPTION: "Annotation that places Part Plan IDs on Survey Plan Parcels"
+  FORMAT: "%1 Plan %4 %v7 LTO"
 >
 
 <TEMPLATE: "PLAN - Survey Plan Annotation with LTO Office"

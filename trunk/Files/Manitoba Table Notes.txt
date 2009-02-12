@@ -1,0 +1,54 @@
+
+To tighten up the referential integrity in the sample Manitoba database, I intend to
+make use of the domain tables to define some foreign key constraints.
+
+Unfortunately, the tables that come as part of the sample distribution need to be
+modified slightly.
+
+
+Domain					Datatype	Nulls		Null
+							allowed?	in data?
+
+[DOMAIN_DLS_PARCEL_TYPES]		char(2) 	yes		yes
+[DOMAIN_HALVES_of_DLS_QS_Polygons]	char(1) 	yes		yes
+[DOMAIN_Issuing_LTOs]			char(2) 	yes		yes
+[DOMAIN_Meridian_Values]		char(1) 	yes		no
+[DOMAIN_Parcel_Types]			char(1) 	yes		yes
+[DOMAIN_Parish_Lot_Types]		char(2) 	yes		no
+[DOMAIN_Parish_Values]			char(2) 	yes		no
+[DOMAIN_Part_of_Cadastral_Polygon]	char(2) 	yes		yes
+[DOMAIN_Plan_Types]			char(1) 	yes		no
+[DOMAIN_Quarter_Sections]		char(2) 	yes		no
+[DOMAIN_Range_Values]			char(3) 	yes		no
+[DOMAIN_WaterBodyTypes]			char(1)		no		n/a
+
+
+To be able to utilize a domain table in a foreign key constraint, the lookup
+field needs to be the primary key of the table. However, a column cannot be
+a primary key if it allows database nulls.
+
+The problem is that several of domain tables contain a lookup value that is
+a null. This was apparently intended to match rows in data tables where
+the matching field was also null. Unfortunately, a null does not get
+matched with a null in SQL databases.
+
+Domain table				Foreign Table.Column			DataType	Nulls allowed?
+
+[DOMAIN_DLS_PARCEL_TYPES]		DLSParcelData.DLS_PARCEL_TYPE		char(1)		yes	-> char(2) not null default ''
+[DOMAIN_HALVES_of_DLS_QS_Polygons]	DLSParcelData.HALF			varchar(50)	yes	-> char(1) not null default ''
+[DOMAIN_Issuing_LTOs]			PlanParcelData.Original_Issuing_LTO	char(2)		yes	-> char(2) not null default ''
+[DOMAIN_Meridian_Values]		DLSParcelData.Meridian			char(1)		yes	-> char(1) not null
+[DOMAIN_Parcel_Types]			PlanParcelData.Parcel_Type		char(1)		yes	-> char(1) not null default ''
+[DOMAIN_Parish_Lot_Types]		ParishLotParcelData.Par_Lot_Type	varchar(2)	yes	-> char(2) not null
+[DOMAIN_Parish_Values]			ParishLotParcelData.Parish		varchar(2)	yes	-> char(2) not null
+[DOMAIN_Part_of_Cadastral_Polygon]	DLSParcelData.PART			char(2)		yes	-> char(2) not null default ''
+					ParishLotParcelData.PART		varchar(2)	yes	-> char(2) not null default ''
+					PlanParcelData.PART			char(2)		yes	-> char(2) not null default ''
+[DOMAIN_Plan_Types]			PlanParcelData.Plan_Type 		char(1)		no	ok
+[DOMAIN_Quarter_Sections]		DLSParcelData.QS_Value			char(2)		yes	-> char(2) not null
+[DOMAIN_Range_Values]			DLSParcelData.Range_value		varchar(50)	yes	-> char(3) not null
+[DOMAIN_WaterBodyTypes]			WaterBodyData.WB_Type			char(1) 	no	ok
+
+-- The columns with default '' correspond to domains that include a row with a null lookup value
+
+-- Removed default on DLSParcelData.TOWNSHIP_num, since the default value would break the check constraint CK_DLSParcelData_TOWNSHIP_num
