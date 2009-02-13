@@ -324,7 +324,10 @@ namespace Backsight.Environment.Editor
         private void newButton_Click(object sender, EventArgs e)
         {
             Form dial = null;
-            if (m_CurrentType == ItemType.Entity)
+
+            if (m_CurrentType == ItemType.Domain)
+                dial = new DomainForm();
+            else if (m_CurrentType == ItemType.Entity)
                 dial = new EntityForm();
             else if (m_CurrentType == ItemType.Font)
                 dial = new FontForm();
@@ -377,7 +380,9 @@ namespace Backsight.Environment.Editor
         {
             Form dial =null;
 
-            if (m_CurrentType == ItemType.Entity)
+            if (m_CurrentType == ItemType.Domain)
+                dial = new DomainForm((IEditDomainTable)item);
+            else if (m_CurrentType == ItemType.Entity)
                 dial = new EntityForm((IEditEntity)item);
             else if (m_CurrentType == ItemType.Font)
                 dial = new FontForm((IEditFont)item);
@@ -434,6 +439,13 @@ namespace Backsight.Environment.Editor
 
             switch (m_CurrentType)
             {
+                case ItemType.Domain:
+                {
+                    typeName = "domain";
+                    RefreshList(m_CurrentType, m_Data.Domains);
+                    break;
+                }
+
                 case ItemType.Entity:
                 {
                     typeName = "entity type";
@@ -502,6 +514,11 @@ namespace Backsight.Environment.Editor
                 typeName += "s";
 
             countLabel.Text = String.Format("{0} {1}", nRows, typeName);
+        }
+
+        private void viewDomainsMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshList(ItemType.Domain);
         }
 
         private void viewEntityTypesMenuItem_Click(object sender, EventArgs e)

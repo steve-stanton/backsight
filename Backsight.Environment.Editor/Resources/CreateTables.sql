@@ -21,6 +21,23 @@ GO
 -- Create tables
 --
 
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[DomainTables]') AND type in (N'U'))
+BEGIN
+PRINT 'CREATE TABLE DomainTables';
+CREATE TABLE [ced].[DomainTables]
+(
+  [DomainId] [int] NOT NULL,
+  [TableName] [varchar](100) NOT NULL,
+  [LookupColumnName] [varchar](100) NOT NULL,
+  [ValueColumnName] [varchar](100) NOT NULL,
+
+  CONSTRAINT [PK_DomainTables] PRIMARY KEY CLUSTERED ([DomainId] ASC)
+  WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+  
+) ON [PRIMARY]
+END
+GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[Edits]') AND type in (N'U'))
 BEGIN
 PRINT 'CREATE TABLE Edits';

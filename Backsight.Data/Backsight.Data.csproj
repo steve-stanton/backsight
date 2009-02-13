@@ -46,7 +46,11 @@
     </Compile>
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="ConnectionWrapper.cs" />
+    <Compile Include="DomainTableRow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="EntityTypeRow.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="EntityTypeSchemaDataTable.cs">
     </Compile>
@@ -59,6 +63,7 @@
     <Compile Include="FontRow.cs">
     </Compile>
     <Compile Include="BacksightDataSet.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IConnection.cs" />
     <Compile Include="IdGroupDataTable.cs">
