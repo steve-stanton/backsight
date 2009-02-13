@@ -39,5 +39,10 @@ namespace Backsight.Environment
         /// Any text formatting templates associated with the table (may be an empty array)
         /// </summary>
         ITemplate[] Templates { get; }
+
+        /// <summary>
+        /// Any domain tables associated with columns in the table.
+        /// </summary>
+        IDomainTable[] DomainTables { get; }
     }
 }

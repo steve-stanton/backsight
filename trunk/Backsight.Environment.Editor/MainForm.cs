@@ -381,8 +381,12 @@ namespace Backsight.Environment.Editor
             Form dial =null;
 
             if (m_CurrentType == ItemType.Domain)
-                dial = new DomainForm((IEditDomainTable)item);
-            else if (m_CurrentType == ItemType.Entity)
+            {
+                MessageBox.Show("Domain tables cannot be updated. You can only create them, or remove them.");
+                return;
+            }
+
+            if (m_CurrentType == ItemType.Entity)
                 dial = new EntityForm((IEditEntity)item);
             else if (m_CurrentType == ItemType.Font)
                 dial = new FontForm((IEditFont)item);
@@ -410,7 +414,6 @@ namespace Backsight.Environment.Editor
 
             if (ok)
                 RefreshList();
-
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
@@ -442,7 +445,7 @@ namespace Backsight.Environment.Editor
                 case ItemType.Domain:
                 {
                     typeName = "domain";
-                    RefreshList(m_CurrentType, m_Data.Domains);
+                    RefreshList(m_CurrentType, m_Data.DomainTables);
                     break;
                 }
 

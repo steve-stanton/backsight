@@ -27,5 +27,10 @@ namespace Backsight.Environment
         /// The name of the database table (possibly decorated with schema name)
         /// </summary>
         new string TableName { get; set; }
+
+        /// <summary>
+        /// Any domain tables associated with columns in the table.
+        /// </summary>
+        //IDomainTable[] DomainTables { get; set; }
     }
 }

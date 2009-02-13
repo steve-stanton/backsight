@@ -30,29 +30,9 @@ namespace Backsight.Environment.Editor
     /// </summary>
     public partial class DomainForm : Form
     {
-        /// <summary>
-        /// The domain that's being edited
-        /// </summary>
-        private readonly IEditDomainTable m_Edit;
-
         public DomainForm()
-            : this(null)
-        {
-        }
-
-        public DomainForm(IEditDomainTable edit)
         {
             InitializeComponent();
-
-            m_Edit = edit;
-
-            if (m_Edit==null)
-            {
-                IEnvironmentFactory f = EnvironmentContainer.Factory;
-                m_Edit = f.CreateDomainTable();
-            }
-
-            m_Edit.BeginEdit();
         }
 
         private void DomainForm_Shown(object sender, EventArgs e)
@@ -60,52 +40,30 @@ namespace Backsight.Environment.Editor
             // Load the database tables in the current database (excluding all
             // Backsight system tables)
             string[] tableNames = new TableFactory().GetUserTables();
-            tableNameComboBox.DataSource = PrependBlank(tableNames);
 
-            alreadyAddedLabel.Visible = false;
+            // Grab the currently defined domain tables
+            IDomainTable[] currentDomains = EnvironmentContainer.Current.DomainTables;
 
-            if (m_Edit.Id > 0)
+            List<string> domains = new List<string>();
+            domains.Add(String.Empty);
+
+            // Include only those tables that have the required columns.
+            // Exclude tables that have already been defined as domain tables.
+
+            foreach (string t in tableNames)
             {
-                tableNameComboBox.SelectedItem = m_Edit.TableName;
-                shortValueColumnNameComboBox.SelectedItem = m_Edit.LookupColumnName;
-                longValueColumnNameComboBox.SelectedItem = m_Edit.ValueColumnName;
+                if (!Array.Exists<IDomainTable>(currentDomains, delegate(IDomainTable dt)
+                                { return String.Compare(dt.TableName, t, true) == 0; }))
+                {
+                    string[] cols = GetColumnNames(t);
+
+                    if (Array.Exists(cols, delegate(string a) { return String.Compare(a, "ShortValue", true) == 0; }) &&
+                        Array.Exists(cols, delegate(string a) { return String.Compare(a, "LongValue", true) == 0; }))
+                        domains.Add(t);
+                }
             }
-        }
 
-        string[] PrependBlank(string[] array)
-        {
-            List<string> result = new List<string>(array.Length + 1);
-            result.Add(String.Empty);
-            result.AddRange(array);
-            return result.ToArray();
-        }
-
-        private void tableNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            object o = tableNameComboBox.SelectedItem;
-            if (o == null || o.ToString().Length==0)
-            {
-                shortValueColumnNameComboBox.SelectedIndex = 0;
-                longValueColumnNameComboBox.SelectedIndex = 0;
-
-                shortValueColumnNameComboBox.Enabled = false;
-                longValueColumnNameComboBox.Enabled = false;
-            }
-            else
-            {
-                string tableName = o.ToString();
-                string[] cols = GetColumnNames(tableName);
-
-                shortValueColumnNameComboBox.DataSource = PrependBlank(cols);
-                shortValueColumnNameComboBox.Enabled = true;
-                if (cols.Length > 0)
-                    shortValueColumnNameComboBox.SelectedIndex = 1;
-
-                longValueColumnNameComboBox.DataSource = PrependBlank(cols);
-                longValueColumnNameComboBox.Enabled = true;
-                if (cols.Length > 1)
-                    longValueColumnNameComboBox.SelectedIndex = 2;
-            }
+            tableNameComboBox.DataSource = domains;
         }
 
         string[] GetColumnNames(string tableName)
@@ -135,19 +93,11 @@ namespace Backsight.Environment.Editor
                 return;
             }
 
-            // Ensure the lookup column name is defined.
-            string lookupColumnName = shortValueColumnNameComboBox.SelectedItem.ToString();
-            if (lookupColumnName.Length == 0)
-            {
-                MessageBox.Show("The name of the lookup column must be specified.");
-                shortValueColumnNameComboBox.Focus();
-                return;
-            }
-
-            m_Edit.TableName = tableName;
-            m_Edit.LookupColumnName = lookupColumnName;
-            m_Edit.ValueColumnName = longValueColumnNameComboBox.SelectedItem.ToString();
-            m_Edit.FinishEdit();
+            IEnvironmentFactory f = EnvironmentContainer.Factory;
+            IEditDomainTable dt = f.CreateDomainTable();
+            dt.BeginEdit();
+            dt.TableName = tableName;
+            dt.FinishEdit();
 
             this.DialogResult = DialogResult.OK;
             Close();
@@ -155,7 +105,6 @@ namespace Backsight.Environment.Editor
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            m_Edit.CancelEdit();
             this.DialogResult = DialogResult.Cancel;
             Close();
         }

@@ -81,6 +81,23 @@ namespace Backsight.Data
                     return result.ToArray();
                 }
             }
+
+            /// <summary>
+            /// Any domain tables associated with columns in the table.
+            /// </summary>
+            public IDomainTable[] DomainTables
+            {
+                get
+                {
+                    TableDomainRow[] tds = GetTableDomainRows();
+                    List<IDomainTable> result = new List<IDomainTable>(tds.Length);
+
+                    foreach (TableDomainRow t in tds)
+                        result.Add(t.DomainTablesRow);
+
+                    return result.ToArray();
+                }
+            }
         }
     }
 }

@@ -28,8 +28,6 @@ CREATE TABLE [ced].[DomainTables]
 (
   [DomainId] [int] NOT NULL,
   [TableName] [varchar](100) NOT NULL,
-  [LookupColumnName] [varchar](100) NOT NULL,
-  [ValueColumnName] [varchar](100) NOT NULL,
 
   CONSTRAINT [PK_DomainTables] PRIMARY KEY CLUSTERED ([DomainId] ASC)
   WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
@@ -295,6 +293,22 @@ CREATE TABLE [ced].[SysId]
 	
 	CONSTRAINT [PK_SysId] PRIMARY KEY CLUSTERED ([LastId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+		
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[Templates]') AND type in (N'U'))
+BEGIN
+PRINT 'CREATE TABLE TableDomains';
+CREATE TABLE [ced].[TableDomains]
+(
+  [TableId] [int] NOT NULL,
+  [ColumnName] [varchar](100) NOT NULL,
+  [DomainId] [int] NOT NULL,
+
+  CONSTRAINT [PK_TableDomains] PRIMARY KEY CLUSTERED ([TableId] ASC, [ColumnName] ASC)
+  WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
 END
@@ -736,6 +750,15 @@ ALTER TABLE [ced].[Sessions]  WITH CHECK ADD  CONSTRAINT [FK_Session_User] FOREI
 REFERENCES [ced].[Users] ([UserId])
 GO
 ALTER TABLE [ced].[Sessions] CHECK CONSTRAINT [FK_Session_User]
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_TableDomains_DomainTables]') AND parent_object_id = OBJECT_ID(N'[ced].[TableDomains]'))
+ALTER TABLE [ced].[TableDomains] ADD CONSTRAINT [FK_TableDomains_DomainTables] FOREIGN KEY([DomainId])
+REFERENCES [ced].[DomainTables] ([DomainId])
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_TableDomains_Schemas]') AND parent_object_id = OBJECT_ID(N'[ced].[TableDomains]'))
+ALTER TABLE [ced].[TableDomains] ADD CONSTRAINT [FK_TableDomains_Schemas] FOREIGN KEY([TableId])
+REFERENCES [ced].[Schemas] ([SchemaId])
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_UserJob_Job]') AND parent_object_id = OBJECT_ID(N'[ced].[UserJobs]'))

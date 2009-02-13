@@ -33,17 +33,10 @@ namespace Backsight.Environment
         string TableName { get; }
 
         /// <summary>
-        /// The name of the database column that holds the lookup value for the
-        /// domain. This will most likely be the primary key of the domain table.
-        /// The default name used by Backsight is "ShortValue".
+        /// Performs a lookup on the domain table
         /// </summary>
-        string LookupColumnName { get; }
-
-        /// <summary>
-        /// The name of the database column (if any) that holds an expanded version
-        /// of the lookup value. A blank value indicates that there is no expanded value. 
-        /// The default name used by Backsight is "LongValue".
-        /// </summary>
-        string ValueColumnName { get; }
+        /// <param name="shortValue">The abbreviated code to lookup</param>
+        /// <returns>The expanded value for the lookup</returns>
+        string Lookup(string shortValue);
     }
 }
