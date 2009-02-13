@@ -28,6 +28,12 @@ namespace Backsight.Environment
     public interface IEnvironmentFactory
     {
         /// <summary>
+        /// Creates the definition for a new domain table
+        /// </summary>
+        /// <returns>The newly created domain table</returns>
+        IEditDomainTable CreateDomainTable();
+
+        /// <summary>
         /// Creates a new entity type
         /// </summary>
         /// <returns>The newly created entity type</returns>

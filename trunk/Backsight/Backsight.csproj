@@ -47,7 +47,9 @@
     <Compile Include="DesignTimeMapModel.cs" />
     <Compile Include="Dimension.cs" />
     <Compile Include="Environment\EnvironmentContainer.cs" />
+    <Compile Include="Environment\IDomainTable.cs" />
     <Compile Include="Environment\IEditControl.cs" />
+    <Compile Include="Environment\IEditDomainTable.cs" />
     <Compile Include="Environment\IEditEntity.cs" />
     <Compile Include="Environment\IEditFont.cs" />
     <Compile Include="Environment\IEditIdGroup.cs" />

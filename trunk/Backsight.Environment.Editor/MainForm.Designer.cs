@@ -53,6 +53,7 @@ namespace Backsight.Environment.Editor
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewDomainsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntityTypesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewFontsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewIdGroupsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -157,6 +158,7 @@ namespace Backsight.Environment.Editor
             // viewMenu
             // 
             this.viewMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewDomainsMenuItem,
             this.viewEntityTypesMenuItem,
             this.viewFontsMenuItem,
             this.viewIdGroupsMenuItem,
@@ -170,6 +172,13 @@ namespace Backsight.Environment.Editor
             this.viewMenu.Name = "viewMenu";
             this.viewMenu.Size = new System.Drawing.Size(48, 20);
             this.viewMenu.Text = "&View";
+            // 
+            // viewDomainsMenuItem
+            // 
+            this.viewDomainsMenuItem.Name = "viewDomainsMenuItem";
+            this.viewDomainsMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.viewDomainsMenuItem.Text = "&Domains";
+            this.viewDomainsMenuItem.Click += new System.EventHandler(this.viewDomainsMenuItem_Click);
             // 
             // viewEntityTypesMenuItem
             // 
@@ -409,6 +418,7 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripMenuItem viewTablesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewTemplatesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewZonesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewDomainsMenuItem;
     }
 }
 

@@ -99,6 +99,13 @@ namespace Backsight.Data
             }
         }
 
+        public IEditDomainTable CreateDomainTable()
+        {
+            EnvData.DomainTableRow row = EnvData.DomainTableRow.CreateDomainTableRow(m_Data);
+            row.DomainId = ReserveId();
+            return row;
+        }
+
         public IEditEntity CreateEntity()
         {
             EnvData.EntityTypeRow row = EnvData.EntityTypeRow.CreateEntityTypeRow(m_Data);
@@ -187,6 +194,11 @@ namespace Backsight.Data
         {
             get { return m_Data.DataSetName; }
             set { m_Data.DataSetName = value; }
+        }
+
+        public IDomainTable[] Domains
+        {
+            get { return (IDomainTable[])m_Data.DomainTable.Select(); }
         }
 
         public IEntity[] EntityTypes
