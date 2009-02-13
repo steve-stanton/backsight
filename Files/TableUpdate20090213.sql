@@ -5,8 +5,6 @@ CREATE TABLE [ced].[DomainTables]
 (
   [DomainId] [int] NOT NULL,
   [TableName] [varchar](100) NOT NULL,
-  [LookupColumnName] [varchar](100) NOT NULL,
-  [ValueColumnName] [varchar](100) NOT NULL,
 
   CONSTRAINT [PK_DomainTables] PRIMARY KEY CLUSTERED ([DomainId] ASC)
   WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]

@@ -196,7 +196,7 @@ namespace Backsight.Data
             set { m_Data.DataSetName = value; }
         }
 
-        public IDomainTable[] Domains
+        public IDomainTable[] DomainTables
         {
             get { return (IDomainTable[])m_Data.DomainTable.Select(); }
         }

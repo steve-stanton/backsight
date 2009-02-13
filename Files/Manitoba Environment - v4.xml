@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="yes"?>
+﻿<?xml version="1.0" standalone="yes"?>
 <Manitoba_x0020_Environment_x0020_-_x0020_v4.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
   <EntityType>
     <EntityId>0</EntityId>
@@ -2773,73 +2773,49 @@
   <DomainTable>
     <DomainId>574</DomainId>
     <TableName>DOMAIN_DLS_PARCEL_TYPES</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>575</DomainId>
     <TableName>DOMAIN_HALVES_of_DLS_QS_Polygons</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>576</DomainId>
     <TableName>DOMAIN_Issuing_LTOs</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>577</DomainId>
     <TableName>DOMAIN_Meridian_Values</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>578</DomainId>
     <TableName>DOMAIN_Parcel_Types</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>579</DomainId>
     <TableName>DOMAIN_Parish_Lot_Types</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>580</DomainId>
     <TableName>DOMAIN_Parish_Values</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>582</DomainId>
     <TableName>DOMAIN_Part_of_Cadastral_Polygon</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>583</DomainId>
     <TableName>DOMAIN_Plan_Types</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>584</DomainId>
     <TableName>DOMAIN_Quarter_Sections</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>585</DomainId>
     <TableName>DOMAIN_Range_Values</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
   <DomainTable>
     <DomainId>586</DomainId>
     <TableName>DOMAIN_WaterBodyTypes</TableName>
-    <LookupColumnName>ShortValue</LookupColumnName>
-    <ValueColumnName>LongValue</ValueColumnName>
   </DomainTable>
 </Manitoba_x0020_Environment_x0020_-_x0020_v4.xml>

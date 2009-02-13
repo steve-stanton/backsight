@@ -70,6 +70,11 @@ namespace Backsight.Environment
         string Name { get; set; }
 
         /// <summary>
+        /// All defined domain tables
+        /// </summary>
+        IDomainTable[] DomainTables { get; }
+
+        /// <summary>
         /// All defined entity types
         /// </summary>
         IEntity[] EntityTypes { get; }
