@@ -650,6 +650,10 @@ namespace Backsight.Forms
         {
             if (this.IsInitialized)
             {
+                // Ensure focus is with the map panel so that mouse wheel
+                // events will be received
+                mapPanel.Focus();
+
                 Position p = DisplayToGround(e.Location);
 
                 if (m_Tool==null)
@@ -689,7 +693,9 @@ namespace Backsight.Forms
                 // Ensure the map panel has the focus so that any mouse wheel
                 // messages will be picked up... no, if you do that, overlapping
                 // command dialogs don't retain the focus they need.
-                //mapPanel.Focus();
+                // mapPanel.Focus();
+
+                // ...the above is now done in mapPanel_MouseDown
 
                 Position p = DisplayToGround(e.Location);
 
