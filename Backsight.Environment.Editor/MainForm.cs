@@ -578,7 +578,8 @@ namespace Backsight.Environment.Editor
             listBox.Items.AddRange(items);
 
             // The Update button isn't relevant when dealing with associated tables
-            updateButton.Enabled = (itemType != ItemType.Schema);
+            // or domains
+            updateButton.Enabled = !(itemType == ItemType.Schema || itemType == ItemType.Domain);
 
             // If the first item is blank, remove it (all "real" items should have
             // a defined name, blanks refer to rows that exist only to accommodate
