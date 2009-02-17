@@ -98,6 +98,14 @@ namespace Backsight.Data
                     return result.ToArray();
                 }
             }
+
+            /// <summary>
+            /// Any domains associated with columns in the table
+            /// </summary>
+            public IColumnDomain[] Domains
+            {
+                get { return GetTableDomainRows(); }
+            }
         }
     }
 }

@@ -80,6 +80,9 @@
     <Compile Include="LayerRow.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TableDomainRow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ZoneRow.cs">
       <SubType>Component</SubType>
     </Compile>

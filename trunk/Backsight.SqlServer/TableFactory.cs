@@ -599,19 +599,22 @@ namespace Backsight.SqlServer
         /// <summary>
         /// Returns the names of all Backsight system tables
         /// </summary>
-        /// <returns>The tables associated with an instance of <see cref="BacksightDataSet"/></returns>
+        /// <returns>The tables associated with the "ced" schema</returns>
         public string[] GetSystemTableNames()
         {
-            BacksightDataSet ds = new BacksightDataSet();
-            DataTableCollection dtc = ds.Tables;
-            List<string> result = new List<string>(dtc.Count);
-            foreach (DataTable dt in dtc)
+            return GetCedTableNames();
+            /*
+            Smo.TableCollection tc = m_Database.Tables;
+            List<string> names = new List<string>(100);
+
+            foreach (Smo.Table t in tc)
             {
-                string tableName = GetTableName(dt);
-                result.Add(tableName);
+                if (t.Schema == "ced")
+                    names.Add(t.Name);
             }
 
-            return result.ToArray();
+            return names.ToArray();
+             */
         }
 
         /// <summary>

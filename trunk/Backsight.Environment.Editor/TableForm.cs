@@ -15,6 +15,9 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+
+using Smo=Microsoft.SqlServer.Management.Smo;
 
 using Backsight.SqlServer;
 
@@ -51,58 +54,136 @@ namespace Backsight.Environment.Editor
             m_Edit.BeginEdit();
         }
 
-        private void TableForm_Shown(object sender, EventArgs e)
+        private void TableForm_Load(object sender, EventArgs e)
         {
             // Load tables that have already been associated with Backsight
             IEnvironmentContainer ec = EnvironmentContainer.Current;
             m_Tables = ec.Tables;
 
-            // Load the database tables in the current database (excluding all
-            // Backsight system tables)
-            string[] tableNames = new TableFactory().GetUserTables();
-            tableComboBox.DataSource = tableNames;
-
-            alreadyAddedLabel.Visible = false;
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            m_Edit.CancelEdit();
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            string t = tableComboBox.Text.Trim();
-            if (t.Length==0)
+            // If we're adding a new table, list the database tables. Otherwise
+            // skip to the page that lists column names
+            if (String.IsNullOrEmpty(m_Edit.TableName))
+                LoadTableList();
+            else
             {
-                MessageBox.Show("You must first select a table name");
-                tableComboBox.Focus();
-                return;
+                wizard.Pages.Remove(tablesPage);
+                wizard.NextTo(columnsPage);
+            }
+        }
+
+        void LoadTableList()
+        {
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            string[] tableNames = new TableFactory().GetUserTables();
+            List<string> exclude = new List<string>();
+
+            if (excludeDomainTablesCheckBox.Checked)
+            {
+                IDomainTable[] domainTables = ec.DomainTables;
+                foreach (IDomainTable t in domainTables)
+                    exclude.Add(t.TableName);
             }
 
-            m_Edit.TableName = t;
+            if (excludeAlreadyAddedCheckBox.Checked)
+            {
+                ITable[] tables = ec.Tables;
+                foreach (ITable t in tables)
+                    exclude.Add(t.TableName);
+            }
+
+            if (exclude.Count > 0)
+            {
+                tableNames = Array.FindAll<string>(tableNames, delegate(string s)
+                                                    { return !exclude.Contains(s); });
+            }
+
+            tableList.Items.Clear();
+            tableList.Items.AddRange(tableNames);
+        }
+
+        private void tablesPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
+        {
+            object o = tableList.SelectedItem;
+            if (o == null)
+            {
+                MessageBox.Show("You must first select a table");
+                e.Page = tablesPage;
+            }
+            else
+            {
+                string s = o.ToString();
+                if (Array.Exists<ITable>(m_Tables, delegate(ITable t) { return t.TableName==s; }))
+                {
+                    MessageBox.Show("The selected table has already been recorded as a data source for Backsight");
+                    e.Page = tablesPage;
+                }
+                else
+                {
+                    m_Edit.TableName = s;
+                }
+            }
+        }
+
+        private void excludeDomainTablesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            LoadTableList();
+        }
+
+        private void excludeAlreadyAddedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            LoadTableList();
+        }
+
+        private void columnsPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
+        {
             m_Edit.FinishEdit();
             this.DialogResult = DialogResult.OK;
             Close();
         }
 
-        private void tableComboBox_SelectedValueChanged(object sender, EventArgs e)
+        private void wizard_CloseFromCancel(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            alreadyAddedLabel.Visible = false;
-
-            if (m_Tables==null)
-                return;
-
-            object o = tableComboBox.SelectedItem;
-            if (o==null)
-                return;
-
-            string s = o.ToString();
-            ITable addedTable = Array.Find<ITable>(m_Tables, delegate(ITable t)
-                                    { return t.TableName==s; });
-            alreadyAddedLabel.Visible = (addedTable!=null);
+            m_Edit.CancelEdit();
+            this.DialogResult = DialogResult.Cancel;
         }
+
+        private void columnsPage_ShowFromNext(object sender, EventArgs e)
+        {
+            columnsGrid.Rows.Clear();
+            idColumnComboBox.Items.Clear();
+
+            TableFactory tf = new TableFactory();
+            string tableName = m_Edit.TableName;
+            Smo.Table t = tf.FindTableByName(tableName);
+
+            if (t == null)
+                return;
+
+            // Get defined domains
+            IDomainTable[] curDomains = m_Edit.DomainTables;
+            IDomainTable[] domains = EnvironmentContainer.Current.DomainTables;
+            (columnsGrid.Columns["dgcDomain"] as DataGridViewComboBoxColumn).DataSource = domains;
+
+            columnsGrid.RowCount = t.Columns.Count;
+
+            for (int i=0; i<columnsGrid.RowCount; i++)
+            {
+                Smo.Column c = t.Columns[i];
+                idColumnComboBox.Items.Add(c.Name);
+
+                DataGridViewRow row = columnsGrid.Rows[i];
+                row.Cells["dgcColumnName"].Value = c.Name;
+                row.Cells["dgcDataType"].Value = c.DataType;
+
+                // If the column already has a domain, ensure it has been selected
+
+                row.Tag = c;
+            }
+
+            // Nothing initially selected
+            columnsGrid.CurrentCell = null;
+        }
+
+        //string[] pre
     }
 }
