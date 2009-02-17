@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Generic;
-
-using Backsight.Environment;
 using System.Data.SqlClient;
 using System.Data;
+
+using Backsight.Environment;
 
 namespace Backsight.Data
 {
