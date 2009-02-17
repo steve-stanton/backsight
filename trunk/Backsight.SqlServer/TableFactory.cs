@@ -308,6 +308,40 @@ namespace Backsight.SqlServer
             return c;
         }
 
+        /// <summary>
+        /// Attempts to locate a simple primary key for a table (a key where the
+        /// index consists of just one column)
+        /// </summary>
+        /// <param name="t">The table of interest</param>
+        /// <returns>The column that defines the primary key (null if the table does
+        /// not have a primary key, or it consists of more than one column)</returns>
+        public static Smo.Column GetSimplePrimaryKeyColumn(Smo.Table t)
+        {
+            Smo.Index x = GetPrimaryKey(t);
+            if (x == null || x.IndexedColumns.Count != 1)
+                return null;
+
+            Smo.IndexedColumn xc = x.IndexedColumns[0];
+            return t.Columns[xc.Name];
+        }
+
+        /// <summary>
+        /// Locates the primary key for a table
+        /// </summary>
+        /// <param name="t">The table of interest</param>
+        /// <returns>The index that represents the primary key (null if the table
+        /// doesn't have a primary key)</returns>
+        static Smo.Index GetPrimaryKey(Smo.Table t)
+        {
+            foreach (Smo.Index x in t.Indexes)
+            {
+                if (x.IndexKeyType == IndexKeyType.DriPrimaryKey)
+                    return x;
+            }
+
+            return null;
+        }
+
         Smo.Index CreatePrimaryKey(Smo.Table t, DataTable dt)
         {
             DataColumn[] pk = dt.PrimaryKey;

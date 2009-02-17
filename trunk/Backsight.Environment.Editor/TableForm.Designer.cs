@@ -30,21 +30,29 @@ namespace Backsight.Environment.Editor
         {
             this.label1 = new System.Windows.Forms.Label();
             this.wizard = new Gui.Wizard.Wizard();
-            this.tablesPage = new Gui.Wizard.WizardPage();
-            this.tableList = new System.Windows.Forms.ListBox();
             this.columnsPage = new Gui.Wizard.WizardPage();
-            this.excludeDomainTablesCheckBox = new System.Windows.Forms.CheckBox();
-            this.excludeAlreadyAddedCheckBox = new System.Windows.Forms.CheckBox();
-            this.columnsGrid = new System.Windows.Forms.DataGridView();
-            this.label2 = new System.Windows.Forms.Label();
             this.idColumnComboBox = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.columnsGrid = new System.Windows.Forms.DataGridView();
+            this.tablesPage = new Gui.Wizard.WizardPage();
+            this.excludeAlreadyAddedCheckBox = new System.Windows.Forms.CheckBox();
+            this.excludeDomainTablesCheckBox = new System.Windows.Forms.CheckBox();
+            this.tableList = new System.Windows.Forms.ListBox();
+            this.domainsListBox = new System.Windows.Forms.ListBox();
             this.dgcColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcDataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgcDomain = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dgcDomain = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label3 = new System.Windows.Forms.Label();
+            this.setDomainLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.clearDomainLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.wizard.SuspendLayout();
-            this.tablesPage.SuspendLayout();
             this.columnsPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.columnsGrid)).BeginInit();
+            this.tablesPage.SuspendLayout();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -68,9 +76,64 @@ namespace Backsight.Environment.Editor
             this.wizard.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.tablesPage,
             this.columnsPage});
-            this.wizard.Size = new System.Drawing.Size(752, 496);
+            this.wizard.Size = new System.Drawing.Size(761, 484);
             this.wizard.TabIndex = 24;
             this.wizard.CloseFromCancel += new System.ComponentModel.CancelEventHandler(this.wizard_CloseFromCancel);
+            // 
+            // columnsPage
+            // 
+            this.columnsPage.Controls.Add(this.splitContainer);
+            this.columnsPage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.columnsPage.IsFinishPage = true;
+            this.columnsPage.Location = new System.Drawing.Point(0, 0);
+            this.columnsPage.Name = "columnsPage";
+            this.columnsPage.Size = new System.Drawing.Size(761, 436);
+            this.columnsPage.TabIndex = 2;
+            this.columnsPage.CloseFromNext += new Gui.Wizard.PageEventHandler(this.columnsPage_CloseFromNext);
+            this.columnsPage.ShowFromNext += new System.EventHandler(this.columnsPage_ShowFromNext);
+            // 
+            // idColumnComboBox
+            // 
+            this.idColumnComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.idColumnComboBox.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.idColumnComboBox.FormattingEnabled = true;
+            this.idColumnComboBox.Location = new System.Drawing.Point(135, 381);
+            this.idColumnComboBox.Name = "idColumnComboBox";
+            this.idColumnComboBox.Size = new System.Drawing.Size(243, 24);
+            this.idColumnComboBox.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(16, 384);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(113, 16);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Feature ID column";
+            // 
+            // columnsGrid
+            // 
+            this.columnsGrid.AllowUserToAddRows = false;
+            this.columnsGrid.AllowUserToDeleteRows = false;
+            this.columnsGrid.AllowUserToResizeRows = false;
+            this.columnsGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.columnsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.columnsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgcColumnName,
+            this.dgcDataType,
+            this.dgcDomain});
+            this.columnsGrid.Location = new System.Drawing.Point(19, 39);
+            this.columnsGrid.MultiSelect = false;
+            this.columnsGrid.Name = "columnsGrid";
+            this.columnsGrid.RowHeadersVisible = false;
+            this.columnsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.columnsGrid.Size = new System.Drawing.Size(492, 325);
+            this.columnsGrid.TabIndex = 0;
             // 
             // tablesPage
             // 
@@ -87,32 +150,20 @@ namespace Backsight.Environment.Editor
             this.tablesPage.TabIndex = 1;
             this.tablesPage.CloseFromNext += new Gui.Wizard.PageEventHandler(this.tablesPage_CloseFromNext);
             // 
-            // tableList
+            // excludeAlreadyAddedCheckBox
             // 
-            this.tableList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableList.FormattingEnabled = true;
-            this.tableList.ItemHeight = 16;
-            this.tableList.Location = new System.Drawing.Point(27, 53);
-            this.tableList.Name = "tableList";
-            this.tableList.Size = new System.Drawing.Size(345, 308);
-            this.tableList.Sorted = true;
-            this.tableList.TabIndex = 24;
-            // 
-            // columnsPage
-            // 
-            this.columnsPage.Controls.Add(this.idColumnComboBox);
-            this.columnsPage.Controls.Add(this.label2);
-            this.columnsPage.Controls.Add(this.columnsGrid);
-            this.columnsPage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.columnsPage.IsFinishPage = true;
-            this.columnsPage.Location = new System.Drawing.Point(0, 0);
-            this.columnsPage.Name = "columnsPage";
-            this.columnsPage.Size = new System.Drawing.Size(752, 448);
-            this.columnsPage.TabIndex = 2;
-            this.columnsPage.CloseFromNext += new Gui.Wizard.PageEventHandler(this.columnsPage_CloseFromNext);
-            this.columnsPage.ShowFromNext += new System.EventHandler(this.columnsPage_ShowFromNext);
+            this.excludeAlreadyAddedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.excludeAlreadyAddedCheckBox.AutoSize = true;
+            this.excludeAlreadyAddedCheckBox.Checked = true;
+            this.excludeAlreadyAddedCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.excludeAlreadyAddedCheckBox.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excludeAlreadyAddedCheckBox.Location = new System.Drawing.Point(36, 404);
+            this.excludeAlreadyAddedCheckBox.Name = "excludeAlreadyAddedCheckBox";
+            this.excludeAlreadyAddedCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.excludeAlreadyAddedCheckBox.TabIndex = 26;
+            this.excludeAlreadyAddedCheckBox.Text = "Exclude previously added tables";
+            this.excludeAlreadyAddedCheckBox.UseVisualStyleBackColor = true;
+            this.excludeAlreadyAddedCheckBox.CheckedChanged += new System.EventHandler(this.excludeAlreadyAddedCheckBox_CheckedChanged);
             // 
             // excludeDomainTablesCheckBox
             // 
@@ -129,62 +180,30 @@ namespace Backsight.Environment.Editor
             this.excludeDomainTablesCheckBox.UseVisualStyleBackColor = true;
             this.excludeDomainTablesCheckBox.CheckedChanged += new System.EventHandler(this.excludeDomainTablesCheckBox_CheckedChanged);
             // 
-            // excludeAlreadyAddedCheckBox
+            // tableList
             // 
-            this.excludeAlreadyAddedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.excludeAlreadyAddedCheckBox.AutoSize = true;
-            this.excludeAlreadyAddedCheckBox.Checked = true;
-            this.excludeAlreadyAddedCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.excludeAlreadyAddedCheckBox.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.excludeAlreadyAddedCheckBox.Location = new System.Drawing.Point(36, 404);
-            this.excludeAlreadyAddedCheckBox.Name = "excludeAlreadyAddedCheckBox";
-            this.excludeAlreadyAddedCheckBox.Size = new System.Drawing.Size(180, 17);
-            this.excludeAlreadyAddedCheckBox.TabIndex = 26;
-            this.excludeAlreadyAddedCheckBox.Text = "Exclude previously added tables";
-            this.excludeAlreadyAddedCheckBox.UseVisualStyleBackColor = true;
-            this.excludeAlreadyAddedCheckBox.CheckedChanged += new System.EventHandler(this.excludeAlreadyAddedCheckBox_CheckedChanged);
+            this.tableList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableList.FormattingEnabled = true;
+            this.tableList.ItemHeight = 16;
+            this.tableList.Location = new System.Drawing.Point(27, 53);
+            this.tableList.Name = "tableList";
+            this.tableList.Size = new System.Drawing.Size(345, 308);
+            this.tableList.Sorted = true;
+            this.tableList.TabIndex = 24;
             // 
-            // columnsGrid
+            // domainsListBox
             // 
-            this.columnsGrid.AllowUserToAddRows = false;
-            this.columnsGrid.AllowUserToDeleteRows = false;
-            this.columnsGrid.AllowUserToResizeRows = false;
-            this.columnsGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.columnsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.columnsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dgcColumnName,
-            this.dgcDataType,
-            this.dgcDomain});
-            this.columnsGrid.Location = new System.Drawing.Point(22, 32);
-            this.columnsGrid.MultiSelect = false;
-            this.columnsGrid.Name = "columnsGrid";
-            this.columnsGrid.RowHeadersVisible = false;
-            this.columnsGrid.Size = new System.Drawing.Size(559, 336);
-            this.columnsGrid.TabIndex = 0;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(24, 390);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(113, 16);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Feature ID column";
-            // 
-            // idColumnComboBox
-            // 
-            this.idColumnComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.idColumnComboBox.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.idColumnComboBox.FormattingEnabled = true;
-            this.idColumnComboBox.Location = new System.Drawing.Point(142, 387);
-            this.idColumnComboBox.Name = "idColumnComboBox";
-            this.idColumnComboBox.Size = new System.Drawing.Size(225, 24);
-            this.idColumnComboBox.TabIndex = 2;
+            this.domainsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.domainsListBox.FormattingEnabled = true;
+            this.domainsListBox.Location = new System.Drawing.Point(20, 71);
+            this.domainsListBox.Name = "domainsListBox";
+            this.domainsListBox.Size = new System.Drawing.Size(187, 251);
+            this.domainsListBox.TabIndex = 3;
+            this.domainsListBox.DoubleClick += new System.EventHandler(this.domainsListBox_DoubleClick);
             // 
             // dgcColumnName
             // 
@@ -206,12 +225,70 @@ namespace Backsight.Environment.Editor
             this.dgcDomain.HeaderText = "Domain";
             this.dgcDomain.Name = "dgcDomain";
             this.dgcDomain.ReadOnly = true;
+            this.dgcDomain.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgcDomain.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(21, 42);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(92, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Available domains";
+            // 
+            // setDomainLinkLabel
+            // 
+            this.setDomainLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.setDomainLinkLabel.AutoSize = true;
+            this.setDomainLinkLabel.Location = new System.Drawing.Point(21, 331);
+            this.setDomainLinkLabel.Name = "setDomainLinkLabel";
+            this.setDomainLinkLabel.Size = new System.Drawing.Size(61, 13);
+            this.setDomainLinkLabel.TabIndex = 7;
+            this.setDomainLinkLabel.TabStop = true;
+            this.setDomainLinkLabel.Text = "Set Domain";
+            this.setDomainLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.setDomainLinkLabel_LinkClicked);
+            // 
+            // clearDomainLinkLabel
+            // 
+            this.clearDomainLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.clearDomainLinkLabel.AutoSize = true;
+            this.clearDomainLinkLabel.Location = new System.Drawing.Point(21, 349);
+            this.clearDomainLinkLabel.Name = "clearDomainLinkLabel";
+            this.clearDomainLinkLabel.Size = new System.Drawing.Size(70, 13);
+            this.clearDomainLinkLabel.TabIndex = 8;
+            this.clearDomainLinkLabel.TabStop = true;
+            this.clearDomainLinkLabel.Text = "Clear Domain";
+            this.clearDomainLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.clearDomainLinkLabel_LinkClicked);
+            // 
+            // splitContainer
+            // 
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel1
+            // 
+            this.splitContainer.Panel1.Controls.Add(this.columnsGrid);
+            this.splitContainer.Panel1.Controls.Add(this.idColumnComboBox);
+            this.splitContainer.Panel1.Controls.Add(this.label2);
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Controls.Add(this.label3);
+            this.splitContainer.Panel2.Controls.Add(this.clearDomainLinkLabel);
+            this.splitContainer.Panel2.Controls.Add(this.domainsListBox);
+            this.splitContainer.Panel2.Controls.Add(this.setDomainLinkLabel);
+            this.splitContainer.Size = new System.Drawing.Size(761, 436);
+            this.splitContainer.SplitterDistance = 528;
+            this.splitContainer.TabIndex = 9;
             // 
             // TableForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(752, 496);
+            this.ClientSize = new System.Drawing.Size(761, 484);
             this.Controls.Add(this.wizard);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -220,11 +297,15 @@ namespace Backsight.Environment.Editor
             this.Text = "Database Table";
             this.Load += new System.EventHandler(this.TableForm_Load);
             this.wizard.ResumeLayout(false);
+            this.columnsPage.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.columnsGrid)).EndInit();
             this.tablesPage.ResumeLayout(false);
             this.tablesPage.PerformLayout();
-            this.columnsPage.ResumeLayout(false);
-            this.columnsPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.columnsGrid)).EndInit();
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel1.PerformLayout();
+            this.splitContainer.Panel2.ResumeLayout(false);
+            this.splitContainer.Panel2.PerformLayout();
+            this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -241,8 +322,13 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ComboBox idColumnComboBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridView columnsGrid;
+        private System.Windows.Forms.ListBox domainsListBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcColumnName;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcDataType;
-        private System.Windows.Forms.DataGridViewComboBoxColumn dgcDomain;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgcDomain;
+        private System.Windows.Forms.LinkLabel clearDomainLinkLabel;
+        private System.Windows.Forms.LinkLabel setDomainLinkLabel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.SplitContainer splitContainer;
     }
 }

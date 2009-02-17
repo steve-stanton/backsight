@@ -69,6 +69,9 @@ namespace Backsight.Environment.Editor
                 wizard.Pages.Remove(tablesPage);
                 wizard.NextTo(columnsPage);
             }
+
+            // Display available domains
+            domainsListBox.DataSource = ec.DomainTables;
         }
 
         void LoadTableList()
@@ -136,6 +139,10 @@ namespace Backsight.Environment.Editor
 
         private void columnsPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
         {
+            // Ensure column domains are up to date (and establish or remove foreign key
+            // definitions in the database)... what if the changes aren't ultimately saved?
+            // TODO
+
             m_Edit.FinishEdit();
             this.DialogResult = DialogResult.OK;
             Close();
@@ -159,10 +166,8 @@ namespace Backsight.Environment.Editor
             if (t == null)
                 return;
 
-            // Get defined domains
-            IDomainTable[] curDomains = m_Edit.DomainTables;
-            IDomainTable[] domains = EnvironmentContainer.Current.DomainTables;
-            (columnsGrid.Columns["dgcDomain"] as DataGridViewComboBoxColumn).DataSource = domains;
+            // Get any domains already associated with the table
+            IColumnDomain[] curDomains = m_Edit.Domains;
 
             columnsGrid.RowCount = t.Columns.Count;
 
@@ -173,17 +178,88 @@ namespace Backsight.Environment.Editor
 
                 DataGridViewRow row = columnsGrid.Rows[i];
                 row.Cells["dgcColumnName"].Value = c.Name;
-                row.Cells["dgcDataType"].Value = c.DataType;
 
-                // If the column already has a domain, ensure it has been selected
+                Smo.DataType dt = c.DataType;
+                string dataType = dt.SqlDataType.ToString().ToLower();
+
+                if (dt.SqlDataType == Smo.SqlDataType.Char ||
+                    dt.SqlDataType == Smo.SqlDataType.NChar ||
+                    dt.SqlDataType == Smo.SqlDataType.VarChar ||
+                    dt.SqlDataType == Smo.SqlDataType.NVarChar)
+                    dataType += String.Format("({0})", dt.MaximumLength);
+
+                if (!c.Nullable)
+                    dataType += " not null";
+
+                row.Cells["dgcDataType"].Value = dataType;
+
+                // Display any domain previously associated with the column
+                IColumnDomain cd = Array.Find<IColumnDomain>(curDomains,
+                    delegate(IColumnDomain tcd) { return tcd.ColumnName == c.Name; });
+                if (cd != null)
+                    row.Cells["dgcDomain"].Value = cd.Domain;
 
                 row.Tag = c;
             }
 
             // Nothing initially selected
             columnsGrid.CurrentCell = null;
+
+            // If we have a simple primary key, assume it's the feature ID column
+            if (String.IsNullOrEmpty(m_Edit.FeatureIdColumnName))
+            {
+                Smo.Column pk = TableFactory.GetSimplePrimaryKeyColumn(t);
+                if (pk != null)
+                    idColumnComboBox.SelectedItem = pk.Name;
+            }
+            else
+            {
+                idColumnComboBox.SelectedItem = m_Edit.FeatureIdColumnName;
+            }
         }
 
-        //string[] pre
+        private void domainsListBox_DoubleClick(object sender, EventArgs e)
+        {
+            IDomainTable dt = GetSelectedDomainTable();
+            DataGridViewRow c = GetSelectedColumn();
+            if (dt !=null && c != null)
+                c.Cells["dgcDomain"].Value = dt;
+        }
+
+        IDomainTable GetSelectedDomainTable()
+        {
+            return (domainsListBox.SelectedItem as IDomainTable);
+        }
+
+        DataGridViewRow GetSelectedColumn()
+        {
+            DataGridViewSelectedRowCollection sel = columnsGrid.SelectedRows;
+            if (sel == null || sel.Count == 0)
+                return null;
+            else
+                return sel[0];
+        }
+
+        private void setDomainLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            IDomainTable dt = GetSelectedDomainTable();
+            DataGridViewRow c = GetSelectedColumn();
+
+            if (dt == null)
+                MessageBox.Show("You must select the domain table you want to assign");
+            else if (c == null)
+                MessageBox.Show("You must select the database column the domain should apply to");
+            else
+                c.Cells["dgcDomain"].Value = dt;
+        }
+
+        private void clearDomainLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            DataGridViewRow c = GetSelectedColumn();
+            if (c == null)
+                MessageBox.Show("You must first select a database column");
+            else
+                c.Cells["dgcDomain"].Value = null;
+        }
     }
 }
