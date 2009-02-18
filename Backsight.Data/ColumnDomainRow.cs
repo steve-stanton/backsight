@@ -22,7 +22,7 @@ namespace Backsight.Data
 {
     public partial class BacksightDataSet
     {
-        public partial class TableDomainRow : IEditColumnDomain
+        public partial class ColumnDomainRow : IEditColumnDomain
         {
             #region Class data
 
@@ -38,12 +38,12 @@ namespace Backsight.Data
                 if (IsAdded(this))
                     this.EndEdit();
                 else
-                    this.tableTableDomain.AddTableDomainRow(this);
+                    this.tableColumnDomain.AddColumnDomainRow(this);
             }
 
-            public static TableDomainRow CreateTableDomainRow(BacksightDataSet ds)
+            public static ColumnDomainRow CreateColumnDomainRow(BacksightDataSet ds)
             {
-                TableDomainRow result = ds.TableDomain.NewTableDomainRow();
+                ColumnDomainRow result = ds.ColumnDomain.NewColumnDomainRow();
                 result.SetDefaultValues();
                 return result;
             }
@@ -57,7 +57,6 @@ namespace Backsight.Data
 
             #region IEditColumnDomain Members
 
-
             public IDomainTable Domain
             {
                 get
@@ -65,7 +64,7 @@ namespace Backsight.Data
                     if (DomainId == 0)
                         return null;
                     else
-                        return this.DomainTablesRow;
+                        return this.DomainTableRow;
                 }
 
                 set

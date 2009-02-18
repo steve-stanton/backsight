@@ -44,6 +44,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ColumnDomainRow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="DomainTableRow.cs">
@@ -78,9 +81,6 @@
     </Compile>
     <Compile Include="LastDatabase.cs" />
     <Compile Include="LayerRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TableDomainRow.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ZoneRow.cs">

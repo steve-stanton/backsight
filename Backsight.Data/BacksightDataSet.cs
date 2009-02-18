@@ -39,8 +39,8 @@ namespace Backsight.Data
                 ConnectionFactory.ConnectionString = connectionString;
                 Transaction.Execute(delegate
                 {
+                    AdapterFactory.Create<ColumnDomainTableAdapter>().Update(this.ColumnDomain);
                     AdapterFactory.Create<DomainTableTableAdapter>().Update(this.DomainTable);
-                    AdapterFactory.Create<TableDomainTableAdapter>().Update(this.TableDomain);
                     AdapterFactory.Create<FontTableAdapter>().Update(this.Font);
                     AdapterFactory.Create<IdGroupTableAdapter>().Update(this.IdGroup);
                     AdapterFactory.Create<EntityTypeTableAdapter>().Update(this.EntityType);
@@ -66,8 +66,8 @@ namespace Backsight.Data
         {
             using (IConnection ic = ConnectionFactory.Create())
             {
+                ColumnDomainTableAdapter columnDomain = new ColumnDomainTableAdapter();
                 DomainTableTableAdapter domainTable = new DomainTableTableAdapter();
-                TableDomainTableAdapter tableDomain = new TableDomainTableAdapter();
                 FontTableAdapter font = new FontTableAdapter();
                 IdGroupTableAdapter idGroup = new IdGroupTableAdapter();
                 EntityTypeTableAdapter entity = new EntityTypeTableAdapter();
@@ -81,8 +81,8 @@ namespace Backsight.Data
                 EntityTypeSchemaTableAdapter entityTypeSchema = new EntityTypeSchemaTableAdapter();
                 ZoneTableAdapter zone = new ZoneTableAdapter();
 
+                columnDomain.Connection =
                 domainTable.Connection =
-                tableDomain.Connection =
                 font.Connection =
                 idGroup.Connection =
                 entity.Connection =
@@ -96,8 +96,8 @@ namespace Backsight.Data
                 entityTypeSchema.Connection =
                 zone.Connection = ic.Value;
 
+                columnDomain.Fill(this.ColumnDomain);
                 domainTable.Fill(this.DomainTable);
-                tableDomain.Fill(this.TableDomain);
                 font.Fill(this.Font);
                 idGroup.Fill(this.IdGroup);
                 entity.Fill(this.EntityType);

@@ -21,6 +21,22 @@ GO
 -- Create tables
 --
 
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[ColumnDomains]') AND type in (N'U'))
+BEGIN
+PRINT 'CREATE TABLE ColumnDomains';
+CREATE TABLE [ced].[ColumnDomains]
+(
+  [TableId] [int] NOT NULL,
+  [ColumnName] [varchar](100) NOT NULL,
+  [DomainId] [int] NOT NULL,
+
+  CONSTRAINT [PK_ColumnDomains] PRIMARY KEY CLUSTERED ([TableId] ASC, [ColumnName] ASC)
+  WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+		
+) ON [PRIMARY]
+END
+GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[DomainTables]') AND type in (N'U'))
 BEGIN
 PRINT 'CREATE TABLE DomainTables';
@@ -293,22 +309,6 @@ CREATE TABLE [ced].[SysId]
 	
 	CONSTRAINT [PK_SysId] PRIMARY KEY CLUSTERED ([LastId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
-		
-) ON [PRIMARY]
-END
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[Templates]') AND type in (N'U'))
-BEGIN
-PRINT 'CREATE TABLE TableDomains';
-CREATE TABLE [ced].[TableDomains]
-(
-  [TableId] [int] NOT NULL,
-  [ColumnName] [varchar](100) NOT NULL,
-  [DomainId] [int] NOT NULL,
-
-  CONSTRAINT [PK_TableDomains] PRIMARY KEY CLUSTERED ([TableId] ASC, [ColumnName] ASC)
-  WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
 END
@@ -752,12 +752,12 @@ GO
 ALTER TABLE [ced].[Sessions] CHECK CONSTRAINT [FK_Session_User]
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_TableDomains_DomainTables]') AND parent_object_id = OBJECT_ID(N'[ced].[TableDomains]'))
-ALTER TABLE [ced].[TableDomains] ADD CONSTRAINT [FK_TableDomains_DomainTables] FOREIGN KEY([DomainId])
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_ColumnDomains_DomainTables]') AND parent_object_id = OBJECT_ID(N'[ced].[ColumnDomains]'))
+ALTER TABLE [ced].[ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_DomainTables] FOREIGN KEY([DomainId])
 REFERENCES [ced].[DomainTables] ([DomainId])
 GO
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_TableDomains_Schemas]') AND parent_object_id = OBJECT_ID(N'[ced].[TableDomains]'))
-ALTER TABLE [ced].[TableDomains] ADD CONSTRAINT [FK_TableDomains_Schemas] FOREIGN KEY([TableId])
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_ColumnDomains_Schemas]') AND parent_object_id = OBJECT_ID(N'[ced].[ColumnDomains]'))
+ALTER TABLE [ced].[ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
 REFERENCES [ced].[Schemas] ([SchemaId])
 GO
 

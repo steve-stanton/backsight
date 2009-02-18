@@ -89,11 +89,11 @@ namespace Backsight.Data
             {
                 get
                 {
-                    TableDomainRow[] tds = GetTableDomainRows();
-                    List<IDomainTable> result = new List<IDomainTable>(tds.Length);
+                    IColumnDomain[] cds = this.Domains;
+                    List<IDomainTable> result = new List<IDomainTable>(cds.Length);
 
-                    foreach (TableDomainRow t in tds)
-                        result.Add(t.DomainTablesRow);
+                    foreach (ColumnDomainRow cd in cds)
+                        result.Add(cd.Domain);
 
                     return result.ToArray();
                 }
@@ -104,7 +104,7 @@ namespace Backsight.Data
             /// </summary>
             public IColumnDomain[] Domains
             {
-                get { return GetTableDomainRows(); }
+                get { return GetColumnDomainRows(); }
             }
         }
     }
