@@ -24,6 +24,11 @@ namespace Backsight.Environment
     public interface IEditColumnDomain : IColumnDomain, IEditControl
     {
         /// <summary>
+        /// The table the column is part of
+        /// </summary>
+        new ITable ParentTable { get; set; }
+
+        /// <summary>
         /// The name of the database column that the domain is associated with
         /// </summary>
         new string ColumnName { get; set; }

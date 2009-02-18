@@ -23,12 +23,17 @@ namespace Backsight.Environment
     public interface IColumnDomain
     {
         /// <summary>
+        /// The table the column is part of
+        /// </summary>
+        ITable ParentTable { get; }
+
+        /// <summary>
         /// The name of the database column that the domain is associated with
         /// </summary>
         string ColumnName { get; }
 
         /// <summary>
-        /// The associated domain
+        /// The associated domain table
         /// </summary>
         IDomainTable Domain { get; }
     }

@@ -99,6 +99,12 @@ namespace Backsight.Data
             }
         }
 
+        public IEditColumnDomain CreateColumnDomain()
+        {
+            EnvData.ColumnDomainRow row = EnvData.ColumnDomainRow.CreateColumnDomainRow(m_Data);
+            return row;
+        }
+
         public IEditDomainTable CreateDomainTable()
         {
             EnvData.DomainTableRow row = EnvData.DomainTableRow.CreateDomainTableRow(m_Data);

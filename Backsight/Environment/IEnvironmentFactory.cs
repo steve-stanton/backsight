@@ -28,6 +28,12 @@ namespace Backsight.Environment
     public interface IEnvironmentFactory
     {
         /// <summary>
+        /// Creates an association between a database column and a domain
+        /// </summary>
+        /// <returns>The newly created column-domain association</returns>
+        IEditColumnDomain CreateColumnDomain();
+
+        /// <summary>
         /// Creates the definition for a new domain table
         /// </summary>
         /// <returns>The newly created domain table</returns>
