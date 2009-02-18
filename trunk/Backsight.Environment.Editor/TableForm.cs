@@ -29,6 +29,9 @@ namespace Backsight.Environment.Editor
     /// </summary>
     public partial class TableForm : Form
     {
+        /// <summary>
+        /// The table association the user is editing
+        /// </summary>
         readonly IEditTable m_Edit;
 
         /// <summary>
@@ -139,10 +142,31 @@ namespace Backsight.Environment.Editor
 
         private void columnsPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
         {
-            // Ensure column domains are up to date (and establish or remove foreign key
-            // definitions in the database)... what if the changes aren't ultimately saved?
-            // TODO
+            // Ensure column domains are up to date.
+            // For the time being, we do NOT establish or remove foreign keys in the
+            // database - if that is considered desirable, bear in mind that the changes
+            // being saved here may ultimately be discarded by the user (on exit from the
+            // application).
 
+            List<IColumnDomain> cds = new List<IColumnDomain>();
+            IEnvironmentFactory factory = EnvironmentContainer.Factory;
+
+            foreach (DataGridViewRow row in columnsGrid.Rows)
+            {
+                IDomainTable dt = (row.Cells["dgcDomain"].Value as IDomainTable);
+
+                if (dt != null)
+                {
+                    IEditColumnDomain cd = factory.CreateColumnDomain();
+                    cd.ParentTable = m_Edit;
+                    cd.ColumnName = row.Cells["dgcColumnName"].FormattedValue.ToString();
+                    cd.Domain = dt;
+
+                    cds.Add(cd);
+                }
+            }
+
+            m_Edit.ColumnDomains = cds.ToArray();
             m_Edit.FinishEdit();
             this.DialogResult = DialogResult.OK;
             Close();
@@ -167,7 +191,7 @@ namespace Backsight.Environment.Editor
                 return;
 
             // Get any domains already associated with the table
-            IColumnDomain[] curDomains = m_Edit.Domains;
+            IColumnDomain[] curDomains = m_Edit.ColumnDomains;
 
             columnsGrid.RowCount = t.Columns.Count;
 

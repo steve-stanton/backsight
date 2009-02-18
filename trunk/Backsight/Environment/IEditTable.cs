@@ -32,5 +32,10 @@ namespace Backsight.Environment
         /// Any domain tables associated with columns in the table.
         /// </summary>
         //IDomainTable[] DomainTables { get; set; }
+
+        /// <summary>
+        /// Any domains associated with columns in the table
+        /// </summary>
+        new IColumnDomain[] ColumnDomains { get; set; }
     }
 }

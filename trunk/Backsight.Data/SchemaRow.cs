@@ -83,28 +83,50 @@ namespace Backsight.Data
             }
 
             /// <summary>
-            /// Any domain tables associated with columns in the table.
-            /// </summary>
-            public IDomainTable[] DomainTables
-            {
-                get
-                {
-                    IColumnDomain[] cds = this.Domains;
-                    List<IDomainTable> result = new List<IDomainTable>(cds.Length);
-
-                    foreach (ColumnDomainRow cd in cds)
-                        result.Add(cd.Domain);
-
-                    return result.ToArray();
-                }
-            }
-
-            /// <summary>
             /// Any domains associated with columns in the table
             /// </summary>
-            public IColumnDomain[] Domains
+            public IColumnDomain[] ColumnDomains
             {
                 get { return GetColumnDomainRows(); }
+                set
+                {
+                    if (value==null)
+                        throw new ArgumentNullException();
+
+                    // Grab the current table -> domain associations
+                    BacksightDataSet ds = GetDataSet(this);
+                    ColumnDomainDataTable tab = ds.ColumnDomain;
+                    ColumnDomainRow[] cds = tab.FindByTableId(this.Id);
+
+                    // Insert new associations
+                    foreach (IColumnDomain cd in value)
+                    {
+                        if (!ColumnDomainRow.HasMatchInArray(cd, cds))
+                            tab.AddColumnDomainRow(cd);
+                    }
+
+                    // Remove any associations that no longer apply
+                    foreach (ColumnDomainRow row in cds)
+                    {
+                        int tableId = row.TableId;
+                        int domainTableId = row.DomainId;
+                        string columnName = row.ColumnName;
+
+                        if (!Array.Exists<IColumnDomain>(value, delegate(IColumnDomain t)
+                        {
+                            int tt = (t.ParentTable == null ? 0 : t.ParentTable.Id);
+                            if (tt != tableId)
+                                return false;
+
+                            int td = (t.Domain == null ? 0 : t.Domain.Id);
+                            if (td != domainTableId)
+                                return false;
+
+                            return (columnName == t.ColumnName);
+                        }))
+                            row.Delete();
+                    }
+                }
             }
         }
     }
