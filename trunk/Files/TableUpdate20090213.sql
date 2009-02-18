@@ -12,7 +12,7 @@ CREATE TABLE [ced].[DomainTables]
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [ced].[TableDomains]
+CREATE TABLE [ced].[ColumnDomains]
 (
   [TableId] [int] NOT NULL,
   [ColumnName] [varchar](100) NOT NULL,
@@ -24,13 +24,13 @@ CREATE TABLE [ced].[TableDomains]
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [ced].[TableDomains]
-ADD CONSTRAINT [FK_TableDomains_DomainTables] FOREIGN KEY([DomainId])
+ALTER TABLE [ced].[ColumnDomains]
+ADD CONSTRAINT [FK_ColumnDomains_DomainTables] FOREIGN KEY([DomainId])
 REFERENCES [ced].[DomainTables] ([DomainId])
 GO
 
-ALTER TABLE [ced].[TableDomains]
-ADD CONSTRAINT [FK_TableDomains_Schemas] FOREIGN KEY([TableId])
+ALTER TABLE [ced].[ColumnDomains]
+ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
 REFERENCES [ced].[Schemas] ([SchemaId])
 GO
 
