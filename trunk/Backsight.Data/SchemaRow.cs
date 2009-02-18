@@ -52,17 +52,8 @@ namespace Backsight.Data
             internal void SetDefaultValues()
             {
                 SchemaId = 0;
-                Name = String.Empty;
                 TableName = String.Empty;
-            }
-
-            /// <summary>
-            /// The name of the column that corresponds to the user-perceived ID
-            /// associated with spatial features.
-            /// </summary>
-            public string FeatureIdColumnName
-            {
-                get { return "PIN"; }
+                IdColumnName = String.Empty;
             }
 
             /// <summary>

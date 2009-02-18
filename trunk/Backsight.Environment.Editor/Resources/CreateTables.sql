@@ -85,7 +85,7 @@ CREATE TABLE [ced].[EntityTypes]
 	[GroupId] [int] NOT NULL,
 	[IsLineTrimmed] [char](1) NOT NULL CONSTRAINT DF_EntityTypes_1 DEFAULT ('n'),
 	
-	CONSTRAINT [EntityKey] PRIMARY KEY CLUSTERED ([EntityId] ASC)
+	CONSTRAINT [PK_EntityTypes] PRIMARY KEY CLUSTERED ([EntityId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -100,7 +100,7 @@ CREATE TABLE [ced].[EntityTypeSchemas]
 	[EntityId] [int] NOT NULL,
 	[SchemaId] [int] NOT NULL,
 	
-	CONSTRAINT [EntitySchemaKey] PRIMARY KEY CLUSTERED ([EntityId] ASC, [SchemaId] ASC)
+	CONSTRAINT [PK_EntityTypeSchemas] PRIMARY KEY CLUSTERED ([EntityId] ASC, [SchemaId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -120,7 +120,7 @@ CREATE TABLE [ced].[Fonts]
 	[IsUnderline] [char](1) NOT NULL,
 	[FontFile] [varchar](50) NOT NULL,
 	
-	CONSTRAINT [FontKey] PRIMARY KEY CLUSTERED ([FontId] ASC)
+	CONSTRAINT [PK_Fonts] PRIMARY KEY CLUSTERED ([FontId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 	
 ) ON [PRIMARY]
@@ -140,7 +140,7 @@ CREATE TABLE [ced].[IdAllocations]
 	[TimeAllocated] [datetime] NOT NULL,
 	[NumUsed] [int] NOT NULL,
 
-	CONSTRAINT [IdAllocationKey] PRIMARY KEY CLUSTERED ([LowestId] ASC)
+	CONSTRAINT [PK_IdAllocations] PRIMARY KEY CLUSTERED ([LowestId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -156,7 +156,7 @@ CREATE TABLE [ced].[IdFree]
 	[LowestId] [int] NOT NULL,
 	[HighestId] [int] NOT NULL,
 
-	CONSTRAINT [IdFreeKey] PRIMARY KEY CLUSTERED ([GroupId] ASC, [LowestId] ASC)
+	CONSTRAINT [PK_IdFree] PRIMARY KEY CLUSTERED ([GroupId] ASC, [LowestId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 	
 ) ON [PRIMARY]
@@ -176,7 +176,7 @@ CREATE TABLE [ced].[IdGroups]
 	[CheckDigit] [char](1) NOT NULL,
 	[KeyFormat] [varchar](8) NOT NULL,
 
-	CONSTRAINT [IdGroupKey] PRIMARY KEY CLUSTERED ([GroupId] ASC)
+	CONSTRAINT [PK_IdGroups] PRIMARY KEY CLUSTERED ([GroupId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -226,7 +226,7 @@ CREATE TABLE [ced].[Layers]
 	[DefaultPolygonId] [int] NOT NULL,
 	[DefaultTextId] [int] NOT NULL,
 
-	CONSTRAINT [LayerKey] PRIMARY KEY CLUSTERED ([LayerId] ASC)
+	CONSTRAINT [PK_Layers] PRIMARY KEY CLUSTERED ([LayerId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -242,7 +242,7 @@ CREATE TABLE [ced].[Properties]
 	[Value] [varchar](100) NOT NULL,
 	[Description] [varchar](200) NOT NULL,
 
-	 CONSTRAINT [PropertyKey] PRIMARY KEY CLUSTERED ([Name] ASC)
+	 CONSTRAINT [PK_Properties] PRIMARY KEY CLUSTERED ([Name] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -255,10 +255,10 @@ PRINT 'CREATE TABLE Schemas';
 CREATE TABLE [ced].[Schemas]
 (
 	[SchemaId] [int] NOT NULL,
-	[Name] [varchar](100) NOT NULL,
 	[TableName] [varchar](100) NOT NULL,
+	[IdColumnName] [varchar](100) NOT NULL,
 
-	CONSTRAINT [SchemaKey] PRIMARY KEY CLUSTERED ([SchemaId] ASC)
+	CONSTRAINT [PK_Schemas] PRIMARY KEY CLUSTERED ([SchemaId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -273,7 +273,7 @@ CREATE TABLE [ced].[SchemaTemplates]
 	[SchemaId] [int] NOT NULL,
 	[TemplateId] [int] NOT NULL,
 	
-	CONSTRAINT [SchemaTemplateKey] PRIMARY KEY CLUSTERED ([SchemaId] ASC, [TemplateId] ASC)
+	CONSTRAINT [PK_SchemaTemplates] PRIMARY KEY CLUSTERED ([SchemaId] ASC, [TemplateId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -323,7 +323,7 @@ CREATE TABLE [ced].[Templates]
 	[Name] [varchar](100) NOT NULL,
 	[TemplateFormat] [varchar](500) NOT NULL,
 	
-	CONSTRAINT [TemplateKey] PRIMARY KEY CLUSTERED ([TemplateId] ASC)
+	CONSTRAINT [PK_Templates] PRIMARY KEY CLUSTERED ([TemplateId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
@@ -338,7 +338,7 @@ CREATE TABLE [ced].[Themes]
 	[ThemeId] [int] NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	
-	CONSTRAINT [ThemeKey] PRIMARY KEY CLUSTERED ([ThemeId] ASC)
+	CONSTRAINT [PK_Themes] PRIMARY KEY CLUSTERED ([ThemeId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 		
 ) ON [PRIMARY]
