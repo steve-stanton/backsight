@@ -113,11 +113,11 @@ namespace Backsight.Editor
                 foreach (ITable t in tables)
                 {
                     string sql = String.Format("SELECT * FROM [{0}] WHERE [{1}] IN (SELECT [FeatureId] FROM [{2}])",
-                                    t.TableName, t.FeatureIdColumnName, KEYS_TABLE_NAME);
+                                    t.TableName, t.IdColumnName, KEYS_TABLE_NAME);
                     DataTable tab = DbUtil.ExecuteSelect(c, sql);
                     tab.TableName = t.TableName;
 
-                    int featureIdIndex = tab.Columns[t.FeatureIdColumnName].Ordinal;
+                    int featureIdIndex = tab.Columns[t.IdColumnName].Ordinal;
                     Debug.Assert(featureIdIndex>=0);
                     foreach (DataRow row in tab.Select())
                     {

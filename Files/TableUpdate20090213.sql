@@ -18,7 +18,7 @@ CREATE TABLE [ced].[ColumnDomains]
   [ColumnName] [varchar](100) NOT NULL,
   [DomainId] [int] NOT NULL,
 
-  CONSTRAINT [PK_TableDomains] PRIMARY KEY CLUSTERED ([TableId] ASC, [ColumnName] ASC)
+  CONSTRAINT [PK_ColumnDomains] PRIMARY KEY CLUSTERED ([TableId] ASC, [ColumnName] ASC)
   WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 
 ) ON [PRIMARY]
@@ -32,5 +32,15 @@ GO
 ALTER TABLE [ced].[ColumnDomains]
 ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
 REFERENCES [ced].[Schemas] ([SchemaId])
+GO
+
+-- Modify Schemas table
+
+ALTER TABLE [ced].[Schemas]
+DROP COLUMN [Name]
+GO
+
+ALTER TABLE [ced].[Schemas]
+ADD [IdColumnName] [varchar](100) NOT NULL CONSTRAINT DF_Schemas_IdColumnName DEFAULT ('PIN')
 GO
 

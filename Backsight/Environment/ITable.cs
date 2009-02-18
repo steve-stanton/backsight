@@ -33,7 +33,7 @@ namespace Backsight.Environment
         /// associated with spatial features (this may or may not be the primary
         /// key of the table).
         /// </summary>
-        string FeatureIdColumnName { get; }
+        string IdColumnName { get; }
 
         /// <summary>
         /// Any text formatting templates associated with the table (may be an empty array)

@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<Manitoba_x0020_Environment_x0020_-_x0020_v3.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
+<Manitoba_x0020_Environment.xml xmlns="http://tempuri.org/BacksightDataSet.xsd">
   <EntityType>
     <EntityId>0</EntityId>
     <Name />
@@ -11,6 +11,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>25</EntityId>
@@ -23,6 +24,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>26</EntityId>
@@ -35,6 +37,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>27</EntityId>
@@ -47,6 +50,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>22</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>28</EntityId>
@@ -59,6 +63,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>19</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>29</EntityId>
@@ -71,6 +76,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>30</EntityId>
@@ -83,6 +89,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>31</EntityId>
@@ -95,6 +102,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>32</EntityId>
@@ -107,6 +115,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>33</EntityId>
@@ -119,6 +128,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>21</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>35</EntityId>
@@ -131,6 +141,7 @@
     <FontId>525</FontId>
     <LayerId>12</LayerId>
     <GroupId>18</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>36</EntityId>
@@ -143,6 +154,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>20</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>37</EntityId>
@@ -155,6 +167,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>38</EntityId>
@@ -167,6 +180,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>39</EntityId>
@@ -179,6 +193,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>40</EntityId>
@@ -191,6 +206,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>41</EntityId>
@@ -203,6 +219,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>42</EntityId>
@@ -215,6 +232,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>43</EntityId>
@@ -227,6 +245,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>44</EntityId>
@@ -239,6 +258,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>45</EntityId>
@@ -251,6 +271,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>46</EntityId>
@@ -263,6 +284,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>47</EntityId>
@@ -275,6 +297,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>48</EntityId>
@@ -287,6 +310,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>49</EntityId>
@@ -299,6 +323,7 @@
     <FontId>527</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>50</EntityId>
@@ -311,6 +336,7 @@
     <FontId>527</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>51</EntityId>
@@ -323,6 +349,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>52</EntityId>
@@ -335,6 +362,7 @@
     <FontId>528</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>53</EntityId>
@@ -347,6 +375,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>54</EntityId>
@@ -359,6 +388,7 @@
     <FontId>529</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>55</EntityId>
@@ -371,6 +401,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>56</EntityId>
@@ -383,6 +414,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>57</EntityId>
@@ -395,6 +427,7 @@
     <FontId>530</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>58</EntityId>
@@ -407,6 +440,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>59</EntityId>
@@ -419,6 +453,7 @@
     <FontId>531</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>60</EntityId>
@@ -431,6 +466,7 @@
     <FontId>532</FontId>
     <LayerId>0</LayerId>
     <GroupId>21</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>61</EntityId>
@@ -443,6 +479,7 @@
     <FontId>536</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>62</EntityId>
@@ -455,6 +492,7 @@
     <FontId>535</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>63</EntityId>
@@ -467,6 +505,7 @@
     <FontId>534</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>64</EntityId>
@@ -479,6 +518,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>65</EntityId>
@@ -491,6 +531,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>66</EntityId>
@@ -503,6 +544,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>72</EntityId>
@@ -515,6 +557,7 @@
     <FontId>0</FontId>
     <LayerId>11</LayerId>
     <GroupId>19</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>507</EntityId>
@@ -527,6 +570,7 @@
     <FontId>527</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>508</EntityId>
@@ -539,6 +583,7 @@
     <FontId>531</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>509</EntityId>
@@ -551,6 +596,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>511</EntityId>
@@ -563,6 +609,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>512</EntityId>
@@ -575,6 +622,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>513</EntityId>
@@ -587,6 +635,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>514</EntityId>
@@ -599,6 +648,7 @@
     <FontId>527</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>515</EntityId>
@@ -611,6 +661,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>516</EntityId>
@@ -623,6 +674,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>517</EntityId>
@@ -635,6 +687,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>518</EntityId>
@@ -647,6 +700,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>519</EntityId>
@@ -659,6 +713,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>521</EntityId>
@@ -671,6 +726,7 @@
     <FontId>534</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>522</EntityId>
@@ -683,6 +739,7 @@
     <FontId>531</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>526</EntityId>
@@ -695,6 +752,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>23</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>537</EntityId>
@@ -707,6 +765,7 @@
     <FontId>534</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>538</EntityId>
@@ -719,6 +778,7 @@
     <FontId>534</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>539</EntityId>
@@ -731,6 +791,7 @@
     <FontId>534</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>540</EntityId>
@@ -743,6 +804,7 @@
     <FontId>525</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>543</EntityId>
@@ -755,6 +817,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>544</EntityId>
@@ -767,6 +830,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>545</EntityId>
@@ -779,6 +843,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>546</EntityId>
@@ -791,6 +856,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>547</EntityId>
@@ -803,6 +869,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>548</EntityId>
@@ -815,6 +882,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>549</EntityId>
@@ -827,6 +895,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>550</EntityId>
@@ -839,6 +908,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>551</EntityId>
@@ -851,6 +921,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>552</EntityId>
@@ -863,6 +934,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>553</EntityId>
@@ -875,6 +947,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>554</EntityId>
@@ -887,6 +960,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>555</EntityId>
@@ -899,6 +973,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>556</EntityId>
@@ -911,6 +986,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>557</EntityId>
@@ -923,6 +999,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>558</EntityId>
@@ -935,6 +1012,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>559</EntityId>
@@ -947,6 +1025,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>560</EntityId>
@@ -959,6 +1038,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>561</EntityId>
@@ -971,6 +1051,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>562</EntityId>
@@ -983,6 +1064,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>563</EntityId>
@@ -995,6 +1077,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>564</EntityId>
@@ -1007,6 +1090,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>565</EntityId>
@@ -1019,6 +1103,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>566</EntityId>
@@ -1031,6 +1116,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>567</EntityId>
@@ -1043,6 +1129,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>568</EntityId>
@@ -1055,6 +1142,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>569</EntityId>
@@ -1067,6 +1155,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>570</EntityId>
@@ -1079,6 +1168,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>571</EntityId>
@@ -1091,6 +1181,7 @@
     <FontId>0</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>572</EntityId>
@@ -1103,6 +1194,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <EntityType>
     <EntityId>573</EntityId>
@@ -1115,6 +1207,7 @@
     <FontId>542</FontId>
     <LayerId>0</LayerId>
     <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
   <Font>
     <FontId>0</FontId>
@@ -1337,60 +1430,70 @@
     <DefaultPolygonId>36</DefaultPolygonId>
     <DefaultTextId>0</DefaultTextId>
   </Layer>
+  <Property>
+    <Name>EntityFile</Name>
+    <Value />
+    <Description />
+  </Property>
+  <Property>
+    <Name>StyleFile</Name>
+    <Value />
+    <Description />
+  </Property>
   <Schema>
     <SchemaId>475</SchemaId>
-    <Name />
     <TableName>PlanParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>477</SchemaId>
-    <Name />
     <TableName>CertificateofTitleParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>478</SchemaId>
-    <Name />
     <TableName>DLSParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>479</SchemaId>
-    <Name />
     <TableName>JudgesOrderParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>480</SchemaId>
-    <Name />
     <TableName>LegalInstrumentParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>481</SchemaId>
-    <Name />
     <TableName>ParishLotParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>482</SchemaId>
-    <Name />
     <TableName>PropertyMapPolygonData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>483</SchemaId>
-    <Name />
     <TableName>PublicLaneData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>484</SchemaId>
-    <Name />
     <TableName>PublicWalkData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>485</SchemaId>
-    <Name />
     <TableName>StreetData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <Schema>
     <SchemaId>486</SchemaId>
-    <Name />
     <TableName>WaterBodyData</TableName>
+    <IdColumnName>PIN</IdColumnName>
   </Schema>
   <SchemaTemplate>
     <SchemaId>475</SchemaId>
@@ -1473,7 +1576,7 @@
     <TemplateId>506</TemplateId>
   </SchemaTemplate>
   <SysId>
-    <LastId>573</LastId>
+    <LastId>586</LastId>
   </SysId>
   <Template>
     <TemplateId>487</TemplateId>
@@ -2667,4 +2770,122 @@
     <ZoneId>541</ZoneId>
     <Name>Manitoba</Name>
   </Zone>
-</Manitoba_x0020_Environment_x0020_-_x0020_v3.xml>
+  <DomainTable>
+    <DomainId>574</DomainId>
+    <TableName>DOMAIN_DLS_PARCEL_TYPES</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>575</DomainId>
+    <TableName>DOMAIN_HALVES_of_DLS_QS_Polygons</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>576</DomainId>
+    <TableName>DOMAIN_Issuing_LTOs</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>577</DomainId>
+    <TableName>DOMAIN_Meridian_Values</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>578</DomainId>
+    <TableName>DOMAIN_Parcel_Types</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>579</DomainId>
+    <TableName>DOMAIN_Parish_Lot_Types</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>580</DomainId>
+    <TableName>DOMAIN_Parish_Values</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>582</DomainId>
+    <TableName>DOMAIN_Part_of_Cadastral_Polygon</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>583</DomainId>
+    <TableName>DOMAIN_Plan_Types</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>584</DomainId>
+    <TableName>DOMAIN_Quarter_Sections</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>585</DomainId>
+    <TableName>DOMAIN_Range_Values</TableName>
+  </DomainTable>
+  <DomainTable>
+    <DomainId>586</DomainId>
+    <TableName>DOMAIN_WaterBodyTypes</TableName>
+  </DomainTable>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Original_Issuing_LTO</ColumnName>
+    <DomainId>576</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Parcel_Type</ColumnName>
+    <DomainId>578</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Plan_Type</ColumnName>
+    <DomainId>583</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>DLS_PARCEL_TYPE</ColumnName>
+    <DomainId>574</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>HALF</ColumnName>
+    <DomainId>575</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>MERIDIAN</ColumnName>
+    <DomainId>577</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>QS_VALUE</ColumnName>
+    <DomainId>584</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>RANGE_VALUE</ColumnName>
+    <DomainId>585</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>Par_Lot_Type</ColumnName>
+    <DomainId>579</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>Parish</ColumnName>
+    <DomainId>580</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>486</TableId>
+    <ColumnName>WB_Type</ColumnName>
+    <DomainId>586</DomainId>
+  </ColumnDomain>
+</Manitoba_x0020_Environment.xml>

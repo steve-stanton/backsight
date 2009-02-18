@@ -29,9 +29,11 @@ namespace Backsight.Environment
         new string TableName { get; set; }
 
         /// <summary>
-        /// Any domain tables associated with columns in the table.
+        /// The name of the column that corresponds to the user-perceived ID
+        /// associated with spatial features (this may or may not be the primary
+        /// key of the table).
         /// </summary>
-        //IDomainTable[] DomainTables { get; set; }
+        new string IdColumnName { get; set; }
 
         /// <summary>
         /// Any domains associated with columns in the table

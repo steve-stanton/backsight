@@ -142,6 +142,18 @@ namespace Backsight.Environment.Editor
 
         private void columnsPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
         {
+            // Ensure ID column has been defined
+            string idColumnName = (idColumnComboBox.SelectedItem == null ? String.Empty : idColumnComboBox.SelectedItem.ToString());
+            if (idColumnName.Length == 0)
+            {
+                MessageBox.Show("You must specify the name of the column that holds the feature ID");
+                idColumnComboBox.Focus();
+                e.Page = columnsPage;
+                return;
+            }
+
+            m_Edit.IdColumnName = idColumnName;
+
             // Ensure column domains are up to date.
             // For the time being, we do NOT establish or remove foreign keys in the
             // database - if that is considered desirable, bear in mind that the changes
@@ -230,7 +242,7 @@ namespace Backsight.Environment.Editor
             columnsGrid.CurrentCell = null;
 
             // If we have a simple primary key, assume it's the feature ID column
-            if (String.IsNullOrEmpty(m_Edit.FeatureIdColumnName))
+            if (String.IsNullOrEmpty(m_Edit.IdColumnName))
             {
                 Smo.Column pk = TableFactory.GetSimplePrimaryKeyColumn(t);
                 if (pk != null)
@@ -238,7 +250,7 @@ namespace Backsight.Environment.Editor
             }
             else
             {
-                idColumnComboBox.SelectedItem = m_Edit.FeatureIdColumnName;
+                idColumnComboBox.SelectedItem = m_Edit.IdColumnName;
             }
         }
 
