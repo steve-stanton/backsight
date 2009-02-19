@@ -18,6 +18,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Data;
 using Backsight.Data;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Database
 {
@@ -98,6 +99,22 @@ namespace Backsight.Editor.Database
                     return DbUtil.GetLastId(c);
 
                 throw new Exception("Insert failed to add a single row: "+sql);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new row for a database table
+        /// </summary>
+        /// <param name="t">The table of interest</param>
+        /// <returns>A new row in the table (not yet inserted, with default data for
+        /// all columns)</returns>
+        internal static DataRow CreateNewRow(ITable t)
+        {
+            using (IConnection ic = ConnectionFactory.Create())
+            {
+                string sql = String.Format("SELECT * FROM {0} WHERE 1=0", t.TableName);
+                DataTable dt = ExecuteSelect(ic.Value, sql);
+                return dt.NewRow();
             }
         }
     }

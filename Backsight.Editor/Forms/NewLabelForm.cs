@@ -58,6 +58,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         bool m_IsNoAttr;
 
+        /// <summary>
+        /// True if the dialog is currently being loaded
+        /// </summary>
+        //bool m_IsLoading;
+
         #endregion
 
         #region Constructors
@@ -105,33 +110,48 @@ namespace Backsight.Editor.Forms
 
         private void NewLabelForm_Shown(object sender, EventArgs e)
         {
-            // Load up entity combo box with the default type for polygons.
-            m_PolygonType = entityTypeComboBox.Load(SpatialType.Polygon);
+            //try
+            //{
+            //    m_IsLoading = true;
 
-            // Load the schema (and annotation template) combo boxes. By
-            // default, you get just the default schemas for the entity
-            // type we have defined.
-            ListSchemas();
+                // Load up entity combo box with the default type for polygons.
+                m_PolygonType = entityTypeComboBox.Load(SpatialType.Polygon);
 
-            // 20080422 - FOR THE TIME BEING, DEFAULT TO USING THE ID (NO ATTRIBUTES)
-            noAttributesCheckBox.Checked = true;
+                // Load the schema (and annotation template) combo boxes. By
+                // default, you get just the default schemas for the entity
+                // type we have defined.
+                ListSchemas();
+
+                // 20080422 - FOR THE TIME BEING, DEFAULT TO USING THE ID (NO ATTRIBUTES)
+                //noAttributesCheckBox.Checked = true;
+            //}
+
+            //finally
+            //{
+            //    m_IsLoading = false;
+            //}
         }
 
         private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            // Get the new polygon type.
-            m_PolygonType = entityTypeComboBox.SelectedEntityType;
+            //if (!m_IsLoading)
+            //{
+                // Get the new polygon type.
+                m_PolygonType = entityTypeComboBox.SelectedEntityType;
 
-            // Ensure that the schema combo lists everything for the
-            // newly selected entity type.
-            ListSchemas();
+                // Ensure that the schema combo lists everything for the
+                // newly selected entity type.
+                ListSchemas();
+            //}
         }
 
         private void schemaComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            // Get the new polygon attribute schema
-            m_Schema = schemaComboBox.SelectedTable;
-            OnDefaultAnnotation();
+            //if (!m_IsLoading)
+            //{
+                m_Schema = schemaComboBox.SelectedTable;
+                OnDefaultAnnotation();
+            //}
         }
 
         private void defaultAnnotationCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -144,6 +164,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         void OnDefaultAnnotation()
         {
+            noTemplatesLabel.Visible = false;
+
+            //if (m_IsNoAttr)
+            //    return;
+
             // What does the user want to do?
             m_IsUseId = defaultAnnotationCheckBox.Checked;
 
@@ -151,10 +176,11 @@ namespace Backsight.Editor.Forms
             // have a schema!
             if (!m_IsUseId && m_Schema == null)
             {
-                string errmsg = String.Empty;
-                errmsg += ("The specified polygon type does not have any" + System.Environment.NewLine);
-                errmsg += ("annotation templates, so you can only use the ID.");
-                MessageBox.Show(errmsg);
+                noTemplatesLabel.Visible = true;
+                //string errmsg = String.Empty;
+                //errmsg += ("The specified polygon type does not have any" + System.Environment.NewLine);
+                //errmsg += ("annotation templates, so you can only use the ID.");
+                //MessageBox.Show(errmsg);
                 m_IsUseId = true;
             }
 
@@ -169,6 +195,9 @@ namespace Backsight.Editor.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            if (m_PolygonType != null)
+                CadastralMapModel.Current.SetDefaultEntity(SpatialType.Polygon, m_PolygonType);
+
             this.DialogResult = DialogResult.OK;
             Close();
         }

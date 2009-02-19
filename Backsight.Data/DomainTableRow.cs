@@ -24,6 +24,12 @@ namespace Backsight.Data
 {
     public partial class BacksightDataSet
     {
+        /// <summary>
+        /// The content of a domain table.
+        /// </summary>
+        /// <remarks>The class name is consistent with the naming conventions used throughout this project,
+        /// but may be confusing here, since <c>DomainTableRow</c> suggests a single row in a domain table.
+        /// What it actually represents is the complete table.</remarks>
         public partial class DomainTableRow : IEditDomainTable
         {
             #region Class data
@@ -72,7 +78,7 @@ namespace Backsight.Data
             /// Performs a lookup on the domain table
             /// </summary>
             /// <param name="shortValue">The abbreviated code to lookup</param>
-            /// <returns>The expanded value for the lookup</returns>
+            /// <returns>The expanded value for the lookup (blank if not found)</returns>
             public string Lookup(string shortValue)
             {
                 if (m_Data == null)

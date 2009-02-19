@@ -39,6 +39,8 @@ namespace Backsight.Editor
         /// <summary>
         /// How to form the text string out of the data in the row.
         /// </summary>
+        /// <remarks>It may be better to hold some sort of "prepared" template here (see additional
+        /// remarks for <see cref="GetDomainValue"/>)</remarks>
         ITemplate m_Template;        
 
         #endregion
@@ -81,22 +83,13 @@ namespace Backsight.Editor
         /// </summary>
         public override string Text
         {
-            get
-            {
-                // Get the row's key (it MUST have one in order for the row text to exist at all).
-                FeatureId id = m_Row.Id;
-                if (id==null)
-                    return "ID not available";
-
-                return GetText(m_Row, id.FormattedKey, m_Template);
-            }
+            get { return GetText(m_Row, m_Template); }
         }
 
         /// <summary>
         /// Generates the text that should be displayed for the supplied row and template
         /// </summary>
         /// <param name="row">The row containing the information to display</param>
-        /// <param name="key">The key of the feature (is this used?)</param>
         /// <param name="template">The template that defines the output format</param>
         /// <returns>The text that needs to be displayed</returns>
         /// <remarks>
@@ -126,7 +119,7 @@ namespace Backsight.Editor
         /// <para/>
         /// "Public Lane" - specifies that only this text be output
         /// </remarks>
-        static string GetText(Row row, string key, ITemplate template)
+        static string GetText(Row row, ITemplate template)
         {
             // The row must have a defined schema (and presumably the same
             // as the same as the template's schema, although we won't check).
@@ -175,6 +168,10 @@ namespace Backsight.Editor
                     DataColumn dc = data.Table.Columns[fieldName];
                     int columnIndex = dc.Ordinal;
                     string s = (data.IsNull(columnIndex) ? String.Empty : data[columnIndex].ToString());
+
+                    if (expand)
+                        s = GetDomainValue(s, fieldName, schema);
+
                     result.Append(s);
 
                     startIndex = endField+1;
@@ -182,6 +179,39 @@ namespace Backsight.Editor
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Attempts to expand a domain lookup value
+        /// </summary>
+        /// <param name="shortValue">The short lookup string</param>
+        /// <param name="columnName">The name of the column the lookup value was obtained from</param>
+        /// <param name="table">The table containing the column</param>
+        /// <returns>The expanded value in the domain associated with the column. If the column is
+        /// not associated with a domain table, or the lookup string cannot be found, you get back
+        /// the supplied <paramref name="shortValue"/>.</returns>
+        /// <remarks>There is some scope for efficiency improvement here. Rather than doing this
+        /// every time some RowTextGeometry is drawn, it would make sense to hold something like
+        /// a <c>PreparedTemplate</c> object that holds a parsed template that points more directly
+        /// to any domains involved.</remarks>
+        static string GetDomainValue(string shortValue, string columnName, ITable table)
+        {
+            // Attempt to locate the column in question
+            IColumnDomain[] cds = table.ColumnDomains;
+            IColumnDomain cd = Array.Find<IColumnDomain>(cds, delegate(IColumnDomain t)
+                { return String.Compare(t.ColumnName, columnName, true)==0; });
+            if (cd == null)
+                return shortValue;
+
+            // Perform a lookup on the domain
+            IDomainTable dt = cd.Domain;
+            string longValue = dt.Lookup(shortValue);
+
+            // If it's not there, it SHOULD be blank
+            if (String.IsNullOrEmpty(longValue))
+                return shortValue;
+            else
+                return longValue;
         }
 
         /// <summary>

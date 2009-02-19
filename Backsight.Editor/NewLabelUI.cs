@@ -746,6 +746,9 @@ namespace Backsight.Editor
             if (m_Schema==null)
                 return false;
 
+            AttributeDataForm dial = new AttributeDataForm(m_Schema);
+            dial.ShowDialog();
+            dial.Dispose();
 
             MessageBox.Show("Attribute data entry is not currently implemented");
             return false;
