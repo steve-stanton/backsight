@@ -1209,6 +1209,62 @@
     <GroupId>0</GroupId>
     <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
+  <EntityTypeSchema>
+    <EntityId>31</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>33</EntityId>
+    <SchemaId>477</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>49</EntityId>
+    <SchemaId>478</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>50</EntityId>
+    <SchemaId>481</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>51</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>52</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>53</EntityId>
+    <SchemaId>479</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>54</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>55</EntityId>
+    <SchemaId>480</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>56</EntityId>
+    <SchemaId>484</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>57</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>58</EntityId>
+    <SchemaId>483</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>59</EntityId>
+    <SchemaId>486</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>517</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
   <Font>
     <FontId>0</FontId>
     <TypeFace />
