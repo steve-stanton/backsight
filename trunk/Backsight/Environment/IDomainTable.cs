@@ -36,7 +36,7 @@ namespace Backsight.Environment
         /// Performs a lookup on the domain table
         /// </summary>
         /// <param name="shortValue">The abbreviated code to lookup</param>
-        /// <returns>The expanded value for the lookup</returns>
+        /// <returns>The expanded value for the lookup (blank if not found)</returns>
         string Lookup(string shortValue);
     }
 }

@@ -40,6 +40,7 @@ namespace Backsight.Editor.Forms
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.defaultAnnotationCheckBox = new System.Windows.Forms.CheckBox();
             this.annotationTemplateComboBox = new System.Windows.Forms.ComboBox();
+            this.noTemplatesLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -82,6 +83,7 @@ namespace Backsight.Editor.Forms
             this.entityTypeComboBox.FormattingEnabled = true;
             this.entityTypeComboBox.Location = new System.Drawing.Point(121, 12);
             this.entityTypeComboBox.Name = "entityTypeComboBox";
+            this.entityTypeComboBox.ShowBlankEntityType = true;
             this.entityTypeComboBox.Size = new System.Drawing.Size(226, 24);
             this.entityTypeComboBox.TabIndex = 0;
             this.entityTypeComboBox.SelectedValueChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
@@ -134,11 +136,12 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.noTemplatesLabel);
             this.groupBox2.Controls.Add(this.defaultAnnotationCheckBox);
             this.groupBox2.Controls.Add(this.annotationTemplateComboBox);
             this.groupBox2.Location = new System.Drawing.Point(12, 136);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(558, 73);
+            this.groupBox2.Size = new System.Drawing.Size(558, 84);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "What sort of Annotation?";
@@ -163,6 +166,16 @@ namespace Backsight.Editor.Forms
             this.annotationTemplateComboBox.Size = new System.Drawing.Size(363, 24);
             this.annotationTemplateComboBox.TabIndex = 2;
             this.annotationTemplateComboBox.SelectedValueChanged += new System.EventHandler(this.annotationTemplateComboBox_SelectedValueChanged);
+            // 
+            // noTemplatesLabel
+            // 
+            this.noTemplatesLabel.AutoSize = true;
+            this.noTemplatesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.noTemplatesLabel.Location = new System.Drawing.Point(10, 57);
+            this.noTemplatesLabel.Name = "noTemplatesLabel";
+            this.noTemplatesLabel.Size = new System.Drawing.Size(245, 16);
+            this.noTemplatesLabel.TabIndex = 3;
+            this.noTemplatesLabel.Text = "No templates for specified polygon type";
             // 
             // NewLabelForm
             // 
@@ -205,5 +218,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.CheckBox defaultAnnotationCheckBox;
         private System.Windows.Forms.ComboBox annotationTemplateComboBox;
         private SchemaComboBox schemaComboBox;
+        private System.Windows.Forms.Label noTemplatesLabel;
     }
 }
