@@ -18,9 +18,11 @@ using System.Windows.Forms;
 using System.Data;
 
 using Backsight.Forms;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
+    /// <written by="Steve Stanton" on="10-FEB-2009"/>
     /// <summary>
     /// A TabPage that contains a PropertyGrid
     /// </summary>
@@ -38,6 +40,9 @@ namespace Backsight.Editor.Forms
             // Set the text on the tab
             this.Text = row.Table.TableName;
 
+            // We'll display any expanded domain values if we can
+            IColumnDomain[] cds = row.Table.ColumnDomains;
+
             // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
             // hard way (is there a better way?)
 
@@ -49,7 +54,23 @@ namespace Backsight.Editor.Forms
             for (int i=0; i<items.Length; i++)
             {
                 DataColumn dc = table.Columns[i];
-                AdhocProperty item = new AdhocProperty(dc.ColumnName, items[i]);
+                string columnName = dc.ColumnName;
+                AdhocProperty item = new AdhocProperty(columnName, items[i]);
+                item.ReadOnly = true;
+
+                // If the column is associated with a domain, lookup the expanded value and
+                // record as the item's description
+
+                IColumnDomain cd = Array.Find<IColumnDomain>(cds, delegate(IColumnDomain t)
+                    { return String.Compare(t.ColumnName, columnName, true)==0; });
+
+                if (cd != null)
+                {
+                    string shortValue = items[i].ToString();
+                    string longValue = cd.Domain.Lookup(shortValue);
+                    item.Description = longValue;
+                }
+
                 props.Add(item);
             }
 

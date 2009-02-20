@@ -92,6 +92,7 @@
     <Compile Include="Forms\AttributeDataForm.Designer.cs">
       <DependentUpon>AttributeDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ColumnDomainConverter.cs" />
     <Compile Include="Forms\CoordSystemForm.cs">
       <SubType>Form</SubType>
     </Compile>
