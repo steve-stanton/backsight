@@ -118,6 +118,29 @@ namespace Backsight.Data
 
                 return result;
             }
+
+            /// <summary>
+            /// The lookup values in the domain table
+            /// </summary>
+            public string[] LookupValues
+            {
+                get
+                {
+                    if (m_Data == null)
+                        m_Data = LoadDomainTable();
+
+                    string[] result = new string[m_Data.Count];
+
+                    int i = 0;
+                    foreach (string s in m_Data.Keys)
+                    {
+                        result[i] = s;
+                        i++;
+                    }
+
+                    return result;
+                }
+            }
         }
     }
 }

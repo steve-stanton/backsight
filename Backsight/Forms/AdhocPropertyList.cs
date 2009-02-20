@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 
 namespace Backsight.Forms
 {
@@ -35,6 +36,7 @@ namespace Backsight.Forms
         private String m_Description;
         private String m_Category;
         private TypeConverter m_Converter;
+        private UITypeEditor m_Editor;
 
         /// <summary>
         /// Creates a property that's not readonly, and which is visible
@@ -56,6 +58,7 @@ namespace Backsight.Forms
             m_Description = this.sName;
             m_Category = String.Empty;
             m_Converter = null;
+            m_Editor = null;
 		}
 
 		public bool ReadOnly
@@ -91,6 +94,12 @@ namespace Backsight.Forms
         {
             get { return m_Converter; }
             set { m_Converter = value; }
+        }
+
+        public UITypeEditor Editor
+        {
+            get { return m_Editor; }
+            set { m_Editor = value; }
         }
 
 		public bool Visible
