@@ -17,11 +17,12 @@ using System;
 using System.Windows.Forms;
 using System.Data;
 using System.ComponentModel;
+using System.Drawing.Design;
 
 using Backsight.Environment;
 using Backsight.Editor.Database;
 using Backsight.Forms;
-using System.Drawing.Design;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -31,15 +32,44 @@ namespace Backsight.Editor.Forms
     /// </summary>
     public partial class AttributeDataForm : Form
     {
+        #region Static
+
+        static ITable s_LastTable;
+
+        /// <summary>
+        /// The last row that was entered via this dialog
+        /// </summary>
+        static object[] s_LastItems;
+
+        #endregion
+
         #region Class data
 
+        /// <summary>
+        /// The table the attribute data is for
+        /// </summary>
         readonly ITable m_Table;
+
+        /// <summary>
+        /// The ID that will be assigned to the new label
+        /// </summary>
+        readonly string m_Id;
+
+        /// <summary>
+        /// The data entered by the user
+        /// </summary>
+        DataRow m_Data;
 
         #endregion
 
         #region Constructors
 
-        public AttributeDataForm(ITable t)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="t">The table the attribute data is for</param>
+        /// <param name="id">The ID that will be assigned to the new label</param>
+        public AttributeDataForm(ITable t, string id)
         {
             InitializeComponent();
 
@@ -47,6 +77,7 @@ namespace Backsight.Editor.Forms
                 throw new ArgumentNullException();
 
             m_Table = t;
+            m_Id = id;
         }
 
         #endregion
@@ -59,7 +90,12 @@ namespace Backsight.Editor.Forms
                 DataRow data = DbUtil.CreateNewRow(m_Table);
 
                 // Initialize items so they match the values of the last row we processed (if any)
-                // TODO
+                if (s_LastTable != null && s_LastTable.Id == m_Table.Id)
+                {
+                    Debug.Assert(s_LastItems != null);
+                    Debug.Assert(s_LastItems.Length == data.Table.Columns.Count);
+                    data.ItemArray = s_LastItems;
+                }
 
                 SetRow(data);
             }
@@ -72,6 +108,8 @@ namespace Backsight.Editor.Forms
 
         void SetRow(DataRow data)
         {
+            m_Data = data;
+
             // Create type converters for any domains
             IColumnDomain[] cds = m_Table.ColumnDomains;
             ColumnDomainConverter[] cvs = new ColumnDomainConverter[cds.Length];
@@ -93,8 +131,9 @@ namespace Backsight.Editor.Forms
                 AdhocProperty item = new AdhocProperty(columnName, items[i]);
 
                 // Disallow editing of the feature ID
-                if (String.Compare(columnName, m_Table.IdColumnName, true)==0)
+                if (String.Compare(columnName, m_Table.IdColumnName, true) == 0)
                 {
+                    item.Value = m_Id;
                     item.Description = "The ID field cannot be edited";
                     item.ReadOnly = true;
                 }
@@ -107,7 +146,6 @@ namespace Backsight.Editor.Forms
                     if (cv != null)
                     {
                         item.Converter = cv;
-                        //item.Editor = new UITypeEditor();
                     }
                     else
                     {
@@ -124,6 +162,8 @@ namespace Backsight.Editor.Forms
                             item.Converter = new DoubleConverter();
                         else if (t == typeof(float))
                             item.Converter = new SingleConverter();
+                        else if (t == typeof(DateTime))
+                            item.Converter = new DateTimeConverter();
                         else
                             item.Converter = new StringConverter();
                     }
@@ -137,14 +177,37 @@ namespace Backsight.Editor.Forms
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
+            m_Data = null;
             this.DialogResult = DialogResult.Cancel;
             Close();
         }
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            // Remember the row as-entered (and the table involved) - we'll
+            // use it the data to initialize default values the next time this
+            // dialog is displayed)
+            AdhocPropertyList list = (propertyGrid.SelectedObject as AdhocPropertyList);
+            if (list == null)
+                throw new InvalidOperationException();
+
+            foreach (AdhocProperty p in list)
+                m_Data[p.Name] = p.Value;
+
+            s_LastTable = m_Table;
+            s_LastItems = m_Data.ItemArray;
+
             this.DialogResult = DialogResult.OK;
             Close();
+        }
+
+        /// <summary>
+        /// The data specified by the user (null if the user cancelled from
+        /// the dialog)
+        /// </summary>
+        internal DataRow Data
+        {
+            get { return m_Data; }
         }
     }
 }

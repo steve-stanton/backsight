@@ -1231,10 +1231,12 @@ namespace Backsight.Editor
         internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, DataRow row, ITemplate atemplate,
                                             double height, double width, double rotation)
         {
+            // Create a row-text primitive.
+            RowTextGeometry text = new RowTextGeometry();
+
             throw new NotImplementedException("CadastralMapModel.AddRowLabel");
         }
         /*
-	// Create a row-text primitive.
 	CeRowText* pText =
 		new ( os_database::of(this), os_ts<CeRowText>::get() )
 		CeRowText((CeRow*)row,(CeTemplate*)atemplate,vtx);
@@ -1249,6 +1251,42 @@ namespace Backsight.Editor
 
 } // end of AddRowLabel
          */
+
+        /// <summary>
+        /// Adds a label that is based on a row.
+        /// </summary>
+        /// <param name="creator">The editing operation creating the text</param>
+        /// <param name="polygonId">The ID and entity type to assign to the label.</param>
+        /// <param name="vtx">The reference position of the label.</param>
+        /// <param name="row">The row to attach to the label.</param>
+        /// <param name="atemplate">The template for the row text.</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the text, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        /// <returns>The newly created text</returns>
+        internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, DataRow row,
+            ITemplate atemplate, double height, double width, double rotation)
+        {
+            // Exit with error if the key is not reserved.
+            if (!polygonId.IsReserved)
+                throw new ArgumentException();
+
+            // Add the label.
+            IEntity ent = polygonId.Entity;
+            TextFeature label = AddRowLabel(creator, ent, vtx, row, atemplate,
+                                            height, width, rotation);
+
+            if (label != null)
+            {
+                // Define the label's key.
+                FeatureId id = polygonId.CreateId(label);
+
+                // Attach the row to the new label
+                Row r = new Row(id, atemplate.Schema, row);
+            }
+
+            return label;
+        }
 
         /// <summary>
         /// Generic processing for adding a label.
