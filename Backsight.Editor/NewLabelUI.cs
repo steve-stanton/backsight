@@ -198,23 +198,16 @@ namespace Backsight.Editor
             // Get any attributes.
             if (m_Schema != null)
             {
-                if (!GetAttributes() || m_LastRow == null)
+                if (!GetAttributes(str) || m_LastRow == null)
                 {
                     DialFinish(null);
                     return false;
                 }
 
                 // If an annotation template has been specified, use that
-                // to get the text from the row (pass in the ID in case the
-                // template includes a reference to the key).
-                throw new NotImplementedException("NewLabelUI.GetLabelInfo");
-                /*
-		            if ( m_pTemplate ) {
-			            CString text;
-			            m_pTemplate->GetText(*m_pLastRow,(LPCTSTR)str,text);
-			            str = text;
-		            }
-                 */
+                // to get the text from the row
+                if (m_Template != null)
+                    str = RowTextGeometry.GetText(m_LastRow, m_Template);
             }
 
             // Tell the base class.
@@ -739,86 +732,23 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets the attributes for a new label.
         /// </summary>
-        /// <returns>True if attributes entered OK.</returns>
-        bool GetAttributes()
+        /// <param name="id">The ID that will be assigned to the new label</param>
+        /// <returns>True if attributes entered OK (m_LastRow defined).</returns>
+        bool GetAttributes(string id)
         {
             // There HAS to be a schema.
             if (m_Schema==null)
                 return false;
 
-            AttributeDataForm dial = new AttributeDataForm(m_Schema);
-            dial.ShowDialog();
+            AttributeDataForm dial = new AttributeDataForm(m_Schema, id);
+            if (dial.ShowDialog() == DialogResult.OK)
+                m_LastRow = dial.Data;
+            else
+                m_LastRow = null;
+
             dial.Dispose();
-
-            MessageBox.Show("Attribute data entry is not currently implemented");
-            return false;
+            return (m_LastRow != null);
         }
-        /*
-	// Allocate a blob of memory to hold the attribute data.
-	CHARS* pAttrData = new CHARS[m_pSchema->GetSchemaMemSize()];
-
-	// If we previously created a row, make a copy of it's data.
-	// Otherwise define default attributes.
-
-	if ( m_pLastRow ) {
-
-		m_pLastRow->SaveDataCopy(pAttrData);
-
-		// If it didn't get associated with a label (somehow), get
-		// rid of it now.
-		if ( !m_pLastRow->GetpId() ) {
-			delete m_pLastRow;
-			m_pLastRow = 0;
-		}
-	}
-	else
-		m_pSchema->MakeDefaultBlob(pAttrData);
-
-	// Create a new row (without an ID).
-	m_pLastRow = new ( os_database::of(m_pSchema)
-				     , os_ts<CeRow>::get() )
-					   CeRow(*m_pSchema,pAttrData);
-
-	// Don't need our copy of the attribute data any more.
-	delete [] pAttrData;
-	pAttrData = 0;
-
-	// Construct 'container dialog' to hold controls
-	CdRowDialog ParentDialog(TRUE,FALSE);
-
-	// Next construct empty dynamic dialog to have controls added to
-	CeDynamicDialog DynamicDialog(&ParentDialog,0,14,4000,10,5);
-		
-	// Set the title for the dialog window
-	DynamicDialog.SetWindowTitle("Specify Attributes for Next Label");
-
-	// Set the dynamic dialog in the container dialog so that
-	// OnSize messages get handled.
-	ParentDialog.SetDynamicDialog(&DynamicDialog);
-
-	// Construct the object for displaying a row of attributes.
-	CeRowDisplay DisplayObject(&DynamicDialog,TRUE,m_pLastRow);
-
-	// Set the object used to construct the controls
-	ParentDialog.SetDisplayObject(&DisplayObject);
-
-	// Present modal dialog.
-	if ( ParentDialog.DoModal()!=IDOK ) return FALSE;
-	
-	// if the user requested setting of attributes and some were changed, then they
-	// are set in the CeRow object
-
-	if ( DynamicDialog.IsChanged() ) {
-		m_pLastRow->OnPreChange();
-		LOGICAL retval = DisplayObject.UpdateRow(TRUE);
-		m_pLastRow->OnPostChange();
-		return retval;
-	}
-
-	return TRUE;
-
-} // end of GetAttributes
-        */
 
         /// <summary>
         /// Updates a previously added polygon label.

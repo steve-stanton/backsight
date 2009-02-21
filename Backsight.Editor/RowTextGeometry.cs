@@ -83,7 +83,11 @@ namespace Backsight.Editor
         /// </summary>
         public override string Text
         {
-            get { return GetText(m_Row, m_Template); }
+            get
+            {
+                Debug.Assert(m_Row.Table.Id == m_Template.Schema.Id);
+                return GetText(m_Row.Data, m_Template);
+            }
         }
 
         /// <summary>
@@ -119,17 +123,14 @@ namespace Backsight.Editor
         /// <para/>
         /// "Public Lane" - specifies that only this text be output
         /// </remarks>
-        static string GetText(Row row, ITemplate template)
+        internal static string GetText(DataRow data, ITemplate template)
         {
-            // The row must have a defined schema (and presumably the same
-            // as the same as the template's schema, although we won't check).
-            ITable schema = row.Table;
+            ITable schema = template.Schema;
             Debug.Assert(schema!=null);
 
             StringBuilder result = new StringBuilder(100);
             string fmt = template.Format;
             int startIndex = 0;
-            DataRow data = row.Data;
 
             while (startIndex < fmt.Length)
             {

@@ -190,43 +190,29 @@ namespace Backsight.Editor.Operations
             Complete();
         }
 
-        internal void Execute(IPosition vtx, double ght, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol)
+        /// <summary>
+        /// Executes the new label operation.
+        /// </summary>
+        /// <param name="vtx">The position of the new label.</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="polygonId">The ID and entity type to assign to the new label.</param>
+        /// <param name="row">The data to use for creating a row for the new label.</param>
+        /// <param name="atemplate">The template to use in creating the RowTextGeometry
+        /// for the new label.</param>
+        /// <param name="pol">The polygon that the label falls inside. It should not already
+        /// refer to a label. Not null.</param>
+        internal void Execute(IPosition vtx, double height, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol)
         {
+            if (pol == null)
+                throw new ArgumentNullException();
+
+            // Add the label.
+            CadastralMapModel map = MapModel;
+            //m_NewText = map.AddRowLabel(this, polygonId, vtx, height, width, rotation);
+
             throw new NotImplementedException("NewTextOperation.Execute");
         }
         /*
-//	@mfunc	Execute the new label operation.
-//
-//	@parm	The position of the new label.
-//	@parm	The height for the new label, in metres on the ground.
-//			Specify 0.0 to get the entity type's default size.
-//	@parm	The ID and entity type to assign to the new label.
-//	@parm	The transient row to use for creating a row for the new label.
-//	@parm	The template to use in creating the CeRowText primitive for the
-//          new label.
-//	@parm	The polygon that the label falls inside. It should
-//			not already refer to a label. Specify 0 if the
-//			label is non-topological.
-//
-//	@rdesc	TRUE if operation executed ok.
-//
-//////////////////////////////////////////////////////////////////////
-
-LOGICAL CeNewLabel::Execute	( const CeVertex& vtx
-							, const FLOAT8 ght
- 							, const CeIdHandle& polygonId
-							, CeRow& row
-							, const CeTemplate& atemplate
-							, CePolygon* pPol ) {
-
-//	Confirm that any specified polygon is good.
-	if ( pPol && pPol->IsIsland() ) {
-		ShowMessage ( "CeNewLabel::Execute\nIsland polygon." );
-		return FALSE;
-	}
-
-//	Add the label.
-	CeMap* pMap = CeMap::GetpMap();
 	m_pNewLabel = pMap->AddRowLabel(polygonId,vtx,&row,&atemplate,(FLOAT4)ght);
 	if ( !m_pNewLabel ) return FALSE;
 
@@ -235,25 +221,6 @@ LOGICAL CeNewLabel::Execute	( const CeVertex& vtx
 		m_pNewLabel->SetTopology(TRUE);
 		pPol->ClaimLabel(*m_pNewLabel);
 	}
-	else
-		m_pNewLabel->SetTopology(FALSE);
-
-	// Cross-reference the row to this op.
-	// 22-OCT-99: This was done so that if the row was subsequently
-	// changed, we could navigate to the corresponding CeRowText
-	// object to update the spatial index. However, if you rolled
-	// back an extra label, CeLabel::SetDeleted did not remove
-	// the CeRow object, which would lead to a mem violation
-	// shortly thereafter. Although it would have been possible
-	// to extend the rollback logic, it's better to handle things
-	// by overriding CePrimitive::OnPreChange/OnPostChange in
-	// CeRow, and getting it to funnel the request to the
-	// row text via the CeFeatureId and CeLabel objects. That
-	// way, it will also work in the eventuality that the row
-	// is attached via some technique other than a CeNewLabel
-	// operation.
-
-	// row.AddOp(*this);
 
 	return TRUE;
 
