@@ -114,7 +114,38 @@ namespace Backsight.Editor.Database
             {
                 string sql = String.Format("SELECT * FROM {0} WHERE 1=0", t.TableName);
                 DataTable dt = ExecuteSelect(ic.Value, sql);
-                return dt.NewRow();
+                DataRow result = dt.NewRow();
+                result.Table.TableName = t.TableName;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Add a row to the database
+        /// </summary>
+        /// <param name="row">The row to add. Usually a row that was created via a
+        /// prior call to <see cref="CreateNewRow"/> (the important thing is that
+        /// the table name must be defined as part of the rows associated <c>DataTable</c>)</param>
+        /// <remarks>This makes use of the <see cref="SqlCommandBuilder"/> class to
+        /// generate the relevant insert statement, which requires that the table involved
+        /// must have a primary key (if not, you will get an exception)</remarks>
+        /// <exception cref="ArgumentException">If the <see cref="DataTable"/> associated
+        /// with the supplied row does not contain a defined table name.</exception>
+        public static void SaveRow(DataRow row)
+        {
+            DataTable dt = row.Table;
+            string tableName = dt.TableName;
+            if (String.IsNullOrEmpty(tableName))
+                throw new ArgumentException("Table name for row is not defined");
+
+            using (IConnection ic = ConnectionFactory.Create())
+            {
+                SqlConnection c = ic.Value;
+                SqlDataAdapter a = new SqlDataAdapter("SELECT * FROM " + tableName, c);
+                SqlCommandBuilder cb = new SqlCommandBuilder(a);
+                dt.Rows.Add(row);
+                int nRows = a.Update(dt);
+                Debug.Assert(nRows == 1);
             }
         }
     }
