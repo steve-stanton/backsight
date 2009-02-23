@@ -25,6 +25,7 @@ using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -678,8 +679,7 @@ namespace Backsight.Editor
                         //}
 
                         // Save the attributes in the database
-                        DataTable t = m_LastRow.Table;
-
+                        DbUtil.SaveRow(m_LastRow);
                     }
                     else
                     {
