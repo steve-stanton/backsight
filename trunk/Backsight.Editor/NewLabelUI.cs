@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Data;
@@ -272,9 +272,9 @@ namespace Backsight.Editor
             }
 
             if (m_IsAutoPos && m_AutoPosition!=null)
-                DrawRect(m_AutoPosition);
+                DrawText(m_AutoPosition);
             else
-                DrawRect(pos);
+                DrawText(pos);
         }
 
         /// <summary>
@@ -667,7 +667,7 @@ namespace Backsight.Editor
 
                     if (m_Template!=null && m_LastRow!=null)
                     {
-                        op.Execute(posn, Height, m_PolygonId, m_LastRow, m_Template, m_Polygon);
+                        op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
                         // Confirm that the row got cross-referenced to an ID (not
 			            // sure what the above ends up doing).
@@ -676,6 +676,10 @@ namespace Backsight.Editor
                         //    MessageBox.Show("Attributes were not attached to an ID");
                         //    return null;
                         //}
+
+                        // Save the attributes in the database
+                        DataTable t = m_LastRow.Table;
+
                     }
                     else
                     {
@@ -861,7 +865,7 @@ namespace Backsight.Editor
                 if (m_AutoPosition==null)
                     m_AutoPosition = m_Polygon.GetLabelPosition(Width, Height);
 
-                DrawRect(m_AutoPosition);
+                DrawText(m_AutoPosition);
             }
             else
                 base.Paint(point);

@@ -159,7 +159,7 @@ namespace Backsight.Editor
             EraseRect();
 
             // Draw a rectangle representing the outline of the text.
-            DrawRect(p);
+            DrawText(p);
         }
 
         /// <summary>
