@@ -75,8 +75,34 @@ namespace Backsight.Editor
             m_Template = template;
         }
 
+        /// <summary>
+        /// Copy constructor (for use by the <see cref="RowTextContent"/> class)
+        /// </summary>
+        /// <param name="copy">The geometry to copy</param>
+        protected RowTextGeometry(RowTextGeometry copy)
+            : base(copy)
+        {
+            m_Row = copy.m_Row;
+            m_Template = copy.m_Template;
+        }
+
         #endregion
 
+        /// <summary>
+        /// The row that contains the information to format
+        /// </summary>
+        internal Row Row
+        {
+            get { return m_Row; }
+        }
+
+        /// <summary>
+        /// How to form the text string out of the data in the row.
+        /// </summary>
+        internal ITemplate Template
+        {
+            get { return m_Template; }
+        }
 
         /// <summary>
         /// The text string represented by this geometry
@@ -268,7 +294,7 @@ namespace Backsight.Editor
             if (this is RowTextContent)
                 base.WriteContent(writer);
             else
-                new RowTextContent(m_Row, m_Template).WriteContent(writer);
+                new RowTextContent(this).WriteContent(writer);
         }
 
         /// <summary>

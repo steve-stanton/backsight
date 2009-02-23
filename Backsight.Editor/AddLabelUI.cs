@@ -68,6 +68,11 @@ namespace Backsight.Editor
         /// </summary>
         double m_Rotation;
 
+        /// <summary>
+        /// The text that was last used to derive m_Width and m_Height
+        /// </summary>
+        string m_Text;
+
         #endregion
 
         #region Constructors
@@ -106,10 +111,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Draws a rectangle representing the outline of the label that is currently being added.
+        /// Draws the text that is currently being added, together with a rectangle representing
+        /// the outline of the label.
         /// </summary>
         /// <param name="refpos">Reference position for the label</param>
-        protected void DrawRect(IPosition refpos)
+        protected void DrawText(IPosition refpos)
         {
             if (refpos==null)
                 return;
@@ -118,6 +124,12 @@ namespace Backsight.Editor
             IPosition[] outline = GetOutline(refpos);
             IDrawStyle style = new DrawStyle(); // black
             style.Render(ActiveDisplay, outline);
+
+            // Draw the text
+            PointGeometry p = PointGeometry.Create(refpos);
+            IFont font = (m_Entity==null ? null : m_Entity.Font);
+            MiscText text = new MiscText(m_Text, p, font, m_Height, m_Width, (float)m_Rotation);
+            style.Render(ActiveDisplay, text);
 
             // If doing auto-angle stuff, draw an additional line
             // at the position used to search for candidate lines
@@ -227,6 +239,9 @@ namespace Backsight.Editor
                 return false;
             }
 
+            // Remember the text that the dimensions correspond to
+            m_Text = str;
+
             // The entity type provides the height of the text (in point units)
             IFont fontInfo = m_Entity.Font;
             if (fontInfo==null)
@@ -310,7 +325,7 @@ namespace Backsight.Editor
             CadastralMapModel.Current.DefaultTextRotation = rot;
 
             // Redraw the rectangle at the last position.
-            DrawRect(m_LastPos);
+            DrawText(m_LastPos);
         }
 
         /// <summary>
@@ -429,7 +444,7 @@ namespace Backsight.Editor
         /// <param name="point">The specific point (if any) that the parent window has drawn.</param>
         internal override void Paint(PointFeature point)
         {
-            DrawRect(m_LastPos);
+            DrawText(m_LastPos);
         }
     }
 }

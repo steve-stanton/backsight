@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -1231,12 +1231,10 @@ namespace Backsight.Editor
         internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, DataRow row, ITemplate atemplate,
                                             double height, double width, double rotation)
         {
-            // Create a row-text primitive.
-            RowTextGeometry text = new RowTextGeometry();
-
             throw new NotImplementedException("CadastralMapModel.AddRowLabel");
         }
         /*
+            // Create a row-text primitive.
 	CeRowText* pText =
 		new ( os_database::of(this), os_ts<CeRowText>::get() )
 		CeRowText((CeRow*)row,(CeTemplate*)atemplate,vtx);
@@ -1271,19 +1269,19 @@ namespace Backsight.Editor
             if (!polygonId.IsReserved)
                 throw new ArgumentException();
 
-            // Add the label.
+            // Add the label with null geometry for now (chicken and egg -- need Feature in order
+            // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
-            TextFeature label = AddRowLabel(creator, ent, vtx, row, atemplate,
-                                            height, width, rotation);
+            TextFeature label = new TextFeature(null, ent, creator);
 
-            if (label != null)
-            {
-                // Define the label's key.
-                FeatureId id = polygonId.CreateId(label);
+            // Define the label's ID and attach the row to it
+            FeatureId id = polygonId.CreateId(label);
+            Row r = new Row(id, atemplate.Schema, row);
 
-                // Attach the row to the new label
-                Row r = new Row(id, atemplate.Schema, row);
-            }
+            // Attach the geometry
+            PointGeometry p = PointGeometry.Create(vtx);
+            RowTextGeometry text = new RowTextGeometry(r, atemplate, p, ent.Font, height, width, (float)rotation);
+            label.TextGeometry = text;
 
             return label;
         }

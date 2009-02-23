@@ -134,7 +134,7 @@ namespace Backsight.Editor.Forms
                 if (String.Compare(columnName, m_Table.IdColumnName, true) == 0)
                 {
                     item.Value = m_Id;
-                    item.Description = "The ID field cannot be edited";
+                    item.Description = "The ID field cannot be edited"; // not sure if autonumber is turned off
                     item.ReadOnly = true;
                 }
                 else

@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Data;
@@ -194,39 +194,32 @@ namespace Backsight.Editor.Operations
         /// Executes the new label operation.
         /// </summary>
         /// <param name="vtx">The position of the new label.</param>
-        /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="polygonId">The ID and entity type to assign to the new label.</param>
         /// <param name="row">The data to use for creating a row for the new label.</param>
         /// <param name="atemplate">The template to use in creating the RowTextGeometry
         /// for the new label.</param>
         /// <param name="pol">The polygon that the label falls inside. It should not already
         /// refer to a label. Not null.</param>
-        internal void Execute(IPosition vtx, double height, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol)
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The width of the new label, in meters on the ground.</param>
+        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
+        internal void Execute(IPosition vtx, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol,
+                                double height, double width, double rotation)
         {
             if (pol == null)
                 throw new ArgumentNullException();
 
             // Add the label.
             CadastralMapModel map = MapModel;
-            //m_NewText = map.AddRowLabel(this, polygonId, vtx, height, width, rotation);
+            m_NewText = map.AddRowLabel(this, polygonId, vtx, row, atemplate, height, width, rotation);
 
-            throw new NotImplementedException("NewTextOperation.Execute");
+            // Associate the polygon with the label, and vice versa.
+            m_NewText.SetTopology(true);
+            pol.ClaimLabel(m_NewText);
+
+            Complete();
         }
-        /*
-	m_pNewLabel = pMap->AddRowLabel(polygonId,vtx,&row,&atemplate,(FLOAT4)ght);
-	if ( !m_pNewLabel ) return FALSE;
 
-//	Associate the polygon with the label, and vice versa.
-	if ( pPol ) {
-		m_pNewLabel->SetTopology(TRUE);
-		pPol->ClaimLabel(*m_pNewLabel);
-	}
-
-	return TRUE;
-
-} // end of Execute
-#endif
-*/
         /// <summary>
         /// Executes this operation. This version is suitable for adding miscellaneous
         /// non-topological trim.

@@ -87,6 +87,19 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Copy constructor (for use by the <see cref="RowTextContent"/> class)
+        /// </summary>
+        /// <param name="copy">The geometry to copy</param>
+        protected TextGeometry(TextGeometry copy)
+        {
+            m_Font = copy.m_Font;
+            m_Position = copy.m_Position;
+            m_Height = copy.m_Height;
+            m_Width = copy.m_Width;
+            m_Rotation = copy.m_Rotation;
+        }
+
         #endregion
 
         /// <summary>

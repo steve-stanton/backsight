@@ -54,18 +54,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RowTextContent"/> class.
+        /// Initializes a new instance of the <see cref="RowTextContent"/> class that matches
+        /// an instance of <see cref="RowTextGeometry"/>
         /// </summary>
-        /// <param name="row">The row that contains the information to format</param>
-        /// <param name="template">How to form the text string out of the data in the row</param>
-        internal RowTextContent(Row row, ITemplate template)
+        /// <param name="copy">The text geometry to copy from</param>
+        internal RowTextContent(RowTextGeometry copy)
+            : base(copy)
         {
-            if (row==null || template==null)
-                throw new ArgumentNullException();
+            Row r = copy.Row;
+            ITemplate t = copy.Template;
 
-            m_Id = row.Id.FormattedKey;
-            m_TableId = row.Table.Id;
-            m_TemplateId = template.Id;
+            m_Id = r.Id.FormattedKey;
+            m_TableId = r.Table.Id;
+            m_TemplateId = t.Id;
         }
 
         #endregion
