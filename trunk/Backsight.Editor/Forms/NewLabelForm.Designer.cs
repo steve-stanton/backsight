@@ -38,9 +38,9 @@ namespace Backsight.Editor.Forms
             this.allSchemasCheckBox = new System.Windows.Forms.CheckBox();
             this.noAttributesCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.noTemplatesLabel = new System.Windows.Forms.Label();
             this.defaultAnnotationCheckBox = new System.Windows.Forms.CheckBox();
             this.annotationTemplateComboBox = new System.Windows.Forms.ComboBox();
-            this.noTemplatesLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -146,6 +146,16 @@ namespace Backsight.Editor.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "What sort of Annotation?";
             // 
+            // noTemplatesLabel
+            // 
+            this.noTemplatesLabel.AutoSize = true;
+            this.noTemplatesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.noTemplatesLabel.Location = new System.Drawing.Point(10, 57);
+            this.noTemplatesLabel.Name = "noTemplatesLabel";
+            this.noTemplatesLabel.Size = new System.Drawing.Size(245, 16);
+            this.noTemplatesLabel.TabIndex = 3;
+            this.noTemplatesLabel.Text = "No templates for specified polygon type";
+            // 
             // defaultAnnotationCheckBox
             // 
             this.defaultAnnotationCheckBox.AutoSize = true;
@@ -167,18 +177,9 @@ namespace Backsight.Editor.Forms
             this.annotationTemplateComboBox.TabIndex = 2;
             this.annotationTemplateComboBox.SelectedValueChanged += new System.EventHandler(this.annotationTemplateComboBox_SelectedValueChanged);
             // 
-            // noTemplatesLabel
-            // 
-            this.noTemplatesLabel.AutoSize = true;
-            this.noTemplatesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noTemplatesLabel.Location = new System.Drawing.Point(10, 57);
-            this.noTemplatesLabel.Name = "noTemplatesLabel";
-            this.noTemplatesLabel.Size = new System.Drawing.Size(245, 16);
-            this.noTemplatesLabel.TabIndex = 3;
-            this.noTemplatesLabel.Text = "No templates for specified polygon type";
-            // 
             // NewLabelForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(585, 282);
