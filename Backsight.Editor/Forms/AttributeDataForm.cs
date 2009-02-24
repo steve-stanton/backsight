@@ -18,11 +18,12 @@ using System.Windows.Forms;
 using System.Data;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Diagnostics;
+using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Editor.Database;
 using Backsight.Forms;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -89,15 +90,21 @@ namespace Backsight.Editor.Forms
                 this.Text = m_Table.TableName;
                 DataRow data = DbUtil.CreateNewRow(m_Table);
 
-                // Initialize items so they match the values of the last row we processed (if any)
+                // Initialize items so they match the values of the last row we processed (if any).
+                // Otherwise assign default values that are indicative of the data type.
                 if (s_LastTable != null && s_LastTable.Id == m_Table.Id)
                 {
                     Debug.Assert(s_LastItems != null);
                     Debug.Assert(s_LastItems.Length == data.Table.Columns.Count);
                     data.ItemArray = s_LastItems;
                 }
+                else
+                {
+                    AssignDefaultValues(data);
+                }
 
-                SetRow(data);
+                SetGrid(data);
+                grid.Focus();
             }
 
             catch (Exception ex)
@@ -106,73 +113,102 @@ namespace Backsight.Editor.Forms
             }
         }
 
-        void SetRow(DataRow data)
+        /// <summary>
+        /// Assigns default values to fields in a new row of attribute data. Numeric fields are
+        /// assigned a value of 0 (even though this could conceivably break check constraints).
+        /// Fields associated with a domain table are assigned the first lookup value (whatever
+        /// that is). Any other [var]char field that is not nullable will be assigned a blank value.
+        /// </summary>
+        /// <param name="data">The data to assign defaults to</param>
+        void AssignDefaultValues(DataRow data)
         {
-            m_Data = data;
-
-            // Create type converters for any domains
+            DataTable dt = data.Table;
             IColumnDomain[] cds = m_Table.ColumnDomains;
-            ColumnDomainConverter[] cvs = new ColumnDomainConverter[cds.Length];
 
-            for (int i=0; i<cds.Length; i++)
-                cvs[i] = new ColumnDomainConverter(cds[i]);
+            foreach (DataColumn dc in dt.Columns)
+            {
+                Type t = dc.DataType;
+                if (t==typeof(int) || t==typeof(short) || t==typeof(byte))
+                    data[dc] = 0;
+                else if (t==typeof(double) || t==typeof(float))
+                    data[dc] = 0.0;
+                else if (t==typeof(string))
+                {
+                    IColumnDomain cd = FindColumnDomain(dc.ColumnName);
 
-            // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
-            // hard way (is there a better way?)
+                    if (cd != null)
+                    {
+                        string[] vals = cd.Domain.LookupValues;
+                        if (vals.Length > 0)
+                            data[dc] = vals[0];
+                    }
+                    else if (!dc.AllowDBNull)
+                    {
+                        // Default to a blank string is the field isn't nullable                        
+                        data[dc] = String.Empty;
+                    }
+                }
+            }
+        }
 
+        IColumnDomain FindColumnDomain(string columnName)
+        {
+            IColumnDomain[] cds = m_Table.ColumnDomains;
+            return Array.Find<IColumnDomain>(cds,
+                delegate(IColumnDomain t) { return String.Compare(t.ColumnName, columnName, true)==0; });
+        }
+
+        void SetGrid(DataRow data)
+        {
+            grid.Enabled = false;
+            m_Data = data;
             DataTable table = data.Table;
             object[] items = data.ItemArray;
-            AdhocPropertyList props = new AdhocPropertyList(items.Length);
+
+            grid.RowCount = items.Length;
 
             for (int i=0; i<items.Length; i++)
             {
+                DataGridViewRow row = grid.Rows[i];
                 DataColumn dc = table.Columns[i];
-                string columnName = dc.ColumnName;
-                AdhocProperty item = new AdhocProperty(columnName, items[i]);
+                row.Tag = dc;
+                row.Cells["dgcColumnName"].Value = dc.ColumnName;
+
+                DataGridViewCell cell = row.Cells["dgcValue"];
+                cell.ValueType = dc.DataType;
+                cell.Value = items[i];
 
                 // Disallow editing of the feature ID
-                if (String.Compare(columnName, m_Table.IdColumnName, true) == 0)
+                if (String.Compare(dc.ColumnName, m_Table.IdColumnName, true) == 0)
                 {
-                    item.Value = m_Id;
-                    item.Description = "The ID field cannot be edited"; // not sure if autonumber is turned off
-                    item.ReadOnly = true;
+                    cell.Value = m_Id;
+                    cell.ReadOnly = true;
+                    DataGridViewCellStyle readStyle = new DataGridViewCellStyle(grid.DefaultCellStyle);
+                    readStyle.BackColor = Color.LightGray;
+                    cell.Style = readStyle;
                 }
-                else
-                {
-                    // If the column has a domain, define the corresponding converter
-                    ColumnDomainConverter cv = Array.Find<ColumnDomainConverter>(cvs,
-                        delegate(ColumnDomainConverter t) { return String.Compare(t.ColumnDomain.ColumnName, columnName, true)==0; });
-
-                    if (cv != null)
-                    {
-                        item.Converter = cv;
-                    }
-                    else
-                    {
-                        // Define a converter that's consistent with the column datatype (drop through
-                        // to a string converter)
-
-                        Type t = dc.DataType;
-
-                        if (t == typeof(int))
-                            item.Converter = new Int32Converter();
-                        else if (t == typeof(short))
-                            item.Converter = new Int16Converter();
-                        else if (t == typeof(double))
-                            item.Converter = new DoubleConverter();
-                        else if (t == typeof(float))
-                            item.Converter = new SingleConverter();
-                        else if (t == typeof(DateTime))
-                            item.Converter = new DateTimeConverter();
-                        else
-                            item.Converter = new StringConverter();
-                    }
-                }
-
-                props.Add(item);
             }
 
-            propertyGrid.SelectedObject = props;
+            // Enable the grid now (if the first editable cell selected below relates to
+            // a domain table, we want to domain values to show up)
+            grid.Enabled = true;
+
+            // Select the first editable cell (the first cell is frequently the ID, which
+            // the user is not expected to edit).
+            SelectFirstEditableValue();
+        }
+
+        void SelectFirstEditableValue()
+        {
+            foreach (DataGridViewRow row in grid.Rows)
+            {
+                DataGridViewCell cell = row.Cells["dgcValue"];
+                if (!cell.ReadOnly)
+                {
+                    grid.CurrentCell = cell;
+                    return;
+                }
+            }
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -184,16 +220,31 @@ namespace Backsight.Editor.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            foreach (DataGridViewRow row in grid.Rows)
+            {
+                object v = row.Cells["dgcValue"].Value;
+
+                // If we're dealing with a varchar column, ensure the entered value isn't too long
+                DataColumn dc = (DataColumn)row.Tag;
+                if (dc.DataType == typeof(string))
+                {
+                    string s = v.ToString();
+                    if (s.Length > dc.MaxLength)
+                    {
+                        string msg = String.Format("Value for {0} is too long (maximum is {1} characters)",
+                                                dc.ColumnName, dc.MaxLength);
+                        MessageBox.Show(msg, "Text too long");
+                        grid.CurrentCell = row.Cells["dgcValue"];
+                        return;
+                    }
+                }
+
+                m_Data[dc] = v;
+            }
+
             // Remember the row as-entered (and the table involved) - we'll
             // use it the data to initialize default values the next time this
             // dialog is displayed)
-            AdhocPropertyList list = (propertyGrid.SelectedObject as AdhocPropertyList);
-            if (list == null)
-                throw new InvalidOperationException();
-
-            foreach (AdhocProperty p in list)
-                m_Data[p.Name] = p.Value;
-
             s_LastTable = m_Table;
             s_LastItems = m_Data.ItemArray;
 
@@ -208,6 +259,77 @@ namespace Backsight.Editor.Forms
         internal DataRow Data
         {
             get { return m_Data; }
+        }
+
+        DataGridViewRow GetSelectedGridRow()
+        {
+            DataGridViewSelectedCellCollection sel = grid.SelectedCells;
+            if (sel==null || sel.Count==0)
+                return null;
+
+            DataGridViewCell cell = sel[0];
+            return grid.Rows[cell.RowIndex];
+        }
+
+        private void grid_SelectionChanged(object sender, EventArgs e)
+        {
+            domainGrid.Tag = null;
+            domainGrid.Rows.Clear();
+            domainGrid.Enabled = false;
+
+            if (!grid.Enabled)
+                return;
+
+            DataGridViewRow row = GetSelectedGridRow();
+            if (row == null)
+                return;
+
+            DataColumn dc = (DataColumn)row.Tag;
+            IColumnDomain cd = FindColumnDomain(dc.ColumnName);
+            if (cd != null)
+            {
+                // Note the currently defined value
+                string currentValue = row.Cells["dgcValue"].FormattedValue.ToString();
+                DataGridViewCell currentCell = null;
+
+                IDomainTable domainTable = cd.Domain;
+                string[] lookups = domainTable.LookupValues;
+                domainGrid.RowCount = lookups.Length;
+                for (int i=0; i<lookups.Length; i++)
+                {
+                    string shortValue = lookups[i];
+                    DataGridViewRow r = domainGrid.Rows[i];
+                    r.Tag = shortValue;
+                    r.Cells["dgcShortValue"].Value = shortValue;
+                    r.Cells["dgcLongValue"].Value = domainTable.Lookup(shortValue);
+
+                    // If we have just defined the current data value, remember the cell so
+                    // that we can set it once the grid has been loaded.
+                    if (shortValue == currentValue)
+                        currentCell = r.Cells["dgcShortValue"];
+                }
+
+                domainGrid.CurrentCell = currentCell;
+                domainGrid.Enabled = true;
+                domainGrid.Tag = domainTable;
+            }
+        }
+
+        private void domainGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            if (!domainGrid.Enabled)
+                return;
+
+            DataGridViewRow row = GetSelectedGridRow();
+            if (row == null)
+                return;
+
+            DataGridViewSelectedRowCollection sel = domainGrid.SelectedRows;
+            if (sel==null || sel.Count==0)
+                return;
+
+            string shortValue = sel[0].Tag.ToString();
+            row.Cells["dgcValue"].Value = shortValue;
         }
     }
 }
