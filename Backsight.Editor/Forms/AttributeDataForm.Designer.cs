@@ -33,16 +33,17 @@ namespace Backsight.Editor.Forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.gridContainer = new System.Windows.Forms.SplitContainer();
+            this.dataTypeLabel = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.grid = new System.Windows.Forms.DataGridView();
             this.dgcColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.domainValuesLabel = new System.Windows.Forms.Label();
             this.domainGrid = new System.Windows.Forms.DataGridView();
             this.dgcShortValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgcLongValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -72,6 +73,7 @@ namespace Backsight.Editor.Forms
             this.splitContainer.Size = new System.Drawing.Size(691, 591);
             this.splitContainer.SplitterDistance = 517;
             this.splitContainer.TabIndex = 0;
+            this.splitContainer.TabStop = false;
             // 
             // gridContainer
             // 
@@ -82,25 +84,46 @@ namespace Backsight.Editor.Forms
             // 
             // gridContainer.Panel1
             // 
+            this.gridContainer.Panel1.Controls.Add(this.dataTypeLabel);
             this.gridContainer.Panel1.Controls.Add(this.label2);
             this.gridContainer.Panel1.Controls.Add(this.grid);
             // 
             // gridContainer.Panel2
             // 
-            this.gridContainer.Panel2.Controls.Add(this.label1);
+            this.gridContainer.Panel2.Controls.Add(this.domainValuesLabel);
             this.gridContainer.Panel2.Controls.Add(this.domainGrid);
             this.gridContainer.Size = new System.Drawing.Size(691, 517);
             this.gridContainer.SplitterDistance = 368;
             this.gridContainer.TabIndex = 3;
+            this.gridContainer.TabStop = false;
+            // 
+            // dataTypeLabel
+            // 
+            this.dataTypeLabel.AutoSize = true;
+            this.dataTypeLabel.Location = new System.Drawing.Point(12, 482);
+            this.dataTypeLabel.Name = "dataTypeLabel";
+            this.dataTypeLabel.Size = new System.Drawing.Size(66, 16);
+            this.dataTypeLabel.TabIndex = 5;
+            this.dataTypeLabel.Text = "Data type";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(12, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(91, 16);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Data values";
             // 
             // grid
             // 
             this.grid.AllowUserToAddRows = false;
             this.grid.AllowUserToDeleteRows = false;
             this.grid.AllowUserToResizeRows = false;
-            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.grid.ColumnHeadersHeight = 24;
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dgcColumnName,
@@ -109,8 +132,9 @@ namespace Backsight.Editor.Forms
             this.grid.MultiSelect = false;
             this.grid.Name = "grid";
             this.grid.RowHeadersVisible = false;
-            this.grid.Size = new System.Drawing.Size(347, 447);
+            this.grid.Size = new System.Drawing.Size(347, 432);
             this.grid.TabIndex = 1;
+            this.grid.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellEnter);
             this.grid.SelectionChanged += new System.EventHandler(this.grid_SelectionChanged);
             // 
             // dgcColumnName
@@ -128,14 +152,24 @@ namespace Backsight.Editor.Forms
             this.dgcValue.HeaderText = "Value";
             this.dgcValue.Name = "dgcValue";
             // 
+            // domainValuesLabel
+            // 
+            this.domainValuesLabel.AutoSize = true;
+            this.domainValuesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.domainValuesLabel.Location = new System.Drawing.Point(17, 21);
+            this.domainValuesLabel.Name = "domainValuesLabel";
+            this.domainValuesLabel.Size = new System.Drawing.Size(111, 16);
+            this.domainValuesLabel.TabIndex = 3;
+            this.domainValuesLabel.Text = "Domain values";
+            // 
             // domainGrid
             // 
             this.domainGrid.AllowUserToAddRows = false;
             this.domainGrid.AllowUserToDeleteRows = false;
             this.domainGrid.AllowUserToResizeRows = false;
-            this.domainGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.domainGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.domainGrid.BackgroundColor = System.Drawing.Color.Moccasin;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.Moccasin;
@@ -164,8 +198,9 @@ namespace Backsight.Editor.Forms
             this.domainGrid.ReadOnly = true;
             this.domainGrid.RowHeadersVisible = false;
             this.domainGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.domainGrid.Size = new System.Drawing.Size(287, 447);
+            this.domainGrid.Size = new System.Drawing.Size(287, 432);
             this.domainGrid.TabIndex = 2;
+            this.domainGrid.TabStop = false;
             this.domainGrid.SelectionChanged += new System.EventHandler(this.domainGrid_SelectionChanged);
             // 
             // dgcShortValue
@@ -206,26 +241,6 @@ namespace Backsight.Editor.Forms
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(17, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(111, 16);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Domain values";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(12, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(91, 16);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Data values";
-            // 
             // AttributeDataForm
             // 
             this.AcceptButton = this.okButton;
@@ -264,6 +279,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcShortValue;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgcLongValue;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label domainValuesLabel;
+        private System.Windows.Forms.Label dataTypeLabel;
     }
 }

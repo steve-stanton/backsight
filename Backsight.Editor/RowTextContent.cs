@@ -100,5 +100,17 @@ namespace Backsight.Editor
             m_TableId = reader.ReadInt("Table");
             m_TemplateId = reader.ReadInt("Template");
         }
+
+        /// <summary>
+        /// Override returns a null spatial extent. The extent will be defined
+        /// only after instances of <c>RowTextContent</c> have been associated
+        /// with database attributes as part of the deserialization logic that
+        /// occurs during application startup (at that time, the geometry will be
+        /// replaced with fully defined instances of <see cref="RowTextGeometry"/>).
+        /// </summary>
+        public override IWindow Extent
+        {
+            get { return null; }
+        }
     }
 }

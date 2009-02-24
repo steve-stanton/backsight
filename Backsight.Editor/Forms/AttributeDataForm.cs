@@ -178,6 +178,12 @@ namespace Backsight.Editor.Forms
                 cell.ValueType = dc.DataType;
                 cell.Value = items[i];
 
+                if (dc.DataType == typeof(string))
+                {
+                    DataGridViewTextBoxCell textCell = (DataGridViewTextBoxCell)cell;
+                    textCell.MaxInputLength = dc.MaxLength;
+                }
+
                 // Disallow editing of the feature ID
                 if (String.Compare(dc.ColumnName, m_Table.IdColumnName, true) == 0)
                 {
@@ -222,13 +228,15 @@ namespace Backsight.Editor.Forms
         {
             foreach (DataGridViewRow row in grid.Rows)
             {
-                object v = row.Cells["dgcValue"].Value;
+                DataGridViewCell valueCell = row.Cells["dgcValue"];
 
-                // If we're dealing with a varchar column, ensure the entered value isn't too long
+                // If we're dealing with a varchar column, ensure the entered value isn't too long (this
+                // should have been covered via the MaxInputLength assigned to the grid cell, but we'll
+                // check again just in case)
                 DataColumn dc = (DataColumn)row.Tag;
                 if (dc.DataType == typeof(string))
                 {
-                    string s = v.ToString();
+                    string s = valueCell.FormattedValue.ToString();
                     if (s.Length > dc.MaxLength)
                     {
                         string msg = String.Format("Value for {0} is too long (maximum is {1} characters)",
@@ -239,7 +247,7 @@ namespace Backsight.Editor.Forms
                     }
                 }
 
-                m_Data[dc] = v;
+                m_Data[dc] = valueCell.Value;
             }
 
             // Remember the row as-entered (and the table involved) - we'll
@@ -284,8 +292,25 @@ namespace Backsight.Editor.Forms
             if (row == null)
                 return;
 
+            // Show the data type
             DataColumn dc = (DataColumn)row.Tag;
+            dataTypeLabel.Text = dc.DataType.Name;
+
+            if (!dc.AllowDBNull)
+                dataTypeLabel.Text += " not null";
+
+            if (dc.DataType == typeof(string))
+            {
+                if (dc.MaxLength == 1)
+                    dataTypeLabel.Text += " (1 character)";
+                else
+                    dataTypeLabel.Text += String.Format(" (up to {0} characters)", dc.MaxLength);
+            }
+
+            // Show any domain values
             IColumnDomain cd = FindColumnDomain(dc.ColumnName);
+            domainValuesLabel.Enabled = (cd != null);
+
             if (cd != null)
             {
                 // Note the currently defined value
@@ -330,6 +355,16 @@ namespace Backsight.Editor.Forms
 
             string shortValue = sel[0].Tag.ToString();
             row.Cells["dgcValue"].Value = shortValue;
+        }
+
+        private void grid_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            // Don't enter readonly cells
+            int colIndex = e.ColumnIndex;
+            int rowIndex = e.RowIndex;
+            DataGridViewCell cell = grid.Rows[rowIndex].Cells[colIndex];
+            if (cell.ReadOnly)
+                SendKeys.Send("{Tab}");
         }
     }
 }

@@ -167,7 +167,7 @@ namespace Backsight.Editor
             return new Length(Math.Sqrt(dsq));
         }
 
-        public IWindow Extent
+        public virtual IWindow Extent
         {
             get
             {

@@ -118,6 +118,8 @@ namespace Backsight.Editor.Database
 
                 Trace.Write("Attaching attributes...");
                 AttributeData.Load(xcr.GetFeatureIds());
+
+                // TODO: Index any text that has RowTextGeometry
             }
         }
 
