@@ -17,6 +17,7 @@ using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Data;
+
 using Backsight.Data;
 using Backsight.Environment;
 
@@ -113,10 +114,14 @@ namespace Backsight.Editor.Database
             using (IConnection ic = ConnectionFactory.Create())
             {
                 string sql = String.Format("SELECT * FROM {0} WHERE 1=0", t.TableName);
-                DataTable dt = ExecuteSelect(ic.Value, sql);
-                DataRow result = dt.NewRow();
-                result.Table.TableName = t.TableName;
-                return result;
+                SqlDataAdapter adapter = new SqlDataAdapter(sql, ic.Value);
+                DataTable dt = new DataTable(t.TableName);
+
+                // Ensure the length is defined for char columns
+                adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+
+                adapter.Fill(dt);
+                return dt.NewRow();
             }
         }
 

@@ -600,8 +600,24 @@ namespace Backsight.Editor
 
             foreach (Feature f in fa)
             {
-                f.AddToIndex(index);
-                m_Window.Union(f.Extent);
+                // Ignore if the feature has no extent (this should apply only during 
+                // deserialization of TextFeature instances that are associated with
+                // RowTextGeometry). It would be nice to do all indexing after all
+                // edits have been deserialized. However, I believe that some of the
+                // deserialization logic expects previous edits to be indexed.
+
+                IWindow x = f.Extent;
+                if (x != null)
+                {
+                    f.AddToIndex(index);
+                    m_Window.Union(f.Extent);
+                }
+                else
+                {
+                    Debug.Assert(f is TextFeature);
+                    TextFeature tf = (TextFeature)f;
+                    Debug.Assert(tf.TextGeometry is RowTextGeometry);
+                }
             }
 
             // The extent of circles don't get included in the map extent, because
