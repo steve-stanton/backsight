@@ -202,6 +202,17 @@ namespace Backsight.Environment
         }
 
         /// <summary>
+        /// Locates a text template based on it's unique ID
+        /// </summary>
+        /// <param name="id">The ID of the required template</param>
+        /// <returns>The corresponding template (null if not found)</returns>
+        public static ITemplate FindTemplateById(int id)
+        {
+            ITemplate[] templates = s_Container.Templates;
+            return Array.Find<ITemplate>(templates, delegate(ITemplate t) { return t.Id == id; });
+        }
+
+        /// <summary>
         /// Locates a map theme based on it's unique ID
         /// </summary>
         /// <param name="id">The ID of the required theme</param>

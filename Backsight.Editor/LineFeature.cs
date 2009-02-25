@@ -695,10 +695,13 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// a model is opened (after a prior call to <c>OnLoad</c>).
         /// </summary>
         /// <param name="index">The spatial index to add to</param>
-        internal override void AddToIndex(IEditSpatialIndex index)
+        /// <returns>True if the feature was indexed. False if the feature is currently inactive (not
+        /// added to the index)</returns>
+        internal override bool AddToIndex(IEditSpatialIndex index)
         {
             // Index this line feature
-            base.AddToIndex(index);
+            if (!base.AddToIndex(index))
+                return false;
 
             // Index any neighbouring polygons
             if (m_Topology!=null)
@@ -706,6 +709,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 foreach (IDivider d in m_Topology)
                     Topology.AddToIndex(d, index);
             }
+
+            return true;
         }
 
         public string BoundaryString

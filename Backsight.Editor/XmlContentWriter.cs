@@ -140,7 +140,16 @@ namespace Backsight.Editor
             else
             {
                 m_Writer.WriteStartElement(name);
-                WriteElementContent(content);
+
+                if (content is IXmlAlternateContent)
+                {
+                    IXmlAlternateContent alt = (content as IXmlAlternateContent);
+                    WriteElementContent(alt.GetAlternate());
+                }
+                else
+                {
+                    WriteElementContent(content);
+                }
             }
         }
 

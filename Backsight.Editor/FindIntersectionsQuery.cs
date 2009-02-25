@@ -74,6 +74,9 @@ namespace Backsight.Editor
         /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
         internal FindIntersectionsQuery(ISpatialIndex index, LineFeature line, bool wantEndEnd)
         {
+            if (index == null)
+                throw new ArgumentNullException("FindIntersectionsQuery");
+
             m_Feature = line;
             m_Geom = GetUnsectionedLineGeometry(line.LineGeometry);
             m_WantEndEnd = wantEndEnd;

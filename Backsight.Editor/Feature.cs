@@ -299,10 +299,15 @@ namespace Backsight.Editor
         /// is opened (after a prior call to <c>OnLoad</c>).
         /// </summary>
         /// <param name="index">The spatial index to add to</param>
-        internal virtual void AddToIndex(IEditSpatialIndex index)
+        /// <returns>True if the feature was indexed. False if the feature is currently inactive (not
+        /// added to the index)</returns>
+        internal virtual bool AddToIndex(IEditSpatialIndex index)
         {
-            if (!IsInactive)
-                index.Add(this);
+            if (IsInactive)
+                return false;
+
+            index.Add(this);
+            return true;
         }
 
         public Operation Creator
@@ -505,7 +510,9 @@ namespace Backsight.Editor
             SetBuilt(false);
 
             // Remove from spatial index
-            m_Creator.MapModel.EditingIndex.Remove(this);
+            IEditSpatialIndex index = m_Creator.MapModel.EditingIndex;
+            if (index != null)
+                index.Remove(this);
 
             // In the case of lines, this will first call the override that gets
             // rid of any topological attachments
@@ -595,30 +602,42 @@ namespace Backsight.Editor
 
         public void PreMove()
         {
-            OnPreMove(this);
-
-            foreach (IFeatureDependent fd in m_References)
-                fd.OnPreMove(this);
+            if (OnPreMove(this))
+            {
+                foreach (IFeatureDependent fd in m_References)
+                    fd.OnPreMove(this);
+            }
         }
 
-        public void OnPreMove(Feature f)
+        public bool OnPreMove(Feature f)
         {
-            CadastralMapModel map = this.MapModel;
-            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
+            // The spatial index may be null while data is being deserialized from the
+            // database during application startup
+            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
+            if (index == null)
+                return false;
+
             index.Remove(this);
+            return true;
         }
 
         public void PostMove()
         {
-            OnPostMove(this);
-
-            foreach (IFeatureDependent fd in m_References)
-                fd.OnPostMove(this);
+            if (OnPostMove(this))
+            {
+                foreach (IFeatureDependent fd in m_References)
+                    fd.OnPostMove(this);
+            }
         }
 
-        public void OnPostMove(Feature f)
+        public bool OnPostMove(Feature f)
         {
-            MapModel.EditingIndex.Add(this);
+            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
+            if (index == null)
+                return false;
+
+            index.Add(this);
+            return true;
         }
 
         public string TypeName

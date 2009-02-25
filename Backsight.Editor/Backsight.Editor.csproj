@@ -327,6 +327,7 @@
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IntersectUI.cs" />
+    <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />

@@ -112,5 +112,21 @@ namespace Backsight.Editor
         {
             get { return null; }
         }
+
+        /// <summary>
+        /// The Backsight ID for the database table
+        /// </summary>
+        internal int TableId
+        {
+            get { return m_TableId; }
+        }
+
+        /// <summary>
+        /// The ID of the formatting template
+        /// </summary>
+        internal int TemplateId
+        {
+            get { return m_TemplateId; }
+        }
     }
 }

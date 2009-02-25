@@ -102,18 +102,24 @@ namespace Backsight.Editor
 
         #region IFeatureDependent Members
 
-        public void OnPreMove(Feature f)
+        public bool OnPreMove(Feature f)
         {
-            CadastralMapModel map = f.MapModel;
-            IEditSpatialIndex index = map.EditingIndex;
+            IEditSpatialIndex index = f.MapModel.EditingIndex;
+            if (index == null)
+                return false;
+
             index.Remove(this);
+            return true;
         }
 
-        public void OnPostMove(Feature f)
+        public bool OnPostMove(Feature f)
         {
-            CadastralMapModel map = f.MapModel;
-            IEditSpatialIndex index = map.EditingIndex;
+            IEditSpatialIndex index = f.MapModel.EditingIndex;
+            if (index == null)
+                return false;
+
             index.Add(this);
+            return true;
         }
 
         public void AddReferences()

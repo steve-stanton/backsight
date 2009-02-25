@@ -269,16 +269,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Inserts data into the spatial index of the map model associated with this
-        /// session. This should be called shortly after a model is opened (after a prior
-        /// call to <c>OnLoad</c>).
+        /// Spatially indexes the features created by this session (this excludes features that
+        /// may have been de-activated).
         /// </summary>
+        /// <param name="index">The index to append to</param>
         internal void AddToIndex()
         {
             foreach (Operation op in m_Operations)
             {
                 Feature[] createdFeatures = op.Features;
-                m_Model.AddToIndex(createdFeatures);
+                this.MapModel.AddToIndex(createdFeatures);
             }
         }
 

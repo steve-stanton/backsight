@@ -121,6 +121,25 @@ namespace Backsight.Editor
         internal void AddReference(Row row)
         {
             m_Rows = (m_Rows==null ? row : m_Rows.Add(row));
+
+            // Check whether any associated features are instances of TextFeature that
+            // have RowTextContent geometry (a placeholder class that is meant to exist
+            // only during deserialization from the database). If so, see whether the
+            // geometry can now be replaced with the "proper" RowTextGeometry.
+
+            if (m_Features != null)
+            {
+                foreach (Feature f in m_Features)
+                {
+                    TextFeature tf = (f as TextFeature);
+                    if (tf != null)
+                    {
+                        RowTextContent content = (tf.TextGeometry as RowTextContent);
+                        if (content != null && content.TableId == row.Table.Id)
+                            tf.TextGeometry = new RowTextGeometry(row, content); 
+                    }
+                }
+            }
         }
 
         /// <summary>

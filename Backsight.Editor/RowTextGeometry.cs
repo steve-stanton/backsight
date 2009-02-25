@@ -27,7 +27,7 @@ namespace Backsight.Editor
     /// Row text describes how to format a text string that is
     /// defined via attributes in an associated database table.
     /// </summary>
-    class RowTextGeometry : TextGeometry
+    class RowTextGeometry : TextGeometry, IXmlAlternateContent
     {
         #region Class data
 
@@ -84,6 +84,27 @@ namespace Backsight.Editor
         {
             m_Row = copy.m_Row;
             m_Template = copy.m_Template;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RowTextGeometry"/> class, using the supplied
+        /// content placeholder and the row of attribute data that has been discovered.
+        /// </summary>
+        /// <param name="row">The row that contains the information to format</param>
+        /// <param name="content">The content placeholder read from the database</param>
+        /// <remarks>This constructor is utilized during deserialization from the database, which
+        /// occurs when an editing job is opened.</remarks>
+        internal RowTextGeometry(Row row, RowTextContent content)
+            : base(content)
+        {
+            if (row == null)
+                throw new ArgumentNullException();
+
+            m_Row = row;
+            m_Template = EnvironmentContainer.FindTemplateById(content.TemplateId);
+
+            if (m_Template == null)
+                throw new InvalidOperationException("Cannot locate text template: "+content.TemplateId);
         }
 
         #endregion
@@ -281,6 +302,7 @@ namespace Backsight.Editor
         /// after the element name and class type (xsi:type) have been written.
         /// </summary>
         /// <param name="writer">The writing tool</param>
+        /*
         public override void WriteContent(XmlContentWriter writer)
         {
             // Will need to write out some sort of proxy, since it's not
@@ -291,10 +313,28 @@ namespace Backsight.Editor
             // To simplify things, let the proxy extend this class so
             // that it can pretend to be the real thing during ReadContent.
 
+            // The XmlContentWriter should see that this class implements IXmlAlternateContent,
+            // directing the WriteContent call through an instance of the alternate content
+            // class. So if we end up here and we DON'T have an instance of the alternate,
+            // then something is wrong.
+
             if (this is RowTextContent)
                 base.WriteContent(writer);
             else
-                new RowTextContent(this).WriteContent(writer);
+                throw new InvalidOperationException("Attempt to write content directly");
+        }
+         */
+
+        /// <summary>
+        /// Obtains an instance of the content object that can be persisted in the
+        /// database. On deserialization, the alternate will usually need to be
+        /// converted into an instance of the original class (this is done by the
+        /// <see cref="FeatureId.AddReference(Row)"/> method).
+        /// </summary>
+        /// <returns>The content to save to the database</returns>
+        public IXmlContent GetAlternate()
+        {
+            return new RowTextContent(this);
         }
 
         /// <summary>
@@ -303,10 +343,12 @@ namespace Backsight.Editor
         /// after the default constructor has been invoked).
         /// </summary>
         /// <param name="reader">The reading tool</param>
+        /*
         public override void ReadContent(XmlContentReader reader)
         {
             Debug.Assert(this is RowTextContent);
             base.ReadContent(reader);
         }
+         */
     }
 }

@@ -82,7 +82,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Spatial index for the data in this model.
         /// </summary>
-        readonly EditingIndex m_Index;
+        EditingIndex m_Index;
 
         /// <summary>
         /// Default rotation angle for text (in radians).
@@ -136,7 +136,7 @@ namespace Backsight.Editor
             m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
-            m_Index = new EditingIndex();
+            m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
             m_Reader = null;
         }
@@ -606,18 +606,25 @@ namespace Backsight.Editor
                 // edits have been deserialized. However, I believe that some of the
                 // deserialization logic expects previous edits to be indexed.
 
-                IWindow x = f.Extent;
-                if (x != null)
-                {
-                    f.AddToIndex(index);
+                // ...on second thoughts, this is just too messy. If deserialization
+                // logic does really require access to a spatial index, the relevant
+                // edits should be modified to avoid the dependency
+
+                //IWindow x = f.Extent;
+                //if (x != null)
+                //{
+                //    f.AddToIndex(index);
+                //    m_Window.Union(f.Extent);
+                //}
+                //else
+                //{
+                //    Debug.Assert(f is TextFeature);
+                //    TextFeature tf = (TextFeature)f;
+                //    Debug.Assert(tf.TextGeometry is RowTextGeometry);
+                //}
+
+                if (f.AddToIndex(index))
                     m_Window.Union(f.Extent);
-                }
-                else
-                {
-                    Debug.Assert(f is TextFeature);
-                    TextFeature tf = (TextFeature)f;
-                    Debug.Assert(tf.TextGeometry is RowTextGeometry);
-                }
             }
 
             // The extent of circles don't get included in the map extent, because
@@ -1561,6 +1568,17 @@ namespace Backsight.Editor
         {
             get { return m_Reader; }
             set { m_Reader = value; }
+        }
+
+        /// <summary>
+        /// Creates the spatial index
+        /// </summary>
+        internal void CreateIndex()
+        {
+            m_Index = new EditingIndex();
+
+            foreach (Session s in m_Sessions)
+                s.AddToIndex();
         }
     }
 }
