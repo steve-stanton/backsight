@@ -336,14 +336,15 @@ namespace Backsight.Editor
 
         #region IFeatureDependent Members
 
-        public void OnPreMove(Feature f)
+        public bool OnPreMove(Feature f)
         {
             throw new NotImplementedException("Operation.OnPreMove");
         }
 
-        public void OnPostMove(Feature f)
+        public bool OnPostMove(Feature f)
         {
             SetFlag(OperationFlag.Changed, true);
+            return true;
         }
 
         #endregion
@@ -368,9 +369,10 @@ namespace Backsight.Editor
             // If we're not doing startup, attempt to associate new features with database attributes (when
             // we're doing startup, we do all the deserialzation, then do all attribute matching in one big swoop)
             if (!isStartup)
+            {
                 AttributeData.Load(feats);
-
-            MapModel.AddToIndex(feats);
+                MapModel.AddToIndex(feats);
+            }
 
             // Assign 1-based creation sequence to each created feature
             uint numItem = m_Session.NumItem;

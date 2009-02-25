@@ -438,8 +438,8 @@ namespace Backsight.Editor
                 result.AddReferences();
 
                 // Add created features to the model
-                Feature[] feats = result.Features;
-                m_Model.AddToIndex(feats);
+                //Feature[] feats = result.Features;
+                //m_Model.AddToIndex(feats);
 
                 return result;
             }
