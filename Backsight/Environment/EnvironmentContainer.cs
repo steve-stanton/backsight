@@ -155,8 +155,7 @@ namespace Backsight.Environment
         /// <returns>The corresponding layer (null if not found)</returns>
         public static ILayer FindLayerById(int id)
         {
-            ILayer[] layers = s_Container.Layers;
-            return Array.Find<ILayer>(layers, delegate(ILayer a) { return a.Id==id; });
+            return FindById<ILayer>(s_Container.Layers, id);
         }
 
         /// <summary>
@@ -166,8 +165,7 @@ namespace Backsight.Environment
         /// <returns>The corresponding entity type (null if not found)</returns>
         public static IEntity FindEntityById(int id)
         {
-            IEntity[] ents = s_Container.EntityTypes;
-            return Array.Find<IEntity>(ents, delegate(IEntity e) { return e.Id==id; });
+            return FindById<IEntity>(s_Container.EntityTypes, id);
         }
 
         /// <summary>
@@ -197,8 +195,7 @@ namespace Backsight.Environment
         /// <returns>The corresponding font information  (null if not found)</returns>
         public static IFont FindFontById(int id)
         {
-            IFont[] fonts = s_Container.Fonts;
-            return Array.Find<IFont>(fonts, delegate(IFont f) { return f.Id == id; });
+            return FindById<IFont>(s_Container.Fonts, id);
         }
 
         /// <summary>
@@ -208,8 +205,7 @@ namespace Backsight.Environment
         /// <returns>The corresponding template (null if not found)</returns>
         public static ITemplate FindTemplateById(int id)
         {
-            ITemplate[] templates = s_Container.Templates;
-            return Array.Find<ITemplate>(templates, delegate(ITemplate t) { return t.Id == id; });
+            return FindById<ITemplate>(s_Container.Templates, id);
         }
 
         /// <summary>
@@ -219,8 +215,7 @@ namespace Backsight.Environment
         /// <returns>The corresponding theme (null if not found)</returns>
         public static ITheme FindThemeById(int id)
         {
-            ITheme[] themes = s_Container.Themes;
-            return Array.Find<ITheme>(themes, delegate(ITheme t) { return t.Id == id; });
+            return FindById<ITheme>(s_Container.Themes, id);
         }
 
         /// <summary>
@@ -230,8 +225,19 @@ namespace Backsight.Environment
         /// <returns>The corresponding ID group (null if not found)</returns>
         public static IIdGroup FindIdGroupById(int id)
         {
-            IIdGroup[] idGroups = s_Container.IdGroups;
-            return Array.Find<IIdGroup>(idGroups, delegate(IIdGroup g) { return g.Id == id; });
+            return FindById<IIdGroup>(s_Container.IdGroups, id);
+        }
+
+        /// <summary>
+        /// Locates an environment item based on it's unique ID
+        /// </summary>
+        /// <typeparam name="T">The type of item to look for</typeparam>
+        /// <param name="items">The items to examine</param>
+        /// <param name="id">The ID of the required item</param>
+        /// <returns>The corresponding item (null if not found)</returns>
+        static T FindById<T>(T[] items, int id) where T : IEnvironmentItem
+        {
+            return Array.Find<T>(items, delegate(T t) { return t.Id == id; });
         }
     }
 }
