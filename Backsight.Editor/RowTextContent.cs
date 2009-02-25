@@ -128,5 +128,17 @@ namespace Backsight.Editor
         {
             get { return m_TemplateId; }
         }
+
+        /// <summary>
+        /// The text string represented by this geometry is "NoData" (always).
+        /// Instances of <c>RowTextContent</c> should exist only for a short
+        /// period during deserialization from the database (however, if database
+        /// rows have been deleted unexpectedly, the content object may continue
+        /// to exist).
+        /// </summary>
+        public override string Text
+        {
+            get { return "NoData"; }
+        }
     }
 }
