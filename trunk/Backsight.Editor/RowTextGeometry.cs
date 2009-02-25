@@ -297,58 +297,30 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /*
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            // Will need to write out some sort of proxy, since it's not
-            // possible to read back RowText until the attribute data has
-            // been loaded from the database (and that only happens after
-            // all features have been deserialized from the database).
-
-            // To simplify things, let the proxy extend this class so
-            // that it can pretend to be the real thing during ReadContent.
-
-            // The XmlContentWriter should see that this class implements IXmlAlternateContent,
-            // directing the WriteContent call through an instance of the alternate content
-            // class. So if we end up here and we DON'T have an instance of the alternate,
-            // then something is wrong.
-
-            if (this is RowTextContent)
-                base.WriteContent(writer);
-            else
-                throw new InvalidOperationException("Attempt to write content directly");
-        }
-         */
-
-        /// <summary>
         /// Obtains an instance of the content object that can be persisted in the
-        /// database. On deserialization, the alternate will usually need to be
-        /// converted into an instance of the original class (this is done by the
+        /// database. On deserialization, the alternate needs to be converted into
+        /// an instance of the original class (this is done by the
         /// <see cref="FeatureId.AddReference(Row)"/> method).
+        /// <para/>
+        /// This method is called by <see cref="XmlContentWriter.WriteElement"/>,
+        /// which directs the <see cref="IXmlContent.WriteContent"/> call through
+        /// an instance of the alternate content class.
         /// </summary>
         /// <returns>The content to save to the database</returns>
+        /// <remarks>
+        /// It's not possible to immediately read back instances of RowTextGeometry
+        /// on deserialization from the database - because attribute data is only
+        /// obtained from the database after all features have been deserialized.
+        /// <para/>
+        /// To keep things simple, the alternate returned here actually extends
+        /// this class, so it can pretend to be the real thing in any class that
+        /// refers to <c>RowTextGeometry</c>. The expectation is that the fake
+        /// will be replaced as soon as possible with a fully defined instance
+        /// of <c>RowTextGeometry</c>.
+        /// </remarks>
         public IXmlContent GetAlternate()
         {
             return new RowTextContent(this);
         }
-
-        /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        /*
-        public override void ReadContent(XmlContentReader reader)
-        {
-            Debug.Assert(this is RowTextContent);
-            base.ReadContent(reader);
-        }
-         */
     }
 }
