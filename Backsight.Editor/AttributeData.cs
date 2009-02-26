@@ -125,12 +125,12 @@ namespace Backsight.Editor
                         FeatureId fid;
                         if (keyIds.TryGetValue(key, out fid))
                         {
-                            // Don't create a row if the ID is already associated with a row in the
-                            // same table that has the same key (this is meant to cover situations where
-                            // the edit has actively formed the attributes, and is calling this method
-                            // only to cover the fact that further attributes may be involved).
+                            // Don't create a row if the ID is already associated with the
+                            // table (this is meant to cover situations where the edit has actively
+                            // formed the attributes, and is calling this method only to cover the
+                            // fact that further attributes may be involved).
 
-                            if (!fid.ContainsRow(t, key))
+                            if (!fid.RefersToTable(t))
                             {
                                 Row r = new Row(fid, t, row);
                                 nFound++;
