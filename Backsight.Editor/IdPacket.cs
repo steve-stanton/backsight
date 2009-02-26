@@ -163,7 +163,19 @@ namespace Backsight.Editor
         /// </summary>
         internal int NumUsed
         {
-            get { return m_Allocation.NumUsed; }
+            //get { return m_Allocation.NumUsed; }
+            get
+            {
+                int result = 0;
+
+                for (int i=0; i<m_Ids.Length; i++)
+                {
+                    if (m_Ids[i] != null)
+                        result++;
+                }
+
+                return result;
+            }
         }
         /// <summary>
         /// The number of IDs that are currently free. This is the total number of null
@@ -504,7 +516,7 @@ namespace Backsight.Editor
 
                 // Remember the new ID and increment the usage count.
                 m_Ids[index] = fid;
-                m_Allocation.IncrementNumUsed();
+                //m_Allocation.IncrementNumUsed();
             }
             else
             {

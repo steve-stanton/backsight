@@ -286,6 +286,9 @@ namespace Backsight.Editor
         /// result of a call to <see cref="FinishCommand"/>.</returns>
         internal override bool DialFinish(Control wnd)
         {
+            // Ensure any reserved ID has been returned to the pool
+            m_PolygonId.DiscardReservedId();
+
             // Ensure any text outline has been erased.
             EraseRect();
 
@@ -668,6 +671,9 @@ namespace Backsight.Editor
 
                     if (m_Template!=null && m_LastRow!=null)
                     {
+                        // Save the attributes in the database
+                        DbUtil.SaveRow(m_LastRow);
+
                         op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
                         // Confirm that the row got cross-referenced to an ID (not
@@ -677,9 +683,6 @@ namespace Backsight.Editor
                         //    MessageBox.Show("Attributes were not attached to an ID");
                         //    return null;
                         //}
-
-                        // Save the attributes in the database
-                        DbUtil.SaveRow(m_LastRow);
                     }
                     else
                     {
@@ -744,7 +747,18 @@ namespace Backsight.Editor
             if (m_Schema==null)
                 return false;
 
-            AttributeDataForm dial = new AttributeDataForm(m_Schema, id);
+            // Although unlikely, it is conceivable that the attributes have already
+            // been loaded into the database. In that case, display the existing
+            // attributes for editing.
+
+            AttributeDataForm dial;
+
+            DataRow[] existingData = AttributeData.FindByKey(m_Schema, id);
+            if (existingData.Length > 0)
+                dial = new AttributeDataForm(m_Schema, existingData[0]);
+            else
+                dial = new AttributeDataForm(m_Schema, id);
+
             if (dial.ShowDialog() == DialogResult.OK)
                 m_LastRow = dial.Data;
             else

@@ -57,7 +57,7 @@ namespace Backsight.Editor.Forms
         readonly string m_Id;
 
         /// <summary>
-        /// The data entered by the user
+        /// The data entered by the user. 
         /// </summary>
         DataRow m_Data;
 
@@ -66,7 +66,7 @@ namespace Backsight.Editor.Forms
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Creates a new <see cref="AttributeDataForm"/> for a brand new row of attribute data
         /// </summary>
         /// <param name="t">The table the attribute data is for</param>
         /// <param name="id">The ID that will be assigned to the new label</param>
@@ -79,6 +79,24 @@ namespace Backsight.Editor.Forms
 
             m_Table = t;
             m_Id = id;
+            m_Data = null;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="AttributeDataForm"/> that shows an existing row of attribute data
+        /// </summary>
+        /// <param name="t">The table the attribute data is for</param>
+        /// <param name="row">The row to display</param>
+        public AttributeDataForm(ITable t, DataRow row)
+        {
+            InitializeComponent();
+
+            if (t==null || row==null)
+                throw new ArgumentNullException();
+
+            m_Table = t;
+            m_Id = row[t.IdColumnName].ToString();
+            m_Data = row;
         }
 
         #endregion
@@ -88,22 +106,32 @@ namespace Backsight.Editor.Forms
             try
             {
                 this.Text = m_Table.TableName;
-                DataRow data = DbUtil.CreateNewRow(m_Table);
+                updateLabel.Visible = (m_Data != null);
 
-                // Initialize items so they match the values of the last row we processed (if any).
-                // Otherwise assign default values that are indicative of the data type.
-                if (s_LastTable != null && s_LastTable.Id == m_Table.Id)
+                if (m_Data == null)
                 {
-                    Debug.Assert(s_LastItems != null);
-                    Debug.Assert(s_LastItems.Length == data.Table.Columns.Count);
-                    data.ItemArray = s_LastItems;
+                    DataRow data = DbUtil.CreateNewRow(m_Table);
+
+                    // Initialize items so they match the values of the last row we processed (if any).
+                    // Otherwise assign default values that are indicative of the data type.
+                    if (s_LastTable != null && s_LastTable.Id == m_Table.Id)
+                    {
+                        Debug.Assert(s_LastItems != null);
+                        Debug.Assert(s_LastItems.Length == data.Table.Columns.Count);
+                        data.ItemArray = s_LastItems;
+                    }
+                    else
+                    {
+                        AssignDefaultValues(data);
+                    }
+
+                    SetGrid(data);
                 }
                 else
                 {
-                    AssignDefaultValues(data);
+                    SetGrid(m_Data);
                 }
 
-                SetGrid(data);
                 grid.Focus();
             }
 
@@ -201,9 +229,11 @@ namespace Backsight.Editor.Forms
 
             // Select the first editable cell (the first cell is frequently the ID, which
             // the user is not expected to edit).
-            SelectFirstEditableValue();
+            //SelectFirstEditableValue();
+            grid.CurrentCell = grid.Rows[0].Cells["dgcValue"];
         }
 
+        /*
         void SelectFirstEditableValue()
         {
             foreach (DataGridViewRow row in grid.Rows)
@@ -216,6 +246,7 @@ namespace Backsight.Editor.Forms
                 }
             }
         }
+        */
 
         private void cancelButton_Click(object sender, EventArgs e)
         {

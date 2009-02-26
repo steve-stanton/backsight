@@ -112,7 +112,7 @@ namespace Backsight.Editor
 
                 foreach (ITable t in tables)
                 {
-                    string sql = String.Format("SELECT * FROM [{0}] WHERE [{1}] IN (SELECT [FeatureId] FROM [{2}])",
+                    string sql = String.Format("SELECT * FROM {0} WHERE [{1}] IN (SELECT [FeatureId] FROM [{2}])",
                                     t.TableName, t.IdColumnName, KEYS_TABLE_NAME);
                     DataTable tab = DbUtil.ExecuteSelect(c, sql);
                     tab.TableName = t.TableName;
@@ -121,15 +121,83 @@ namespace Backsight.Editor
                     Debug.Assert(featureIdIndex>=0);
                     foreach (DataRow row in tab.Select())
                     {
-                        string key = row[featureIdIndex].ToString();
-                        FeatureId fid = keyIds[key];
-                        Row r = new Row(fid, t, row);
-                        nFound++;
+                        string key = row[featureIdIndex].ToString().TrimEnd();
+                        FeatureId fid;
+                        if (keyIds.TryGetValue(key, out fid))
+                        {
+                            // Don't create a row if the ID is already associated with a row in the
+                            // same table that has the same key (this is meant to cover situations where
+                            // the edit has actively formed the attributes, and is calling this method
+                            // only to cover the fact that further attributes may be involved).
+
+                            if (!fid.ContainsRow(t, key))
+                            {
+                                Row r = new Row(fid, t, row);
+                                nFound++;
+                            }
+                        }
+                        else
+                        {
+                            string msg = String.Format("Cannot find '{0}' in dictionary", key);
+                            throw new Exception(msg);
+                        }
                     }
                 }
             }
 
             return nFound;
+        }
+
+        /// <summary>
+        /// Attempts to locate any rows of attribute data that have a specific key (this involves
+        /// a select on all database tables that have been associated with Backsight).
+        /// </summary>
+        /// <param name="key">The key to look for</param>
+        /// <returns>The rows found (may be an empty array)</returns>
+        internal static DataRow[] FindByKey(string key)
+        {
+            // Locate information about the tables associated with Backsight
+            ITable[] tables = EnvironmentContainer.Current.Tables;
+            if (tables.Length == 0)
+                return new DataRow[0];
+
+            List<DataRow> result = new List<DataRow>();
+
+            using (IConnection ic = ConnectionFactory.Create())
+            {
+                SqlConnection c = ic.Value;
+
+                foreach (ITable t in tables)
+                {
+                    string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
+                                    t.TableName, t.IdColumnName, key);
+                    DataTable tab = DbUtil.ExecuteSelect(c, sql);
+                    tab.TableName = t.TableName;
+                    result.AddRange(tab.Select());
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Searches a specific table to see whether it contains any rows with a specific key
+        /// </summary>
+        /// <param name="table">The table to select from</param>
+        /// <param name="key">The key to look for</param>
+        /// <returns>The rows found (may be an empty array). Normally, this array should contain
+        /// no more than one row - however, it is possible that the spatial key is not the primary
+        /// key of the table.</returns>
+        internal static DataRow[] FindByKey(ITable table, string key)
+        {
+            using (IConnection ic = ConnectionFactory.Create())
+            {
+                string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
+                                table.TableName, table.IdColumnName, key);
+                DataTable tab = DbUtil.ExecuteSelect(ic.Value, sql);
+                tab.TableName = table.TableName;
+                return tab.Select();
+            }
         }
 
         /// <summary>

@@ -44,6 +44,7 @@ namespace Backsight.Editor.Forms
             this.dgcLongValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.updateLabel = new System.Windows.Forms.Label();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -84,6 +85,7 @@ namespace Backsight.Editor.Forms
             // 
             // gridContainer.Panel1
             // 
+            this.gridContainer.Panel1.Controls.Add(this.updateLabel);
             this.gridContainer.Panel1.Controls.Add(this.dataTypeLabel);
             this.gridContainer.Panel1.Controls.Add(this.label2);
             this.gridContainer.Panel1.Controls.Add(this.grid);
@@ -121,9 +123,9 @@ namespace Backsight.Editor.Forms
             this.grid.AllowUserToAddRows = false;
             this.grid.AllowUserToDeleteRows = false;
             this.grid.AllowUserToResizeRows = false;
-            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grid.ColumnHeadersHeight = 24;
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dgcColumnName,
@@ -167,9 +169,9 @@ namespace Backsight.Editor.Forms
             this.domainGrid.AllowUserToAddRows = false;
             this.domainGrid.AllowUserToDeleteRows = false;
             this.domainGrid.AllowUserToResizeRows = false;
-            this.domainGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.domainGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.domainGrid.BackgroundColor = System.Drawing.Color.Moccasin;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.Moccasin;
@@ -241,6 +243,17 @@ namespace Backsight.Editor.Forms
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // updateLabel
+            // 
+            this.updateLabel.AutoSize = true;
+            this.updateLabel.BackColor = System.Drawing.Color.MistyRose;
+            this.updateLabel.Location = new System.Drawing.Point(268, 482);
+            this.updateLabel.Name = "updateLabel";
+            this.updateLabel.Size = new System.Drawing.Size(91, 16);
+            this.updateLabel.TabIndex = 6;
+            this.updateLabel.Text = "Update mode";
+            this.updateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // AttributeDataForm
             // 
             this.AcceptButton = this.okButton;
@@ -281,5 +294,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label domainValuesLabel;
         private System.Windows.Forms.Label dataTypeLabel;
+        private System.Windows.Forms.Label updateLabel;
     }
 }

@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -438,5 +439,29 @@ namespace Backsight.Editor
             m_Key.Log(cc);
         }
          */
+
+        /// <summary>
+        /// Checks whether this ID is associated with a row of attribute data in
+        /// a specific table.
+        /// </summary>
+        /// <param name="t">The table of interest</param>
+        /// <param name="key">The key to look for</param>
+        /// <returns>True if this ID object is already associated with data in the specified
+        /// table (with the specified key)</returns>
+        internal bool ContainsRow(ITable t, string key)
+        {
+            if (m_Rows != null)
+            {
+                int tid = t.Id;
+
+                foreach (Row r in m_Rows)
+                {
+                    if (r.Table.Id == tid && r.Data[t.IdColumnName].ToString()==key)
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

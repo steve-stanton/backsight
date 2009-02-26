@@ -44,7 +44,7 @@ namespace Backsight.Editor
     /// <devnote>06-FEB-2007: The above is the original comment from 1998. What it doesn't
     /// say is why it's bad to have an unused feature ID. Perhaps it's something to do with
     /// the old persistence mechanism. If so, this class could well be irrelevant.</devnote>
-    class IdHandle : IDisposable
+    class IdHandle
     {
         #region Class data
         
@@ -179,12 +179,12 @@ namespace Backsight.Editor
             }
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Ensures that any reserved ID has been cleared (if the ID handle has actually been
+        /// used to create a new <see cref="NativeId"/>, this does nothing).
+        /// </summary>
+        internal void DiscardReservedId()
         {
-            // Ensure that any reserved ID has been cleared (if the ID
-            // handle has actually been used to create a new ID, this
-            // does nothing).
-
             if (m_Group!=null && m_Id!=0)
                 m_Group.FreeId(m_Id);
         }
