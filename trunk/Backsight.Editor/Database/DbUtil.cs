@@ -63,6 +63,7 @@ namespace Backsight.Editor.Database
             SqlCommand cmd = new SqlCommand(sql, c);
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
+            adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
             adapter.Fill(dt);
             return dt;
         }
@@ -126,14 +127,18 @@ namespace Backsight.Editor.Database
         }
 
         /// <summary>
-        /// Add a row to the database
+        /// Saves a row in the database (adds if the <see cref="DataRow.RowState"/> has
+        /// a value of <c>DataRowState.Detached</c>, otherwise attempts to update). This
+        /// logic may well be defective in a situation where the row has already been added
+        /// to a <c>DataTable</c>.
         /// </summary>
         /// <param name="row">The row to add. Usually a row that was created via a
         /// prior call to <see cref="CreateNewRow"/> (the important thing is that
         /// the table name must be defined as part of the rows associated <c>DataTable</c>)</param>
         /// <remarks>This makes use of the <see cref="SqlCommandBuilder"/> class to
         /// generate the relevant insert statement, which requires that the table involved
-        /// must have a primary key (if not, you will get an exception)</remarks>
+        /// must have a primary key (if not, you will get an exception)
+        /// </remarks>
         /// <exception cref="ArgumentException">If the <see cref="DataTable"/> associated
         /// with the supplied row does not contain a defined table name.</exception>
         public static void SaveRow(DataRow row)
@@ -145,10 +150,11 @@ namespace Backsight.Editor.Database
 
             using (IConnection ic = ConnectionFactory.Create())
             {
-                SqlConnection c = ic.Value;
-                SqlDataAdapter a = new SqlDataAdapter("SELECT * FROM " + tableName, c);
+                SqlDataAdapter a = new SqlDataAdapter("SELECT * FROM " + tableName, ic.Value);
                 SqlCommandBuilder cb = new SqlCommandBuilder(a);
-                dt.Rows.Add(row);
+                if (row.RowState == DataRowState.Detached)
+                    dt.Rows.Add(row);
+
                 int nRows = a.Update(dt);
                 Debug.Assert(nRows == 1);
             }

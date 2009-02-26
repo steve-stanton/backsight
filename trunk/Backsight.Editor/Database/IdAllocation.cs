@@ -152,7 +152,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The number of IDs that have been used
         /// </summary>
-        int m_NumUsed;
+        //int m_NumUsed;
 
         #endregion
 
@@ -177,7 +177,7 @@ namespace Backsight.Editor.Database
             m_JobId = jobId;
             m_UserId = userId;
             m_TimeAllocated = timeAllocated;
-            m_NumUsed = numUsed;
+            //m_NumUsed = numUsed;
         }
 
         #endregion
@@ -257,20 +257,20 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The number of IDs that have been used
         /// </summary>
-        internal int NumUsed
-        {
-            get { return m_NumUsed; }
-        }
+        //internal int NumUsed
+        //{
+        //    get { return m_NumUsed; }
+        //}
 
         /// <summary>
         /// Increments the number of used IDs.
         /// </summary>
         /// <remarks>TODO: This doesn't update the database. Either need to make sure it
         /// happens, or revisit whether it should actually be stored in the db</remarks>
-        internal void IncrementNumUsed()
-        {
-            m_NumUsed++;
-        }
+        //internal void IncrementNumUsed()
+        //{
+        //    m_NumUsed++;
+        //}
 
         /// <summary>
         /// Trims or extends an ID allocation
