@@ -33,6 +33,7 @@ namespace Backsight.Editor.Forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.gridContainer = new System.Windows.Forms.SplitContainer();
+            this.updateLabel = new System.Windows.Forms.Label();
             this.dataTypeLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.grid = new System.Windows.Forms.DataGridView();
@@ -44,7 +45,6 @@ namespace Backsight.Editor.Forms
             this.dgcLongValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.updateLabel = new System.Windows.Forms.Label();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -98,6 +98,17 @@ namespace Backsight.Editor.Forms
             this.gridContainer.SplitterDistance = 368;
             this.gridContainer.TabIndex = 3;
             this.gridContainer.TabStop = false;
+            // 
+            // updateLabel
+            // 
+            this.updateLabel.AutoSize = true;
+            this.updateLabel.BackColor = System.Drawing.Color.MistyRose;
+            this.updateLabel.Location = new System.Drawing.Point(309, 21);
+            this.updateLabel.Name = "updateLabel";
+            this.updateLabel.Size = new System.Drawing.Size(50, 16);
+            this.updateLabel.TabIndex = 6;
+            this.updateLabel.Text = "update";
+            this.updateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // dataTypeLabel
             // 
@@ -242,17 +253,6 @@ namespace Backsight.Editor.Forms
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
-            // 
-            // updateLabel
-            // 
-            this.updateLabel.AutoSize = true;
-            this.updateLabel.BackColor = System.Drawing.Color.MistyRose;
-            this.updateLabel.Location = new System.Drawing.Point(268, 482);
-            this.updateLabel.Name = "updateLabel";
-            this.updateLabel.Size = new System.Drawing.Size(91, 16);
-            this.updateLabel.TabIndex = 6;
-            this.updateLabel.Text = "Update mode";
-            this.updateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // AttributeDataForm
             // 

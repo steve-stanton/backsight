@@ -204,7 +204,6 @@ namespace Backsight.Editor.Forms
             AddAction(mnuFileCoordinateSystem, IsFileCoordinateSystemEnabled, FileCoordinateSystem);
             AddAction(mnuFileCheck, IsFileCheckEnabled, FileCheck);
             AddAction(mnuFilePublish, IsFilePublishEnabled, FilePublish);
-            AddAction(mnuFileUpdateSchema, IsFileUpdateSchemaEnabled, FileUpdateSchema);
             AddAction(mnuFilePrintWindowRotated, IsFilePrintWindowRotatedEnabled, FilePrintWindowRotated);
             AddAction(mnuFilePrintWindow, IsFilePrintWindowEnabled, FilePrintWindow);
             AddAction(new ToolStripItem[] { mnuFilePrint, toolFilePrint }, IsFilePrintEnabled, FilePrint);
@@ -395,11 +394,6 @@ namespace Backsight.Editor.Forms
                 IsTextDefaultRotationAngleEnabled,
                 TextDefaultRotationAngle);
             AddAction(ctxTextProperties, null, ShowProperties);
-
-            // Polygon menu (only part of context menu)...
-            AddAction(ctxPolygonDisplayAttributes, IsPolygonDisplayAttributesEnabled, PolygonDisplayAttributes);
-            AddAction(ctxPolygonEditAttributes, IsPolygonEditAttributesEnabled, PolygonEditAttributes);
-            AddAction(ctxPolygonProperties, null, ShowProperties);
 
             // Intersect menu...
             AddEdit(
@@ -611,9 +605,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (s.Count>1)
                 return multiSelectContextMenu;
 
-            // Show the default menu, enabling the "Polygon" item if a single polygon
+            // Show the default menu, enabling the "Subdivide Polygon" item if a single polygon
             // is currently selected
-            ctxPolygon.Enabled = (s.Item!=null && s.Item.SpatialType==SpatialType.Polygon);
+            ctxLineSubdividePolygon.Enabled = (s.Item!=null && s.Item.SpatialType==SpatialType.Polygon);
             return noSelectionContextMenu;
         }
 
@@ -789,16 +783,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             PublishForm dial = new PublishForm();
             dial.ShowDialog();
             dial.Dispose();
-        }
-
-        private bool IsFileUpdateSchemaEnabled()
-        {
-            return false;
-        }
-
-        private void FileUpdateSchema(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
         }
 
         private bool IsFilePrintWindowRotatedEnabled()
@@ -1728,30 +1712,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             CommandUI cmd = new TextRotationUI(this, action);
             m_Controller.StartCommand(cmd);
-        }
-
-        #endregion
-
-        #region Polygon menu
-
-        private bool IsPolygonDisplayAttributesEnabled()
-        {
-            return false;
-        }
-
-        private void PolygonDisplayAttributes(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
-        }
-
-        private bool IsPolygonEditAttributesEnabled()
-        {
-            return false;
-        }
-
-        private void PolygonEditAttributes(IUserAction action)
-        {
-            MessageBox.Show(action.Title);
         }
 
         #endregion
