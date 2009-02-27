@@ -15,6 +15,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
+
 using Backsight.Environment;
 
 namespace Backsight.Editor
@@ -460,6 +462,30 @@ namespace Backsight.Editor
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Locates any text features associated with this ID that have
+        /// <see cref="RowTextGeometry"/>.
+        /// </summary>
+        /// <returns>Any text features associated with this ID that
+        /// have a geometry that's dependent on database attributes. May be
+        /// an empty array (but never null)</returns>
+        internal TextFeature[] GetRowText()
+        {
+            List<TextFeature> result = new List<TextFeature>();
+
+            if (m_Features != null)
+            {
+                foreach (Feature f in m_Features)
+                {
+                    TextFeature tf = (f as TextFeature);
+                    if (tf != null && (tf.TextGeometry is RowTextGeometry))
+                        result.Add(tf);
+                }
+            }
+
+            return result.ToArray();
         }
     }
 }

@@ -19,6 +19,8 @@ using System.Data;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Backsight.Editor.Database;
+
 namespace Backsight.Editor.Forms
 {
     /// <summary>
@@ -45,12 +47,14 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
             m_LastPageName = String.Empty;
+            editButton.Visible = false;
         }
 
         internal void SetSelectedObject(ISpatialObject so)
         {
             try
             {
+                editButton.Visible = false;
                 string oldLastPage = m_LastPageName;
 
                 // Grab the attributes we'll be displaying
@@ -151,8 +155,68 @@ namespace Backsight.Editor.Forms
         private void tabControl_Selected(object sender, TabControlEventArgs e)
         {
             TabPage page = tabControl.SelectedTab;
-            if (page is PropertyPage)
+            bool isAttributes = (page is PropertyPage);
+            if (isAttributes)
                 m_LastPageName = page.Text;
+
+            // You can only edit database attributes (not spatial properties)
+            editButton.Visible = isAttributes;
+        }
+
+        private void editButton_Click(object sender, EventArgs e)
+        {
+            // Do nothing if the topmost tab page doesn't relate to a database row (the
+            // editing button should have been invisible)
+            PropertyPage pp = (tabControl.SelectedTab as PropertyPage);
+            if (pp == null)
+                return;
+
+            // If the row is associated with any RowText, ensure it is removed from
+            // the spatial index NOW (if we wait until the edit has been completed,
+            // it's possible we won't be able to update the index properly)
+            Row r = pp.DisplayedRow;
+            TextFeature[] text = r.Id.GetRowText();
+            EditingIndex index = CadastralMapModel.Current.EditingIndex;
+            bool isChanged = false;
+
+            try
+            {
+                // Remove the text from the spatial index (but see comment below)
+                foreach (TextFeature tf in text)
+                    index.Remove(tf);
+
+                // Display the attribute entry dialog
+                AttributeDataForm dial = new AttributeDataForm(r.Table, r.Data);
+                isChanged = (dial.ShowDialog() == DialogResult.OK);
+                dial.Dispose();
+
+                if (isChanged)
+                {
+                    DbUtil.SaveRow(r.Data);
+                    pp.RefreshRow();
+                }
+            }
+
+            finally
+            {
+                // Ensure text has been re-indexed... actually, this is likely to be
+                // redundant, because nothing here has actually altered the stored
+                // width and height of the text (if the attributes have become more
+                // verbose, they'll just be scrunched up a bit tighter). The text
+                // metrics probably should be reworked (kind of like AutoSize for
+                // Windows labels), but I'm not sure whether this demands a formal
+                // editing operation.
+
+                foreach (TextFeature tf in text)
+                    index.Add(tf);
+
+                // Re-display the text if any changes have been saved
+                if (isChanged)
+                {
+                    ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+                    display.Redraw();
+                }
+            }
         }
     }
 }

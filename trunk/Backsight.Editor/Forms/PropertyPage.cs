@@ -28,6 +28,22 @@ namespace Backsight.Editor.Forms
     /// </summary>
     partial class PropertyPage : TabPage
     {
+        #region Class data
+
+        /// <summary>
+        /// The database row that's being displayed
+        /// </summary>
+        Row m_Row;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyPage"/> class.
+        /// </summary>
+        /// <param name="row">The database row that's being displayed (not null)</param>
+        /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
         internal PropertyPage(Row row)
             : base()
         {
@@ -35,8 +51,37 @@ namespace Backsight.Editor.Forms
             SetRow(row);
         }
 
+        #endregion
+
+        /// <summary>
+        /// The database row that's being displayed
+        /// </summary>
+        internal Row DisplayedRow
+        {
+            get { return m_Row; }
+        }
+
+        /// <summary>
+        /// Refreshes the display of row attributes (e.g. after the user has edited
+        /// the data)
+        /// </summary>
+        internal void RefreshRow()
+        {
+            SetRow(m_Row);
+        }
+
+        /// <summary>
+        /// Display the attributes of a specific row on this property page
+        /// </summary>
+        /// <param name="row">The row of interest (not null)</param>
+        /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
         internal void SetRow(Row row)
         {
+            if (row == null)
+                throw new ArgumentNullException();
+
+            m_Row = row;
+
             // Set the text on the tab
             this.Text = row.Table.TableName;
 

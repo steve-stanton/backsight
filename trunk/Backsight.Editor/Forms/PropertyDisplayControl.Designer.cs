@@ -32,6 +32,7 @@ namespace Backsight.Editor.Forms
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.editButton = new System.Windows.Forms.Button();
             this.closeButton = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -85,10 +86,22 @@ namespace Backsight.Editor.Forms
             // 
             // splitContainer.Panel2
             // 
+            this.splitContainer.Panel2.Controls.Add(this.editButton);
             this.splitContainer.Panel2.Controls.Add(this.closeButton);
             this.splitContainer.Size = new System.Drawing.Size(301, 487);
             this.splitContainer.SplitterDistance = 437;
             this.splitContainer.TabIndex = 1;
+            // 
+            // editButton
+            // 
+            this.editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.editButton.Location = new System.Drawing.Point(16, 10);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(75, 23);
+            this.editButton.TabIndex = 2;
+            this.editButton.Text = "&Edit...";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
             // 
             // closeButton
             // 
@@ -124,5 +137,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.Button editButton;
     }
 }
