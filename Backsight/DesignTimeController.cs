@@ -33,6 +33,7 @@ namespace Backsight
         public ISpatialModel MapModel { get { return m_Model; } }
         public void Register(ISpatialDisplay display) { }
         public void Unregister(ISpatialDisplay display) { }
+        public void MouseDoubleClick(ISpatialDisplay sender, IPosition p) { }
         public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
         public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
         public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b) { }

@@ -1513,12 +1513,20 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsLineUpdateEnabled()
         {
-            return false;
+            return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);
         }
 
         private void LineUpdate(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            LineFeature selLine = this.SelectedLine;
+            if (selLine == null)
+            {
+                MessageBox.Show("You need to select a specific line first.");
+                return;
+            }
+
+            m_Controller.ClearSelection();
+            m_Controller.RunUpdate(selLine);
         }
 
         private bool IsLinePolygonBoundaryEnabled()
