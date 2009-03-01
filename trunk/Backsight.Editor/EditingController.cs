@@ -185,6 +185,44 @@ namespace Backsight.Editor
             get { return m_JobData; }
         }
 
+        public override void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
+        {
+            // Attempt to select something
+            OnSelect(sender, p, false);
+
+            ISpatialObject so = m_Sel.Selection.Item;
+            RunUpdate(so);
+        }
+
+        internal void RunUpdate(ISpatialObject so)
+        {
+            ClearSelection();
+
+        }
+        /*
+//	@mfunc	Start update mode.
+//	@parm	A feature that's been selected for update.
+//	@rdesc	TRUE if update started ok.
+LOGICAL CeView::RunUpdate ( CeFeature* pFeat ) {
+
+	// A feature must be available.
+	if ( !pFeat ) return FALSE;
+
+	// There can't be any command currently running.
+	if ( m_pCommand ) return FALSE;
+
+	// If we're currently auto-highlighting, get rid of it.
+	if ( m_AutoHighlight!=0 ) OnAutoHighlight();
+
+	// Create a new tool for update mode and start it.
+	CuiUpdate* pup = new CuiUpdate(*this);
+	m_pCommand = pup;
+	GetDocument()->OnStartUpdate();
+	pup->Run(*pFeat);
+	return TRUE;
+
+} // end of RunUpdate
+*/
         public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
             if (b == MouseButtons.Right)

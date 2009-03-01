@@ -55,6 +55,13 @@ namespace Backsight
         ISpatialDisplay ActiveDisplay { get; }
 
         /// <summary>
+        /// Handles a mouse double click event
+        /// </summary>
+        /// <param name="sender">The display where the mouse event originated</param>
+        /// <param name="p">The position where the mouse click occurred</param>
+        void MouseDoubleClick(ISpatialDisplay sender, IPosition p);
+
+        /// <summary>
         /// Handles a mouse down event
         /// </summary>
         /// <param name="sender">The display where the mouse event originated</param>

@@ -646,6 +646,15 @@ namespace Backsight.Forms
             SpatialController.Current.KeyUp(this, e);
         }
 
+        private void mapPanel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (this.IsInitialized)
+            {
+                Position p = DisplayToGround(e.Location);
+                SpatialController.Current.MouseDoubleClick(this, p);
+            }
+        }
+
         private void mapPanel_MouseDown(object sender, MouseEventArgs e)
         {
             if (this.IsInitialized)

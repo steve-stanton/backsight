@@ -121,6 +121,10 @@ namespace Backsight
             m_Displays.Remove(display);
         }
 
+        public virtual void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
+        {
+        }
+
         public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
             if (b==MouseButtons.Right)

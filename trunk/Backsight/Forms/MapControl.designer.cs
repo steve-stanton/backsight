@@ -95,9 +95,10 @@ namespace Backsight.Forms
             this.mapPanel.Name = "mapPanel";
             this.mapPanel.Size = new System.Drawing.Size(271, 275);
             this.mapPanel.TabIndex = 2;
-            this.mapPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseDown);
-            this.mapPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseMove);
             this.mapPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mapPanel_Paint);
+            this.mapPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseMove);
+            this.mapPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseDoubleClick);
+            this.mapPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseDown);
             this.mapPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mapPanel_MouseUp);
             // 
             // MapControl
@@ -108,8 +109,8 @@ namespace Backsight.Forms
             this.Controls.Add(this.tableLayoutPanel);
             this.Name = "MapControl";
             this.Size = new System.Drawing.Size(291, 295);
-            this.VisibleChanged += new System.EventHandler(this.MapControl_VisibleChanged);
             this.Load += new System.EventHandler(this.MapControl_Load);
+            this.VisibleChanged += new System.EventHandler(this.MapControl_VisibleChanged);
             this.Leave += new System.EventHandler(this.MapControl_Leave);
             this.Resize += new System.EventHandler(this.MapControl_Resize);
             this.tableLayoutPanel.ResumeLayout(false);
