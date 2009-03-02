@@ -121,6 +121,11 @@ namespace Backsight
             m_Displays.Remove(display);
         }
 
+        /// <summary>
+        /// Handles a mouse double click event. This implementation does nothing.
+        /// </summary>
+        /// <param name="sender">The display where the mouse event originated</param>
+        /// <param name="p">The position where the mouse click occurred</param>
         public virtual void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
         {
         }

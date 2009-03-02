@@ -1263,12 +1263,19 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsPointUpdateEnabled()
         {
-            return false;
+            return (m_Controller.IsItemSelected(SpatialType.Point) && !m_Controller.IsCommandRunning);
         }
 
         private void PointUpdate(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            PointFeature selPoint = this.SelectedPoint;
+            if (selPoint == null)
+            {
+                MessageBox.Show("You need to select a specific point first.");
+                return;
+            }
+
+            m_Controller.RunUpdate(action, selPoint);
         }
 
         private bool IsPointBulkUpdateEnabled()
@@ -1525,8 +1532,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
             }
 
-            m_Controller.ClearSelection();
-            m_Controller.RunUpdate(selLine);
+            m_Controller.RunUpdate(action, selLine);
         }
 
         private bool IsLinePolygonBoundaryEnabled()
@@ -1891,6 +1897,45 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void mnuHelpTopics_Click(object sender, EventArgs e)
         {
+        }
+
+        /// <summary>
+        /// Invokes the dialog for updating the attributes of a polygon
+        /// </summary>
+        /// <param name="p">The polygon of interest (not null)</param>
+        internal void UpdatePolygon(Polygon p)
+        {
+            // Locate the attributes for the first label associated with RowText
+            TextFeature[] labels = p.Labels;
+            Row r = null;
+            foreach (TextFeature tf in labels)
+            {
+                RowTextGeometry tg = (tf.TextGeometry as RowTextGeometry);
+                if (tg != null)
+                {
+                    r = tg.Row;
+                    break;
+                }
+            }
+
+            // If we didn't find any RowText, arbitrarily select the first row
+            if (r == null)
+            {
+                foreach (TextFeature tf in labels)
+                {
+                    FeatureId fid = tf.Id;
+                    if (fid!=null && fid.RowCount>0)
+                    {
+                        r = fid.Rows[0];
+                        break;
+                    }
+                }
+            }
+
+            if (r == null)
+                MessageBox.Show("No attributes for selected polygon.");
+            else
+                AttributeData.Update(r);
         }
     }
 }

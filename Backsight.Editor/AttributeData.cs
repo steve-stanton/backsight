@@ -18,10 +18,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using System.Windows.Forms;
 
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Database;
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
@@ -233,6 +235,59 @@ namespace Backsight.Editor
             bcp.BatchSize = rows.Length;
             bcp.DestinationTableName = tableName;
             bcp.WriteToServer(rows);
+        }
+
+        /// <summary>
+        /// Displays database attributes so that they can be edited by the user.
+        /// </summary>
+        /// <param name="r">The row of interest</param>
+        /// <returns>True if any changes were saved to the database</returns>
+        internal static bool Update(Row r)
+        {
+            // If the row is associated with any RowText, ensure it is removed from
+            // the spatial index NOW (if we wait until the edit has been completed,
+            // it's possible we won't be able to update the index properly)
+            TextFeature[] text = r.Id.GetRowText();
+            EditingIndex index = CadastralMapModel.Current.EditingIndex;
+            bool isChanged = false;
+
+            try
+            {
+                // Remove the text from the spatial index (but see comment below)
+                foreach (TextFeature tf in text)
+                    index.Remove(tf);
+
+                // Display the attribute entry dialog
+                AttributeDataForm dial = new AttributeDataForm(r.Table, r.Data);
+                isChanged = (dial.ShowDialog() == DialogResult.OK);
+                dial.Dispose();
+
+                if (isChanged)
+                    DbUtil.SaveRow(r.Data);
+            }
+
+            finally
+            {
+                // Ensure text has been re-indexed... actually, this is likely to be
+                // redundant, because nothing here has actually altered the stored
+                // width and height of the text (if the attributes have become more
+                // verbose, they'll just be scrunched up a bit tighter). The text
+                // metrics probably should be reworked (kind of like AutoSize for
+                // Windows labels), but I'm not sure whether this demands a formal
+                // editing operation.
+
+                foreach (TextFeature tf in text)
+                    index.Add(tf);
+
+                // Re-display the text if any changes have been saved
+                if (isChanged)
+                {
+                    ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+                    display.Redraw();
+                }
+            }
+
+            return isChanged;
         }
     }
 }
