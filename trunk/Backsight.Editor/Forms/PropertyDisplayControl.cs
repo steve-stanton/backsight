@@ -171,52 +171,9 @@ namespace Backsight.Editor.Forms
             if (pp == null)
                 return;
 
-            // If the row is associated with any RowText, ensure it is removed from
-            // the spatial index NOW (if we wait until the edit has been completed,
-            // it's possible we won't be able to update the index properly)
             Row r = pp.DisplayedRow;
-            TextFeature[] text = r.Id.GetRowText();
-            EditingIndex index = CadastralMapModel.Current.EditingIndex;
-            bool isChanged = false;
-
-            try
-            {
-                // Remove the text from the spatial index (but see comment below)
-                foreach (TextFeature tf in text)
-                    index.Remove(tf);
-
-                // Display the attribute entry dialog
-                AttributeDataForm dial = new AttributeDataForm(r.Table, r.Data);
-                isChanged = (dial.ShowDialog() == DialogResult.OK);
-                dial.Dispose();
-
-                if (isChanged)
-                {
-                    DbUtil.SaveRow(r.Data);
-                    pp.RefreshRow();
-                }
-            }
-
-            finally
-            {
-                // Ensure text has been re-indexed... actually, this is likely to be
-                // redundant, because nothing here has actually altered the stored
-                // width and height of the text (if the attributes have become more
-                // verbose, they'll just be scrunched up a bit tighter). The text
-                // metrics probably should be reworked (kind of like AutoSize for
-                // Windows labels), but I'm not sure whether this demands a formal
-                // editing operation.
-
-                foreach (TextFeature tf in text)
-                    index.Add(tf);
-
-                // Re-display the text if any changes have been saved
-                if (isChanged)
-                {
-                    ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-                    display.Redraw();
-                }
-            }
+            if (AttributeData.Update(r))
+                pp.RefreshRow();
         }
     }
 }

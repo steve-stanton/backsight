@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -25,8 +25,14 @@ using Backsight.Editor.Forms;
 
 namespace Backsight.Editor
 {
+    /// <written by="Steve Stanton" on="30-NOV-1999" was="CuiUpdate"/>
+    /// <summary>
+    /// User interface for updating editing operations
+    /// </summary>
     class UpdateUI : SimpleCommandUI
     {
+        #region Class data
+
         /// <summary>
         /// The update that is currently being executed.
         /// </summary>
@@ -56,14 +62,18 @@ namespace Backsight.Editor
         /// Info about the current feature that's selected for update.
         /// </summary>
         UpdateForm m_Info;
-        /*
-	CeView&			m_View;		// The view that's running the show. ... to use the controller instead
-         */
 
-        public UpdateUI(IControlContainer cc, IUserAction cmdId) : base(cc, cmdId)
+        #endregion
+
+        #region Constructors
+
+        public UpdateUI(IControlContainer cc, IUserAction cmdId)
+            : base(cc, cmdId)
         {
 //            base.Update = this;
         }
+
+        #endregion
 
         /// <summary>
         /// Accepts a new offset

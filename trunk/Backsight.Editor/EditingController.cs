@@ -185,44 +185,61 @@ namespace Backsight.Editor
             get { return m_JobData; }
         }
 
+        /// <summary>
+        /// Handles a mouse double click event by attempting to select a spatial object
+        /// at the supplied position. If the resultant selection refers to just one object,
+        /// it will be processed with <see cref="RunUpdate"/>.
+        /// </summary>
+        /// <param name="sender">The display where the mouse event originated</param>
+        /// <param name="p">The position where the mouse click occurred</param>
         public override void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
         {
             // Attempt to select something
             OnSelect(sender, p, false);
 
-            ISpatialObject so = m_Sel.Selection.Item;
-            RunUpdate(so);
+            // Update the selected item
+            ISpatialSelection ss = SpatialSelection;
+            RunUpdate(null, ss.Item);
         }
 
-        internal void RunUpdate(ISpatialObject so)
+        /// <summary>
+        /// Starts some sort of update. If the selected item is a polygon that has associated
+        /// database attributes, a dialog will be displayed to let the user change the attributes.
+        /// For any other spatial feature, the dialog for updating an editing operation will be
+        /// displayed.
+        /// </summary>
+        /// <param name="so">The item selected for update</param>
+        internal void RunUpdate(IUserAction action, ISpatialObject so)
         {
-            ClearSelection();
+            if (so==null)
+                return;
 
-        }
-        /*
-//	@mfunc	Start update mode.
-//	@parm	A feature that's been selected for update.
-//	@rdesc	TRUE if update started ok.
-LOGICAL CeView::RunUpdate ( CeFeature* pFeat ) {
+            // There can't be any command currently running.
+            if (m_Command != null)
+                return;
 
-	// A feature must be available.
-	if ( !pFeat ) return FALSE;
+            // If we're currently auto-highlighting, get rid of it.
+            AutoSelect = false;
 
-	// There can't be any command currently running.
-	if ( m_pCommand ) return FALSE;
-
-	// If we're currently auto-highlighting, get rid of it.
-	if ( m_AutoHighlight!=0 ) OnAutoHighlight();
-
-	// Create a new tool for update mode and start it.
+            // If a polygon has been selected, invoke the attribute update dialog. Otherwise
+            // start an update command.
+            if (so.SpatialType == SpatialType.Polygon)
+            {
+                m_Main.UpdatePolygon((Polygon)so);
+            }
+            else
+            {
+                ClearSelection();
+                m_Command = new UpdateUI(null, action);
+                /*
 	CuiUpdate* pup = new CuiUpdate(*this);
 	m_pCommand = pup;
 	GetDocument()->OnStartUpdate();
 	pup->Run(*pFeat);
-	return TRUE;
+                 */
+            }
+        }
 
-} // end of RunUpdate
-*/
         public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
         {
             if (b == MouseButtons.Right)

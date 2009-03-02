@@ -278,6 +278,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Associated labels (may be an empty array). This should ideally contain just one label.
+        /// </summary>
+        public TextFeature[] Labels
+        {
+            get { return (m_Labels==null ? new TextFeature[0] : m_Labels.ToArray()); }
+        }
+
+        /// <summary>
         /// The text associated with the polygon <see cref="Label"/>
         /// </summary>
         /// <remarks>Primarily provided as a convenience, since it then shows as a top-level
