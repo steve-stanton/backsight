@@ -551,7 +551,12 @@ namespace Backsight.Editor
 	        // of a diagonal that crosses the map's extent.
             IWindow mapWin = SpatialController.Current.MapModel.Extent;
             Debug.Assert(mapWin!=null);
-            double dist = Geom.Distance(mapWin.Min, mapWin.Max);
+
+            // If the window is currently undefined (e.g. during deserialization),
+            // just use a really big distance.
+            // TODO: This is a hack, but hopefully it may be shortlived, because
+            // new logic is in the works for handling updates.
+            double dist = (mapWin.IsEmpty ? 100000.0 : Geom.Distance(mapWin.Min, mapWin.Max));
 
         	// Define the position of the direction line. DON'T use the from-
 	        // point, because there may be an offset to the direction.
