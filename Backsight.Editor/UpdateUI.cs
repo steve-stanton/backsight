@@ -67,10 +67,19 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        public UpdateUI(IControlContainer cc, IUserAction cmdId)
-            : base(cc, cmdId)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateUI"/> class.
+        /// </summary>
+        /// <param name="action">The action that initiated this command</param>
+        public UpdateUI(IUserAction action)
+            : base(action)
         {
-//            base.Update = this;
+            m_Update = null;
+            m_Info = null;
+            m_Cmd = null;
+            //m_NumUndo = 0;
+            m_DepOps = null;
+            m_Problem = null;
         }
 
         #endregion
@@ -363,9 +372,14 @@ namespace Backsight.Editor
 	        return true;
         }
 
+        /// <summary>
+        /// Runs this instance (implements the abstract method declared by the base class, but
+        /// does nothing).
+        /// </summary>
+        /// <returns>False (always). To start an update, use <see cref="Run(Feature)"/></returns>
         internal override bool Run()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return false;
         }
 
         /// <summary>

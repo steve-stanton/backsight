@@ -961,6 +961,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>TerminalControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UpdateForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -1114,6 +1118,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AmberTrafficLight.ico" />
     <Content Include="Resources\AttachPointCursor.cur" />
     <Content Include="Resources\AttributeContainerIcon.ico" />
     <Content Include="Resources\BodyIcon.ico" />
@@ -1136,11 +1141,13 @@
     <Content Include="Resources\FieldDefinitionIcon.ico" />
     <Content Include="Resources\GrayReverseArrowCursor.cur" />
     <Content Include="Resources\GrayWandCursor.cur" />
+    <Content Include="Resources\GreenTrafficLight.ico" />
     <Content Include="Resources\LayerIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\Point1Cursor.cur" />
     <Content Include="Resources\Point2Cursor.cur" />
     <Content Include="Resources\PolygonSubdivisionCursor.cur" />
+    <Content Include="Resources\RedTrafficLight.ico" />
     <Content Include="Resources\ReverseArrowCursor.cur" />
     <Content Include="Resources\TableDefinitionIcon.ico" />
     <Content Include="Resources\TemplateIcon.ico" />

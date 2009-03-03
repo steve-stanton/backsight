@@ -265,4 +265,13 @@
   <data name="WandCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\WandCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="AmberTrafficLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AmberTrafficLight.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GreenTrafficLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GreenTrafficLight.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RedTrafficLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RedTrafficLight.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

@@ -60,6 +60,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static System.Drawing.Icon AmberTrafficLight {
+            get {
+                object obj = ResourceManager.GetObject("AmberTrafficLight", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static byte[] AttachPointCursor {
             get {
                 object obj = ResourceManager.GetObject("AttachPointCursor", resourceCulture);
@@ -242,6 +249,13 @@ namespace Backsight.Editor.Properties {
             }
         }
         
+        internal static System.Drawing.Icon GreenTrafficLight {
+            get {
+                object obj = ResourceManager.GetObject("GreenTrafficLight", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap InverseCalculator {
             get {
                 object obj = ResourceManager.GetObject("InverseCalculator", resourceCulture);
@@ -316,6 +330,13 @@ namespace Backsight.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("RedCar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon RedTrafficLight {
+            get {
+                object obj = ResourceManager.GetObject("RedTrafficLight", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
