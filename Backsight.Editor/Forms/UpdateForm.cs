@@ -65,7 +65,7 @@ namespace Backsight.Editor.Forms
 
         private void dependenciesButton_Click(object sender, EventArgs e)
         {
-            //m_Cmd.Dependencies();
+            m_Cmd.Dependencies();
         }
 
         private void predecessorsButton_Click(object sender, EventArgs e)
@@ -73,7 +73,7 @@ namespace Backsight.Editor.Forms
             // Get the command to display the predecessors. If a
             // change is ultimately made, another call to Display
             // will be made.
-            //m_Cmd.Predecessors();
+            m_Cmd.Predecessors();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)

@@ -229,7 +229,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="line">The line of interest</param>
         /// <returns>Null (always), since this operation doesn't create any lines.</returns>
-        internal LineFeature GetPredecessor(LineFeature line)
+        internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
         }

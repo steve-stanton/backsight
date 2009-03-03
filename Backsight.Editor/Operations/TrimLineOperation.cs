@@ -215,7 +215,7 @@ namespace Backsight.Editor.Operations
         /// <param name="line">The line of interest</param>
         /// <returns>The superseded line that the line of interest was derived from. Null if
         /// this edit did not create the line of interest.</returns>
-        LineFeature GetPredecessor(LineFeature line)
+        internal override LineFeature GetPredecessor(LineFeature line)
         {
             // No predecessors (for same reason that DeletionOperation does
             // not return predecessors)? Not sure about this.
