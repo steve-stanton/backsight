@@ -233,6 +233,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
         /// The number of features deleted by this edit.
         /// </summary>
         /// <remarks>This property is used by <see cref="SessionForm"/> to show

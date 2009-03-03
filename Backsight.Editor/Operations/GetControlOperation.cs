@@ -220,7 +220,14 @@ namespace Backsight.Editor.Operations
             base.ReadContent(reader);
             PointFeature[] points = reader.ReadArray<PointFeature>("PointArray", "Point");
             m_Features.AddRange(points);
+        }
 
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
         }
     }
 }

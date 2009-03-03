@@ -523,7 +523,7 @@ namespace Backsight.Editor
         /// Reads back a calculated point feature
         /// </summary>
         /// <param name="elementName">The name of the element containing the fields
-        /// desribing the basic feature</param>
+        /// describing the basic feature</param>
         /// <param name="p">The calculated position of the point</param>
         /// <returns>The created point</returns>
         internal PointFeature ReadCalculatedPoint(string elementName, IPosition p)
@@ -534,6 +534,24 @@ namespace Backsight.Editor
                 return null;
             else
                 return CreateCalculatedPoint(fd, p);
+        }
+
+        /// <summary>
+        /// Reads back a point feature (without any geometry). A subsequent call
+        /// to <see cref="Operation.CalculateGeometry"/> needs to be made to
+        /// define the geometry for the point.
+        /// </summary>
+        /// <param name="elementName">The name of the element containing the fields
+        /// describing the point</param>
+        /// <returns>The created point (without any geometry)</returns>
+        internal PointFeature ReadPoint(string elementName)
+        {
+            // Pick up the information for the point
+            FeatureData fd = ReadElement<FeatureData>(elementName);
+            if (fd == null)
+                return null;
+            else
+                return CreateCalculatedPoint(fd, null);
         }
 
         /// <summary>
