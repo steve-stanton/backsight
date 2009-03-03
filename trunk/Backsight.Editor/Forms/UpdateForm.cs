@@ -15,42 +15,130 @@
 
 using System;
 using System.Windows.Forms;
+using System.Text;
 
 namespace Backsight.Editor.Forms
 {
-    public partial class UpdateForm : Form
+    /// <written by="Steve Stanton" on="30-NOV-1999" was="CdUpdate"/>
+    /// <summary>
+    /// Dialog for showing summary information about a feature that is currently
+    /// the focus of an update.
+    /// </summary>
+    partial class UpdateForm : Form
     {
-        public UpdateForm()
+        #region Class data
+
+        /// <summary>
+        /// The command running this dialog.
+        /// </summary>
+        readonly UpdateUI m_Cmd;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateForm"/> class.
+        /// </summary>
+        /// <param name="cmd">The command running this dialog (not null)</param>
+        /// <exception cref="ArgumentNullException">If the supplied update command is null</exception>
+        internal UpdateForm(UpdateUI cmd)
         {
             InitializeComponent();
+
+            if (cmd == null)
+                throw new ArgumentNullException();
+
+            m_Cmd = cmd;
+        }
+
+        #endregion
+
+        private void UpdateForm_Shown(object sender, EventArgs e)
+        {
+            infoLabel.Text = "Nothing selected for update";
+            Enable(false);
+
+            // Cancel unless the user explicitly clicks the Finish button
+            this.DialogResult = DialogResult.Cancel;
+        }
+
+        private void dependenciesButton_Click(object sender, EventArgs e)
+        {
+            //m_Cmd.Dependencies();
+        }
+
+        private void predecessorsButton_Click(object sender, EventArgs e)
+        {
+            // Get the command to display the predecessors. If a
+            // change is ultimately made, another call to Display
+            // will be made.
+            //m_Cmd.Predecessors();
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            //m_Cmd.Cancel();
+        }
+
+        private void finishButton_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            //m_Cmd.Finish();
         }
 
         internal void Display(Feature feat)
         {
-            throw new NotImplementedException("UpdateForm.Display");
-
-            /*
             this.Text = "Update";
 
-	        // Nothing to do if feature was not specified.
-	        if (feat==null)
+            // Nothing to do if feature was not specified.
+            if (feat==null)
             {
-		        CWnd* pInfo = GetDlgItem(IDC_INFO);
-		        pInfo->SetWindowText("Nothing selected for update");
-		        Enable(false);
-		        return;
-	        }
-
-	        // Get the creating op and display info about it.
-	        IOperation pop = feat.Creator;
-	        Show(pop, feat);
-             */
+                infoLabel.Text = "Nothing selected for update";
+                Enable(false);
+            }
+            else
+            {
+                // Get the creating op and display info about it.
+                Operation pop = feat.Creator;
+                ShowInfo(pop, feat);
+            }
         }
 
-        internal void OnAbortUpdate()
+        void ShowInfo(Operation pop, Feature feat)
         {
-            throw new NotImplementedException("UpdateForm");
-            //ShowWindow(SW_RESTORE);
+            if (pop == null)
+            {
+                infoLabel.Text = "No editing command";
+                Enable(false);
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                string newLine = System.Environment.NewLine;
+                sb.AppendFormat("{0}\t{1}{2}", "Editor command:", pop.Name, newLine);
+                sb.AppendFormat("{0}\t{1}{2}", "Edit sequence:", pop.EditSequence, newLine);
+                sb.AppendFormat("{0}\t{1}", "Created on:", pop.Session.StartTime.Date);
+                infoLabel.Text = sb.ToString();
+                Enable(true);
+
+                // Disable the Predecessors button if the selected
+                // feature doesn't actually have one.
+                //if (!UpdateUI.GetPredecessor(feat))
+                //    predecessorsButton.Enabled = false;
+
+                // Disable the Update button if the operation is not updateable.
+                //if (pop.CanCorrect)
+                //    updateButton.Focus();
+                //else
+                    updateButton.Enabled = false;
+            }
+        }
+
+        private void updateButton_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            //m_Cmd.Update();
         }
 
         internal void OnFinishUpdate(Operation problem) 
@@ -80,5 +168,57 @@ namespace Backsight.Editor.Forms
 	        ShowWindow(SW_RESTORE);
              */
         }
+
+        /*
+
+void CdUpdate::SetIcon ( const INT4 id ) {
+
+	CStatic* pWnd = (CStatic*)GetDlgItem(IDC_LIGHT);
+	HICON icon = AfxGetApp()->LoadIcon(id);
+	pWnd->SetIcon(icon);
+}
+         */
+
+        internal void OnAbortUpdate()
+        {
+            throw new NotImplementedException("UpdateForm");
+            //ShowWindow(SW_RESTORE);
+        }
+
+        /// <summary>
+        /// Enables (or disables) every button, except Cancel.
+        /// </summary>
+        /// <param name="isEnable">Should buttons be enabled?</param>
+        void Enable(bool isEnable)
+        {
+            updateButton.Enabled = isEnable;
+            predecessorsButton.Enabled = isEnable;
+            dependenciesButton.Enabled = isEnable;
+            finishButton.Enabled = isEnable;
+        }
+
+        /*
+void CdUpdate::OnClose() 
+{
+	m_Cmd.Cancel();
+}
+         */
+
+        /*
+
+void CdUpdate::SetUpdateCount ( const UINT4 n )
+{
+	if ( n == 0 )
+		GetDlgItem(IDC_NUM_UPDATE)->ShowWindow(SW_HIDE);
+	else
+	{
+		CWnd* pText = GetDlgItem(IDC_NUM_UPDATE);
+		CString text;
+		text.Format("Update %d",n);
+		pText->SetWindowText(text);
+		pText->ShowWindow(SW_SHOW);
+	}
+}
+         */
     }
 }

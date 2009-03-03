@@ -230,7 +230,7 @@ namespace Backsight.Editor
             else
             {
                 ClearSelection();
-                m_Command = new UpdateUI(null, action);
+                m_Command = new UpdateUI(action);
                 /*
 	CuiUpdate* pup = new CuiUpdate(*this);
 	m_pCommand = pup;
