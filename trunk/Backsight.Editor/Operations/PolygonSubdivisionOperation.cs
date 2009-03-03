@@ -181,5 +181,16 @@ namespace Backsight.Editor.Operations
             m_Label = reader.ReadFeatureByReference<TextFeature>("DeactivatedLabel");
             m_Lines = reader.ReadArray<LineFeature>("LineArray", "Line");
         }
+
+        /// <summary>
+        /// Attempts to locate a superseded (inactive) line that was the parent of
+        /// a specific line.
+        /// </summary>
+        /// <param name="line">The line of interest</param>
+        /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
+        internal override LineFeature GetPredecessor(LineFeature line)
+        {
+            return null;
+        }
     }
 }

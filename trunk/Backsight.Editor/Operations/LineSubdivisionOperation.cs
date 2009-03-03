@@ -519,5 +519,33 @@ namespace Backsight.Editor.Operations
             // De-activate the parent line
             m_Line.Deactivate();
         }
+
+        /// <summary>
+        /// Attempts to locate a superseded (inactive) line that was the parent of
+        /// a specific line.
+        /// </summary>
+        /// <param name="line">The line of interest</param>
+        /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
+        internal override LineFeature GetPredecessor(LineFeature line)
+        {
+            foreach (MeasuredLineFeature mlf in m_Sections)
+            {
+                if (Object.ReferenceEquals(mlf.Line, line))
+                    return m_Line;
+            }
+
+            return null;
+            /*
+	const INT4 nFace = GetNumFace();
+
+	for ( INT4 i=0; i<nFace; i++ )
+	{
+		const CeObjectList* const pS = GetSectionList(i);
+		if ( pS->IsReferredTo(&arc) ) return m_pArc;
+	}
+
+	return 0;
+             */
+        }
     }
 }

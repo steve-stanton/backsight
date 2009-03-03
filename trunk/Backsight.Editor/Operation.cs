@@ -531,5 +531,15 @@ namespace Backsight.Editor
             XmlContentWriter.TargetNamespace = "Backsight";
             return XmlContentWriter.GetXml("Edit", indent, this);
         }
+
+        /// <summary>
+        /// Attempts to locate a superseded (inactive) line that was the parent of
+        /// a specific line.
+        /// </summary>
+        /// <param name="line">The line of interest</param>
+        /// <returns>A line that was superseded by this edit in order to produce
+        /// the line of interest.</returns>
+        abstract internal LineFeature GetPredecessor(LineFeature line);
     }
+
 }

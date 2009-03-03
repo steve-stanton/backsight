@@ -452,5 +452,16 @@ void CeRadial::CreateAngleText ( CPtrList& text
             //m_Line = reader.ReadCalculatedLine("Line", m_Direction.From, m_To);
             m_Line = reader.ReadElement<LineFeature>("Line");
         }
+
+        /// <summary>
+        /// Attempts to locate a superseded (inactive) line that was the parent of
+        /// a specific line.
+        /// </summary>
+        /// <param name="line">The line of interest</param>
+        /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
+        internal override LineFeature GetPredecessor(LineFeature line)
+        {
+            return null;
+        }
     }
 }
