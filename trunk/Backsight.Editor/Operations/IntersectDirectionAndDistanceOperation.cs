@@ -550,10 +550,21 @@ namespace Backsight.Editor.Operations
             m_Direction = reader.ReadElement<Direction>("Direction");
             m_Distance = reader.ReadElement<Observation>("Distance");
 
-            IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
-            m_To = reader.ReadCalculatedPoint("To", to);
+            //IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
+            //m_To = reader.ReadCalculatedPoint("To", to);
+            m_To = reader.ReadPoint("To");
             m_DirLine = reader.ReadElement<LineFeature>("DirLine");
             m_DistLine = reader.ReadElement<LineFeature>("DistLine");
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
+            PointGeometry pg = PointGeometry.Create(to);
+            m_To.PointGeometry = pg;
         }
     }
 }

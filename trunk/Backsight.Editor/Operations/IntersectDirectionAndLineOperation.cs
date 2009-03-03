@@ -557,11 +557,22 @@ namespace Backsight.Editor.Operations
             m_IsSplit = reader.ReadBool("IsSplit");
             m_Direction = reader.ReadElement<Direction>("Direction");
 
-            IPosition p = Calculate();
-            m_Intersection = reader.ReadCalculatedPoint("To", p);
+            //IPosition p = Calculate();
+            //m_Intersection = reader.ReadCalculatedPoint("To", p);
+            m_Intersection = reader.ReadPoint("To");
             m_DirLine = reader.ReadElement<LineFeature>("DirLine");
             m_LineA = reader.ReadElement<LineFeature>("LineA");
             m_LineB = reader.ReadElement<LineFeature>("LineB");
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_Intersection.PointGeometry = pg;
         }
     }
 }

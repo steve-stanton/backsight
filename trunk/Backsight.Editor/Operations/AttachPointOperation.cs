@@ -262,7 +262,18 @@ namespace Backsight.Editor.Operations
             base.ReadContent(reader);
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
             m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
-            m_Point = reader.ReadCalculatedPoint("Point", Calculate());
+            //m_Point = reader.ReadCalculatedPoint("Point", Calculate());
+            m_Point = reader.ReadPoint("Point");
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_Point.PointGeometry = pg;
         }
 
         /// <summary>
