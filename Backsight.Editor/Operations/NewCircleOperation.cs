@@ -326,5 +326,19 @@ namespace Backsight.Editor.Operations
 
             base.ReadContent(reader);
         }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // I don't THINK it needs to be calculated here - the ReadContent call
+            // leads to LineFeature.ReadContent, which reads a <Geometry> element
+            // from the XML. This strikes me as being a bit suspect (why is the
+            // geometry being written explicitly, rather than being calculated from
+            // the parameters saved as part of the op?). I can see that making sense
+            // when dealing with MultiSegmentGeometry, but not for any other type
+            // of line... TODO cleanup.
+        }
     }
 }

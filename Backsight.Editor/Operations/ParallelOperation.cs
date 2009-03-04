@@ -652,6 +652,23 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Calculate the end positions
+            IPosition spos, epos;
+            if (!Calculate(out spos, out epos))
+                throw new Exception("Failed to calculate parallel line positions");
+
+            /*
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_NewPoint.PointGeometry = pg;
+             */
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

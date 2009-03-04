@@ -296,6 +296,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // TODO - Nothing to do for now, since LineFeature.ReadContent ends up
+            // reading in the geometry. This may well need to change (see comments
+            // in NewCircleOperation.CalculateGeometry)
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

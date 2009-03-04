@@ -167,6 +167,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
         /// Initializes this operation upon loading of the session that contains it.
         /// This implementation ensures the defined rotation angle is recorded as
         /// part of the enclosing model.

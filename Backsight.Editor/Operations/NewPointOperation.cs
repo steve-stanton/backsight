@@ -151,6 +151,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

@@ -416,8 +416,19 @@ namespace Backsight.Editor.Operations
             m_ExtendLine = reader.ReadFeatureByReference<LineFeature>("ExtendLine");
             m_IsExtendFromEnd = reader.ReadBool("IsExtendFromEnd");
             m_Length = reader.ReadElement<Distance>("Distance");
-            m_NewPoint = reader.ReadCalculatedPoint("NewPoint", Calculate());
+            //m_NewPoint = reader.ReadCalculatedPoint("NewPoint", Calculate());
+            m_NewPoint = reader.ReadPoint("NewPoint");
             m_NewLine = reader.ReadElement<LineFeature>("NewLine");
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_NewPoint.PointGeometry = pg;
         }
     }
 }

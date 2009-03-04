@@ -447,10 +447,29 @@ void CeRadial::CreateAngleText ( CPtrList& text
             m_Direction = reader.ReadElement<Direction>("Direction");
             m_Length = reader.ReadElement<Observation>("Length");
 
-            IPosition to = RadialUI.Calculate(m_Direction, m_Length);
-            m_To = reader.ReadCalculatedPoint("To", to);
-            //m_Line = reader.ReadCalculatedLine("Line", m_Direction.From, m_To);
+            //IPosition to = RadialUI.Calculate(m_Direction, m_Length);
+            //m_To = reader.ReadCalculatedPoint("To", to);
+            m_To = reader.ReadPoint("To");
             m_Line = reader.ReadElement<LineFeature>("Line");
+        }
+
+        /// <summary>
+        /// Calculates the position of the sideshot point.
+        /// </summary>
+        /// <returns>The calculated position</returns>
+        IPosition Calculate()
+        {
+            return RadialUI.Calculate(m_Direction, m_Length);
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_To.PointGeometry = pg;
         }
 
         /// <summary>

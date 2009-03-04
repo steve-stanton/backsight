@@ -236,5 +236,13 @@ namespace Backsight.Editor.Operations
             m_OldText = reader.ReadFeatureByReference<TextFeature>("OldText");
             base.ReadContent(reader);
         }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
     }
 }
