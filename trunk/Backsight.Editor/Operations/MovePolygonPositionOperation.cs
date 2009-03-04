@@ -186,6 +186,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
         /// Executes the move operation.
         /// </summary>
         /// <param name="label">The polygon label to modify</param>

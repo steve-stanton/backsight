@@ -442,5 +442,13 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
             base.ReadContent(reader);
             m_NewText = reader.ReadElement<TextFeature>("NewText");
         }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
     }
 }

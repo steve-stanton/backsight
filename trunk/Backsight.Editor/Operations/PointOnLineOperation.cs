@@ -18,11 +18,14 @@ using System.Collections.Generic;
 
 namespace Backsight.Editor.Operations
 {
-    /// <written by="Steve Stanton" on="10-JUN-1999" />
+    /// <written by="Steve Stanton" on="10-JUN-1999" was="CePointOnLine"/>
     /// <summary>
     /// Add a point at a specific distance from the start or end of an existing line,
     /// splitting the original line at the point.
     /// </summary>
+    /// <remarks>TODO: The class name is a bit confusing (the name suggests the functionality
+    /// that's actually covered by the AttachPointOperation). Should probably rename as
+    /// SimpleLineSubdivisionOperation</remarks>
     class PointOnLineOperation : Operation
     {
         #region Class data
@@ -387,8 +390,9 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             uint line2 = reader.ReadUnsignedInt("NewLine2");
             m_Distance = reader.ReadElement<Distance>("Distance");
 
-            IPosition p = Calculate();
-            m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
+            //IPosition p = Calculate();
+            //m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
+            m_NewPoint = reader.ReadPoint("NewPoint");
             m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
             m_NewLine1.CreatorSequence = line1;
             m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
@@ -403,14 +407,28 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         }
 
         /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_NewPoint.PointGeometry = pg;
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>
         /// <param name="line">The line of interest</param>
-        /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
+        /// <returns>The line that was subdivided (if it resulted in the supplied line
+        /// of interest), otherwise null.</returns>
         internal override LineFeature GetPredecessor(LineFeature line)
         {
-            return null;
+            if (Object.ReferenceEquals(line, m_NewLine1) || Object.ReferenceEquals(line, m_NewLine2))
+                return m_Line;
+            else
+                return null;
         }
     }
 }

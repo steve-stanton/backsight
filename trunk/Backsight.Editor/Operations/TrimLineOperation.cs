@@ -300,5 +300,13 @@ namespace Backsight.Editor.Operations
             foreach (PointFeature point in m_Points)
                 point.IsTrimmed = true;
         }
+
+        /// <summary>
+        /// Calculates the geometry for any features created by this edit.
+        /// </summary>
+        public override void CalculateGeometry()
+        {
+            // Nothing to do
+        }
     }
 }
