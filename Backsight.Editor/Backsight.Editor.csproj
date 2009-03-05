@@ -51,6 +51,11 @@
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
+    <Compile Include="Content\FeatureInfo.cs" />
+    <Compile Include="Content\IContent.cs" />
+    <Compile Include="Content\ISpatialKey.cs" />
+    <Compile Include="Content\GroupKey.cs" />
+    <Compile Include="Content\StringKey.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="Database\DbUtil.cs" />

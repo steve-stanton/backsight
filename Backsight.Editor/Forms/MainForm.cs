@@ -26,6 +26,7 @@ using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Editor.Database;
+using Backsight.Editor.Content; // TEST
 
 namespace Backsight.Editor.Forms
 {
@@ -1837,7 +1838,32 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             IDictionary<int, IPosition> data = loader.ReadPositions();
              */
 
-            MessageBox.Show(Application.ExecutablePath);
+            //MessageBox.Show(Application.ExecutablePath);
+
+            // Test content classes
+            FeatureInfo info = new FeatureInfo();
+            info.Id = "abc";
+            info.Key = new StringKey("xyz");
+            info.Type = 23;
+
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(1000);
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.ConformanceLevel = ConformanceLevel.Fragment;
+            xws.Indent = true;
+
+            using (XmlWriter writer = XmlWriter.Create(sb, xws))
+            {
+                writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+                writer.WriteStartElement("Test", "Backsight");
+                writer.WriteAttributeString("xmlns", "xsi", null, System.Xml.Schema.XmlSchema.InstanceNamespace);
+
+                //WriteElementContent(content);
+                info.WriteContent(writer, "Test");
+
+                //writer.WriteEndElement();
+            }
+
+            MessageBox.Show(sb.ToString());
         }
 
         #endregion
