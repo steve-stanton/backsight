@@ -21,7 +21,7 @@ using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="03-JAN-1999" was="CuiAddLabel"/>
     /// <summary>

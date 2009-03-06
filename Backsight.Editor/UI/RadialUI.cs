@@ -22,7 +22,7 @@ using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     class RadialUI : SimpleCommandUI, IDisposable
     {

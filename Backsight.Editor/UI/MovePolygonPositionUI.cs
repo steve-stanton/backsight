@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2008 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,50 +14,49 @@
 // </remarks>
 
 using System;
-using System.Windows.Forms;
-using System.Drawing;
 
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
-    /// <written by="Steve Stanton" on="16-JAN-2009"/>
+    /// <written by="Steve Stanton" on="20-JAN-2009"/>
     /// <summary>
-    /// User interface for moving an item of text.
+    /// User interface for moving the reference position of a polygon label
     /// </summary>
-    class MoveTextUI : SimpleCommandUI
+    class MovePolygonPositionUI : SimpleCommandUI
     {
         #region Class data
 
         /// <summary>
-        /// The text that's being moved (not null)
+        /// The polygon label that's being modified (not null)
         /// </summary>
         readonly TextFeature m_Text;
 
         /// <summary>
-        /// The last position for the text
+        /// The last polygon that the polygon position was inside (could be null)
         /// </summary>
-        PointGeometry m_LastPosition;
+        Polygon m_LastPolygon;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>MoveTextUI</c>
+        /// Creates a new <c>MovePolygonPositionUI</c>
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <param name="text">The text to move (not null)</param>
-        internal MoveTextUI(IControlContainer cc, IUserAction action, TextFeature text)
+        internal MovePolygonPositionUI(IControlContainer cc, IUserAction action, TextFeature text)
             : base(cc, action)
         {
             if (text == null)
                 throw new ArgumentNullException();
 
             m_Text = text;
+            m_LastPolygon = m_Text.Container;
         }
 
         #endregion
@@ -68,13 +67,16 @@ namespace Backsight.Editor
         /// <returns>True (always)</returns>
         internal override bool Run()
         {
-            // Ensure the text is un-selected
-            Controller.ClearSelection();
-
-            // Switch to a null cursor (we'll be dragging the text).
-            Cursor.Current = null;
-
+            SetCommandCursor();
             return true;
+        }
+
+        /// <summary>
+        /// Ensures the command cursor (if any) is shown.
+        /// </summary>
+        internal override void SetCommandCursor()
+        {
+            ActiveDisplay.MapPanel.Cursor = EditorResources.AttachPointCursor;
         }
 
         /// <summary>
@@ -83,12 +85,18 @@ namespace Backsight.Editor
         /// <param name="p">The new position of the mouse</param>
         internal override void MouseMove(IPosition p)
         {
-            // Erase the text at its previous position, and draw it at the new position.
-            Controller.ActiveDisplay.RestoreLastDraw();
+            if (m_LastPolygon == null || !m_LastPolygon.IsEnclosing(p))
+            {
+                IPointGeometry pg = PointGeometry.Create(p);
+                ISpatialIndex index = CadastralMapModel.Current.Index;
+                Polygon pol = new FindPointContainerQuery(index, pg).Result;
 
-            // Remember the mouse position. We'll draw at this new position when
-            // the Paint method gets called
-            m_LastPosition = PointGeometry.Create(p);
+                if (pol != null || (m_LastPolygon != null && pol == null))
+                {
+                    Controller.ActiveDisplay.RestoreLastDraw();
+                    m_LastPolygon = pol;
+                }
+            }
         }
 
         /// <summary>
@@ -98,25 +106,12 @@ namespace Backsight.Editor
         /// Not used.</param>
         internal override void Paint(PointFeature point)
         {
-            if (m_LastPosition != null)
-            {
-                // Draw gray text in the original position
-                ISpatialDisplay display = ActiveDisplay;
-                m_Text.Draw(display, Color.Gray);
+            ISpatialDisplay display = ActiveDisplay;
+            IDrawStyle highlighter = Controller.HighlightStyle;
+            m_Text.Render(display, highlighter);
 
-                // Draw the text at the last mouse position
-                IPointGeometry p = m_Text.Position;
-                try
-                {
-                    m_Text.TextGeometry.Position = m_LastPosition;
-                    m_Text.Draw(display, Color.Red);
-                }
-
-                finally
-                {
-                    m_Text.TextGeometry.Position = p;
-                }
-            }
+            if (m_LastPolygon != null)
+                m_LastPolygon.Render(display, highlighter);
         }
 
         /// <summary>
@@ -136,7 +131,7 @@ namespace Backsight.Editor
         /// <returns>True, indicating that the text was moved.</returns>
         internal override bool LButtonDown(IPosition p)
         {
-            MoveTextOperation op = new MoveTextOperation();
+            MovePolygonPositionOperation op = new MovePolygonPositionOperation();
             op.Execute(m_Text, PointGeometry.Create(p));
             FinishCommand();
             return true;

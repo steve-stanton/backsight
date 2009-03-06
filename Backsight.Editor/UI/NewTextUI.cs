@@ -22,7 +22,7 @@ using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="28-MAR-1999" was="CuiNewText"/>
     /// <summary>

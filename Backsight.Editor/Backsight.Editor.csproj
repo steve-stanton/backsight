@@ -40,9 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddLabelUI.cs" />
     <Compile Include="ArcGeometry.cs" />
-    <Compile Include="AttachPointUI.cs" />
     <Compile Include="AttributeData.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="CircularLeg.cs" />
@@ -334,10 +332,8 @@
     <Compile Include="Forms\UpdatePathForm.Designer.cs">
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GetControlUI.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
-    <Compile Include="IntersectUI.cs" />
     <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
@@ -345,11 +341,7 @@
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
     <Compile Include="LineData.cs" />
-    <Compile Include="MovePolygonPositionUI.cs" />
-    <Compile Include="MoveTextUI.cs" />
     <Compile Include="NativeId.cs" />
-    <Compile Include="NewLabelUI.cs" />
-    <Compile Include="NewTextUI.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Observations\AngleDirection.cs" />
     <Compile Include="Observations\BearingDirection.cs" />
@@ -375,8 +367,6 @@
     <Compile Include="RowTextContent.cs" />
     <Compile Include="RowTextGeometry.cs" />
     <Compile Include="SpanData.cs" />
-    <Compile Include="NewCircleUI.cs" />
-    <Compile Include="NewCircularArcUI.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndLineOperation.cs" />
@@ -388,7 +378,6 @@
     <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="PathItem.cs" />
     <Compile Include="PathItemType.cs" />
-    <Compile Include="PathUI.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
@@ -399,7 +388,6 @@
     <Compile Include="Constants.cs" />
     <Compile Include="CoordinateSystem.cs" />
     <Compile Include="DataStub.cs" />
-    <Compile Include="DeletionUI.cs" />
     <Compile Include="DividerObject.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FileCheckQuery.cs" />
@@ -593,10 +581,8 @@
     <Compile Include="ITranslate.cs" />
     <Compile Include="Leg.cs" />
     <Compile Include="LegItemFlag.cs" />
-    <Compile Include="LineExtensionUI.cs" />
     <Compile Include="LineGeometry.cs" />
     <Compile Include="LineOverlap.cs" />
-    <Compile Include="LineSubdivisionUI.cs" />
     <Compile Include="RingCheck.cs" />
     <Compile Include="SectionDivider.cs" />
     <Compile Include="SectionOverlap.cs" />
@@ -614,7 +600,6 @@
       <DependentUpon>TestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TextCheck.cs" />
-    <Compile Include="TextRotationUI.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />
@@ -624,8 +609,6 @@
     <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
     <Compile Include="Operations\SetTopologyOperation.cs" />
-    <Compile Include="PointOnLineUI.cs" />
-    <Compile Include="PolygonSubdivisionUI.cs" />
     <Compile Include="RingFlag.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="RingMetrics.cs" />
@@ -635,14 +618,11 @@
     <Compile Include="SegmentGeometry.cs" />
     <Compile Include="MeasuredLineFeature.cs" />
     <Compile Include="Circle.cs" />
-    <Compile Include="NewLineUI.cs" />
     <Compile Include="OperationFlag.cs" />
     <Compile Include="Operations\LineSubdivisionOperation.cs" />
     <Compile Include="Operations\NewLineOperation.cs" />
     <Compile Include="Operations\ParallelOperation.cs" />
     <Compile Include="Orientation.cs" />
-    <Compile Include="ParallelUI.cs" />
-    <Compile Include="RadialUI.cs" />
     <Compile Include="Geom.cs" />
     <Compile Include="HorizontalRay.cs" />
     <Compile Include="IdGroup.cs" />
@@ -685,7 +665,6 @@
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />
     <Compile Include="MiscText.cs" />
-    <Compile Include="NewPointUI.cs" />
     <Compile Include="NtxImport.cs" />
     <Compile Include="EditingActionId.cs" />
     <Compile Include="Observation.cs" />
@@ -1014,7 +993,6 @@
     <Compile Include="RollforwardException.cs" />
     <Compile Include="Row.cs" />
     <Compile Include="Session.cs" />
-    <Compile Include="SetTopologyUI.cs" />
     <Compile Include="Side.cs" />
     <Compile Include="SimpleCommandUI.cs" />
     <Compile Include="LineTopology.cs" />
@@ -1023,10 +1001,32 @@
     <Compile Include="TextGeometry.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="TranslationFile.cs" />
-    <Compile Include="TrimLineUI.cs" />
-    <Compile Include="UndoUI.cs" />
+    <Compile Include="UI\AddLabelUI.cs" />
+    <Compile Include="UI\AttachPointUI.cs" />
+    <Compile Include="UI\DeletionUI.cs" />
+    <Compile Include="UI\GetControlUI.cs" />
+    <Compile Include="UI\IntersectUI.cs" />
+    <Compile Include="UI\LineExtensionUI.cs" />
+    <Compile Include="UI\LineSubdivisionUI.cs" />
+    <Compile Include="UI\MovePolygonPositionUI.cs" />
+    <Compile Include="UI\MoveTextUI.cs" />
+    <Compile Include="UI\NewCircleUI.cs" />
+    <Compile Include="UI\NewCircularArcUI.cs" />
+    <Compile Include="UI\NewLabelUI.cs" />
+    <Compile Include="UI\NewLineUI.cs" />
+    <Compile Include="UI\NewPointUI.cs" />
+    <Compile Include="UI\NewTextUI.cs" />
+    <Compile Include="UI\ParallelUI.cs" />
+    <Compile Include="UI\PathUI.cs" />
+    <Compile Include="UI\PointOnLineUI.cs" />
+    <Compile Include="UI\PolygonSubdivisionUI.cs" />
+    <Compile Include="UI\RadialUI.cs" />
+    <Compile Include="UI\SetTopologyUI.cs" />
+    <Compile Include="UI\TextRotationUI.cs" />
+    <Compile Include="UI\TrimLineUI.cs" />
+    <Compile Include="UI\UndoUI.cs" />
+    <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
-    <Compile Include="UpdateUI.cs" />
     <Compile Include="Wildcard.cs" />
     <Compile Include="XmlContentReader.cs" />
     <Compile Include="XmlContentWriter.cs" />

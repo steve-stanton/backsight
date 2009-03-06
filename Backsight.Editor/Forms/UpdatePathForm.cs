@@ -16,6 +16,9 @@
 using System;
 using System.Windows.Forms;
 
+using Backsight.Editor.UI;
+
+
 namespace Backsight.Editor.Forms
 {
     partial class UpdatePathForm : Form

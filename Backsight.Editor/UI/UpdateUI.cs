@@ -24,7 +24,7 @@ using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="30-NOV-1999" was="CuiUpdate"/>
     /// <summary>

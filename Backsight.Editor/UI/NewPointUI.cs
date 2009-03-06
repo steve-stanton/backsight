@@ -20,7 +20,7 @@ using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
 	/// <written by="Steve Stanton" on="13-DEC-1999" />
     /// <was>CuiNewPoint</was>

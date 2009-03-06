@@ -20,7 +20,7 @@ using System.Windows.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="10-DEC-1999" was="CuiArcSubdivision" />
     /// <summary>

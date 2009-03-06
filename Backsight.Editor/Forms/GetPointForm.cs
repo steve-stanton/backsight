@@ -17,6 +17,9 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 
+using Backsight.Editor.UI;
+
+
 namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" was="CdGetPoint" />
