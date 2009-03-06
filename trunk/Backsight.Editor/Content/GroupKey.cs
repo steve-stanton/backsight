@@ -2,7 +2,7 @@ using System;
 
 namespace Backsight.Editor.Content
 {
-    public struct GroupKey : ISpatialKey
+    public struct GroupKey : IContentAttribute
     {
         int GroupId;
         uint Value;
@@ -13,27 +13,19 @@ namespace Backsight.Editor.Content
             Value = value;
         }
 
-        #region IContent Members
-
-        public void WriteContent(System.Xml.XmlWriter writer, string name)
+        public GroupKey(string s)
         {
-            writer.WriteStartElement(name, "Backsight");
-            writer.WriteAttributeString("xsi", "type", null, GetType().Name);
-            WriteAttributes(writer);
-            WriteChildElements(writer);
-            writer.WriteEndElement();
+            string[] tokens = s.Split('@');
+            if (tokens.Length != 2)
+                throw new ArgumentException();
+
+            Value = uint.Parse(tokens[0]);
+            GroupId = int.Parse(tokens[1]);
         }
 
-        public void WriteAttributes(System.Xml.XmlWriter w)
+        public string AttributeString
         {
-            w.WriteAttributeString("Group", GroupId.ToString());
-            w.WriteAttributeString("Value", Value.ToString());
+            get { return String.Format("{0}@{1}", Value, GroupId); }
         }
-
-        public void WriteChildElements(System.Xml.XmlWriter w)
-        {
-        }
-
-        #endregion
     }
 }

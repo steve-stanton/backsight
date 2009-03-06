@@ -1,9 +1,8 @@
 using System;
-using System.Xml;
 
 namespace Backsight.Editor.Content
 {
-    public struct StringKey : ISpatialKey
+    public struct StringKey : IContentAttribute
     {
         public string Value;
 
@@ -12,26 +11,9 @@ namespace Backsight.Editor.Content
             Value = value;
         }
 
-        #region IContent Members
-
-        public void WriteContent(XmlWriter writer, string name)
+        public string AttributeString
         {
-            writer.WriteStartElement(name, "Backsight");
-            writer.WriteAttributeString("xsi", "type", null, GetType().Name);
-            WriteAttributes(writer);
-            WriteChildElements(writer);
-            writer.WriteEndElement();
+            get { return Value; }
         }
-
-        public void WriteAttributes(System.Xml.XmlWriter w)
-        {
-            w.WriteAttributeString("Key", Value);
-        }
-
-        public void WriteChildElements(System.Xml.XmlWriter w)
-        {
-        }
-
-        #endregion
     }
 }
