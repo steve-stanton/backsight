@@ -23,7 +23,7 @@ using Backsight.Editor.Forms;
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="04-JAN-2008" />
     /// <summary>

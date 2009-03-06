@@ -22,7 +22,7 @@ using System.Windows.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="28-OCT-1999" was="CuiPath"/>
     /// <summary>

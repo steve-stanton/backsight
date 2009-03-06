@@ -20,6 +20,7 @@ using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Editor.UI;
 
 
 namespace Backsight.Editor.Operations

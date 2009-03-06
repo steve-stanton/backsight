@@ -14,14 +14,14 @@
 /// </remarks>
 
 using System;
+using System.Windows.Forms;
+using System.Drawing;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
-using System.Windows.Forms;
-using System.Drawing;
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="" />
     /// <summary>

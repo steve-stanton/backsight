@@ -32,6 +32,7 @@ using Backsight.SqlServer;
 using Backsight.Geometry;
 using Backsight.Editor.Database;
 using Backsight.Data;
+using Backsight.Editor.UI;
 
 namespace Backsight.Editor
 {

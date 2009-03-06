@@ -23,7 +23,7 @@ using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="04-FEB-2003" was="CuiAttachPoint" />
     /// <summary>

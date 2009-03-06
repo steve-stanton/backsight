@@ -17,6 +17,9 @@ using System;
 using System.Windows.Forms;
 using System.Text;
 
+using Backsight.Editor.UI;
+
+
 namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" on="30-NOV-1999" was="CdUpdate"/>

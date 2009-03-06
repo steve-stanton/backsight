@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 
 using Backsight.Editor.Operations;
+using Backsight.Editor.UI;
 
 namespace Backsight.Editor.Forms
 {

@@ -21,7 +21,7 @@ using System.Windows.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="03-JAN-2008" />
     /// <summary>

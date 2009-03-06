@@ -20,7 +20,7 @@ using System.Diagnostics;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
     /// <written by="Steve Stanton" on="01-DEC-1999" was="CuiIntersect" />
     /// <summary>

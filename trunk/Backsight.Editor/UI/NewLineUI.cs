@@ -24,7 +24,7 @@ using Backsight.Geometry;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.UI
 {
 	/// <written by="Steve Stanton" on="03-JUL-2007" />
     /// <summary>

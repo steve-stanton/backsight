@@ -27,6 +27,8 @@ using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Editor.Database;
 using Backsight.Editor.Content; // TEST
+using Backsight.Editor.UI;
+
 
 namespace Backsight.Editor.Forms
 {
