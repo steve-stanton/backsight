@@ -1841,11 +1841,20 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             //MessageBox.Show(Application.ExecutablePath);
 
             // Test content classes
-            FeatureInfo info = new FeatureInfo();
-            info.Id = "abc";
-            info.Key = new StringKey("xyz");
+            SpatialItem info = new SpatialItem();
+            info.ItemId = new Id("23.9");
+            info.Key = new GroupKey(123, 65);
             info.Type = 23;
 
+
+            AttachPoint ap = new AttachPoint();
+            ap.EditId = new Id("11.94");
+            ap.Line = new Id("445.885");
+            ap.PositionRatio = 1657246;
+            ap.Point = info;
+
+            string s = ContentWriter.GetXml(true, ap);
+            /*
             System.Text.StringBuilder sb = new System.Text.StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.ConformanceLevel = ConformanceLevel.Fragment;
@@ -1854,16 +1863,35 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
             {
                 writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-                writer.WriteStartElement("Test", "Backsight");
+                writer.WriteStartElement("Edit", "Backsight");
+
+                // The top-level element needs this
                 writer.WriteAttributeString("xmlns", "xsi", null, System.Xml.Schema.XmlSchema.InstanceNamespace);
 
-                //WriteElementContent(content);
-                info.WriteContent(writer, "Test");
+                // This repeats information that appears in the ced.Edits table, but it may be handy
+                // to have it as part of the xml fragment too
+                writer.WriteAttributeString("Session", Session.WorkingSession.Id.ToString());
+                writer.WriteAttributeString("Order", Operation.CurrentEditSequence.ToString());
 
-                //writer.WriteEndElement();
+                info.WriteContent(writer, "Info");
+
+                writer.WriteEndElement();
             }
+            */
+            MessageBox.Show(s);
+            File.WriteAllLines(@"C:\Temp\Test.txt", new string[] { s });
 
-            MessageBox.Show(sb.ToString());
+            using (StringReader sr = new StringReader(s))
+            {
+                using (XmlReader r = XmlReader.Create(sr))
+                {
+                    ContentReader cr = new ContentReader(0);
+                    Edit result = cr.ReadEdit(r);
+                    string check = ContentWriter.GetXml(true, result);
+                    string msg = (check==s ? "ok" : "different");
+                    MessageBox.Show(check, msg);
+                }
+            }
         }
 
         #endregion

@@ -1,12 +1,12 @@
 using System;
-using System.Xml;
 
 namespace Backsight.Editor.Content
 {
+    /// <summary>
+    /// Tagging interface identifies some sort of database content.
+    /// Base for <see cref="IContentElement"/> and <see cref="IContentAttribute"/>.
+    /// </summary>
     public interface IContent
     {
-        void WriteContent(XmlWriter w, string name);
-        void WriteAttributes(XmlWriter w);
-        void WriteChildElements(XmlWriter w);
     }
 }
