@@ -22,6 +22,7 @@ using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Forms
 {

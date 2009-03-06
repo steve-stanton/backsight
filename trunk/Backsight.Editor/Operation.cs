@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Diagnostics;
@@ -22,6 +22,8 @@ using System.Data;
 
 using Backsight.Editor.Database;
 using Backsight.Data;
+using Backsight.Editor.Content;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -29,7 +31,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    abstract class Operation : IFeatureDependent, IXmlContent
+    abstract class Operation : IFeatureDependent, IXmlContent, IContentElement
     {
         #region Static
 
@@ -549,6 +551,30 @@ namespace Backsight.Editor
         /// <returns>A line that was superseded by this edit in order to produce
         /// the line of interest.</returns>
         abstract internal LineFeature GetPredecessor(LineFeature line);
+
+        #region IContentElement Members
+
+        public virtual void WriteAttributes(ContentWriter writer)
+        {
+            writer.WriteString("Id", DataId);
+        }
+
+        public virtual void WriteChildElements(ContentWriter writer)
+        {
+        }
+
+        public virtual void ReadAttributes(ContentReader reader)
+        {
+            // Not currently used (but it would probably be a good idea to
+            // pick up session & creation sequence via the content)
+            string id = reader.ReadString("Id");
+        }
+
+        public virtual void ReadChildElements(ContentReader reader)
+        {
+        }
+
+        #endregion
     }
 
 }

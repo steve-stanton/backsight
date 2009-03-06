@@ -20,6 +20,7 @@ using System.Drawing;
 
 using Backsight.Environment;
 using Backsight.Editor.Operations;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Forms
 {

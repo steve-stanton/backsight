@@ -16,6 +16,9 @@
 using System;
 using System.Windows.Forms;
 
+using Backsight.Editor.Observations;
+
+
 namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" was="CdAngle"/>
