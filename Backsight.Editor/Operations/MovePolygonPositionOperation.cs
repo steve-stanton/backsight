@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Observations;
+
+
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="21-JAN-2009"/>

@@ -15,9 +15,7 @@
 
 using System;
 
-//using Backsight.Content;
-
-namespace Backsight.Editor
+namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="23-OCT-1997" />
     /// <summary>

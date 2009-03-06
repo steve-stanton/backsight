@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Geometry;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Operations
 {

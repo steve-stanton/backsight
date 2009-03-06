@@ -183,5 +183,17 @@ namespace Backsight.Editor.Content
         {
             WriteArray(itemName, items);
         }
+
+        /// <summary>
+        /// Writes out a reference to a previously existing spatial feature
+        /// (as an attribute)
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="feature">The feature that's referenced</param>
+        internal void WriteFeatureReference(string name, Feature feature)
+        {
+            if (feature != null)
+                m_Writer.WriteAttributeString(name, feature.DataId);
+        }
     }
 }

@@ -17,6 +17,9 @@ using System;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+using Backsight.Editor.Observations;
+
+
 namespace Backsight.Editor.Forms
 {
     public partial class GetOffsetForm : Form

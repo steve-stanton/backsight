@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
 /// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,9 @@ using System.IO;
 
 using Backsight.Environment;
 using Backsight.Data;
+using Backsight.Editor.Content;
+using Backsight.Editor.Observations;
+
 
 namespace Backsight.Editor.Operations
 {
@@ -264,6 +267,32 @@ namespace Backsight.Editor.Operations
             m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
             //m_Point = reader.ReadCalculatedPoint("Point", Calculate());
             m_Point = reader.ReadPoint("Point");
+        }
+
+        public override void WriteAttributes(ContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteFeatureReference("Line", m_Line);
+            writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
+        }
+
+        public override void WriteChildElements(ContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+            //writer.WriteElement("Point", Point);
+        }
+
+        public override void ReadAttributes(ContentReader reader)
+        {
+            base.ReadAttributes(reader);
+            //Line = new Id(reader.ReadString("Line"));
+            m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
+        }
+
+        public override void ReadChildElements(ContentReader reader)
+        {
+            base.ReadChildElements(reader);
+            //Point = reader.ReadElement<SpatialItem>("Point");
         }
 
         /// <summary>

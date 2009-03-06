@@ -15,11 +15,12 @@
 
 using System;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
-using System.Drawing;
-using System.Diagnostics;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Forms
 {

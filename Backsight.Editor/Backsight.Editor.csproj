@@ -41,12 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddLabelUI.cs" />
-    <Compile Include="AngleDirection.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttachPointUI.cs" />
     <Compile Include="AttributeData.cs" />
     <Compile Include="BasicList.cs" />
-    <Compile Include="BearingDirection.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
@@ -353,6 +351,17 @@
     <Compile Include="NewLabelUI.cs" />
     <Compile Include="NewTextUI.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="Observations\AngleDirection.cs" />
+    <Compile Include="Observations\BearingDirection.cs" />
+    <Compile Include="Observations\DeflectionDirection.cs" />
+    <Compile Include="Observations\Direction.cs" />
+    <Compile Include="Observations\DirectionFlags.cs" />
+    <Compile Include="Observations\DirectionType.cs" />
+    <Compile Include="Observations\Distance.cs" />
+    <Compile Include="Observations\Offset.cs" />
+    <Compile Include="Observations\OffsetDistance.cs" />
+    <Compile Include="Observations\OffsetPoint.cs" />
+    <Compile Include="Observations\ParallelDirection.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
@@ -390,10 +399,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="CoordinateSystem.cs" />
     <Compile Include="DataStub.cs" />
-    <Compile Include="DeflectionDirection.cs" />
     <Compile Include="DeletionUI.cs" />
-    <Compile Include="Direction.cs" />
-    <Compile Include="DirectionFlags.cs" />
     <Compile Include="DividerObject.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="FileCheckQuery.cs" />
@@ -415,9 +421,7 @@
     <Compile Include="DividerCheck.cs" />
     <Compile Include="LineDivider.cs" />
     <Compile Include="DottedStyle.cs" />
-    <Compile Include="DirectionType.cs" />
     <Compile Include="DisplayId.cs" />
-    <Compile Include="Distance.cs" />
     <Compile Include="DistanceUnit.cs" />
     <Compile Include="DistanceUnitType.cs" />
     <Compile Include="EditorResources.cs" />
@@ -685,15 +689,11 @@
     <Compile Include="NtxImport.cs" />
     <Compile Include="EditingActionId.cs" />
     <Compile Include="Observation.cs" />
-    <Compile Include="Offset.cs" />
-    <Compile Include="OffsetDistance.cs" />
-    <Compile Include="OffsetPoint.cs" />
     <Compile Include="Operations\Import.cs" />
     <Compile Include="Operations\NewPointOperation.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Operations\RadialOperation.cs" />
     <Compile Include="MultiSegmentGeometry.cs" />
-    <Compile Include="ParallelDirection.cs" />
     <Compile Include="PointFeature.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="PolygonBuilder.cs" />
