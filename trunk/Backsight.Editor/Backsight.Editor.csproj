@@ -656,7 +656,6 @@
     <Compile Include="Forms\UpdateForm.Designer.cs">
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IIdDatabase.cs" />
     <Compile Include="IntersectionData.cs" />
     <Compile Include="IntersectionResult.cs" />
     <Compile Include="IntersectionType.cs" />
