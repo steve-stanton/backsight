@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An ID acts as a cross-reference between multiple features and multiple rows.
     /// </summary>
-    abstract class FeatureId
+    abstract class FeatureId : IContentAttribute
     {
         #region Class data
 
@@ -487,5 +487,11 @@ namespace Backsight.Editor
 
             return result.ToArray();
         }
+
+        /// <summary>
+        /// The formatted value of the attribute that will be serialized
+        /// </summary>
+        /// <remarks>Implements <see cref="IContentAttribute"/></remarks>
+        abstract public string AttributeString { get; }
     }
 }

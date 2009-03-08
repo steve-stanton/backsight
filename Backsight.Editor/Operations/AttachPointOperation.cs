@@ -21,7 +21,6 @@ using System.IO;
 
 using Backsight.Environment;
 using Backsight.Data;
-using Backsight.Editor.Content;
 using Backsight.Editor.Observations;
 
 

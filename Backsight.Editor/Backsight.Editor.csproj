@@ -47,19 +47,8 @@
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
-    <Compile Include="Content\AttachPoint.cs" />
-    <Compile Include="Content\ContentReader.cs" />
-    <Compile Include="Content\ContentWriter.cs" />
-    <Compile Include="Content\Deletion.cs" />
-    <Compile Include="Content\Edit.cs" />
-    <Compile Include="Content\SpatialItem.cs" />
-    <Compile Include="Content\IContent.cs" />
-    <Compile Include="Content\GroupKey.cs" />
-    <Compile Include="Content\IContentAttribute.cs" />
-    <Compile Include="Content\IContentElement.cs" />
-    <Compile Include="Content\Id.cs" />
-    <Compile Include="Content\Revision.cs" />
-    <Compile Include="Content\StringKey.cs" />
+    <Compile Include="ContentReader.cs" />
+    <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="Database\DbUtil.cs" />
@@ -332,6 +321,8 @@
     <Compile Include="Forms\UpdatePathForm.Designer.cs">
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IContentAttribute.cs" />
+    <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="IXmlAlternateContent.cs" />

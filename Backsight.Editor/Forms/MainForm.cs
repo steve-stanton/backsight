@@ -26,7 +26,6 @@ using Backsight.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Editor.Database;
-using Backsight.Editor.Content; // TEST
 using Backsight.Editor.UI;
 
 
@@ -1842,6 +1841,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
             //MessageBox.Show(Application.ExecutablePath);
 
+            /*
             // Test content classes
             SpatialItem info = new SpatialItem();
             info.ItemId = new Id("23.9");
@@ -1856,30 +1856,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             ap.Point = info;
 
             string s = ContentWriter.GetXml(true, ap);
-            /*
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(1000);
-            XmlWriterSettings xws = new XmlWriterSettings();
-            xws.ConformanceLevel = ConformanceLevel.Fragment;
-            xws.Indent = true;
-
-            using (XmlWriter writer = XmlWriter.Create(sb, xws))
-            {
-                writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-                writer.WriteStartElement("Edit", "Backsight");
-
-                // The top-level element needs this
-                writer.WriteAttributeString("xmlns", "xsi", null, System.Xml.Schema.XmlSchema.InstanceNamespace);
-
-                // This repeats information that appears in the ced.Edits table, but it may be handy
-                // to have it as part of the xml fragment too
-                writer.WriteAttributeString("Session", Session.WorkingSession.Id.ToString());
-                writer.WriteAttributeString("Order", Operation.CurrentEditSequence.ToString());
-
-                info.WriteContent(writer, "Info");
-
-                writer.WriteEndElement();
-            }
-            */
             MessageBox.Show(s);
             File.WriteAllLines(@"C:\Temp\Test.txt", new string[] { s });
 
@@ -1894,6 +1870,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                     MessageBox.Show(check, msg);
                 }
             }
+             */
         }
 
         #endregion
