@@ -377,6 +377,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void WriteAttributes(XmlContentWriter writer)
+        {
+            writer.WriteFeatureReference("Center", m_Center);
+            writer.WriteDouble("Radius", m_Radius);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void WriteChildElements(XmlContentWriter writer)
+        {
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

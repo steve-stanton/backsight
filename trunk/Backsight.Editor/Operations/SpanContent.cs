@@ -166,6 +166,35 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void WriteAttributes(XmlContentWriter writer)
+        {
+            // No need to write line item number if there's no line
+            if (m_LineItem != 0)
+                writer.WriteUnsignedInt("Line", m_LineItem);
+
+            // You always get either To or Point
+            if (m_ExistingEndPoint != null)
+                writer.WriteString("To", m_ExistingEndPoint);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public void WriteChildElements(XmlContentWriter writer)
+        {
+            // You always get either To or Point
+            if (m_ExistingEndPoint == null)
+                writer.WriteElement("Point", m_CreatedEndPoint); // could be null
+
+            writer.WriteElement("Length", m_Length);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

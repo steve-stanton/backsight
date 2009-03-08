@@ -22,7 +22,6 @@ using System.Data;
 
 using Backsight.Editor.Database;
 using Backsight.Data;
-using Backsight.Editor.Content;
 using Backsight.Editor.Observations;
 
 namespace Backsight.Editor

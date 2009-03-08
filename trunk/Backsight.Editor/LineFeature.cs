@@ -1256,6 +1256,43 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteFeatureReference("From", StartPoint);
+            writer.WriteFeatureReference("To", EndPoint);
+
+            string flags = String.Empty;
+            if (m_Geom is SegmentGeometry)
+                flags += "S";
+
+            if (!IsTopological)
+                flags += "N";
+
+            if (flags.Length > 0)
+                writer.WriteString("Flags", flags);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // Since 80% of lines are simple line segments (in a Cadastral application at least),
+            // it's a bit verbose to output an empty geometry, so a flag letter is written in
+            // that case.
+            if (!(m_Geom is SegmentGeometry))
+                writer.WriteElement("Geometry", m_Geom);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

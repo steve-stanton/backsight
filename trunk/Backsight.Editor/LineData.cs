@@ -128,6 +128,54 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+
+            // Write IDs (as attributes) if the point(s) existed prior to the line
+
+            if (!String.IsNullOrEmpty(m_FromId))
+            {
+                Debug.Assert(m_FromPoint == null);
+                writer.WriteString("From", m_FromId);
+            }
+
+            if (!String.IsNullOrEmpty(m_ToId))
+            {
+                Debug.Assert(m_ToPoint == null);
+                writer.WriteString("To", m_ToId);
+            }
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // Write FeatureData (as elements) if the point(s) were created at the same time
+            // as the line
+
+            if (m_FromPoint != null)
+            {
+                Debug.Assert(String.IsNullOrEmpty(m_FromId));
+                writer.WriteElement("Start", m_FromPoint);
+            }
+
+            if (m_ToPoint != null)
+            {
+                Debug.Assert(String.IsNullOrEmpty(m_ToId));
+                writer.WriteElement("End", m_ToPoint);
+            }
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).
