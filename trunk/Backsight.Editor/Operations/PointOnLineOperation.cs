@@ -361,25 +361,6 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
          */
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteFeatureReference("Line", m_Line);
-
-            // The lines are implied, taking the entity type of the parent line. However,
-            // we need to know the item numbers that were assigned to them.
-            writer.WriteUnsignedInt("NewLine1", m_NewLine1.CreatorSequence);
-            writer.WriteUnsignedInt("NewLine2", m_NewLine2.CreatorSequence);
-
-            writer.WriteElement("Distance", m_Distance);
-            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -435,6 +416,25 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             reader.AddFeature(m_NewLine2);
 
             m_Line.Deactivate();
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>

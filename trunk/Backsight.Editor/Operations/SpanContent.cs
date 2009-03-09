@@ -145,27 +145,6 @@ namespace Backsight.Editor.Operations
         #endregion
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public void WriteContent(XmlContentWriter writer)
-        {
-            // No need to write line item number if there's no line
-            if (m_LineItem!=0)
-                writer.WriteUnsignedInt("Line", m_LineItem);
-
-            // You always get either To or Point
-            if (m_ExistingEndPoint!=null)
-                writer.WriteString("To", m_ExistingEndPoint);
-            else
-                writer.WriteElement("Point", m_CreatedEndPoint); // could be null
-
-            writer.WriteElement("Length", m_Length);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -211,6 +190,23 @@ namespace Backsight.Editor.Operations
                 m_CreatedEndPoint = null;
 
             m_Length = reader.ReadElement<Distance>("Length");
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public void ReadAttributes(XmlContentReader reader)
+        {
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public void ReadChildElements(XmlContentReader reader)
+        {
         }
 
         /// <summary>

@@ -257,7 +257,8 @@ namespace Backsight.Editor
             try
             {
                 m_Elements.Push(result);
-                result.ReadContent(this);
+                result.ReadAttributes(this);
+                result.ReadChildElements(this);
             }
 
             finally

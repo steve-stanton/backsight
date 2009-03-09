@@ -476,36 +476,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            writer.WriteFeatureReference("Line1", m_Line1);
-            writer.WriteFeatureReference("Line2", m_Line2);
-            writer.WriteFeatureReference("CloseTo", m_CloseTo);
-            writer.WriteBool("IsSplit1", m_IsSplit1);
-            writer.WriteBool("IsSplit2", m_IsSplit2);
-
-            // Creations...
-            writer.WriteCalculatedPoint("To", m_Intersection);
-            if (m_IsSplit1)
-            {
-                writer.WriteElement("Line1a", m_Line1a);
-                writer.WriteElement("Line1b", m_Line1b);
-            }
-            if (m_IsSplit2)
-            {
-                writer.WriteElement("Line2a", m_Line2a);
-                writer.WriteElement("Line2b", m_Line2b);
-            }
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -529,7 +499,6 @@ namespace Backsight.Editor.Operations
         {
             base.WriteChildElements(writer);
 
-            // Creations...
             writer.WriteCalculatedPoint("To", m_Intersection);
             if (m_IsSplit1)
             {
@@ -572,6 +541,25 @@ namespace Backsight.Editor.Operations
                 m_Line2a = reader.ReadElement<LineFeature>("Line2a");
                 m_Line2b = reader.ReadElement<LineFeature>("Line2b");
             }
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>

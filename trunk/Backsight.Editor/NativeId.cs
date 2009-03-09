@@ -94,14 +94,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The formatted value of the attribute that will be serialized
+        /// The associated ID group
         /// </summary>
-        /// <value>A concatenation of the <see cref="RawId"/> property, the "@" character,
-        /// and the ID of ID group this instance is associated with.</value>
-        /// <remarks>Implements <see cref="IContentAttribute"/></remarks>
-        public override string AttributeString
+        internal IdGroup IdGroup
         {
-            get { return String.Format("{0}@{1}", m_Key, m_Group.Id); }
+            get { return m_Group; }
         }
     }
 }

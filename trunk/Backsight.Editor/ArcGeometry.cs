@@ -708,26 +708,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-            writer.WriteBool("Clockwise", m_IsClockwise);
-
-            // If this is the first arc associated with the circle, write out
-            // the circle geometry
-            ArcFeature firstArc = m_Circle.FirstArc;
-            if (Object.ReferenceEquals(firstArc.Geometry, this))
-                writer.WriteElement("Circle", m_Circle);
-            else
-                writer.WriteFeatureReference("FirstArc", firstArc);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -761,14 +741,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
+
             m_IsClockwise = reader.ReadBool("Clockwise");
 
             if (reader.HasAttribute("FirstArc"))
@@ -776,7 +755,18 @@ namespace Backsight.Editor
                 ArcFeature firstArc = reader.ReadFeatureByReference<ArcFeature>("FirstArc");
                 m_Circle = firstArc.Circle;
             }
-            else
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
+
+            if (m_Circle == null)
                 m_Circle = reader.ReadElement<Circle>("Circle");
         }
     }

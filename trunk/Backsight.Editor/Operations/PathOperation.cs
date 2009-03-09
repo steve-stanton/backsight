@@ -1081,33 +1081,6 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteFeatureReference("To", m_To);
-
-            // The default data entry units have a bearing on how the entry string should
-            // be interpreted
-            int unitType = (int)m_DefaultEntryUnit.UnitType;
-            if (unitType != 0)
-                writer.WriteInt("EntryUnit", unitType);
-
-            // Default entity types for points and lines
-            writer.WriteInt("PointType", m_PointType.Id);
-            writer.WriteInt("LineType", m_LineType.Id);
-
-            writer.WriteString("EntryString", m_EntryString);
-
-            // Write information about created features
-            writer.WriteFeatureDataArray("FeatureArray", "Feature", this.Features);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -1203,6 +1176,25 @@ void CePath::CreateAngleText ( CPtrList& text
             {
                 Session.CurrentSession.NumItem = itemCount;
             }
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
     }
 }

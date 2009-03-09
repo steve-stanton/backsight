@@ -156,7 +156,8 @@ namespace Backsight.Editor
         void WriteElementContent(IXmlContent content)
         {
             m_Writer.WriteAttributeString("xsi", "type", null, content.GetType().Name);
-            content.WriteContent(this);
+            content.WriteAttributes(this);
+            content.WriteChildElements(this);
             m_Writer.WriteEndElement();
         }
 

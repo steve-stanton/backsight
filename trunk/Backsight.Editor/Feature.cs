@@ -812,25 +812,6 @@ namespace Backsight.Editor
         #region IXmlContent Members
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public virtual void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteUnsignedInt("Item", m_CreatorSequence);
-            writer.WriteInt("EntityId", m_What.Id);
-
-            // Flags are written by derived classes
-
-            if (m_Id is NativeId)
-                writer.WriteUnsignedInt("Id", (m_Id as NativeId).RawId);
-            else if (m_Id is ForeignId)
-                writer.WriteString("Key", m_Id.FormattedKey);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -840,7 +821,7 @@ namespace Backsight.Editor
             writer.WriteInt("EntityId", m_What.Id);
 
             if (m_Id != null)
-                writer.WriteString("Key", m_Id.AttributeString);
+                m_Id.Write("Key", writer);
 
             // Flags are written by derived classes
         }
@@ -855,36 +836,30 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadContent(XmlContentReader reader)
+        public virtual void ReadAttributes(XmlContentReader reader)
         {
             m_Creator = reader.FindParent<Operation>();
             Debug.Assert(m_Creator!=null);
-
             m_CreatorSequence = reader.ReadUnsignedInt("Item");
             int entId = reader.ReadInt("EntityId");
             m_What = EnvironmentContainer.FindEntityById(entId);
-
-            FeatureId fid = null;
-            if (reader.HasAttribute("Id"))
-            {
-                IdGroup group = CadastralMapModel.Current.IdManager.GetGroup(m_What);
-                uint id = reader.ReadUnsignedInt("Id");
-                fid = reader.FindNativeId(group, id);
-            }
-            else if (reader.HasAttribute("Key"))
-            {
-                string key = reader.ReadString("Key");
-                fid = reader.FindForeignId(key);
-            }
+            FeatureId fid = FeatureId.Read("Key", reader);
 
             // If an ID has been obtained, ensure it knows about this feature, and vice versa
             if (fid!=null)
                 fid.Add(this);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadChildElements(XmlContentReader reader)
+        {
         }
 
         #endregion

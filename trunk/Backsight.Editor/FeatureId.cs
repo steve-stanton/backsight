@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An ID acts as a cross-reference between multiple features and multiple rows.
     /// </summary>
-    abstract class FeatureId : IContentAttribute
+    abstract class FeatureId
     {
         #region Class data
 
@@ -489,9 +489,52 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The formatted value of the attribute that will be serialized
+        /// Serializes this ID to XML (as an attribute)
         /// </summary>
-        /// <remarks>Implements <see cref="IContentAttribute"/></remarks>
-        abstract public string AttributeString { get; }
+        /// <param name="name">The name for the attribute</param>
+        /// <param name="writer">The writing tool</param>
+        internal void Write(string name, XmlContentWriter writer)
+        {
+            // Rather than relying on an override in the derived class, do things
+            // explicitly here. This is just to keep the relevant logic close to
+            // the implementation of the static Read method
+
+            string s = null;
+
+            if (this is NativeId)
+            {
+                NativeId nid = (NativeId)this;
+                s = String.Format("{0}@{1}", nid.RawId, nid.IdGroup.Id);
+            }
+            else if (this is ForeignId)
+            {
+                s = FormattedKey;
+            }
+
+            if (s == null)
+                throw new NotSupportedException("Unexpected ID class: "+GetType().Name);
+
+            writer.WriteString(name, s);
+        }
+
+        /// <summary>
+        /// Deserialized an ID that was previously written using the <see cref="Write"/> method
+        /// </summary>
+        /// <returns></returns>
+        internal static FeatureId Read(string name, XmlContentReader reader)
+        {
+            string key = reader.ReadString(name);
+            if (key == null)
+                return null;
+
+            int atPos = key.IndexOf('@');
+            if (atPos < 0)
+                return reader.FindForeignId(key);
+
+            uint rawId = uint.Parse(key.Substring(0, atPos));
+            int groupId = int.Parse(key.Substring(atPos+1));
+            IIdGroup group = EnvironmentContainer.FindIdGroupById(groupId);
+            return reader.FindNativeId((IdGroup)group, rawId);
+        }
     }
 }

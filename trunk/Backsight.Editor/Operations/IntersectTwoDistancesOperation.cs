@@ -560,28 +560,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            writer.WriteFeatureReference("From1", m_From1);
-            writer.WriteFeatureReference("From2", m_From2);
-            writer.WriteBool("IsDefault", m_Default);
-            writer.WriteElement("Distance1", m_Distance1);
-            writer.WriteElement("Distance2", m_Distance2);
-
-            // Creations ...
-            writer.WriteCalculatedPoint("To", m_To);
-            writer.WriteElement("Line1", m_Line1);
-            writer.WriteElement("Line2", m_Line2);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -602,10 +580,9 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
+
             writer.WriteElement("Distance1", m_Distance1);
             writer.WriteElement("Distance2", m_Distance2);
-
-            // Creations ...
             writer.WriteCalculatedPoint("To", m_To);
             writer.WriteElement("Line1", m_Line1);
             writer.WriteElement("Line2", m_Line2);
@@ -632,6 +609,25 @@ namespace Backsight.Editor.Operations
             m_To = reader.ReadPoint("To");
             m_Line1 = reader.ReadElement<LineFeature>("Line1");
             m_Line2 = reader.ReadElement<LineFeature>("Line2");
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>
