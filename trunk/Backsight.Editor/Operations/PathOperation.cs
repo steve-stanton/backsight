@@ -1108,6 +1108,42 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteFeatureReference("From", m_From);
+            writer.WriteFeatureReference("To", m_To);
+
+            // The default data entry units have a bearing on how the entry string should
+            // be interpreted
+            int unitType = (int)m_DefaultEntryUnit.UnitType;
+            if (unitType != 0)
+                writer.WriteInt("EntryUnit", unitType);
+
+            // Default entity types for points and lines
+            writer.WriteInt("PointType", m_PointType.Id);
+            writer.WriteInt("LineType", m_LineType.Id);
+
+            writer.WriteString("EntryString", m_EntryString);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // Write information about created features
+            writer.WriteFeatureDataArray("FeatureArray", "Feature", this.Features);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

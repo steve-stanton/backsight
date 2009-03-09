@@ -386,6 +386,31 @@ namespace Backsight.Editor
             writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
         }
 
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteAttributes(XmlContentWriter writer)
+        {
+            writer.WriteLong("X", m_Position.Easting.Microns);
+            writer.WriteLong("Y", m_Position.Northing.Microns);
+            writer.WriteInt("FontId", (m_Font==null ? 0 : m_Font.Id));
+            writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
+            writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
+
+            // TODO: May want to cover indirect rotations
+            writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteChildElements(XmlContentWriter writer)
+        {
+        }
+
         public virtual void ReadContent(XmlContentReader reader)
         {
             m_Position = new PointGeometry();

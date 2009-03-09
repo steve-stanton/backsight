@@ -450,6 +450,29 @@ namespace Backsight.Editor
             throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteContent");
         }
 
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            // This should never get called, since simple line segments are serialized
+            // using special code in the LineFeature class.
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteAttributes");
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            // This should never get called, since simple line segments are serialized
+            // using special code in the LineFeature class.
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteChildElements");
+        }
+
         public override void ReadContent(XmlContentReader reader)
         {
             // This should never get called, since simple line segments are deserialized

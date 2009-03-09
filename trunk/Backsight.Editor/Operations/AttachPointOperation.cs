@@ -254,6 +254,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteFeatureReference("Line", m_Line);
+            writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+            writer.WriteCalculatedPoint("Point", m_Point);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).
@@ -266,32 +288,6 @@ namespace Backsight.Editor.Operations
             m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
             //m_Point = reader.ReadCalculatedPoint("Point", Calculate());
             m_Point = reader.ReadPoint("Point");
-        }
-
-        public override void WriteAttributes(ContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Line", m_Line);
-            writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
-        }
-
-        public override void WriteChildElements(ContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            //writer.WriteElement("Point", Point);
-        }
-
-        public override void ReadAttributes(ContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            //Line = new Id(reader.ReadString("Line"));
-            m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
-        }
-
-        public override void ReadChildElements(ContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            //Point = reader.ReadElement<SpatialItem>("Point");
         }
 
         /// <summary>
