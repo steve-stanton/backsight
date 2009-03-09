@@ -117,14 +117,18 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        abstract public void WriteAttributes(XmlContentWriter writer);
+        public virtual void WriteAttributes(XmlContentWriter writer)
+        {
+        }
 
         /// <summary>
         /// Writes any child elements of this class. This will be called after
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        abstract public void WriteChildElements(XmlContentWriter writer);
+        public virtual void WriteChildElements(XmlContentWriter writer)
+        {
+        }
 
         /// <summary>
         /// Loads the content of this class. This is called by

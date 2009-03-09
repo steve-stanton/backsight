@@ -537,6 +537,35 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+
+            writer.WriteFeatureReference("From", m_From);
+            writer.WriteBool("IsDefault", m_Default);
+            writer.WriteElement("Direction", m_Direction);
+            writer.WriteElement("Distance", m_Distance);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // Creations...
+            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteElement("DirLine", m_DirLine);
+            writer.WriteElement("DistLine", m_DistLine);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

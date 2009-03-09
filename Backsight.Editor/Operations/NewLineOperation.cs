@@ -287,6 +287,36 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // TODO: Is this right? - should writing the geometry for the new line
+            // lead to the center and radius info when dealing with a NewCircleOperation?
+
+            /*
+            if (this is NewCircleOperation)
+                writer.WriteElement("NewLine", new FeatureData(m_NewLine));
+            else
+                writer.WriteElement("NewLine", m_NewLine);
+             */
+            writer.WriteElement("NewLine", m_NewLine);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

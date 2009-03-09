@@ -232,10 +232,27 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public virtual void WriteContent(XmlContentWriter writer)
         {
+        }
+
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteAttributes(XmlContentWriter writer)
+        {
             // TODO: There's something not quite right here. Although this class contains
             // references to two terminals, they don't get written here. They get written
             // by the LineFeature that makes use of this geometry (that being the case,
             // it probably makes better sense to hold a reference to the LineFeature here).
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteChildElements(XmlContentWriter writer)
+        {
         }
 
         /// <summary>

@@ -728,6 +728,39 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+
+            writer.WriteBool("Clockwise", m_IsClockwise);
+
+            // If this is the first arc associated with the circle, write out
+            // the circle geometry
+            ArcFeature firstArc = m_Circle.FirstArc;
+            if (!Object.ReferenceEquals(firstArc.Geometry, this))
+                writer.WriteFeatureReference("FirstArc", firstArc);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // If this is the first arc associated with the circle, write out
+            // the circle geometry
+            ArcFeature firstArc = m_Circle.FirstArc;
+            if (Object.ReferenceEquals(firstArc.Geometry, this))
+                writer.WriteElement("Circle", m_Circle);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

@@ -380,6 +380,33 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            writer.WriteFeatureReference("Line", m_Line);
+
+            // The lines are implied, taking the entity type of the parent line. However,
+            // we need to know the item numbers that were assigned to them.
+            writer.WriteUnsignedInt("NewLine1", m_NewLine1.CreatorSequence);
+            writer.WriteUnsignedInt("NewLine2", m_NewLine2.CreatorSequence);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+            writer.WriteElement("Distance", m_Distance);
+            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

@@ -506,6 +506,44 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+
+            writer.WriteFeatureReference("Line1", m_Line1);
+            writer.WriteFeatureReference("Line2", m_Line2);
+            writer.WriteFeatureReference("CloseTo", m_CloseTo);
+            writer.WriteBool("IsSplit1", m_IsSplit1);
+            writer.WriteBool("IsSplit2", m_IsSplit2);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+
+            // Creations...
+            writer.WriteCalculatedPoint("To", m_Intersection);
+            if (m_IsSplit1)
+            {
+                writer.WriteElement("Line1a", m_Line1a);
+                writer.WriteElement("Line1b", m_Line1b);
+            }
+            if (m_IsSplit2)
+            {
+                writer.WriteElement("Line2a", m_Line2a);
+                writer.WriteElement("Line2b", m_Line2b);
+            }
+        }
+
+        /// <summary>
         /// Loads the content of this class. This is called by
         /// <see cref="XmlContentReader"/> during deserialization from XML (just
         /// after the default constructor has been invoked).

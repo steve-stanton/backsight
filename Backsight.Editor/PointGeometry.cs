@@ -194,6 +194,25 @@ namespace Backsight.Editor
             writer.WriteLong("Y", m_Y.Microns);
         }
 
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteAttributes(XmlContentWriter writer)
+        {
+            writer.WriteLong("X", m_X.Microns);
+            writer.WriteLong("Y", m_Y.Microns);
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public virtual void WriteChildElements(XmlContentWriter writer)
+        {
+        }
+
         public void ReadContent(XmlContentReader reader)
         {
             m_X = new MicronValue(reader.ReadLong("X"));
