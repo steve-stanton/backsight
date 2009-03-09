@@ -88,46 +88,6 @@ namespace Backsight.Editor
         #region IXmlContent Members
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            // Write IDs (as attributes) if the point(s) existed prior to the line
-
-            if (!String.IsNullOrEmpty(m_FromId))
-            {
-                Debug.Assert(m_FromPoint==null);
-                writer.WriteString("From", m_FromId);
-            }
-
-            if (!String.IsNullOrEmpty(m_ToId))
-            {
-                Debug.Assert(m_ToPoint==null);
-                writer.WriteString("To", m_ToId);
-            }
-
-            // Write FeatureData (as elements) if the point(s) were created at the same time
-            // as the line
-
-            if (m_FromPoint!=null)
-            {
-                Debug.Assert(String.IsNullOrEmpty(m_FromId));
-                writer.WriteElement("Start", m_FromPoint);
-            }
-
-            if (m_ToPoint!=null)
-            {
-                Debug.Assert(String.IsNullOrEmpty(m_ToId));
-                writer.WriteElement("End", m_ToPoint);
-            }
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -176,17 +136,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
 
             m_FromId = reader.ReadString("From");
             m_ToId = reader.ReadString("To");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
 
             if (String.IsNullOrEmpty(m_FromId))
                 m_FromPoint = reader.ReadElement<FeatureData>("Start");

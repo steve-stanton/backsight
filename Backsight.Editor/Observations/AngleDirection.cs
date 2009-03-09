@@ -174,24 +174,6 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteFeatureReference("Backsight", m_Backsight);
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteString("Observation", RadianValue.AsString(m_Observation));
-
-            // Write base content at the end. This is a bit of a kludge, needed because
-            // the base may need to write a sub-element, and the writer requires that
-            // all attributes be written first. Should devise a better way!
-            base.WriteContent(writer);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -214,21 +196,29 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
+            base.ReadAttributes(reader);
+
             m_Backsight = reader.ReadFeatureByReference<PointFeature>("Backsight");
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
 
             string obsv = reader.ReadString("Observation");
             if (!RadianValue.TryParse(obsv, out m_Observation))
-                throw new Exception("AngleDirection.ReadContent - Cannot parse 'Observation'");
+                throw new Exception("AngleDirection.ReadAttributes - Cannot parse 'Observation'");
+        }
 
-            base.ReadContent(reader);
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
     }
 }

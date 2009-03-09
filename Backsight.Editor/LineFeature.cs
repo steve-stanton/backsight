@@ -1227,35 +1227,6 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
          */
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-            writer.WriteFeatureReference("From", StartPoint);
-            writer.WriteFeatureReference("To", EndPoint);
-
-            string flags = String.Empty;
-            if (m_Geom is SegmentGeometry)
-                flags += "S";
-
-            if (!IsTopological)
-                flags += "N";
-
-            if (flags.Length > 0)
-                writer.WriteString("Flags", flags);
-
-            // Since 80% of lines are simple line segments (in a Cadastral application at least),
-            // it's a bit verbose to output an empty geometry, so a flag letter is written in
-            // that case.
-            if (!(m_Geom is SegmentGeometry))
-                writer.WriteElement("Geometry", m_Geom);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -1293,14 +1264,13 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
+
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
@@ -1315,7 +1285,18 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
 
             if (flags.Contains("S"))
                 m_Geom = new SegmentGeometry(m_From, m_To);
-            else
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
+
+            if (m_Geom == null)
                 m_Geom = reader.ReadElement<LineGeometry>("Geometry");
 
             // Refer the start and end points to this line

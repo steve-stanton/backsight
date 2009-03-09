@@ -303,8 +303,8 @@ namespace Backsight.Editor
         /// <see cref="FeatureId.AddReference(Row)"/> method).
         /// <para/>
         /// This method is called by <see cref="XmlContentWriter.WriteElement"/>,
-        /// which directs the <see cref="IXmlContent.WriteContent"/> call through
-        /// an instance of the alternate content class.
+        /// which directs subsequent output through an instance of the alternate
+        /// content class.
         /// </summary>
         /// <returns>The content to save to the database</returns>
         /// <remarks>

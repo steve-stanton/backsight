@@ -25,14 +25,6 @@ namespace Backsight.Editor
     public interface IXmlContent
     {
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        void WriteContent(XmlContentWriter writer);
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -46,20 +38,16 @@ namespace Backsight.Editor
         void WriteChildElements(XmlContentWriter writer);
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader.ReadElement"/>
-        /// if the content object has a default constructor.
-        /// <para/>
-        /// In situations where a class contains readonly members (i.e. members that
-        /// are not expected to change after instantiation), you must provide a
-        /// constructor that accepts an <see cref="XmlContentReader"/>. This more
-        /// specialized constructor will do the sort of stuff that would normally
-        /// be done in an implementation of <c>ReadContent</c>. In that situation,
-        /// you must obviously still implement a <c>ReadContent</c> method, but it
-        /// would be a good idea to throw an exception on an attempt to load the
-        /// object that way.
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        void ReadContent(XmlContentReader reader);
+        void ReadAttributes(XmlContentReader reader);
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        void ReadChildElements(XmlContentReader reader);
     }
 }

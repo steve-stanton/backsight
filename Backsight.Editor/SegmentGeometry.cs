@@ -443,13 +443,6 @@ namespace Backsight.Editor
             return rotation;
         }
 
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            // This should never get called, since simple line segments are serialized
-            // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteContent");
-        }
-
         /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
@@ -473,11 +466,27 @@ namespace Backsight.Editor
             throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteChildElements");
         }
 
-        public override void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
         {
             // This should never get called, since simple line segments are deserialized
             // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadContent");
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadAttributes");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            // This should never get called, since simple line segments are deserialized
+            // using special code in the LineFeature class.
+            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadChildElements");
         }
     }
 }

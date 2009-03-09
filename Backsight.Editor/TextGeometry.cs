@@ -369,24 +369,6 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public virtual void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteLong("X", m_Position.Easting.Microns);
-            writer.WriteLong("Y", m_Position.Northing.Microns);
-            writer.WriteInt("FontId", (m_Font==null ? 0 : m_Font.Id));
-            writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
-            writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
-
-            // TODO: May want to cover indirect rotations
-            writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -414,7 +396,7 @@ namespace Backsight.Editor
         public virtual void ReadContent(XmlContentReader reader)
         {
             m_Position = new PointGeometry();
-            m_Position.ReadContent(reader);
+            m_Position.ReadAttributes(reader);
             m_Font = EnvironmentContainer.FindFontById(reader.ReadInt("FontId"));
             m_Height = Single.Parse(reader.ReadString("Height"));
             m_Width = Single.Parse(reader.ReadString("Width"));
@@ -424,6 +406,23 @@ namespace Backsight.Editor
                 m_Rotation = new RadianValue(rot);
             else
                 throw new Exception("Cannot parse text rotation");
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadAttributes(XmlContentReader reader)
+        {
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadChildElements(XmlContentReader reader)
+        {
         }
     }
 }

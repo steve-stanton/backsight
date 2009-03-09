@@ -136,27 +136,43 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
+        /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
-            base.WriteContent(writer);
+            base.WriteAttributes(writer);
             writer.WriteString("Text", m_Text);
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        public override void WriteChildElements(XmlContentWriter writer)
+        {
+            base.WriteChildElements(writer);
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
             m_Text = reader.ReadString("Text");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
     }
 }

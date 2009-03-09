@@ -356,32 +356,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            // Just output position as attributes (yes, I know geometry could theoretically
-            // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
-            // This isn't really significant here, but it matters in the ReadContent method.
-
-            if (m_Geom.FirstPoint == this)
-            {
-                if (m_Geom.PointCount > 1)
-                    writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
-
-                // The Node class is NOT expected to override the PointGeometry implementation
-                m_Geom.WriteContent(writer);
-            }
-            else
-                writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -414,19 +388,18 @@ namespace Backsight.Editor
             if (m_Geom.FirstPoint == this)
             {
                 // The Node class is NOT expected to override the PointGeometry implementation
-                m_Geom.WriteContent(writer);
+                //writer.WriteElement(
+                m_Geom.WriteAttributes(writer);
             }
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
 
             // Since we didn't write out the geometry as an element, we need to cover
             // the types of geometry that are supported.
@@ -448,7 +421,7 @@ namespace Backsight.Editor
                 else
                 {
                     PointGeometry g = new PointGeometry();
-                    g.ReadContent(reader);
+                    g.ReadAttributes(reader);
 
                     //uint pointCount = Math.Max(1, reader.ReadUnsignedInt("PointCount"));
                     m_Geom = new Node(this, g);
@@ -456,5 +429,14 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
+        }
     }
 }

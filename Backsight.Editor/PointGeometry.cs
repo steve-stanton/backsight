@@ -187,18 +187,12 @@ namespace Backsight.Editor
 
         #region IXmlContent Members
 
-        // Not virtual (don't want the Node class to override) - See PointFeature usage
-        public void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteLong("X", m_X.Microns);
-            writer.WriteLong("Y", m_Y.Microns);
-        }
-
         /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        // Not virtual (don't want the Node class to override) - See PointFeature usage
+        public void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);
@@ -209,14 +203,27 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        public void WriteChildElements(XmlContentWriter writer)
         {
         }
 
-        public void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public void ReadAttributes(XmlContentReader reader)
         {
             m_X = new MicronValue(reader.ReadLong("X"));
             m_Y = new MicronValue(reader.ReadLong("Y"));
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public void ReadChildElements(XmlContentReader reader)
+        {
         }
 
         #endregion

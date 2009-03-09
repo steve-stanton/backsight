@@ -421,23 +421,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteElement("Direction", m_Direction);
-            writer.WriteElement("Length", m_Length);
-
-            // Creations ...
-            writer.WriteCalculatedPoint("To", m_To);
-            //writer.WriteCalculatedLine("Line", m_Line);
-            writer.WriteElement("Line", m_Line);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -479,6 +462,25 @@ void CeRadial::CreateAngleText ( CPtrList& text
             //m_To = reader.ReadCalculatedPoint("To", to);
             m_To = reader.ReadPoint("To");
             m_Line = reader.ReadElement<LineFeature>("Line");
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>

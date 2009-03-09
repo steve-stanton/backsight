@@ -355,25 +355,6 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
-            writer.WriteDouble("MetricValue", m_ObservedMetric);
-            writer.WriteBool("IsFixed", m_IsFixed);
-            /*
-            DistanceContent c = new DistanceContent();
-            c.Unit = (int)m_EnteredUnit.UnitType;
-            c.MetricValue = m_ObservedMetric;
-            c.IsFixed = m_IsFixed;
-             */
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -396,17 +377,27 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
+            base.ReadAttributes(reader);
+
             DistanceUnitType unitType = (DistanceUnitType)reader.ReadInt("Unit");
             m_EnteredUnit = EditingController.Current.GetUnits(unitType);
             m_ObservedMetric = reader.ReadDouble("MetricValue");
             m_IsFixed = reader.ReadBool("IsFixed");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>

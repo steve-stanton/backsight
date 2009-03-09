@@ -577,27 +577,6 @@ namespace Backsight.Editor.Operations
 	    }
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            writer.WriteFeatureReference("RefLine", m_RefLine);
-            writer.WriteFeatureReference("Term1", m_Term1);
-            writer.WriteFeatureReference("Term2", m_Term2);
-
-            if (IsArcReversed)
-                writer.WriteBool("ArcReversed", true);
-
-            writer.WriteElement("Offset", m_Offset);
-
-            // Created features ...
-            writer.WriteElement("ParLine", new LineData(m_ParLine));
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -677,6 +656,25 @@ namespace Backsight.Editor.Operations
             {
                 m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
             }
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>

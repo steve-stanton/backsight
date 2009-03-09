@@ -53,15 +53,5 @@ namespace Backsight.Editor
         {
             get { return m_Key; }
         }
-
-        /// <summary>
-        /// The formatted value of the attribute that will be serialized
-        /// </summary>
-        /// <value>The same as the value of the <see cref="FormattedKey"/> property</value>
-        /// <remarks>Implements <see cref="IContentAttribute"/></remarks>
-        public override string AttributeString
-        {
-            get { return m_Key; }
-        }
     }
 }

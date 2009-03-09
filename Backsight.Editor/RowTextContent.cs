@@ -72,27 +72,13 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Writes the content of this class. This is called by
-        /// <see cref="XmlContentWriter.WriteElement"/>
-        /// after the element name and class type (xsi:type) have been written.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteContent(XmlContentWriter writer)
-        {
-            base.WriteContent(writer);
-
-            writer.WriteString("Id", m_Id);
-            writer.WriteInt("Table", m_TableId);
-            writer.WriteInt("Template", m_TemplateId);
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
         public override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
+
             writer.WriteString("Id", m_Id);
             writer.WriteInt("Table", m_TableId);
             writer.WriteInt("Template", m_TemplateId);
@@ -121,6 +107,25 @@ namespace Backsight.Editor
             m_Id = reader.ReadString("Id");
             m_TableId = reader.ReadInt("Table");
             m_TemplateId = reader.ReadInt("Template");
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
         }
 
         /// <summary>
