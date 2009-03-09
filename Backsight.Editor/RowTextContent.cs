@@ -95,27 +95,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-
-            m_Id = reader.ReadString("Id");
-            m_TableId = reader.ReadInt("Table");
-            m_TemplateId = reader.ReadInt("Template");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+
+            m_Id = reader.ReadString("Id");
+            m_TableId = reader.ReadInt("Table");
+            m_TemplateId = reader.ReadInt("Template");
         }
 
         /// <summary>

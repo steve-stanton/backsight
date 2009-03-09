@@ -447,24 +447,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            m_Direction = reader.ReadElement<Direction>("Direction");
-            m_Length = reader.ReadElement<Observation>("Length");
-
-            //IPosition to = RadialUI.Calculate(m_Direction, m_Length);
-            //m_To = reader.ReadCalculatedPoint("To", to);
-            m_To = reader.ReadPoint("To");
-            m_Line = reader.ReadElement<LineFeature>("Line");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -481,6 +463,13 @@ void CeRadial::CreateAngleText ( CPtrList& text
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+
+            m_Direction = reader.ReadElement<Direction>("Direction");
+            m_Length = reader.ReadElement<Observation>("Length");
+            //IPosition to = RadialUI.Calculate(m_Direction, m_Length);
+            //m_To = reader.ReadCalculatedPoint("To", to);
+            m_To = reader.ReadPoint("To");
+            m_Line = reader.ReadElement<LineFeature>("Line");
         }
 
         /// <summary>

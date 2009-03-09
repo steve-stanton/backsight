@@ -162,29 +162,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            m_Rotation = reader.ReadAngle("NewRotation");
-            m_PrevRotation = reader.ReadAngle("OldRotation");
-
-            base.ReadContent(reader);
-
-            // Remember the new rotation as part of the map model
-            MapModel.DefaultTextRotation = m_Rotation;
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+            m_Rotation = reader.ReadAngle("NewRotation");
+            m_PrevRotation = reader.ReadAngle("OldRotation");
         }
 
         /// <summary>
@@ -202,7 +187,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            // Remember the new rotation as part of the map model
+            MapModel.DefaultTextRotation = m_Rotation;
         }
 
         /// <summary>

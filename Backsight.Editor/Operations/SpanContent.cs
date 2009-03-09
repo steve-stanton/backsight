@@ -174,30 +174,13 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public void ReadContent(XmlContentReader reader)
-        {
-            m_LineItem = reader.ReadUnsignedInt("Line");
-
-            m_ExistingEndPoint = reader.ReadString("To");
-            if (m_ExistingEndPoint==null)
-                m_CreatedEndPoint = reader.ReadElement<FeatureData>("Point");
-            else
-                m_CreatedEndPoint = null;
-
-            m_Length = reader.ReadElement<Distance>("Length");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public void ReadAttributes(XmlContentReader reader)
         {
+            m_LineItem = reader.ReadUnsignedInt("Line");
+            m_ExistingEndPoint = reader.ReadString("To");
         }
 
         /// <summary>
@@ -207,6 +190,12 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         public void ReadChildElements(XmlContentReader reader)
         {
+            if (m_ExistingEndPoint == null)
+                m_CreatedEndPoint = reader.ReadElement<FeatureData>("Point");
+            else
+                m_CreatedEndPoint = null;
+
+            m_Length = reader.ReadElement<Distance>("Length");
         }
 
         /// <summary>

@@ -551,35 +551,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
-            m_IsSplit = reader.ReadBool("IsSplit");
-            m_Direction = reader.ReadElement<Direction>("Direction");
-
-            //IPosition p = Calculate();
-            //m_Intersection = reader.ReadCalculatedPoint("To", p);
-            m_Intersection = reader.ReadPoint("To");
-            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
-            m_LineA = reader.ReadElement<LineFeature>("LineA");
-            m_LineB = reader.ReadElement<LineFeature>("LineB");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
+            m_IsSplit = reader.ReadBool("IsSplit");
         }
 
         /// <summary>
@@ -590,6 +571,14 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+
+            m_Direction = reader.ReadElement<Direction>("Direction");
+            //IPosition p = Calculate();
+            //m_Intersection = reader.ReadCalculatedPoint("To", p);
+            m_Intersection = reader.ReadPoint("To");
+            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
+            m_LineA = reader.ReadElement<LineFeature>("LineA");
+            m_LineB = reader.ReadElement<LineFeature>("LineB");
         }
 
         /// <summary>

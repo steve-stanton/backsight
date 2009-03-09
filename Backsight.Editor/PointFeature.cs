@@ -365,7 +365,7 @@ namespace Backsight.Editor
 
             // Just output position as attributes (yes, I know geometry could theoretically
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
-            // This isn't really significant here, but it matters in the ReadContent method.
+            // This isn't really significant here, but it matters in the Read* methods.
 
             if (m_Geom.FirstPoint == this)
             {

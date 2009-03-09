@@ -442,18 +442,6 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            m_NewText = reader.ReadElement<TextFeature>("NewText");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -470,6 +458,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+            m_NewText = reader.ReadElement<TextFeature>("NewText");
         }
 
         /// <summary>

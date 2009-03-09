@@ -589,35 +589,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-
-            m_From1 = reader.ReadFeatureByReference<PointFeature>("From1");
-            m_From2 = reader.ReadFeatureByReference<PointFeature>("From2");
-            m_Default = reader.ReadBool("IsDefault");
-            m_Distance1 = reader.ReadElement<Distance>("Distance1");
-            m_Distance2 = reader.ReadElement<Distance>("Distance2");
-
-            //IPosition p = Calculate();
-            //m_To = reader.ReadCalculatedPoint("To", p);
-            m_To = reader.ReadPoint("To");
-            m_Line1 = reader.ReadElement<LineFeature>("Line1");
-            m_Line2 = reader.ReadElement<LineFeature>("Line2");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+
+            m_From1 = reader.ReadFeatureByReference<PointFeature>("From1");
+            m_From2 = reader.ReadFeatureByReference<PointFeature>("From2");
+            m_Default = reader.ReadBool("IsDefault");
         }
 
         /// <summary>
@@ -628,6 +609,14 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+
+            m_Distance1 = reader.ReadElement<Distance>("Distance1");
+            m_Distance2 = reader.ReadElement<Distance>("Distance2");
+            //IPosition p = Calculate();
+            //m_To = reader.ReadCalculatedPoint("To", p);
+            m_To = reader.ReadPoint("To");
+            m_Line1 = reader.ReadElement<LineFeature>("Line1");
+            m_Line2 = reader.ReadElement<LineFeature>("Line2");
         }
 
         /// <summary>

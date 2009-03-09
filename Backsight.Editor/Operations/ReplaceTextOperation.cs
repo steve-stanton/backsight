@@ -230,28 +230,18 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            // TODO: I believe the old text should be getting deactivated when the
-            // replacement text becomes known. However, the Execute method doesn't
-            // appear to do that, so for the time being, I won't do it here either.
-
-            m_OldText = reader.ReadFeatureByReference<TextFeature>("OldText");
-            base.ReadContent(reader);
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+
+            // TODO: I believe the old text should be getting deactivated when the
+            // replacement text becomes known. However, the Execute method doesn't
+            // appear to do that, so for the time being, I won't do it here either.
+
+            m_OldText = reader.ReadFeatureByReference<TextFeature>("OldText");
         }
 
         /// <summary>

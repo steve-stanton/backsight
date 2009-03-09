@@ -220,19 +220,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            PointFeature[] points = reader.ReadArray<PointFeature>("PointArray", "Point");
-            m_Features.AddRange(points);
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -249,6 +236,8 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+            PointFeature[] points = reader.ReadArray<PointFeature>("PointArray", "Point");
+            m_Features.AddRange(points);
         }
 
         /// <summary>

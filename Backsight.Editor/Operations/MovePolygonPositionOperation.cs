@@ -176,19 +176,18 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
+
             m_Label = reader.ReadFeatureByReference<TextFeature>("Label");
 
             long x = reader.ReadLong("OldX");
             long y = reader.ReadLong("OldY");
-            if (x==0 && y==0)
+            if (x == 0 && y == 0)
                 m_OldPosition = null;
             else
                 m_OldPosition = new PointGeometry(x, y);
@@ -196,15 +195,6 @@ namespace Backsight.Editor.Operations
             x = reader.ReadLong("NewX");
             y = reader.ReadLong("NewY");
             m_NewPosition = new PointGeometry(x, y);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
         }
 
         /// <summary>

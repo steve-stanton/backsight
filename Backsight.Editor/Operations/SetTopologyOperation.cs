@@ -157,26 +157,13 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            base.ReadContent(reader);
-
-            m_Line.SwitchTopology();
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
         }
 
         /// <summary>
@@ -194,7 +181,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            m_Line.SwitchTopology();
         }
 
         /// <summary>
