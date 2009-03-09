@@ -224,27 +224,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            Feature[] dels = reader.ReadFeatureReferenceArray<Feature>("IdArray", "Id");
-            m_Deletions = new List<Feature>(dels);
-
-            // Mark the features as deleted and remove from spatial index
-            //EditingIndex index = reader.Model.EditingIndex;
-            foreach (Feature f in dels)
-            {
-                f.Deactivate();
-                //index.Remove(f);
-            }
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -261,6 +240,16 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+            Feature[] dels = reader.ReadFeatureReferenceArray<Feature>("IdArray", "Id");
+            m_Deletions = new List<Feature>(dels);
+
+            // Mark the features as deleted and remove from spatial index
+            //EditingIndex index = reader.Model.EditingIndex;
+            foreach (Feature f in dels)
+            {
+                f.Deactivate();
+                //index.Remove(f);
+            }
         }
 
         /// <summary>

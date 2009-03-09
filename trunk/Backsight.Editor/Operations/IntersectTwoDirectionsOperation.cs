@@ -405,26 +405,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            
-            m_Direction1 = reader.ReadElement<Direction>("Direction1");
-            m_Direction2 = reader.ReadElement<Direction>("Direction2");
-
-            //IPosition p = Calculate();
-            //m_To = reader.ReadCalculatedPoint("To", p);
-            m_To = reader.ReadPoint("To");
-            m_Line1 = reader.ReadElement<LineFeature>("Line1");
-            m_Line2 = reader.ReadElement<LineFeature>("Line2");
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -441,6 +421,14 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+
+            m_Direction1 = reader.ReadElement<Direction>("Direction1");
+            m_Direction2 = reader.ReadElement<Direction>("Direction2");
+            //IPosition p = Calculate();
+            //m_To = reader.ReadCalculatedPoint("To", p);
+            m_To = reader.ReadPoint("To");
+            m_Line1 = reader.ReadElement<LineFeature>("Line1");
+            m_Line2 = reader.ReadElement<LineFeature>("Line2");
         }
 
         /// <summary>

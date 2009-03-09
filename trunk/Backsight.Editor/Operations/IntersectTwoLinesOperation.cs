@@ -513,20 +513,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
-            
+            base.ReadAttributes(reader);
+
             m_Line1 = reader.ReadFeatureByReference<LineFeature>("Line1");
             m_Line2 = reader.ReadFeatureByReference<LineFeature>("Line2");
             m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
             m_IsSplit1 = reader.ReadBool("IsSplit1");
             m_IsSplit2 = reader.ReadBool("IsSplit2");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
 
             //IPosition p = Calculate();
             //m_Intersection = reader.ReadCalculatedPoint("To", p);
@@ -541,25 +549,6 @@ namespace Backsight.Editor.Operations
                 m_Line2a = reader.ReadElement<LineFeature>("Line2a");
                 m_Line2b = reader.ReadElement<LineFeature>("Line2b");
             }
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
 
         /// <summary>

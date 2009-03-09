@@ -602,14 +602,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
+            base.ReadAttributes(reader);
 
             m_RefLine = reader.ReadFeatureByReference<LineFeature>("RefLine");
             m_Term1 = reader.ReadFeatureByReference<LineFeature>("Term1");
@@ -618,6 +616,16 @@ namespace Backsight.Editor.Operations
             bool isArcReversed = reader.ReadBool("ArcReversed");
             if (isArcReversed)
                 m_Flags = 1;
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
 
             m_Offset = reader.ReadElement<Observation>("Offset");
 
@@ -646,7 +654,7 @@ namespace Backsight.Editor.Operations
                 Circle parCircle = CadastralMapModel.Current.AddCircle(center, parRadius);
 
                 // Use the reverse arc direction if specified.
-                if (isArcReversed)
+                if (IsArcReversed)
                     iscw = !iscw;
 
                 // Add the circular arc
@@ -656,25 +664,6 @@ namespace Backsight.Editor.Operations
             {
                 m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
             }
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
 
         /// <summary>

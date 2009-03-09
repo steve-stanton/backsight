@@ -507,24 +507,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public virtual void ReadContent(XmlContentReader reader)
-        {
-            m_Session = Session.CurrentSession;
-            m_Sequence = Operation.CurrentEditSequence;
-            m_Flag = 0;
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public virtual void ReadAttributes(XmlContentReader reader)
         {
+            m_Session = Session.CurrentSession;
+            m_Sequence = Operation.CurrentEditSequence;
+            m_Flag = 0;
         }
 
         /// <summary>

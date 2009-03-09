@@ -393,7 +393,11 @@ namespace Backsight.Editor
         {
         }
 
-        public virtual void ReadContent(XmlContentReader reader)
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public virtual void ReadAttributes(XmlContentReader reader)
         {
             m_Position = new PointGeometry();
             m_Position.ReadAttributes(reader);
@@ -406,14 +410,6 @@ namespace Backsight.Editor
                 m_Rotation = new RadianValue(rot);
             else
                 throw new Exception("Cannot parse text rotation");
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
-        {
         }
 
         /// <summary>

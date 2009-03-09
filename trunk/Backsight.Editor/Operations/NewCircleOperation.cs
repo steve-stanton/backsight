@@ -324,26 +324,13 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
-            m_Radius = reader.ReadElement<Observation>("Radius");
-
-            base.ReadContent(reader);
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+            m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
         }
 
         /// <summary>
@@ -354,6 +341,7 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+            m_Radius = reader.ReadElement<Observation>("Radius");
         }
 
         /// <summary>
@@ -361,8 +349,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // I don't THINK it needs to be calculated here - the ReadContent call
-            // leads to LineFeature.ReadContent, which reads a <Geometry> element
+            // I don't THINK it needs to be calculated here - the read calls
+            // lead to LineFeature.ReadChildElements, which reads a <Geometry> element
             // from the XML. This strikes me as being a bit suspect (why is the
             // geometry being written explicitly, rather than being calculated from
             // the parameters saved as part of the op?). I can see that making sense

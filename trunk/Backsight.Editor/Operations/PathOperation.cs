@@ -1117,36 +1117,44 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
+            base.ReadAttributes(reader);
+
+            m_From = reader.ReadFeatureByReference<PointFeature>("From");
+            m_To = reader.ReadFeatureByReference<PointFeature>("To");
+
+            int unitType = reader.ReadInt("EntryUnit");
+            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
+
+            // Ensure default entity types have been set to the values they had when
+            // this edit was originally executed
+            m_PointType = EnvironmentContainer.FindEntityById(reader.ReadInt("PointType"));
+            m_LineType = EnvironmentContainer.FindEntityById(reader.ReadInt("LineType"));
+
+            CadastralMapModel.Current.DefaultPointType = m_PointType;
+            CadastralMapModel.Current.DefaultLineType = m_LineType;
+
+            // Read back the data entry string
+            m_EntryString = reader.ReadString("EntryString");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            base.ReadChildElements(reader);
             uint itemCount = Session.CurrentSession.NumItem;
 
             try
             {
-                base.ReadContent(reader);
                 Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
-
-                m_From = reader.ReadFeatureByReference<PointFeature>("From");
-                m_To = reader.ReadFeatureByReference<PointFeature>("To");
-
-                int unitType = reader.ReadInt("EntryUnit");
-                m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
-
-                // Ensure default entity types have been set to the values they had when
-                // this edit was originally executed
-                m_PointType = EnvironmentContainer.FindEntityById(reader.ReadInt("PointType"));
-                m_LineType = EnvironmentContainer.FindEntityById(reader.ReadInt("LineType"));
-
-                CadastralMapModel.Current.DefaultPointType = m_PointType;
-                CadastralMapModel.Current.DefaultLineType = m_LineType;
-
-                // Read back the data entry string
-                m_EntryString = reader.ReadString("EntryString");
 
                 // Read back information about created features
                 FeatureData[] featureInfo = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
@@ -1162,9 +1170,9 @@ void CePath::CreateAngleText ( CPtrList& text
                 foreach (PointFeature p in createdPoints)
                 {
                     FeatureData info = Array.Find<FeatureData>(featureInfo,
-                        delegate(FeatureData t) { return (t.CreationSequence==p.CreatorSequence); });
+                        delegate(FeatureData t) { return (t.CreationSequence == p.CreatorSequence); });
 
-                    if (info!=null)
+                    if (info != null)
                     {
                         FeatureId id = info.Id;
                         p.SetId(id);
@@ -1176,25 +1184,6 @@ void CePath::CreateAngleText ( CPtrList& text
             {
                 Session.CurrentSession.NumItem = itemCount;
             }
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
     }
 }

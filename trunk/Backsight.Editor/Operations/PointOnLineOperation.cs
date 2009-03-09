@@ -388,20 +388,29 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
+        /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
-            base.ReadContent(reader);
-
+            base.ReadAttributes(reader);
             m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        public override void ReadChildElements(XmlContentReader reader)
+        {
+            // TODO: This is a hack, but should work
             uint line1 = reader.ReadUnsignedInt("NewLine1");
             uint line2 = reader.ReadUnsignedInt("NewLine2");
-            m_Distance = reader.ReadElement<Distance>("Distance");
 
+            base.ReadChildElements(reader);
+
+            m_Distance = reader.ReadElement<Distance>("Distance");
             //IPosition p = Calculate();
             //m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
             m_NewPoint = reader.ReadPoint("NewPoint");
@@ -416,25 +425,6 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             reader.AddFeature(m_NewLine2);
 
             m_Line.Deactivate();
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
 
         /// <summary>

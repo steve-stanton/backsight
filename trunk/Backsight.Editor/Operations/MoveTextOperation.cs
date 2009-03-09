@@ -206,39 +206,21 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Loads the content of this class. This is called by
-        /// <see cref="XmlContentReader"/> during deserialization from XML (just
-        /// after the default constructor has been invoked).
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadContent(XmlContentReader reader)
-        {
-            base.ReadContent(reader);
-            m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
-
-            long x = reader.ReadLong("X");
-            long y = reader.ReadLong("Y");
-            if (x==0 && y==0)
-                m_OldPolPosition = null;
-            else
-                m_OldPolPosition = new PointGeometry(x, y);
-
-            m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
-            m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
-
-            // Ensure the text has been moved to the revised position
-            m_Text.Move(m_NewPosition);
-
-            // Should be no need to re-calculate enclosing polygon while deserializing
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
         public override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
+
+            m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
+
+            long x = reader.ReadLong("X");
+            long y = reader.ReadLong("Y");
+            if (x == 0 && y == 0)
+                m_OldPolPosition = null;
+            else
+                m_OldPolPosition = new PointGeometry(x, y);
         }
 
         /// <summary>
@@ -249,6 +231,14 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
+
+            m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
+            m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
+
+            // Ensure the text has been moved to the revised position
+            m_Text.Move(m_NewPosition);
+
+            // Should be no need to re-calculate enclosing polygon while deserializing
         }
 
         /// <summary>
