@@ -41,9 +41,19 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>DeletionOperation</c> that refers to nothing.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public DeletionOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeletionOperation"/> class
+        /// that refers to nothing.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal DeletionOperation(Session s)
+            : base(s)
         {
             m_Deletions = null;
         }

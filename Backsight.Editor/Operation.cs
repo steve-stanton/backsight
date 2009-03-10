@@ -77,17 +77,14 @@ namespace Backsight.Editor
         /// </summary>
         protected Operation()
         {
+            if (!CadastralMapModel.Current.IsLoading)
+                throw new InvalidOperationException("Wrong constructor used to create edit");
+
             m_Session = Session.CurrentSession;
             if (m_Session==null)
                 throw new ArgumentNullException("Editing session is not defined");
 
             m_Session.Add(this);
-
-            // Reserve a sequence number for the edit, so long as we are not
-            // in the process of deserializing from the database
-            if (m_Session.MapModel.ContentReader==null)
-                Operation.CurrentEditSequence = Session.ReserveNextItem();
-
             m_Sequence = s_CurrentEditSequence;
         }
 
@@ -100,6 +97,9 @@ namespace Backsight.Editor
         {
             if (s==null)
                 throw new ArgumentNullException();
+
+            // The default constructor should be used during loading
+            Debug.Assert(!s.MapModel.IsLoading);
 
             s.Add(this);
             m_Session = s;
@@ -168,6 +168,19 @@ namespace Backsight.Editor
         internal string DataId
         {
             get { return String.Format("{0}.{1}", m_Session.Id, m_Sequence); }
+        }
+
+        /// <summary>
+        /// Parses a string that was returned by the <see cref="DataId"/> property.
+        /// </summary>
+        /// <param name="s">The string to parse</param>
+        /// <param name="sessionId">The ID of the session</param>
+        /// <param name="sequence">The creation sequence of the edit within the session</param>
+        void ParseDataId(string s, out uint sessionId, out uint sequence)
+        {
+            int dotIndex = s.IndexOf('.');
+            sessionId = uint.Parse(s.Substring(0, dotIndex));
+            sequence = uint.Parse(s.Substring(dotIndex+1));
         }
 
         /// <summary>
@@ -512,9 +525,16 @@ namespace Backsight.Editor
         /// <param name="reader">The reading tool</param>
         public virtual void ReadAttributes(XmlContentReader reader)
         {
+            uint sessionId;
+            ParseDataId(reader.ReadString("Id"), out sessionId, out m_Sequence);
             m_Session = Session.CurrentSession;
-            m_Sequence = Operation.CurrentEditSequence;
             m_Flag = 0;
+
+            // Remember the edit sequence in case anyone else needs it
+            Operation.CurrentEditSequence = m_Sequence;
+
+            // The session needs to defined in advance
+            Debug.Assert(m_Session.Id==sessionId);
         }
 
         /// <summary>
@@ -554,7 +574,6 @@ namespace Backsight.Editor
         /// <returns>The XML for this edit</returns>
         internal string ToXml(bool indent)
         {
-            XmlContentWriter.TargetNamespace = "Backsight";
             return XmlContentWriter.GetXml("Edit", indent, this);
         }
 
@@ -566,21 +585,6 @@ namespace Backsight.Editor
         /// <returns>A line that was superseded by this edit in order to produce
         /// the line of interest.</returns>
         abstract internal LineFeature GetPredecessor(LineFeature line);
-
-        #region IContentElement Members
-
-        public virtual void ReadAttributes(ContentReader reader)
-        {
-            // Not currently used (but it would probably be a good idea to
-            // pick up session & creation sequence via the content)
-            string id = reader.ReadString("Id");
-        }
-
-        public virtual void ReadChildElements(ContentReader reader)
-        {
-        }
-
-        #endregion
     }
 
 }

@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Xml;
@@ -31,22 +31,6 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
-        /// The target namespace that should be used when writing out the
-        /// top-level element. Not null.
-        /// </summary>
-        static string s_TargetNamespace = "Backsight";
-
-        /// <summary>
-        /// The target namespace that should be used when writing out the
-        /// top-level element. Not null.
-        /// </summary>
-        internal static string TargetNamespace
-        {
-            get { return s_TargetNamespace; }
-            set { s_TargetNamespace = (value==null ? String.Empty : value); }
-        }
-
-        /// <summary>
         /// Converts an editing operation into XML
         /// </summary>
         /// <param name="name">The name to assign to main content element</param>
@@ -62,7 +46,7 @@ namespace Backsight.Editor
 
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
             {
-                new XmlContentWriter(writer, edit).WriteTopElement(name, (IXmlContent)edit);
+                new XmlContentWriter(writer).WriteEdit(edit);
             }
             return sb.ToString();
         }
@@ -76,28 +60,45 @@ namespace Backsight.Editor
         /// </summary>
         readonly XmlWriter m_Writer;
 
-        /// <summary>
-        /// The edit that is currently being written
-        /// </summary>
-        readonly Operation m_CurrentEdit;
-
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>XmlContentWriter</c> that wraps the supplied
-        /// writing tool.
+        /// Creates a new <c>XmlContentWriter</c> that wraps the supplied writing tool.
         /// </summary>
         /// <param name="writer">The object that actually does the writing.</param>
-        /// <param name="edit">The edit to convert into XML</param>
-        XmlContentWriter(XmlWriter writer, Operation edit)
+        XmlContentWriter(XmlWriter writer)
         {
             m_Writer = writer;
-            m_CurrentEdit = edit;
         }
 
         #endregion
+
+        /// <summary>
+        /// Writes out a top-level element with the specified name. In addition to
+        /// the usual stuff, this will write out a namespace for the element (which
+        /// is required if the XML is destined for storage in a SqlServer database).
+        /// </summary>
+        /// <param name="edit">The content to write (not null)</param>
+        /// <exception cref="ArgumentNullException">If the supplied content is null</exception>
+        void WriteEdit(Operation edit)
+        {
+            if (edit==null)
+                throw new ArgumentNullException();
+
+            // The edit is enclosed by a top-level element that has no attributes - the only reason for
+            // this is that the top-level element needs to also specify the XmlSchema.InstanceNamespace.
+
+            // Should encoding be written too?
+            m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+            m_Writer.WriteStartElement("Data", "Backsight");
+            m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
+
+            WriteElement("Edit", edit);
+
+            m_Writer.WriteEndElement();
+        }
 
         /// <summary>
         /// Writes out a top-level element with the specified name. In addition to
@@ -109,23 +110,23 @@ namespace Backsight.Editor
         /// <param name="content">The content to write (not null)</param>
         /// <param name="name">The name for the XML element</param>
         /// <exception cref="ArgumentNullException">If the supplied content is null</exception>
-        public void WriteTopElement(string name, IXmlContent content)
-        {
-            if (content==null)
-                throw new ArgumentNullException();
+        //void WriteTopElement(string name, IXmlContent content)
+        //{
+        //    if (content==null)
+        //        throw new ArgumentNullException();
 
-            // Should encoding be written too?
-            m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+        //    // Should encoding be written too?
+        //    m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
 
-            // The initial element needs a namespace (for SqlServer)
-            m_Writer.WriteStartElement(name, s_TargetNamespace);
+        //    // The initial element needs a namespace (for SqlServer)
+        //    m_Writer.WriteStartElement(name, "Backsight");
 
-            // Write declaration that allows specification of class type (if you don't do
-            // this, an attempt to write out "xsi:type" will only give you "type").
-            m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
+        //    // Write declaration that allows specification of class type (if you don't do
+        //    // this, an attempt to write out "xsi:type" will only give you "type").
+        //    m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
 
-            WriteElementContent(content);
-        }
+        //    WriteElementContent(content);
+        //}
 
         /// <summary>
         /// Writes out an element with the specified name
@@ -208,7 +209,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out a reference to a previously existing spatial feature
+        /// Writes out a reference to a previously existing spatial feature (as an attribute)
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
         /// <param name="feature">The feature that's referenced</param>
@@ -267,27 +268,6 @@ namespace Backsight.Editor
 
             m_Writer.WriteEndElement();
         }
-        /*
-        /// <summary>
-        /// Writes the header for an array.
-        /// </summary>
-        /// <param name="arrayName">The name for the element representing the array</param>
-        /// <param name="length">The number of array elements that will be written</param>
-        internal void WriteArrayHeading(string arrayName, uint length)
-        {
-            m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Length", (uint)data.Length);
-        }
-
-        /// <summary>
-        /// Finishes off an array element that was previously started via a call to
-        /// <see cref="WriteArrayHeading"/>
-        /// </summary>
-        internal void WriteArrayTail()
-        {
-            m_Writer.WriteEndElement();
-        }
-        */
 
         /// <summary>
         /// Writes an array element for the supplied content
@@ -321,27 +301,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes an array element for features that have an assigned ID
-        /// </summary>
-        /// <param name="arrayName">The name for the element representing the complete array</param>
-        /// <param name="itemName">The element name for individual elements in the array</param>
-        /// <param name="data">The features that may have assigned IDs (only those features
-        /// that have IDs will be represented in the output). Expected to relate to a
-        /// single editing operation.</param>
-        /*
-        internal void WriteFeatureIdArray(string arrayName, string itemName, Feature[] data)
-        {
-            // Grab those features that actually have an ID
-            List<Feature> idFeats = new List<Feature>(data.Length);
-            foreach (Feature f in data)
-            {
-                if (f.Id != null)
-                    idFeats.Add(f);
-            }
-        }
-         */
-
-        /// <summary>
         /// Writes an array element for the supplied content
         /// </summary>
         /// <param name="arrayName">The name for the element representing the complete array</param>
@@ -367,14 +326,6 @@ namespace Backsight.Editor
         internal void WriteCalculatedPoint(string elementName, PointFeature point)
         {
             WriteElement(elementName, new FeatureData(point));
-        }
-
-        /// <summary>
-        /// The edit that is currently being written
-        /// </summary>
-        internal Operation CurrentEdit
-        {
-            get { return m_CurrentEdit; }
         }
 
         /// <summary>

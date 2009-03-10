@@ -79,7 +79,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor sets everything to null, for use in deserialization
+        /// Default constructor, for use during deserialization
         /// </summary>
         public PathOperation()
         {
@@ -92,6 +92,7 @@ namespace Backsight.Editor.Operations
         }
 
         internal PathOperation(PointFeature from, PointFeature to, string entryString)
+            : base(Session.WorkingSession)
         {
             m_From = from;
             m_To = to;
@@ -99,21 +100,6 @@ namespace Backsight.Editor.Operations
             m_DefaultEntryUnit = EditingController.Current.EntryUnit;
             m_PointType = CadastralMapModel.Current.DefaultPointType;
             m_LineType = CadastralMapModel.Current.DefaultLineType;
-        }
-
-        /// <summary>
-        /// Creates a new <c>PathOperation</c>
-        /// </summary>
-        /// <param name="pd">The data that defines the path</param>
-        internal PathOperation(PathData pd)
-        {
-            m_From = pd.FromPoint;
-            m_To = pd.ToPoint;
-            m_DefaultEntryUnit = EditingController.Current.EntryUnit;
-
-            // The legs should all be instances of CircularLeg or StraightLeg
-            Leg[] legs = pd.GetLegs();
-            m_Legs = new List<Leg>(legs);
         }
 
         #endregion

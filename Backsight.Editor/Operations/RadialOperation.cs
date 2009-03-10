@@ -66,15 +66,13 @@ namespace Backsight.Editor.Operations
         /// Default constructor, for use during deserialization
         /// </summary>
         public RadialOperation()
-            : base()
         {
-            SetInitialValues();
         }
 
         /// <summary>
         /// Creates a new <c>RadialOperation</c> as part of an editing session.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="s">The session the new instance should be added to</param>
         internal RadialOperation(Session s)
             : base(s)
         {

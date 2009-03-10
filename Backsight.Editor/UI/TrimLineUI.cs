@@ -82,7 +82,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new TrimLineOperation();
+                op = new TrimLineOperation(Session.WorkingSession);
                 op.Execute(lines);
 
                 c.ClearSelection();

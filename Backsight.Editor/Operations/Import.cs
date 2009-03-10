@@ -39,11 +39,18 @@ namespace Backsight.Editor.Operations
 
         #region Constructors
 
-        public Import() : base()
+        /// <summary>
+        /// Default constructor, for use during deserialization
+        /// </summary>
+        public Import()
         {
-            m_Data = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Import"/> class
+        /// that refers to nothing.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
         internal Import(Session s)
             : base(s)
         {

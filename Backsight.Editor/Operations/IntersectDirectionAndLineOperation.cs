@@ -81,9 +81,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>IntersectDirectionAndLineOperation</c> with everything set to null.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public IntersectDirectionAndLineOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndLineOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal IntersectDirectionAndLineOperation(Session s)
+            : base(s)
         {
             m_Direction = null;
             m_Line = null;

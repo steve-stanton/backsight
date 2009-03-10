@@ -138,7 +138,7 @@ namespace Backsight.Editor.Forms
                 IdHandle pointId = intersectInfo.PointId;
                 PointFeature closeTo = intersectInfo.ClosestPoint;
 
-                op = new IntersectTwoLinesOperation();
+                op = new IntersectTwoLinesOperation(Session.WorkingSession);
                 op.Execute(line1, line2, closeTo, wantSplit1, wantSplit2, pointId);
                 return op.IntersectionPoint;
             }

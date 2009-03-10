@@ -274,7 +274,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new NewTextOperation();
+                op = new NewTextOperation(Session.WorkingSession);
                 op.Execute(m_NewText, Entity, posn, Height, Width, Rotation);
                 return op.Text;
             }

@@ -209,7 +209,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new NewCircleOperation();
+                    op = new NewCircleOperation(Session.WorkingSession);
                     op.Execute(center, radius);
                 }
 

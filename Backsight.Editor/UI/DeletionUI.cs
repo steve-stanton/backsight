@@ -64,7 +64,7 @@ namespace Backsight.Editor.UI
             try
             {
                 SetCommandCursor();
-                dop = new DeletionOperation();
+                dop = new DeletionOperation(Session.WorkingSession);
                 foreach (ISpatialObject so in c.SpatialSelection.Items)
                 {
                     if (so is Feature)

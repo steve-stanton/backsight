@@ -63,15 +63,24 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>LineExtensionOperation</c> with everything set to null.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public LineExtensionOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal LineExtensionOperation(Session s)
+            : base(s)
         {
             m_ExtendLine = null;
             m_NewLine = null;
             m_NewPoint = null;
             m_Length = null;
-        	m_IsExtendFromEnd = true;
+            m_IsExtendFromEnd = true;
         }
 
         #endregion

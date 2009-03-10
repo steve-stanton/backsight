@@ -39,9 +39,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>NewTextOperation</c> that doesn't refer to any new text.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public NewTextOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewTextOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal NewTextOperation(Session s)
+            : base(s)
         {
             m_NewText = null;
         }

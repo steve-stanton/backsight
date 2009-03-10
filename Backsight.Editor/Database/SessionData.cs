@@ -111,7 +111,10 @@ namespace Backsight.Editor.Database
                         SqlXml data = reader.GetSqlXml(2);
                         using (XmlReader xr = data.CreateReader())
                         {
-                            xcr.LoadOperation(editSequence, xr);
+                            Operation edit = xcr.ReadEdit(xr);
+
+                            // The edit sequence is repeated in the XML data
+                            Debug.Assert(edit.EditSequence == editSequence);
                         }
                     }
                 }

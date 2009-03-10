@@ -416,7 +416,7 @@ namespace Backsight.Editor.Forms
 
                 // Create import operation.
                 CadastralMapModel map = CadastralMapModel.Current;
-                save = new GetControlOperation();
+                save = new GetControlOperation(Session.WorkingSession);
 
                 // Tell each range to add itself to the map.
                 foreach (ControlRange r in m_Ranges)

@@ -36,11 +36,12 @@ namespace Backsight.Editor.Operations
 
         #region Constructors
 
-        /// <summary>
-        /// Default constructor.
-        /// Creates a new <c>IntersectionOperation</c>
-        /// </summary>
-        internal IntersectOperation()
+        protected IntersectOperation()
+        {
+        }
+
+        protected IntersectOperation(Session s)
+            : base(s)
         {
         }
 

@@ -233,7 +233,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new PointOnLineOperation();
+                    op = new PointOnLineOperation(Session.WorkingSession);
                     op.Execute(m_Line, m_Length, m_IsFromEnd);
                 }
 

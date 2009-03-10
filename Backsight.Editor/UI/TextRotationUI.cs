@@ -101,7 +101,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new TextRotationOperation();
+                op = new TextRotationOperation(Session.WorkingSession);
                 op.Execute(point1, point2);
                 FinishCommand();
             }

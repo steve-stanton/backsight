@@ -291,39 +291,6 @@ namespace Backsight.Editor
             }
         }
 
-        /*
-         * Consider the following sample:
-         * 
-            <?xml version="1.0"?>
-            <Edit xsi:type="Import" xmlns="Backsight" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-              <FeatureArray>
-                <Feature xsi:type="PointFeature" CreationSequence="1" EntityId="27" Key="">
-                  <Geometry xsi:type="PointGeometry" X="427567152600" Y="5521630899900" />
-                </Feature>
-                <Feature xsi:type="PointFeature" CreationSequence="5" EntityId="27" Key="">
-                  <Geometry xsi:type="PointGeometry" X="427588490200" Y="5522161261200" />
-                </Feature>
-              </FeatureArray>
-            </Edit>         
-
-         * As you read through the above, you hit the following nodes (name and type),
-         * (they'll possibly be interspersed with Whitespace nodes)
-
-            xml XmlDeclaration
-            Edit Element
-              FeatureArray Element
-                Feature Element
-                  Geometry Element
-                Feature EndElement
-                Feature Element
-                  Geometry Element
-                Feature EndElement
-              FeatureArray EndElement
-            Edit EndElement
-         
-         * Note that there's no EndElement node for the geometry (where everything
-         * consists of attributes)
-         */
         public T[] ReadArray<T>(string arrayName, string itemName) where T : class, IXmlContent
         {
             // Ensure we're at an element
@@ -422,17 +389,13 @@ namespace Backsight.Editor
         /// Loads the content of an editing operation. Prior to call, the current editing session
         /// must be defined using the <see cref="Session.CurrentSession"/> property.
         /// </summary>
-        /// <param name="editSequence">The item sequence for the edit</param>
         /// <param name="data">The data that describes the edit</param>
         /// <returns>The created editing object</returns>
-        internal Operation LoadOperation(uint editSequence, XmlReader data)
+        internal Operation ReadEdit(XmlReader data)
         {
-            // Remember the sequence number of the edit that's being loaded
-            Operation.CurrentEditSequence = editSequence;
-
             try
             {
-                m_Model.ContentReader = this;
+                m_Model.IsLoading = true;
                 m_Reader = data;
                 Debug.Assert(m_Elements.Count==0);
                 Operation result = ReadElement<Operation>("Edit");
@@ -448,7 +411,7 @@ namespace Backsight.Editor
             finally
             {
                 m_Reader = null;
-                m_Model.ContentReader = null;
+                m_Model.IsLoading = false;
             }
         }
 
@@ -519,23 +482,6 @@ namespace Backsight.Editor
 
             return result;
         }
-
-        /// <summary>
-        /// Reads back a calculated point feature
-        /// </summary>
-        /// <param name="elementName">The name of the element containing the fields
-        /// describing the basic feature</param>
-        /// <param name="p">The calculated position of the point</param>
-        /// <returns>The created point</returns>
-        //internal PointFeature ReadCalculatedPoint(string elementName, IPosition p)
-        //{
-        //    // Pick up the information for the point
-        //    FeatureData fd = ReadElement<FeatureData>(elementName);
-        //    if (fd==null)
-        //        return null;
-        //    else
-        //        return CreateCalculatedPoint(fd, p);
-        //}
 
         /// <summary>
         /// Reads back a point feature (without any geometry). A subsequent call

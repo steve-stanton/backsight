@@ -46,12 +46,10 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor sets everything to null, for use in deserialization
+        /// Default constructor, for use during deserialization
         /// </summary>
         public LineSubdivisionOperation()
         {
-            m_Line = null;
-            m_Sections = null;
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="line">The line that is being subdivided.</param>
         internal LineSubdivisionOperation(LineFeature line)
-            : base()
+            : base(Session.WorkingSession)
         {
             m_Line = line;
             m_Sections = null;

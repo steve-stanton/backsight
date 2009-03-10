@@ -37,7 +37,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Default constructor, for use during deserialization
         /// </summary>
         public SetTopologyOperation()
         {
@@ -47,7 +47,8 @@ namespace Backsight.Editor.Operations
         /// Creates a new <c>SetTopologyOperation</c> that refers to the specified line.
         /// </summary>
         /// <param name="line">The line to change</param>
-        internal SetTopologyOperation(LineFeature line)
+        internal SetTopologyOperation(Session s, LineFeature line)
+            : base(s)
         {
             if (line==null)
                 throw new ArgumentNullException();

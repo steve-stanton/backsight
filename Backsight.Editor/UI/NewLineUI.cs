@@ -241,7 +241,7 @@ namespace Backsight.Editor.UI
         internal virtual void AddNewLine(PointFeature end)
         {
             // Create the persistent edit (adds to current session)
-            NewLineOperation op = new NewLineOperation();
+            NewLineOperation op = new NewLineOperation(Session.WorkingSession);
             bool ok = op.Execute(m_Start, end);
 
             if (!ok)

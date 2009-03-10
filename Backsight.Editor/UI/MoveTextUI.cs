@@ -136,7 +136,7 @@ namespace Backsight.Editor.UI
         /// <returns>True, indicating that the text was moved.</returns>
         internal override bool LButtonDown(IPosition p)
         {
-            MoveTextOperation op = new MoveTextOperation();
+            MoveTextOperation op = new MoveTextOperation(Session.WorkingSession);
             op.Execute(m_Text, PointGeometry.Create(p));
             FinishCommand();
             return true;
