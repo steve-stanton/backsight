@@ -39,10 +39,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor creates a <c>NewLineOperation</c> that doesn't refer
-        /// to any new line.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public NewLineOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewLineOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal NewLineOperation(Session s)
+            : base(s)
         {
             m_NewLine = null;
         }

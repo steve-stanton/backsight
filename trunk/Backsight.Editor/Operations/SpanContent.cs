@@ -57,7 +57,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for serialization.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public SpanContent()
         {

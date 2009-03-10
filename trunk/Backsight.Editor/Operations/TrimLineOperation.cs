@@ -103,9 +103,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>TrimLineOperation</c> with everything set to null.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public TrimLineOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal TrimLineOperation(Session s)
+            : base(s)
         {
             m_Lines = null;
             m_Points = null;

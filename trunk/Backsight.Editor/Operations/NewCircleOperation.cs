@@ -45,10 +45,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor creates a <c>NewCircleOperation</c> with
-        /// everything set to null.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public NewCircleOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal NewCircleOperation(Session s)
+            : base(s)
         {
             m_Center = null;
             m_Radius = null;

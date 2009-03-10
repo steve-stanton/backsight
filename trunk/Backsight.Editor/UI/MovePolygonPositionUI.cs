@@ -131,7 +131,7 @@ namespace Backsight.Editor.UI
         /// <returns>True, indicating that the text was moved.</returns>
         internal override bool LButtonDown(IPosition p)
         {
-            MovePolygonPositionOperation op = new MovePolygonPositionOperation();
+            MovePolygonPositionOperation op = new MovePolygonPositionOperation(Session.WorkingSession);
             op.Execute(m_Text, PointGeometry.Create(p));
             FinishCommand();
             return true;

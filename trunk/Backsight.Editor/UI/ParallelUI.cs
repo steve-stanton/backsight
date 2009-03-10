@@ -540,7 +540,7 @@ namespace Backsight.Editor.UI
             else
             {
                 // Create the persistent edit (adds to current session)
-                ParallelOperation op = new ParallelOperation();
+                ParallelOperation op = new ParallelOperation(Session.WorkingSession);
                 bool ok = false;
                 
                 if (m_Offset!=null)

@@ -40,7 +40,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Default constructor, for use during deserialization
         /// </summary>
         public ReplaceTextOperation()
         {
@@ -50,8 +50,11 @@ namespace Backsight.Editor.Operations
         /// Creates a new <c>ReplaceTextOperation</c> that refers to the text that's
         /// being replaced, but which doesn't yet refer to new text.
         /// </summary>
-        internal ReplaceTextOperation(TextFeature oldText)
-            : base()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="oldText">The text label that was superseded as a consequence of adding
+        /// an extra label to a derived layer.</param>
+        internal ReplaceTextOperation(Session s, TextFeature oldText)
+            : base(s)
         {
             m_OldText = oldText;
         }

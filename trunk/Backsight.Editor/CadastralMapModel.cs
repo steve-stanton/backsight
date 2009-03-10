@@ -47,40 +47,13 @@ namespace Backsight.Editor
             }
         }
 
-        /// <summary>
-        /// Opens a map model (creates if it didn't previously exist)
-        /// </summary>
-        /// <param name="s">The name of the file holding the model</param>
-        /// <returns>The map model</returns>
-        /*
-        internal static CadastralMapModel Open(string s)
-        {
-            CadastralMapModel cmm = LoadFile(s);
-            cmm.m_ModelFileName = new ModelFileName(s);
-            cmm.OnOpen();
-            Settings.Default.LastMap = s;
-            Settings.Default.Save();
-            return cmm;
-        }
-         */
-
-        /*
-        private static CadastralMapModel LoadFile(string inputFileName)
-        {
-            using (FileStream fs = new FileStream(inputFileName, FileMode.Open))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                object o = formatter.Deserialize(fs);
-                return (CadastralMapModel)o;
-            }
-        }
-    */
         #endregion
 
         #region Class data
 
         /// <summary>
-        /// Spatial index for the data in this model.
+        /// Spatial index for the data in this model. This will be null while the model
+        /// is being deserialized from the database.
         /// </summary>
         EditingIndex m_Index;
 
@@ -116,12 +89,9 @@ namespace Backsight.Editor
         Session m_WorkingSession;
 
         /// <summary>
-        /// The content reader that is currently loading this model (null if
-        /// the model is not being deserialized). 
+        /// Is the model currently being loaded (deserialized from the database)?
         /// </summary>
-        /// <remarks>This is a bit of a hack, introduced in an attempt to overcome
-        /// problems with the deserialization of connection paths.</remarks>
-        XmlContentReader m_Reader;
+        bool m_IsLoading;
 
         #endregion
 
@@ -138,7 +108,7 @@ namespace Backsight.Editor
             m_Sessions = new List<Session>();
             m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
-            m_Reader = null;
+            m_IsLoading = false;
         }
 
         #endregion
@@ -155,22 +125,7 @@ namespace Backsight.Editor
         /// </summary>
         public string Name
         {
-            get
-            {
-                return EditingController.Current.JobFile.Name;
-                //if (m_ModelFileName==null || m_ModelFileName.IsTempName)
-                //    return String.Empty;
-                //else
-                //    return m_ModelFileName.Name;
-            }
-
-            //internal set
-            //{
-            //    if (m_ModelFileName==null)
-            //        m_ModelFileName = new ModelFileName(value);
-            //    else
-            //        m_ModelFileName.Name = value;
-            //}
+            get { return EditingController.Current.JobFile.Name; }
         }
 
         /// <summary>
@@ -276,18 +231,6 @@ namespace Backsight.Editor
 
         #endregion
 
-        /// <summary>
-        /// Updates the end time of the current editing session (if there is one).
-        /// </summary>
-        /*
-        internal void UpdateSession()
-        {
-            Session s = Session.CurrentSession;
-            if (s!=null)
-                s.UpdateEndTime();
-        }
-         */
-
         internal uint MakeBackup()
         {
             return 0;
@@ -339,52 +282,6 @@ namespace Backsight.Editor
              */
         }
 
-        /*
-        internal void Write(string fileName)
-        {
-            if (m_ModelFileName==null)
-                m_ModelFileName = new ModelFileName(fileName);
-            else
-                m_ModelFileName.Name = fileName;
-
-            Write();
-        }
-        */
-
-        /*
-        internal void Write()
-        {
-            if (m_ModelFileName==null)
-                m_ModelFileName = new ModelFileName();
-
-            using (FileStream fs = new FileStream(m_ModelFileName.Name, FileMode.Create))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(fs, this);
-            }
-        }
-        */
-
-        /// <summary>
-        /// Exports edit details to an XML file that sits alongside the file holding
-        /// this map model.
-        /// </summary>
-        /// <param name="e">The edit to export</param>
-        //internal void WriteEdit(Edit e)
-        //{
-        //    string fullSpec = m_ModelFileName.Name;
-        //    string dir = Path.GetDirectoryName(fullSpec);
-        //    string name = Path.GetFileNameWithoutExtension(fullSpec);
-        //    string outputName = String.Format("{0}-{1}.xml", name, e.EditSequence);
-        //    string outputSpec = Path.Combine(dir, outputName);
-
-        //    XmlSerializer xs = new XmlSerializer(e.GetType());
-        //    using (StreamWriter sw = File.CreateText(outputSpec))
-        //    {
-        //        xs.Serialize(sw, e);
-        //    }
-        //}
-
         internal void Close()
         {
             Session s = Session.WorkingSession;
@@ -399,38 +296,6 @@ namespace Backsight.Editor
                 Session.ClearCurrentSession();
             }
         }
-
-        /// <summary>
-        /// Performs initialization whenever a specific map model is opened.
-        /// </summary>
-        /*
-        private void OnOpen()
-        {
-            // Define information relating to the environment
-            //AssignData(EnvironmentContainer.Current);
-
-            // Notify all sessions      
-            foreach (Session s in m_Sessions)
-            {
-                s.OnLoad(this);
-            }
-
-            // Generate a spatial index
-            foreach (Session s in m_Sessions)
-                s.AddToIndex();      
-        }
-    */
-        /*
-        private void CreateIndex()
-        {
-            EditingIndex index = new EditingIndex();
-
-            foreach (Session s in m_Sessions)
-                s.AddToIndex(index);
-
-            m_Index = index;
-        }
-         */
 
         /// <summary>
         /// The sequence number of the last edit in the last session (0 if no edits have
@@ -494,38 +359,6 @@ namespace Backsight.Editor
 
             //m_LabelShifts.RemoveAll();
         }
-
-        /*
-        internal List<IdRange> IdRanges
-        {
-            get { return m_IdRanges; }
-        }
-        */
-
-        /*
-        internal ILayer ActiveLayer
-        {
-            get { return m_ActiveLayer; }
-
-            set
-            {
-                if (value==null)
-                    throw new ArgumentNullException();
-
-                // Ensure the layer we save is one of the instances known to this model
-                m_ActiveLayer = GetRegisteredLayer(value);
-
-                Session s = Session.CurrentSession;
-                if (s==null)
-                    AddSession();
-                else if (s.ActiveLayer.Id!=m_ActiveLayer.Id)
-                {
-                    s.End();
-                    AddSession();
-                }
-            }
-        }
-        */
 
         /// <summary>
         /// Creates a new point feature as part of this model.
@@ -1561,13 +1394,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The content reader that is currently loading this model (null if
-        /// the model is not being deserialized). 
+        /// Is the model currently being loaded (deserialized from the database)?
         /// </summary>
-        internal XmlContentReader ContentReader
+        internal bool IsLoading
         {
-            get { return m_Reader; }
-            set { m_Reader = value; }
+            get { return m_IsLoading; }
+            set { m_IsLoading = value; }
         }
 
         /// <summary>

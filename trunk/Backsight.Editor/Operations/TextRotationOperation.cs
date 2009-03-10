@@ -43,9 +43,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>TextRotationOperation</c> with everything set to zero.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public TextRotationOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextRotationOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal TextRotationOperation(Session s)
+            : base(s)
         {
             m_Rotation = m_PrevRotation = 0.0;
         }

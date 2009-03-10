@@ -68,7 +68,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new SetTopologyOperation(m_Line);
+                op = new SetTopologyOperation(Session.WorkingSession, m_Line);
                 op.Execute();
                 c.ClearSelection();
                 c.FinishCommand(this);

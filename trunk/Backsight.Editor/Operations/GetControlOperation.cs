@@ -39,9 +39,20 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public GetControlOperation()
+        {
+            m_Features = new List<PointFeature>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetControlOperation"/> class
+        /// that refers to nothing.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal GetControlOperation(Session s)
+            : base(s)
         {
             m_Features = new List<PointFeature>();
         }

@@ -49,9 +49,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>MovePolygonPositionOperation</c>
+        /// Default constructor, for use during deserialization
         /// </summary>
         public MovePolygonPositionOperation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal MovePolygonPositionOperation(Session s)
+            : base(s)
         {
             m_Label = null;
             m_OldPosition = null;

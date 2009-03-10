@@ -77,10 +77,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
+        /// Default constructor, for use during deserialization
         /// </summary>
         public ParallelOperation()
-            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParallelOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal ParallelOperation(Session s)
+            : base(s)
         {
             // Input ...
 

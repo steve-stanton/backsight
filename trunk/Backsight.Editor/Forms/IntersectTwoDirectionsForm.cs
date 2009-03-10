@@ -156,7 +156,7 @@ namespace Backsight.Editor.Forms
                 IEntity e2 = getDirection2.LineType;
                 IdHandle pointId = intersectInfo.PointId;
 
-                op = new IntersectTwoDirectionsOperation();
+                op = new IntersectTwoDirectionsOperation(Session.WorkingSession);
                 op.Execute(d1, d2, pointId, e1, e2);
                 return op.IntersectionPoint;
             }

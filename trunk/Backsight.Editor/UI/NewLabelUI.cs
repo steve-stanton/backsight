@@ -595,7 +595,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new ReplaceTextOperation(oldLabel);
+                    op = new ReplaceTextOperation(Session.WorkingSession, oldLabel);
 
                     if (m_Template != null && m_LastRow != null)
                     {
@@ -667,7 +667,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new NewTextOperation();
+                    op = new NewTextOperation(Session.WorkingSession);
 
                     if (m_Template!=null && m_LastRow!=null)
                     {

@@ -252,7 +252,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new LineExtensionOperation();
+                    op = new LineExtensionOperation(Session.WorkingSession);
                     op.Execute(m_ExtendLine, m_IsExtendFromEnd, m_Length, idh, m_LineType);
                 }
 

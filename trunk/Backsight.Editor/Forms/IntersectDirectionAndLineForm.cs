@@ -149,7 +149,7 @@ namespace Backsight.Editor.Forms
                 IdHandle pointId = intersectInfo.PointId;
                 PointFeature closeTo = intersectInfo.ClosestPoint;
 
-                op = new IntersectDirectionAndLineOperation();
+                op = new IntersectDirectionAndLineOperation(Session.WorkingSession);
                 op.Execute(dir, line, closeTo, wantSplit, pointId, dirEnt);
                 return op.IntersectionPoint;
             }

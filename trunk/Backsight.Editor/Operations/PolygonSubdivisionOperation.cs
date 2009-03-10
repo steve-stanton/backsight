@@ -50,6 +50,15 @@ namespace Backsight.Editor.Operations
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal PolygonSubdivisionOperation(Session s)
+            : base(s)
+        {
+        }
+
         #endregion
 
 
