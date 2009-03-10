@@ -1096,6 +1096,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
+    <None Include="Edits.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Edits.xsx">
+      <DependentUpon>Edits.xsd</DependentUpon>
+    </None>
     <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>
