@@ -356,6 +356,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Obtains the object that should be used to serialize the content
+        /// when it is being written to the database.
+        /// </summary>
+        /// <returns>
+        /// The object that should be used to serialize the content
+        /// </returns>
+        /// <remarks>Implements IContent</remarks>
+        public override IXmlContent GetXmlContent()
+        {
+            if (m_Geom.FirstPoint == this)
+                return this;
+            else
+                return new SharedPointContent(this);
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -367,26 +383,8 @@ namespace Backsight.Editor
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the Read* methods.
 
-            if (m_Geom.FirstPoint == this)
-            {
-                //if (m_Geom.PointCount > 1)
-                //    writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
-
-                // The Node class is NOT expected to override the PointGeometry implementation
-                m_Geom.WriteAttributes(writer);
-            }
-            else
-                writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+            Debug.Assert(m_Geom.FirstPoint == this); // see GetXmlContent
+            m_Geom.WriteAttributes(writer); // X and Y
         }
 
         /// <summary>
@@ -421,16 +419,6 @@ namespace Backsight.Editor
                     m_Geom = new Node(this, g);
                 }
             }
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
     }
 }

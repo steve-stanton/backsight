@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// The definition of a circle (as used by the Cadastral Editor).
     /// </summary>
     /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
-    class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent, IXmlContent
+    class Circle : Content, ISpatialObject, ICircleGeometry, IFeatureDependent
     {
         #region Class data
 
@@ -368,7 +368,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteFeatureReference("Center", m_Center);
             writer.WriteDouble("Radius", m_Radius);
@@ -379,7 +379,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -387,7 +387,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
             m_Radius = reader.ReadDouble("Radius");
@@ -398,7 +398,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
 

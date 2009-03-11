@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// Data class for a feature, excluding the geometry (you use this class
     /// if the geometry will be calculated on-the-fly).
     /// </summary>
-    class FeatureData : IXmlContent
+    class FeatureData : Content
     {
         #region Class data
 
@@ -98,7 +98,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             if (m_CreationSequence != 0)
             {
@@ -115,7 +115,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -123,7 +123,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             if (reader.HasAttribute("Item"))
             {
@@ -139,7 +139,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
 

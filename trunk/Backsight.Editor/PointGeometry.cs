@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// Integer values are used largely for historical reasons, since various items
     /// of software are coded to accommodate the consequences of roundoff.
     /// </remarks>
-    public class PointGeometry : IPointGeometry, IXmlContent
+    class PointGeometry : Content, IPointGeometry
     {
         #region Class data
 
@@ -191,8 +191,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        // Not virtual (don't want the Node class to override) - See PointFeature usage
-        public void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_X.Microns);
             writer.WriteLong("Y", m_Y.Microns);
@@ -203,7 +202,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -211,7 +210,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             m_X = new MicronValue(reader.ReadLong("X"));
             m_Y = new MicronValue(reader.ReadLong("Y"));
@@ -222,7 +221,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
 
