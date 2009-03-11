@@ -203,7 +203,7 @@ namespace Backsight.Editor
              */
         }
 
-        public T ReadElement<T>(string name) where T : IXmlContent
+        public T ReadElement<T>(string name) where T : Content
         {
             // Ensure we're at an element
             if (!ReadToElement(name))
@@ -251,7 +251,7 @@ namespace Backsight.Editor
 
             // Create the instance
             ConstructorInfo c = m_Types[typeName];
-            T result = (T)c.Invoke(new object[0]);
+            Content result = (Content)c.Invoke(new object[0]);
 
             // Load the instance
             try
@@ -259,6 +259,7 @@ namespace Backsight.Editor
                 m_Elements.Push(result);
                 result.ReadAttributes(this);
                 result.ReadChildElements(this);
+                result = result.GetContent();
             }
 
             finally
@@ -273,7 +274,7 @@ namespace Backsight.Editor
             // doesn't we should be all ready to start reading the next element.
             //m_Reader.Read();
 
-            return result;
+            return (T)result;
         }
 
         /// <summary>
@@ -291,7 +292,7 @@ namespace Backsight.Editor
             }
         }
 
-        public T[] ReadArray<T>(string arrayName, string itemName) where T : class, IXmlContent
+        public T[] ReadArray<T>(string arrayName, string itemName) where T : Content
         {
             // Ensure we're at an element
             if (!ReadToElement(arrayName))
@@ -394,7 +395,7 @@ namespace Backsight.Editor
         internal Operation ReadEdit(XmlReader data)
         {
             // Experiment...
-
+            /*
             try
             {
                 // The first child is the "Data" element. Within that is the "Edit" element.
@@ -415,6 +416,7 @@ namespace Backsight.Editor
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message);
             }
+            */
 
             try
             {

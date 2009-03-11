@@ -47,6 +47,7 @@
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
+    <Compile Include="Content.cs" />
     <Compile Include="ContentReader.cs" />
     <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
@@ -357,6 +358,7 @@
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
     <Compile Include="RowTextGeometry.cs" />
+    <Compile Include="SharedPointContent.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />

@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2008 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -18,42 +18,19 @@ using System;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Methods that must be implemented by classes that are utilized in
-    /// conjunction with <see cref="XmlContentWriter"/> and
-    /// <see cref="XmlContentReader"/>.
-    /// <para/>
-    /// In many cases, classes that extend <see cref="Content"/> will also
-    /// implement the <see cref="IXmlContent"/> interface. In certain cases,
-    /// however, the serialization can be more conveniently carried out via
-    /// a surrogate class.
+    /// Something that will be serialized to the database
     /// </summary>
-    public interface IXmlContent
+    abstract public class Content : IXmlContent
     {
         /// <summary>
-        /// Writes the attributes of this class.
+        /// Obtains the object that should be used to serialize the content
+        /// when it is being written to the database.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        void WriteAttributes(XmlContentWriter writer);
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        void WriteChildElements(XmlContentWriter writer);
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        void ReadAttributes(XmlContentReader reader);
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        void ReadChildElements(XmlContentReader reader);
+        /// <returns>The object that should be used to serialize the content</returns>
+        public virtual IXmlContent GetXmlContent()
+        {
+            return this;
+        }
 
         /// <summary>
         /// Performs the reverse of <see cref="IContent.GetXmlContent"/> by obtaining
@@ -61,6 +38,48 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>An object that corresponds to the original content prior
         /// to serialization.</returns>
-        Content GetContent();
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual Content GetContent()
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual void WriteAttributes(XmlContentWriter writer)
+        {
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual void WriteChildElements(XmlContentWriter writer)
+        {
+        }
+
+        /// <summary>
+        /// Defines the attributes of this content
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual void ReadAttributes(XmlContentReader reader)
+        {
+        }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual void ReadChildElements(XmlContentReader reader)
+        {
+        }
     }
 }

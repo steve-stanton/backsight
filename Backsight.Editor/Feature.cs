@@ -37,7 +37,7 @@ namespace Backsight.Editor
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
     [DefaultProperty("EntityType")]
-    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IXmlContent
+    abstract class Feature : Content, ISpatialObject, IPossibleList<Feature>, IXmlContent
     {
         #region Class data
 
@@ -823,13 +823,23 @@ namespace Backsight.Editor
             set { SetFlag(FeatureFlag.Void, value); }
         }
 
-        #region IXmlContent Members
-
         /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+            WriteFeatureAttributes(writer);
+        }
+
+        /// <summary>
+        /// Writes the attributes of just this class (not any derived class, or
+        /// any attributes of the base class).
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal void WriteFeatureAttributes(XmlContentWriter writer)
         {
             writer.WriteString("Id", DataId);
             writer.WriteInt("Type", m_What.Id);
@@ -841,22 +851,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void ReadAttributes(XmlContentReader reader)
+        {
+            base.ReadAttributes(reader);
+            ReadFeatureAttributes(reader);
+        }
+
+        /// <summary>
+        /// Reads the attributes of just this class (not any derived class, or
+        /// any attributes of the base class).
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        internal void ReadFeatureAttributes(XmlContentReader reader)
         {
             m_Creator = reader.FindParent<Operation>();
-            Debug.Assert(m_Creator!=null);
+            Debug.Assert(m_Creator != null);
             uint sessionId;
             ParseDataId(reader.ReadString("Id"), out sessionId, out m_CreatorSequence);
             int entId = reader.ReadInt("Type");
@@ -864,19 +877,8 @@ namespace Backsight.Editor
             FeatureId fid = FeatureId.Read("Key", reader);
 
             // If an ID has been obtained, ensure it knows about this feature, and vice versa
-            if (fid!=null)
+            if (fid != null)
                 fid.Add(this);
         }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
-        {
-        }
-
-        #endregion
     }
 }

@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of line geometry.
     /// </summary>
-    abstract class LineGeometry : ILineGeometry, IIntersectable, IXmlContent
+    abstract class LineGeometry : Content, ILineGeometry, IIntersectable, IXmlContent
     {
         #region Class data
 
@@ -228,7 +228,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             // TODO: There's something not quite right here. Although this class contains
             // references to two terminals, they don't get written here. They get written
@@ -241,7 +241,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -249,7 +249,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             // Locate the feature that's being read (I don't expect any LineGeometry instance
             // to be written unless it's in the context of a LineFeature)
@@ -266,7 +266,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
     }

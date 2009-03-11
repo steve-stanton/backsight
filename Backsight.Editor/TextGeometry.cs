@@ -28,7 +28,7 @@ namespace Backsight.Editor
     ///	<see cref="MiscText"/>, <see cref="KeyTextGeometry"/>, <see cref="RowTextGeometry"/>,
     /// and <see cref="FeatureText"/>.
     /// </summary>
-    abstract public class TextGeometry : IString, IXmlContent
+    abstract class TextGeometry : Content, IString, IXmlContent
     {
         #region Class data
 
@@ -372,7 +372,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_Position.Easting.Microns);
             writer.WriteLong("Y", m_Position.Northing.Microns);
@@ -389,7 +389,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -397,7 +397,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             m_Position = new PointGeometry();
             m_Position.ReadAttributes(reader);
@@ -417,7 +417,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
     }

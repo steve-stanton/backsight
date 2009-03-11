@@ -24,7 +24,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Any sort of survey observation.
     /// </summary>
-    abstract class Observation : IXmlContent
+    abstract class Observation : Content
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
@@ -103,13 +103,12 @@ namespace Backsight.Editor
         /// <param name="op">The operation that makes use of this observation</param>
         internal abstract void AddReferences(Operation op);
 
-        #region IXmlContent Members
-
         /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void WriteAttributes(XmlContentWriter writer)
         {
         }
 
@@ -118,7 +117,8 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -126,7 +126,8 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void ReadAttributes(XmlContentReader reader)
         {
         }
 
@@ -135,10 +136,9 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
-
-        #endregion
     }
 }

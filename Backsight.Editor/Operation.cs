@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    abstract class Operation : IFeatureDependent, IXmlContent
+    abstract class Operation : Content, IFeatureDependent, IXmlContent
     {
         #region Static
 
@@ -505,7 +505,7 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteAttributes(XmlContentWriter writer)
+        public override void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteString("Id", DataId);
         }
@@ -515,7 +515,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public virtual void WriteChildElements(XmlContentWriter writer)
+        public override void WriteChildElements(XmlContentWriter writer)
         {
         }
 
@@ -523,7 +523,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadAttributes(XmlContentReader reader)
+        public override void ReadAttributes(XmlContentReader reader)
         {
             uint sessionId;
             ParseDataId(reader.ReadString("Id"), out sessionId, out m_Sequence);
@@ -542,7 +542,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public virtual void ReadChildElements(XmlContentReader reader)
+        public override void ReadChildElements(XmlContentReader reader)
         {
         }
 
@@ -586,5 +586,4 @@ namespace Backsight.Editor
         /// the line of interest.</returns>
         abstract internal LineFeature GetPredecessor(LineFeature line);
     }
-
 }
