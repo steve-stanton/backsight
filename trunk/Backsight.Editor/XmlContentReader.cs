@@ -393,6 +393,29 @@ namespace Backsight.Editor
         /// <returns>The created editing object</returns>
         internal Operation ReadEdit(XmlReader data)
         {
+            // Experiment...
+
+            try
+            {
+                // The first child is the "Data" element. Within that is the "Edit" element.
+                XmlDocument doc = new XmlDocument();
+                doc.Load(data);
+                Debug.Assert(doc.ChildNodes.Count==1);
+                XmlNode top = doc.ChildNodes[0];
+                Debug.Assert(doc.Name == "Data");
+                Debug.Assert(top.ChildNodes.Count==1);
+                XmlNode ed = top.ChildNodes[0];                
+                Debug.Assert(ed.Name == "Edit");
+                XmlAttribute a = ed.Attributes["xsi:type"];
+                string edType = a.Value;
+                return null;
+            }
+
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
+
             try
             {
                 m_Model.IsLoading = true;

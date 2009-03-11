@@ -369,8 +369,11 @@ namespace Backsight.Editor
 
             if (m_Geom.FirstPoint == this)
             {
-                if (m_Geom.PointCount > 1)
-                    writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
+                //if (m_Geom.PointCount > 1)
+                //    writer.WriteUnsignedInt("PointCount", m_Geom.PointCount);
+
+                // The Node class is NOT expected to override the PointGeometry implementation
+                m_Geom.WriteAttributes(writer);
             }
             else
                 writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
@@ -384,13 +387,6 @@ namespace Backsight.Editor
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-
-            if (m_Geom.FirstPoint == this)
-            {
-                // The Node class is NOT expected to override the PointGeometry implementation
-                //writer.WriteElement(
-                m_Geom.WriteAttributes(writer);
-            }
         }
 
         /// <summary>
@@ -422,8 +418,6 @@ namespace Backsight.Editor
                 {
                     PointGeometry g = new PointGeometry();
                     g.ReadAttributes(reader);
-
-                    //uint pointCount = Math.Max(1, reader.ReadUnsignedInt("PointCount"));
                     m_Geom = new Node(this, g);
                 }
             }
