@@ -362,8 +362,7 @@ namespace Backsight.Editor
         /// <returns>
         /// The object that should be used to serialize the content
         /// </returns>
-        /// <remarks>Implements IContent</remarks>
-        public override IXmlContent GetXmlContent()
+        internal override IXmlContent GetXmlContent()
         {
             if (m_Geom.FirstPoint == this)
                 return this;

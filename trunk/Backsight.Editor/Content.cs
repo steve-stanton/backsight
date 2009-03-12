@@ -27,13 +27,13 @@ namespace Backsight.Editor
         /// when it is being written to the database.
         /// </summary>
         /// <returns>The object that should be used to serialize the content</returns>
-        public virtual IXmlContent GetXmlContent()
+        internal virtual IXmlContent GetXmlContent()
         {
             return this;
         }
 
         /// <summary>
-        /// Performs the reverse of <see cref="IContent.GetXmlContent"/> by obtaining
+        /// Performs the reverse of <see cref="GetXmlContent"/> by obtaining
         /// an instance of the content object that corresponds to this serializable content.
         /// </summary>
         /// <returns>An object that corresponds to the original content prior
