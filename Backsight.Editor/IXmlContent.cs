@@ -56,7 +56,7 @@ namespace Backsight.Editor
         void ReadChildElements(XmlContentReader reader);
 
         /// <summary>
-        /// Performs the reverse of <see cref="IContent.GetXmlContent"/> by obtaining
+        /// Performs the reverse of <see cref="Content.GetXmlContent"/> by obtaining
         /// an instance of the content object that corresponds to this serializable content.
         /// </summary>
         /// <returns>An object that corresponds to the original content prior

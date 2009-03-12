@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -73,16 +73,27 @@ namespace Backsight.Editor
 
         #region ISpatialObject Members
 
+        /// <summary>
+        /// Value denoting the spatial object type.
+        /// </summary>
         public SpatialType SpatialType
         {
             get { return SpatialType.Line; }
         }
 
+        /// <summary>
+        /// Draws this object on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
         public void Render(ISpatialDisplay display, IDrawStyle style)
         {
             CircleGeometry.Render(this, display, style);
         }
 
+        /// <summary>
+        /// The spatial extent of this object.
+        /// </summary>
         public IWindow Extent
         {
             get { return CircleGeometry.GetExtent(this); }
@@ -102,6 +113,16 @@ namespace Backsight.Editor
 
         #region IFeatureDependent Members
 
+        /// <summary>
+        /// Performs any processing that needs to be done just before the position of
+        /// a referenced feature is changed.
+        /// </summary>
+        /// <param name="f">The feature that is about to be changed (a feature that
+        /// the <c>IFeatureDependent</c> is dependent on)</param>
+        /// <returns>
+        /// True if the feature was removed from spatial index. False if the
+        /// spatial index does not exist.
+        /// </returns>
         public bool OnPreMove(Feature f)
         {
             IEditSpatialIndex index = f.MapModel.EditingIndex;
@@ -112,6 +133,16 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// Performs any processing that needs to be done after the position of
+        /// a referenced feature has been changed.
+        /// </summary>
+        /// <param name="f">The feature that has just been changed (a feature that
+        /// the <c>IFeatureDependent</c> is dependent on)</param>
+        /// <returns>
+        /// True if the feature was removed from spatial index. False if the
+        /// spatial index does not exist.
+        /// </returns>
         public bool OnPostMove(Feature f)
         {
             IEditSpatialIndex index = f.MapModel.EditingIndex;
@@ -122,6 +153,9 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// Adds references to the features that this dependent is dependent on.
+        /// </summary>
         public void AddReferences()
         {
             m_Center.AddReference(this);
@@ -131,11 +165,17 @@ namespace Backsight.Editor
 
         #region ICircleGeometry Members
 
+        /// <summary>
+        /// The position of the center of the circle.
+        /// </summary>
         public IPointGeometry Center
         {
             get { return m_Center; }
         }
 
+        /// <summary>
+        /// The radius of the circle, in meters
+        /// </summary>
         public double Radius
         {
             get { return m_Radius; }
@@ -375,15 +415,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
@@ -394,16 +425,8 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-        }
-
-        /// <summary>
-        /// The first arc associated with this circle
+        /// The first arc associated with this circle (null if no arcs are currently
+        /// associated with this circle).
         /// </summary>
         internal ArcFeature FirstArc
         {

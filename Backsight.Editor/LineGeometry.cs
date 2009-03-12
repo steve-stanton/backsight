@@ -234,15 +234,16 @@ namespace Backsight.Editor
             // references to two terminals, they don't get written here. They get written
             // by the LineFeature that makes use of this geometry (that being the case,
             // it probably makes better sense to hold a reference to the LineFeature here).
-        }
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
+            // ...the reason LineFeature writes the end points is because that's all that's
+            // required when dealing with simple line segments (the majority of all lines).
+            // You cannot reference a LineFeature here because LineGeometry may be created
+            // for other reasons (e.g. detecting intersections of ad-hoc lines).
+
+            // To minimize confusion, it may be advisable to utilize a surrogate content
+            // class for line geometry. As it is, the design gives the impression that
+            // LineGeometry can be independently written as content, when in fact the
+            // expectation is that it will only be written as a child of a LineFeature.
         }
 
         /// <summary>
@@ -259,15 +260,6 @@ namespace Backsight.Editor
             // Define the positions that define the ends of this line
             m_Start = f.StartPoint;
             m_End = f.EndPoint;
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
         }
     }
 }

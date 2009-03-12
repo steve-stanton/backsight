@@ -15,9 +15,7 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="FeatureDataType">
-    <xs:attribute name="Item" type="xs:unsignedInt" use="required" />
-    <xs:attribute name="EntityId" type="xs:int" use="required" />
-    <xs:attribute name="Key" type="xs:string" use="optional" />
+    <xs:attributeGroup ref="FeatureDataGroup" />
   </xs:complexType>
   <xs:complexType name="FeatureType" abstract="true" id="Id">
     <xs:attribute name="Id" type="xs:string" />
@@ -46,4 +44,63 @@
     <xs:attribute name="Session" type="xs:unsignedInt" use="required" />
     <xs:attribute name="Order" type="xs:unsignedInt" use="required" />
   </xs:complexType>
+  <xs:attributeGroup name="FeatureDataGroup">
+    <xs:attribute name="Id" type="xs:string" />
+    <xs:attribute name="Type" type="xs:int" />
+    <xs:attribute name="Key" type="xs:string" use="optional" />
+  </xs:attributeGroup>
+  <xs:complexType name="CircleType">
+    <xs:attribute name="Center" type="xs:string" />
+    <xs:attribute name="Radius" type="xs:double" />
+  </xs:complexType>
+  <xs:complexType name="LineFeatureType">
+    <xs:complexContent>
+      <xs:extension base="FeatureType">
+        <xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="From" type="xs:string" />
+        <xs:attribute name="To" type="xs:string" />
+        <xs:attribute name="IsTopological" type="xs:boolean" use="optional" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MultiSegmentType">
+    <xs:complexContent>
+      <xs:extension base="LineFeatureType">
+        <xs:sequence>
+          <xs:element name="Point" type="PointGeometryType" minOccurs="2" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointGeometryType">
+    <xs:sequence />
+    <xs:attribute name="X" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
+  </xs:complexType>
+  <xs:complexType name="SectionType">
+    <xs:complexContent>
+      <xs:extension base="LineFeatureType">
+        <xs:attribute name="Base" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArcType">
+    <xs:complexContent>
+      <xs:extension base="LineFeatureType">
+        <xs:sequence>
+          <xs:choice maxOccurs="1" minOccurs="0">
+            <xs:element name="FirstArc" type="xs:string" />
+            <xs:element name="Circle" type="CircleType" />
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="IsClockwise" type="xs:boolean" use="optional" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="IdType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+.[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
