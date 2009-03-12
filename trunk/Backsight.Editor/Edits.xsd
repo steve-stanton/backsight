@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="Edits" targetNamespace="http://tempuri.org/Edits.xsd" elementFormDefault="qualified" xmlns="http://tempuri.org/Edits.xsd" xmlns:mstns="http://tempuri.org/Edits.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:complexType name="OperationType" abstract="true" id="Id">
+  <xs:complexType name="OperationType" abstract="true">
     <xs:attribute name="Id" type="xs:string" use="required" />
   </xs:complexType>
   <xs:complexType name="AttachPointType">
@@ -17,16 +17,14 @@
   <xs:complexType name="FeatureDataType">
     <xs:attributeGroup ref="FeatureDataGroup" />
   </xs:complexType>
-  <xs:complexType name="FeatureType" abstract="true" id="Id">
+  <xs:complexType name="FeatureType" abstract="true">
     <xs:attribute name="Id" type="xs:string" />
     <xs:attribute name="Type" type="xs:int" />
     <xs:attribute name="Key" type="xs:string" use="optional" />
   </xs:complexType>
-  <xs:complexType name="PointFeatureType">
+  <xs:complexType name="PointType">
     <xs:complexContent>
       <xs:extension base="FeatureType">
-        <xs:sequence>
-        </xs:sequence>
         <xs:attribute name="X" type="xs:unsignedLong" use="required" />
         <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
       </xs:extension>
@@ -40,10 +38,6 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IdType">
-    <xs:attribute name="Session" type="xs:unsignedInt" use="required" />
-    <xs:attribute name="Order" type="xs:unsignedInt" use="required" />
-  </xs:complexType>
   <xs:attributeGroup name="FeatureDataGroup">
     <xs:attribute name="Id" type="xs:string" />
     <xs:attribute name="Type" type="xs:int" />
@@ -53,11 +47,9 @@
     <xs:attribute name="Center" type="xs:string" />
     <xs:attribute name="Radius" type="xs:double" />
   </xs:complexType>
-  <xs:complexType name="LineFeatureType">
+  <xs:complexType name="LineType">
     <xs:complexContent>
       <xs:extension base="FeatureType">
-        <xs:sequence>
-        </xs:sequence>
         <xs:attribute name="From" type="xs:string" />
         <xs:attribute name="To" type="xs:string" />
         <xs:attribute name="IsTopological" type="xs:boolean" use="optional" default="true" />
@@ -66,7 +58,7 @@
   </xs:complexType>
   <xs:complexType name="MultiSegmentType">
     <xs:complexContent>
-      <xs:extension base="LineFeatureType">
+      <xs:extension base="LineType">
         <xs:sequence>
           <xs:element name="Point" type="PointGeometryType" minOccurs="2" maxOccurs="unbounded" />
         </xs:sequence>
@@ -74,20 +66,19 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="PointGeometryType">
-    <xs:sequence />
     <xs:attribute name="X" type="xs:unsignedLong" use="required" />
     <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
   </xs:complexType>
   <xs:complexType name="SectionType">
     <xs:complexContent>
-      <xs:extension base="LineFeatureType">
+      <xs:extension base="LineType">
         <xs:attribute name="Base" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="ArcType">
     <xs:complexContent>
-      <xs:extension base="LineFeatureType">
+      <xs:extension base="LineType">
         <xs:sequence>
           <xs:choice maxOccurs="1" minOccurs="0">
             <xs:element name="FirstArc" type="xs:string" />
@@ -103,4 +94,41 @@
       <xs:pattern value="[0-9]+.[0-9]+" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="TextType">
+    <xs:complexContent>
+      <xs:extension base="FeatureType">
+        <xs:attribute name="X" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="Y" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="Height" type="xs:double" use="required" />
+        <xs:attribute name="Width" type="xs:double" use="required" />
+        <xs:attribute name="Rotation" type="xs:string" use="optional" />
+        <xs:attribute name="FontId" type="xs:int" use="optional" />
+        <xs:attribute name="IsTopological" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="PolygonX" type="xs:unsignedInt" use="optional" />
+        <xs:attribute name="PolygonY" type="xs:unsignedInt" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MiscTextType">
+    <xs:complexContent>
+      <xs:extension base="TextType">
+        <xs:attribute name="Text" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RowTextType">
+    <xs:complexContent>
+      <xs:extension base="TextType">
+        <xs:attribute name="Key" type="xs:string" use="required" />
+        <xs:attribute name="TableId" type="xs:int" use="required" />
+        <xs:attribute name="TemplateId" type="xs:int" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Point" type="PointType">
+  </xs:element>
+  <xs:element name="Feature" type="FeatureType">
+  </xs:element>
+  <xs:element name="SharedPoint" type="SharedPointType">
+  </xs:element>
 </xs:schema>
