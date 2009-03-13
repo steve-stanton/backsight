@@ -1,134 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="Edits" targetNamespace="http://tempuri.org/Edits.xsd" elementFormDefault="qualified" xmlns="http://tempuri.org/Edits.xsd" xmlns:mstns="http://tempuri.org/Edits.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:complexType name="OperationType" abstract="true">
-    <xs:attribute name="Id" type="xs:string" use="required" />
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="ArcType">
+    <xs:annotation>
+      <xs:documentation>A circular arc</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="LineType">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="1">
+            <xs:element name="FirstArc" type="IdType" />
+            <xs:element name="Circle" type="CircleType" />
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute default="true" name="IsClockwise" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="AttachPointType">
-    <xs:complexContent>
+    <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
-        <xs:sequence>
+        <xs:sequence minOccurs="1" maxOccurs="1">
           <xs:element name="Point" type="FeatureDataType" />
         </xs:sequence>
-        <xs:attribute name="Line" type="xs:string" use="required" />
+        <xs:attribute name="Line" type="IdType" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="CircleType">
+    <xs:attribute name="Center" type="IdType" />
+    <xs:attribute name="Radius" type="xs:double" />
+  </xs:complexType>
+  <xs:complexType name="EditType">
+    <xs:annotation>
+      <xs:documentation>The top level element, corresponding to a row in the ced.Edits table. The system currently works with just one operation - however, the notion of an edit that consists of multiple operations is probably quite useful.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="Operation" type="OperationType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Edit" type="EditType" />
+  <xs:complexType name="FeatureType" abstract="true">
+    <xs:attribute name="Id" type="IdType" />
+    <xs:attribute name="Type" type="xs:unsignedInt" />
+    <xs:attribute name="Key" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:attributeGroup name="FeatureDataGroup">
+    <xs:attribute name="Id" type="IdType" />
+    <xs:attribute name="Type" type="xs:unsignedInt" />
+    <xs:attribute name="Key" type="xs:string" use="optional" />
+  </xs:attributeGroup>
   <xs:complexType name="FeatureDataType">
     <xs:attributeGroup ref="FeatureDataGroup" />
   </xs:complexType>
-  <xs:complexType name="FeatureType" abstract="true">
-    <xs:attribute name="Id" type="xs:string" />
-    <xs:attribute name="Type" type="xs:int" />
-    <xs:attribute name="Key" type="xs:string" use="optional" />
-  </xs:complexType>
-  <xs:complexType name="PointType">
-    <xs:complexContent>
-      <xs:extension base="FeatureType">
-        <xs:attribute name="X" type="xs:unsignedLong" use="required" />
-        <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="SharedPointType">
-    <xs:complexContent>
-      <xs:extension base="FeatureType">
-        <xs:sequence />
-        <xs:attribute name="FirstPoint" type="xs:string" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:attributeGroup name="FeatureDataGroup">
-    <xs:attribute name="Id" type="xs:string" />
-    <xs:attribute name="Type" type="xs:int" />
-    <xs:attribute name="Key" type="xs:string" use="optional" />
-  </xs:attributeGroup>
-  <xs:complexType name="CircleType">
-    <xs:attribute name="Center" type="xs:string" />
-    <xs:attribute name="Radius" type="xs:double" />
-  </xs:complexType>
+  <xs:element name="Feature" type="FeatureType" />
+  <xs:simpleType name="IdType">
+    <xs:annotation>
+      <xs:documentation>The ID for features and editing operations. Backsight defines this by concatenating the ID of the sesion in which the item was created, followed by a sequence number indicating the creation order within the session. The very first ID is 1.1
+
+Dealing with these two components as a single formatted string may well be "bad" from a design point of view. The main reason for doing so is that it's more natural to think of an identifier as a single attribute value (could make it an element, but that's a bit messier).</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{1,10}\.[0-9]{1,10}" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="LineType">
-    <xs:complexContent>
+    <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
-        <xs:attribute name="From" type="xs:string" />
-        <xs:attribute name="To" type="xs:string" />
-        <xs:attribute name="IsTopological" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="From" type="IdType" />
+        <xs:attribute name="To" type="IdType" />
+        <xs:attribute default="true" name="IsTopological" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MiscTextType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="TextType">
+        <xs:attribute name="Text" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="MultiSegmentType">
-    <xs:complexContent>
+    <xs:complexContent mixed="false">
       <xs:extension base="LineType">
         <xs:sequence>
-          <xs:element name="Point" type="PointGeometryType" minOccurs="2" maxOccurs="unbounded" />
+          <xs:element minOccurs="2" maxOccurs="unbounded" name="Point" type="PointGeometryType" />
         </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MultiSegment" type="MultiSegmentType" />
+  <xs:complexType name="NewPointType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element name="Point" type="PointType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="NewPoint" type="NewPointType" />
+  <xs:complexType name="OperationType" abstract="true">
+    <xs:attribute name="Id" type="IdType" use="required" />
+  </xs:complexType>
+  <xs:complexType name="PointType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="FeatureType">
+        <xs:attribute name="X" type="xs:unsignedLong" use="required" />
+        <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
+        <xs:attribute name="Z" type="xs:unsignedLong" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="PointGeometryType">
     <xs:attribute name="X" type="xs:unsignedLong" use="required" />
     <xs:attribute name="Y" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="Z" type="xs:unsignedLong" use="optional" />
   </xs:complexType>
+  <xs:complexType name="RowTextType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="TextType">
+        <xs:attribute name="Key" type="xs:string" use="required" />
+        <xs:attribute name="TableId" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="TemplateId" type="xs:unsignedInt" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RowText" type="RowTextType" />
   <xs:complexType name="SectionType">
-    <xs:complexContent>
+    <xs:complexContent mixed="false">
       <xs:extension base="LineType">
-        <xs:attribute name="Base" type="xs:string" use="required" />
+        <xs:attribute name="Base" type="IdType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ArcType">
-    <xs:complexContent>
-      <xs:extension base="LineType">
-        <xs:sequence>
-          <xs:choice maxOccurs="1" minOccurs="0">
-            <xs:element name="FirstArc" type="xs:string" />
-            <xs:element name="Circle" type="CircleType" />
-          </xs:choice>
-        </xs:sequence>
-        <xs:attribute name="IsClockwise" type="xs:boolean" use="optional" default="true" />
+  <xs:complexType name="SharedPointType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="FeatureType">
+        <xs:sequence />
+        <xs:attribute name="FirstPoint" type="IdType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="IdType">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[0-9]+.[0-9]+" />
-    </xs:restriction>
-  </xs:simpleType>
+  <xs:element name="SharedPoint" type="SharedPointType" />
   <xs:complexType name="TextType">
-    <xs:complexContent>
+    <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
         <xs:attribute name="X" type="xs:unsignedInt" use="required" />
         <xs:attribute name="Y" type="xs:unsignedInt" use="required" />
         <xs:attribute name="Height" type="xs:double" use="required" />
         <xs:attribute name="Width" type="xs:double" use="required" />
         <xs:attribute name="Rotation" type="xs:string" use="optional" />
-        <xs:attribute name="FontId" type="xs:int" use="optional" />
-        <xs:attribute name="IsTopological" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="FontId" type="xs:unsignedInt" use="optional" />
+        <xs:attribute default="true" name="IsTopological" type="xs:boolean" use="optional" />
         <xs:attribute name="PolygonX" type="xs:unsignedInt" use="optional" />
         <xs:attribute name="PolygonY" type="xs:unsignedInt" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="MiscTextType">
-    <xs:complexContent>
-      <xs:extension base="TextType">
-        <xs:attribute name="Text" type="xs:string" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="RowTextType">
-    <xs:complexContent>
-      <xs:extension base="TextType">
-        <xs:attribute name="Key" type="xs:string" use="required" />
-        <xs:attribute name="TableId" type="xs:int" use="required" />
-        <xs:attribute name="TemplateId" type="xs:int" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="Point" type="PointType">
-  </xs:element>
-  <xs:element name="Feature" type="FeatureType">
-  </xs:element>
-  <xs:element name="SharedPoint" type="SharedPointType">
-  </xs:element>
 </xs:schema>

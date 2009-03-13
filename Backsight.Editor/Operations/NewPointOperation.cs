@@ -135,15 +135,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-        }
-
-        /// <summary>
         /// Writes any child elements of this class. This will be called after
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
@@ -152,15 +143,6 @@ namespace Backsight.Editor.Operations
         {
             base.WriteChildElements(writer);
             writer.WriteElement("NewPoint", m_NewPoint);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
         }
 
         /// <summary>
