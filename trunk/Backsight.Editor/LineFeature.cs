@@ -1227,6 +1227,15 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
          */
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get { return m_Geom.XmlTypeName; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -1237,17 +1246,9 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             writer.WriteFeatureReference("To", EndPoint);
 
             if (!IsTopological)
-                writer.WriteBool("IsTopological", false);
+                writer.WriteBool("Topological", false);
 
-            string flags = String.Empty;
-            if (m_Geom is SegmentGeometry)
-                flags += "S";
-
-            if (!IsTopological)
-                flags += "N";
-
-            if (flags.Length > 0)
-                writer.WriteString("Flags", flags);
+            m_Geom.WriteAttributes(writer);
         }
 
         /// <summary>
@@ -1258,12 +1259,7 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-
-            // Since 80% of lines are simple line segments (in a Cadastral application at least),
-            // it's a bit verbose to output an empty geometry, so a flag letter is written in
-            // that case.
-            if (!(m_Geom is SegmentGeometry))
-                writer.WriteElement("Geometry", m_Geom);
+            m_Geom.WriteChildElements(writer);
         }
 
         /// <summary>
@@ -1277,17 +1273,22 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             m_From = reader.ReadFeatureByReference<PointFeature>("From");
             m_To = reader.ReadFeatureByReference<PointFeature>("To");
 
-            string flags = reader.ReadString("Flags");
-            if (flags==null)
-                flags = String.Empty;
+            bool isTopological = reader.ReadBool("Topological");
+            SetTopology(isTopological);
 
-            if (flags.Contains("N"))
-                SetTopology(false);
-            else
-                SetTopology(true);
-
-            if (flags.Contains("S"))
+            string xmlType = reader.XmlTypeName;
+            if (xmlType == "LineType")
                 m_Geom = new SegmentGeometry(m_From, m_To);
+            else if (xmlType == "ArcType")
+                m_Geom = new ArcGeometry();
+            else if (xmlType == "MultiSegmentType")
+                m_Geom = new MultiSegmentGeometry();
+            else if (xmlType == "SectionType")
+                m_Geom = new SectionGeometry();
+            else
+                throw new Exception("Unexpected xml type for line: " + xmlType);
+
+            m_Geom.ReadAttributes(reader);
         }
 
         /// <summary>
@@ -1298,9 +1299,7 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
-
-            if (m_Geom == null)
-                m_Geom = reader.ReadElement<LineGeometry>("Geometry");
+            m_Geom.ReadChildElements(reader);
 
             // Refer the start and end points to this line
             AddReferences();

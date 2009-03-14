@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
     /// the current map model.
     /// </summary>
-    class Import : Operation
+    class ImportOperation : Operation
     {
         #region Class data
 
@@ -42,7 +42,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Default constructor, for use during deserialization
         /// </summary>
-        public Import()
+        public ImportOperation()
         {
         }
 
@@ -51,7 +51,7 @@ namespace Backsight.Editor.Operations
         /// that refers to nothing.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal Import(Session s)
+        internal ImportOperation(Session s)
             : base(s)
         {
             m_Data = null;
@@ -120,6 +120,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get { return "ImportType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -136,7 +145,9 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteArray("FeatureArray", "Feature", m_Data);
+
+            foreach (Feature f in m_Data)
+                writer.WriteElement("Feature", f);
         }
 
         /// <summary>

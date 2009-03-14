@@ -708,20 +708,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "ArcType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-
             writer.WriteBool("Clockwise", m_IsClockwise);
-
-            // If this is the first arc associated with the circle, write out
-            // the circle geometry
-            ArcFeature firstArc = m_Circle.FirstArc;
-            if (!Object.ReferenceEquals(firstArc.Geometry, this))
-                writer.WriteFeatureReference("FirstArc", firstArc);
         }
 
         /// <summary>
@@ -729,22 +732,26 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        internal override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
 
             // If this is the first arc associated with the circle, write out
-            // the circle geometry
+            // the circle geometry. In this case, the FirstArc is part of an xs:choice,
+            // so it needs to be written as an element.
+
             ArcFeature firstArc = m_Circle.FirstArc;
             if (Object.ReferenceEquals(firstArc.Geometry, this))
                 writer.WriteElement("Circle", m_Circle);
+            else
+                writer.WriteFeatureReferenceAsElement("FirstArc", firstArc);
         }
 
         /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
 
@@ -762,7 +769,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
+        internal override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
 

@@ -410,8 +410,11 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteAttributes(XmlContentWriter writer)
         {
+            // When writing out the radius, round if off to 10 decimal places (to
+            // avoid strings with spurious trailing digits, like "237.13320000000002")
+
             writer.WriteFeatureReference("Center", m_Center);
-            writer.WriteDouble("Radius", m_Radius);
+            writer.WriteDouble("Radius", Math.Round(m_Radius, 10));
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of line geometry.
     /// </summary>
-    abstract class LineGeometry : Content, ILineGeometry, IIntersectable, IXmlContent
+    abstract class LineGeometry : ILineGeometry, IIntersectable
     {
         #region Class data
 
@@ -228,29 +228,27 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal virtual void WriteAttributes(XmlContentWriter writer)
         {
-            // TODO: There's something not quite right here. Although this class contains
-            // references to two terminals, they don't get written here. They get written
-            // by the LineFeature that makes use of this geometry (that being the case,
-            // it probably makes better sense to hold a reference to the LineFeature here).
+            // Nothing to do (the start and end terminals are written out
+            // via the LineFeature this geometry is associated with).
+        }
 
-            // ...the reason LineFeature writes the end points is because that's all that's
-            // required when dealing with simple line segments (the majority of all lines).
-            // You cannot reference a LineFeature here because LineGeometry may be created
-            // for other reasons (e.g. detecting intersections of ad-hoc lines).
-
-            // To minimize confusion, it may be advisable to utilize a surrogate content
-            // class for line geometry. As it is, the design gives the impression that
-            // LineGeometry can be independently written as content, when in fact the
-            // expectation is that it will only be written as a child of a LineFeature.
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        internal virtual void WriteChildElements(XmlContentWriter writer)
+        {
         }
 
         /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal virtual void ReadAttributes(XmlContentReader reader)
         {
             // Locate the feature that's being read (I don't expect any LineGeometry instance
             // to be written unless it's in the context of a LineFeature)
@@ -261,5 +259,22 @@ namespace Backsight.Editor
             m_Start = f.StartPoint;
             m_End = f.EndPoint;
         }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        internal virtual void ReadChildElements(XmlContentReader reader)
+        {
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        abstract internal string XmlTypeName { get; }
     }
 }

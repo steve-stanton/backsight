@@ -260,10 +260,20 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "SectionType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
             writer.WriteFeatureReference("Base", m_Base);
@@ -273,11 +283,9 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
-
-            // Grab the line this section is based on
             m_Base = reader.ReadFeatureByReference<LineFeature>("Base");
         }
     }

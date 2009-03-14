@@ -346,6 +346,7 @@
     <Compile Include="Observations\OffsetDistance.cs" />
     <Compile Include="Observations\OffsetPoint.cs" />
     <Compile Include="Observations\ParallelDirection.cs" />
+    <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
@@ -358,7 +359,6 @@
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
     <Compile Include="RowTextGeometry.cs" />
-    <Compile Include="SharedPointContent.cs" />
     <Compile Include="SpanData.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
@@ -660,7 +660,6 @@
     <Compile Include="NtxImport.cs" />
     <Compile Include="EditingActionId.cs" />
     <Compile Include="Observation.cs" />
-    <Compile Include="Operations\Import.cs" />
     <Compile Include="Operations\NewPointOperation.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Operations\RadialOperation.cs" />
