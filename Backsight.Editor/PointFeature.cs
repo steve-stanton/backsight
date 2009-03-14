@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -364,10 +364,26 @@ namespace Backsight.Editor
         /// </returns>
         internal override IXmlContent GetXmlContent()
         {
-            if (m_Geom.FirstPoint == this)
-                return this;
-            else
-                return new SharedPointContent(this);
+            return this;
+            //if (m_Geom.FirstPoint == this)
+            //    return this;
+            //else
+            //    return new SharedPointContent(this);
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get
+            {
+                if (m_Geom.FirstPoint == this)
+                    return "PointType";
+                else
+                    return "SharedPointType";
+            }
         }
 
         /// <summary>
@@ -382,8 +398,11 @@ namespace Backsight.Editor
             // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
             // This isn't really significant here, but it matters in the Read* methods.
 
-            Debug.Assert(m_Geom.FirstPoint == this); // see GetXmlContent
-            m_Geom.WriteAttributes(writer); // X and Y
+            //Debug.Assert(m_Geom.FirstPoint == this); // see GetXmlContent
+            if (XmlTypeName == "PointType")
+                m_Geom.WriteAttributes(writer); // X and Y
+            else
+                writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
         }
 
         /// <summary>

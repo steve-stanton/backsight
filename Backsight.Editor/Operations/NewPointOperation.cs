@@ -135,6 +135,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get { return "NewPointType"; }
+        }
+
+        /// <summary>
         /// Writes any child elements of this class. This will be called after
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
@@ -142,7 +151,7 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteElement("NewPoint", m_NewPoint);
+            writer.WriteElement("Point", m_NewPoint);
         }
 
         /// <summary>
@@ -153,7 +162,7 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
-            m_NewPoint = reader.ReadElement<PointFeature>("NewPoint");
+            m_NewPoint = reader.ReadElement<PointFeature>("Point");
         }
 
         /// <summary>

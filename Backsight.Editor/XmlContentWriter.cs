@@ -92,10 +92,10 @@ namespace Backsight.Editor
 
             // Should encoding be written too?
             m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-            m_Writer.WriteStartElement("Data", "Backsight");
+            m_Writer.WriteStartElement("Edit", "Backsight");
             m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
 
-            WriteElement("Edit", edit);
+            WriteElement("Operation", edit);
 
             m_Writer.WriteEndElement();
         }
@@ -156,7 +156,10 @@ namespace Backsight.Editor
 
         void WriteElementContent(IXmlContent content)
         {
-            m_Writer.WriteAttributeString("xsi", "type", null, content.GetType().Name);
+            string typeName = content.XmlTypeName;
+            if (!String.IsNullOrEmpty(typeName))
+                m_Writer.WriteAttributeString("xsi", "type", null, typeName);
+
             content.WriteAttributes(this);
             content.WriteChildElements(this);
             m_Writer.WriteEndElement();
@@ -217,6 +220,18 @@ namespace Backsight.Editor
         {
             if (feature!=null)
                 m_Writer.WriteAttributeString(name, feature.DataId);
+        }
+
+        /// <summary>
+        /// Writes out a reference to a previously existing spatial feature (as an attribute)
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <param name="feature">The feature that's referenced</param>
+        internal void WriteFeatureReferenceAsElement(string name, Feature feature)
+        {
+            m_Writer.WriteStartElement(name);
+            m_Writer.WriteString(feature.DataId);
+            m_Writer.WriteEndElement();
         }
 
         /// <summary>

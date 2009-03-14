@@ -33,6 +33,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this content (may
+        /// be blank if an xsi:type is not needed). This implementation just returns
+        /// the class name of this instance, concatenated with "Type".
+        /// <para/>
+        /// Derived classes may override. It is quite possible that a derived class
+        /// will return various values, depending on the exact nature of the derived
+        /// content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public virtual string XmlTypeName
+        {
+            get { return GetType().Name + "Type"; }
+        }
+
+        /// <summary>
         /// Performs the reverse of <see cref="GetXmlContent"/> by obtaining
         /// an instance of the content object that corresponds to this serializable content.
         /// </summary>
@@ -81,5 +96,6 @@ namespace Backsight.Editor
         public virtual void ReadChildElements(XmlContentReader reader)
         {
         }
+
     }
 }

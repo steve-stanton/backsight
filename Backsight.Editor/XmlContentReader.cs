@@ -703,5 +703,14 @@ namespace Backsight.Editor
 
             return result.ToArray();
         }
+
+        /// <summary>
+        /// The XML type name of the element that is currently being processed
+        /// </summary>
+        internal string XmlTypeName
+        {
+            // TODO
+            get { return null; }
+        }
     }
 }

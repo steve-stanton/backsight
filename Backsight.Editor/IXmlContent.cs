@@ -30,6 +30,12 @@ namespace Backsight.Editor
     public interface IXmlContent
     {
         /// <summary>
+        /// The string that will be used as the xsi:type for this content (may
+        /// be blank if an xsi:type is not needed).
+        /// </summary>
+        string XmlTypeName { get; }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>

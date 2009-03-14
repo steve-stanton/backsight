@@ -134,12 +134,12 @@ namespace Backsight.Editor.Forms
             // displayed extent).
             bool wasEmpty = CadastralMapModel.Current.IsEmpty;
 
-            Import i = null;
+            ImportOperation i = null;
             EditingController c = EditingController.Current;
 
             try
             {
-                i = new Import(Session.WorkingSession);
+                i = new ImportOperation(Session.WorkingSession);
                 NtxImport ni = new NtxImport(ntxFile, this);
                 i.Execute(ni);
                 Trace.Write("Map model updates completed");

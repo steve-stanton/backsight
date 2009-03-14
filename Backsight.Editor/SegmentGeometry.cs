@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -444,14 +444,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this geometry
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "LineType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal override void WriteAttributes(XmlContentWriter writer)
         {
-            // This should never get called, since simple line segments are serialized
-            // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteAttributes");
         }
 
         /// <summary>
@@ -459,34 +466,9 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        internal override void WriteChildElements(XmlContentWriter writer)
         {
-            // This should never get called, since simple line segments are serialized
-            // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.WriteChildElements");
         }
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            // This should never get called, since simple line segments are deserialized
-            // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadAttributes");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            // This should never get called, since simple line segments are deserialized
-            // using special code in the LineFeature class.
-            throw new InvalidOperationException("Unexpected call to SegmentGeometry.ReadChildElements");
-        }
     }
 }

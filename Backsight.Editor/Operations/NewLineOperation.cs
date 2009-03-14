@@ -275,12 +275,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
+        /// The string that will be used as the xsi:type for this content.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
         {
-            base.WriteAttributes(writer);
+            get { return "NewLineType"; }
         }
 
         /// <summary>
@@ -301,16 +301,7 @@ namespace Backsight.Editor.Operations
             else
                 writer.WriteElement("NewLine", m_NewLine);
              */
-            writer.WriteElement("NewLine", m_NewLine);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
+            writer.WriteElement("Line", m_NewLine);
         }
 
         /// <summary>
