@@ -136,10 +136,20 @@ namespace Backsight.Editor
         */
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "MiscTextType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
             writer.WriteString("Text", m_Text);
@@ -150,7 +160,7 @@ namespace Backsight.Editor
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        internal override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
         }
@@ -159,7 +169,7 @@ namespace Backsight.Editor
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
             m_Text = reader.ReadString("Text");
@@ -170,7 +180,7 @@ namespace Backsight.Editor
         /// all attributes have been defined via <see cref="ReadAttributes"/>.
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
+        internal override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
         }

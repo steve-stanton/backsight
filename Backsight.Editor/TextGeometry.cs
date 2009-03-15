@@ -28,7 +28,7 @@ namespace Backsight.Editor
     ///	<see cref="MiscText"/>, <see cref="KeyTextGeometry"/>, <see cref="RowTextGeometry"/>,
     /// and <see cref="FeatureText"/>.
     /// </summary>
-    abstract class TextGeometry : Content, IString, IXmlContent
+    abstract class TextGeometry : IString
     {
         #region Class data
 
@@ -372,23 +372,33 @@ namespace Backsight.Editor
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        internal virtual void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteLong("X", m_Position.Easting.Microns);
             writer.WriteLong("Y", m_Position.Northing.Microns);
-            writer.WriteInt("FontId", (m_Font==null ? 0 : m_Font.Id));
             writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
             writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
 
             // TODO: May want to cover indirect rotations
             writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
+            writer.WriteInt("Font", (m_Font == null ? 0 : m_Font.Id));
+        }
+
+        /// <summary>
+        /// Writes any child elements of this class. This will be called after
+        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        internal virtual void WriteChildElements(XmlContentWriter writer)
+        {
         }
 
         /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal virtual void ReadAttributes(XmlContentReader reader)
         {
             m_Position = new PointGeometry();
             m_Position.ReadAttributes(reader);
@@ -402,5 +412,22 @@ namespace Backsight.Editor
             else
                 throw new Exception("Cannot parse text rotation");
         }
+
+        /// <summary>
+        /// Defines any child content related to this instance. This will be called after
+        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// </summary>
+        /// <param name="reader">The reading tool</param>
+        /// <remarks>Implements IXmlContent</remarks>
+        internal virtual void ReadChildElements(XmlContentReader reader)
+        {
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        abstract internal string XmlTypeName { get; }
     }
 }

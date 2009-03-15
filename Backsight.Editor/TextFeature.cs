@@ -355,20 +355,30 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get { return m_Geom.XmlTypeName; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
         public override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
+            m_Geom.WriteAttributes(writer);
 
             if (!IsTopological)
-                writer.WriteString("Flags", "N");
+                writer.WriteBool("Topological", false);
 
             if (m_PolygonPosition != null)
             {
-                writer.WriteLong("X", m_PolygonPosition.Easting.Microns);
-                writer.WriteLong("Y", m_PolygonPosition.Northing.Microns);
+                writer.WriteLong("PolygonX", m_PolygonPosition.Easting.Microns);
+                writer.WriteLong("PolygonY", m_PolygonPosition.Northing.Microns);
             }
         }
 
@@ -380,7 +390,7 @@ namespace Backsight.Editor
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteElement("Geometry", m_Geom);
+            m_Geom.WriteChildElements(writer);
         }
 
         /// <summary>
@@ -391,18 +401,24 @@ namespace Backsight.Editor
         {
             base.ReadAttributes(reader);
 
-            string flags = reader.ReadString("Flags");
-            if (flags == null)
-                flags = String.Empty;
-
-            if (flags.Contains("N"))
-                SetTopology(false);
+            string xmlType = reader.XmlTypeName;
+            if (xmlType == "TextType")
+                m_Geom = new KeyTextGeometry();
+            else if (xmlType == "MiscTextType")
+                m_Geom = new MiscText();
+            else if (xmlType == "RowTextType")
+                m_Geom = new RowTextContent();
             else
-                SetTopology(true);
+                throw new Exception("Unexpected xml type for text: " + xmlType);
+
+            m_Geom.ReadAttributes(reader);
+
+            bool isTopological = reader.ReadBool("Topological");
+            SetTopology(isTopological);
 
             // Pick up any polygon reference position
-            long x = reader.ReadLong("X");
-            long y = reader.ReadLong("Y");
+            long x = reader.ReadLong("PolygonX");
+            long y = reader.ReadLong("PolygonY");
             if (x==0 && y==0)
                 m_PolygonPosition = null;
             else
@@ -417,8 +433,7 @@ namespace Backsight.Editor
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
-
-            m_Geom = reader.ReadElement<TextGeometry>("Geometry");
+            m_Geom.ReadChildElements(reader);
 
             // KeyText refers back to this feature (which provides the key)
             if (m_Geom is KeyTextGeometry)

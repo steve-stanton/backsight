@@ -83,5 +83,15 @@ namespace Backsight.Editor
                 return (id==null ? "?" : id.FormattedKey);
             }
         }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "TextType"; }
+        }
     }
 }
