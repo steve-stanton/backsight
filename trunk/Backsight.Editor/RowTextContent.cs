@@ -30,7 +30,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The formatted ID of the spatial feature
         /// </summary>
-        string m_Id;
+        string m_RowKey;
 
         /// <summary>
         /// The Backsight ID for the database table
@@ -64,7 +64,7 @@ namespace Backsight.Editor
             Row r = copy.Row;
             ITemplate t = copy.Template;
 
-            m_Id = r.Id.FormattedKey;
+            m_RowKey = r.Id.FormattedKey;
             m_TableId = r.Table.Id;
             m_TemplateId = t.Id;
         }
@@ -72,49 +72,16 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            writer.WriteString("Id", m_Id);
-            writer.WriteInt("Table", m_TableId);
-            writer.WriteInt("Template", m_TemplateId);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
         /// Defines the attributes of this content
         /// </summary>
         /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        internal override void ReadAttributes(XmlContentReader reader)
         {
             base.ReadAttributes(reader);
 
-            m_Id = reader.ReadString("Id");
+            m_RowKey = reader.ReadString("Id");
             m_TableId = reader.ReadInt("Table");
             m_TemplateId = reader.ReadInt("Template");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
         }
 
         /// <summary>

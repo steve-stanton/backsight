@@ -320,7 +320,31 @@ namespace Backsight.Editor
         /// </remarks>
         public IXmlContent GetAlternate()
         {
-            return new RowTextContent(this);
+            throw new NotImplementedException("RowTextGeometry.GetAlternate");
+            // return new RowTextContent(this);
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "RowTextType"; }
+        }
+
+        /// <summary>
+        /// Writes the attributes of this class.
+        /// </summary>
+        /// <param name="writer">The writing tool</param>
+        internal override void WriteAttributes(XmlContentWriter writer)
+        {
+            base.WriteAttributes(writer);
+
+            writer.WriteString("RowKey", m_Row.Id.FormattedKey);
+            writer.WriteInt("Table", m_Row.Table.Id);
+            writer.WriteInt("Template", m_Template.Id);
         }
     }
 }

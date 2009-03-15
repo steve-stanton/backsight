@@ -21,7 +21,7 @@ namespace Backsight.Editor
     /// Some sort of content that cannot be directly stored in the database. Instead,
     /// an alternative content class must be used.
     /// </summary>
-    public interface IXmlAlternateContent : IXmlContent
+    public interface IXmlAlternateContent
     {
         /// <summary>
         /// Obtains an instance of the content object that can be persisted in the

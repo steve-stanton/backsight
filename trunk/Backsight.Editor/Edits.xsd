@@ -138,9 +138,13 @@ The first and last positions are assumed to match the positions of the point fea
   <xs:complexType name="RowTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType">
-        <xs:attribute name="Key" type="xs:string" use="required" />
-        <xs:attribute name="TableId" type="xs:unsignedInt" use="required" />
-        <xs:attribute name="TemplateId" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="RowKey" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The key of the row containing the information that defines this text (as opposed to the key of the text itself)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Table" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="Template" type="xs:unsignedInt" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -169,7 +173,7 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="Height" type="xs:double" use="required" />
         <xs:attribute name="Width" type="xs:double" use="required" />
         <xs:attribute name="Rotation" type="xs:string" use="optional" />
-        <xs:attribute name="FontId" type="xs:unsignedInt" use="optional" />
+        <xs:attribute name="Font" type="xs:unsignedInt" use="optional" />
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
         <xs:attribute name="PolygonX" type="xs:unsignedLong" use="optional" />
         <xs:attribute name="PolygonY" type="xs:unsignedLong" use="optional" />
