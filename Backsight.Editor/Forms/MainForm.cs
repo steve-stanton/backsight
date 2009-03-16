@@ -1871,6 +1871,20 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 }
             }
              */
+
+            /*
+            try
+            {
+                string x = File.ReadAllText(@"C:\Temp\LastEdit.txt");
+                XmlContentReader.Validate(x);
+                MessageBox.Show("ok");
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+             */
         }
 
         #endregion

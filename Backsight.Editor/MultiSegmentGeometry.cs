@@ -1165,7 +1165,7 @@ namespace Backsight.Editor
             Debug.Assert(f!=null);
 
             // Read in the positions of the line
-            PointGeometry[] data = reader.ReadArray<PointGeometry>("PositionArray", "Position");
+            PointGeometry[] data = reader.ReadArray<PointGeometry>("Position");
             Debug.Assert(data.Length>2);
 
             // Confirm that the terminal positions match the position of the line end points (assumes

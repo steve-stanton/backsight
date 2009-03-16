@@ -48,6 +48,7 @@
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
     <Compile Include="Content.cs" />
+    <Compile Include="ContentMapping.cs" />
     <Compile Include="ContentReader.cs" />
     <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
@@ -1097,9 +1098,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
-    <None Include="Edits.xsd">
+    <EmbeddedResource Include="Edits.xsd">
       <SubType>Designer</SubType>
-    </None>
+    </EmbeddedResource>
     <None Include="Edits.xsx">
       <DependentUpon>Edits.xsd</DependentUpon>
     </None>
