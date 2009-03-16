@@ -1885,6 +1885,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 MessageBox.Show(ex.Message);
             }
              */
+
+            System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(EditType));
+            using (StreamReader s = File.OpenText(@"C:\Temp\LastEdit.txt"))
+            {
+                EditType et = (EditType)xs.Deserialize(s);
+                OperationType[] ops = et.Operation;
+            }
         }
 
         #endregion

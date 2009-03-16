@@ -60,6 +60,9 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
+    <Compile Include="Edits.cs">
+      <DependentUpon>Edits.xsd</DependentUpon>
+    </Compile>
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
