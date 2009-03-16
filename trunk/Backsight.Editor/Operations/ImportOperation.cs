@@ -167,7 +167,7 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
-            m_Data = reader.ReadArray<Feature>("FeatureArray", "Feature");
+            m_Data = reader.ReadArray<Feature>("Feature");
         }
 
         /// <summary>

@@ -247,7 +247,7 @@ namespace Backsight.Editor.Operations
         public override void ReadChildElements(XmlContentReader reader)
         {
             base.ReadChildElements(reader);
-            PointFeature[] points = reader.ReadArray<PointFeature>("PointArray", "Point");
+            PointFeature[] points = reader.ReadArray<PointFeature>("Point");
             m_Features.AddRange(points);
         }
 

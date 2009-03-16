@@ -428,10 +428,14 @@ namespace Backsight.Editor
             // Save the last edit in the database
             string x = this.ToXml();
 
+            // Dump the file out (to help with debugging)
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
             {
                 sw.Write(x);
             }
+
+            // Validate the xml against the schema
+            XmlContentReader.Validate(x);
 
             Transaction.Execute(delegate
             {

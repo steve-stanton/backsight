@@ -1,23 +1,25 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Xml;
+using System.Xml.Schema;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Backsight.Editor
 {
@@ -27,6 +29,57 @@ namespace Backsight.Editor
     /// </summary>
     public class XmlContentReader
     {
+        #region Static
+
+        /// <summary>
+        /// Validates a string representing an XML fragment that should conform to the
+        /// XML schema defined by <c>Edits.xsd</c>.
+        /// </summary>
+        /// <param name="s">The XML to validate</param>
+        /// <exception cref="XmlSchemaException">If the schema cannot be loaded from the assembly
+        /// holding this class, or the supplied XML is not valid.</exception>
+        internal static void Validate(string s)
+        {
+            Validate(s, GetSchema());
+        }
+
+        /// <summary>
+        /// Obtains the XML schema for Backsight content
+        /// </summary>
+        /// <returns>The schema defined by <c>Edits.xsd</c></returns>
+        /// <exception cref="XmlSchemaException">If the schema cannot be loaded from the assembly
+        /// holding this class</exception>
+        internal static XmlSchema GetSchema()
+        {
+            Assembly a = Assembly.GetExecutingAssembly();
+            using (Stream fs = a.GetManifestResourceStream("Backsight.Editor.Edits.xsd"))
+            {
+                return XmlSchema.Read(fs, null);
+            }
+        }
+
+        /// <summary>
+        /// Validates a string representing an XML fragment using the supplied schema
+        /// </summary>
+        /// <param name="s">The XML to validate</param>
+        /// <param name="schema">The schema the XML should conform to</param>
+        /// <exception cref="XmlSchemaException">If the supplied XML is not valid.</exception>
+        internal static void Validate(string s, XmlSchema schema)
+        {
+            XmlReaderSettings xrs = new XmlReaderSettings();
+            xrs.ConformanceLevel = ConformanceLevel.Fragment;
+            xrs.ValidationType = ValidationType.Schema;
+            xrs.Schemas.Add(schema);
+
+            using (StringReader sr = new StringReader(s))
+            {
+                XmlReader reader = XmlReader.Create(sr, xrs);
+                while (reader.Read()) { }
+            }
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -38,6 +91,11 @@ namespace Backsight.Editor
         /// The object that actually does the reading.
         /// </summary>
         XmlReader m_Reader;
+
+        /// <summary>
+        /// The current node that's being processed
+        /// </summary>
+        XmlNode m_CurrentNode;
 
         /// <summary>
         /// Cross-reference of type names to the corresponding constructor.
@@ -67,16 +125,6 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<string, ForeignId> m_ForeignIds;
 
-        /// <summary>
-        /// Information about the features created by the editing operation that
-        /// is currently being deserialized from the database. The key is the
-        /// sequence number of the created feature, the value holds the assigned
-        /// entity type (and perhaps the assigned ID too).
-        /// </summary>
-        /// <remarks>This is a bit of a hack, introduced in an attempt to overcome
-        /// problems with the deserialization of connection paths.</remarks>
-        //Dictionary<uint, FeatureData> m_FeatureInfo;
-
         #endregion
 
         #region Constructors
@@ -102,68 +150,47 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Attempts to locate the <c>Type</c> corresponding to the supplied type name
+        /// Reads an attribute that is expected to be an <c>Int32</c> value
         /// </summary>
-        /// <param name="typeName">The name of the type (unqualified with any assembly stuff)</param>
-        /// <returns>The correspond class type (null if not found in application domain)</returns>
-        /// <remarks>This stuff is in pretty murky territory for me. I would guess it's possible
-        /// that the same type name could appear in more than one assembly, so there could be
-        /// some ambiguity.</remarks>
-        Type FindType(string typeName)
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (0 if the attribute is not present)</returns>
+        public int ReadInt(string name)
         {
-            // The type is most likely part of the assembly that holds this class.
-            // Note: I thought it might be sufficient to just call Type.GetType("Backsight.Editor."+typeName),
-            // but that doesn't find Operation classes (it only works if you specify the sub-folder name too).
-            Type result = FindType(GetType().Assembly, typeName);
-            if (result != null)
-                return result;
-
-            // If things get moved about though, it's a bit more complicated...
-            Assembly[] aa = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly a in aa)
-            {
-                result = FindType(a, typeName);
-                if (result != null)
-                    return result;
-            }
-
-            return null;
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? 0 : Int32.Parse(a.Value));
         }
 
         /// <summary>
-        /// Searches the supplied assembly for a <c>Type</c> corresponding to the
-        /// supplied type name
+        /// Reads an attribute that is expected to be a <c>UInt32</c> value
         /// </summary>
-        /// <param name="a">The assembly to search</param>
-        /// <param name="typeName">The name of the type (unqualified with any assembly stuff)</param>
-        /// <returns>The corresponding type (null if not found)</returns>
-        Type FindType(Assembly a, string typeName)
-        {
-            foreach (Type type in a.GetTypes())
-            {
-                if (type.Name == typeName)
-                    return type;
-            }
-
-            return null;
-        }
-
-        public int ReadInt(string name)
-        {
-            string s = m_Reader[name];
-            return (s==null ? 0 : Int32.Parse(s));
-        }
-
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (0 if the attribute is not present)</returns>
         public uint ReadUnsignedInt(string name)
         {
-            string s = m_Reader[name];
-            return (s == null ? 0 : UInt32.Parse(s));
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? 0 : UInt32.Parse(a.Value));
         }
 
+        /// <summary>
+        /// Reads an attribute that is expected to be an <c>Int64</c> value
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (0 if the attribute is not present)</returns>
         public long ReadLong(string name)
         {
-            string s = m_Reader[name];
-            return (s == null ? 0 : Int64.Parse(s));
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? 0 : Int64.Parse(a.Value));
+        }
+
+        /// <summary>
+        /// Reads an attribute that is expected to be a <c>UInt64</c> value
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (0 if the attribute is not present)</returns>
+        public ulong ReadUnsignedLong(string name)
+        {
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? 0 : UInt64.Parse(a.Value));
         }
 
         /// <summary>
@@ -173,85 +200,40 @@ namespace Backsight.Editor
         /// <returns>The value of the attribute (false if the attribute isn't there)</returns>
         public bool ReadBool(string name)
         {
-            string s = m_Reader[name];
-            return (s == null ? false : Boolean.Parse(s));
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? false : Boolean.Parse(a.Value));
         }
 
+        /// <summary>
+        /// Reads an attribute that is expected to be a <c>Double</c> value
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (0.0 if the attribute is not present)</returns>
         public double ReadDouble(string name)
         {
-            string s = m_Reader[name];
-            return (s == null ? 0 : Double.Parse(s));
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? 0.0 : Double.Parse(a.Value));
         }
 
+        /// <summary>
+        /// Reads an attribute that is expected to be a <c>String</c> value
+        /// </summary>
+        /// <param name="name">The local name of the attribute</param>
+        /// <returns>The attribute value (null if the attribute is not present)</returns>
         public string ReadString(string name)
         {
-            return m_Reader[name];
-        }
-
-        bool ReadToElement(string name)
-        {
-            return m_Reader.ReadToFollowing(name);
-            /*
-            while (m_Reader.NodeType != XmlNodeType.Element && m_Reader.Name != name)
-            {
-                if (!m_Reader.Read())
-                    return false;
-            }
-
-            m_Reader.MoveToElement();
-            return true;
-             */
+            XmlAttribute a = m_CurrentNode.Attributes[name];
+            return (a == null ? null : a.Value);
         }
 
         public T ReadElement<T>(string name) where T : Content
         {
-            // Ensure we're at an element
-            if (!ReadToElement(name))
-                return default(T);
-
-            // For some reason, I'd read an ArcFeature with an embedded ArcGeometry, but the
-            // xsi:type attribute continues to say it's ArcFeature. So try to nudge it ahead.
-            //if (!m_Reader.MoveToFirstAttribute())
-            //    return default(T);
-
-            /*
-            // After doing the above, we won't be at an element! Whoever wrote this XML
-            // reading code sure knew how to make it opaque!
-            if (!ReadToElement(name))
-                return default(T);
-
-            m_Reader.MoveToFirstAttribute();
-            */
-
-            // If there's no type declaration, assume we're dealing with a null object
-            string typeName = m_Reader["xsi:type"];
+            string typeName = ReadString("xsi:type");
             if (String.IsNullOrEmpty(typeName))
-                return default(T);
-                //throw new Exception("Content does not contain xsi:type attribute");
+                throw new Exception("Content does not contain xsi:type attribute");
 
-            // If we haven't previously encountered the type, look up a
-            // default constructor
-            if (!m_Types.ContainsKey(typeName))
-            {
-                Type t = FindType(typeName);
-                if (t == null)
-                    throw new Exception("Cannot create object with type: " + typeName);
-
-                // Confirm that the type implements IXmlContent
-                if (t.FindInterfaces(Module.FilterTypeName, "IXmlContent").Length == 0)
-                    throw new Exception("IXmlContent not implemented by type: " + t.FullName);
-
-                // Locate default constructor
-                ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
-                if (ci == null)
-                    throw new Exception("Cannot locate default constructor for type: " + t.FullName);
-
-                m_Types.Add(typeName, ci);
-            }
-
-            // Create the instance
-            ConstructorInfo c = m_Types[typeName];
-            Content result = (Content)c.Invoke(new object[0]);
+            // Get an instance of the type
+            Content result = ContentMapping.GetInstance<T>(typeName);
 
             // Load the instance
             try
@@ -292,31 +274,39 @@ namespace Backsight.Editor
             }
         }
 
-        public T[] ReadArray<T>(string arrayName, string itemName) where T : Content
+        public T[] ReadArray<T>(string itemName) where T : Content
         {
-            // Ensure we're at an element
-            if (!ReadToElement(arrayName))
-                throw new Exception("Array element not found");
+            List<T> result = new List<T>();
+            XmlNode initialNode = m_CurrentNode;
 
-            // Pick up array size
-            uint capacity = ReadUnsignedInt("Length");
-            T[] result = new T[(int)capacity];
-
-            for (int i=0; i<capacity; i++)
+            try
             {
-                T item = ReadElement<T>(itemName);
-                Debug.Assert(item!=null);
-                result[i] = item;
+                foreach (XmlNode child in initialNode.ChildNodes)
+                {
+                    if (child.Name == itemName)
+                    {
+                        m_CurrentNode = child;
+                        T item = ReadElement<T>(itemName);
+                        result.Add(item);
+                    }
+                }
+
+                return result.ToArray();
             }
 
-            return result;
+            finally
+            {
+                m_CurrentNode = initialNode;
+            }
         }
 
         string[] ReadStringArray(string arrayName, string itemName)
         {
+            throw new NotImplementedException();
+
             // Ensure we're at an element
-            if (!ReadToElement(arrayName))
-                throw new Exception("Array element not found");
+            //if (!ReadToElement(arrayName))
+            //    throw new Exception("Array element not found");
 
             // Pick up array size
             uint capacity = ReadUnsignedInt("Length");
@@ -352,7 +342,7 @@ namespace Backsight.Editor
         internal T ReadFeatureByReference<T>(string name) where T : Feature
         {
             // Get the internal ID of the feature
-            string sid = m_Reader[name];
+            string sid = ReadString(name);
             if (sid==null)
                 return null;
 
@@ -394,30 +384,28 @@ namespace Backsight.Editor
         /// <returns>The created editing object</returns>
         internal Operation ReadEdit(XmlReader data)
         {
-            // Experiment...
-            /*
             try
             {
-                // The first child is the "Data" element. Within that is the "Edit" element.
+                m_Model.IsLoading = true;
+                m_Reader = data;
+
+                // The first child is the "Edit" element.
                 XmlDocument doc = new XmlDocument();
                 doc.Load(data);
                 Debug.Assert(doc.ChildNodes.Count==1);
                 XmlNode top = doc.ChildNodes[0];
-                Debug.Assert(doc.Name == "Data");
+                Debug.Assert(top.Name == "Edit");
                 Debug.Assert(top.ChildNodes.Count==1);
-                XmlNode ed = top.ChildNodes[0];                
-                Debug.Assert(ed.Name == "Edit");
-                XmlAttribute a = ed.Attributes["xsi:type"];
-                string edType = a.Value;
-                return null;
+                XmlNode op = top.ChildNodes[0];                
+                Debug.Assert(op.Name == "Operation");
+
+                m_CurrentNode = op;
+                Operation result = ReadElement<Operation>("Operation");
+                result.AddReferences();
+                return result;
             }
 
-            catch (Exception ex)
-            {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
-            }
-            */
-
+            /*
             try
             {
                 m_Model.IsLoading = true;
@@ -432,7 +420,7 @@ namespace Backsight.Editor
 
                 return result;
             }
-
+            */
             finally
             {
                 m_Reader = null;
@@ -448,7 +436,7 @@ namespace Backsight.Editor
         /// <returns>True if the attribute is defined</returns>
         internal bool HasAttribute(string name)
         {
-            return (m_Reader[name] != null);
+            return (m_CurrentNode.Attributes[name] != null);
         }
 
         /// <summary>
@@ -627,7 +615,7 @@ namespace Backsight.Editor
         /// <returns>The angle in radians (0.0 if the attribute isn't there)</returns>
         public double ReadAngle(string name)
         {
-            string s = m_Reader[name];
+            string s = ReadString(name);
             if (s==null)
                 return 0.0;
 
@@ -709,8 +697,7 @@ namespace Backsight.Editor
         /// </summary>
         internal string XmlTypeName
         {
-            // TODO
-            get { return null; }
+            get { return ReadString("xsi:type"); }
         }
     }
 }

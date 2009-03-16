@@ -1143,7 +1143,7 @@ void CePath::CreateAngleText ( CPtrList& text
                 Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
 
                 // Read back information about created features
-                FeatureData[] featureInfo = reader.ReadArray<FeatureData>("FeatureArray", "Feature");
+                FeatureData[] featureInfo = reader.ReadArray<FeatureData>("Feature");
 
                 // Create stuff
                 List<PointFeature> createdPoints = CreateFeatures();

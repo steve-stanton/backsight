@@ -490,7 +490,7 @@ namespace Backsight.Editor.Operations
             base.ReadChildElements(reader);
 
             // Read info about each span
-            SpanContent[] spans = reader.ReadArray<SpanContent>("SpanArray", "Span");
+            SpanContent[] spans = reader.ReadArray<SpanContent>("Span");
 
             // Adjust the observed distances
             Distance[] distances = new Distance[spans.Length];
