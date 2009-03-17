@@ -23,6 +23,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -80,6 +81,35 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="t">The serialized version of this feature</param>
+        protected Feature(FeatureType t)
+        {
+            throw new NotImplementedException("Feature(FeatureType)");
+            //m_Creator = 
+            /*
+            m_Creator = reader.FindParent<Operation>();
+            Debug.Assert(m_Creator != null);
+            uint sessionId;
+            ParseDataId(reader.ReadString("Id"), out sessionId, out m_CreatorSequence);
+            FeatureId fid = FeatureId.Read("Key", reader);
+
+            // If an ID has been obtained, ensure it knows about this feature, and vice versa
+            if (fid != null)
+                fid.Add(this);
+             */
+
+            uint sessionId;
+
+            int entId = (int)t.Type;
+            m_What = EnvironmentContainer.FindEntityById(entId);
+
+            // Remember this feature as part of the model
+            MapModel.AddFeature(this);
+        }
+
+        /// <summary>
         /// Creates a new feature
         /// </summary>
         /// <param name="ent">The entity type for the feature (not null)</param>
@@ -93,7 +123,7 @@ namespace Backsight.Editor
             if (creator==null) 
                 throw new ArgumentNullException("Creating operation must be defined");
 
-            m_What = e; //creator.MapModel.GetRegisteredEntityType(e);
+            m_What = e;
             m_Creator = creator;
             m_CreatorSequence = 0;
         }

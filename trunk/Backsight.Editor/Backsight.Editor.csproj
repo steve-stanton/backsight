@@ -1028,10 +1028,15 @@
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Xml\FeatureType.cs" />
     <Compile Include="Xml\ImportType.cs" />
+    <Compile Include="Xml\LineType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
+    <Compile Include="Xml\PointType.cs" />
+    <Compile Include="Xml\SharedPointType.cs" />
+    <Compile Include="Xml\TextType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

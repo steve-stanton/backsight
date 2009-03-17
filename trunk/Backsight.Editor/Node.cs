@@ -48,7 +48,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="p">The point that will be assigned this geometry (not null).
         /// Modified by referring its geometry to <c>this</c> node.</param>
-        /// </param>
         /// <param name="g">The geometry for the point (not null)</param>
         internal Node(PointFeature p, PointGeometry g)
             : base(g)
@@ -85,7 +84,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node"/> class, with sufficient space
-        /// to reference a single point feature. Make a subsequent call to <see cref="AddSharedPoint">
+        /// to reference a single point feature. Make a subsequent call to <see cref="AttachPoint"/>
         /// to associate the new node with the point.
         /// </summary>
         /// <param name="g">The position of the node</param>

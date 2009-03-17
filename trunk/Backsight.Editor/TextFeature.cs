@@ -21,6 +21,7 @@ using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
 using Backsight.Forms;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -71,6 +72,15 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="t">The serialized version of this feature</param>
+        internal TextFeature(TextType t)
+            : base(t)
+        {
+        }
 
         /// <summary>
         /// Creates a new text feature

@@ -20,6 +20,7 @@ using System.Text;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -43,6 +44,29 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="t">The serialized version of this feature</param>
+        internal PointFeature(PointType t)
+            : base(t)
+        {
+            PointGeometry pg = new PointGeometry(t.X, t.Y);
+            m_Geom = new Node(this, pg);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization of a point that
+        /// shares geometry with another point.
+        /// </summary>
+        /// <param name="t">The serialized version of this feature</param>
+        internal PointFeature(SharedPointType t)
+            : base(t)
+        {
+            PointFeature firstPoint = MapModel.Find<PointFeature>(t.FirstPoint);
+            firstPoint.Node.AttachPoint(this);
+        }
 
         /// <summary>
         /// Default constructor (for serialization)
