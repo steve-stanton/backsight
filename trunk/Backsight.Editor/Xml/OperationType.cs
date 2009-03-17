@@ -1,0 +1,39 @@
+// <remarks>
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
+
+using System;
+
+using Backsight.Editor.Operations;
+
+namespace Backsight.Editor.Xml
+{
+    /// <summary>
+    /// Base class for any sort of serialized editing operation.
+    /// </summary>
+    /// <remarks>The remainder of this class is auto-generated, and may be found
+    /// in the <c>Edits.cs</c> file.</remarks>
+    abstract public partial class OperationType
+    {
+        /// <summary>
+        /// Deserializes this editing operation.
+        /// </summary>
+        /// <returns>The deserialized version of this edit</returns>
+        /// <remarks>The result can be safely cast to an instance of <see cref="Operation"/>. It is
+        /// returned as an <see cref="IOperation"/> because some sort of public object is required
+        /// (the <c>Operation</c> class is declared as an internal class, but you cannot return
+        /// that from a class that is declared to be public).</remarks>
+        abstract public IOperation Create();
+    }
+}

@@ -23,6 +23,7 @@ using System.Data;
 using Backsight.Editor.Database;
 using Backsight.Data;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -71,8 +72,31 @@ namespace Backsight.Editor
 
         #region Constructors
 
+
         /// <summary>
-        /// Creates a new editing operation as oart of the current default session. This constructor
+        /// Creates a new editing operation as part of the current default session. This constructor
+        /// should be called during de-serialization from the database.
+        /// </summary>
+        protected Operation(OperationType t)
+        {
+            if (!CadastralMapModel.Current.IsLoading)
+                throw new InvalidOperationException("Wrong constructor used to create edit");
+
+            m_Session = Session.CurrentSession;
+            if (m_Session==null)
+                throw new ArgumentNullException("Editing session is not defined");
+
+            m_Session.Add(this);
+
+            uint sessionId;
+            InternalIdValue.Parse(t.Id, out sessionId, out m_Sequence);
+
+            Debug.Assert(m_Sequence == s_CurrentEditSequence); // should no longer be necessary
+            Debug.Assert(m_Session.Id == sessionId);
+        }
+
+        /// <summary>
+        /// Creates a new editing operation as part of the current default session. This constructor
         /// should be called during de-serialization from the database.
         /// </summary>
         protected Operation()
@@ -167,7 +191,7 @@ namespace Backsight.Editor
         /// </summary>
         internal string DataId
         {
-            get { return String.Format("{0}.{1}", m_Session.Id, m_Sequence); }
+            get { return InternalIdValue.Format(m_Session.Id, m_Sequence); }
         }
 
         /// <summary>
@@ -178,9 +202,7 @@ namespace Backsight.Editor
         /// <param name="sequence">The creation sequence of the edit within the session</param>
         void ParseDataId(string s, out uint sessionId, out uint sequence)
         {
-            int dotIndex = s.IndexOf('.');
-            sessionId = uint.Parse(s.Substring(0, dotIndex));
-            sequence = uint.Parse(s.Substring(dotIndex+1));
+            InternalIdValue.Parse(s, out sessionId, out sequence);
         }
 
         /// <summary>
@@ -435,7 +457,7 @@ namespace Backsight.Editor
             }
 
             // Validate the xml against the schema
-            XmlContentReader.Validate(x);
+            Backsight.Editor.Xml.Content.Validate(x);
 
             Transaction.Execute(delegate
             {

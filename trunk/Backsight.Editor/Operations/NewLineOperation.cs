@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new line (either a simple line segment, or a circular arc).
     /// </summary>
-    class NewLineOperation : Operation
+    class NewLineOperation : Operation, IOperation
     {
         #region Class data
 

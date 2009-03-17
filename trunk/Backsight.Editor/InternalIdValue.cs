@@ -35,7 +35,41 @@ namespace Backsight.Editor
     /// </summary>
     struct InternalIdValue : IEquatable<InternalIdValue>
     {
-        #region Class data
+        #region Static
+
+        /// <summary>
+        /// Parses a string that was generated using <see cref="Format"/>
+        /// </summary>
+        /// <param name="s">The string to parse</param>
+        /// <param name="sessionId">The ID of the session in which an item was created</param>
+        /// <param name="creationSequence">The sequence number indicating the order in which
+        /// the item was created in the session</param>
+        /// <exception cref="ArgumentException">If the supplied string is not in the correct format</exception>
+        internal static void Parse(string s, out uint sessionId, out uint creationSequence)
+        {
+            int cIndex = s.IndexOf(':');
+            if (cIndex < 0)
+                throw new ArgumentException();
+
+            sessionId = uint.Parse(s.Substring(0, cIndex));
+            creationSequence = uint.Parse(s.Substring(cIndex+1));
+        }
+
+        /// <summary>
+        /// A formatted representation of an internal ID
+        /// </summary>
+        /// <param name="sessionId">The ID of the session in which an item was created</param>
+        /// <param name="creationSequence">The sequence number indicating the order in which
+        /// the item was created in the session</param>
+        /// <returns>The formatted version of an internal ID</returns>
+        internal static string Format(uint sessionId, uint creationSequence)
+        {
+            return String.Format("{0}:{1}", sessionId, creationSequence);
+        }
+
+        #endregion
+
+        #region data
 
         /// <summary>
         /// The 1-based sequence number of the session.
@@ -75,12 +109,7 @@ namespace Backsight.Editor
         /// by a call to <see cref="InternalIdValue.ToString"/>)</param>
         internal InternalIdValue(string s)
         {
-            int dotPos = s.IndexOf('.');
-            if (dotPos<=0)
-                throw new ArgumentException();
-
-            m_Session = UInt32.Parse(s.Substring(0, dotPos));
-            m_Item = UInt32.Parse(s.Substring(dotPos+1));
+            Parse(s, out m_Session, out m_Item);
         }
 
         #endregion
@@ -115,11 +144,11 @@ namespace Backsight.Editor
         /// Override returns a concatenation of the job registration ID & the
         /// creation sequence value.
         /// </summary>
-        /// <returns>A string taking the form #.#, where the number prior to the period is the
-        /// session ID, and the number after the period is the item sequence.</returns>
+        /// <returns>A string taking the form #:#, where the number prior to the colon is the
+        /// session ID, and the number after the colon is the item sequence.</returns>
         public override string ToString()
         {
-            return String.Format("{0}.{1}", m_Session, m_Item);
+            return Format(m_Session, m_Item);
         }
 
         /// <summary>

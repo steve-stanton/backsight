@@ -20,6 +20,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Xml.Serialization;
+
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -29,57 +32,6 @@ namespace Backsight.Editor
     /// </summary>
     public class XmlContentReader
     {
-        #region Static
-
-        /// <summary>
-        /// Validates a string representing an XML fragment that should conform to the
-        /// XML schema defined by <c>Edits.xsd</c>.
-        /// </summary>
-        /// <param name="s">The XML to validate</param>
-        /// <exception cref="XmlSchemaException">If the schema cannot be loaded from the assembly
-        /// holding this class, or the supplied XML is not valid.</exception>
-        internal static void Validate(string s)
-        {
-            Validate(s, GetSchema());
-        }
-
-        /// <summary>
-        /// Obtains the XML schema for Backsight content
-        /// </summary>
-        /// <returns>The schema defined by <c>Edits.xsd</c></returns>
-        /// <exception cref="XmlSchemaException">If the schema cannot be loaded from the assembly
-        /// holding this class</exception>
-        internal static XmlSchema GetSchema()
-        {
-            Assembly a = Assembly.GetExecutingAssembly();
-            using (Stream fs = a.GetManifestResourceStream("Backsight.Editor.Edits.xsd"))
-            {
-                return XmlSchema.Read(fs, null);
-            }
-        }
-
-        /// <summary>
-        /// Validates a string representing an XML fragment using the supplied schema
-        /// </summary>
-        /// <param name="s">The XML to validate</param>
-        /// <param name="schema">The schema the XML should conform to</param>
-        /// <exception cref="XmlSchemaException">If the supplied XML is not valid.</exception>
-        internal static void Validate(string s, XmlSchema schema)
-        {
-            XmlReaderSettings xrs = new XmlReaderSettings();
-            xrs.ConformanceLevel = ConformanceLevel.Fragment;
-            xrs.ValidationType = ValidationType.Schema;
-            xrs.Schemas.Add(schema);
-
-            using (StringReader sr = new StringReader(s))
-            {
-                XmlReader reader = XmlReader.Create(sr, xrs);
-                while (reader.Read()) { }
-            }
-        }
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -389,7 +341,14 @@ namespace Backsight.Editor
                 m_Model.IsLoading = true;
                 m_Reader = data;
 
+                XmlSerializer xs = new XmlSerializer(typeof(EditType));
+                EditType et = (EditType)xs.Deserialize(data);
+                Debug.Assert(et.Operation.Length==1);
+                OperationType ot = et.Operation[0];
+                Operation result = (Operation)ot.Create();
+/*
                 // The first child is the "Edit" element.
+                
                 XmlDocument doc = new XmlDocument();
                 doc.Load(data);
                 Debug.Assert(doc.ChildNodes.Count==1);
@@ -401,6 +360,7 @@ namespace Backsight.Editor
 
                 m_CurrentNode = op;
                 Operation result = ReadElement<Operation>("Operation");
+ */
                 result.AddReferences();
                 return result;
             }
