@@ -16,10 +16,11 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
-    class NewPointOperation : Operation
+    class NewPointOperation : Operation, IOperation
     {
         #region Class data
 
@@ -33,10 +34,13 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public NewPointOperation()
+        public NewPointOperation(NewPointType t)
+            : base(t)
         {
+            PointType pt = t.Point;
+            //m_NewPoint = MapModel.
         }
 
         /// <summary>

@@ -1,0 +1,1 @@
+xsd Edits.xsd /classes /n:Backsight.Editor.Xml

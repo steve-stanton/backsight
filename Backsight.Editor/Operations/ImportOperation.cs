@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
     /// the current map model.
     /// </summary>
-    class ImportOperation : Operation
+    class ImportOperation : Operation, IOperation
     {
         #region Class data
 

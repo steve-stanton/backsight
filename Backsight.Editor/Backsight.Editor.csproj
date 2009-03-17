@@ -60,9 +60,6 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
-    <Compile Include="Edits.cs">
-      <DependentUpon>Edits.xsd</DependentUpon>
-    </Compile>
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
@@ -330,6 +327,7 @@
     <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
+    <Compile Include="IOperation.cs" />
     <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
@@ -1025,6 +1023,15 @@
     <Compile Include="Wildcard.cs" />
     <Compile Include="XmlContentReader.cs" />
     <Compile Include="XmlContentWriter.cs" />
+    <Compile Include="Xml\AttachPointType.cs" />
+    <Compile Include="Xml\Content.cs" />
+    <Compile Include="Xml\Edits.cs">
+      <DependentUpon>Edits.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Xml\ImportType.cs" />
+    <Compile Include="Xml\NewLineType.cs" />
+    <Compile Include="Xml\NewPointType.cs" />
+    <Compile Include="Xml\OperationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />
@@ -1101,13 +1108,13 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
-    <EmbeddedResource Include="Edits.xsd">
+    <None Include="Resources\ZoomOut.ico" />
+    <None Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <None Include="Edits.xsx">
+    </None>
+    <None Include="Xml\Edits.xsx">
       <DependentUpon>Edits.xsd</DependentUpon>
     </None>
-    <None Include="Resources\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">

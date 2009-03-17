@@ -138,7 +138,7 @@ namespace Backsight.Editor
             get
             {
                 uint sessionId = m_Creator.Session.Id;
-                return String.Format("{0}.{1}", sessionId, m_CreatorSequence);
+                return InternalIdValue.Format(sessionId, m_CreatorSequence);
             }
         }
 
@@ -151,9 +151,7 @@ namespace Backsight.Editor
         /// this feature was created in the session</param>
         void ParseDataId(string s, out uint sessionId, out uint creationSequence)
         {
-            int dotPos = s.IndexOf('.');
-            sessionId = uint.Parse(s.Substring(0, dotPos));
-            creationSequence = uint.Parse(s.Substring(dotPos+1));
+            InternalIdValue.Parse(s, out sessionId, out creationSequence);
         }
 
         public InternalIdValue InternalId
