@@ -93,6 +93,12 @@ namespace Backsight.Editor
         /// </summary>
         bool m_IsLoading;
 
+        /// <summary>
+        /// Spatial features that have been loaded (including features that may
+        /// have been deactivated).
+        /// </summary>
+        readonly Dictionary<InternalIdValue, Feature> m_Features;
+
         #endregion
 
         #region Constructors
@@ -109,6 +115,7 @@ namespace Backsight.Editor
             m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
             m_IsLoading = false;
+            m_Features = new Dictionary<InternalIdValue, Feature>();
         }
 
         #endregion
@@ -1411,6 +1418,48 @@ namespace Backsight.Editor
 
             foreach (Session s in m_Sessions)
                 s.AddToIndex();
+        }
+
+        /// <summary>
+        /// Records a new feature loaded as part of this model. This indexes the
+        /// feature by it's internal ID.
+        /// </summary>
+        /// <param name="f">The feature that has been loaded (if null, nothing gets done)</param>
+        internal void AddFeature(Feature f)
+        {
+            if (f != null)
+            {
+                try { m_Features.Add(f.InternalId, f); }
+                catch { throw new Exception("Failed to index feature " + f.DataId); }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to locate a spatial feature based on its internal ID.
+        /// This is an indexed lookup.
+        /// </summary>
+        /// <param name="s">The formatted version of an internal ID (as produced
+        /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
+        /// <returns>The corresponding feature (null if not found)</returns>
+        internal T Find<T>(string s) where T : Feature
+        {
+            InternalIdValue id = new InternalIdValue(s);
+            return Find<T>(id);
+        }
+
+        /// <summary>
+        /// Attempts to locate a spatial feature based on its internal ID.
+        /// This is an indexed lookup.
+        /// </summary>
+        /// <param name="id">The ID to look for</param>
+        /// <returns>The corresponding feature (null if not found)</returns>
+        internal T Find<T>(InternalIdValue id) where T : Feature
+        {
+            Feature f;
+            if (m_Features.TryGetValue(id, out f))
+                return (f as T);
+            else
+                return null;
         }
     }
 }

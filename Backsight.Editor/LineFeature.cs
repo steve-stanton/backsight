@@ -22,6 +22,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -56,6 +57,15 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="t">The serialized version of this feature</param>
+        internal LineFeature(LineType t)
+            : base(t)
+        {
+        }
 
         /// <summary>
         /// Creates a new <c>LineFeature</c>
