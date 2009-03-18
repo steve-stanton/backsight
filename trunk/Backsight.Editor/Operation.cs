@@ -77,22 +77,20 @@ namespace Backsight.Editor
         /// Creates a new editing operation as part of the current default session. This constructor
         /// should be called during de-serialization from the database.
         /// </summary>
-        protected Operation(OperationType t)
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected Operation(Session s, OperationType t)
         {
-            if (!CadastralMapModel.Current.IsLoading)
-                throw new InvalidOperationException("Wrong constructor used to create edit");
-
-            m_Session = Session.CurrentSession;
-            if (m_Session==null)
-                throw new ArgumentNullException("Editing session is not defined");
-
-            m_Session.Add(this);
+            if (s==null || t==null)
+                throw new ArgumentNullException();
 
             uint sessionId;
             InternalIdValue.Parse(t.Id, out sessionId, out m_Sequence);
-
+            Debug.Assert(s.Id == sessionId);
             Debug.Assert(m_Sequence == s_CurrentEditSequence); // should no longer be necessary
-            Debug.Assert(m_Session.Id == sessionId);
+
+            m_Session = s;
+            m_Session.Add(this);
         }
 
         /// <summary>

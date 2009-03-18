@@ -72,17 +72,17 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class PointGeometryType {
         
-        private ulong xField;
+        private long xField;
         
-        private ulong yField;
+        private long yField;
         
-        private ulong zField;
+        private long zField;
         
         private bool zFieldSpecified;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong X {
+        public long X {
             get {
                 return this.xField;
             }
@@ -93,7 +93,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong Y {
+        public long Y {
             get {
                 return this.yField;
             }
@@ -104,7 +104,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong Z {
+        public long Z {
             get {
                 return this.zField;
             }
@@ -179,67 +179,6 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class FeatureDataType {
-        
-        private string idField;
-        
-        private uint typeField;
-        
-        private bool typeFieldSpecified;
-        
-        private string keyField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Id {
-            get {
-                return this.idField;
-            }
-            set {
-                this.idField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public uint Type {
-            get {
-                return this.typeField;
-            }
-            set {
-                this.typeField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool TypeSpecified {
-            get {
-                return this.typeFieldSpecified;
-            }
-            set {
-                this.typeFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Key {
-            get {
-                return this.keyField;
-            }
-            set {
-                this.keyField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class ImportType : OperationType {
         
         private FeatureType[] featureField;
@@ -260,6 +199,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TextType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RowTextType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MiscTextType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(KeyTextType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SharedPointType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PointType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(LineType))]
@@ -272,7 +212,7 @@ namespace Backsight.Editor.Xml {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     [System.Xml.Serialization.XmlRootAttribute("Feature", Namespace="Backsight", IsNullable=false)]
-    public abstract partial class FeatureType {
+    public partial class FeatureType {
         
         private string idField;
         
@@ -330,16 +270,17 @@ namespace Backsight.Editor.Xml {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RowTextType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MiscTextType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(KeyTextType))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class TextType : FeatureType {
+    public abstract partial class TextType : FeatureType {
         
-        private ulong xField;
+        private long xField;
         
-        private ulong yField;
+        private long yField;
         
         private double heightField;
         
@@ -353,11 +294,11 @@ namespace Backsight.Editor.Xml {
         
         private bool topologicalField;
         
-        private ulong polygonXField;
+        private long polygonXField;
         
         private bool polygonXFieldSpecified;
         
-        private ulong polygonYField;
+        private long polygonYField;
         
         private bool polygonYFieldSpecified;
         
@@ -367,7 +308,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong X {
+        public long X {
             get {
                 return this.xField;
             }
@@ -378,7 +319,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong Y {
+        public long Y {
             get {
                 return this.yField;
             }
@@ -456,7 +397,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong PolygonX {
+        public long PolygonX {
             get {
                 return this.polygonXField;
             }
@@ -478,7 +419,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong PolygonY {
+        public long PolygonY {
             get {
                 return this.polygonYField;
             }
@@ -527,19 +468,28 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class KeyTextType : TextType {
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class PointType : FeatureType {
         
-        private ulong xField;
+        private long xField;
         
-        private ulong yField;
+        private long yField;
         
-        private ulong zField;
+        private long zField;
         
         private bool zFieldSpecified;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong X {
+        public long X {
             get {
                 return this.xField;
             }
@@ -550,7 +500,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong Y {
+        public long Y {
             get {
                 return this.yField;
             }
@@ -561,7 +511,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ulong Z {
+        public long Z {
             get {
                 return this.zField;
             }
@@ -730,14 +680,14 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class AttachPointType : OperationType {
         
-        private FeatureDataType pointField;
+        private FeatureType pointField;
         
         private string lineField;
         
         private uint positionRatioField;
         
         /// <remarks/>
-        public FeatureDataType Point {
+        public FeatureType Point {
             get {
                 return this.pointField;
             }

@@ -20,15 +20,16 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized text feature.
     /// </summary>
-    public partial class TextType
+    public partial class RowTextType
     {
         /// <summary>
-        /// Deserializes a text feature
+        /// Loads this feature as part of an editing operation
         /// </summary>
-        /// <returns>The deserialized version of this feature</returns>
-        internal override Feature Deserialize()
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
         {
-            return new TextFeature(this);
+            return new TextFeature(op, this);
         }
     }
 }

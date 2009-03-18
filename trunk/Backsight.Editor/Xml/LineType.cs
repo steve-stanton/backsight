@@ -23,12 +23,13 @@ namespace Backsight.Editor.Xml
     public partial class LineType
     {
         /// <summary>
-        /// Deserializes a line feature
+        /// Loads this feature as part of an editing operation
         /// </summary>
-        /// <returns>The deserialized version of this feature</returns>
-        internal override Feature Deserialize()
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
         {
-            return new LineFeature(this);
+            return new LineFeature(op, this);
         }
     }
 }

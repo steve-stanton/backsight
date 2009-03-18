@@ -48,7 +48,6 @@
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
     <Compile Include="Content.cs" />
-    <Compile Include="ContentMapping.cs" />
     <Compile Include="ContentReader.cs" />
     <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
@@ -327,7 +326,6 @@
     <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
-    <Compile Include="IOperation.cs" />
     <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
@@ -1023,6 +1021,7 @@
     <Compile Include="Wildcard.cs" />
     <Compile Include="XmlContentReader.cs" />
     <Compile Include="XmlContentWriter.cs" />
+    <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\Edits.cs">
@@ -1030,13 +1029,15 @@
     </Compile>
     <Compile Include="Xml\FeatureType.cs" />
     <Compile Include="Xml\ImportType.cs" />
+    <Compile Include="Xml\KeyTextType.cs" />
     <Compile Include="Xml\LineType.cs" />
+    <Compile Include="Xml\MiscTextType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
     <Compile Include="Xml\PointType.cs" />
+    <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SharedPointType.cs" />
-    <Compile Include="Xml\TextType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

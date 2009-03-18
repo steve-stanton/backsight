@@ -77,7 +77,8 @@ namespace Backsight.Editor.Database
                 sb.Append(" ORDER BY [SessionId], [EditSequence]");
                 SqlCommand cmd = new SqlCommand(sb.ToString(), con);
 
-                SessionData curSession = null;
+                SessionData curSessionData = null;
+                Session curSession = null;
                 User curUser = null;
                 Job curJob = null;
                 Trace.Write("Reading data...");
@@ -90,28 +91,28 @@ namespace Backsight.Editor.Database
                         uint editSequence = (uint)reader.GetInt32(1);
 
                         // Ensure we have the correct session object
-                        if (curSession==null || curSession.m_SessionId!=sessionId)
+                        if (curSessionData==null || curSessionData.m_SessionId!=sessionId)
                         {
-                            curSession = sessions.Find(delegate(SessionData s)
+                            curSessionData = sessions.Find(delegate(SessionData s)
                                             { return (s.m_SessionId==sessionId); });
-                            Debug.Assert(curSession != null);
+                            Debug.Assert(curSessionData != null);
 
                             curUser = Array.Find<User>(allUsers, delegate(User u)
-                                            { return (u.UserId==curSession.UserId); });
+                                            { return (u.UserId==curSessionData.UserId); });
                             Debug.Assert(curUser != null);
 
                             curJob = Array.Find<Job>(allJobs, delegate(Job j)
-                                            { return (j.JobId == curSession.JobId); });
+                                            { return (j.JobId == curSessionData.JobId); });
                             Debug.Assert(curJob != null);
 
                             // Create the session (and append to the model)
-                            Session.CreateCurrentSession(model, curSession, curUser, curJob);
+                            curSession = Session.CreateCurrentSession(model, curSessionData, curUser, curJob);
                         }
 
                         SqlXml data = reader.GetSqlXml(2);
                         using (XmlReader xr = data.CreateReader())
                         {
-                            Operation edit = xcr.ReadEdit(xr);
+                            Operation edit = xcr.ReadEdit(curSession, xr);
 
                             // The edit sequence is repeated in the XML data
                             Debug.Assert(edit.EditSequence == editSequence);
@@ -120,7 +121,7 @@ namespace Backsight.Editor.Database
                 }
 
                 Trace.Write("Attaching attributes...");
-                AttributeData.Load(xcr.GetFeatureIds());
+                AttributeData.Load(model.GetFeatureIds());
 
                 // Create spatial index
                 Trace.Write("Indexing...");

@@ -19,6 +19,7 @@ using System.Windows.Forms;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -81,10 +82,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        protected TextGeometry()
+        /// <param name="f">The feature that makes use of this geometry</param>
+        /// <param name="t">The serialized version of the feature</param>
+        protected TextGeometry(TextFeature f, TextType t)
         {
+            m_Font = EnvironmentContainer.FindFontById((int)t.Font);
+            m_Position = new PointGeometry(t.X, t.Y);
+            m_Height = (float)t.Height;
+            m_Width = (float)t.Width;
+
+            double rot;
+            if (RadianValue.TryParse(t.Rotation, out rot))
+                m_Rotation = new RadianValue(rot);
+            else
+                throw new Exception("Cannot parse text rotation");
         }
 
         /// <summary>
@@ -391,35 +404,6 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         /// <remarks>Implements IXmlContent</remarks>
         internal virtual void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal virtual void ReadAttributes(XmlContentReader reader)
-        {
-            m_Position = new PointGeometry();
-            m_Position.ReadAttributes(reader);
-            m_Font = EnvironmentContainer.FindFontById(reader.ReadInt("FontId"));
-            m_Height = Single.Parse(reader.ReadString("Height"));
-            m_Width = Single.Parse(reader.ReadString("Width"));
-
-            double rot;
-            if (RadianValue.TryParse(reader.ReadString("Rotation"), out rot))
-                m_Rotation = new RadianValue(rot);
-            else
-                throw new Exception("Cannot parse text rotation");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        internal virtual void ReadChildElements(XmlContentReader reader)
         {
         }
 

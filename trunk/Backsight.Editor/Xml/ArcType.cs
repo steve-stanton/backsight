@@ -15,20 +15,21 @@
 
 using System;
 
-using Backsight.Editor.Operations;
-
 namespace Backsight.Editor.Xml
 {
-    public partial class NewLineType
+    /// <summary>
+    /// A serialized text feature.
+    /// </summary>
+    public partial class ArcType
     {
         /// <summary>
-        /// Loads this editing operation into a session
+        /// Loads this feature as part of an editing operation
         /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
         {
-            return new NewLineOperation(s, this);
+            return new ArcFeature(op, this);
         }
     }
 }

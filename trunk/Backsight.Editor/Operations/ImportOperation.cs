@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -25,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
     /// the current map model.
     /// </summary>
-    class ImportOperation : Operation, IOperation
+    class ImportOperation : Operation
     {
         #region Class data
 
@@ -40,10 +41,19 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public ImportOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal ImportOperation(Session s, ImportType t)
+            : base(s, t)
         {
+            m_Data = new Feature[t.Feature.Length];
+            for (int i=0; i<m_Data.Length; i++)
+            {
+                FeatureType f = t.Feature[i];
+                m_Data[i] = f.LoadFeature(this);
+            }
         }
 
         /// <summary>

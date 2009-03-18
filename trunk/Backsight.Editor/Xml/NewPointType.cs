@@ -21,9 +21,14 @@ namespace Backsight.Editor.Xml
 {
     public partial class NewPointType
     {
-        public override IOperation Create()
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
         {
-            return new NewPointOperation(this);
+            return new NewPointOperation(s, this);
         }
     }
 }

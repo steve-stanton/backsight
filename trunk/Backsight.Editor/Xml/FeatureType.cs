@@ -25,9 +25,10 @@ namespace Backsight.Editor.Xml
     abstract public partial class FeatureType
     {
         /// <summary>
-        /// Deserializes a spatial feature
+        /// Loads this feature as part of an editing operation
         /// </summary>
-        /// <returns>The deserialized version of this feature</returns>
-        abstract internal Feature Deserialize();
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        abstract internal Feature LoadFeature(Operation op);
     }
 }

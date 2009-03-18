@@ -48,21 +48,37 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(PointType t)
-            : base(t)
+        internal PointFeature(Operation op, PointType t)
+            : base(op, t)
         {
             PointGeometry pg = new PointGeometry(t.X, t.Y);
             m_Geom = new Node(this, pg);
+        }
+
+
+        /// <summary>
+        /// Constructor for use during deserialization. This version does not define the
+        /// position for the new point - the editing operation must subsequently calculate
+        /// the geometry.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of the information describing this feature</param>
+        internal PointFeature(Operation op, FeatureType t)
+            : base(op, t)
+        {
+            m_Geom = null;
         }
 
         /// <summary>
         /// Constructor for use during deserialization of a point that
         /// shares geometry with another point.
         /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(SharedPointType t)
-            : base(t)
+        internal PointFeature(Operation op, SharedPointType t)
+            : base(op, t)
         {
             PointFeature firstPoint = MapModel.Find<PointFeature>(t.FirstPoint);
             firstPoint.Node.AttachPoint(this);

@@ -27,13 +27,10 @@ namespace Backsight.Editor.Xml
     abstract public partial class OperationType
     {
         /// <summary>
-        /// Deserializes this editing operation.
+        /// Loads this editing operation into a session
         /// </summary>
-        /// <returns>The deserialized version of this edit</returns>
-        /// <remarks>The result can be safely cast to an instance of <see cref="Operation"/>. It is
-        /// returned as an <see cref="IOperation"/> because some sort of public object is required
-        /// (the <c>Operation</c> class is declared as an internal class, but you cannot return
-        /// that from a class that is declared to be public).</remarks>
-        abstract public IOperation Create();
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        abstract internal Operation LoadOperation(Session s);
     }
 }

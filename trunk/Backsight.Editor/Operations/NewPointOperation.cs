@@ -20,7 +20,7 @@ using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
-    class NewPointOperation : Operation, IOperation
+    class NewPointOperation : Operation
     {
         #region Class data
 
@@ -36,8 +36,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        public NewPointOperation(NewPointType t)
-            : base(t)
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal NewPointOperation(Session s, NewPointType t)
+            : base(s, t)
         {
             PointType pt = t.Point;
             //m_NewPoint = MapModel.
