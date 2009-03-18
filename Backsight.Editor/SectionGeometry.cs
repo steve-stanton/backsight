@@ -39,28 +39,21 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public SectionGeometry()
-        {
-        }
-
-        /// <summary>
         /// Creates a new <c>LineSection</c>
         /// </summary>
-        /// <param name="line">The line the section refers to (not null).</param>
+        /// <param name="baseLine">The line the section is based on (not null).</param>
         /// <param name="start">The point at the start of the section (coincident with
         /// the specified line)</param>
         /// <param name="end">The point at the end of the section (coincident with
         /// the specified line)</param>
         /// <exception cref="ArgumentNullException">If a null line was specified</exception>
-        internal SectionGeometry(LineFeature line, PointFeature start, PointFeature end)
+        internal SectionGeometry(LineFeature baseLine, PointFeature start, PointFeature end)
             : base(start, end)
         {
-            if (line==null)
+            if (baseLine==null)
                 throw new ArgumentNullException();
 
-            m_Base = line;            
+            m_Base = baseLine;            
         }
 
         #endregion
@@ -277,16 +270,6 @@ namespace Backsight.Editor
         {
             base.WriteAttributes(writer);
             writer.WriteFeatureReference("Base", m_Base);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Base = reader.ReadFeatureByReference<LineFeature>("Base");
         }
     }
 }

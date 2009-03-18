@@ -41,6 +41,12 @@ namespace Backsight.Editor
         internal ArcFeature(Operation op, ArcType t)
             : base(op, t)
         {
+            // Associate this line with the circle (this is ordinarily done
+            // by the ArcFeature.AddRefernces override that is called by the
+            // LineFeature(LineType) constructor - however, in this context,
+            // the Circle doesn't get defined until a bit later.
+
+            Circle.AddArc(this);
         }
 
         /// <summary>
@@ -66,7 +72,12 @@ namespace Backsight.Editor
         /// <param name="container">The line that refers to this geometry.</param>
         public override void AddReferences()
         {
-            Circle.AddArc(this);
+            // The circle may not be known during deserialization. This is taken
+            // care of by the appropriate LineFeature constructor
+            Circle c = this.Circle;
+            if (c!=null)
+                c.AddArc(this);
+
             base.AddReferences();
         }
 

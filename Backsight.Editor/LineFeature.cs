@@ -63,19 +63,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, LineType t)
+        private LineFeature(Operation op, LineType t)
             : base(op, t)
         {
             CadastralMapModel mapModel = op.MapModel;
             m_From = mapModel.Find<PointFeature>(t.From);
             m_To = mapModel.Find<PointFeature>(t.To);
-
-            // For the time being, assume we're dealing with a segment (this may be
-            // changed by other constructors that accept a derived LineType class).
-            // To make it a bit cleaner, this class should be abstract (should have
-            // a SegmentType class). Alternatively, segments could work with a dynamic
-            // geometry.
-            m_Geom = new SegmentGeometry(m_From, m_To);
 
             // Refer the start and end points to this line
             AddReferences();
@@ -94,10 +87,64 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected LineFeature(Operation op, ArcType t)
-            : base(op, t)
+        internal LineFeature(Operation op, ArcType t)
+            : this(op, (LineType)t)
         {
-            //m_Geom = new ArcGeometry(
+            Circle c = null;
+
+            if (t.Circle==null)
+            {
+                ArcFeature firstArc = op.MapModel.Find<ArcFeature>(t.FirstArc);
+                c = firstArc.Circle;
+            }
+            else
+            {
+                c = new Circle(op, t.Circle);
+            }
+
+            m_Geom = new ArcGeometry(c, m_From, m_To, t.Clockwise);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal LineFeature(Operation op, SegmentType t)
+            : this(op, (LineType)t)
+        {
+            m_Geom = new SegmentGeometry(m_From, m_To);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal LineFeature(Operation op, MultiSegmentType t)
+            : this(op, (LineType)t)
+        {
+            PointGeometryType[] pts = t.Point;
+            IPointGeometry[] pgs = new IPointGeometry[pts.Length];
+            for (int i=0; i<pts.Length; i++)
+            {
+                PointGeometryType pt = pts[i];
+                pgs[i] = new PointGeometry(pt.X, pt.Y);
+            }
+
+            m_Geom = new MultiSegmentGeometry(m_From, m_To, pgs);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal LineFeature(Operation op, SectionType t)
+            : this(op, (LineType)t)
+        {
+            LineFeature baseLine = op.MapModel.Find<LineFeature>(t.Base);
+            m_Geom = new SectionGeometry(baseLine, m_From, m_To);
         }
 
         /// <summary>
@@ -1296,17 +1343,6 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         {
             base.WriteChildElements(writer);
             m_Geom.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Geom.ReadChildElements(reader);
         }
 
         /// <summary>

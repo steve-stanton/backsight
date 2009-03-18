@@ -40,13 +40,6 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public BearingDirection()
-        {
-        }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="from">The point which the bearing was taken from.</param>

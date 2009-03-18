@@ -403,7 +403,7 @@ namespace Backsight.Editor
         /// <remarks>Implements IXmlContent</remarks>
         public override string XmlTypeName
         {
-            get { throw new NotImplementedException("TextFeature.XmlTypeName"); }
+            get { return m_Geom.XmlTypeName; }
         }
 
         /// <summary>

@@ -46,7 +46,6 @@
     <xs:attribute name="Type" type="xs:unsignedInt" />
     <xs:attribute name="Key" type="xs:string" use="optional" />
   </xs:complexType>
-  <xs:element name="Feature" type="FeatureType" />
   <xs:simpleType name="IdType">
     <xs:annotation>
       <xs:documentation>The ID for features and editing operations. Backsight defines this by concatenating the ID of the sesion in which the item was created, followed by a sequence number indicating the creation order within the session. The very first ID is 1.1
@@ -57,12 +56,21 @@ Dealing with these two components as a single formatted string may well be "bad"
       <xs:pattern value="[0-9]{1,10}:[0-9]{1,10}" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="ImportType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+          <xs:element name="Feature" type="FeatureType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="KeyTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LineType">
+  <xs:complexType name="LineType" abstract="true">
     <xs:annotation>
       <xs:documentation>A line feature plus its associated geometry. The base type is suitable for simple line segments (probably 80% of all lines in a cadastral mapping environment).</xs:documentation>
     </xs:annotation>
@@ -90,12 +98,11 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="LineType">
         <xs:sequence>
-          <xs:element minOccurs="2" maxOccurs="unbounded" name="Point" type="PointGeometryType" />
+          <xs:element minOccurs="3" maxOccurs="unbounded" name="Point" type="PointGeometryType" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="MultiSegment" type="MultiSegmentType" />
   <xs:complexType name="NewLineType">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
@@ -114,7 +121,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="NewPoint" type="NewPointType" />
   <xs:complexType name="OperationType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
   </xs:complexType>
@@ -145,7 +151,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="RowText" type="RowTextType" />
   <xs:complexType name="SectionType">
     <xs:complexContent mixed="false">
       <xs:extension base="LineType">
@@ -161,7 +166,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="SharedPoint" type="SharedPointType" />
   <xs:complexType name="TextType" abstract="true">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
@@ -177,13 +181,9 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ImportType">
+  <xs:complexType name="SegmentType">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-          <xs:element name="Feature" type="FeatureType" />
-        </xs:sequence>
-      </xs:extension>
+      <xs:extension base="LineType" />
     </xs:complexContent>
   </xs:complexType>
 </xs:schema>

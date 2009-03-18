@@ -1030,13 +1030,15 @@
     <Compile Include="Xml\FeatureType.cs" />
     <Compile Include="Xml\ImportType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
-    <Compile Include="Xml\LineType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
+    <Compile Include="Xml\MultiSegmentType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\RowTextType.cs" />
+    <Compile Include="Xml\SectionType.cs" />
+    <Compile Include="Xml\SegmentType.cs" />
     <Compile Include="Xml\SharedPointType.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1115,9 +1117,9 @@
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
     <None Include="Resources\ZoomOut.ico" />
-    <None Include="Xml\Edits.xsd">
+    <EmbeddedResource Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
-    </None>
+    </EmbeddedResource>
     <None Include="Xml\Edits.xsx">
       <DependentUpon>Edits.xsd</DependentUpon>
     </None>

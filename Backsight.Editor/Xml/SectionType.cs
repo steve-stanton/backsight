@@ -18,9 +18,9 @@ using System;
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// A serialized line feature with geometry defined by a circular arc.
+    /// A serialized line feature with geometry defined as a section of another line.
     /// </summary>
-    public partial class ArcType
+    public partial class SectionType
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -29,17 +29,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new ArcFeature(op, this);
-        }
-
-        internal string FirstArc
-        {
-            get { return (Item as string); }
-        }
-
-        internal CircleType Circle
-        {
-            get { return (Item as CircleType); }
+            return new LineFeature(op, this);
         }
     }
 }

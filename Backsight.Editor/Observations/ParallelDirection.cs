@@ -47,13 +47,6 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public ParallelDirection()
-        {
-        }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="from">The point the direction is from.</param>

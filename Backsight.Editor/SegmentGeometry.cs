@@ -450,7 +450,7 @@ namespace Backsight.Editor
         /// of <see cref="LineFeature"/></remarks>
         internal override string XmlTypeName
         {
-            get { return "LineType"; }
+            get { return "SegmentType"; }
         }
 
         /// <summary>

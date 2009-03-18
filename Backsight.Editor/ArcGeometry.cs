@@ -50,13 +50,6 @@ namespace Backsight.Editor
             m_IsClockwise = isClockwise;
         }
 
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public ArcGeometry()
-        {
-        }
-
         #endregion
 
         #region ICircularArcGeometry Members
@@ -745,36 +738,6 @@ namespace Backsight.Editor
                 writer.WriteElement("Circle", m_Circle);
             else
                 writer.WriteFeatureReferenceAsElement("FirstArc", firstArc);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_IsClockwise = reader.ReadBool("Clockwise");
-
-            if (reader.HasAttribute("FirstArc"))
-            {
-                ArcFeature firstArc = reader.ReadFeatureByReference<ArcFeature>("FirstArc");
-                m_Circle = firstArc.Circle;
-            }
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            if (m_Circle == null)
-                m_Circle = reader.ReadElement<Circle>("Circle");
         }
     }
 }

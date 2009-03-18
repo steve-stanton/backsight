@@ -100,13 +100,6 @@ namespace Backsight.Editor
         {
         }
 
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public PointGeometry()
-        {
-        }
-
         #endregion
 
         public override string ToString()

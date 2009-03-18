@@ -47,7 +47,7 @@ namespace Backsight.Editor.Xml
         static XmlSchema GetSchema()
         {
             Assembly a = Assembly.GetExecutingAssembly();
-            using (Stream fs = a.GetManifestResourceStream("Backsight.Xml.Edits.xsd"))
+            using (Stream fs = a.GetManifestResourceStream("Backsight.Editor.Xml.Edits.xsd"))
             {
                 return XmlSchema.Read(fs, null);
             }

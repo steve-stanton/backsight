@@ -55,14 +55,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public LineData()
-            : base()
-        {
-        }
-
-        /// <summary>
         /// Creates a new <c>LineData</c> that's initialized with the information
         /// in the supplied feature.
         /// </summary>

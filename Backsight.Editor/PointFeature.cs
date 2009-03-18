@@ -81,14 +81,8 @@ namespace Backsight.Editor
             : base(op, t)
         {
             PointFeature firstPoint = MapModel.Find<PointFeature>(t.FirstPoint);
-            firstPoint.Node.AttachPoint(this);
-        }
-
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public PointFeature()
-        {
+            m_Geom = firstPoint.m_Geom;
+            m_Geom.AttachPoint(this);
         }
 
         /// <summary>
@@ -396,22 +390,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains the object that should be used to serialize the content
-        /// when it is being written to the database.
-        /// </summary>
-        /// <returns>
-        /// The object that should be used to serialize the content
-        /// </returns>
-        internal override IXmlContent GetXmlContent()
-        {
-            return this;
-            //if (m_Geom.FirstPoint == this)
-            //    return this;
-            //else
-            //    return new SharedPointContent(this);
-        }
-
-        /// <summary>
         /// The string that will be used as the xsi:type for this content.
         /// </summary>
         /// <remarks>Implements IXmlContent</remarks>
@@ -443,40 +421,6 @@ namespace Backsight.Editor
                 m_Geom.WriteAttributes(writer); // X and Y
             else
                 writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            // Since we didn't write out the geometry as an element, we need to cover
-            // the types of geometry that are supported.
-            if (reader.HasAttribute("Z"))
-            {
-                // Just a matter of defining a PointGeometry3D class, but I'm too lazy
-                // to do it today.
-                throw new NotSupportedException("Points will elevation are not currently supported");
-            }
-            else
-            {
-                // If this point shares geometry with a preceding point, grab the geometry from there
-                if (reader.HasAttribute("FirstPoint"))
-                {
-                    PointFeature p = reader.ReadFeatureByReference<PointFeature>("FirstPoint");
-                    m_Geom = p.m_Geom;
-                    m_Geom.AttachPoint(this);
-                }
-                else
-                {
-                    PointGeometry g = new PointGeometry();
-                    g.ReadAttributes(reader);
-                    m_Geom = new Node(this, g);
-                }
-            }
         }
     }
 }
