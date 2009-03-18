@@ -76,10 +76,50 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(TextType t)
-            : base(t)
+        private TextFeature(Operation op, TextType t)
+            : base(op, t)
         {
+            SetTopology(t.Topological);
+
+            if (t.PolygonXSpecified && t.PolygonYSpecified)
+                m_PolygonPosition = new PointGeometry(t.PolygonX, t.PolygonY);
+            else
+                m_PolygonPosition = null;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal TextFeature(Operation op, MiscTextType t)
+            : this(op, (TextType)t)
+        {
+            m_Geom = new MiscText(this, t);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal TextFeature(Operation op, KeyTextType t)
+            : this(op, (TextType)t)
+        {
+            m_Geom = new KeyTextGeometry(this, t);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal TextFeature(Operation op, RowTextType t)
+            : this(op, (TextType)t)
+        {
+            m_Geom = new RowTextContent(this, t);
         }
 
         /// <summary>
@@ -93,13 +133,6 @@ namespace Backsight.Editor
         {
             m_Geom = text;
             m_Container = null;
-        }
-
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public TextFeature()
-        {
         }
 
         #endregion
@@ -370,7 +403,7 @@ namespace Backsight.Editor
         /// <remarks>Implements IXmlContent</remarks>
         public override string XmlTypeName
         {
-            get { return m_Geom.XmlTypeName; }
+            get { throw new NotImplementedException("TextFeature.XmlTypeName"); }
         }
 
         /// <summary>
@@ -401,53 +434,6 @@ namespace Backsight.Editor
         {
             base.WriteChildElements(writer);
             m_Geom.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            string xmlType = reader.XmlTypeName;
-            if (xmlType == "TextType")
-                m_Geom = new KeyTextGeometry();
-            else if (xmlType == "MiscTextType")
-                m_Geom = new MiscText();
-            else if (xmlType == "RowTextType")
-                m_Geom = new RowTextContent();
-            else
-                throw new Exception("Unexpected xml type for text: " + xmlType);
-
-            m_Geom.ReadAttributes(reader);
-
-            bool isTopological = reader.ReadBool("Topological");
-            SetTopology(isTopological);
-
-            // Pick up any polygon reference position
-            long x = reader.ReadLong("PolygonX");
-            long y = reader.ReadLong("PolygonY");
-            if (x==0 && y==0)
-                m_PolygonPosition = null;
-            else
-                m_PolygonPosition = new PointGeometry(x, y);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Geom.ReadChildElements(reader);
-
-            // KeyText refers back to this feature (which provides the key)
-            if (m_Geom is KeyTextGeometry)
-                (m_Geom as KeyTextGeometry).Label = this;
         }
 
         /// <summary>

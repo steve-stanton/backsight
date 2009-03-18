@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -25,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new line (either a simple line segment, or a circular arc).
     /// </summary>
-    class NewLineOperation : Operation, IOperation
+    class NewLineOperation : Operation
     {
         #region Class data
 
@@ -37,6 +38,17 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal NewLineOperation(Session s, NewLineType t)
+            : base(s, t)
+        {
+            throw new NotImplementedException("NewLineOperation");
+        }
 
         /// <summary>
         /// Default constructor, for use during deserialization

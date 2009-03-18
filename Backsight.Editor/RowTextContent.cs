@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -47,10 +48,16 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        public RowTextContent()
+        /// <param name="f">The feature that makes use of this geometry</param>
+        /// <param name="t">The serialized version of the feature</param>
+        internal RowTextContent(TextFeature f, RowTextType t)
+            : base(f, t)
         {
+            m_RowKey = t.RowKey;
+            m_TableId = (int)t.Table;
+            m_TemplateId = (int)t.Template;
         }
 
         /// <summary>
@@ -70,19 +77,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_RowKey = reader.ReadString("Id");
-            m_TableId = reader.ReadInt("Table");
-            m_TemplateId = reader.ReadInt("Template");
-        }
 
         /// <summary>
         /// Override returns a null spatial extent. The extent will be defined

@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -523,18 +524,24 @@ namespace Backsight.Editor
         /// <returns></returns>
         internal static FeatureId Read(string name, XmlContentReader reader)
         {
-            string key = reader.ReadString(name);
-            if (key == null)
+            throw new NotSupportedException("FeatureId.Read");
+        }
+
+        internal static FeatureId Read(CadastralMapModel mapModel, FeatureType f)
+        {
+            string key = f.Key;
+            if (String.IsNullOrEmpty(key))
                 return null;
 
             int atPos = key.IndexOf('@');
             if (atPos < 0)
-                return reader.FindForeignId(key);
+                return mapModel.FindForeignId(key);
 
             uint rawId = uint.Parse(key.Substring(0, atPos));
             int groupId = int.Parse(key.Substring(atPos+1));
             IIdGroup group = EnvironmentContainer.FindIdGroupById(groupId);
-            return reader.FindNativeId((IdGroup)group, rawId);
+            return mapModel.FindNativeId((IdGroup)group, rawId);
         }
+
     }
 }

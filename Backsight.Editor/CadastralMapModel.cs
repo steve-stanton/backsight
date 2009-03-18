@@ -99,6 +99,19 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<InternalIdValue, Feature> m_Features;
 
+        /// <summary>
+        /// Index of feature IDs that are based on the Backsight numbering strategy (as opposed
+        /// to user-perceived IDs that originate from some foreign source). The key
+        /// is the raw ID, the value the created ID object.
+        /// </summary>
+        readonly Dictionary<uint, NativeId> m_NativeIds;
+
+        /// <summary>
+        /// Index of all foreign IDs (typically IDs that get defined via import from some
+        /// alien data source).
+        /// </summary>
+        readonly Dictionary<string, ForeignId> m_ForeignIds;
+
         #endregion
 
         #region Constructors
@@ -115,7 +128,9 @@ namespace Backsight.Editor
             m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
             m_IsLoading = false;
-            m_Features = new Dictionary<InternalIdValue, Feature>();
+            m_Features = new Dictionary<InternalIdValue, Feature>(1000);
+            m_NativeIds = new Dictionary<uint, NativeId>(1000);
+            m_ForeignIds = new Dictionary<string, ForeignId>(1000);
         }
 
         #endregion
@@ -1460,6 +1475,65 @@ namespace Backsight.Editor
                 return (f as T);
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Obtains a native ID for a feature, adding it to the model if it was not
+        /// previously loaded.
+        /// </summary>
+        /// <param name="group">The ID group the ID is part of</param>
+        /// <param name="rawId">The raw ID to look for</param>
+        /// <returns>The ID assigned to the feature</returns>
+        internal NativeId FindNativeId(IdGroup group, uint rawId)
+        {
+            NativeId result;
+
+            if (!m_NativeIds.TryGetValue(rawId, out result))
+            {
+                result = new NativeId(group, rawId);
+                m_NativeIds.Add(rawId, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Obtains a foreign ID for a feature, adding it to the model if it was not
+        /// previously loaded.
+        /// </summary>
+        /// <param name="name">The name of the attribute holding the foreign ID string</param>
+        /// <param name="f">The feature that will receive the ID</param>
+        /// <returns>The ID assigned to the feature</returns>
+        internal ForeignId FindForeignId(string key)
+        {
+            ForeignId result;
+
+            if (!m_ForeignIds.TryGetValue(key, out result))
+            {
+                result = new ForeignId(key);
+                m_ForeignIds.Add(key, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Obtains all loaded feature IDs
+        /// </summary>
+        /// <returns>The native and foreign IDs that have been loaded (may be an empty array)</returns>
+        internal FeatureId[] GetFeatureIds()
+        {
+            int numNative = m_NativeIds.Count;
+            int numForeign = m_ForeignIds.Count;
+            List<FeatureId> result = new List<FeatureId>(numNative + numForeign);
+
+            foreach (NativeId nid in m_NativeIds.Values)
+                result.Add(nid);
+
+            foreach (ForeignId fid in m_ForeignIds.Values)
+                result.Add(fid);
+
+            return result.ToArray();
         }
     }
 }

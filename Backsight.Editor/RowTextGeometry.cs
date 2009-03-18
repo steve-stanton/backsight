@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Data;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -48,10 +49,16 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        public RowTextGeometry()
+        /// <param name="f">The feature that makes use of this geometry</param>
+        /// <param name="t">The serialized version of the feature</param>
+        internal RowTextGeometry(TextFeature f, RowTextType t)
+            : base(f, t)
         {
+            // The row will be defined after attributes have been loaded
+            m_Row = null;
+            m_Template = EnvironmentContainer.FindTemplateById((int)t.Template);
         }
 
         /// <summary>
@@ -325,16 +332,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
-        {
-            get { return "RowTextType"; }
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -345,6 +342,16 @@ namespace Backsight.Editor
             writer.WriteString("RowKey", m_Row.Id.FormattedKey);
             writer.WriteInt("Table", m_Row.Table.Id);
             writer.WriteInt("Template", m_Template.Id);
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this geometry.
+        /// </summary>
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
+        {
+            get { return "RowTextType"; }
         }
     }
 }

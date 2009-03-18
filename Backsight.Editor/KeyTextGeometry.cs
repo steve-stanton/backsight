@@ -17,6 +17,7 @@ using System;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -38,10 +39,14 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public KeyTextGeometry()
+        /// <param name="f">The feature that makes use of this geometry</param>
+        /// <param name="t">The serialized version of the feature</param>
+        internal KeyTextGeometry(TextFeature f, KeyTextType t)
+            : base(f, t)
         {
+            m_Feature = f;
         }
 
         /// <summary>
@@ -91,7 +96,7 @@ namespace Backsight.Editor
         /// of <see cref="LineFeature"/></remarks>
         internal override string XmlTypeName
         {
-            get { return "TextType"; }
+            get { return "KeyTextType"; }
         }
     }
 }

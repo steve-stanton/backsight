@@ -15,15 +15,21 @@
 
 using System;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// An editing operation that can be serialized to the database as an XML fragment.
-    /// You can safely cast an instance of this interface to an instance of the <see cref="Operation"/>
-    /// class. The only reason for the interface is that it is utilized by xsd-generated classes that
-    /// are created as public, but the <c>Operation</c> class is not public.
+    /// A serialized text feature that represents the user-perceived key for a spatial feature.
     /// </summary>
-    public interface IOperation
+    public partial class KeyTextType
     {
+        /// <summary>
+        /// Loads this feature as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
+        {
+            return new TextFeature(op, this);
+        }
     }
 }

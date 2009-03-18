@@ -22,6 +22,7 @@ using System.IO;
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -30,7 +31,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to attach a point to a line.
     /// </summary>
-    class AttachPointOperation : Operation, IOperation
+    class AttachPointOperation : Operation
     {
         /// <summary>
         /// The max value stored for <c>m_PositionRatio</c>
@@ -59,6 +60,21 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal AttachPointOperation(Session s, AttachPointType t)
+            : base(s, t)
+        {
+            m_Line = s.MapModel.Find<LineFeature>(t.Line);
+            m_PositionRatio = t.PositionRatio;
+            m_Point = new PointFeature(this, t.Point);
+        }
 
         /// <summary>
         /// Default constructor, for use during deserialization

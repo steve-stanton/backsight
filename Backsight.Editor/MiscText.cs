@@ -17,6 +17,7 @@ using System;
 
 using Backsight.Environment;
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -50,10 +51,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        public MiscText()
+        /// <param name="f">The feature that makes use of this geometry</param>
+        /// <param name="t">The serialized version of the feature</param>
+        internal MiscText(TextFeature f, MiscTextType t)
+            : base(f, t)
         {
+            m_Text = t.Text;
         }
 
         #endregion
@@ -136,16 +141,6 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
-        {
-            get { return "MiscTextType"; }
-        }
-
-        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -166,23 +161,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Defines the attributes of this content
+        /// The string that will be used as the xsi:type for this geometry.
         /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadAttributes(XmlContentReader reader)
+        /// <remarks>Line geometry is only saved in the context of an instance
+        /// of <see cref="LineFeature"/></remarks>
+        internal override string XmlTypeName
         {
-            base.ReadAttributes(reader);
-            m_Text = reader.ReadString("Text");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            get { return "MiscTextType"; }
         }
     }
 }

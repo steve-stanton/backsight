@@ -19,6 +19,7 @@ using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -33,6 +34,16 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal ArcFeature(Operation op, ArcType t)
+            : base(op, t)
+        {
+        }
+
+        /// <summary>
         /// Creates a new <c>ArcFeature</c>
         /// </summary>
         /// <param name="e">The entity type for the feature.</param>
@@ -43,13 +54,6 @@ namespace Backsight.Editor
         /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
         internal ArcFeature(IEntity e, Operation creator, Circle c, PointFeature bc, PointFeature ec, bool isClockwise)
             : base(e, creator, c, bc, ec, isClockwise)
-        {
-        }
-
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public ArcFeature()
         {
         }
 

@@ -134,15 +134,6 @@ namespace Backsight.Editor
             }
         }
 
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-        }
-
         #endregion
 
         /// <summary>
