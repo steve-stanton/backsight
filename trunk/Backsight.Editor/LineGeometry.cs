@@ -1,23 +1,23 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Geometry;
-using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -55,13 +55,6 @@ namespace Backsight.Editor
 
             m_Start = start;
             m_End = end;
-        }
-
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        protected LineGeometry()
-        {
         }
 
         #endregion
@@ -241,32 +234,6 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         /// <remarks>Implements IXmlContent</remarks>
         internal virtual void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal virtual void ReadAttributes(XmlContentReader reader)
-        {
-            // Locate the feature that's being read (I don't expect any LineGeometry instance
-            // to be written unless it's in the context of a LineFeature)
-            LineFeature f = reader.FindParent<LineFeature>();
-            Debug.Assert(f!=null);
-
-            // Define the positions that define the ends of this line
-            m_Start = f.StartPoint;
-            m_End = f.EndPoint;
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        internal virtual void ReadChildElements(XmlContentReader reader)
         {
         }
 

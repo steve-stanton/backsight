@@ -71,13 +71,6 @@ namespace Backsight.Editor
             SetPackedData(positions);
         }
 
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public MultiSegmentGeometry()
-        {
-        }
-
         #endregion
 
         /// <summary>
@@ -1149,32 +1142,6 @@ namespace Backsight.Editor
             PointGeometry[] data = GetUnpackedData();
             foreach (PointGeometry pg in data)
                 writer.WriteElement("Point", pg);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        internal override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            // Locate the feature that's being read
-            LineFeature f = reader.FindParent<LineFeature>();
-            Debug.Assert(f!=null);
-
-            // Read in the positions of the line
-            PointGeometry[] data = reader.ReadArray<PointGeometry>("Position");
-            Debug.Assert(data.Length>2);
-
-            // Confirm that the terminal positions match the position of the line end points (assumes
-            // that the line feature has picked up the end points before parsing the geometry)
-            Debug.Assert(data[0].IsCoincident(f.StartPoint));
-            Debug.Assert(data[data.Length-1].IsCoincident(f.EndPoint));
-
-            // Pack the data
-            SetPackedData(data);
         }
     }
 }

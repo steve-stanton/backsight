@@ -30,13 +30,6 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public DeflectionDirection()
-        {
-        }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="backsight">The backsight point.</param>

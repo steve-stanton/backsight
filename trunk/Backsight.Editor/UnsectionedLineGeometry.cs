@@ -41,13 +41,6 @@ namespace Backsight.Editor
         {
         }
 
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        protected UnsectionedLineGeometry()
-        {
-        }
-
         #endregion
 
         /// <summary>

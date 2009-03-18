@@ -87,7 +87,6 @@ namespace Backsight.Editor
             uint sessionId;
             InternalIdValue.Parse(t.Id, out sessionId, out m_Sequence);
             Debug.Assert(s.Id == sessionId);
-            Debug.Assert(m_Sequence == s_CurrentEditSequence); // should no longer be necessary
 
             m_Session = s;
             m_Session.Add(this);
@@ -99,15 +98,7 @@ namespace Backsight.Editor
         /// </summary>
         protected Operation()
         {
-            if (!CadastralMapModel.Current.IsLoading)
-                throw new InvalidOperationException("Wrong constructor used to create edit");
-
-            m_Session = Session.CurrentSession;
-            if (m_Session==null)
-                throw new ArgumentNullException("Editing session is not defined");
-
-            m_Session.Add(this);
-            m_Sequence = s_CurrentEditSequence;
+            throw new NotSupportedException("Operation (old constructor)");
         }
 
         /// <summary>
@@ -532,42 +523,6 @@ namespace Backsight.Editor
         public override void WriteAttributes(XmlContentWriter writer)
         {
             writer.WriteString("Id", DataId);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            uint sessionId;
-            ParseDataId(reader.ReadString("Id"), out sessionId, out m_Sequence);
-            m_Session = Session.CurrentSession;
-            m_Flag = 0;
-
-            // Remember the edit sequence in case anyone else needs it
-            Operation.CurrentEditSequence = m_Sequence;
-
-            // The session needs to defined in advance
-            Debug.Assert(m_Session.Id==sessionId);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
         }
 
         /// <summary>

@@ -47,16 +47,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        public FeatureData()
-        {
-            m_CreationSequence = 0;
-            m_Entity = null;
-            m_Id = null;
-        }
-
-        /// <summary>
         /// Creates a new <c>FeatureData</c> that's initialized with the information
         /// in the supplied feature.
         /// </summary>

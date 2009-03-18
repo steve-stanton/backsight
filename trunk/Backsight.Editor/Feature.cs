@@ -130,13 +130,6 @@ namespace Backsight.Editor
             m_CreatorSequence = 0;
         }
 
-        /// <summary>
-        /// Default constructor (for serialization)
-        /// </summary>
-        protected Feature()
-        {
-        }
-
         #endregion
 
         /// <summary>

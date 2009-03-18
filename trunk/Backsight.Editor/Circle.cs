@@ -18,12 +18,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="19-SEP-1997" />
     /// <summary>
-    /// The definition of a circle (as used by the Cadastral Editor).
+    /// The definition of a circle
     /// </summary>
     /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
     class Circle : Content, ISpatialObject, ICircleGeometry, IFeatureDependent
@@ -62,10 +63,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Default constructor (for serialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        public Circle()
+        /// <param name="op">The editing operation creating the circle</param>
+        /// <param name="t">The serialized version of this circle</param>
+        internal Circle(Operation op, CircleType t)
         {
+            m_Center = op.MapModel.Find<PointFeature>(t.Center);
+            m_Radius = t.Radius;
             m_Arcs = new List<ArcFeature>();
         }
 

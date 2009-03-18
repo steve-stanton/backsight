@@ -18,9 +18,9 @@ using System;
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// A serialized line feature.
+    /// A serialized line feature with geometry defined by an array of positions.
     /// </summary>
-    public partial class LineType
+    public partial class MultiSegmentType
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
