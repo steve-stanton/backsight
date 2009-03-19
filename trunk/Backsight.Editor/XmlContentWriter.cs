@@ -246,12 +246,12 @@ namespace Backsight.Editor
             // is undefined. Assumes that all boolean attributes are
             // defined as optional.
 
-            if (value == true)
-            {
+            //if (value == true)
+            //{
                 m_Writer.WriteStartAttribute(name);
                 m_Writer.WriteValue(value);
                 m_Writer.WriteEndAttribute();
-            }
+            //}
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace Backsight.Editor
         /// <param name="point">The point to write out</param>
         internal void WriteCalculatedPoint(string elementName, PointFeature point)
         {
-            WriteElement(elementName, new FeatureData(point));
+            WriteElement(elementName, new CalculatedPoint(point));
         }
 
         /// <summary>

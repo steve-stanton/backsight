@@ -43,6 +43,7 @@
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttributeData.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="CalculatedPoint.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />

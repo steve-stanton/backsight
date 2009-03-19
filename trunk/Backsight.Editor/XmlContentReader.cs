@@ -335,41 +335,16 @@ namespace Backsight.Editor
                 Debug.Assert(et.Operation.Length==1);
                 OperationType ot = et.Operation[0];
                 Operation result = ot.LoadOperation(s);
-/*
-                // The first child is the "Edit" element.
-                
-                XmlDocument doc = new XmlDocument();
-                doc.Load(data);
-                Debug.Assert(doc.ChildNodes.Count==1);
-                XmlNode top = doc.ChildNodes[0];
-                Debug.Assert(top.Name == "Edit");
-                Debug.Assert(top.ChildNodes.Count==1);
-                XmlNode op = top.ChildNodes[0];                
-                Debug.Assert(op.Name == "Operation");
 
-                m_CurrentNode = op;
-                Operation result = ReadElement<Operation>("Operation");
- */
+                // Note that calculated geometry is NOT defined at this stage. That happens
+                // when the model is asked to index the data.
+
+                // Associate referenced features with the edit
                 result.AddReferences();
+
                 return result;
             }
 
-            /*
-            try
-            {
-                m_Model.IsLoading = true;
-                m_Reader = data;
-                Debug.Assert(m_Elements.Count==0);
-                Operation result = ReadElement<Operation>("Edit");
-                result.AddReferences();
-
-                // Add created features to the model
-                //Feature[] feats = result.Features;
-                //m_Model.AddToIndex(feats);
-
-                return result;
-            }
-            */
             finally
             {
                 m_Reader = null;

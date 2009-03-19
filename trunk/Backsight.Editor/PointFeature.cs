@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal PointFeature(Operation op, FeatureType t)
+        internal PointFeature(Operation op, CalculatedPointType t)
             : base(op, t)
         {
             m_Geom = null;
@@ -80,7 +80,7 @@ namespace Backsight.Editor
         internal PointFeature(Operation op, SharedPointType t)
             : base(op, t)
         {
-            PointFeature firstPoint = MapModel.Find<PointFeature>(t.FirstPoint);
+            PointFeature firstPoint = op.MapModel.Find<PointFeature>(t.FirstPoint);
             m_Geom = firstPoint.m_Geom;
             m_Geom.AttachPoint(this);
         }

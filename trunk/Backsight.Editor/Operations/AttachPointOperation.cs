@@ -77,13 +77,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public AttachPointOperation()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AttachPointOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
@@ -284,29 +277,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            m_PositionRatio = reader.ReadUnsignedInt("PositionRatio");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            //m_Point = reader.ReadCalculatedPoint("Point", Calculate());
-            m_Point = reader.ReadPoint("Point");
-        }
-
-        /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
         public override void CalculateGeometry()
@@ -325,6 +295,15 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this content.
+        /// </summary>
+        /// <remarks>Implements IXmlContent</remarks>
+        public override string XmlTypeName
+        {
+            get { return "AttachPointType"; }
         }
     }
 }

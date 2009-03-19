@@ -22,13 +22,16 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    abstract public partial class FeatureType
+    public partial class FeatureType
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <returns>The spatial feature that was loaded</returns>
-        abstract internal Feature LoadFeature(Operation op);
+        internal virtual Feature LoadFeature(Operation op)
+        {
+            throw new NotImplementedException("LoadFeature not implemented by: "+GetType().Name);
+        }
     }
 }

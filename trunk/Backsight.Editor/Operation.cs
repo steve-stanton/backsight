@@ -528,8 +528,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        /// <remarks>TODO: This should be declared as abstract, and included in
-        /// the IXmlContent interface</remarks>
+        /// <remarks>TODO: This should be declared as abstract</remarks>
         public virtual void CalculateGeometry()
         {
         }
