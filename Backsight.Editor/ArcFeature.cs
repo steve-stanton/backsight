@@ -94,7 +94,11 @@ namespace Backsight.Editor
         /// </summary>
         internal override Circle Circle
         {
-            get { return (Circle)Geometry.Circle; }
+            get
+            {
+                ArcGeometry ag = Geometry;
+                return (ag==null ? null : (Circle)ag.Circle);
+            }
         }
 
         /// <summary>

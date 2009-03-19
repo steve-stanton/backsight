@@ -13,7 +13,7 @@
             <xs:element name="Circle" type="CircleType" />
           </xs:choice>
         </xs:sequence>
-        <xs:attribute default="true" name="Clockwise" type="xs:boolean" use="optional" />
+        <xs:attribute default="false" name="Clockwise" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -21,11 +21,16 @@
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Point" type="FeatureType" />
+          <xs:element name="Point" type="CalculatedPointType" />
         </xs:sequence>
         <xs:attribute name="Line" type="IdType" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
       </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CalculatedPointType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="FeatureType" />
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="CircleType">
@@ -41,9 +46,9 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Edit" type="EditType" />
-  <xs:complexType name="FeatureType">
+  <xs:complexType name="FeatureType" abstract="true">
     <xs:attribute name="Id" type="IdType" />
-    <xs:attribute name="Type" type="xs:unsignedInt" />
+    <xs:attribute name="Type" type="xs:int" />
     <xs:attribute name="Key" type="xs:string" use="optional" />
   </xs:complexType>
   <xs:simpleType name="IdType">
@@ -158,6 +163,11 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="SegmentType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="LineType" />
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="SharedPointType">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
@@ -179,11 +189,6 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="PolygonX" type="xs:long" use="optional" />
         <xs:attribute name="PolygonY" type="xs:long" use="optional" />
       </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="SegmentType">
-    <xs:complexContent mixed="false">
-      <xs:extension base="LineType" />
     </xs:complexContent>
   </xs:complexType>
 </xs:schema>

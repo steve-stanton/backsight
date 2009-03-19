@@ -277,6 +277,7 @@ namespace Backsight.Editor
         {
             foreach (Operation op in m_Operations)
             {
+                op.CalculateGeometry();
                 Feature[] createdFeatures = op.Features;
                 this.MapModel.AddToIndex(createdFeatures);
             }

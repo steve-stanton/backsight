@@ -522,7 +522,9 @@ namespace Backsight.Editor.Operations
                 LineFeature section = m_Line.MakeSubSection(geom, this);
 
                 // Ensure the new section has the right ID info, and register with the reader
-                FeatureData sectionData = new FeatureData(span.LineItemNumber, m_Line.EntityType, m_Line.Id);
+                throw new NotImplementedException("LineSubdivisionOperation.ReadChildElements");
+                //FeatureData sectionData = new FeatureData(span.LineItemNumber, m_Line.EntityType, m_Line.Id);
+                FeatureData sectionData = null;
                 reader.InitializeFeature(section, sectionData);
 
                 MeasuredLineFeature mf = new MeasuredLineFeature(section, distances[i]);

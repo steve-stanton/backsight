@@ -717,7 +717,10 @@ namespace Backsight.Editor
         internal override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-            writer.WriteBool("Clockwise", m_IsClockwise);
+
+            // The default is false (according to the schema), so write out only if it's clockwise
+            if (m_IsClockwise)
+                writer.WriteBool("Clockwise", true);
         }
 
         /// <summary>
