@@ -19,16 +19,10 @@ using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    public partial class AttachPointType : IAttachPoint
+    interface IAttachPoint
     {
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            return new AttachPointOperation(s, this);
-        }
+        string Line { get; }
+        uint PositionRatio { get; }
+        CalculatedPointType Point { get; }
     }
 }

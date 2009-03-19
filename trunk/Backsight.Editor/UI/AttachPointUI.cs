@@ -22,6 +22,7 @@ using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.UI
 {
@@ -221,5 +222,24 @@ namespace Backsight.Editor.UI
         {
             AbortCommand();
         }
+
+        #region IAttachPoint Members
+
+        public string Line
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        public uint PositionRatio
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        public CalculatedPointType Point
+        {
+            get { throw new Exception("The method or operation is not implemented."); }
+        }
+
+        #endregion
     }
 }

@@ -467,7 +467,8 @@ namespace Backsight.Editor.Operations
             for (int i=0; i<spans.Length; i++)
                 spans[i] = new SpanContent(this, m_Sections[i]);
 
-            writer.WriteArray("SpanArray", "Span", spans);
+            foreach (SpanContent s in spans)
+                writer.WriteElement("Span", s);
         }
 
         /// <summary>

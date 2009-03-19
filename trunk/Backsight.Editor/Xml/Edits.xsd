@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Edit" type="EditType" />
   <xs:complexType name="ArcType">
     <xs:annotation>
       <xs:documentation>A circular arc</xs:documentation>
@@ -37,6 +38,21 @@
     <xs:attribute name="Center" type="IdType" />
     <xs:attribute name="Radius" type="xs:double" />
   </xs:complexType>
+  <xs:complexType name="DeletionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+          <xs:element name="Delete" type="IdType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="DistanceUnitType">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0" />
+      <xs:maxInclusive value="3" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="EditType">
     <xs:annotation>
       <xs:documentation>The top level element, corresponding to a row in the ced.Edits table. The system currently works with just one operation - however, the notion of an edit that consists of multiple operations is probably quite useful.</xs:documentation>
@@ -45,11 +61,19 @@
       <xs:element name="Operation" type="OperationType" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="Edit" type="EditType" />
   <xs:complexType name="FeatureType" abstract="true">
-    <xs:attribute name="Id" type="IdType" />
-    <xs:attribute name="Type" type="xs:int" />
+    <xs:attribute name="Id" type="IdType" use="required" />
+    <xs:attribute name="Type" type="xs:int" use="required" />
     <xs:attribute name="Key" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="GetControlType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="PointType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:simpleType name="IdType">
     <xs:annotation>
@@ -126,6 +150,19 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="ObservationType" abstract="true" />
+  <xs:complexType name="OffsetType" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="ObservationType" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="OffsetPointType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OffsetType">
+        <xs:attribute name="Point" type="IdType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="OperationType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
   </xs:complexType>
@@ -184,7 +221,7 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="Height" type="xs:double" use="required" />
         <xs:attribute name="Width" type="xs:double" use="required" />
         <xs:attribute name="Rotation" type="xs:string" use="optional" />
-        <xs:attribute name="Font" type="xs:unsignedInt" use="optional" />
+        <xs:attribute name="Font" type="xs:int" use="optional" />
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
         <xs:attribute name="PolygonX" type="xs:long" use="optional" />
         <xs:attribute name="PolygonY" type="xs:long" use="optional" />

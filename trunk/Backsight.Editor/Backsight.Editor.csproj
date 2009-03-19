@@ -1025,10 +1025,13 @@
     <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />
     <Compile Include="Xml\Content.cs" />
+    <Compile Include="Xml\DeletionType.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
     <Compile Include="Xml\FeatureType.cs" />
+    <Compile Include="Xml\GetControlType.cs" />
+    <Compile Include="Xml\IAttachPoint.cs" />
     <Compile Include="Xml\ImportType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
