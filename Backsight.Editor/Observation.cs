@@ -102,43 +102,5 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that makes use of this observation</param>
         internal abstract void AddReferences(Operation op);
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-        }
     }
 }

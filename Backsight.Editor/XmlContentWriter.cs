@@ -269,34 +269,23 @@ namespace Backsight.Editor
         /// <summary>
         /// Writes an array element for the supplied content
         /// </summary>
-        /// <param name="arrayName">The name for the element representing the complete array</param>
         /// <param name="itemName">The element name for individual elements in the array</param>
         /// <param name="data">The content to write out</param>
-        public void WriteArray(string arrayName, string itemName, IXmlContent[] data)
+        public void WriteArray(string itemName, IXmlContent[] data)
         {
-            m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Length", (uint)data.Length);
-            //WriteArrayHeading(arrayName, (uint)data.Length);
-
             foreach (IXmlContent xc in data)
                 WriteElement(itemName, xc);
-
-            m_Writer.WriteEndElement();
         }
 
         /// <summary>
         /// Writes an array element for the supplied content
         /// </summary>
-        /// <param name="arrayName">The name for the element representing the complete array</param>
         /// <param name="itemName">The element name for individual elements in the array</param>
         /// <param name="data">The content to write out</param>
-        internal void WriteFeatureReferenceArray(string arrayName, string itemName, Feature[] data)
+        internal void WriteFeatureReferenceArray(string itemName, Feature[] data)
         {
-            string[] ids = new string[data.Length];
-            for (int i=0; i<data.Length; i++)
-                ids[i] = data[i].DataId;
-
-            WriteStringArray(arrayName, itemName, ids);
+            foreach(Feature f in data)
+                m_Writer.WriteElementString(itemName, f.DataId);
         }
 
         /// <summary>
@@ -306,30 +295,10 @@ namespace Backsight.Editor
         /// <param name="arrayName">The name for the element representing the complete array</param>
         /// <param name="itemName">The element name for individual elements in the array</param>
         /// <param name="data">The features that will be written as an array of <c>FeatureData</c></param>
-        internal void WriteFeatureDataArray(string arrayName, string itemName, Feature[] data)
+        internal void WriteFeatureDataArray(string itemName, Feature[] data)
         {
-            FeatureData[] fda = new FeatureData[data.Length];
-            for (int i = 0; i < data.Length; i++)
-                fda[i] = new FeatureData(data[i]);
-
-            WriteArray(arrayName, itemName, fda);
-        }
-
-        /// <summary>
-        /// Writes an array element for the supplied content
-        /// </summary>
-        /// <param name="arrayName">The name for the element representing the complete array</param>
-        /// <param name="itemName">The element name for individual elements in the array</param>
-        /// <param name="data">The content to write out</param>
-        void WriteStringArray(string arrayName, string itemName, string[] data)
-        {
-            m_Writer.WriteStartElement(arrayName);
-            WriteUnsignedInt("Length", (uint)data.Length);
-
-            foreach (string s in data)
-                m_Writer.WriteElementString(itemName, s);
-
-            m_Writer.WriteEndElement();
+            foreach (Feature f in data)
+                WriteElement(itemName, new FeatureData(f));
         }
 
         /// <summary>

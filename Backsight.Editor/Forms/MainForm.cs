@@ -1817,39 +1817,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            //MessageBox.Show(action.Title);
-
-            /*
-            if (MessageBox.Show("Load point positions to db?", "Test", MessageBoxButtons.YesNo)
-                    == DialogResult.No)
-                return;
-
-            // Go through each point feature, converting to lat-long and
-            // store in the database
-
-            PositionLoader loader = new PositionLoader(CadastralMapModel.Current);
-            loader.LoadDatabase();
-             */
-
-            /*
-            if (MessageBox.Show("Read point positions from db?", "Test", MessageBoxButtons.YesNo)
-                    == DialogResult.No)
-                return;
-
-            PositionLoader loader = new PositionLoader(CadastralMapModel.Current);
-            IDictionary<int, IPosition> data = loader.ReadPositions();
-             */
-
             //MessageBox.Show(Application.ExecutablePath);
 
             /*
-            // Test content classes
-            SpatialItem info = new SpatialItem();
-            info.ItemId = new Id("23.9");
-            info.Key = new GroupKey(123, 65);
-            info.Type = 23;
-
-
             AttachPoint ap = new AttachPoint();
             ap.EditId = new Id("11.94");
             ap.Line = new Id("445.885");
@@ -1887,12 +1857,33 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             }
              */
 
+            /*
             System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(EditType));
             using (StreamReader s = File.OpenText(@"C:\Temp\LastEdit.txt"))
             {
                 EditType et = (EditType)xs.Deserialize(s);
                 OperationType[] ops = et.Operation;
             }
+             */
+
+            AttachPointType t = new AttachPointType();
+            t.Line = "123.45";
+            t.PositionRatio = (uint)56789;
+            CalculatedPointType p = new CalculatedPointType();
+            t.Point = p;
+            p.Id = "234.56";
+            p.Type = 88;
+            p.Key = "ABC";
+
+            EditType e = new EditType();
+            e.Operation = new OperationType[] { t };
+
+            System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(EditType));
+            using (StreamWriter s = File.CreateText(@"C:\Temp\Test2.txt"))
+            {
+                xs.Serialize(s, e);
+            }
+
         }
 
         #endregion

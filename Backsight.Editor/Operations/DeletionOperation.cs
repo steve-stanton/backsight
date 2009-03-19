@@ -15,8 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -41,13 +43,6 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public DeletionOperation()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DeletionOperation"/> class
         /// that refers to nothing.
         /// </summary>
@@ -56,6 +51,26 @@ namespace Backsight.Editor.Operations
             : base(s)
         {
             m_Deletions = null;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal DeletionOperation(Session s, DeletionType t)
+            : base(s, t)
+        {
+            string[] items = t.Delete;
+            m_Deletions = new List<Feature>(items.Length);
+            CadastralMapModel mapModel = s.MapModel;
+
+            foreach (string id in items)
+            {
+                Feature f = mapModel.Find<Feature>(id);
+                Debug.Assert(f != null);
+                m_Deletions.Add(f);
+            }
         }
 
         #endregion
@@ -230,36 +245,7 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteFeatureReferenceArray("IdArray", "Id", m_Deletions.ToArray());
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            Feature[] dels = reader.ReadFeatureReferenceArray<Feature>("IdArray", "Id");
-            m_Deletions = new List<Feature>(dels);
-
-            // Mark the features as deleted and remove from spatial index
-            //EditingIndex index = reader.Model.EditingIndex;
-            foreach (Feature f in dels)
-            {
-                f.Deactivate();
-                //index.Remove(f);
-            }
+            writer.WriteFeatureReferenceArray("Delete", m_Deletions.ToArray());
         }
 
         /// <summary>
@@ -267,7 +253,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            // Mark the features as deleted
+            foreach (Feature f in m_Deletions)
+                f.Deactivate();
         }
 
         /// <summary>
@@ -289,6 +277,14 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "DeletionType"; }
         }
     }
 }

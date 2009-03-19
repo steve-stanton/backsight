@@ -184,7 +184,9 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteArray("LineArray", "Line", m_Lines);
+
+            foreach (LineFeature line in m_Lines)
+                writer.WriteElement("Line", line);
         }
 
         /// <summary>

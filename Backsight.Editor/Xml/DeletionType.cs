@@ -19,7 +19,7 @@ using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    public partial class AttachPointType : IAttachPoint
+    public partial class DeletionType
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -28,7 +28,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new AttachPointOperation(s, this);
+            return new DeletionOperation(s, this);
         }
     }
 }

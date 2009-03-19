@@ -1099,7 +1099,7 @@ void CePath::CreateAngleText ( CPtrList& text
             base.WriteChildElements(writer);
 
             // Write information about created features
-            writer.WriteFeatureDataArray("FeatureArray", "Feature", this.Features);
+            writer.WriteFeatureDataArray("Feature", this.Features);
         }
 
         /// <summary>

@@ -293,8 +293,8 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteFeatureReferenceArray("LineArray", "Id", m_Lines.ToArray());
-            writer.WriteFeatureReferenceArray("PointArray", "Id", m_Points.ToArray());
+            writer.WriteFeatureReferenceArray("Line", m_Lines.ToArray());
+            writer.WriteFeatureReferenceArray("Point", m_Points.ToArray());
         }
 
         /// <summary>
