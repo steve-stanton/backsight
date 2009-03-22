@@ -246,12 +246,12 @@ namespace Backsight.Editor
             // is undefined. Assumes that all boolean attributes are
             // defined as optional.
 
-            //if (value == true)
-            //{
+            if (value == true)
+            {
                 m_Writer.WriteStartAttribute(name);
                 m_Writer.WriteValue(value);
                 m_Writer.WriteEndAttribute();
-            //}
+            }
         }
 
         /// <summary>

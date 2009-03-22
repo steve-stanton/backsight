@@ -59,6 +59,22 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Constructor for use during deserialization. This version does not define the
+        /// position for the new line - the editing operation must subsequently calculate
+        /// the geometry.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of the information describing this feature</param>
+        internal LineFeature(Operation op, CalculatedFeatureType t)
+            : base(op, t)
+        {
+            m_Topology = null;
+            m_Geom = null;
+            m_From = null;
+            m_To = null;
+        }
+
+        /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>

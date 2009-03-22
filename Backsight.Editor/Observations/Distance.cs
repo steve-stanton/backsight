@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Xml;
+
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="23-OCT-1997" />
@@ -62,14 +65,25 @@ namespace Backsight.Editor.Observations
 
         #region Constructors
 
-        /// <summary>
-        /// Creates a new <c>Distance</c>, for use during deserialization
-        /// </summary>
-        public Distance()
+        internal Distance()
         {
-	        m_EnteredUnit = null;
-	        m_ObservedMetric = 0.0;
-	        m_IsFixed = false;
+            m_EnteredUnit = null;
+            m_ObservedMetric = 0.0;
+            m_IsFixed = false;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal Distance(Operation op, DistanceType t)
+            : base(op, t)
+        {
+            DistanceUnitType dut = (DistanceUnitType)t.EntryUnit;
+            m_EnteredUnit = EditingController.Current.GetUnits(dut);
+            m_ObservedMetric = t.MetricValue;
+            m_IsFixed = t.Fixed;
         }
 
         /// <summary>
@@ -361,43 +375,9 @@ namespace Backsight.Editor.Observations
         public override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-            writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
+            writer.WriteInt("EntryUnit", (int)m_EnteredUnit.UnitType);
             writer.WriteDouble("MetricValue", m_ObservedMetric);
-            writer.WriteBool("IsFixed", m_IsFixed);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            DistanceUnitType unitType = (DistanceUnitType)reader.ReadInt("Unit");
-            m_EnteredUnit = EditingController.Current.GetUnits(unitType);
-            m_ObservedMetric = reader.ReadDouble("MetricValue");
-            m_IsFixed = reader.ReadBool("IsFixed");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            writer.WriteBool("Fixed", m_IsFixed);
         }
 
         /// <summary>
@@ -406,6 +386,14 @@ namespace Backsight.Editor.Observations
         internal double ObservedValue
         {
             get { return GetDistance(m_EnteredUnit); }
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "DistanceType"; }
         }
     }
 }

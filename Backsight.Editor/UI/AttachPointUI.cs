@@ -222,24 +222,5 @@ namespace Backsight.Editor.UI
         {
             AbortCommand();
         }
-
-        #region IAttachPoint Members
-
-        public string Line
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        public uint PositionRatio
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        public CalculatedPointType Point
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
-
-        #endregion
     }
 }

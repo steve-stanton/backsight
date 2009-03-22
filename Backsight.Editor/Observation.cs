@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -28,6 +29,15 @@ namespace Backsight.Editor
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        protected Observation(Operation op, ObservationType t)
+        {
+        }
 
         protected Observation() : base()
         {

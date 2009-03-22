@@ -19,10 +19,16 @@ using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    interface IAttachPoint
+    public partial class IntersectDirectionAndDistanceType
     {
-        string Line { get; }
-        uint PositionRatio { get; }
-        CalculatedFeatureType Point { get; }
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new IntersectDirectionAndDistanceOperation(s, this);
+        }
     }
 }

@@ -51,7 +51,7 @@ namespace Backsight.Editor
         /// <remarks>Implements IXmlContent</remarks>
         public override string XmlTypeName
         {
-            get { return "CalculatedPointType"; }
+            get { return "CalculatedFeatureType"; }
         }
 
         /// <summary>

@@ -16,6 +16,8 @@
 using System;
 using System.Diagnostics;
 
+using Backsight.Editor.Xml;
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="13-NOV-1997" />
@@ -41,16 +43,6 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Default constructor creates an offset point that doesn't refer to anything.
-        /// You must use the <c>Point</c> property to subsequently define the offset point.
-        /// For use during deserialization.
-        /// </summary>
-        public OffsetPoint() : base()
-        {
-            m_Point = null;
-        }
-
-        /// <summary>
         /// Constructor for an offset at the specified point.
         /// </summary>
         /// <param name="point">The offset point</param>
@@ -66,6 +58,17 @@ namespace Backsight.Editor.Observations
         internal OffsetPoint(OffsetPoint copy) : base(copy)
         {
             m_Point = copy.m_Point;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal OffsetPoint(Operation op, OffsetPointType t)
+            : base(op, t)
+        {
+            m_Point = op.MapModel.Find<PointFeature>(t.Point);
         }
 
         #endregion
@@ -200,33 +203,11 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        public override string XmlTypeName
         {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Point = reader.ReadFeatureByReference<PointFeature>("Point");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            get { return "OffsetPointType"; }
         }
     }
 }

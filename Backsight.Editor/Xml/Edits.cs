@@ -41,6 +41,7 @@ namespace Backsight.Editor.Xml {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewPointType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewLineType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(IntersectDirectionAndDistanceType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ImportType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GetControlType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DeletionType))]
@@ -64,6 +65,315 @@ namespace Backsight.Editor.Xml {
                 this.idField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DistanceType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetPointType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetDistanceType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DirectionType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParallelType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(BearingType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(AngleType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DeflectionType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class ObservationType {
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class DistanceType : ObservationType {
+        
+        private int entryUnitField;
+        
+        private double metricValueField;
+        
+        private bool fixedField;
+        
+        public DistanceType() {
+            this.fixedField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int EntryUnit {
+            get {
+                return this.entryUnitField;
+            }
+            set {
+                this.entryUnitField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public double MetricValue {
+            get {
+                return this.metricValueField;
+            }
+            set {
+                this.metricValueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Fixed {
+            get {
+                return this.fixedField;
+            }
+            set {
+                this.fixedField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetPointType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetDistanceType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class OffsetType : ObservationType {
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class OffsetPointType : OffsetType {
+        
+        private string pointField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Point {
+            get {
+                return this.pointField;
+            }
+            set {
+                this.pointField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class OffsetDistanceType : OffsetType {
+        
+        private DistanceType distanceField;
+        
+        private bool leftField;
+        
+        public OffsetDistanceType() {
+            this.leftField = false;
+        }
+        
+        /// <remarks/>
+        public DistanceType Distance {
+            get {
+                return this.distanceField;
+            }
+            set {
+                this.distanceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Left {
+            get {
+                return this.leftField;
+            }
+            set {
+                this.leftField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParallelType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(BearingType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(AngleType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DeflectionType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class DirectionType : ObservationType {
+        
+        private OffsetType offsetField;
+        
+        /// <remarks/>
+        public OffsetType Offset {
+            get {
+                return this.offsetField;
+            }
+            set {
+                this.offsetField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class ParallelType : DirectionType {
+        
+        private string fromField;
+        
+        private string startField;
+        
+        private string endField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string From {
+            get {
+                return this.fromField;
+            }
+            set {
+                this.fromField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Start {
+            get {
+                return this.startField;
+            }
+            set {
+                this.startField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string End {
+            get {
+                return this.endField;
+            }
+            set {
+                this.endField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class BearingType : DirectionType {
+        
+        private string valueField;
+        
+        private string fromField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Value {
+            get {
+                return this.valueField;
+            }
+            set {
+                this.valueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string From {
+            get {
+                return this.fromField;
+            }
+            set {
+                this.fromField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DeflectionType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class AngleType : DirectionType {
+        
+        private string valueField;
+        
+        private string fromField;
+        
+        private string backsightField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Value {
+            get {
+                return this.valueField;
+            }
+            set {
+                this.valueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string From {
+            get {
+                return this.fromField;
+            }
+            set {
+                this.fromField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Backsight {
+            get {
+                return this.backsightField;
+            }
+            set {
+                this.backsightField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class DeflectionType : AngleType {
     }
     
     /// <remarks/>
@@ -187,7 +497,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectionType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MultiSegmentType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ArcType))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(CalculatedPointType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(CalculatedFeatureType))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -727,7 +1037,7 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class CalculatedPointType : FeatureType {
+    public partial class CalculatedFeatureType : FeatureType {
     }
     
     /// <remarks/>
@@ -768,6 +1078,106 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.lineField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class IntersectDirectionAndDistanceType : OperationType {
+        
+        private DirectionType directionField;
+        
+        private ObservationType distanceField;
+        
+        private CalculatedFeatureType toField;
+        
+        private CalculatedFeatureType dirLineField;
+        
+        private CalculatedFeatureType distLineField;
+        
+        private string fromField;
+        
+        private bool defaultField;
+        
+        public IntersectDirectionAndDistanceType() {
+            this.defaultField = false;
+        }
+        
+        /// <remarks/>
+        public DirectionType Direction {
+            get {
+                return this.directionField;
+            }
+            set {
+                this.directionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public ObservationType Distance {
+            get {
+                return this.distanceField;
+            }
+            set {
+                this.distanceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType To {
+            get {
+                return this.toField;
+            }
+            set {
+                this.toField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType DirLine {
+            get {
+                return this.dirLineField;
+            }
+            set {
+                this.dirLineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType DistLine {
+            get {
+                return this.distLineField;
+            }
+            set {
+                this.distLineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string From {
+            get {
+                return this.fromField;
+            }
+            set {
+                this.fromField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Default {
+            get {
+                return this.defaultField;
+            }
+            set {
+                this.defaultField = value;
             }
         }
     }
@@ -846,14 +1256,14 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class AttachPointType : OperationType {
         
-        private CalculatedPointType pointField;
+        private CalculatedFeatureType pointField;
         
         private string lineField;
         
         private uint positionRatioField;
         
         /// <remarks/>
-        public CalculatedPointType Point {
+        public CalculatedFeatureType Point {
             get {
                 return this.pointField;
             }

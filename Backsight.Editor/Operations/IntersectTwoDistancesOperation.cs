@@ -78,13 +78,6 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public IntersectTwoDistancesOperation()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>

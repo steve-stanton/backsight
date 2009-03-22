@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -74,10 +75,30 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
         /// </summary>
-        public IntersectDirectionAndDistanceOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal IntersectDirectionAndDistanceOperation(Session s, IntersectDirectionAndDistanceType t)
+            : base(s, t)
         {
+            m_From = s.MapModel.Find<PointFeature>(t.From);
+            m_Default = t.Default;
+            m_Direction = (Direction)t.Direction.LoadObservation(this);
+            m_Distance = t.Distance.LoadObservation(this);
+            m_To = new PointFeature(this, t.To);
+
+            if (t.DirLine == null)
+                m_DirLine = null;
+            else
+                m_DirLine = new LineFeature(this, t.DirLine);
+
+            if (t.DistLine == null)
+                m_DistLine = null;
+            else
+                m_DistLine = new LineFeature(this, t.DistLine);
         }
 
         /// <summary>
@@ -525,6 +546,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "IntersectDirectionAndDistanceType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -533,7 +562,7 @@ namespace Backsight.Editor.Operations
             base.WriteAttributes(writer);
 
             writer.WriteFeatureReference("From", m_From);
-            writer.WriteBool("IsDefault", m_Default);
+            writer.WriteBool("Default", m_Default);
         }
 
         /// <summary>
@@ -548,38 +577,12 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Direction", m_Direction);
             writer.WriteElement("Distance", m_Distance);
             writer.WriteCalculatedPoint("To", m_To);
-            writer.WriteElement("DirLine", m_DirLine);
-            writer.WriteElement("DistLine", m_DistLine);
-        }
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
+            if (m_DirLine!=null)
+                writer.WriteElement("DirLine", m_DirLine);
 
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-            m_Default = reader.ReadBool("IsDefault");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Direction = reader.ReadElement<Direction>("Direction");
-            m_Distance = reader.ReadElement<Observation>("Distance");
-            //IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
-            //m_To = reader.ReadCalculatedPoint("To", to);
-            m_To = reader.ReadPoint("To");
-            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
-            m_DistLine = reader.ReadElement<LineFeature>("DistLine");
+            if (m_DistLine!=null)
+                writer.WriteElement("DistLine", m_DistLine);
         }
 
         /// <summary>
