@@ -1869,7 +1869,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             AttachPointType t = new AttachPointType();
             t.Line = "123.45";
             t.PositionRatio = (uint)56789;
-            CalculatedPointType p = new CalculatedPointType();
+            CalculatedFeatureType p = new CalculatedFeatureType();
             t.Point = p;
             p.Id = "234.56";
             p.Type = 88;

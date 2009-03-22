@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Xml;
+
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="09-JUN-1999" />
@@ -28,6 +31,16 @@ namespace Backsight.Editor.Observations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal DeflectionDirection(Operation op, DeflectionType t)
+            : base(op, t)
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -65,6 +78,14 @@ namespace Backsight.Editor.Observations
         internal override DirectionType DirectionType
         {
             get { return DirectionType.Deflection; }
+        }
+
+        /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "DeflectionType"; }
         }
     }
 }

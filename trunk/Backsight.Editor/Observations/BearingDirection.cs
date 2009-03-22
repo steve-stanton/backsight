@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Xml;
+
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="06-NOV-1997" />
@@ -28,16 +31,30 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Angle from grid north, in range [0,2*PI].
         /// </summary>
-        private double m_Observation; // readonly
+        readonly double m_Observation;
 
         /// <summary>
         /// The point which the bearing was taken.
         /// </summary>
-        private PointFeature m_From; // readonly
+        readonly PointFeature m_From;
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal BearingDirection(Operation op, BearingType t)
+            : base(op, t)
+        {
+            if (!RadianValue.TryParse(t.Value, out m_Observation))
+                throw new Exception("BearingDirection - Cannot parse 'Value' attribute");
+
+            m_From = op.MapModel.Find<PointFeature>(t.From);
+        }
 
         /// <summary>
         /// Constructor
@@ -135,42 +152,15 @@ namespace Backsight.Editor.Observations
         {
             base.WriteAttributes(writer);
             writer.WriteFeatureReference("From", m_From);
-            writer.WriteString("Observation", RadianValue.AsString(m_Observation));
+            writer.WriteString("Value", RadianValue.AsString(m_Observation));
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        public override string XmlTypeName
         {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-
-            string obsv = reader.ReadString("Observation");
-            if (!RadianValue.TryParse(obsv, out m_Observation))
-                throw new Exception("BearingDirection.ReadAttributes - Cannot parse 'Observation'");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            get { return "BearingType"; }
         }
     }
 }

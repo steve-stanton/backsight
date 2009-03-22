@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 
 using Backsight.Environment;
+using XmlDirectionType = Backsight.Editor.Xml.DirectionType;
 
 namespace Backsight.Editor.Observations
 {
@@ -45,6 +46,22 @@ namespace Backsight.Editor.Observations
         internal Direction()
         {
             m_Offset = null;
+            m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        protected Direction(Operation op, XmlDirectionType t)
+            : base(op, t)
+        {
+            if (t.Offset == null)
+                m_Offset = null;
+            else
+                m_Offset = (Offset)t.Offset.LoadObservation(op);
+
             m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
         }
 
@@ -659,18 +676,6 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            if (IsFixed)
-                writer.WriteString("Flags", "F");
-        }
-
-        /// <summary>
         /// Writes any child elements of this class. This will be called after
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
@@ -679,34 +684,8 @@ namespace Backsight.Editor.Observations
         {
             base.WriteChildElements(writer);
 
-            writer.WriteElement("Offset", m_Offset);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            if (reader.HasAttribute("Flags"))
-            {
-                string flags = reader.ReadString("Flags");
-                if (flags.Contains("F"))
-                    SetFixed();
-            }
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Offset = reader.ReadElement<Offset>("Offset");
+            if (m_Offset != null)
+                writer.WriteElement("Offset", m_Offset);
         }
     }
 }

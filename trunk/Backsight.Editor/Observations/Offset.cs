@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Observations
 {
@@ -27,6 +28,16 @@ namespace Backsight.Editor.Observations
         /// Default constructor.
         /// </summary>
         protected Offset() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        protected Offset(Operation op, OffsetType t)
+            : base(op, t)
         {
         }
 

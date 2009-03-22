@@ -15,14 +15,23 @@
 
 using System;
 
-using Backsight.Editor.Operations;
-
 namespace Backsight.Editor.Xml
 {
-    interface IAttachPoint
+    /// <summary>
+    /// Base class for any sort of serialized <see cref="Observation"/>
+    /// </summary>
+    /// <remarks>The remainder of this class is auto-generated, and may be found
+    /// in the <c>Edits.cs</c> file.</remarks>
+    public partial class ObservationType
     {
-        string Line { get; }
-        uint PositionRatio { get; }
-        CalculatedFeatureType Point { get; }
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal virtual Observation LoadObservation(Operation op)
+        {
+            throw new NotImplementedException("LoadObservation not implemented by: " + GetType().Name);
+        }
     }
 }

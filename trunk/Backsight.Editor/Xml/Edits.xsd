@@ -2,6 +2,27 @@
 <!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditType" />
+  <xs:complexType name="AngleType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DirectionType">
+        <xs:attribute name="Value" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The angle in radians. A negated value indicates an anticlockwise angle.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The occupied station</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Backsight" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The backsight point</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="ArcType">
     <xs:annotation>
       <xs:documentation>A circular arc</xs:documentation>
@@ -22,14 +43,30 @@
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Point" type="CalculatedPointType" />
+          <xs:element name="Point" type="CalculatedFeatureType" />
         </xs:sequence>
         <xs:attribute name="Line" type="IdType" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="CalculatedPointType">
+  <xs:complexType name="BearingType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DirectionType">
+        <xs:attribute name="Value" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The bearing value in radians - in the range [0,2*Pi)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point from which the bearing was observed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CalculatedFeatureType">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType" />
     </xs:complexContent>
@@ -38,12 +75,35 @@
     <xs:attribute name="Center" type="IdType" />
     <xs:attribute name="Radius" type="xs:double" />
   </xs:complexType>
+  <xs:complexType name="DeflectionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="AngleType" />
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="DeletionType">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
           <xs:element name="Delete" type="IdType" />
         </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DirectionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="ObservationType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element name="Offset" type="OffsetType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DistanceType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="ObservationType">
+        <xs:attribute name="EntryUnit" type="DistanceUnitType" use="required" />
+        <xs:attribute name="MetricValue" type="xs:double" use="required" />
+        <xs:attribute default="false" name="Fixed" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -91,6 +151,49 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
           <xs:element name="Feature" type="FeatureType" />
         </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="IntersectDirectionAndDistanceType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType">
+            <xs:annotation>
+              <xs:documentation>The observed direction</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The created intersection point</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The second line created (if any), running from the the point at which the distance was observed, to the intersection point.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point the distance was measured from.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="Default" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>True if it was the default intersection (the one closest to the origin of the direction).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -156,6 +259,16 @@ The first and last positions are assumed to match the positions of the point fea
       <xs:extension base="ObservationType" />
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="OffsetDistanceType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OffsetType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType" />
+        </xs:sequence>
+        <xs:attribute default="false" name="Left" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="OffsetPointType">
     <xs:complexContent mixed="false">
       <xs:extension base="OffsetType">
@@ -165,6 +278,27 @@ The first and last positions are assumed to match the positions of the point fea
   </xs:complexType>
   <xs:complexType name="OperationType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ParallelType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DirectionType">
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The origin of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Start" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The starting point of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="End" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The ending point of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="PointType">
     <xs:complexContent mixed="false">

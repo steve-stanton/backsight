@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal PointFeature(Operation op, CalculatedPointType t)
+        internal PointFeature(Operation op, CalculatedFeatureType t)
             : base(op, t)
         {
             m_Geom = null;

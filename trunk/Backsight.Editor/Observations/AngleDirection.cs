@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Xml;
+
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="06-NOV-1997" />
@@ -29,27 +32,35 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// The angle in radians. A negated value indicates an anticlockwise angle.
         /// </summary>
-        private double m_Observation; // readonly
+        readonly double m_Observation;
 
         /// <summary>
         /// The backsight point.
         /// </summary>
-        private PointFeature m_Backsight; // readonly
+        readonly PointFeature m_Backsight;
 
         /// <summary>
         /// The occupied station.
         /// </summary>
-        private PointFeature m_From; // readonly
+        readonly PointFeature m_From;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>AngleDirection</c>, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public AngleDirection()
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal AngleDirection(Operation op, AngleType t)
+            : base(op, t)
         {
+            if (!RadianValue.TryParse(t.Value, out m_Observation))
+                throw new Exception("AngleDirection - Cannot parse 'Value' attribute");
+
+            m_Backsight = op.MapModel.Find<PointFeature>(t.Backsight);
+            m_From = op.MapModel.Find<PointFeature>(t.From);
         }
 
         /// <summary>
@@ -182,43 +193,15 @@ namespace Backsight.Editor.Observations
             base.WriteAttributes(writer);
             writer.WriteFeatureReference("Backsight", m_Backsight);
             writer.WriteFeatureReference("From", m_From);
-            writer.WriteString("Observation", RadianValue.AsString(m_Observation));
+            writer.WriteString("Value", RadianValue.AsString(m_Observation));
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        public override string XmlTypeName
         {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_Backsight = reader.ReadFeatureByReference<PointFeature>("Backsight");
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-
-            string obsv = reader.ReadString("Observation");
-            if (!RadianValue.TryParse(obsv, out m_Observation))
-                throw new Exception("AngleDirection.ReadAttributes - Cannot parse 'Observation'");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            get { return "AngleType"; }
         }
     }
 }

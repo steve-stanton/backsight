@@ -15,14 +15,25 @@
 
 using System;
 
-using Backsight.Editor.Operations;
+using Backsight.Editor.Observations;
+
 
 namespace Backsight.Editor.Xml
 {
-    interface IAttachPoint
+    /// <summary>
+    /// A serialized <see cref="ParallelDirection"/>
+    /// </summary>
+    public partial class ParallelType
     {
-        string Line { get; }
-        uint PositionRatio { get; }
-        CalculatedFeatureType Point { get; }
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal override Observation LoadObservation(Operation op)
+        {
+            return new ParallelDirection(op, this);
+        }
     }
 }
+

@@ -19,7 +19,7 @@ using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    public partial class AttachPointType : IAttachPoint
+    public partial class AttachPointType
     {
         /// <summary>
         /// Loads this editing operation into a session

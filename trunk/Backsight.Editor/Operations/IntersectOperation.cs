@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -36,7 +37,15 @@ namespace Backsight.Editor.Operations
 
         #region Constructors
 
-        protected IntersectOperation()
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected IntersectOperation(Session s, OperationType t)
+            : base(s, t)
         {
         }
 

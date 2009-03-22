@@ -1022,10 +1022,14 @@
     <Compile Include="Wildcard.cs" />
     <Compile Include="XmlContentReader.cs" />
     <Compile Include="XmlContentWriter.cs" />
+    <Compile Include="Xml\AngleType.cs" />
     <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />
+    <Compile Include="Xml\BearingType.cs" />
     <Compile Include="Xml\Content.cs" />
+    <Compile Include="Xml\DeflectionType.cs" />
     <Compile Include="Xml\DeletionType.cs" />
+    <Compile Include="Xml\DistanceType.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
@@ -1033,12 +1037,17 @@
     <Compile Include="Xml\GetControlType.cs" />
     <Compile Include="Xml\IAttachPoint.cs" />
     <Compile Include="Xml\ImportType.cs" />
+    <Compile Include="Xml\IntersectDirectionAndDistanceType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
     <Compile Include="Xml\MultiSegmentType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
+    <Compile Include="Xml\ObservationType.cs" />
+    <Compile Include="Xml\OffsetDistanceType.cs" />
+    <Compile Include="Xml\OffsetPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
+    <Compile Include="Xml\ParallelType.cs" />
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SectionType.cs" />

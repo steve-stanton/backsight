@@ -15,6 +15,9 @@
 
 using System;
 
+using Backsight.Editor.Xml;
+
+
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="13-NOV-1997" />
@@ -41,12 +44,15 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Default constructor creates an undefined offset (for use during deserialization)
+        /// Constructor for use during deserialization
         /// </summary>
-        public OffsetDistance()
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="t">The serialized version of this observation</param>
+        internal OffsetDistance(Operation op, OffsetDistanceType t)
+            : base(op, t)
         {
-            m_Offset = new Distance();
-            m_IsLeft = false;
+            m_Offset = new Distance(op, t.Distance);
+            m_IsLeft = t.Left;
         }
 
         /// <summary>
@@ -214,7 +220,7 @@ namespace Backsight.Editor.Observations
         public override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-            writer.WriteBool("IsLeft", m_IsLeft);
+            writer.WriteBool("Left", m_IsLeft);
         }
 
         /// <summary>
@@ -229,24 +235,11 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Defines the attributes of this content
+        /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
+        public override string XmlTypeName
         {
-            base.ReadAttributes(reader);
-            m_IsLeft = reader.ReadBool("IsLeft");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Offset = reader.ReadElement<Distance>("Offset");
+            get { return "OffsetDistanceType"; }
         }
     }
 }
