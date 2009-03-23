@@ -193,7 +193,7 @@ namespace Backsight.Editor.Observations
             base.WriteAttributes(writer);
             writer.WriteFeatureReference("Backsight", m_Backsight);
             writer.WriteFeatureReference("From", m_From);
-            writer.WriteString("Value", RadianValue.AsString(m_Observation));
+            writer.WriteAngle("Value", m_Observation);
         }
 
         /// <summary>

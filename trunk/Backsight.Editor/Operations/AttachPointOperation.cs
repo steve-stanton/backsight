@@ -273,7 +273,7 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteCalculatedPoint("Point", m_Point);
+            writer.WriteCalculatedFeature("Point", m_Point);
         }
 
         /// <summary>

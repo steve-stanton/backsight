@@ -18,29 +18,29 @@ using System;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Wrapper class that contains a point where the position is calculated by the
+    /// Wrapper class that contains a feature where the position is calculated by the
     /// edit that created it. For use during serialization.
     /// </summary>
-    class CalculatedPoint : Content
+    sealed class CalculatedFeature : Content
     {
         #region Class data
 
         /// <summary>
-        /// The calculated point (may be null)
+        /// The calculated feature (may be null)
         /// </summary>
-        readonly PointFeature m_Point;
+        readonly Feature m_Feature;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CalculatedPoint"/> class.
+        /// Initializes a new instance of the <see cref="CalculatedFeature"/> class.
         /// </summary>
-        /// <param name="point">The calculated point (may be null)</param>
-        internal CalculatedPoint(PointFeature point)
+        /// <param name="f">The calculated feature (may be null)</param>
+        internal CalculatedFeature(Feature f)
         {
-            m_Point = point;
+            m_Feature = f;
         }
 
         #endregion
@@ -51,7 +51,8 @@ namespace Backsight.Editor
         /// <remarks>Implements IXmlContent</remarks>
         public override string XmlTypeName
         {
-            get { return "CalculatedFeatureType"; }
+            get { return String.Empty; }
+            //get { return "CalculatedFeatureType"; }
         }
 
         /// <summary>
@@ -60,8 +61,8 @@ namespace Backsight.Editor
         /// <param name="writer">The writing tool</param>
         public override void WriteAttributes(XmlContentWriter writer)
         {
-            if (m_Point != null)
-                m_Point.WriteFeatureAttributes(writer);
+            if (m_Feature != null)
+                m_Feature.WriteFeatureAttributes(writer);
         }
     }
 }

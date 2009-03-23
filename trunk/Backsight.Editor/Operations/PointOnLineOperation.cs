@@ -393,7 +393,7 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         {
             base.WriteChildElements(writer);
             writer.WriteElement("Distance", m_Distance);
-            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
+            writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
         }
 
         /// <summary>

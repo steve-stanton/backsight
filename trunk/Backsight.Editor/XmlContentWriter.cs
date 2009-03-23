@@ -241,17 +241,9 @@ namespace Backsight.Editor
         /// <param name="value">The value of the attribute</param>
         public void WriteBool(string name, bool value)
         {
-            // There's no need to write out anything if the value is
-            // false, since that's what you'll get back if the attribute
-            // is undefined. Assumes that all boolean attributes are
-            // defined as optional.
-
-            if (value == true)
-            {
-                m_Writer.WriteStartAttribute(name);
-                m_Writer.WriteValue(value);
-                m_Writer.WriteEndAttribute();
-            }
+            m_Writer.WriteStartAttribute(name);
+            m_Writer.WriteValue(value);
+            m_Writer.WriteEndAttribute();
         }
 
         /// <summary>
@@ -302,14 +294,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out information for a point feature with geometry that will be
+        /// Writes out information for a feature with geometry that will be
         /// re-calculated on deserialization.
         /// </summary>
         /// <param name="elementName">The name of the element</param>
-        /// <param name="point">The point to write out</param>
-        internal void WriteCalculatedPoint(string elementName, PointFeature point)
+        /// <param name="f">The feature to write out</param>
+        internal void WriteCalculatedFeature(string elementName, Feature f)
         {
-            WriteElement(elementName, new CalculatedPoint(point));
+            WriteElement(elementName, new CalculatedFeature(f));
         }
 
         /// <summary>

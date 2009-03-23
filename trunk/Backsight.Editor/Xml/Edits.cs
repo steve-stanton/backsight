@@ -41,6 +41,7 @@ namespace Backsight.Editor.Xml {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewPointType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewLineType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(IntersectDirectionAndLineType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(IntersectDirectionAndDistanceType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ImportType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GetControlType))]
@@ -1078,6 +1079,103 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.lineField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class IntersectDirectionAndLineType : OperationType {
+        
+        private DirectionType directionField;
+        
+        private CalculatedFeatureType toField;
+        
+        private CalculatedFeatureType dirLineField;
+        
+        private string closeToField;
+        
+        private string lineField;
+        
+        private string splitBeforeField;
+        
+        private string splitAfterField;
+        
+        /// <remarks/>
+        public DirectionType Direction {
+            get {
+                return this.directionField;
+            }
+            set {
+                this.directionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType To {
+            get {
+                return this.toField;
+            }
+            set {
+                this.toField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType DirLine {
+            get {
+                return this.dirLineField;
+            }
+            set {
+                this.dirLineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CloseTo {
+            get {
+                return this.closeToField;
+            }
+            set {
+                this.closeToField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Line {
+            get {
+                return this.lineField;
+            }
+            set {
+                this.lineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SplitBefore {
+            get {
+                return this.splitBeforeField;
+            }
+            set {
+                this.splitBeforeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SplitAfter {
+            get {
+                return this.splitAfterField;
+            }
+            set {
+                this.splitAfterField = value;
             }
         }
     }

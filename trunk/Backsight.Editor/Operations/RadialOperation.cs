@@ -439,7 +439,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
             writer.WriteElement("Length", m_Length);
 
             // Creations ...
-            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteCalculatedFeature("To", m_To);
             //writer.WriteCalculatedLine("Line", m_Line);
             writer.WriteElement("Line", m_Line);
         }
