@@ -15,12 +15,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
-using System.Diagnostics;
 
 
 namespace Backsight.Editor.Operations
@@ -136,7 +136,7 @@ namespace Backsight.Editor.Operations
                 m_IsSplit = true;
                 m_LineA = MakeSection(m_Line, m_Line.StartPoint, m_Intersection);
                 m_LineB = MakeSection(m_Line, m_Intersection, m_Line.EndPoint);
-                m_Line.IsInactive = true;
+                m_Line.Deactivate();
 
                 // Apply the correct creation sequence to the sections
                 Debug.Assert(m_LineA.CreatorSequence==0);

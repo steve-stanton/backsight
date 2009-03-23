@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -61,6 +62,31 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal IntersectTwoDirectionsOperation(Session s, IntersectTwoDirectionsType t)
+            : base(s, t)
+        {
+            m_Direction1 = (Direction)t.Direction1.LoadObservation(this);
+            m_Direction2 = (Direction)t.Direction2.LoadObservation(this);
+            m_To = new PointFeature(this, t.To);
+
+            if (t.Line1 == null)
+                m_Line1 = null;
+            else
+                m_Line1 = new LineFeature(this, m_Direction1.From, m_To, t.Line1);
+
+            if (t.Line2 == null)
+                m_Line2 = null;
+            else
+                m_Line2 = new LineFeature(this, m_Direction2.From, m_To, t.Line2);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class
@@ -382,12 +408,11 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
+        /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        public override string XmlTypeName
         {
-            base.WriteAttributes(writer);
+            get { return "IntersectTwoDirectionsType"; }
         }
 
         /// <summary>
@@ -402,35 +427,8 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Direction1", m_Direction1);
             writer.WriteElement("Direction2", m_Direction2);
             writer.WriteCalculatedFeature("To", m_To);
-            writer.WriteElement("Line1", m_Line1);
-            writer.WriteElement("Line2", m_Line2);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Direction1 = reader.ReadElement<Direction>("Direction1");
-            m_Direction2 = reader.ReadElement<Direction>("Direction2");
-            //IPosition p = Calculate();
-            //m_To = reader.ReadCalculatedPoint("To", p);
-            m_To = reader.ReadPoint("To");
-            m_Line1 = reader.ReadElement<LineFeature>("Line1");
-            m_Line2 = reader.ReadElement<LineFeature>("Line2");
+            writer.WriteCalculatedFeature("Line1", m_Line1);
+            writer.WriteCalculatedFeature("Line2", m_Line2);
         }
 
         /// <summary>

@@ -562,7 +562,9 @@ namespace Backsight.Editor.Operations
             base.WriteAttributes(writer);
 
             writer.WriteFeatureReference("From", m_From);
-            writer.WriteBool("Default", m_Default);
+
+            if (m_Default)
+                writer.WriteBool("Default", true);
         }
 
         /// <summary>
