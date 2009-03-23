@@ -7,7 +7,7 @@
       <xs:extension base="DirectionType">
         <xs:attribute name="Value" type="xs:string" use="required">
           <xs:annotation>
-            <xs:documentation>The angle in radians. A negated value indicates an anticlockwise angle.</xs:documentation>
+            <xs:documentation>The angle in DMS format. A negated value indicates an anticlockwise angle.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="From" type="IdType" use="required">
@@ -101,9 +101,9 @@
   <xs:complexType name="DistanceType">
     <xs:complexContent mixed="false">
       <xs:extension base="ObservationType">
-        <xs:attribute name="EntryUnit" type="DistanceUnitType" use="required" />
-        <xs:attribute name="MetricValue" type="xs:double" use="required" />
-        <xs:attribute default="false" name="Fixed" type="xs:boolean" />
+        <xs:attribute name="Value" type="xs:double" use="required" />
+        <xs:attribute name="Unit" type="DistanceUnitType" use="required" />
+        <xs:attribute default="false" name="Fixed" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

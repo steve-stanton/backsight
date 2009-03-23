@@ -519,14 +519,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Deserialized an ID that was previously written using the <see cref="Write"/> method
+        /// Deserializes an ID that was previously written using the <see cref="Write"/> method
         /// </summary>
         /// <returns></returns>
-        internal static FeatureId Read(string name, XmlContentReader reader)
-        {
-            throw new NotSupportedException("FeatureId.Read");
-        }
-
         internal static FeatureId Read(CadastralMapModel mapModel, FeatureType f)
         {
             string key = f.Key;
@@ -539,8 +534,7 @@ namespace Backsight.Editor
 
             uint rawId = uint.Parse(key.Substring(0, atPos));
             int groupId = int.Parse(key.Substring(atPos+1));
-            IIdGroup group = EnvironmentContainer.FindIdGroupById(groupId);
-            return mapModel.FindNativeId((IdGroup)group, rawId);
+            return mapModel.FindNativeId(groupId, rawId);
         }
 
     }
