@@ -19,6 +19,9 @@ using System.Collections.Generic;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
+using System.Diagnostics;
+
 
 namespace Backsight.Editor.Operations
 {
@@ -62,12 +65,12 @@ namespace Backsight.Editor.Operations
         // Relating to line split ...
 
         /// <summary>
-        /// The portion of m_Line prior to the intersection (0 if m_IsSplit==false).
+        /// The portion of m_Line prior to the intersection (null if m_IsSplit==false).
         /// </summary>
         LineFeature m_LineA;
 
         /// <summary>
-        /// The portion of m_Line after the intersection (0 if m_IsSplit==false).
+        /// The portion of m_Line after the intersection (null if m_IsSplit==false).
         /// </summary>
         LineFeature m_LineB;
 
@@ -95,6 +98,55 @@ namespace Backsight.Editor.Operations
             m_LineA = null;
             m_LineB = null;
             m_IsSplit = false;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal IntersectDirectionAndLineOperation(Session s, IntersectDirectionAndLineType t)
+            : base(s, t)
+        {
+            CadastralMapModel mapModel = s.MapModel;
+
+            m_Direction = (Direction)t.Direction.LoadObservation(this);
+            m_Line = mapModel.Find<LineFeature>(t.Line);
+            m_CloseTo = mapModel.Find<PointFeature>(t.CloseTo);
+            m_Intersection = new PointFeature(this, t.To);
+
+            if (t.DirLine == null)
+                m_DirLine = null;
+            else
+                m_DirLine = new LineFeature(this, m_Direction.From, m_Intersection, t.DirLine);
+
+            string before = t.SplitBefore;
+            string after = t.SplitAfter;
+
+            if (before==null || after==null)
+                m_IsSplit = false;
+            else
+            {
+                // Split the line (the sections should get an undefined creation sequence). Note that
+                // you cannot use the SplitLine method at this stage, because that requires defined
+                // geometry.
+
+                m_IsSplit = true;
+                m_LineA = MakeSection(m_Line, m_Line.StartPoint, m_Intersection);
+                m_LineB = MakeSection(m_Line, m_Intersection, m_Line.EndPoint);
+                m_Line.IsInactive = true;
+
+                // Apply the correct creation sequence to the sections
+                Debug.Assert(m_LineA.CreatorSequence==0);
+                Debug.Assert(m_LineB.CreatorSequence==0);
+                uint sessionId, creationSequence;
+                InternalIdValue.Parse(before, out sessionId, out creationSequence);
+                m_LineA.CreatorSequence = creationSequence;
+                InternalIdValue.Parse(after, out sessionId, out creationSequence);
+                m_LineB.CreatorSequence = creationSequence;
+            }
         }
 
         #endregion
@@ -524,6 +576,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "IntersectDirectionAndLineType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -533,7 +593,12 @@ namespace Backsight.Editor.Operations
 
             writer.WriteFeatureReference("Line", m_Line);
             writer.WriteFeatureReference("CloseTo", m_CloseTo);
-            writer.WriteBool("IsSplit", m_IsSplit);
+
+            if (m_LineA!=null)
+                writer.WriteFeatureReference("SplitBefore", m_LineA);
+
+            if (m_LineB!=null)
+                writer.WriteFeatureReference("SplitAfter", m_LineB);
         }
 
         /// <summary>
@@ -546,41 +611,10 @@ namespace Backsight.Editor.Operations
             base.WriteChildElements(writer);
 
             writer.WriteElement("Direction", m_Direction);
-            writer.WriteCalculatedPoint("To", m_Intersection);
-            writer.WriteElement("DirLine", m_DirLine);
-            writer.WriteElement("LineA", m_LineA);
-            writer.WriteElement("LineB", m_LineB);
-        }
+            writer.WriteCalculatedFeature("To", m_Intersection);
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
-            m_IsSplit = reader.ReadBool("IsSplit");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Direction = reader.ReadElement<Direction>("Direction");
-            //IPosition p = Calculate();
-            //m_Intersection = reader.ReadCalculatedPoint("To", p);
-            m_Intersection = reader.ReadPoint("To");
-            m_DirLine = reader.ReadElement<LineFeature>("DirLine");
-            m_LineA = reader.ReadElement<LineFeature>("LineA");
-            m_LineB = reader.ReadElement<LineFeature>("LineB");
+            if (m_DirLine != null)
+                writer.WriteCalculatedFeature("DirLine", m_DirLine);
         }
 
         /// <summary>

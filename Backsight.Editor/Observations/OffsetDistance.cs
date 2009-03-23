@@ -231,7 +231,7 @@ namespace Backsight.Editor.Observations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-            writer.WriteElement("Offset", m_Offset);
+            writer.WriteElement("Distance", m_Offset);
         }
 
         /// <summary>

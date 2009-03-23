@@ -377,7 +377,9 @@ namespace Backsight.Editor.Observations
             base.WriteAttributes(writer);
             writer.WriteDouble("Value", GetDistance());
             writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
-            writer.WriteBool("Fixed", m_IsFixed);
+
+            if (m_IsFixed)
+                writer.WriteBool("Fixed", true);
         }
 
         /// <summary>

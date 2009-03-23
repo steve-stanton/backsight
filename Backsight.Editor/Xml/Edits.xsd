@@ -197,6 +197,49 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="IntersectDirectionAndLineType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType">
+            <xs:annotation>
+              <xs:documentation>The observed direction</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The created intersection point</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="CloseTo" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point closest to the intersection (usually defaulted to one of the end points for the lines, or the origin of the direction).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Line" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The line the direction intersects</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitBefore" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitAfter" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="KeyTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType" />

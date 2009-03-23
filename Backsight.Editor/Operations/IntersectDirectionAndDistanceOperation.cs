@@ -93,12 +93,12 @@ namespace Backsight.Editor.Operations
             if (t.DirLine == null)
                 m_DirLine = null;
             else
-                m_DirLine = new LineFeature(this, t.DirLine);
+                m_DirLine = new LineFeature(this, m_Direction.From, m_To, t.DirLine);
 
             if (t.DistLine == null)
                 m_DistLine = null;
             else
-                m_DistLine = new LineFeature(this, t.DistLine);
+                m_DistLine = new LineFeature(this, m_From, m_To, t.DistLine);
         }
 
         /// <summary>
@@ -576,13 +576,13 @@ namespace Backsight.Editor.Operations
 
             writer.WriteElement("Direction", m_Direction);
             writer.WriteElement("Distance", m_Distance);
-            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteCalculatedFeature("To", m_To);
 
             if (m_DirLine!=null)
-                writer.WriteElement("DirLine", m_DirLine);
+                writer.WriteCalculatedFeature("DirLine", m_DirLine);
 
             if (m_DistLine!=null)
-                writer.WriteElement("DistLine", m_DistLine);
+                writer.WriteCalculatedFeature("DistLine", m_DistLine);
         }
 
         /// <summary>
@@ -593,6 +593,12 @@ namespace Backsight.Editor.Operations
             IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
             PointGeometry pg = PointGeometry.Create(to);
             m_To.PointGeometry = pg;
+
+            if (m_DirLine!=null)
+                m_DirLine.LineGeometry = new SegmentGeometry(m_Direction.From, m_To);
+
+            if (m_DistLine!=null)
+                m_DistLine.LineGeometry = new SegmentGeometry(m_From, m_To);
         }
     }
 }

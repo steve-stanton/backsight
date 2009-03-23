@@ -401,7 +401,7 @@ namespace Backsight.Editor.Operations
 
             writer.WriteElement("Direction1", m_Direction1);
             writer.WriteElement("Direction2", m_Direction2);
-            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteCalculatedFeature("To", m_To);
             writer.WriteElement("Line1", m_Line1);
             writer.WriteElement("Line2", m_Line2);
         }

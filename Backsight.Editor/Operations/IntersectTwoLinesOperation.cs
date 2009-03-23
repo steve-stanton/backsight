@@ -501,7 +501,7 @@ namespace Backsight.Editor.Operations
         {
             base.WriteChildElements(writer);
 
-            writer.WriteCalculatedPoint("To", m_Intersection);
+            writer.WriteCalculatedFeature("To", m_Intersection);
             if (m_IsSplit1)
             {
                 writer.WriteElement("Line1a", m_Line1a);

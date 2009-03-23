@@ -585,7 +585,7 @@ namespace Backsight.Editor.Operations
 
             writer.WriteElement("Distance1", m_Distance1);
             writer.WriteElement("Distance2", m_Distance2);
-            writer.WriteCalculatedPoint("To", m_To);
+            writer.WriteCalculatedFeature("To", m_To);
             writer.WriteElement("Line1", m_Line1);
             writer.WriteElement("Line2", m_Line2);
         }

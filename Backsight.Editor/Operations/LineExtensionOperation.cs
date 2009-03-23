@@ -422,7 +422,7 @@ namespace Backsight.Editor.Operations
             base.WriteChildElements(writer);
 
             writer.WriteElement("Distance", m_Length);
-            writer.WriteCalculatedPoint("NewPoint", m_NewPoint);
+            writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
             writer.WriteElement("NewLine", m_NewLine);
         }
 

@@ -44,7 +44,6 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="CalculatedFeature.cs" />
-    <Compile Include="CalculatedPoint.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
@@ -1039,6 +1038,7 @@
     <Compile Include="Xml\IAttachPoint.cs" />
     <Compile Include="Xml\ImportType.cs" />
     <Compile Include="Xml\IntersectDirectionAndDistanceType.cs" />
+    <Compile Include="Xml\IntersectDirectionAndLineType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
     <Compile Include="Xml\MultiSegmentType.cs" />
