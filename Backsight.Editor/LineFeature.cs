@@ -74,6 +74,9 @@ namespace Backsight.Editor
         /// Constructor for use during deserialization. This version does not define the
         /// position for the new line - the editing operation must subsequently calculate
         /// the geometry.
+        /// <para/>
+        /// For the time being, assume the line is a simple line segment (will this constructor
+        /// be used with edits involving circular arcs and multisegments?).
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="start">The point at the start of the line</param>
@@ -82,7 +85,7 @@ namespace Backsight.Editor
         internal LineFeature(Operation op, PointFeature start, PointFeature end, CalculatedFeatureType t)
             : base(op, t)
         {
-            m_Geom = null;
+            m_Geom = new SegmentGeometry(start, end);
             m_From = start;
             m_To = end;
 

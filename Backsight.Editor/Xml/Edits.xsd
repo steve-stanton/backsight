@@ -240,6 +240,79 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="IntersectTwoDirectionsType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction1" type="DirectionType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction2" type="DirectionType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The created intersection point</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The first line created (if any), running from the point at which the first direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The second line created (if any), running from the point at which the second direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="IntersectTwoDistancesType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance1" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The first observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance2" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The second observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The created intersection point</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="From1" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point the first distance was measured from.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="From2" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point the second distance was measured from.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="Default" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>True if it was the default intersection (the one with the lowest bearing with respect to From1 and From2).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="KeyTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType" />

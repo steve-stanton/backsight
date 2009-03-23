@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -76,6 +77,37 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal IntersectTwoDistancesOperation(Session s, IntersectTwoDistancesType t)
+            : base(s, t)
+        {
+            CadastralMapModel mapModel = s.MapModel;
+
+            m_Distance1 = t.Distance1.LoadObservation(this);
+            m_From1 = mapModel.Find<PointFeature>(t.From1);
+            m_Distance2 = t.Distance2.LoadObservation(this);
+            m_From2 = mapModel.Find<PointFeature>(t.From2);
+            m_Default = t.Default;
+            m_To = new PointFeature(this, t.To);
+
+            if (t.Line1 == null)
+                m_Line1 = null;
+            else
+                m_Line1 = new LineFeature(this, m_From1, m_To, t.Line1);
+
+            if (t.Line2 == null)
+                m_Line2 = null;
+            else
+                m_Line2 = new LineFeature(this, m_From2, m_To, t.Line2);
+        }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
@@ -562,6 +594,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "IntersectTwoDistancesType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -571,7 +611,9 @@ namespace Backsight.Editor.Operations
 
             writer.WriteFeatureReference("From1", m_From1);
             writer.WriteFeatureReference("From2", m_From2);
-            writer.WriteBool("IsDefault", m_Default);
+
+            if (m_Default)
+                writer.WriteBool("Default", true);
         }
 
         /// <summary>
@@ -586,39 +628,8 @@ namespace Backsight.Editor.Operations
             writer.WriteElement("Distance1", m_Distance1);
             writer.WriteElement("Distance2", m_Distance2);
             writer.WriteCalculatedFeature("To", m_To);
-            writer.WriteElement("Line1", m_Line1);
-            writer.WriteElement("Line2", m_Line2);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_From1 = reader.ReadFeatureByReference<PointFeature>("From1");
-            m_From2 = reader.ReadFeatureByReference<PointFeature>("From2");
-            m_Default = reader.ReadBool("IsDefault");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Distance1 = reader.ReadElement<Distance>("Distance1");
-            m_Distance2 = reader.ReadElement<Distance>("Distance2");
-            //IPosition p = Calculate();
-            //m_To = reader.ReadCalculatedPoint("To", p);
-            m_To = reader.ReadPoint("To");
-            m_Line1 = reader.ReadElement<LineFeature>("Line1");
-            m_Line2 = reader.ReadElement<LineFeature>("Line2");
+            writer.WriteCalculatedFeature("Line1", m_Line1);
+            writer.WriteCalculatedFeature("Line2", m_Line2);
         }
 
         /// <summary>
