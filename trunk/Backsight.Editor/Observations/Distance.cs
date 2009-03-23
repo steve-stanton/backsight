@@ -80,9 +80,9 @@ namespace Backsight.Editor.Observations
         internal Distance(Operation op, DistanceType t)
             : base(op, t)
         {
-            DistanceUnitType dut = (DistanceUnitType)t.EntryUnit;
+            DistanceUnitType dut = (DistanceUnitType)t.Unit;
             m_EnteredUnit = EditingController.Current.GetUnits(dut);
-            m_ObservedMetric = t.MetricValue;
+            m_ObservedMetric = m_EnteredUnit.ToMetric(t.Value);
             m_IsFixed = t.Fixed;
         }
 
@@ -375,8 +375,8 @@ namespace Backsight.Editor.Observations
         public override void WriteAttributes(XmlContentWriter writer)
         {
             base.WriteAttributes(writer);
-            writer.WriteInt("EntryUnit", (int)m_EnteredUnit.UnitType);
-            writer.WriteDouble("MetricValue", m_ObservedMetric);
+            writer.WriteDouble("Value", GetDistance());
+            writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
             writer.WriteBool("Fixed", m_IsFixed);
         }
 

@@ -73,6 +73,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Attempts to find the ID group with a specific ID
+        /// </summary>
+        /// <param name="groupId">The ID of the group to look for</param>
+        /// <returns>The corresponding ID group (null if not found)</returns>
+        internal IdGroup FindGroupById(int groupId)
+        {
+            return Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup g)
+            {
+                return (g.Id == groupId);
+            });
+        }
+
+        /// <summary>
         /// Reserves the next available ID for a given entity type.
         /// </summary>
         /// <param name="idh">The ID handle to fill in.</param>
