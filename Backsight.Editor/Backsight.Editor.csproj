@@ -1041,7 +1041,10 @@
     <Compile Include="Xml\IntersectDirectionAndLineType.cs" />
     <Compile Include="Xml\IntersectTwoDirectionsType.cs" />
     <Compile Include="Xml\IntersectTwoDistancesType.cs" />
+    <Compile Include="Xml\IntersectTwoLinesType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
+    <Compile Include="Xml\LineExtensionType.cs" />
+    <Compile Include="Xml\LineSubdivisionType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
     <Compile Include="Xml\MultiSegmentType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
@@ -1056,6 +1059,7 @@
     <Compile Include="Xml\SectionType.cs" />
     <Compile Include="Xml\SegmentType.cs" />
     <Compile Include="Xml\SharedPointType.cs" />
+    <Compile Include="Xml\SpanType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

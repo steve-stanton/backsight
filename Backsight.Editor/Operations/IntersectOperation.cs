@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Operations
 {
@@ -249,10 +250,57 @@ protected:
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        protected LineFeature MakeSection(LineFeature parent, PointFeature start, PointFeature end)
+        LineFeature MakeSection(LineFeature parent, PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(parent, start, end);
             return parent.MakeSubSection(section, this);
+        }
+
+        /// <summary>
+        /// Creates line sections on either side of an intersection. This is used during
+        /// deserialization, and is expected to work even in situations where the geometry
+        /// is undefined.
+        /// </summary>
+        /// <param name="parent">The line that may need to be sectioned</param>
+        /// <param name="idBefore">The internal ID of the section preceding the intersection (null
+        /// if a section is not required). If null, the <paramref name="idAfter"/> parameter
+        /// should also be null.</param>
+        /// <param name="x">The point representing the intersection. The position of this point
+        /// does not need to be defined.</param>
+        /// <param name="idAfter">The internal ID of the section after the intersection (null
+        /// if a section is not required). If null, the <paramref name="idBefore"/> parameter
+        /// should also be null.</param>
+        /// <param name="lineBefore">The line section prior to the intersection (null if no
+        /// split was required)</param>
+        /// <param name="lineAfter">The line section after to the intersection (null if no
+        /// split was required)</param>
+        /// <returns>True if sections were created</returns>
+        protected bool MakeSections(LineFeature parent, string idBefore, PointFeature x, string idAfter,
+                                        out LineFeature lineBefore, out LineFeature lineAfter)
+        {
+            lineBefore = lineAfter = null;
+
+            if (idBefore==null || idAfter==null)
+                return false;
+
+            // Split the line (the sections should get an undefined creation sequence). Note that
+            // you cannot use the SplitLine method at this stage, because that requires defined
+            // geometry.
+
+            lineBefore = MakeSection(parent, parent.StartPoint, x);
+            lineAfter = MakeSection(parent, x, parent.EndPoint);
+            parent.Deactivate();
+
+            // Apply the correct creation sequence to the sections
+            Debug.Assert(lineBefore.CreatorSequence==0);
+            Debug.Assert(lineAfter.CreatorSequence==0);
+            uint sessionId, creationSequence;
+            InternalIdValue.Parse(idBefore, out sessionId, out creationSequence);
+            lineBefore.CreatorSequence = creationSequence;
+            InternalIdValue.Parse(idAfter, out sessionId, out creationSequence);
+            lineAfter.CreatorSequence = creationSequence;
+
+            return true;
         }
 
         /// <summary>

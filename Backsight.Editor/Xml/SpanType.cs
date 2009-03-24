@@ -20,34 +20,26 @@ using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Xml
 {
-    /// <summary>
-    /// A serialized <see cref="Distance"/>
-    /// </summary>
-    public partial class DistanceType
+    public partial class SpanType
     {
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// The internal ID of the line representing the span (if this is defined, the
+        /// <see cref="Line"/> property should be null).
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        public string LineId
         {
-            return new Distance(op, this);
+            get { return (this.Item as string); }
+            set { this.Item = value; }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DistanceType"/> class.
+        /// Information about the line that was created to represent this span (if this is defined, the
+        /// <see cref="LineId"/> property should be null).
         /// </summary>
-        /// <param name="d">The object to serialize</param>
-        internal DistanceType(Distance d)
-            : base()
+        public CalculatedFeatureType Line
         {
-            this.Value = d.ObservedValue;
-            this.Unit = (int)d.EntryUnit.UnitType;
-
-            if (d.IsFixed)
-                this.Fixed = true;
+            get { return (this.Item as CalculatedFeatureType); }
+            set { this.Item = value; }
         }
     }
 }
-

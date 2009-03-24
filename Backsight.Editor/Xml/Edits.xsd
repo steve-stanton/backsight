@@ -313,6 +313,46 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="IntersectTwoLinesType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The created intersection point</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Line1" type="IdType" use="required" />
+        <xs:attribute name="Line2" type="IdType" use="required" />
+        <xs:attribute name="CloseTo" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point closest to the intersection (usually defaulted to one of the end points for the 2 lines).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitBefore1" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the first line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter1 attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitAfter1" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the first line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore1 attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitBefore2" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the second line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter2 attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="SplitAfter2" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the portion of the second line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore2 attribute will also be present.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="KeyTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType" />
@@ -327,6 +367,56 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:attribute name="From" type="IdType" />
         <xs:attribute name="To" type="IdType" />
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LineExtensionType">
+    <xs:annotation>
+      <xs:documentation>Operation to extend a line.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType">
+            <xs:annotation>
+              <xs:documentation>The observed length of the extension.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The point at the end of the extension.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The actual extension line (if any).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Line" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The line being extended.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="ExtendFromEnd" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>True if extending from the end of the line. False if extending from the start.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LineSubdivisionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="2" maxOccurs="unbounded" name="Spans" type="SpanType" />
+        </xs:sequence>
+        <xs:attribute name="Line" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The line that was subdivided.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -477,5 +567,27 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="PolygonY" type="xs:long" use="optional" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SpanType">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Length" type="DistanceType" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureType">
+        <xs:annotation>
+          <xs:documentation>Information about the point at the end of the span. May be omitted if the end point can be determined by the context in which the span is being used (e.g. the last span of a subdivided line)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:element minOccurs="0" maxOccurs="1" name="LineId" type="IdType">
+          <xs:annotation>
+            <xs:documentation>The internal ID of the line representing the span</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureType">
+          <xs:annotation>
+            <xs:documentation>Information about the line that was created to represent this span.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
   </xs:complexType>
 </xs:schema>

@@ -1,22 +1,23 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -104,6 +105,25 @@ namespace Backsight.Editor.Operations
             m_Line2b = null;
             m_IsSplit1 = false;
             m_IsSplit2 = false;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal IntersectTwoLinesOperation(Session s, IntersectTwoLinesType t)
+            : base(s, t)
+        {
+            CadastralMapModel mapModel = s.MapModel;
+            m_Line1 = mapModel.Find<LineFeature>(t.Line1);
+            m_Line2 = mapModel.Find<LineFeature>(t.Line2);
+            m_CloseTo = mapModel.Find<PointFeature>(t.CloseTo);
+            m_Intersection = new PointFeature(this, t.To);
+            m_IsSplit1 = MakeSections(m_Line1, t.SplitBefore1, m_Intersection, t.SplitAfter1, out m_Line1a, out m_Line1b);
+            m_IsSplit2 = MakeSections(m_Line2, t.SplitBefore2, m_Intersection, t.SplitAfter2, out m_Line2a, out m_Line2b);
         }
 
         #endregion
@@ -478,6 +498,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "IntersectTwoLinesType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -488,8 +516,18 @@ namespace Backsight.Editor.Operations
             writer.WriteFeatureReference("Line1", m_Line1);
             writer.WriteFeatureReference("Line2", m_Line2);
             writer.WriteFeatureReference("CloseTo", m_CloseTo);
-            writer.WriteBool("IsSplit1", m_IsSplit1);
-            writer.WriteBool("IsSplit2", m_IsSplit2);
+
+            if (m_Line1a!=null)
+                writer.WriteFeatureReference("SplitBefore1", m_Line1a);
+
+            if (m_Line1b!=null)
+                writer.WriteFeatureReference("SplitAfter1", m_Line1b);
+
+            if (m_Line2a!=null)
+                writer.WriteFeatureReference("SplitBefore2", m_Line2a);
+
+            if (m_Line2b!=null)
+                writer.WriteFeatureReference("SplitAfter2", m_Line2b);
         }
 
         /// <summary>
@@ -500,57 +538,7 @@ namespace Backsight.Editor.Operations
         public override void WriteChildElements(XmlContentWriter writer)
         {
             base.WriteChildElements(writer);
-
             writer.WriteCalculatedFeature("To", m_Intersection);
-            if (m_IsSplit1)
-            {
-                writer.WriteElement("Line1a", m_Line1a);
-                writer.WriteElement("Line1b", m_Line1b);
-            }
-            if (m_IsSplit2)
-            {
-                writer.WriteElement("Line2a", m_Line2a);
-                writer.WriteElement("Line2b", m_Line2b);
-            }
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_Line1 = reader.ReadFeatureByReference<LineFeature>("Line1");
-            m_Line2 = reader.ReadFeatureByReference<LineFeature>("Line2");
-            m_CloseTo = reader.ReadFeatureByReference<PointFeature>("CloseTo");
-            m_IsSplit1 = reader.ReadBool("IsSplit1");
-            m_IsSplit2 = reader.ReadBool("IsSplit2");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            //IPosition p = Calculate();
-            //m_Intersection = reader.ReadCalculatedPoint("To", p);
-            m_Intersection = reader.ReadPoint("To");
-            if (m_IsSplit1)
-            {
-                m_Line1a = reader.ReadElement<LineFeature>("Line1a");
-                m_Line1b = reader.ReadElement<LineFeature>("Line1b");
-            }
-            if (m_IsSplit2)
-            {
-                m_Line2a = reader.ReadElement<LineFeature>("Line2a");
-                m_Line2b = reader.ReadElement<LineFeature>("Line2b");
-            }
         }
 
         /// <summary>
