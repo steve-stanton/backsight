@@ -473,25 +473,19 @@ namespace Backsight.Editor.Operations
 
             for (int i=0; i<m_Sections.Count; i++)
             {
+                SpanContent span = new SpanContent(this, m_Sections[i]);
+                writer.WriteElement("Span", span);
+            }
+            /*
                 MeasuredLineFeature s = m_Sections[i];
                 SpanType st = new SpanType();
                 st.Length = new DistanceType(s.ObservedLength);
                 st.LineId = s.Line.DataId;
 
-                // Direction of subdivision???
-                throw new NotImplementedException("LineSubdivisionOperation.WriteChildElements");
-                //if (i < (m_Sections.Count-1))
-                //    st.EndPoint = new CalculatedFeatureType(s.Line.EndPoint);
+                if (i < (m_Sections.Count-1))
+                    st.EndPoint = new CalculatedFeatureType(s.Line.EndPoint);
             }
-
-            /*
-            SpanContent[] spans = new SpanContent[m_Sections.Count];
-            for (int i=0; i<spans.Length; i++)
-                spans[i] = new SpanContent(this, m_Sections[i]);
-
-            foreach (SpanContent s in spans)
-                writer.WriteElement("Span", s);
-             */
+            */
         }
 
         /// <summary>

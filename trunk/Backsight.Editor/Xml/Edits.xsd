@@ -553,27 +553,12 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="TextType" abstract="true">
-    <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType">
-        <xs:attribute name="X" type="xs:long" use="required" />
-        <xs:attribute name="Y" type="xs:long" use="required" />
-        <xs:attribute name="Height" type="xs:double" use="required" />
-        <xs:attribute name="Width" type="xs:double" use="required" />
-        <xs:attribute name="Rotation" type="xs:string" use="optional" />
-        <xs:attribute name="Font" type="xs:int" use="optional" />
-        <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
-        <xs:attribute name="PolygonX" type="xs:long" use="optional" />
-        <xs:attribute name="PolygonY" type="xs:long" use="optional" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
   <xs:complexType name="SpanType">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="Length" type="DistanceType" />
       <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureType">
         <xs:annotation>
-          <xs:documentation>Information about the point at the end of the span. May be omitted if the end point can be determined by the context in which the span is being used (e.g. the last span of a subdivided line)</xs:documentation>
+          <xs:documentation>Information about the point at the end of the span.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:choice minOccurs="0" maxOccurs="1">
@@ -589,5 +574,20 @@ The first and last positions are assumed to match the positions of the point fea
         </xs:element>
       </xs:choice>
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TextType" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="FeatureType">
+        <xs:attribute name="X" type="xs:long" use="required" />
+        <xs:attribute name="Y" type="xs:long" use="required" />
+        <xs:attribute name="Height" type="xs:double" use="required" />
+        <xs:attribute name="Width" type="xs:double" use="required" />
+        <xs:attribute name="Rotation" type="xs:string" use="optional" />
+        <xs:attribute name="Font" type="xs:int" use="optional" />
+        <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
+        <xs:attribute name="PolygonX" type="xs:long" use="optional" />
+        <xs:attribute name="PolygonY" type="xs:long" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 </xs:schema>

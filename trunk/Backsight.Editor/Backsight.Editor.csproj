@@ -327,6 +327,7 @@
     <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
+    <Compile Include="ISerializableEdit.cs" />
     <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
