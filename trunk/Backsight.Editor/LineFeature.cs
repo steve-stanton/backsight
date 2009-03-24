@@ -59,33 +59,33 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during serialization. This version acts only as a placeholder
-        /// for holding the internal ID of a line. The editing operation must subsequently
-        /// replace the instance with a "proper" instance.
-        /// </summary>
-        /// <param name="op"></param>
-        /// <param name="id"></param>
-        //internal LineFeature(Operation op, string id)
-        //    : base(null, 
-        //{
-        //}
-
-        /// <summary>
-        /// Constructor for use during deserialization. This version does not define the
-        /// position for the new line - the editing operation must subsequently calculate
-        /// the geometry.
-        /// <para/>
-        /// For the time being, assume the line is a simple line segment (will this constructor
-        /// be used with edits involving circular arcs and multisegments?).
+        /// Constructor for use during deserialization, for creating a line consisting of
+        /// a simple line segment. This version does not define the position for the new line - the
+        /// editing operation must subsequently calculate that.
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
         internal LineFeature(Operation op, PointFeature start, PointFeature end, CalculatedFeatureType t)
+            : this(op, start, end, new SegmentGeometry(start, end), t)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization, for creating a line consisting of
+        /// a simple line segment. This version does not define the position for the new line - the
+        /// editing operation must subsequently calculate that.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="start">The point at the start of the line</param>
+        /// <param name="end">The point at the end of the line</param>
+        /// <param name="geom">The basic geometry for the line (with undefined position)</param>
+        /// <param name="t">The serialized version of the information describing this feature</param>
+        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, CalculatedFeatureType t)
             : base(op, t)
         {
-            m_Geom = new SegmentGeometry(start, end);
+            m_Geom = geom;
             m_From = start;
             m_To = end;
 

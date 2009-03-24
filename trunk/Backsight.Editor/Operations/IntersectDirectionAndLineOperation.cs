@@ -122,31 +122,7 @@ namespace Backsight.Editor.Operations
             else
                 m_DirLine = new LineFeature(this, m_Direction.From, m_Intersection, t.DirLine);
 
-            string before = t.SplitBefore;
-            string after = t.SplitAfter;
-
-            if (before==null || after==null)
-                m_IsSplit = false;
-            else
-            {
-                // Split the line (the sections should get an undefined creation sequence). Note that
-                // you cannot use the SplitLine method at this stage, because that requires defined
-                // geometry.
-
-                m_IsSplit = true;
-                m_LineA = MakeSection(m_Line, m_Line.StartPoint, m_Intersection);
-                m_LineB = MakeSection(m_Line, m_Intersection, m_Line.EndPoint);
-                m_Line.Deactivate();
-
-                // Apply the correct creation sequence to the sections
-                Debug.Assert(m_LineA.CreatorSequence==0);
-                Debug.Assert(m_LineB.CreatorSequence==0);
-                uint sessionId, creationSequence;
-                InternalIdValue.Parse(before, out sessionId, out creationSequence);
-                m_LineA.CreatorSequence = creationSequence;
-                InternalIdValue.Parse(after, out sessionId, out creationSequence);
-                m_LineB.CreatorSequence = creationSequence;
-            }
+            m_IsSplit = MakeSections(m_Line, t.SplitBefore, m_Intersection, t.SplitAfter, out m_LineA, out m_LineB);
         }
 
         #endregion

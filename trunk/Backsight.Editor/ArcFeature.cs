@@ -50,6 +50,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Constructor for use during deserialization, for creating a line consisting of
+        /// a simple line segment. This version does not define the position for the new line - the
+        /// editing operation must subsequently calculate that.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="c">The circle the arc coincides with</param>
+        /// <param name="bc">The point at the start of the arc</param>
+        /// <param name="ec">The point at the end of the arc</param>
+        /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
+        /// <param name="t">The serialized version of the information describing this feature</param>
+        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, CalculatedFeatureType t)
+            : base(op, bc, ec, new ArcGeometry(c, bc, ec, isClockwise), t)
+        {
+            // Confirm that there is no need to call Circle.AddArc in this context
+        }
+
+        /// <summary>
         /// Creates a new <c>ArcFeature</c>
         /// </summary>
         /// <param name="e">The entity type for the feature.</param>

@@ -20,6 +20,7 @@ using System.Diagnostics;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -34,7 +35,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line that was subdivided.
         /// </summary>
-        LineFeature m_Line; // readonly
+        readonly LineFeature m_Line;
 
         /// <summary>
         /// The sections of the subdivided line.
@@ -46,10 +47,17 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
         /// </summary>
-        public LineSubdivisionOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal LineSubdivisionOperation(Session s, LineSubdivisionType t)
+            : base(s, t)
         {
+            m_Line = s.MapModel.Find<LineFeature>(t.Line);
+            throw new NotImplementedException("LineSubdivisionOperation");
         }
 
         /// <summary>
@@ -463,22 +471,27 @@ namespace Backsight.Editor.Operations
             // sensitivity to code elsewhere, express each span using a special class
             // that is a bit easier to work with.
 
+            for (int i=0; i<m_Sections.Count; i++)
+            {
+                MeasuredLineFeature s = m_Sections[i];
+                SpanType st = new SpanType();
+                st.Length = new DistanceType(s.ObservedLength);
+                st.LineId = s.Line.DataId;
+
+                // Direction of subdivision???
+                throw new NotImplementedException("LineSubdivisionOperation.WriteChildElements");
+                //if (i < (m_Sections.Count-1))
+                //    st.EndPoint = new CalculatedFeatureType(s.Line.EndPoint);
+            }
+
+            /*
             SpanContent[] spans = new SpanContent[m_Sections.Count];
             for (int i=0; i<spans.Length; i++)
                 spans[i] = new SpanContent(this, m_Sections[i]);
 
             foreach (SpanContent s in spans)
                 writer.WriteElement("Span", s);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
+             */
         }
 
         /// <summary>

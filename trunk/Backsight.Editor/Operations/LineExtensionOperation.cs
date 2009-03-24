@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -63,13 +64,6 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public LineExtensionOperation()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
@@ -81,6 +75,42 @@ namespace Backsight.Editor.Operations
             m_NewPoint = null;
             m_Length = null;
             m_IsExtendFromEnd = true;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization. The features created by this edit
+        /// are defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal LineExtensionOperation(Session s, LineExtensionType t)
+            : base(s, t)
+        {
+            CadastralMapModel mapModel = s.MapModel;
+            m_ExtendLine = mapModel.Find<LineFeature>(t.Line);
+            m_NewPoint = new PointFeature(this, t.NewPoint);
+            m_Length = new Distance(this, t.Distance);
+            m_IsExtendFromEnd = t.ExtendFromEnd;
+
+            if (t.NewLine == null)
+                m_NewLine = null;
+            else
+            {
+                PointFeature p = (m_IsExtendFromEnd ? m_ExtendLine.EndPoint : m_ExtendLine.StartPoint);
+
+                if (m_ExtendLine is ArcFeature)
+                {
+                    ArcFeature arc = (m_ExtendLine as ArcFeature);
+                    bool isClockwise = arc.IsClockwise;
+                    if (!m_IsExtendFromEnd)
+                        isClockwise = !isClockwise;
+
+                    m_NewLine = new ArcFeature(this, arc.Circle, p, m_NewPoint, isClockwise, t.NewLine);
+                }
+                else
+                    m_NewLine = new LineFeature(this, p, m_NewPoint, t.NewLine);
+            }
         }
 
         #endregion
@@ -401,6 +431,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The string that will be used as the xsi:type for this edit
+        /// </summary>
+        public override string XmlTypeName
+        {
+            get { return "LineExtensionType"; }
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -408,8 +446,10 @@ namespace Backsight.Editor.Operations
         {
             base.WriteAttributes(writer);
 
-            writer.WriteFeatureReference("ExtendLine", m_ExtendLine);
-            writer.WriteBool("IsExtendFromEnd", m_IsExtendFromEnd);
+            writer.WriteFeatureReference("Line", m_ExtendLine);
+
+            if (m_IsExtendFromEnd)
+                writer.WriteBool("ExtendFromEnd", true);
         }
 
         /// <summary>
@@ -423,34 +463,9 @@ namespace Backsight.Editor.Operations
 
             writer.WriteElement("Distance", m_Length);
             writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
-            writer.WriteElement("NewLine", m_NewLine);
-        }
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_ExtendLine = reader.ReadFeatureByReference<LineFeature>("ExtendLine");
-            m_IsExtendFromEnd = reader.ReadBool("IsExtendFromEnd");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Length = reader.ReadElement<Distance>("Distance");
-            //m_NewPoint = reader.ReadCalculatedPoint("NewPoint", Calculate());
-            m_NewPoint = reader.ReadPoint("NewPoint");
-            m_NewLine = reader.ReadElement<LineFeature>("NewLine");
+            if (m_NewLine!=null)
+                writer.WriteCalculatedFeature("NewLine", m_NewLine);
         }
 
         /// <summary>

@@ -51,13 +51,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public NewLineOperation()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NewLineOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
