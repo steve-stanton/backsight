@@ -1865,7 +1865,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 OperationType[] ops = et.Operation;
             }
              */
-
+            /*
             AttachPointType t = new AttachPointType();
             t.Line = "123.45";
             t.PositionRatio = (uint)56789;
@@ -1883,14 +1883,45 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 xs.Serialize(s, e);
             }
+            */
+            LineSubdivisionType op = new LineSubdivisionType();
+            op.Id = "10:7";
+            op.Line = "123:45";
 
+            SpanType[] spans = new SpanType[3];
+            int seq = 7;
+            for (int i = 0; i < spans.Length; i++)
+            {
+                SpanType t = new SpanType();
+                seq++;
+                t.LineId = "10:" + seq;
+                Backsight.Editor.Observations.Distance d = new Backsight.Editor.Observations.Distance((i+11).ToString());
+                t.Length = new DistanceType(d);
+                seq++;
+                t.EndPoint = new CalculatedFeatureType();
+                t.EndPoint.Type = 30;
+                t.EndPoint.Id = "10:"+seq;
+                t.EndPoint.Key = "123" + seq;
+
+                spans[i] = t;
+            }
+            op.Spans = spans;
+
+            EditType e = new EditType();
+            e.Operation = new OperationType[] { op };
+
+            System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(EditType));
+            using (StreamWriter s = File.CreateText(@"C:\Temp\Test.txt"))
+            {
+                xs.Serialize(s, e);
+            }
         }
 
         #endregion
 
         bool HasActiveLayer
         {
-            get { return (ActiveLayer!=null); }
+            get { return (ActiveLayer != null); }
         }
 
         ILayer ActiveLayer

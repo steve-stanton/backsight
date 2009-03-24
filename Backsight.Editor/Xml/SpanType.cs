@@ -26,7 +26,7 @@ namespace Backsight.Editor.Xml
         /// The internal ID of the line representing the span (if this is defined, the
         /// <see cref="Line"/> property should be null).
         /// </summary>
-        public string LineId
+        internal string LineId
         {
             get { return (this.Item as string); }
             set { this.Item = value; }
@@ -36,7 +36,7 @@ namespace Backsight.Editor.Xml
         /// Information about the line that was created to represent this span (if this is defined, the
         /// <see cref="LineId"/> property should be null).
         /// </summary>
-        public CalculatedFeatureType Line
+        internal CalculatedFeatureType Line
         {
             get { return (this.Item as CalculatedFeatureType); }
             set { this.Item = value; }
