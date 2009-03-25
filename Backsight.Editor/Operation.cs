@@ -556,6 +556,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class. This implementation returns null (always).
+        /// </summary>
+        /// <returns>The serializable object (null if this edit is not written using
+        /// standard serialization)</returns>
+        internal virtual OperationType GetSerializableEdit()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

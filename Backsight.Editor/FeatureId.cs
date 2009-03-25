@@ -500,22 +500,31 @@ namespace Backsight.Editor
             // explicitly here. This is just to keep the relevant logic close to
             // the implementation of the static Read method
 
-            string s = null;
-
-            if (this is NativeId)
-            {
-                NativeId nid = (NativeId)this;
-                s = String.Format("{0}@{1}", nid.RawId, nid.IdGroup.Id);
-            }
-            else if (this is ForeignId)
-            {
-                s = FormattedKey;
-            }
-
+            string s = XmlKey;
             if (s == null)
                 throw new NotSupportedException("Unexpected ID class: "+GetType().Name);
 
             writer.WriteString(name, s);
+        }
+
+        /// <summary>
+        /// The representation of this ID that will be serialized to XML
+        /// </summary>
+        internal string XmlKey
+        {
+            get
+            {
+                if (this is NativeId)
+                {
+                    NativeId nid = (NativeId)this;
+                    return String.Format("{0}@{1}", nid.RawId, nid.IdGroup.Id);
+                }
+
+                if (this is ForeignId)
+                    return FormattedKey;
+
+                return null;
+            }
         }
 
         /// <summary>

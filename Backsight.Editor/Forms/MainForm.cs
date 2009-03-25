@@ -1884,6 +1884,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 xs.Serialize(s, e);
             }
             */
+
+            /*
             LineSubdivisionType op = new LineSubdivisionType();
             op.Id = "10:7";
             op.Line = "123:45";
@@ -1905,7 +1907,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
                 spans[i] = t;
             }
-            op.Spans = spans;
+            op.Span = spans;
 
             EditType e = new EditType();
             e.Operation = new OperationType[] { op };
@@ -1915,6 +1917,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 xs.Serialize(s, e);
             }
+             */
         }
 
         #endregion

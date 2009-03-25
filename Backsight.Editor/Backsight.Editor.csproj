@@ -1027,6 +1027,7 @@
     <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />
     <Compile Include="Xml\BearingType.cs" />
+    <Compile Include="Xml\CalculatedFeatureType.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\DeflectionType.cs" />
     <Compile Include="Xml\DeletionType.cs" />

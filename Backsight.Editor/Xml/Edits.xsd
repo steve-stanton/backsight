@@ -102,7 +102,11 @@
     <xs:complexContent mixed="false">
       <xs:extension base="ObservationType">
         <xs:attribute name="Value" type="xs:double" use="required" />
-        <xs:attribute name="Unit" type="DistanceUnitType" use="required" />
+        <xs:attribute default="0" name="Unit" type="DistanceUnitType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The default for the Unit attribute denotes metric values</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
         <xs:attribute default="false" name="Fixed" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
@@ -410,7 +414,7 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence>
-          <xs:element minOccurs="2" maxOccurs="unbounded" name="Spans" type="SpanType" />
+          <xs:element minOccurs="2" maxOccurs="unbounded" name="Span" type="SpanType" />
         </xs:sequence>
         <xs:attribute name="Line" type="IdType" use="required">
           <xs:annotation>
@@ -556,11 +560,6 @@ The first and last positions are assumed to match the positions of the point fea
   <xs:complexType name="SpanType">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="Length" type="DistanceType" />
-      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureType">
-        <xs:annotation>
-          <xs:documentation>Information about the point at the end of the span.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
       <xs:choice minOccurs="0" maxOccurs="1">
         <xs:element minOccurs="0" maxOccurs="1" name="LineId" type="IdType">
           <xs:annotation>
@@ -573,6 +572,11 @@ The first and last positions are assumed to match the positions of the point fea
           </xs:annotation>
         </xs:element>
       </xs:choice>
+      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureType">
+        <xs:annotation>
+          <xs:documentation>Information about the point at the end of the span.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="TextType" abstract="true">

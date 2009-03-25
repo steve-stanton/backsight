@@ -18,6 +18,8 @@ using System.Xml;
 using System.Text;
 using System.Xml.Schema;
 using System.Collections.Generic;
+using Backsight.Editor.Xml;
+using System.Xml.Serialization;
 
 namespace Backsight.Editor
 {
@@ -41,7 +43,7 @@ namespace Backsight.Editor
         {
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
-            xws.ConformanceLevel = ConformanceLevel.Fragment;
+            //xws.ConformanceLevel = ConformanceLevel.Fragment;
             xws.Indent = indent;
 
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
@@ -87,17 +89,32 @@ namespace Backsight.Editor
             if (edit==null)
                 throw new ArgumentNullException();
 
-            // The edit is enclosed by a top-level element that has no attributes - the only reason for
-            // this is that the top-level element needs to also specify the XmlSchema.InstanceNamespace.
+            OperationType sed = edit.GetSerializableEdit();
 
-            // Should encoding be written too?
-            m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-            m_Writer.WriteStartElement("Edit", "Backsight");
-            m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
+            if (sed == null)
+            {
+                // The edit is enclosed by a top-level element that has no attributes - the only reason for
+                // this is that the top-level element needs to also specify the XmlSchema.InstanceNamespace.
 
-            WriteElement("Operation", edit);
+                // Should encoding be written too?
+                m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
+                m_Writer.WriteStartElement("Edit", "Backsight");
+                m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
 
-            m_Writer.WriteEndElement();
+                WriteElement("Operation", edit);
+
+                m_Writer.WriteEndElement();
+            }
+            else
+            {
+                // Wrap the serializable edit in an EditType object (means we always know what to
+                // cast the result to upon deserialization)
+
+                EditType e = new EditType();
+                e.Operation = new OperationType[] { sed };
+                XmlSerializer xs = new XmlSerializer(typeof(EditType));
+                xs.Serialize(m_Writer, e);
+            }
         }
 
         /// <summary>

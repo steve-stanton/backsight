@@ -26,6 +26,22 @@ namespace Backsight.Editor.Xml
     /// in the <c>Edits.cs</c> file.</remarks>
     abstract public partial class OperationType
     {
+        public OperationType()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationType"/> class.
+        /// </summary>
+        /// <param name="op">The editing operation that needs to be serialized.</param>
+        /// <remarks>Should really be protected (since this is an abstract base class), but
+        /// that leads to compiler error because this class is public, while <c>Operation</c>
+        /// is internal.</remarks>
+        internal OperationType(Operation op)
+        {
+            this.Id = op.DataId;
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
