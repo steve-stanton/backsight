@@ -98,6 +98,16 @@ namespace Backsight.Editor
         /// </summary>
         internal abstract string FormattedKey { get; }
 
+        /// <summary>
+        /// The undecorated native ID value (excluding any prefix or suffix or check digit).
+        /// This implementation always returns a value of 0. The derived <see cref="NativeId"/>
+        /// class provides an override.
+        /// </summary>
+        internal virtual uint RawId
+        {
+            get { return 0; }
+        }
+
         public bool IsInactive
         {
             get { return (m_Rows==null && m_Features==null); }
@@ -488,63 +498,5 @@ namespace Backsight.Editor
 
             return result.ToArray();
         }
-
-        /// <summary>
-        /// Serializes this ID to XML (as an attribute)
-        /// </summary>
-        /// <param name="name">The name for the attribute</param>
-        /// <param name="writer">The writing tool</param>
-        internal void Write(string name, XmlContentWriter writer)
-        {
-            // Rather than relying on an override in the derived class, do things
-            // explicitly here. This is just to keep the relevant logic close to
-            // the implementation of the static Read method
-
-            string s = XmlKey;
-            if (s == null)
-                throw new NotSupportedException("Unexpected ID class: "+GetType().Name);
-
-            writer.WriteString(name, s);
-        }
-
-        /// <summary>
-        /// The representation of this ID that will be serialized to XML
-        /// </summary>
-        internal string XmlKey
-        {
-            get
-            {
-                if (this is NativeId)
-                {
-                    NativeId nid = (NativeId)this;
-                    return String.Format("{0}@{1}", nid.RawId, nid.IdGroup.Id);
-                }
-
-                if (this is ForeignId)
-                    return FormattedKey;
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Deserializes an ID that was previously written using the <see cref="Write"/> method
-        /// </summary>
-        /// <returns></returns>
-        internal static FeatureId Read(CadastralMapModel mapModel, FeatureType f)
-        {
-            string key = f.Key;
-            if (String.IsNullOrEmpty(key))
-                return null;
-
-            int atPos = key.IndexOf('@');
-            if (atPos < 0)
-                return mapModel.FindForeignId(key);
-
-            uint rawId = uint.Parse(key.Substring(0, atPos));
-            int groupId = int.Parse(key.Substring(atPos+1));
-            return mapModel.FindNativeId(groupId, rawId);
-        }
-
     }
 }

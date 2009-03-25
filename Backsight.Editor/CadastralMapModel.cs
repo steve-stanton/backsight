@@ -1481,37 +1481,18 @@ namespace Backsight.Editor
         /// Obtains a native ID for a feature, adding it to the model if it was not
         /// previously loaded.
         /// </summary>
-        /// <param name="groupId">The ID of the ID group that the native ID is part of</param>
         /// <param name="rawId">The raw ID to look for</param>
         /// <returns>The corresponding ID (not null)</returns>
-        internal NativeId FindNativeId(int groupId, uint rawId)
+        /// <exception cref="ArgumentException">If an ID group that encloses the specified
+        /// raw ID cannot be found</exception>
+        internal NativeId FindNativeId(uint rawId)
         {
             NativeId result;
 
             if (!m_NativeIds.TryGetValue(rawId, out result))
             {
-                IdGroup group = m_IdManager.FindGroupById(groupId);
-                Debug.Assert(group!=null);
-                result = new NativeId(group, rawId);
-                m_NativeIds.Add(rawId, result);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Obtains a native ID for a feature, adding it to the model if it was not
-        /// previously loaded.
-        /// </summary>
-        /// <param name="group">The ID group the ID is part of</param>
-        /// <param name="rawId">The raw ID to look for</param>
-        /// <returns>The corresponding ID (not null)</returns>
-        internal NativeId FindNativeId(IdGroup group, uint rawId)
-        {
-            NativeId result;
-
-            if (!m_NativeIds.TryGetValue(rawId, out result))
-            {
+                IdGroup group = m_IdManager.FindGroupByRawId(rawId);
+                Debug.Assert(group != null);
                 result = new NativeId(group, rawId);
                 m_NativeIds.Add(rawId, result);
             }

@@ -88,7 +88,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The undecorated ID value (excluding any prefix or suffix or check digit).
         /// </summary>
-        internal uint RawId
+        internal override uint RawId
         {
             get { return m_Key; }
         }
