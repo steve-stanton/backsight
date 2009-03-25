@@ -26,16 +26,6 @@ namespace Backsight.Editor.Xml
     public partial class DistanceType
     {
         /// <summary>
-        /// Loads this observation as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
-        {
-            return new Distance(op, this);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DistanceType"/> class.
         /// </summary>
         /// <param name="d">The object to serialize</param>
@@ -47,6 +37,16 @@ namespace Backsight.Editor.Xml
 
             if (d.IsFixed)
                 this.Fixed = true;
+        }
+
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal override Observation LoadObservation(Operation op)
+        {
+            return new Distance(op, this);
         }
     }
 }

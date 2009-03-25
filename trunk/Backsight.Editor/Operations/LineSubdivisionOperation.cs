@@ -446,6 +446,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
+        {
+            return new LineSubdivisionType(this);
+        }
+
+        /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
@@ -476,16 +485,6 @@ namespace Backsight.Editor.Operations
                 SpanContent span = new SpanContent(this, m_Sections[i]);
                 writer.WriteElement("Span", span);
             }
-            /*
-                MeasuredLineFeature s = m_Sections[i];
-                SpanType st = new SpanType();
-                st.Length = new DistanceType(s.ObservedLength);
-                st.LineId = s.Line.DataId;
-
-                if (i < (m_Sections.Count-1))
-                    st.EndPoint = new CalculatedFeatureType(s.Line.EndPoint);
-            }
-            */
         }
 
         /// <summary>

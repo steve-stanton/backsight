@@ -83,9 +83,9 @@ namespace Backsight.Editor.Xml {
         
         private DistanceType lengthField;
         
-        private CalculatedFeatureType endPointField;
-        
         private object itemField;
+        
+        private CalculatedFeatureType endPointField;
         
         /// <remarks/>
         public DistanceType Length {
@@ -98,16 +98,6 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public CalculatedFeatureType EndPoint {
-            get {
-                return this.endPointField;
-            }
-            set {
-                this.endPointField = value;
-            }
-        }
-        
-        /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Line", typeof(CalculatedFeatureType))]
         [System.Xml.Serialization.XmlElementAttribute("LineId", typeof(string))]
         public object Item {
@@ -116,6 +106,16 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.itemField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType EndPoint {
+            get {
+                return this.endPointField;
+            }
+            set {
+                this.endPointField = value;
             }
         }
     }
@@ -135,6 +135,7 @@ namespace Backsight.Editor.Xml {
         private bool fixedField;
         
         public DistanceType() {
+            this.unitField = 0;
             this.fixedField = false;
         }
         
@@ -151,6 +152,7 @@ namespace Backsight.Editor.Xml {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(0)]
         public int Unit {
             get {
                 return this.unitField;
@@ -1143,18 +1145,18 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class LineSubdivisionType : OperationType {
         
-        private SpanType[] spansField;
+        private SpanType[] spanField;
         
         private string lineField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Spans")]
-        public SpanType[] Spans {
+        [System.Xml.Serialization.XmlElementAttribute("Span")]
+        public SpanType[] Span {
             get {
-                return this.spansField;
+                return this.spanField;
             }
             set {
-                this.spansField = value;
+                this.spanField = value;
             }
         }
         
