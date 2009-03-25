@@ -433,40 +433,60 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The string that will be used as the xsi:type for this edit
         /// </summary>
-        public override string XmlTypeName
+        //public override string XmlTypeName
+        //{
+        //    get { return "LineExtensionType"; }
+        //}
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "LineExtensionType"; }
+            LineExtensionType t = new LineExtensionType();
+
+            t.Id = this.DataId;
+            t.Line = m_ExtendLine.DataId;
+            t.ExtendFromEnd = m_IsExtendFromEnd;
+            t.Distance = new DistanceType(m_Length);
+            t.NewPoint = new CalculatedFeatureType(m_NewPoint);
+
+            if (m_NewLine != null)
+                t.NewLine = new CalculatedFeatureType(m_NewLine);
+
+            return t;
         }
 
         /// <summary>
         /// Writes the attributes of this class.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
+        //public override void WriteAttributes(XmlContentWriter writer)
+        //{
+        //    base.WriteAttributes(writer);
 
-            writer.WriteFeatureReference("Line", m_ExtendLine);
+        //    writer.WriteFeatureReference("Line", m_ExtendLine);
 
-            if (m_IsExtendFromEnd)
-                writer.WriteBool("ExtendFromEnd", true);
-        }
+        //    if (m_IsExtendFromEnd)
+        //        writer.WriteBool("ExtendFromEnd", true);
+        //}
 
         /// <summary>
         /// Writes any child elements of this class. This will be called after
         /// all attributes have been written via <see cref="WriteAttributes"/>.
         /// </summary>
         /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+        //public override void WriteChildElements(XmlContentWriter writer)
+        //{
+        //    base.WriteChildElements(writer);
 
-            writer.WriteElement("Distance", m_Length);
-            writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
+        //    writer.WriteElement("Distance", m_Length);
+        //    writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
 
-            if (m_NewLine!=null)
-                writer.WriteCalculatedFeature("NewLine", m_NewLine);
-        }
+        //    if (m_NewLine!=null)
+        //        writer.WriteCalculatedFeature("NewLine", m_NewLine);
+        //}
 
         /// <summary>
         /// Calculates the geometry for any features created by this edit.

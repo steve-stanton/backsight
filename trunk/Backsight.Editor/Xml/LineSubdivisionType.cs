@@ -21,35 +21,35 @@ namespace Backsight.Editor.Xml
 {
     public partial class LineSubdivisionType : ISerializableEdit
     {
-        public LineSubdivisionType()
-        {
-        }
+        //public LineSubdivisionType()
+        //{
+        //}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LineSubdivisionType"/> class.
-        /// </summary>
-        /// <param name="op">The editing operation that needs to be serialized.</param>
-        internal LineSubdivisionType(LineSubdivisionOperation op)
-            : base(op)
-        {
-            this.Line = op.Parent.DataId;
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="LineSubdivisionType"/> class.
+        ///// </summary>
+        ///// <param name="op">The editing operation that needs to be serialized.</param>
+        //internal LineSubdivisionType(LineSubdivisionOperation op)
+        //    : base(op)
+        //{
+        //    this.Line = op.Parent.DataId;
 
-            MeasuredLineFeature[] sections = op.Sections;
-            this.Span = new SpanType[sections.Length];
+        //    MeasuredLineFeature[] sections = op.Sections;
+        //    this.Span = new SpanType[sections.Length];
 
-            for (int i=0; i<sections.Length; i++)
-            {
-                MeasuredLineFeature mf = sections[i];
-                SpanType st = new SpanType();
-                st.Length = new DistanceType(mf.ObservedLength);
-                st.LineId = mf.Line.DataId;
+        //    for (int i=0; i<sections.Length; i++)
+        //    {
+        //        MeasuredLineFeature mf = sections[i];
+        //        SpanType st = new SpanType();
+        //        st.Length = new DistanceType(mf.ObservedLength);
+        //        st.LineId = mf.Line.DataId;
 
-                if (i<(sections.Length-1))
-                    st.EndPoint = new CalculatedFeatureType(mf.Line.EndPoint);
+        //        if (i<(sections.Length-1))
+        //            st.EndPoint = new CalculatedFeatureType(mf.Line.EndPoint);
 
-                this.Span[i] = st;
-            }            
-        }
+        //        this.Span[i] = st;
+        //    }            
+        //}
 
         /// <summary>
         /// Loads this editing operation into a session

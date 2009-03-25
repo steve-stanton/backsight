@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -35,7 +36,7 @@ namespace Backsight.Editor.Operations
 
         /// <summary>
         /// The original position of the reference point (null if the old position coincided
-        /// with the top-left corner of the text)
+        /// with the top-left corner of the text).
         /// </summary>
         PointGeometry m_OldPosition;
 
@@ -49,10 +50,20 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization.
         /// </summary>
-        public MovePolygonPositionOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal MovePolygonPositionOperation(Session s, MovePolygonPositionType t)
+            : base(s, t)
         {
+            m_Label = s.MapModel.Find<TextFeature>(t.Label);
+            m_NewPosition = new PointGeometry(t.NewX, t.NewY);
+
+            if (t.OldXSpecified && t.OldYSpecified)
+                m_OldPosition = new PointGeometry(t.OldX, t.OldY);
+            else
+                m_OldPosition = null;
         }
 
         /// <summary>
@@ -155,65 +166,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
+            MovePolygonPositionType t = new MovePolygonPositionType();
 
-            writer.WriteFeatureReference("Label", m_Label);
+            t.Id = this.DataId;
+            t.Label = m_Label.DataId;
+            t.NewX = m_NewPosition.Easting.Microns;
+            t.NewY = m_NewPosition.Northing.Microns;
 
-            if (m_OldPosition!=null)
+            if (m_OldPosition != null)
             {
-                writer.WriteLong("OldX", m_OldPosition.Easting.Microns);
-                writer.WriteLong("OldY", m_OldPosition.Northing.Microns);
+                t.OldX = m_OldPosition.Easting.Microns;
+                t.OldY = m_OldPosition.Northing.Microns;
+
+                t.OldXSpecified = true;
+                t.OldYSpecified = true;
             }
 
-            writer.WriteLong("NewX", m_NewPosition.Easting.Microns);
-            writer.WriteLong("NewY", m_NewPosition.Northing.Microns);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_Label = reader.ReadFeatureByReference<TextFeature>("Label");
-
-            long x = reader.ReadLong("OldX");
-            long y = reader.ReadLong("OldY");
-            if (x == 0 && y == 0)
-                m_OldPosition = null;
-            else
-                m_OldPosition = new PointGeometry(x, y);
-
-            x = reader.ReadLong("NewX");
-            y = reader.ReadLong("NewY");
-            m_NewPosition = new PointGeometry(x, y);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            return t;
         }
 
         /// <summary>
@@ -221,7 +195,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            // Move the label's reference position -- the name of this method
+            // really needs to be changed.
+            m_Label.SetPolPosition(m_NewPosition);
         }
 
         /// <summary>

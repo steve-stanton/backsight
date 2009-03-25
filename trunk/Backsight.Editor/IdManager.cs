@@ -86,6 +86,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Attempts to find the ID group that encloses a specific raw ID
+        /// </summary>
+        /// <param name="rawId">The raw ID of interest</param>
+        /// <returns>The corresponding ID group (null if not found)</returns>
+        internal IdGroup FindGroupByRawId(uint rawId)
+        {
+            return Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup g)
+            {
+                return ((uint)g.LowestId <= rawId && rawId <= (uint)g.HighestId);
+            });
+        }
+
+        /// <summary>
         /// Reserves the next available ID for a given entity type.
         /// </summary>
         /// <param name="idh">The ID handle to fill in.</param>

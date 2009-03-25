@@ -57,7 +57,33 @@ namespace Backsight.Editor.Operations
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
-            throw new NotImplementedException("LineSubdivisionOperation");
+
+            SpanType[] spans = t.Span;
+            m_Sections = new List<MeasuredLineFeature>(spans.Length);
+            PointFeature start = m_Line.StartPoint;
+            PointFeature end;
+
+            // Define sections without any geometry
+            foreach (SpanType span in spans)
+            {
+                if (span.EndPoint == null)
+                    end = m_Line.EndPoint;
+                else
+                    end = new PointFeature(this, span.EndPoint);
+
+                // Get the internal ID to assign to the line
+                uint sessionId, lineSequence;
+                InternalIdValue.Parse(span.LineId, out sessionId, out lineSequence);
+
+                SectionGeometry section = new SectionGeometry(m_Line, start, end);
+                LineFeature line = m_Line.MakeSubSection(section, this);
+                line.CreatorSequence = lineSequence;
+                Distance d = new Distance(this, span.Length);
+                MeasuredLineFeature mf = new MeasuredLineFeature(line, d);
+                m_Sections.Add(mf);
+
+                start = end;
+            }
         }
 
         /// <summary>
@@ -451,68 +477,45 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationType GetSerializableEdit()
         {
-            return new LineSubdivisionType(this);
-        }
+            LineSubdivisionType t = new LineSubdivisionType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Line", m_Line);
-        }
+            t.Id = this.DataId;
+            t.Line = m_Line.DataId;
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+            t.Span = new SpanType[m_Sections.Count];
 
-            // The created sections carry over the entity type and ID of the parent line.
-            // So the only thing we really need is info about the point features at
-            // the end of each span... but this assumes that the created line sections
-            // have item sequence numbers in a specific range. Since that introduces a
-            // sensitivity to code elsewhere, express each span using a special class
-            // that is a bit easier to work with.
-
-            for (int i=0; i<m_Sections.Count; i++)
+            for (int i = 0; i < m_Sections.Count; i++)
             {
-                SpanContent span = new SpanContent(this, m_Sections[i]);
-                writer.WriteElement("Span", span);
+                MeasuredLineFeature mf = m_Sections[i];
+                SpanType st = new SpanType();
+                st.Length = new DistanceType(mf.ObservedLength);
+                st.LineId = mf.Line.DataId;
+
+                if (i < (m_Sections.Count - 1))
+                    st.EndPoint = new CalculatedFeatureType(mf.Line.EndPoint);
+
+                t.Span[i] = st;
             }
+
+            return t;
         }
 
         /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
+        /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
+        public override void CalculateGeometry()
         {
-            base.ReadChildElements(reader);
-
-            // Read info about each span
-            SpanContent[] spans = reader.ReadArray<SpanContent>("Span");
-
-            // Adjust the observed distances
-            Distance[] distances = new Distance[spans.Length];
+            // Get adjusted lengths for each section
+            Distance[] distances = new Distance[m_Sections.Count];
             for (int i = 0; i < distances.Length; i++)
-                distances[i] = spans[i].Length;
+                distances[i] = m_Sections[i].ObservedLength;
             double[] adjray = GetAdjustedLengths(m_Line, distances);
 
-            // Create line sections (phew, seems a bit complicated...)
-
-            m_Sections = new List<MeasuredLineFeature>(distances.Length);
             double edist = 0.0;		// Distance to end of section.
             PointFeature start = m_Line.StartPoint;
             LineGeometry lineGeom = m_Line.LineGeometry;
 
-            for (int i = 0; i < adjray.Length; i++)
+            for (int i=0; i<adjray.Length; i++)
             {
                 // Calculate the position at the end of the span
                 edist += adjray[i];
@@ -521,21 +524,13 @@ namespace Backsight.Editor.Operations
                     throw new Exception("Cannot adjust line section");
 
                 // Get the point feature at the end of the span
-                SpanContent span = spans[i];
-                PointFeature end = span.GetEndPoint(reader, to);
+                MeasuredLineFeature mf = m_Sections[i];
+                PointFeature end = mf.Line.EndPoint;
 
-                // Create the section
-                SectionGeometry geom = new SectionGeometry(m_Line, start, end);
-                LineFeature section = m_Line.MakeSubSection(geom, this);
-
-                // Ensure the new section has the right ID info, and register with the reader
-                throw new NotImplementedException("LineSubdivisionOperation.ReadChildElements");
-                //FeatureData sectionData = new FeatureData(span.LineItemNumber, m_Line.EntityType, m_Line.Id);
-                FeatureData sectionData = null;
-                reader.InitializeFeature(section, sectionData);
-
-                MeasuredLineFeature mf = new MeasuredLineFeature(section, distances[i]);
-                m_Sections.Add(mf);
+                // Assign the calculated position so long as we're not at
+                // the end of the line
+                if (end != m_Line.EndPoint)
+                    end.PointGeometry = PointGeometry.Create(to);
 
                 // The end of the current span is the start of the next one
                 start = end;

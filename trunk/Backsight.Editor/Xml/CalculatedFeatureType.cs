@@ -30,7 +30,15 @@ namespace Backsight.Editor.Xml
 
             FeatureId fid = f.Id;
             if (fid != null)
-                this.Key = fid.XmlKey;
+            {
+                if (fid is NativeId)
+                {
+                    this.Key = fid.RawId;
+                    this.KeySpecified = true;
+                }
+                else
+                    this.ForeignKey = fid.FormattedKey;
+            }
         }
     }
 }

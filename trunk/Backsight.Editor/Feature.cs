@@ -97,9 +97,8 @@ namespace Backsight.Editor
             InternalIdValue.Parse(t.Id, out sessionId, out m_CreatorSequence);
             Debug.Assert(sessionId == session.Id);
 
-            FeatureId fid = FeatureId.Read(mapModel, t);
-
-            // If an ID has been obtained, ensure it knows about this feature, and vice versa
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            FeatureId fid = GetFeatureId(mapModel, t);
             if (fid != null)
                 fid.Add(this);
 
@@ -856,7 +855,30 @@ namespace Backsight.Editor
             writer.WriteInt("Type", m_What.Id);
 
             if (m_Id != null)
-                m_Id.Write("Key", writer);
+            {
+                if (m_Id is NativeId)
+                    writer.WriteUnsignedInt("Key", m_Id.RawId);
+                else
+                    writer.WriteString("ForeignKey", m_Id.FormattedKey);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the user-perceived ID of a feature
+        /// </summary>
+        /// <param name="mapModel">The model containing this feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        /// <returns>The corresponding ID (null if this feature does not have
+        /// a user-perceived ID).</returns>
+        FeatureId GetFeatureId(CadastralMapModel mapModel, FeatureType t)
+        {
+            if (t.Key > 0)
+                return mapModel.FindNativeId(t.Key);
+
+            if (t.ForeignKey != null)
+                return mapModel.FindForeignId(t.ForeignKey);
+
+            return null;
         }
     }
 }

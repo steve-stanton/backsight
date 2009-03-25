@@ -17,6 +17,7 @@ using System;
 
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -53,10 +54,23 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization.
         /// </summary>
-        public MoveTextOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal MoveTextOperation(Session s, MoveTextType t)
+            : base(s, t)
         {
+            throw new NotImplementedException("MoveTextOperation");
+            /*
+            m_Label = s.MapModel.Find<TextFeature>(t.Label);
+            m_NewPosition = new PointGeometry(t.NewX, t.NewY);
+
+            if (t.OldXSpecified && t.OldYSpecified)
+                m_OldPosition = new PointGeometry(t.OldX, t.OldY);
+            else
+                m_OldPosition = null;
+             */
         }
 
         /// <summary>

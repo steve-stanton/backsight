@@ -128,7 +128,16 @@
   <xs:complexType name="FeatureType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
     <xs:attribute name="Type" type="xs:int" use="required" />
-    <xs:attribute name="Key" type="xs:string" use="optional" />
+    <xs:attribute name="Key" type="xs:unsignedInt" use="optional">
+      <xs:annotation>
+        <xs:documentation>A native ID value. This is a value that falls within one of the ID groups that are defined as part of the Backsight environment. The value is not formatted according to the ID group (i.e. it is not decorated with any leading and/or tralling characters). Sometimes referred to as a raw ID. If the Key attribute is present, the ForeignKey attribute should not be present.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="ForeignKey" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>An  ID value that originates from some foreign source (defined by edits that import data). If present, the Key attribute should not be present.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
   <xs:complexType name="GetControlType">
     <xs:complexContent mixed="false">
@@ -428,6 +437,30 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="TextType">
         <xs:attribute name="Text" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MovePolygonPositionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:attribute name="Label" type="IdType" use="required" />
+        <xs:attribute name="NewX" type="xs:long" use="required" />
+        <xs:attribute name="NewY" type="xs:long" use="required" />
+        <xs:attribute name="OldX" type="xs:long" use="optional" />
+        <xs:attribute name="OldY" type="xs:long" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MoveTextType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:attribute name="Text" type="IdType" use="required" />
+        <xs:attribute name="OldX" type="xs:long" use="required" />
+        <xs:attribute name="OldY" type="xs:long" use="required" />
+        <xs:attribute name="OldPolygonX" type="xs:long" use="optional" />
+        <xs:attribute name="OldPolygonY" type="xs:long" />
+        <xs:attribute name="NewX" type="xs:long" use="required" />
+        <xs:attribute name="NewY" type="xs:long" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

@@ -1048,6 +1048,8 @@
     <Compile Include="Xml\LineExtensionType.cs" />
     <Compile Include="Xml\LineSubdivisionType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
+    <Compile Include="Xml\MovePolygonPositionType.cs" />
+    <Compile Include="Xml\MoveTextType.cs" />
     <Compile Include="Xml\MultiSegmentType.cs" />
     <Compile Include="Xml\NewLineType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
