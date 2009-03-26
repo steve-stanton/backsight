@@ -457,7 +457,11 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:attribute name="Text" type="IdType" use="required" />
         <xs:attribute name="OldX" type="xs:long" use="required" />
         <xs:attribute name="OldY" type="xs:long" use="required" />
-        <xs:attribute name="OldPolygonX" type="xs:long" use="optional" />
+        <xs:attribute name="OldPolygonX" type="xs:long" use="optional">
+          <xs:annotation>
+            <xs:documentation>The old polygon reference position (not specified if identical to OldX, OldY)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="OldPolygonY" type="xs:long" />
         <xs:attribute name="NewX" type="xs:long" use="required" />
         <xs:attribute name="NewY" type="xs:long" use="required" />
@@ -478,12 +482,34 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewLineType">
+  <xs:complexType name="NewCircleType">
+    <xs:annotation>
+      <xs:documentation>Edit for adding a construction line that runs round the circumference of a circle.</xs:documentation>
+    </xs:annotation>
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
-        <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Line" type="LineType" />
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The radius of the circle (either a DistanceType object, or an OffsetPointType that sits on the circumference of the circle).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
+        <xs:attribute name="Center" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The existing point at the center of the circle.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ClosingPoint" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point that acts as the closing point for the circular arc that runs round the complete circumference of the circle. If the radius was specified using an offset point, the closing point will be the same as the offset point. Otherwise a construction point (with an undefined entity type) gets created at the very top of the circle.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Arc" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The construction line that represents the entire circumference of the circle. This newly created line has no entity type, and no user-perceived key. Note that the underlying circle may have been created via a prior editing operation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -492,6 +518,15 @@ The first and last positions are assumed to match the positions of the point fea
       <xs:extension base="OperationType">
         <xs:sequence>
           <xs:element name="Point" type="PointType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NewSegmentType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="SegmentType" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -585,7 +620,6 @@ The first and last positions are assumed to match the positions of the point fea
   <xs:complexType name="SharedPointType">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
-        <xs:sequence />
         <xs:attribute name="FirstPoint" type="IdType" use="required" />
       </xs:extension>
     </xs:complexContent>

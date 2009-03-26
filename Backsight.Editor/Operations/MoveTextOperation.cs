@@ -61,16 +61,14 @@ namespace Backsight.Editor.Operations
         internal MoveTextOperation(Session s, MoveTextType t)
             : base(s, t)
         {
-            throw new NotImplementedException("MoveTextOperation");
-            /*
-            m_Label = s.MapModel.Find<TextFeature>(t.Label);
+            m_Text = s.MapModel.Find<TextFeature>(t.Text);
+            m_OldPosition = new PointGeometry(t.OldX, t.OldY);
             m_NewPosition = new PointGeometry(t.NewX, t.NewY);
 
-            if (t.OldXSpecified && t.OldYSpecified)
-                m_OldPosition = new PointGeometry(t.OldX, t.OldY);
+            if (t.OldPolygonXSpecified && t.OldPolygonYSpecified)
+                m_OldPolPosition = new PointGeometry(t.OldPolygonX, t.OldPolygonY);
             else
-                m_OldPosition = null;
-             */
+                m_OldPolPosition = null;
         }
 
         /// <summary>
@@ -201,75 +199,40 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Text", m_Text);
+            MoveTextType t = new MoveTextType();
 
-            if (m_OldPolPosition!=null)
+            t.Id = this.DataId;
+            t.Text = m_Text.DataId;
+            t.OldX = m_OldPosition.Easting.Microns;
+            t.OldY = m_OldPosition.Northing.Microns;
+            t.NewX = m_NewPosition.Easting.Microns;
+            t.NewY = m_NewPosition.Northing.Microns;
+
+            if (m_OldPolPosition != null)
             {
-                writer.WriteLong("X", m_OldPolPosition.Easting.Microns);
-                writer.WriteLong("Y", m_OldPolPosition.Northing.Microns);
+                t.OldPolygonX = m_OldPolPosition.Easting.Microns;
+                t.OldPolygonY = m_OldPolPosition.Northing.Microns;
+
+                t.OldPolygonXSpecified = t.OldPolygonYSpecified = true;
             }
+
+            return t;
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("OldPosition", m_OldPosition);
-            writer.WriteElement("NewPosition", m_NewPosition);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_Text = reader.ReadFeatureByReference<TextFeature>("Text");
-
-            long x = reader.ReadLong("X");
-            long y = reader.ReadLong("Y");
-            if (x == 0 && y == 0)
-                m_OldPolPosition = null;
-            else
-                m_OldPolPosition = new PointGeometry(x, y);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_OldPosition = reader.ReadElement<PointGeometry>("OldPosition");
-            m_NewPosition = reader.ReadElement<PointGeometry>("NewPosition");
-
-            // Ensure the text has been moved to the revised position
-            m_Text.Move(m_NewPosition);
-
-            // Should be no need to re-calculate enclosing polygon while deserializing
-        }
-
-        /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Calculates the geometry for any features created by this edit (for use during
+        /// deserialization).
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do -- could possibly make the m_Text.Move call here
+            // Ensure the text has been moved to the revised position.
+            // Should be no need to re-calculate enclosing polygon while deserializing
+            m_Text.Move(m_NewPosition);
         }
 
         /// <summary>

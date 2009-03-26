@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -43,6 +44,46 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal NewCircleOperation(Session s, NewCircleType t)
+            : base(s, t)
+        {
+            m_Center = s.MapModel.Find<PointFeature>(t.Center);
+            m_Radius = t.Radius.LoadObservation(this);
+
+            // In order to create the construction line, we need to have the Circle object,
+            // but to be able to find the circle, the radius has to be known... and if the
+            // radius is specified via an offset point, the point probably has no defined
+            // position at this stage.
+
+            // ...so for now, just work with a circle that has no radius. This may get changed
+            // when CalculateGeometry is ultimately called.
+
+            Circle c = new Circle(m_Center, 0.0);
+
+            // If the closing point does not already exist, create one at some unspecified position
+            PointFeature p = s.MapModel.Find<PointFeature>(t.ClosingPoint);
+            if (p == null)
+            {
+                CalculatedFeatureType ft = new CalculatedFeatureType();
+                ft.Id = t.ClosingPoint;
+                p = new PointFeature(this, ft);
+            }
+
+            // Form the construction line (this will also cross-reference the circle to
+            // the new arc)
+            CalculatedFeatureType at = new CalculatedFeatureType();
+            at.Id = t.Arc;
+            ArcFeature arc = new ArcFeature(this, c, p, p, true, at);
+
+            // Remember the line as part of the base class
+            SetNewLine(arc);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
@@ -304,45 +345,27 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Center", m_Center);
-        }
+            NewCircleType t = new NewCircleType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Radius", m_Radius);
-        }
+            t.Id = this.DataId;
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
-        }
+            if (m_Radius is Distance)
+                t.Radius = new DistanceType(m_Radius as Distance);
+            else if (m_Radius is OffsetPoint)
+                t.Radius = new OffsetPointType(m_Radius as OffsetPoint);
+            else
+                throw new NotImplementedException("Unexpected radius type: "+m_Radius.GetType().Name);
 
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Radius = reader.ReadElement<Observation>("Radius");
+            t.Center = m_Center.DataId;
+            t.ClosingPoint = Line.StartPoint.DataId;
+            t.Arc = Line.DataId;
+
+            return t;
         }
 
         /// <summary>
@@ -350,13 +373,39 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // I don't THINK it needs to be calculated here - the read calls
-            // lead to LineFeature.ReadChildElements, which reads a <Geometry> element
-            // from the XML. This strikes me as being a bit suspect (why is the
-            // geometry being written explicitly, rather than being calculated from
-            // the parameters saved as part of the op?). I can see that making sense
-            // when dealing with MultiSegmentGeometry, but not for any other type
-            // of line... TODO cleanup.
+            // Get the radius, in meters on the ground.
+            double rad = m_Radius.GetDistance(m_Center).Meters;
+            if (rad < Constants.TINY)
+                throw new Exception("NewCircleOperation.CalculateGeometry - Radius is too close to zero.");
+
+            // Try to find an existing circle. If we don't find one, adjust the circle
+            // placeholder that was created by the constructor. Otherwise re-attach the
+            // arc to the circle we found.
+
+            Circle circle = m_Center.GetCircle(rad);
+            ArcFeature arc = (ArcFeature)this.Line;
+
+            if (circle==null)
+            {
+                circle = arc.Circle;
+                circle.Radius = rad;
+
+                // Cross-reference the center point to the circle
+                m_Center.AddReference(circle);
+            }
+            else
+            {
+                arc.LineGeometry = new ArcGeometry(circle, arc.StartPoint, arc.StartPoint, true);
+                circle.AddArc(arc);
+            }
+
+            // If the closing point was created by this edit, calculate it's position
+            PointFeature p = arc.StartPoint;
+            if (p.Creator == this)
+            {
+                PointGeometry pg = new PointGeometry(m_Center.X, m_Center.Y+rad);
+                p.PointGeometry = pg;
+            }
         }
     }
 }

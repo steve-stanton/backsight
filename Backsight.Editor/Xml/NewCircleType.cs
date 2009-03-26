@@ -14,12 +14,14 @@
 // </remarks>
 
 using System;
-
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    public partial class NewLineType
+    /// <summary>
+    /// Serialized version of the <see cref="NewCircleOperation"/> class.
+    /// </summary>
+    public partial class NewCircleType
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -28,7 +30,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new NewLineOperation(s, this);
+            return new NewCircleOperation(s, this);
         }
     }
 }
