@@ -1050,6 +1050,7 @@
     <Compile Include="Xml\MovePolygonPositionType.cs" />
     <Compile Include="Xml\MoveTextType.cs" />
     <Compile Include="Xml\MultiSegmentType.cs" />
+    <Compile Include="Xml\NewArcType.cs" />
     <Compile Include="Xml\NewCircleType.cs" />
     <Compile Include="Xml\NewSegmentType.cs" />
     <Compile Include="Xml\NewPointType.cs" />

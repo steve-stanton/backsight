@@ -482,6 +482,15 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="NewArcType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="ArcType" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="NewCircleType">
     <xs:annotation>
       <xs:documentation>Edit for adding a construction line that runs round the circumference of a circle.</xs:documentation>
@@ -517,7 +526,7 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence>
-          <xs:element name="Point" type="PointType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Point" type="PointType" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

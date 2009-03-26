@@ -55,6 +55,17 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
+        internal NewLineOperation(Session s, NewArcType t)
+            : base(s, t)
+        {
+            m_NewLine = new ArcFeature(this, t.Line);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
         protected NewLineOperation(Session s, NewCircleType t)
             : base(s, t)
         {
@@ -305,24 +316,67 @@ namespace Backsight.Editor.Operations
                 return GetSerializableSegment();
         }
 
+        /// <summary>
+        /// Obtains an object representing an edit that created a circular arc
+        /// </summary>
+        /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableArc()
         {
-            throw new NotImplementedException("GetSerializableArc");
+            // Define the basic line attributes
+            ArcType line = new ArcType();
+            SetLineAttributes(line);
+
+            // Now the stuff that's specific to arcs
+            ArcFeature arc = (ArcFeature)m_NewLine;
+            line.Clockwise = arc.IsClockwise;
+
+            // I think the UI only allows creation of arcs on existing circles,
+            // but cover the possibility that the circle was created by this op.
+            if (arc.Circle.Creator == this)
+            {
+                CircleType c = new CircleType();
+                c.Center = arc.Circle.CenterPoint.DataId;
+                c.Radius = arc.Circle.Radius;
+                line.Circle = c;
+            }
+            else
+            {
+                line.FirstArc = arc.Circle.FirstArc.DataId;
+            }
+
+            // Package it up in an OperationType
+            NewArcType t = new NewArcType();
+            t.Id = this.DataId;
+            t.Line = line;
+            return t;
         }
 
+        /// <summary>
+        /// Obtains an object representing an edit that created a simple line segment
+        /// </summary>
+        /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableSegment()
         {
             SegmentType line = new SegmentType();
-            line.Id = m_NewLine.DataId;
-            line.Type = m_NewLine.EntityType.Id;
-            line.From = m_NewLine.StartPoint.DataId;
-            line.To = m_NewLine.EndPoint.DataId;
-            line.Topological = m_NewLine.IsTopological;
+            SetLineAttributes(line);
 
             NewSegmentType t = new NewSegmentType();
             t.Id = this.DataId;
             t.Line = line;
             return t;
+        }
+
+        /// <summary>
+        /// Defines the attributes that are common to line segments and circular arcs
+        /// </summary>
+        /// <param name="line"></param>
+        void SetLineAttributes(LineType line)
+        {
+            line.Id = m_NewLine.DataId;
+            line.Type = m_NewLine.EntityType.Id;
+            line.From = m_NewLine.StartPoint.DataId;
+            line.To = m_NewLine.EndPoint.DataId;
+            line.Topological = m_NewLine.IsTopological;
         }
 
         /// <summary>
@@ -371,9 +425,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // TODO - Nothing to do for now, since LineFeature.ReadChildElements ends up
-            // reading in the geometry. This may well need to change (see comments
-            // in NewCircleOperation.CalculateGeometry)
         }
 
         /// <summary>

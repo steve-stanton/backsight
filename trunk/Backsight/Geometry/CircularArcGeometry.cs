@@ -413,8 +413,24 @@ namespace Backsight.Geometry
             ICircleGeometry circle = g.Circle;
             double radius = circle.Radius;
 
-            if (asFarAs==null)
+            if (asFarAs == null)
+            {
+                // If the BC coincides with the EC, it's possible the arc has zero
+                // length. As a matter of convention, counter-clockwise arcs will
+                // be regarded as having a length of zero in that case. Meanwhile,
+                // clockwise arcs will have a length that corresponds to the complete
+                // circumference of the circle.
+
+                if (g.BC.IsCoincident(g.EC))
+                {
+                    if (g.IsClockwise)
+                        return CircleGeometry.GetLength(circle);
+                    else
+                        return Backsight.Length.Zero;
+                }
+
                 return new Length(radius * g.SweepAngleInRadians);
+            }
 
             // Express the position of the BC in a local coordinate system.
             IPosition c = circle.Center;

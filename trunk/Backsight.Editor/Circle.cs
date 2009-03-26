@@ -72,6 +72,11 @@ namespace Backsight.Editor
             m_Center = op.MapModel.Find<PointFeature>(t.Center);
             m_Radius = t.Radius;
             m_Arcs = new List<ArcFeature>();
+
+            // Not sure whether this is the best place to do this (seems inconsistent
+            // that the other constructor doesn't do it, though I can see the sense if
+            // we need to create adhoc circles for some reason).
+            m_Center.AddReference(this);
         }
 
         #endregion

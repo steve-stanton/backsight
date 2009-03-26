@@ -14,34 +14,20 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
-    /// <summary>
-    /// A serialized line feature with geometry defined by a circular arc.
-    /// </summary>
-    public partial class ArcType
+    public partial class NewArcType
     {
         /// <summary>
-        /// Loads this feature as part of an editing operation
+        /// Loads this editing operation into a session
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <returns>The spatial feature that was loaded</returns>
-        internal override Feature LoadFeature(Operation op)
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
         {
-            return new ArcFeature(op, this);
-        }
-
-        internal string FirstArc
-        {
-            get { return (Item as string); }
-            set { Item = value; }
-        }
-
-        internal CircleType Circle
-        {
-            get { return (Item as CircleType); }
-            set { Item = value; }
+            return new NewLineOperation(s, this);
         }
     }
 }

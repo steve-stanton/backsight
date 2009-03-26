@@ -41,8 +41,7 @@ namespace Backsight.Editor.Operations
         internal NewPointOperation(Session s, NewPointType t)
             : base(s, t)
         {
-            PointType pt = t.Point;
-            //m_NewPoint = MapModel.
+            m_NewPoint = new PointFeature(this, t.Point);
         }
 
         /// <summary>
@@ -141,34 +140,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this content.
-        /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "NewPointType"; }
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Point", m_NewPoint);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_NewPoint = reader.ReadElement<PointFeature>("Point");
+            NewPointType t = new NewPointType();
+            t.Id = this.DataId;
+            t.Point = new PointType(m_NewPoint);
+            return t;
         }
 
         /// <summary>
