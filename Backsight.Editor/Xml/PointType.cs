@@ -22,6 +22,32 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class PointType
     {
+        public PointType()
+        {
+        }
+
+        internal PointType(PointFeature p)
+        {
+            this.Id = p.DataId;
+            this.Type = p.EntityType.Id;
+
+            if (p.Id != null)
+            {
+                FeatureId fid = p.Id;
+                if (fid.RawId == 0)
+                    this.ForeignKey = fid.FormattedKey;
+                else
+                {
+                    this.Key = fid.RawId;
+                    this.KeySpecified = true;
+                }
+            }
+
+            IPointGeometry pg = p.Geometry;
+            this.X = pg.Easting.Microns;
+            this.Y = pg.Northing.Microns;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
