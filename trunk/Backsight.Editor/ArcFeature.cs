@@ -50,9 +50,8 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Constructor for use during deserialization, for creating a line consisting of
-        /// a simple line segment. This version does not define the position for the new line - the
-        /// editing operation must subsequently calculate that.
+        /// Constructor for use during deserialization. This version does not define the position for
+        /// the new line - the editing operation must subsequently calculate that.
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="c">The circle the arc coincides with</param>

@@ -183,8 +183,7 @@ namespace Backsight.Editor.Operations
                 t.OldX = m_OldPosition.Easting.Microns;
                 t.OldY = m_OldPosition.Northing.Microns;
 
-                t.OldXSpecified = true;
-                t.OldYSpecified = true;
+                t.OldXSpecified = t.OldYSpecified = true;
             }
 
             return t;

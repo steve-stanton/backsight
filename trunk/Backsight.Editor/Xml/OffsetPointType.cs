@@ -25,6 +25,20 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class OffsetPointType
     {
+        public OffsetPointType()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OffsetPointType"/> class.
+        /// </summary>
+        /// <param name="o">The object to serialize</param>
+        internal OffsetPointType(OffsetPoint o)
+            : base()
+        {
+            this.Point = o.Point.DataId;
+        }
+
         /// <summary>
         /// Loads this observation as part of an editing operation
         /// </summary>

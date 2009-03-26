@@ -14,14 +14,20 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
-    /// <summary>
-    /// Tagging interface used to identify an auto-generated class
-    /// that is used to serialize an editing operation.
-    /// </summary>
-    interface ISerializableEdit
+    public partial class NewSegmentType
     {
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new NewLineOperation(s, this);
+        }
     }
 }

@@ -44,10 +44,21 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewLineOperation(Session s, NewLineType t)
+        internal NewLineOperation(Session s, NewSegmentType t)
             : base(s, t)
         {
-            throw new NotImplementedException("NewLineOperation");
+            m_NewLine = new LineFeature(this, t.Line);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected NewLineOperation(Session s, NewCircleType t)
+            : base(s, t)
+        {
+            m_NewLine = null;
         }
 
         /// <summary>
@@ -62,6 +73,9 @@ namespace Backsight.Editor.Operations
 
         #endregion
 
+        /// <summary>
+        /// The created line
+        /// </summary>
         internal LineFeature Line
         {
             get { return m_NewLine; }
@@ -277,6 +291,38 @@ namespace Backsight.Editor.Operations
                 clist.Add((m_NewLine as ArcFeature).Circle);
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
+        {
+            if (m_NewLine is ArcFeature)
+                return GetSerializableArc();
+            else
+                return GetSerializableSegment();
+        }
+
+        OperationType GetSerializableArc()
+        {
+            throw new NotImplementedException("GetSerializableArc");
+        }
+
+        OperationType GetSerializableSegment()
+        {
+            SegmentType line = new SegmentType();
+            line.Id = m_NewLine.DataId;
+            line.Type = m_NewLine.EntityType.Id;
+            line.From = m_NewLine.StartPoint.DataId;
+            line.To = m_NewLine.EndPoint.DataId;
+            line.Topological = m_NewLine.IsTopological;
+
+            NewSegmentType t = new NewSegmentType();
+            t.Id = this.DataId;
+            t.Line = line;
+            return t;
         }
 
         /// <summary>
