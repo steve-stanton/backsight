@@ -40,13 +40,6 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
-        /// </summary>
-        public ReplaceTextOperation()
-        {
-        }
-
-        /// <summary>
         /// Creates a new <c>ReplaceTextOperation</c> that refers to the text that's
         /// being replaced, but which doesn't yet refer to new text.
         /// </summary>

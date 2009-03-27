@@ -322,6 +322,9 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableArc()
         {
+            ArcType line = (ArcType)m_NewLine.GetSerializableLine();
+
+            /*
             // Define the basic line attributes
             ArcType line = new ArcType();
             SetLineAttributes(line);
@@ -343,6 +346,7 @@ namespace Backsight.Editor.Operations
             {
                 line.FirstArc = arc.Circle.FirstArc.DataId;
             }
+             */
 
             // Package it up in an OperationType
             NewArcType t = new NewArcType();
@@ -357,8 +361,9 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableSegment()
         {
-            SegmentType line = new SegmentType();
-            SetLineAttributes(line);
+            SegmentType line = (SegmentType)m_NewLine.GetSerializableLine();
+            //SegmentType line = new SegmentType();
+            //SetLineAttributes(line);
 
             NewSegmentType t = new NewSegmentType();
             t.Id = this.DataId;
@@ -370,14 +375,14 @@ namespace Backsight.Editor.Operations
         /// Defines the attributes that are common to line segments and circular arcs
         /// </summary>
         /// <param name="line"></param>
-        void SetLineAttributes(LineType line)
-        {
-            line.Id = m_NewLine.DataId;
-            line.Type = m_NewLine.EntityType.Id;
-            line.From = m_NewLine.StartPoint.DataId;
-            line.To = m_NewLine.EndPoint.DataId;
-            line.Topological = m_NewLine.IsTopological;
-        }
+        //void SetLineAttributes(LineType line)
+        //{
+        //    line.Id = m_NewLine.DataId;
+        //    line.Type = m_NewLine.EntityType.Id;
+        //    line.From = m_NewLine.StartPoint.DataId;
+        //    line.To = m_NewLine.EndPoint.DataId;
+        //    line.Topological = m_NewLine.IsTopological;
+        //}
 
         /// <summary>
         /// The string that will be used as the xsi:type for this content.

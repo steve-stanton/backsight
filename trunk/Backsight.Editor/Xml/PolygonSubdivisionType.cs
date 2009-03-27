@@ -14,22 +14,23 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// Some sort of content that cannot be directly stored in the database. Instead,
-    /// an alternative content class must be used.
+    /// Serialized version of the <see cref="PolygonSubdivisionOperation"/> class.
     /// </summary>
-    public interface IXmlAlternateContent
+    public partial class PolygonSubdivisionType
     {
         /// <summary>
-        /// Obtains an instance of the content object that can be persisted in the
-        /// database. On deserialization, the alternate will usually need to be
-        /// converted into an instance of the original class (the specifics will
-        /// vary from one class to the next).
+        /// Loads this editing operation into a session
         /// </summary>
-        /// <returns>The content to save to the database</returns>
-        IXmlContent GetAlternate();
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new PolygonSubdivisionOperation(s, this);
+        }
     }
 }

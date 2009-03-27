@@ -119,6 +119,8 @@ namespace Backsight.Editor
         internal TextFeature(Operation op, RowTextType t)
             : this(op, (TextType)t)
         {
+            // Rather than creating an instance of RowTextGeometry, create a placeholder
+            // that can be replaced after attributes have been loaded from the database
             m_Geom = new RowTextContent(this, t);
         }
 
@@ -398,42 +400,29 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this content.
-        /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this text</returns>
+        internal TextType GetSerializableText()
         {
-            get { return m_Geom.XmlTypeName; }
-        }
+            // Get the geometry class to return an appropriate TextType
+            TextType t = m_Geom.GetSerializableText();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            m_Geom.WriteAttributes(writer);
+            // Fill in base class stuff
+            SetSerializableFeature(t);
 
-            if (!IsTopological)
-                writer.WriteBool("Topological", false);
+            // Fill in the stuff that's defined here
+            t.Topological = IsTopological;
 
             if (m_PolygonPosition != null)
             {
-                writer.WriteLong("PolygonX", m_PolygonPosition.Easting.Microns);
-                writer.WriteLong("PolygonY", m_PolygonPosition.Northing.Microns);
-            }
-        }
+                t.PolygonX = m_PolygonPosition.Easting.Microns;
+                t.PolygonY = m_PolygonPosition.Northing.Microns;
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            m_Geom.WriteChildElements(writer);
+                t.PolygonXSpecified = t.PolygonYSpecified = true;
+            }
+
+            return t;
         }
 
         /// <summary>
@@ -458,5 +447,6 @@ namespace Backsight.Editor
 
             return true;
         }
+
     }
 }

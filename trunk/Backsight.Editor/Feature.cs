@@ -864,6 +864,27 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this feature</param>
+        protected void SetSerializableFeature(FeatureType t)
+        {
+            t.Id = DataId;
+            t.Type = m_What.Id;
+
+            if (m_Id != null)
+            {
+                if (m_Id is NativeId)
+                    t.Key = m_Id.RawId;
+                else
+                    t.ForeignKey = m_Id.FormattedKey;
+            }
+
+            // Should Topological be here? (currently it's defined in LineType & TextType)
+        }
+
+        /// <summary>
         /// Deserializes the user-perceived ID of a feature
         /// </summary>
         /// <param name="mapModel">The model containing this feature</param>

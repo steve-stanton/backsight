@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -1118,30 +1119,31 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
+        /// Returns an object that represents this line geometry, and that can be
+        /// serialized using the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
+        /// <returns>
+        /// The serializable version of this line geometry
+        /// </returns>
+        internal override LineType GetSerializableLine()
         {
-            get { return "MultiSegmentType"; }
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-
             // Write out array of expanded positions (there aren't that many
             // multi-segments in a cadastral database).
-
             PointGeometry[] data = GetUnpackedData();
-            foreach (PointGeometry pg in data)
-                writer.WriteElement("Point", pg);
+
+            MultiSegmentType t = new MultiSegmentType();
+            PointGeometryType[] points = new PointGeometryType[data.Length];
+            for (int i=0; i<data.Length; i++)
+            {
+                PointGeometry pg = data[i];
+                PointGeometryType pt = new PointGeometryType();
+                pt.X = pg.Easting.Microns;
+                pt.Y = pg.Northing.Microns;
+                points[i] = pt;
+            }
+
+            t.Point = points;
+            return t;
         }
     }
 }

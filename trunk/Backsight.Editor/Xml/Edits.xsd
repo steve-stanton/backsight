@@ -540,6 +540,19 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="NewTextType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element name="Text" type="TextType">
+            <xs:annotation>
+              <xs:documentation>The text label that was created</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="ObservationType" abstract="true" />
   <xs:complexType name="OffsetType" abstract="true">
     <xs:complexContent mixed="false">
@@ -600,6 +613,24 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:attribute name="X" type="xs:long" use="required" />
     <xs:attribute name="Y" type="xs:long" use="required" />
     <xs:attribute name="Z" type="xs:long" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="PolygonSubdivisionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="SegmentType">
+            <xs:annotation>
+              <xs:documentation>The lines that were created.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="DeactivatedLabel" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>Any polygon label that was de-activated as a result of the subdivision. This will be defined only if the polygon originally had just one enclosed label (if it had more than one, none of them should get deactivated).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="RowTextType">
     <xs:complexContent mixed="false">

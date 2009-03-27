@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -44,10 +45,28 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use in deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public PolygonSubdivisionOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal PolygonSubdivisionOperation(Session s, PolygonSubdivisionType t)
+            : base(s, t)
         {
+            // Pick up any label to deactivate (this won't actually happen until
+            // CalculateGeometry is called)
+
+            if (t.DeactivatedLabel == null)
+                m_Label = null;
+            else
+                m_Label = s.MapModel.Find<TextFeature>(t.DeactivatedLabel);
+
+            // Pick up the line segments that were created
+
+            SegmentType[] lines = t.Line;
+            m_Lines = new LineFeature[lines.Length];
+
+            for (int i=0; i<lines.Length; i++)
+                m_Lines[i] = new LineFeature(this, lines[i]);
         }
 
         /// <summary>
@@ -60,7 +79,6 @@ namespace Backsight.Editor.Operations
         }
 
         #endregion
-
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -167,47 +185,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("DeactivatedLabel", m_Label);
-        }
+            PolygonSubdivisionType t = new PolygonSubdivisionType();
+            t.Id = this.DataId;
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+            if (m_Label != null)
+                t.DeactivatedLabel = m_Label.DataId;
 
-            foreach (LineFeature line in m_Lines)
-                writer.WriteElement("Line", line);
-        }
+            SegmentType[] lines = new SegmentType[m_Lines.Length];
+            for (int i=0; i<lines.Length; i++)
+            {
+                lines[i] = (SegmentType)m_Lines[i].GetSerializableLine();
+            }
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Label = reader.ReadFeatureByReference<TextFeature>("DeactivatedLabel");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_Lines = reader.ReadArray<LineFeature>("Line");
+            t.Line = lines;
+            return t;
         }
 
         /// <summary>
@@ -215,7 +211,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            if (m_Label != null)
+                m_Label.Deactivate();
         }
 
         /// <summary>

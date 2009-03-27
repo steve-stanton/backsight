@@ -141,33 +141,16 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Writes the attributes of this class.
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteAttributes(XmlContentWriter writer)
+        /// <returns>The serializable version of this text</returns>
+        internal override TextType GetSerializableText()
         {
-            base.WriteAttributes(writer);
-            writer.WriteString("Text", m_Text);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
-        {
-            get { return "MiscTextType"; }
+            MiscTextType t = new MiscTextType();
+            SetSerializableText(t);
+            t.Text = m_Text;
+            return t;
         }
     }
 }

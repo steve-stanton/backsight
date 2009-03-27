@@ -60,22 +60,6 @@ namespace Backsight.Editor
             m_TemplateId = (int)t.Template;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RowTextContent"/> class that matches
-        /// an instance of <see cref="RowTextGeometry"/>
-        /// </summary>
-        /// <param name="copy">The text geometry to copy from</param>
-        internal RowTextContent(RowTextGeometry copy)
-            : base(copy)
-        {
-            Row r = copy.Row;
-            ITemplate t = copy.Template;
-
-            m_RowKey = r.Id.FormattedKey;
-            m_TableId = r.Table.Id;
-            m_TemplateId = t.Id;
-        }
-
         #endregion
 
         /// <summary>

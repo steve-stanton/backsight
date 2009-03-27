@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -444,31 +445,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry
+        /// Returns an object that represents this line geometry, and that can be
+        /// serialized using the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
+        /// <returns>
+        /// The serializable version of this line geometry
+        /// </returns>
+        internal override LineType GetSerializableLine()
         {
-            get { return "SegmentType"; }
+            return new SegmentType();
         }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteAttributes(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
     }
 }

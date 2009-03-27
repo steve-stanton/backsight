@@ -1354,39 +1354,23 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
          */
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this content.
-        /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this line</returns>
+        internal LineType GetSerializableLine()
         {
-            get { return m_Geom.XmlTypeName; }
-        }
+            // Get the geometry class to return an appropriate LineType
+            LineType t = m_Geom.GetSerializableLine();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("From", StartPoint);
-            writer.WriteFeatureReference("To", EndPoint);
+            // Fill in base class stuff
+            SetSerializableFeature(t);
 
-            if (!IsTopological)
-                writer.WriteBool("Topological", false);
+            // Fill in the stuff specific to LineType
+            t.From = m_From.DataId;
+            t.To = m_To.DataId;
+            t.Topological = IsTopological;
 
-            m_Geom.WriteAttributes(writer);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            m_Geom.WriteChildElements(writer);
+            return t;
         }
 
         /// <summary>

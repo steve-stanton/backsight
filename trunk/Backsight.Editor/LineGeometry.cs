@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -218,30 +219,22 @@ namespace Backsight.Editor
         abstract internal double GetRotation(IPointGeometry p);
 
         /// <summary>
-        /// Writes the attributes of this class.
+        /// Returns an object that represents this line geometry, and that can be
+        /// serialized using the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal virtual void WriteAttributes(XmlContentWriter writer)
-        {
-            // Nothing to do (the start and end terminals are written out
-            // via the LineFeature this geometry is associated with).
-        }
+        /// <returns>
+        /// The serializable version of this line geometry
+        /// </returns>
+        abstract internal LineType GetSerializableLine();
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        internal virtual void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        abstract internal string XmlTypeName { get; }
+        /// <param name="t">The serializable version of this line geometry</param>
+        //protected void SetSerializableLine(LineType t)
+        //{
+            // The start and end of the line geometry will be defined by LineFeature
+        //}
     }
 }

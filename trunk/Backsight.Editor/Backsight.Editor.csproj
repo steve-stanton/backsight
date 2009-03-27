@@ -327,7 +327,6 @@
     <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
-    <Compile Include="IXmlAlternateContent.cs" />
     <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
@@ -1054,12 +1053,14 @@
     <Compile Include="Xml\NewCircleType.cs" />
     <Compile Include="Xml\NewSegmentType.cs" />
     <Compile Include="Xml\NewPointType.cs" />
+    <Compile Include="Xml\NewTextType.cs" />
     <Compile Include="Xml\ObservationType.cs" />
     <Compile Include="Xml\OffsetDistanceType.cs" />
     <Compile Include="Xml\OffsetPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
     <Compile Include="Xml\ParallelType.cs" />
     <Compile Include="Xml\PointType.cs" />
+    <Compile Include="Xml\PolygonSubdivisionType.cs" />
     <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SectionType.cs" />
     <Compile Include="Xml\SegmentType.cs" />
