@@ -382,36 +382,27 @@ namespace Backsight.Editor
         //}
 
         /// <summary>
-        /// Writes the attributes of this class.
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal virtual void WriteAttributes(XmlContentWriter writer)
+        /// <returns>The serializable version of this text</returns>
+        abstract internal TextType GetSerializableText();
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this text</param>
+        protected void SetSerializableText(TextType t)
         {
-            writer.WriteLong("X", m_Position.Easting.Microns);
-            writer.WriteLong("Y", m_Position.Northing.Microns);
-            writer.WriteString("Height", String.Format("{0:0.00}", m_Height));
-            writer.WriteString("Width", String.Format("{0:0.00}", m_Width));
+            t.X = m_Position.Easting.Microns;
+            t.Y = m_Position.Northing.Microns;
+            t.Height = (double)m_Height;
+            t.Width = (double)m_Width;
+            t.Font = (m_Font == null ? 0 : m_Font.Id);
 
             // TODO: May want to cover indirect rotations
-            writer.WriteString("Rotation", RadianValue.AsString(m_Rotation.Radians));
-            writer.WriteInt("Font", (m_Font == null ? 0 : m_Font.Id));
+            t.Rotation = RadianValue.AsString(m_Rotation.Radians);
         }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        internal virtual void WriteChildElements(XmlContentWriter writer)
-        {
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        abstract internal string XmlTypeName { get; }
     }
 }

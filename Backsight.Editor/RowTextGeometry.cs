@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// Row text describes how to format a text string that is
     /// defined via attributes in an associated database table.
     /// </summary>
-    class RowTextGeometry : TextGeometry, IXmlAlternateContent
+    class RowTextGeometry : TextGeometry
     {
         #region Class data
 
@@ -49,11 +49,13 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Constructor for use during deserialization. This method is protected, because
+        /// data needs to be initially deserialized to an instance of the derived
+        /// <see cref="RowTextContent"/> class.
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal RowTextGeometry(TextFeature f, RowTextType t)
+        protected RowTextGeometry(TextFeature f, RowTextType t)
             : base(f, t)
         {
             // The row will be defined after attributes have been loaded
@@ -304,54 +306,18 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains an instance of the content object that can be persisted in the
-        /// database. On deserialization, the alternate needs to be converted into
-        /// an instance of the original class (this is done by the
-        /// <see cref="FeatureId.AddReference(Row)"/> method).
-        /// <para/>
-        /// This method is called by <see cref="XmlContentWriter.WriteElement"/>,
-        /// which directs subsequent output through an instance of the alternate
-        /// content class.
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <returns>The content to save to the database</returns>
-        /// <remarks>
-        /// It's not possible to immediately read back instances of RowTextGeometry
-        /// on deserialization from the database - because attribute data is only
-        /// obtained from the database after all features have been deserialized.
-        /// <para/>
-        /// To keep things simple, the alternate returned here actually extends
-        /// this class, so it can pretend to be the real thing in any class that
-        /// refers to <c>RowTextGeometry</c>. The expectation is that the fake
-        /// will be replaced as soon as possible with a fully defined instance
-        /// of <c>RowTextGeometry</c>.
-        /// </remarks>
-        public IXmlContent GetAlternate()
+        /// <returns>The serializable version of this text</returns>
+        internal override TextType GetSerializableText()
         {
-            throw new NotImplementedException("RowTextGeometry.GetAlternate");
-            // return new RowTextContent(this);
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            writer.WriteString("RowKey", m_Row.Id.FormattedKey);
-            writer.WriteInt("Table", m_Row.Table.Id);
-            writer.WriteInt("Template", m_Template.Id);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
-        {
-            get { return "RowTextType"; }
+            RowTextType t = new RowTextType();
+            SetSerializableText(t);
+            t.RowKey = m_Row.Id.FormattedKey;
+            t.Table = (uint)m_Row.Table.Id;
+            t.Template = (uint)m_Template.Id;
+            return t;
         }
     }
 }

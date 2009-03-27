@@ -90,13 +90,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
+        /// Returns an object that represents this text, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
+        /// <returns>The serializable version of this text</returns>
+        internal override TextType GetSerializableText()
         {
-            get { return "KeyTextType"; }
+            TextType t = new KeyTextType();
+            SetSerializableText(t);
+            return t;
         }
     }
 }

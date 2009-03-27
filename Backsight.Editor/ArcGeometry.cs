@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -701,36 +702,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
+        /// Returns an object that represents this line geometry, and that can be
+        /// serialized using the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <remarks>Line geometry is only saved in the context of an instance
-        /// of <see cref="LineFeature"/></remarks>
-        internal override string XmlTypeName
+        /// <returns>
+        /// The serializable version of this line geometry
+        /// </returns>
+        internal override LineType GetSerializableLine()
         {
-            get { return "ArcType"; }
-        }
+            ArcType t = new ArcType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            // The default is false (according to the schema), so write out only if it's clockwise
-            if (m_IsClockwise)
-                writer.WriteBool("Clockwise", true);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+            t.Clockwise = m_IsClockwise;
 
             // If this is the first arc associated with the circle, write out
             // the circle geometry. In this case, the FirstArc is part of an xs:choice,
@@ -738,9 +720,18 @@ namespace Backsight.Editor
 
             ArcFeature firstArc = m_Circle.FirstArc;
             if (Object.ReferenceEquals(firstArc.Geometry, this))
-                writer.WriteElement("Circle", m_Circle);
+            {
+                CircleType c = new CircleType();
+                c.Center = m_Circle.CenterPoint.DataId;
+                c.Radius = m_Circle.Radius;
+                t.Circle = c;
+            }
             else
-                writer.WriteFeatureReferenceAsElement("FirstArc", firstArc);
+            {
+                t.FirstArc = firstArc.DataId;
+            }
+
+            return t;
         }
     }
 }
