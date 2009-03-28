@@ -25,13 +25,16 @@ namespace Backsight.Editor.Xml
     public partial class FeatureType
     {
         /// <summary>
-        /// Loads this feature as part of an editing operation
+        /// Loads this feature as part of an editing operation. Derived types
+        /// must implement this method, otherwise you will get an exception on
+        /// deserialization from the database.
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <returns>The spatial feature that was loaded</returns>
+        //internal abstract Feature LoadFeature(Operation op);
         internal virtual Feature LoadFeature(Operation op)
         {
-            throw new NotImplementedException("LoadFeature not implemented by: "+GetType().Name);
+            throw new NotImplementedException("LoadFeature not implemented by: " + GetType().Name);
         }
     }
 }

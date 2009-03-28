@@ -876,7 +876,10 @@ namespace Backsight.Editor
             if (m_Id != null)
             {
                 if (m_Id is NativeId)
+                {
                     t.Key = m_Id.RawId;
+                    t.KeySpecified = true;
+                }
                 else
                     t.ForeignKey = m_Id.FormattedKey;
             }
@@ -901,5 +904,12 @@ namespace Backsight.Editor
 
             return null;
         }
+
+        /// <summary>
+        /// Returns an object that represents this feature, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this feature</returns>
+        abstract internal FeatureType GetSerializableFeature();
     }
 }

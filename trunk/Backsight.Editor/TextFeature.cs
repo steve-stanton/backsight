@@ -400,6 +400,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Returns an object that represents this feature, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this feature</returns>
+        internal override FeatureType GetSerializableFeature()
+        {
+            return GetSerializableText();
+        }
+
+        /// <summary>
         /// Returns an object that represents this text, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this text</returns>

@@ -147,7 +147,7 @@ namespace Backsight.Editor.Operations
         {
             NewPointType t = new NewPointType();
             t.Id = this.DataId;
-            t.Point = new PointType(m_NewPoint);
+            t.Point = (PointType)m_NewPoint.GetSerializableFeature();
             return t;
         }
 

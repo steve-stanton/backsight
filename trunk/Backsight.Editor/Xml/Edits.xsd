@@ -72,8 +72,8 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="CircleType">
-    <xs:attribute name="Center" type="IdType" />
-    <xs:attribute name="Radius" type="xs:double" />
+    <xs:attribute name="Center" type="IdType" use="required" />
+    <xs:attribute name="Radius" type="xs:double" use="required" />
   </xs:complexType>
   <xs:complexType name="DeflectionType">
     <xs:complexContent mixed="false">
@@ -595,6 +595,47 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="End" type="IdType" use="required">
           <xs:annotation>
             <xs:documentation>The ending point of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ParallelLineType">
+    <xs:annotation>
+      <xs:documentation>Operation to create a parallel line.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Offset" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The offset to the parallel (either a DistanceType, or an OffsetPointType).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="ParLine" type="LineType">
+            <xs:annotation>
+              <xs:documentation>The parallel that got created.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="RefLine" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The reference line for the parallel.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Term1" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The 1st terminal arc (if any).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Term2" type="IdType" use="optional">
+          <xs:annotation>
+            <xs:documentation>The 2nd terminal line (if any). May be the same as Term1 (e.g. could be a multi-segment that bends round).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="ReverseArc" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>Should the parallel for a circular arc should go in a direction that is opposite to that of the reference line?</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>

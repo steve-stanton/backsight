@@ -1354,7 +1354,17 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
          */
 
         /// <summary>
-        /// Returns an object that represents this text, and that can be serialized using
+        /// Returns an object that represents this feature, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this feature</returns>
+        internal override FeatureType GetSerializableFeature()
+        {
+            return GetSerializableLine();
+        }
+
+        /// <summary>
+        /// Returns an object that represents this line, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this line</returns>
         internal LineType GetSerializableLine()
