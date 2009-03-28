@@ -390,37 +390,27 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this content.
+        /// Returns an object that represents this feature, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
+        /// <returns>The serializable version of this feature</returns>
+        internal override FeatureType GetSerializableFeature()
         {
-            get
+            if (m_Geom.FirstPoint == this)
             {
-                if (m_Geom.FirstPoint == this)
-                    return "PointType";
-                else
-                    return "SharedPointType";
+                PointType t = new PointType();
+                SetSerializableFeature(t);
+                t.X = m_Geom.Easting.Microns;
+                t.Y = m_Geom.Northing.Microns;
+                return t;
             }
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            // Just output position as attributes (yes, I know geometry could theoretically
-            // contain things like an "M" value, but I'd rather have a straightfoward XML schema).
-            // This isn't really significant here, but it matters in the Read* methods.
-
-            //Debug.Assert(m_Geom.FirstPoint == this); // see GetXmlContent
-            if (XmlTypeName == "PointType")
-                m_Geom.WriteAttributes(writer); // X and Y
             else
-                writer.WriteFeatureReference("FirstPoint", m_Geom.FirstPoint);
+            {
+                SharedPointType t = new SharedPointType();
+                SetSerializableFeature(t);
+                t.FirstPoint = m_Geom.FirstPoint.DataId;
+                return t;
+            }
         }
     }
 }

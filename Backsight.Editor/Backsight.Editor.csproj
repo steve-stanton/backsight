@@ -1058,6 +1058,7 @@
     <Compile Include="Xml\OffsetDistanceType.cs" />
     <Compile Include="Xml\OffsetPointType.cs" />
     <Compile Include="Xml\OperationType.cs" />
+    <Compile Include="Xml\ParallelLineType.cs" />
     <Compile Include="Xml\ParallelType.cs" />
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\PolygonSubdivisionType.cs" />

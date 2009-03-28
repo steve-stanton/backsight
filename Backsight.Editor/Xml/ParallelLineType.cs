@@ -14,22 +14,23 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// A serialized point feature.
+    /// Serialized version of the <see cref="ParallelOperation"/> class.
     /// </summary>
-    public partial class PointType
+    public partial class ParallelLineType
     {
         /// <summary>
-        /// Loads this feature as part of an editing operation
+        /// Loads this editing operation into a session
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <returns>The spatial feature that was loaded</returns>
-        internal override Feature LoadFeature(Operation op)
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
         {
-            return new PointFeature(op, this);
+            return new ParallelOperation(s, this);
         }
     }
 }

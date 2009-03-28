@@ -21,6 +21,7 @@ using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -53,7 +54,7 @@ namespace Backsight.Editor.Operations
         LineFeature m_Term1;
 
         /// <summary>
-        /// The 2nd terminal arc (if any). May be the same as <c>m_Term1</c> (e.g. could be a
+        /// The 2nd terminal line (if any). May be the same as <c>m_Term1</c> (e.g. could be a
         /// multi-segment that bends round).
         /// </summary>
         LineFeature m_Term2;
@@ -77,10 +78,32 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public ParallelOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal ParallelOperation(Session s, ParallelLineType t)
+            : base(s, t)
         {
+            CadastralMapModel mapModel = s.MapModel;
+            m_RefLine = mapModel.Find<LineFeature>(t.RefLine);
+            m_Offset = t.Offset.LoadObservation(this);
+
+            if (t.Term1 == null)
+                m_Term1 = null;
+            else
+                m_Term1 = mapModel.Find<LineFeature>(t.Term1);
+
+            if (t.Term2 == null)
+                m_Term2 = null;
+            else
+                m_Term2 = mapModel.Find<LineFeature>(t.Term2);
+
+            m_Flags = 0;
+            if (t.ReverseArc)
+                m_Flags = 1;
+
+            m_ParLine = (LineFeature)t.ParLine.LoadFeature(this);
         }
 
         /// <summary>
