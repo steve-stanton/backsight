@@ -103,7 +103,17 @@ namespace Backsight.Editor.Operations
             if (t.ReverseArc)
                 m_Flags = 1;
 
-            m_ParLine = (LineFeature)t.ParLine.LoadFeature(this);
+            // Ensure the line end points have been created
+
+            PointFeature from = mapModel.Find<PointFeature>(t.From.Id);
+            if (from == null)
+                from = new PointFeature(this, t.From);
+
+            PointFeature to = mapModel.Find<PointFeature>(t.To.Id);
+            if (to == null)
+                to = new PointFeature(this, t.To);
+
+            m_ParLine = (LineFeature)t.NewLine.LoadFeature(this);
         }
 
         /// <summary>
@@ -608,45 +618,37 @@ namespace Backsight.Editor.Operations
 	    }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("RefLine", m_RefLine);
-            writer.WriteFeatureReference("Term1", m_Term1);
-            writer.WriteFeatureReference("Term2", m_Term2);
-            writer.WriteBool("ArcReversed", IsArcReversed);
-        }
+            ParallelLineType t = new ParallelLineType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Offset", m_Offset);
-            writer.WriteElement("ParLine", new LineData(m_ParLine));
-        }
+            t.Id = this.DataId;
+            t.RefLine = m_RefLine.DataId;
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
+            if (m_Term1!=null)
+                t.Term1 = m_Term1.DataId;
 
-            m_RefLine = reader.ReadFeatureByReference<LineFeature>("RefLine");
-            m_Term1 = reader.ReadFeatureByReference<LineFeature>("Term1");
-            m_Term2 = reader.ReadFeatureByReference<LineFeature>("Term2");
+            if (m_Term2!=null)
+                t.Term2 = m_Term2.DataId;
 
-            bool isArcReversed = reader.ReadBool("ArcReversed");
-            if (isArcReversed)
-                m_Flags = 1;
+            if (IsArcReversed)
+                t.ReverseArc = true;
+
+            if (m_Offset is Distance)
+                t.Offset = new DistanceType(m_Offset as Distance);
+            else if (m_Offset is OffsetPoint)
+                t.Offset = new OffsetPointType(m_Offset as OffsetPoint);
+            else
+                throw new NotImplementedException("Unexpected offset type: "+m_Offset.GetType().Name);
+
+            t.From = new CalculatedFeatureType(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator==this));
+            t.To = new CalculatedFeatureType(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator==this));
+            t.NewLine = m_ParLine.GetSerializableLine();
+
+            return t;
         }
 
         /// <summary>
@@ -656,21 +658,7 @@ namespace Backsight.Editor.Operations
         /// <param name="reader">The reading tool</param>
         public override void ReadChildElements(XmlContentReader reader)
         {
-            base.ReadChildElements(reader);
-
-            m_Offset = reader.ReadElement<Observation>("Offset");
-
-            // Calculate the end positions
-            IPosition spos, epos;
-            if (!Calculate(out spos, out epos))
-                throw new Exception("Failed to calculate parallel line positions");
-
-            // Pick up the information for the line
-            LineData lineData = reader.ReadElement<LineData>("ParLine");
-
-            // Ensure we have the end points
-            PointFeature from = lineData.GetFromPoint(reader, spos);
-            PointFeature to = lineData.GetToPoint(reader, epos);
+            /*
 
             // Create the parallel line
             if (m_RefLine is ArcFeature)
@@ -695,6 +683,7 @@ namespace Backsight.Editor.Operations
             {
                 m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
             }
+             */
         }
 
         /// <summary>
@@ -707,11 +696,13 @@ namespace Backsight.Editor.Operations
             if (!Calculate(out spos, out epos))
                 throw new Exception("Failed to calculate parallel line positions");
 
-            /*
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_NewPoint.PointGeometry = pg;
-             */
+            // Apply the calculated positions so long as the end points of the parallel line
+            // were created by this edit
+            if (m_ParLine.StartPoint.Creator == this)
+                m_ParLine.StartPoint.PointGeometry = PointGeometry.Create(spos);
+
+            if (m_ParLine.EndPoint.Creator == this)
+                m_ParLine.EndPoint.PointGeometry = PointGeometry.Create(epos);
         }
 
         /// <summary>

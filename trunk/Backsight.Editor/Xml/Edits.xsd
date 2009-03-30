@@ -127,7 +127,11 @@
   </xs:complexType>
   <xs:complexType name="FeatureType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
-    <xs:attribute name="Type" type="xs:int" use="required" />
+    <xs:attribute default="0" name="Type" type="xs:int" use="optional">
+      <xs:annotation>
+        <xs:documentation>The ID of the entity type that describes the real-world significance of a feature. The default value of 0 may either signify a construction line (with no real-world significance), or that the type can be obtained from the editing context.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
     <xs:attribute name="Key" type="xs:unsignedInt" use="optional">
       <xs:annotation>
         <xs:documentation>A native ID value. This is a value that falls within one of the ID groups that are defined as part of the Backsight environment. The value is not formatted according to the ID group (i.e. it is not decorated with any leading and/or tralling characters). Sometimes referred to as a raw ID. If the Key attribute is present, the ForeignKey attribute should not be present.</xs:documentation>
@@ -612,7 +616,17 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The offset to the parallel (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element name="ParLine" type="LineType">
+          <xs:element minOccurs="1" maxOccurs="1" name="From" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The point at the start of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The point at the end of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="LineType">
             <xs:annotation>
               <xs:documentation>The parallel that got created.</xs:documentation>
             </xs:annotation>
