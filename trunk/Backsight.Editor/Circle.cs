@@ -67,6 +67,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the circle</param>
         /// <param name="t">The serialized version of this circle</param>
+        /*
         internal Circle(Operation op, CircleType t)
         {
             m_Center = op.MapModel.Find<PointFeature>(t.Center);
@@ -78,6 +79,7 @@ namespace Backsight.Editor
             // we need to create adhoc circles for some reason).
             m_Center.AddReference(this);
         }
+        */
 
         #endregion
 

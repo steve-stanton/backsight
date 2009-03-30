@@ -34,14 +34,36 @@ namespace Backsight.Editor.Xml
 
         internal string FirstArc
         {
-            get { return (Item as string); }
-            set { Item = value; }
+            get
+            {
+                if (ItemElementName == ItemChoiceType.FirstArc)
+                    return Item;
+                else
+                    return null;
+            }
+
+            set
+            {
+                Item = value;
+                ItemElementName = ItemChoiceType.FirstArc;
+            }
         }
 
-        internal CircleType Circle
+        internal string Center
         {
-            get { return (Item as CircleType); }
-            set { Item = value; }
+            get
+            {
+                if (ItemElementName == ItemChoiceType.Center)
+                    return Item;
+                else
+                    return null;
+            }
+
+            set
+            {
+                Item = value;
+                ItemElementName = ItemChoiceType.Center;
+            }
         }
     }
 }

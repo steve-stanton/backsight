@@ -135,14 +135,18 @@ namespace Backsight.Editor
         {
             Circle c = null;
 
-            if (t.Circle==null)
+            if (t.Center==null)
             {
                 ArcFeature firstArc = op.MapModel.Find<ArcFeature>(t.FirstArc);
                 c = firstArc.Circle;
             }
             else
             {
-                c = new Circle(op, t.Circle);
+                // The arc is the first arc attached to the circle. However, we won't
+                // know the radius until CalculateGeometry gets called, so create the
+                // circle with a zero radius.
+                PointFeature center = op.MapModel.Find<PointFeature>(t.Center);
+                c = new Circle(center, 0.0);
             }
 
             m_Geom = new ArcGeometry(c, m_From, m_To, t.Clockwise);

@@ -30,9 +30,17 @@
     <xs:complexContent mixed="false">
       <xs:extension base="LineType">
         <xs:sequence>
-          <xs:choice minOccurs="0" maxOccurs="1">
-            <xs:element name="FirstArc" type="IdType" />
-            <xs:element name="Circle" type="CircleType" />
+          <xs:choice minOccurs="1" maxOccurs="1">
+            <xs:element name="Center" type="IdType">
+              <xs:annotation>
+                <xs:documentation>The point at the center of the circle that this arc lies on, defined only for the very first arc attached to the circle (all subsequently created arcs pick up the center point via the FirstArc attribute). The radius of the circle is derived from the position of the center point, and the position of the point at the start (or end) of the first arc.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="FirstArc" type="IdType">
+              <xs:annotation>
+                <xs:documentation>The ID of the first arc attached to the circle that this arc coincides with</xs:documentation>
+              </xs:annotation>
+            </xs:element>
           </xs:choice>
         </xs:sequence>
         <xs:attribute default="false" name="Clockwise" type="xs:boolean" use="optional" />
@@ -70,10 +78,6 @@
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType" />
     </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="CircleType">
-    <xs:attribute name="Center" type="IdType" use="required" />
-    <xs:attribute name="Radius" type="xs:double" use="required" />
   </xs:complexType>
   <xs:complexType name="DeflectionType">
     <xs:complexContent mixed="false">
