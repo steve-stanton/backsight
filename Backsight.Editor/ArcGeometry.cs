@@ -715,21 +715,13 @@ namespace Backsight.Editor
             t.Clockwise = m_IsClockwise;
 
             // If this is the first arc associated with the circle, write out
-            // the circle geometry. In this case, the FirstArc is part of an xs:choice,
-            // so it needs to be written as an element.
+            // the ID of the point at the center of the circle.
 
             ArcFeature firstArc = m_Circle.FirstArc;
             if (Object.ReferenceEquals(firstArc.Geometry, this))
-            {
-                CircleType c = new CircleType();
-                c.Center = m_Circle.CenterPoint.DataId;
-                c.Radius = m_Circle.Radius;
-                t.Circle = c;
-            }
+                t.Center = m_Circle.CenterPoint.DataId;
             else
-            {
                 t.FirstArc = firstArc.DataId;
-            }
 
             return t;
         }
