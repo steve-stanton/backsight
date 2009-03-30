@@ -24,20 +24,36 @@ namespace Backsight.Editor.Xml
         }
 
         internal CalculatedFeatureType(Feature f)
+            : this(f, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalculatedFeatureType"/> class.
+        /// </summary>
+        /// <param name="f">The feature that is being serialized</param>
+        /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
+        /// if the feature actually represents something that previously existed at the calculated
+        /// position.</param>
+        internal CalculatedFeatureType(Feature f, bool allFields)
         {
             this.Id = f.DataId;
-            this.Type = f.EntityType.Id;
 
-            FeatureId fid = f.Id;
-            if (fid != null)
+            if (allFields)
             {
-                if (fid is NativeId)
+                this.Type = f.EntityType.Id;
+
+                FeatureId fid = f.Id;
+                if (fid != null)
                 {
-                    this.Key = fid.RawId;
-                    this.KeySpecified = true;
+                    if (fid is NativeId)
+                    {
+                        this.Key = fid.RawId;
+                        this.KeySpecified = true;
+                    }
+                    else
+                        this.ForeignKey = fid.FormattedKey;
                 }
-                else
-                    this.ForeignKey = fid.FormattedKey;
             }
         }
     }
