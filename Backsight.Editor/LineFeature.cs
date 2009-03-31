@@ -142,11 +142,16 @@ namespace Backsight.Editor
             }
             else
             {
-                // The arc is the first arc attached to the circle. However, we won't
-                // know the radius until CalculateGeometry gets called, so create the
-                // circle with a zero radius.
+                // The arc is the first arc attached to the circle. However, we may be
+                // unable to calculate the radius (depending on the edit involved, the
+                // geometry may still need to be calculated)
                 PointFeature center = op.MapModel.Find<PointFeature>(t.Center);
-                c = new Circle(center, 0.0);
+                double radius = 0.0;
+                if (center.PointGeometry != null && StartPoint.PointGeometry != null)
+                    radius = Geom.Distance(center.PointGeometry, StartPoint.PointGeometry);
+
+                c = new Circle(center, radius);
+                center.AddReference(c);
             }
 
             m_Geom = new ArcGeometry(c, m_From, m_To, t.Clockwise);

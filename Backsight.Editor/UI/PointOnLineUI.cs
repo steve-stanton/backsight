@@ -209,7 +209,7 @@ namespace Backsight.Editor.UI
             if (up!=null)
             {
                 // Get the original operation.
-                PointOnLineOperation pop = (up.GetOp() as PointOnLineOperation);
+                SimpleLineSubdivisionOperation pop = (up.GetOp() as SimpleLineSubdivisionOperation);
                 if (pop==null)
                 {
                     MessageBox.Show("PointOnLineUI.DialFinish - Unexpected edit type.");
@@ -229,11 +229,11 @@ namespace Backsight.Editor.UI
                 m_Length = m_Dialog.Length;
 
                 // Execute the edit
-                PointOnLineOperation op = null;
+                SimpleLineSubdivisionOperation op = null;
 
                 try
                 {
-                    op = new PointOnLineOperation(Session.WorkingSession);
+                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession);
                     op.Execute(m_Line, m_Length, m_IsFromEnd);
                 }
 

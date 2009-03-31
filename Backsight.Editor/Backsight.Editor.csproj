@@ -350,6 +350,7 @@
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\ReplaceTextOperation.cs" />
+    <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\SpanContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
@@ -599,7 +600,6 @@
     <Compile Include="Operations\LineExtensionOperation.cs" />
     <Compile Include="Operations\MoveTextOperation.cs" />
     <Compile Include="Operations\PathOperation.cs" />
-    <Compile Include="Operations\PointOnLineOperation.cs" />
     <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
     <Compile Include="Operations\SetTopologyOperation.cs" />
     <Compile Include="RingFlag.cs" />
@@ -1066,6 +1066,7 @@
     <Compile Include="Xml\SectionType.cs" />
     <Compile Include="Xml\SegmentType.cs" />
     <Compile Include="Xml\SharedPointType.cs" />
+    <Compile Include="Xml\SimpleLineSubdivisionType.cs" />
     <Compile Include="Xml\SpanType.cs" />
   </ItemGroup>
   <ItemGroup>

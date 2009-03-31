@@ -703,6 +703,15 @@ namespace Backsight.Editor.Operations
 
             if (m_ParLine.EndPoint.Creator == this)
                 m_ParLine.EndPoint.PointGeometry = PointGeometry.Create(epos);
+
+            // If the parallel is an arc, and the circle the arc lies on was created by
+            // this edit, ensure the radius has been defined
+            Circle c = m_ParLine.Circle;
+            if (c != null && c.Creator == this && c.Radius < MathConstants.TINY)
+            {
+                c.Radius = Geom.Distance(c.CenterPoint, m_ParLine.StartPoint);
+                Debug.Assert(c.Radius > MathConstants.TINY);
+            }
         }
 
         /// <summary>

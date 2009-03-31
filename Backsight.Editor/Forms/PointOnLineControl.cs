@@ -67,7 +67,7 @@ namespace Backsight.Editor.Forms
             m_Line = line;
             m_MaxLength = 0.0;
 
-            PointOnLineOperation op = (recall as PointOnLineOperation);
+            SimpleLineSubdivisionOperation op = (recall as SimpleLineSubdivisionOperation);
             if (op!=null)
             {
                 m_Length = new Distance(op.Distance);
@@ -188,7 +188,7 @@ namespace Backsight.Editor.Forms
             ISpatialDisplay display = m_Cmd.ActiveDisplay;
 
             // If we're doing an update, draw the original split point in grey.
-            PointOnLineOperation pop = UpdateOp;
+            SimpleLineSubdivisionOperation pop = UpdateOp;
             if (pop!=null)
             {
                 PointFeature point = pop.NewPoint;
@@ -209,12 +209,12 @@ namespace Backsight.Editor.Forms
             }
         }
 
-        PointOnLineOperation UpdateOp
+        SimpleLineSubdivisionOperation UpdateOp
         {
             get
             {
                 UpdateUI up = (m_Cmd as UpdateUI);
-                return (up==null ? null : (PointOnLineOperation)up.GetOp());
+                return (up==null ? null : (SimpleLineSubdivisionOperation)up.GetOp());
             }
         }
 
@@ -226,7 +226,7 @@ namespace Backsight.Editor.Forms
         bool InitUpdate()
         {
             // Get the creating op.
-            PointOnLineOperation pop = this.UpdateOp;
+            SimpleLineSubdivisionOperation pop = this.UpdateOp;
             if (pop==null)
                 return false;
 

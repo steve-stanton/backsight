@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -27,10 +28,7 @@ namespace Backsight.Editor.Operations
     /// Add a point at a specific distance from the start or end of an existing line,
     /// splitting the original line at the point.
     /// </summary>
-    /// <remarks>TODO: The class name is a bit confusing (the name suggests the functionality
-    /// that's actually covered by the AttachPointOperation). Should probably rename as
-    /// SimpleLineSubdivisionOperation</remarks>
-    class PointOnLineOperation : Operation
+    class SimpleLineSubdivisionOperation : Operation
     {
         #region Class data
 
@@ -68,17 +66,35 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
         /// </summary>
-        public PointOnLineOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal SimpleLineSubdivisionOperation(Session s, SimpleLineSubdivisionType t)
+            : base(s, t)
         {
+            m_Line = s.MapModel.Find<LineFeature>(t.Line);
+            m_Distance = new Distance(this, t.Distance);
+            m_NewPoint = new PointFeature(this, t.NewPoint);
+
+            /*
+            // Get the internal ID to assign to the line
+            uint sessionId, lineSequence;
+            InternalIdValue.Parse(span.LineId, out sessionId, out lineSequence);
+
+            SectionGeometry section = new SectionGeometry(m_Line, start, end);
+            LineFeature line = m_Line.MakeSubSection(section, this);
+            line.CreatorSequence = lineSequence;
+            */
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PointOnLineOperation"/> class
+        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal PointOnLineOperation(Session s)
+        internal SimpleLineSubdivisionOperation(Session s)
             : base(s)
         {
             m_Line = null;

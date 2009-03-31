@@ -322,36 +322,15 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableArc()
         {
-            ArcType line = (ArcType)m_NewLine.GetSerializableLine();
-
-            /*
-            // Define the basic line attributes
-            ArcType line = new ArcType();
-            SetLineAttributes(line);
-
-            // Now the stuff that's specific to arcs
+            // The deserialization logic works on the assumption that this edit can only
+            // attach arcs to existing circles.
             ArcFeature arc = (ArcFeature)m_NewLine;
-            line.Clockwise = arc.IsClockwise;
-
-            // I think the UI only allows creation of arcs on existing circles,
-            // but cover the possibility that the circle was created by this op.
             if (arc.Circle.Creator == this)
-            {
-                CircleType c = new CircleType();
-                c.Center = arc.Circle.CenterPoint.DataId;
-                c.Radius = arc.Circle.Radius;
-                line.Circle = c;
-            }
-            else
-            {
-                line.FirstArc = arc.Circle.FirstArc.DataId;
-            }
-             */
+                throw new InvalidOperationException("Unexpected attempt to simultaneously create arc and circle");
 
-            // Package it up in an OperationType
             NewArcType t = new NewArcType();
             t.Id = this.DataId;
-            t.Line = line;
+            t.Line = (ArcType)m_NewLine.GetSerializableLine();
             return t;
         }
 
@@ -361,68 +340,10 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         OperationType GetSerializableSegment()
         {
-            SegmentType line = (SegmentType)m_NewLine.GetSerializableLine();
-            //SegmentType line = new SegmentType();
-            //SetLineAttributes(line);
-
             NewSegmentType t = new NewSegmentType();
             t.Id = this.DataId;
-            t.Line = line;
+            t.Line = (SegmentType)m_NewLine.GetSerializableLine();
             return t;
-        }
-
-        /// <summary>
-        /// Defines the attributes that are common to line segments and circular arcs
-        /// </summary>
-        /// <param name="line"></param>
-        //void SetLineAttributes(LineType line)
-        //{
-        //    line.Id = m_NewLine.DataId;
-        //    line.Type = m_NewLine.EntityType.Id;
-        //    line.From = m_NewLine.StartPoint.DataId;
-        //    line.To = m_NewLine.EndPoint.DataId;
-        //    line.Topological = m_NewLine.IsTopological;
-        //}
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this content.
-        /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
-        {
-            get { return "NewLineType"; }
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-
-            // TODO: Is this right? - should writing the geometry for the new line
-            // lead to the center and radius info when dealing with a NewCircleOperation?
-
-            /*
-            if (this is NewCircleOperation)
-                writer.WriteElement("NewLine", new FeatureData(m_NewLine));
-            else
-                writer.WriteElement("NewLine", m_NewLine);
-             */
-            writer.WriteElement("Line", m_NewLine);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-            m_NewLine = reader.ReadElement<LineFeature>("NewLine");
         }
 
         /// <summary>
@@ -430,6 +351,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
+            // Nothing to do
         }
 
         /// <summary>

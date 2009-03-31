@@ -723,6 +723,39 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="SimpleLineSubdivisionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType">
+            <xs:annotation>
+              <xs:documentation>The distance to the point. A negated distance refers to the distance from the end of the line.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The added point (between the 2 new lines)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine1" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The line created prior to the new point.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine2" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The line created after the point.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Line" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The line that was subdivided.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="SpanType">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="Length" type="DistanceType" />

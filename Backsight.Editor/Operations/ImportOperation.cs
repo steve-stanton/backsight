@@ -52,6 +52,10 @@ namespace Backsight.Editor.Operations
             for (int i=0; i<m_Data.Length; i++)
             {
                 FeatureType f = t.Feature[i];
+                if (f is ArcType)
+                {
+                    int junk=0;
+                }
                 m_Data[i] = f.LoadFeature(this);
             }
         }
@@ -153,7 +157,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            // Could calculate the radius of circles created by the import. However, this
+            // is already done by the LineFeature constructor that accepts an ArcType.
         }
 
         /// <summary>
