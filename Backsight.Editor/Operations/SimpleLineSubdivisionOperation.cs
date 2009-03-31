@@ -6,7 +6,7 @@
 // either version 3 of the License, or (at your option) any later version.
 //
 // Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
@@ -79,15 +79,17 @@ namespace Backsight.Editor.Operations
             m_Distance = new Distance(this, t.Distance);
             m_NewPoint = new PointFeature(this, t.NewPoint);
 
-            /*
-            // Get the internal ID to assign to the line
-            uint sessionId, lineSequence;
-            InternalIdValue.Parse(span.LineId, out sessionId, out lineSequence);
+            // Create the sections
 
-            SectionGeometry section = new SectionGeometry(m_Line, start, end);
-            LineFeature line = m_Line.MakeSubSection(section, this);
-            line.CreatorSequence = lineSequence;
-            */
+            uint sessionId, lineSequence;
+
+            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
+            InternalIdValue.Parse(t.NewLine1, out sessionId, out lineSequence);
+            m_NewLine1.CreatorSequence = lineSequence;
+
+            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
+            InternalIdValue.Parse(t.NewLine2, out sessionId, out lineSequence);
+            m_NewLine2.CreatorSequence = lineSequence;
         }
 
         /// <summary>
@@ -386,70 +388,21 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
          */
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Line", m_Line);
+            SimpleLineSubdivisionType t = new SimpleLineSubdivisionType();
 
-            // The lines are implied, taking the entity type of the parent line. However,
-            // we need to know the item numbers that were assigned to them.
-            writer.WriteUnsignedInt("NewLine1", m_NewLine1.CreatorSequence);
-            writer.WriteUnsignedInt("NewLine2", m_NewLine2.CreatorSequence);
-        }
+            t.Id = this.DataId;
+            t.Line = m_Line.DataId;
+            t.NewLine1 = m_NewLine1.DataId;
+            t.NewLine2 = m_NewLine2.DataId;
+            t.Distance = new DistanceType(m_Distance);
+            t.NewPoint = new CalculatedFeatureType(m_NewPoint);
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Distance", m_Distance);
-            writer.WriteCalculatedFeature("NewPoint", m_NewPoint);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Line = reader.ReadFeatureByReference<LineFeature>("Line");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            // TODO: This is a hack, but should work
-            uint line1 = reader.ReadUnsignedInt("NewLine1");
-            uint line2 = reader.ReadUnsignedInt("NewLine2");
-
-            base.ReadChildElements(reader);
-
-            m_Distance = reader.ReadElement<Distance>("Distance");
-            //IPosition p = Calculate();
-            //m_NewPoint = reader.ReadCalculatedPoint("NewPoint", p);
-            m_NewPoint = reader.ReadPoint("NewPoint");
-            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
-            m_NewLine1.CreatorSequence = line1;
-            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
-            m_NewLine2.CreatorSequence = line2;
-
-            // Register the new lines with the reader (in case subsequent edits
-            // have references to them)
-            reader.AddFeature(m_NewLine1);
-            reader.AddFeature(m_NewLine2);
-
-            m_Line.Deactivate();
+            return t;
         }
 
         /// <summary>
@@ -460,6 +413,8 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
             m_NewPoint.PointGeometry = pg;
+
+            m_Line.Deactivate();
         }
 
         /// <summary>

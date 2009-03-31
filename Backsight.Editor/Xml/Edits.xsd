@@ -691,6 +691,30 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="RadialType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Length" type="ObservationType">
+            <xs:annotation>
+              <xs:documentation>The length of the sideshot arm (either a DistanceType or an OffsetPointType).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The point at the end of the sideshot arm.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The line (if any) that was added to correspond to the sideshot arm.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="RowTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType">
@@ -737,20 +761,20 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The added point (between the 2 new lines)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewLine1" type="CalculatedFeatureType">
-            <xs:annotation>
-              <xs:documentation>The line created prior to the new point.</xs:documentation>
-            </xs:annotation>
-          </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewLine2" type="CalculatedFeatureType">
-            <xs:annotation>
-              <xs:documentation>The line created after the point.</xs:documentation>
-            </xs:annotation>
-          </xs:element>
         </xs:sequence>
         <xs:attribute name="Line" type="IdType" use="required">
           <xs:annotation>
             <xs:documentation>The line that was subdivided.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="NewLine1" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The internal ID assigned to the line section running from the start of the subdivided line to the subdivision point</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="NewLine2" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The internal ID assigned to the line section running from the subdivision point to the end of the subdivided line</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>

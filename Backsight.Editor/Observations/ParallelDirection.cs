@@ -201,5 +201,20 @@ namespace Backsight.Editor.Observations
         {
             get { return "ParallelType"; }
         }
+
+        /// <summary>
+        /// Returns an object that represents this observation, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this observation</returns>
+        internal override ObservationType GetSerializableObservation()
+        {
+            ParallelType t = new ParallelType();
+            SetSerializableObservation(t);
+            t.From = m_From.DataId;
+            t.Start = m_Par1.DataId;
+            t.End = m_Par2.DataId;
+            return t;
+        }
     }
 }

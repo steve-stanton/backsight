@@ -14,37 +14,23 @@
 // </remarks>
 
 using System;
-
-using Backsight.Editor.Observations;
-
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// A serialized <see cref="OffsetDistance"/>
+    /// Serialized version of the <see cref="RadialOperation"/> class.
     /// </summary>
-    public partial class OffsetDistanceType
+    public partial class RadialType
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OffsetDistanceType"/> class.
+        /// Loads this editing operation into a session
         /// </summary>
-        /// <param name="o">The object to serialize</param>
-        internal OffsetDistanceType(OffsetDistance o)
-            : base()
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
         {
-            Distance = new DistanceType(o.Offset);
-            Left = !o.IsRight;
-        }
-
-        /// <summary>
-        /// Loads this observation as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
-        {
-            return new OffsetDistance(op, this);
+            return new RadialOperation(s, this);
         }
     }
 }
-

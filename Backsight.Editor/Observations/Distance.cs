@@ -397,5 +397,15 @@ namespace Backsight.Editor.Observations
         {
             get { return "DistanceType"; }
         }
+
+        /// <summary>
+        /// Returns an object that represents this observation, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this observation</returns>
+        internal override ObservationType GetSerializableObservation()
+        {
+            return new DistanceType(this);
+        }
     }
 }

@@ -112,5 +112,22 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that makes use of this observation</param>
         internal abstract void AddReferences(Operation op);
+
+        /// <summary>
+        /// Returns an object that represents this observation, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this observation</returns>
+        abstract internal ObservationType GetSerializableObservation();
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this observation</param>
+        protected void SetSerializableObservation(ObservationType t)
+        {
+            // Nothing to do
+        }
     }
 }
