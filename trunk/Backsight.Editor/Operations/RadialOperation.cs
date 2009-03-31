@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -63,10 +64,14 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public RadialOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal RadialOperation(Session s, RadialType t)
+            : base(s, t)
         {
+            // TODO
         }
 
         /// <summary>
@@ -416,6 +421,35 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             // Rollforward the base class.
             return base.OnRollforward();
+        }
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
+        {
+            RadialType t = new RadialType();
+            t.Id = this.DataId;
+
+            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.Length = m_Length.GetSerializableObservation();
+
+            /*
+            if (m_Length is Distance)
+                t.Length = new DistanceType(m_Length as Distance);
+            else if (m_Length is OffsetPoint)
+                t.Length = new OffsetPointType(m_Length as OffsetPoint);
+            else
+                throw new NotImplementedException("Unexpected length type: "+m_Length.GetType().Name);
+            */
+
+            t.To = new CalculatedFeatureType(m_To);
+
+            if (m_Line != null)
+                t.Line = new CalculatedFeatureType(m_Line);
+
+            return t;
         }
 
         /// <summary>

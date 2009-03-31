@@ -162,5 +162,19 @@ namespace Backsight.Editor.Observations
         {
             get { return "BearingType"; }
         }
+
+        /// <summary>
+        /// Returns an object that represents this observation, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <returns>The serializable version of this observation</returns>
+        internal override ObservationType GetSerializableObservation()
+        {
+            BearingType t = new BearingType();
+            SetSerializableObservation(t);
+            t.From = m_From.DataId;
+            t.Value = RadianValue.AsShortString(m_Observation);
+            return t;
+        }
     }
 }

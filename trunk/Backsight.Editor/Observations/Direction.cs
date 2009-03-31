@@ -18,6 +18,7 @@ using System.Diagnostics;
 
 using Backsight.Environment;
 using XmlDirectionType = Backsight.Editor.Xml.DirectionType;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Observations
 {
@@ -686,6 +687,19 @@ namespace Backsight.Editor.Observations
 
             if (m_Offset != null)
                 writer.WriteElement("Offset", m_Offset);
+        }
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this direction</param>
+        protected void SetSerializableObservation(XmlDirectionType t)
+        {
+            base.SetSerializableObservation(t);
+
+            if (m_Offset != null)
+                t.Offset = (OffsetType)m_Offset.GetSerializableObservation();
         }
     }
 }
