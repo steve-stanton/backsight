@@ -416,7 +416,9 @@ namespace Backsight.Editor
                 return (p as PointFeature);
 
             EditingIndex index = EditingIndex;
-            PointFeature pf = (index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+            ILength tol = new Length(Constants.XYRES);
+            PointFeature pf = (index.QueryClosest(p, tol, SpatialType.Point) as PointFeature);
+            //PointFeature pf = (index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
             if (pf==null)
                 pf = AddPoint(p, DefaultPointType, creator);
 
