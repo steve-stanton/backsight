@@ -14,23 +14,23 @@
 // </remarks>
 
 using System;
-
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// Base class for any sort of serialized editing operation.
+    /// Serialized version of the <see cref="ReplaceTextOperation"/> class.
     /// </summary>
-    /// <remarks>The remainder of this class is auto-generated, and may be found
-    /// in the <c>Edits.cs</c> file.</remarks>
-    abstract public partial class OperationType
+    public partial class ReplaceTextType
     {
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
         /// <param name="s">The session the editing operation should be appended to</param>
         /// <returns>The editing operation that was loaded</returns>
-        abstract internal Operation LoadOperation(Session s);
+        internal override Operation LoadOperation(Session s)
+        {
+            return new ReplaceTextOperation(s, this);
+        }
     }
 }

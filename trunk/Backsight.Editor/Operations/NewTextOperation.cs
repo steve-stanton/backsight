@@ -442,9 +442,19 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         internal override OperationType GetSerializableEdit()
         {
             NewTextType t = new NewTextType();
+            SetSerializableEdit(t);
+            return t;
+        }
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this edit</param>
+        protected void SetSerializableEdit(NewTextType t)
+        {
             t.Id = this.DataId;
             t.Text = m_NewText.GetSerializableText();
-            return t;
         }
 
         /// <summary>
