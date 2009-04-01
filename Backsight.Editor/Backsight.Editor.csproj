@@ -1063,6 +1063,7 @@
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\PolygonSubdivisionType.cs" />
     <Compile Include="Xml\RadialType.cs" />
+    <Compile Include="Xml\ReplaceTextType.cs" />
     <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SectionType.cs" />
     <Compile Include="Xml\SegmentType.cs" />

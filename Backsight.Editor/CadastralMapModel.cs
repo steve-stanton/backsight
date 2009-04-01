@@ -1095,40 +1095,37 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Adds a label that is based on a row. This does NOT relate the row to the label's ID (to
-        /// cover cases where the caller is getting the ID from somewhere else, like a previously
-        /// existing label).
+        /// Adds a label that is based on a row. This version covers cases where the
+        /// label is replacing a label on a base layer (see the <see cref="ReplaceTextOperation"/>).
         /// </summary>
         /// <param name="creator">The editing operation creating the text</param>
         /// <param name="ent">The entity type for the label.</param>
         /// <param name="vtx">The reference position of the label</param>
+        /// <param name="id">The user-perceived ID for the label</param>
         /// <param name="row">The row to attach to the label.</param>
         /// <param name="atemplate">The template for the row text.</param>
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
         /// <returns>The newly created text</returns>
-        internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, DataRow row, ITemplate atemplate,
+        internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, FeatureId id,
+                                            DataRow row, ITemplate atemplate,
                                             double height, double width, double rotation)
         {
-            throw new NotImplementedException("CadastralMapModel.AddRowLabel");
+            // Add the label with null geometry for now (chicken and egg -- need Feature in order
+            // to create the Row object that's needed for the RowTextGeometry)
+            TextFeature label = new TextFeature(null, ent, creator);
+
+            // Define the label's ID and attach the row to it
+            Row r = new Row(id, atemplate.Schema, row);
+
+            // Attach the geometry
+            PointGeometry p = PointGeometry.Create(vtx);
+            RowTextGeometry text = new RowTextGeometry(r, atemplate, p, ent.Font, height, width, (float)rotation);
+            label.TextGeometry = text;
+
+            return label;
         }
-        /*
-            // Create a row-text primitive.
-	CeRowText* pText =
-		new ( os_database::of(this), os_ts<CeRowText>::get() )
-		CeRowText((CeRow*)row,(CeTemplate*)atemplate,vtx);
-
-	// Do standard stuff for adding a label.
-	CeLabel* pLabel = AddLabel(*pText,&ent,pSub,height,spacing,rotation,0);
-
-	// Add the label to the spatial index.
-	if ( pLabel ) m_Space.Add(*pLabel);
-
-	return pLabel;
-
-} // end of AddRowLabel
-         */
 
         /// <summary>
         /// Adds a label that is based on a row.

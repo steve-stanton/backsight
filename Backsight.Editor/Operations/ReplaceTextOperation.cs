@@ -1,22 +1,23 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Data;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -33,11 +34,22 @@ namespace Backsight.Editor.Operations
         /// The text label that was superseded as a consequence of adding
         /// an extra label to a derived layer.
         /// </summary>
-        TextFeature m_OldText; // readonly
+        readonly TextFeature m_OldText;
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal ReplaceTextOperation(Session s, ReplaceTextType t)
+            : base(s, t)
+        {
+            m_OldText = s.MapModel.Find<TextFeature>(t.OldText);
+        }
 
         /// <summary>
         /// Creates a new <c>ReplaceTextOperation</c> that refers to the text that's
@@ -135,7 +147,7 @@ namespace Backsight.Editor.Operations
             SetOldLabel();
 
             // Add the new label on the current editing layer.
-            CreateLabel(vtx, ent, row, atemplate, fid, m_OldText.IsForeignId, pol, height, width, rotation);
+            CreateLabel(vtx, ent, row, atemplate, fid, pol, height, width, rotation);
         }
 
         /// <summary>
@@ -146,21 +158,20 @@ namespace Backsight.Editor.Operations
         /// <param name="row">The transient row to use for creating a row for the new label.</param>
         /// <param name="atemplate">The template to use in creating the RowText for the new label.</param>
         /// <param name="id">The ID for the new label.</param>
-        /// <param name="isForeign">Is the ID foreign?</param>
         /// <param name="pol">The polygon that the label relates to.</param>
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
         void CreateLabel(IPosition vtx, IEntity ent, DataRow row, ITemplate atemplate,
-                            FeatureId id, bool isForeign, Polygon pol,
+                            FeatureId id, Polygon pol,
                             double height, double width, double rotation)
         {
             // Get the map to add a new label to the current editing layer (without any ID).
-            TextFeature label = MapModel.AddRowLabel(this, ent, vtx, row, atemplate, height, width, rotation);
+            TextFeature label = MapModel.AddRowLabel(this, ent, vtx, id, row, atemplate, height, width, rotation);
 
             // Relate the new label to the specified ID and vice versa.
             label.SetId(id);
-            id.AddReference(label);
+            //id.AddReference(label);
 
             // Relate the row to the ID and vice versa.
             //row.SetId(id);
@@ -206,28 +217,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("OldText", m_OldText);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            // TODO: I believe the old text should be getting deactivated when the
-            // replacement text becomes known. However, the Execute method doesn't
-            // appear to do that, so for the time being, I won't do it here either.
-
-            m_OldText = reader.ReadFeatureByReference<TextFeature>("OldText");
+            ReplaceTextType t = new ReplaceTextType();
+            SetSerializableEdit(t);
+            t.OldText = m_OldText.DataId;
+            return t;
         }
 
         /// <summary>
@@ -235,7 +233,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
-            // Nothing to do
+            base.CalculateGeometry();
+            m_OldText.Deactivate();
         }
     }
 }

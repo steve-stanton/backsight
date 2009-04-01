@@ -397,8 +397,8 @@ namespace Backsight.Editor
         {
             t.X = m_Position.Easting.Microns;
             t.Y = m_Position.Northing.Microns;
-            t.Height = (double)m_Height;
-            t.Width = (double)m_Width;
+            t.Height = Math.Round((double)m_Height, 2);
+            t.Width = Math.Round((double)m_Width, 2);
             t.Font = (m_Font == null ? 0 : m_Font.Id);
 
             // TODO: May want to cover indirect rotations
