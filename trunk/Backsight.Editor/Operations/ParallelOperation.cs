@@ -637,13 +637,7 @@ namespace Backsight.Editor.Operations
             if (IsArcReversed)
                 t.ReverseArc = true;
 
-            if (m_Offset is Distance)
-                t.Offset = new DistanceType(m_Offset as Distance);
-            else if (m_Offset is OffsetPoint)
-                t.Offset = new OffsetPointType(m_Offset as OffsetPoint);
-            else
-                throw new NotImplementedException("Unexpected offset type: "+m_Offset.GetType().Name);
-
+            t.Offset = m_Offset.GetSerializableObservation();
             t.From = new CalculatedFeatureType(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator==this));
             t.To = new CalculatedFeatureType(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator==this));
             t.NewLine = m_ParLine.GetSerializableLine();

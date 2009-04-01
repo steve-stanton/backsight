@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -43,10 +44,18 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public TextRotationOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal TextRotationOperation(Session s, TextRotationType t)
+            : base(s, t)
         {
+            // The previous rotation gets defined when CalculateGeometry is called
+            m_PrevRotation = 0.0;
+
+            if (!RadianValue.TryParse(t.Value, out m_Rotation))
+                throw new ArgumentException("Cannot parse angle: "+t.Value);
         }
 
         /// <summary>
@@ -150,45 +159,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteAngle("NewRotation", m_Rotation);
-            writer.WriteAngle("OldRotation", m_PrevRotation); // TODO: Is this needed?
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-            m_Rotation = reader.ReadAngle("NewRotation");
-            m_PrevRotation = reader.ReadAngle("OldRotation");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            TextRotationType t = new TextRotationType();
+            t.Value = RadianValue.AsString(m_Rotation);
+            return t;
         }
 
         /// <summary>
@@ -196,23 +174,12 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void CalculateGeometry()
         {
+            // Remember the current default
+            m_PrevRotation = MapModel.DefaultTextRotation;
+
             // Remember the new rotation as part of the map model
             MapModel.DefaultTextRotation = m_Rotation;
         }
-
-        /// <summary>
-        /// Initializes this operation upon loading of the session that contains it.
-        /// This implementation ensures the defined rotation angle is recorded as
-        /// part of the enclosing model.
-        /// </summary>
-        /// <param name="container">The editing session that contains this operation</param>
-        /*
-        internal override void OnLoad(Session container)
-        {
-            base.OnLoad(container);
-            container.MapModel.DefaultTextRotation = m_Rotation;
-        }
-         */
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

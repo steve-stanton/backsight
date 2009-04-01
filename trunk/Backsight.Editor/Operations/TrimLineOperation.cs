@@ -15,8 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -103,10 +105,32 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public TrimLineOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal TrimLineOperation(Session s, TrimLineType t)
+            : base(s, t)
         {
+            CadastralMapModel mapModel = s.MapModel;
+
+            string[] lineIds = t.Line;
+            m_Lines = new List<LineFeature>(lineIds.Length);
+            foreach (string lineId in lineIds)
+            {
+                LineFeature line = mapModel.Find<LineFeature>(lineId);
+                Debug.Assert(line!=null);
+                m_Lines.Add(line);
+            }
+
+            string[] pointIds = t.Point;
+            m_Points = new List<PointFeature>(pointIds.Length);
+            foreach (string pointId in pointIds)
+            {
+                PointFeature p = mapModel.Find<PointFeature>(pointId);
+                Debug.Assert(p!=null);
+                m_Points.Add(p);
+            }
         }
 
         /// <summary>
@@ -277,49 +301,34 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-        }
+            TrimLineType t = new TrimLineType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteFeatureReferenceArray("Line", m_Lines.ToArray());
-            writer.WriteFeatureReferenceArray("Point", m_Points.ToArray());
-        }
+            t.Id = this.DataId;
 
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
+            if (m_Lines==null)
+                t.Line = new string[0];
+            else
+            {
+                t.Line = new string[m_Lines.Count];
+                for (int i=0; i<m_Lines.Count; i++)
+                    t.Line[i] = m_Lines[i].DataId;
+            }
 
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
+            if (m_Points==null)
+                t.Point = new string[0];
+            else
+            {
+                t.Point = new string[m_Points.Count];
+                for (int i=0; i<m_Points.Count; i++)
+                    t.Point[i] = m_Points[i].DataId;
+            }
 
-            LineFeature[] lines = reader.ReadFeatureReferenceArray<LineFeature>("LineArray", "Id");
-            PointFeature[] points = reader.ReadFeatureReferenceArray<PointFeature>("PointArray", "Id");
-
-            m_Lines = new List<LineFeature>(lines);
-            m_Points = new List<PointFeature>(points);
+            return t;
         }
 
         /// <summary>

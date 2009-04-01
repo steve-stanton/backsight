@@ -353,14 +353,7 @@ namespace Backsight.Editor.Operations
             NewCircleType t = new NewCircleType();
 
             t.Id = this.DataId;
-
-            if (m_Radius is Distance)
-                t.Radius = new DistanceType(m_Radius as Distance);
-            else if (m_Radius is OffsetPoint)
-                t.Radius = new OffsetPointType(m_Radius as OffsetPoint);
-            else
-                throw new NotImplementedException("Unexpected radius type: "+m_Radius.GetType().Name);
-
+            t.Radius = m_Radius.GetSerializableObservation();
             t.Center = m_Center.DataId;
             t.ClosingPoint = Line.StartPoint.DataId;
             t.Arc = Line.DataId;

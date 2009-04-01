@@ -71,7 +71,14 @@ namespace Backsight.Editor.Operations
         internal RadialOperation(Session s, RadialType t)
             : base(s, t)
         {
-            // TODO
+            m_Direction = (Direction)t.Direction.LoadObservation(this);
+            m_Length = t.Length.LoadObservation(this);
+            m_To = new PointFeature(this, t.To);
+
+            if (t.Line == null)
+                m_Line = null;
+            else
+                m_Line = new LineFeature(this, m_Direction.From, m_To, t.Line);
         }
 
         /// <summary>
@@ -434,74 +441,12 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
             t.Length = m_Length.GetSerializableObservation();
-
-            /*
-            if (m_Length is Distance)
-                t.Length = new DistanceType(m_Length as Distance);
-            else if (m_Length is OffsetPoint)
-                t.Length = new OffsetPointType(m_Length as OffsetPoint);
-            else
-                throw new NotImplementedException("Unexpected length type: "+m_Length.GetType().Name);
-            */
-
             t.To = new CalculatedFeatureType(m_To);
 
             if (m_Line != null)
                 t.Line = new CalculatedFeatureType(m_Line);
 
             return t;
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Direction", m_Direction);
-            writer.WriteElement("Length", m_Length);
-
-            // Creations ...
-            writer.WriteCalculatedFeature("To", m_To);
-            //writer.WriteCalculatedLine("Line", m_Line);
-            writer.WriteElement("Line", m_Line);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
-
-            m_Direction = reader.ReadElement<Direction>("Direction");
-            m_Length = reader.ReadElement<Observation>("Length");
-            //IPosition to = RadialUI.Calculate(m_Direction, m_Length);
-            //m_To = reader.ReadCalculatedPoint("To", to);
-            m_To = reader.ReadPoint("To");
-            m_Line = reader.ReadElement<LineFeature>("Line");
         }
 
         /// <summary>

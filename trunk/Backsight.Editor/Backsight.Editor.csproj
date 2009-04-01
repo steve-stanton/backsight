@@ -1066,9 +1066,12 @@
     <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SectionType.cs" />
     <Compile Include="Xml\SegmentType.cs" />
+    <Compile Include="Xml\SetTopologyType.cs" />
     <Compile Include="Xml\SharedPointType.cs" />
     <Compile Include="Xml\SimpleLineSubdivisionType.cs" />
     <Compile Include="Xml\SpanType.cs" />
+    <Compile Include="Xml\TextRotationType.cs" />
+    <Compile Include="Xml\TrimLineType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />
