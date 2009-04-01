@@ -469,12 +469,12 @@ namespace Backsight.Editor.UI
         {
             if (IsValidPolygon())
             {
-                // If the polygon actually contains a label that is
-                // drawn on the current editing theme, take this
-                // opportunity to draw it in gray.
-                TextFeature label = m_Polygon.Label;
-                if (label!=null)
-                    label.Draw(ActiveDisplay, Color.Gray);
+                // If the polygon actually contains a label that is drawn on the current editing
+                // layer, take this opportunity to draw it in gray.
+                // ...do it in Paint
+                //TextFeature label = m_Polygon.Label;
+                //if (label!=null)
+                //    label.Draw(ActiveDisplay, Color.Gray);
 
                 if (m_IsAutoPos)
                     return EditorResources.WandCursor;
@@ -885,7 +885,15 @@ namespace Backsight.Editor.UI
                 base.Paint(point);
 
             if (IsValidPolygon())
+            {
                 m_Polygon.Render(ActiveDisplay, style);
+
+                // If the polygon actually contains a label that is drawn on the current editing
+                // layer, take this opportunity to draw it in gray.
+                TextFeature label = m_Polygon.Label;
+                if (label!=null)
+                    label.Draw(ActiveDisplay, Color.Gray);
+            }
         }
 
         /// <summary>

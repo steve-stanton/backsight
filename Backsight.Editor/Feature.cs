@@ -815,11 +815,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The layer associated with this feature's entity type.
+        /// The layer that was active when this feature was created
         /// </summary>
         internal ILayer BaseLayer
         {
-            get { return (m_What==null ? null : m_What.Layer);  }
+            get
+            {
+                // SS20090401 - The entity type can no longer be used, since entity types
+                // associated with layer 0 are now considered to apply to all layers.
+                // return (m_What==null ? null : m_What.Layer);
+
+                int layerId = m_Creator.Session.Job.LayerId;
+                return EnvironmentContainer.FindLayerById(layerId);
+            }
         }
 
         /// <summary>

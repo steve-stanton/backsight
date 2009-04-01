@@ -562,11 +562,6 @@ The first and last positions are assumed to match the positions of the point fea
     </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="ObservationType" abstract="true" />
-  <xs:complexType name="OffsetType" abstract="true">
-    <xs:complexContent mixed="false">
-      <xs:extension base="ObservationType" />
-    </xs:complexContent>
-  </xs:complexType>
   <xs:complexType name="OffsetDistanceType">
     <xs:complexContent mixed="false">
       <xs:extension base="OffsetType">
@@ -584,29 +579,13 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="OffsetType" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="ObservationType" />
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="OperationType" abstract="true">
     <xs:attribute name="Id" type="IdType" use="required" />
-  </xs:complexType>
-  <xs:complexType name="ParallelType">
-    <xs:complexContent mixed="false">
-      <xs:extension base="DirectionType">
-        <xs:attribute name="From" type="IdType" use="required">
-          <xs:annotation>
-            <xs:documentation>The origin of the direction line</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="Start" type="IdType" use="required">
-          <xs:annotation>
-            <xs:documentation>The starting point of the direction line</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="End" type="IdType" use="required">
-          <xs:annotation>
-            <xs:documentation>The ending point of the direction line</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="ParallelLineType">
     <xs:annotation>
@@ -659,6 +638,32 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="ParallelType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DirectionType">
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The origin of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Start" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The starting point of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="End" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The ending point of the direction line</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointGeometryType">
+    <xs:attribute name="X" type="xs:long" use="required" />
+    <xs:attribute name="Y" type="xs:long" use="required" />
+    <xs:attribute name="Z" type="xs:long" use="optional" />
+  </xs:complexType>
   <xs:complexType name="PointType">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
@@ -667,11 +672,6 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="Z" type="xs:long" use="optional" />
       </xs:extension>
     </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="PointGeometryType">
-    <xs:attribute name="X" type="xs:long" use="required" />
-    <xs:attribute name="Y" type="xs:long" use="required" />
-    <xs:attribute name="Z" type="xs:long" use="optional" />
   </xs:complexType>
   <xs:complexType name="PolygonSubdivisionType">
     <xs:complexContent mixed="false">
@@ -740,6 +740,16 @@ The first and last positions are assumed to match the positions of the point fea
       <xs:extension base="LineType" />
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="SetTopologyType">
+    <xs:annotation>
+      <xs:documentation>Edit that toggles the topological status of a line.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:attribute name="Line" type="IdType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="SharedPointType">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
@@ -802,6 +812,20 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="TextRotationType">
+    <xs:annotation>
+      <xs:documentation>Edit to define the default angle for subsequently added text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:attribute name="Value" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The new default rotation (as a clockwise rotation from horizontal axis (+X), in D-M-S format)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="TextType" abstract="true">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureType">
@@ -814,6 +838,24 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
         <xs:attribute name="PolygonX" type="xs:long" use="optional" />
         <xs:attribute name="PolygonY" type="xs:long" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TrimLineType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="IdType">
+            <xs:annotation>
+              <xs:documentation>The lines that were selected for trimming.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="IdType">
+            <xs:annotation>
+              <xs:documentation>Any dangling end points.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
