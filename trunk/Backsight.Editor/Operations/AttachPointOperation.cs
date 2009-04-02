@@ -5,7 +5,7 @@
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
 // either version 3 of the License, or (at your option) any later version.
 //
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 // without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
@@ -255,25 +255,19 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Line", m_Line);
-            writer.WriteUnsignedInt("PositionRatio", m_PositionRatio);
-        }
+            AttachPointType t = new AttachPointType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteCalculatedFeature("Point", m_Point);
+            t.Id = this.DataId;
+            t.Line = m_Line.DataId;
+            t.PositionRatio = m_PositionRatio;
+            t.Point = new CalculatedFeatureType(m_Point);
+
+            return t;
         }
 
         /// <summary>
@@ -295,15 +289,6 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this content.
-        /// </summary>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override string XmlTypeName
-        {
-            get { return "AttachPointType"; }
         }
     }
 }

@@ -384,9 +384,15 @@ namespace Backsight.Editor
         internal override void Clean()
         {
             // If this label refers to a polygon that has been marked for deletion, null
-            // out the reference (the polygon may not point back).
-            if (m_Container!=null && m_Container.IsDeleted)
-                OnPolygonDelete();
+            // out the reference (the polygon may not point back). If the label is now inactive,
+            // but the polygon isn't, clear the polygon->label association.
+            if (m_Container != null)
+            {
+                if (m_Container.IsDeleted)
+                    OnPolygonDelete();
+                else if (this.IsInactive)
+                    m_Container.ReleaseLabel(this);
+            }
 
             base.Clean();
         }

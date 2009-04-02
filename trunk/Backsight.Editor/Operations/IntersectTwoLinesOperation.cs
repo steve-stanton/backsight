@@ -498,47 +498,32 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "IntersectTwoLinesType"; }
-        }
+            IntersectTwoLinesType t = new IntersectTwoLinesType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
+            t.Id = this.DataId;
+            t.Line1 = m_Line1.DataId;
+            t.Line2 = m_Line2.DataId;
+            t.CloseTo = m_CloseTo.DataId;
+            t.To = new CalculatedFeatureType(m_Intersection);
 
-            writer.WriteFeatureReference("Line1", m_Line1);
-            writer.WriteFeatureReference("Line2", m_Line2);
-            writer.WriteFeatureReference("CloseTo", m_CloseTo);
+            if (m_Line1a != null)
+                t.SplitBefore1 = m_Line1a.DataId;
 
-            if (m_Line1a!=null)
-                writer.WriteFeatureReference("SplitBefore1", m_Line1a);
+            if (m_Line1b != null)
+                t.SplitAfter1 = m_Line1b.DataId;
 
-            if (m_Line1b!=null)
-                writer.WriteFeatureReference("SplitAfter1", m_Line1b);
+            if (m_Line2a != null)
+                t.SplitBefore2 = m_Line2a.DataId;
 
-            if (m_Line2a!=null)
-                writer.WriteFeatureReference("SplitBefore2", m_Line2a);
+            if (m_Line2b != null)
+                t.SplitAfter2 = m_Line2b.DataId;
 
-            if (m_Line2b!=null)
-                writer.WriteFeatureReference("SplitAfter2", m_Line2b);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteCalculatedFeature("To", m_Intersection);
+            return t;
         }
 
         /// <summary>
