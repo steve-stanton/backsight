@@ -29,11 +29,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The formatted ID of the spatial feature
-        /// </summary>
-        string m_RowKey;
-
-        /// <summary>
         /// The Backsight ID for the database table
         /// </summary>
         int m_TableId;
@@ -55,7 +50,6 @@ namespace Backsight.Editor
         internal RowTextContent(TextFeature f, RowTextType t)
             : base(f, t)
         {
-            m_RowKey = t.RowKey;
             m_TableId = (int)t.Table;
             m_TemplateId = (int)t.Template;
         }

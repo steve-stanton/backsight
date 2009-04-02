@@ -445,5 +445,13 @@ namespace Backsight.Editor.UI
         {
             DrawText(m_LastPos);
         }
+
+        /// <summary>
+        /// Reacts to a situation where the user presses the ESC key.
+        /// </summary>
+        internal override void Escape()
+        {
+            DialFinish(null);
+        }
     }
 }

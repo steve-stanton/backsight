@@ -724,22 +724,9 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class RowTextType : TextType {
         
-        private string rowKeyField;
-        
         private uint tableField;
         
         private uint templateField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string RowKey {
-            get {
-                return this.rowKeyField;
-            }
-            set {
-                this.rowKeyField = value;
-            }
-        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
