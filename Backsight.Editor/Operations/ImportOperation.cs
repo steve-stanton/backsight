@@ -52,10 +52,6 @@ namespace Backsight.Editor.Operations
             for (int i=0; i<m_Data.Length; i++)
             {
                 FeatureType f = t.Feature[i];
-                if (f is ArcType)
-                {
-                    int junk=0;
-                }
                 m_Data[i] = f.LoadFeature(this);
             }
         }

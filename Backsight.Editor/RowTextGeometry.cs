@@ -314,7 +314,6 @@ namespace Backsight.Editor
         {
             RowTextType t = new RowTextType();
             SetSerializableText(t);
-            t.RowKey = m_Row.Id.FormattedKey;
             t.Table = (uint)m_Row.Table.Id;
             t.Template = (uint)m_Template.Id;
             return t;
