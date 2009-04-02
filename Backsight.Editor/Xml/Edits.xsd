@@ -715,20 +715,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ReplaceTextType">
-    <xs:annotation>
-      <xs:documentation>An edit that creates a new polygon label on a derived layer so as to replace an existing label that was originally shared with the base layers.</xs:documentation>
-    </xs:annotation>
-    <xs:complexContent mixed="false">
-      <xs:extension base="NewTextType">
-        <xs:attribute name="OldText" type="IdType" use="required">
-          <xs:annotation>
-            <xs:documentation>The text label that was superseded as a consequence of adding an extra label to a derived layer.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
   <xs:complexType name="RowTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType">

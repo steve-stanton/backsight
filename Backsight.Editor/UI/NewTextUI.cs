@@ -182,7 +182,7 @@ namespace Backsight.Editor.UI
             EraseRect();
 
             // Add a new label.
-            TextFeature label = AddNewLabel(p, null);
+            TextFeature label = AddNewLabel(p);
 
             // Draw it.
             if (label!=null)
@@ -263,11 +263,8 @@ namespace Backsight.Editor.UI
         /// Creates a new item of text in the map.
         /// </summary>
         /// <param name="posn">Reference position for the text.</param>
-        /// <param name="oldLabel">An old label that's being replaced. Should always
-        /// be NULL. Default=NULL. This appears only because of the abstract definition
-        /// in AddLabelUI.</param>
         /// <returns>The feature that was added (null if something went wrong)</returns>
-        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        internal override TextFeature AddNewLabel(IPosition posn)
         {
             // Execute the edit
             NewTextOperation op = null;
