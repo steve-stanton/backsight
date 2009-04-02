@@ -552,45 +552,29 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "IntersectDirectionAndLineType"; }
-        }
+            IntersectDirectionAndLineType t = new IntersectDirectionAndLineType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-
-            writer.WriteFeatureReference("Line", m_Line);
-            writer.WriteFeatureReference("CloseTo", m_CloseTo);
-
-            if (m_LineA!=null)
-                writer.WriteFeatureReference("SplitBefore", m_LineA);
-
-            if (m_LineB!=null)
-                writer.WriteFeatureReference("SplitAfter", m_LineB);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-
-            writer.WriteElement("Direction", m_Direction);
-            writer.WriteCalculatedFeature("To", m_Intersection);
+            t.Id = this.DataId;
+            t.Line = m_Line.DataId;
+            t.CloseTo = m_CloseTo.DataId;
+            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.To = new CalculatedFeatureType(m_Intersection);
 
             if (m_DirLine != null)
-                writer.WriteCalculatedFeature("DirLine", m_DirLine);
+                t.DirLine = new CalculatedFeatureType(m_DirLine);
+
+            if (m_LineA != null)
+                t.SplitBefore = m_LineA.DataId;
+
+            if (m_LineB != null)
+                t.SplitAfter = m_LineB.DataId;
+
+            return t;
         }
 
         /// <summary>

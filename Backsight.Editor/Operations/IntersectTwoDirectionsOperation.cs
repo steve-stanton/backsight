@@ -408,27 +408,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "IntersectTwoDirectionsType"; }
-        }
+            IntersectTwoDirectionsType t = new IntersectTwoDirectionsType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
+            t.Id = this.DataId;
+            t.Direction1 = (Backsight.Editor.Xml.DirectionType)m_Direction1.GetSerializableObservation();
+            t.Direction2 = (Backsight.Editor.Xml.DirectionType)m_Direction2.GetSerializableObservation();
+            t.To = new CalculatedFeatureType(m_To);
 
-            writer.WriteElement("Direction1", m_Direction1);
-            writer.WriteElement("Direction2", m_Direction2);
-            writer.WriteCalculatedFeature("To", m_To);
-            writer.WriteCalculatedFeature("Line1", m_Line1);
-            writer.WriteCalculatedFeature("Line2", m_Line2);
+            if (m_Line1 != null)
+                t.Line1 = new CalculatedFeatureType(m_Line1);
+
+            if (m_Line2 != null)
+                t.Line2 = new CalculatedFeatureType(m_Line2);
+
+            return t;
         }
 
         /// <summary>

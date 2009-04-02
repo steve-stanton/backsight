@@ -546,45 +546,27 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            get { return "IntersectDirectionAndDistanceType"; }
-        }
+            IntersectDirectionAndDistanceType t = new IntersectDirectionAndDistanceType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
+            t.Id = this.DataId;
+            t.From = m_From.DataId;
+            t.Default = m_Default;
+            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.Distance = m_Distance.GetSerializableObservation();
+            t.To = new CalculatedFeatureType(m_To);
 
-            writer.WriteFeatureReference("From", m_From);
+            if (m_DirLine != null)
+                t.DirLine = new CalculatedFeatureType(m_DirLine);
 
-            if (m_Default)
-                writer.WriteBool("Default", true);
-        }
+            if (m_DistLine != null)
+                t.DistLine = new CalculatedFeatureType(m_DistLine);
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-
-            writer.WriteElement("Direction", m_Direction);
-            writer.WriteElement("Distance", m_Distance);
-            writer.WriteCalculatedFeature("To", m_To);
-
-            if (m_DirLine!=null)
-                writer.WriteCalculatedFeature("DirLine", m_DirLine);
-
-            if (m_DistLine!=null)
-                writer.WriteCalculatedFeature("DistLine", m_DistLine);
+            return t;
         }
 
         /// <summary>

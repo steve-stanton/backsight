@@ -229,23 +229,19 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
         {
-            base.WriteAttributes(writer);
-        }
+            DeletionType t = new DeletionType();
 
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteFeatureReferenceArray("Delete", m_Deletions.ToArray());
+            t.Id = this.DataId;
+            t.Delete = new string[m_Deletions.Count];
+            for (int i = 0; i < t.Delete.Length; i++)
+                t.Delete[i] = m_Deletions[i].DataId;
+
+            return t;
         }
 
         /// <summary>
@@ -277,14 +273,6 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "DeletionType"; }
         }
     }
 }
