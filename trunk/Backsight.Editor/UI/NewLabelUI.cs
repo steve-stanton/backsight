@@ -362,9 +362,9 @@ namespace Backsight.Editor.UI
             TextFeature label = null;
 
             if (m_IsAutoPos)
-                label = AddNewLabel(oldLabel);
+                label = AddNewLabel();
             else
-                label = AddNewLabel(p, oldLabel);
+                label = AddNewLabel(p);
 
             // Tell the base class (resets the last known position, used
             // to erase labels during dragging). 
@@ -523,35 +523,28 @@ namespace Backsight.Editor.UI
             if (m_Polygon==null)
                 return false;
 
-            // Try to find an existing label inside the polygon.
-            TextFeature label = m_Polygon.Label;
-
-            // If we got something, the normal course of action is
-            // to disallow addition of another label. However, if the
-            // current editing layer is derived from the base layer
-            // of the label, we'll allow it ... UNLESS the existing
-            // label is key text and the replacement would be key
-            // text as well.
-
-            if (label == null)
+            // The polygon is valid if it doesn't contain any labels
+            if (m_Polygon.Label==null)
                 return true;
 
-            if (m_Template == null && label.TextGeometry is KeyTextGeometry)
-                return false;
+            // Disallow if the polygon contains a label that was created on the current editing layer (but
+            // allow if it was created on any other base layer)
 
-            // Allow things if the user is working with a derived theme (the label
-            // that's displayed is currently shared with a base layer, but will
-            // be superseded with the label we're about to add).
-            ILayer baseLayer = label.BaseLayer;
-            return (baseLayer!=null && ActiveLayer.ThemeSequence > baseLayer.ThemeSequence);
+            int activeLayerId = ActiveLayer.Id;
+            foreach (TextFeature label in m_Polygon.Labels)
+            {
+                if (label.BaseLayerId == activeLayerId)
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
         /// Creates a new polygon label.
         /// </summary>
-        /// <param name="oldLabel">An old shared label that is being replaced.</param>
         /// <returns>The text feature that was added.</returns>
-        TextFeature AddNewLabel(TextFeature oldLabel)
+        TextFeature AddNewLabel()
         {
             Debug.Assert(m_Polygon!=null);
 
@@ -565,172 +558,86 @@ namespace Backsight.Editor.UI
                 return null;
 
             // Add the label (assumes key label for now).
-            return AddNewLabel(pos, oldLabel);
+            return AddNewLabel(pos);
         }
 
         /// <summary>
         /// Creates a new polygon label in the map.
         /// </summary>
         /// <param name="posn">Reference position for the label.</param>
-        /// <param name="oldLabel">An old shared label that is being replaced.</param>
         /// <returns>The text feature that was added.</returns>
-        internal override TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel)
+        internal override TextFeature AddNewLabel(IPosition posn)
         {
             Debug.Assert(m_Polygon!=null);
             CadastralMapModel map = CadastralMapModel.Current;
             TextFeature newLabel = null;
 
-            // If we are replacing another label, use that label's ID
-            // and ensure that any ID we reserved has been released.
-            if (oldLabel!=null)
+            // Confirm that the polygon ID has been reserved.
+            if (!m_PolygonId.IsReserved)
             {
-                // Get the entity type that the ID handle was assigned
-                // before freeing the handle.
-                IEntity ent = m_PolygonId.Entity;
-                m_PolygonId.FreeId();
-                Debug.Assert(ent!=null);
-
-                // Execute the edit
-                ReplaceTextOperation op = null;
-
-                try
-                {
-                    op = new ReplaceTextOperation(Session.WorkingSession, oldLabel);
-
-                    if (m_Template != null && m_LastRow != null)
-                    {
-                        op.Execute(posn, ent, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
-
-                        // Confirm that the row got cross-referenced to an ID (not
-                        // sure what the above ends up doing).
-                        //if (m_LastRow.GetpId()==null)
-                        //{
-                        //    MessageBox.Show("Attributes were not attached to an ID");
-                        //    return null;
-                        //}
-
-                        // Ensure the row is cross-referenced to the op.
-                        //m_LastRow->AddOp(op);
-                    }
-                    else
-                    {
-                        op.Execute(posn, ent, m_Polygon, Height, Width, Rotation);
-                    }
-
-                    // Pick up the new label.
-                    newLabel = op.Text;
-                }
-
-                catch (Exception ex)
-                {
-                    Session.WorkingSession.Remove(op);
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else
-            {
-                // Not replacing an existing label, so confirm that
-                // the polygon ID has been reserved.
-                if (!m_PolygonId.IsReserved)
-                {
-                    MessageBox.Show("NewLabelUI.AddNewLabel - No polygon ID");
-                    return null;
-                }
-
-                /*
-                // Check whether another label exists in the specified
-                // polygon, but on a layer that is derived from the current
-                // editing layer. If so, note the entity type and free the
-                // supplied ID.
- 
-                // SS20080421 - This bit of code was used to check whether the polygon
-                // was already labelled on a derived layer, in which case the ID would
-                // be promoted to the current layer. However, it's difficult to continue
-                // with that logic, since the polygon object is no longer shared with
-                // any other layer (and won't even exist unless you switch to another
-                // editing layer). Even if the structure was unchanged, I'm not convinced
-                // that it's good to define the ID on the basis of something that the user
-                // can't actually see (if this were to be done, the user should have been
-                // told already, since an explicitly specified ID would be disregarded here).
-
-		        CeLabel* pOldLabel = m_pPolygon->GetBaseLabel();
-		        const CeEntity* pEnt=0;
-
-		        if ( pOldLabel ) {
-			        pEnt = m_PolygonId.GetpEntity();
-			        m_PolygonId.FreeId();
-		        }
-                 */
-
-                // Execute the edit
-                NewTextOperation op = null;
-
-                try
-                {
-                    op = new NewTextOperation(Session.WorkingSession);
-
-                    if (m_Template!=null && m_LastRow!=null)
-                    {
-                        // Save the attributes in the database
-                        DbUtil.SaveRow(m_LastRow);
-
-                        op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
-
-                        // Confirm that the row got cross-referenced to an ID (not
-			            // sure what the above ends up doing).
-                        //if (m_LastRow.GetpId()==null)
-                        //{
-                        //    MessageBox.Show("Attributes were not attached to an ID");
-                        //    return null;
-                        //}
-                    }
-                    else
-                    {
-                        op.Execute(posn, m_PolygonId, m_Polygon, Height, Width, Rotation);
-                    }
-
-                    newLabel = op.Text;
-                }
-
-                catch (Exception ex)
-                {
-                    Session.WorkingSession.Remove(op);
-                    MessageBox.Show(ex.Message);
-                }
+                MessageBox.Show("NewLabelUI.AddNewLabel - No polygon ID");
+                return null;
             }
 
-            // If a new label has actually been added
-            if (newLabel!=null)
+            /*
+            // Check whether another label exists in the specified
+            // polygon, but on a layer that is derived from the current
+            // editing layer. If so, note the entity type and free the
+            // supplied ID.
+
+            // SS20080421 - This bit of code was used to check whether the polygon
+            // was already labelled on a derived layer, in which case the ID would
+            // be promoted to the current layer. However, it's difficult to continue
+            // with that logic, since the polygon object is no longer shared with
+            // any other layer (and won't even exist unless you switch to another
+            // editing layer). Even if the structure was unchanged, I'm not convinced
+            // that it's good to define the ID on the basis of something that the user
+            // can't actually see (if this were to be done, the user should have been
+            // told already, since an explicitly specified ID would be disregarded here).
+
+	        CeLabel* pOldLabel = m_pPolygon->GetBaseLabel();
+	        const CeEntity* pEnt=0;
+
+	        if ( pOldLabel ) {
+		        pEnt = m_PolygonId.GetpEntity();
+		        m_PolygonId.FreeId();
+	        }
+             */
+
+            // Execute the edit
+            NewTextOperation op = null;
+
+            try
             {
-                /*
-		// If a row was created, but we only created key text,
-		// make sure the label's ID has been cross-referenced
-		// to the row (the call to CeRow::SetId makes pointers
-		// both ways).
+                op = new NewTextOperation(Session.WorkingSession);
 
-		// @devnote This was introduced 20-OCT-99. While this
-		// was previously done for CeRowText labels, it was NOT
-		// done for CeKeyText labels. Hence, if you added a new
-		// label to the Assessment layer (which currently has
-		// no row text templates), you'd get key text, but the
-		// attributes you entered would have been stored, but
-		// would not be referenced by the ID. So, if you went
-		// to update the polygon's attributes, it said there
-		// were no attributes.
+                if (m_Template!=null && m_LastRow!=null)
+                {
+                    // Save the attributes in the database
+                    DbUtil.SaveRow(m_LastRow);
 
-		// Note that key text is NOT referenced to the creating
-		// op. This is inconsistent with the way it has always
-		// worked for row text ... row-text labels don't REALLY
-		// need to be cross-referenced to the op, but it makes
-		// sense if you think of the row as being "used" by the
-		// row text.
+                    op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
-		if ( m_pLastRow ) {
-			CeFeatureId* pFid = pNewLabel->GetpId();
-			assert(pFid);
-			if ( pFid ) m_pLastRow->SetId(*pFid);
-		}
-                 */
+                    // Confirm that the row got cross-referenced to an ID (not
+		            // sure what the above ends up doing).
+                    //if (m_LastRow.GetpId()==null)
+                    //{
+                    //    MessageBox.Show("Attributes were not attached to an ID");
+                    //    return null;
+                    //}
+                }
+                else
+                {
+                    op.Execute(posn, m_PolygonId, m_Polygon, Height, Width, Rotation);
+                }
+
+                newLabel = op.Text;
+            }
+
+            catch (Exception ex)
+            {
+                Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.Message);
             }
 
             return newLabel;

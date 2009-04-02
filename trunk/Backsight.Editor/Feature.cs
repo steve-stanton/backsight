@@ -825,9 +825,17 @@ namespace Backsight.Editor
                 // associated with layer 0 are now considered to apply to all layers.
                 // return (m_What==null ? null : m_What.Layer);
 
-                int layerId = m_Creator.Session.Job.LayerId;
+                int layerId = BaseLayerId;
                 return EnvironmentContainer.FindLayerById(layerId);
             }
+        }
+
+        /// <summary>
+        /// The ID of the layer that was active when this feature was created
+        /// </summary>
+        internal int BaseLayerId
+        {
+            get { return m_Creator.Session.Job.LayerId; }
         }
 
         /// <summary>

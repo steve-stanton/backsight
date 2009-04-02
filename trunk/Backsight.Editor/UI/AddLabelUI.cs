@@ -96,8 +96,7 @@ namespace Backsight.Editor.UI
 
         abstract internal bool IsAutoPosition { get; }
 
-        // Default for oldLabel was null
-        abstract internal TextFeature AddNewLabel(IPosition posn, TextFeature oldLabel);
+        abstract internal TextFeature AddNewLabel(IPosition posn);
 
         abstract internal bool UpdateLabel(TextFeature label);
 
