@@ -371,11 +371,7 @@ namespace Backsight.Editor
         internal uint NumItem
         {
             get { return m_Data.NumItem; }
-            set
-            {
-                //Debug.Assert(value >= m_Data.NumItem);
-                m_Data.NumItem = value;
-            }
+            set { m_Data.NumItem = value; }
         }
 
         /// <summary>

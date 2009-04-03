@@ -39,17 +39,28 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
-        /// The item number of the current editing operation.
+        /// Loads the content of an editing operation. Prior to call, the current editing session
+        /// must be defined using the <see cref="Session.CurrentSession"/> property.
         /// </summary>
-        static uint s_CurrentEditSequence = 0;
-
-        /// <summary>
-        /// The item number of the current editing operation.
-        /// </summary>
-        internal static uint CurrentEditSequence
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <param name="data">The data that describes the edit</param>
+        /// <returns>The created editing object</returns>
+        /// <remarks>Edits are converted into xml using the <see cref="ToXml"/> method.</remarks>
+        static internal Operation ReadEdit(Session s, XmlReader data)
         {
-            get { return s_CurrentEditSequence; }
-            set { s_CurrentEditSequence = value; }
+            XmlSerializer xs = new XmlSerializer(typeof(EditType));
+            EditType et = (EditType)xs.Deserialize(data);
+            Debug.Assert(et.Operation.Length == 1);
+            OperationType ot = et.Operation[0];
+            Operation result = ot.LoadOperation(s);
+
+            // Note that calculated geometry is NOT defined at this stage. That happens
+            // when the model is asked to index the data.
+
+            // Associate referenced features with the edit
+            result.AddReferences();
+
+            return result;
         }
 
         #endregion
@@ -96,15 +107,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new editing operation as part of the current default session. This constructor
-        /// should be called during de-serialization from the database.
-        /// </summary>
-        protected Operation()
-        {
-            throw new NotSupportedException("Operation (old constructor)");
-        }
-
-        /// <summary>
         /// Creates a new editing operation as part of the supplied session. This constructor
         /// should be called during regular editing work.
         /// </summary>
@@ -113,9 +115,6 @@ namespace Backsight.Editor
         {
             if (s==null)
                 throw new ArgumentNullException();
-
-            // The default constructor should be used during loading
-            Debug.Assert(!s.MapModel.IsLoading);
 
             s.Add(this);
             m_Session = s;
@@ -449,7 +448,7 @@ namespace Backsight.Editor
             }
 
             // Validate the xml against the schema
-            Backsight.Editor.Xml.Content.Validate(x);
+            Content.Validate(x);
 
             Transaction.Execute(delegate
             {

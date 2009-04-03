@@ -666,9 +666,9 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="unbounded" name="Feature" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="CalculatedFeatureType">
             <xs:annotation>
-              <xs:documentation>The features created along the connection path</xs:documentation>
+              <xs:documentation>The points created along the connection path</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>

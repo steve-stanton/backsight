@@ -1007,7 +1007,6 @@
     <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="XmlContentReader.cs" />
     <Compile Include="Xml\AngleType.cs" />
     <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />

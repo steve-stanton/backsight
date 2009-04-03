@@ -1415,15 +1415,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Is the model currently being loaded (deserialized from the database)?
-        /// </summary>
-        internal bool IsLoading
-        {
-            get { return m_IsLoading; }
-            set { m_IsLoading = value; }
-        }
-
-        /// <summary>
         /// Creates the spatial index
         /// </summary>
         internal void CreateIndex()

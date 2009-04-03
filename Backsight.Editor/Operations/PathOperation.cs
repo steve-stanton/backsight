@@ -76,11 +76,11 @@ namespace Backsight.Editor.Operations
         IEntity m_LineType;
 
         /// <summary>
-        /// Information loaded about created features (this is a hack, to avoid complications
+        /// Information loaded about created points (this is a hack, to avoid complications
         /// during deserialization - it will get defined by the constructor that is used during
         /// deserialization, then used and nulled by CalculateGeometry).
         /// </summary>
-        CalculatedFeatureType[] m_FeatureData;
+        CalculatedFeatureType[] m_Points;
 
         #endregion
 
@@ -103,8 +103,8 @@ namespace Backsight.Editor.Operations
             m_PointType = EnvironmentContainer.FindEntityById(t.PointType);
             m_LineType = EnvironmentContainer.FindEntityById(t.LineType);
 
-            // Remember info about created features
-            m_FeatureData = t.Feature;
+            // Remember info about created points
+            m_Points = t.Point;
         }
 
         internal PathOperation(PointFeature from, PointFeature to, string entryString)
@@ -463,7 +463,7 @@ namespace Backsight.Editor.Operations
             if (Object.ReferenceEquals(result.Creator, this))
             {
                 // During deserialization, the ID will be assigned at the end of CalculateGeometry
-                if (result.Id==null && m_FeatureData==null)
+                if (result.Id==null && m_Points==null)
                     result.SetNextId();
 
                 extraPoints.Add(result);
@@ -1105,24 +1105,23 @@ void CePath::CreateAngleText ( CPtrList& text
             t.LineType = m_LineType.Id;
 
             Feature[] features = this.Features;
-            t.Feature = new CalculatedFeatureType[features.Length];
-
-            for (int i=0; i<features.Length; i++)
+            List<CalculatedFeatureType> points = new List<CalculatedFeatureType>(features.Length / 2);
+            foreach (Feature f in features)
             {
-                Feature f = features[i];
-                CalculatedFeatureType cf = new CalculatedFeatureType();
-                cf.Id = f.DataId;
-
-                // Can only be a native ID
-                FeatureId fid = f.Id;
-                if (fid != null && fid.RawId != 0)
+                if (f is PointFeature)
                 {
+                    CalculatedFeatureType cf = new CalculatedFeatureType();
+                    cf.Id = f.DataId;
+
+                    FeatureId fid = f.Id;
+                    Debug.Assert(fid is NativeId);
                     cf.Key = fid.RawId;
                     cf.KeySpecified = true;
-                }
 
-                t.Feature[i] = cf;
+                    points.Add(cf);
+                }
             }
+            t.Point = points.ToArray();
 
             return t;
         }
@@ -1132,46 +1131,38 @@ void CePath::CreateAngleText ( CPtrList& text
         /// </summary>
         internal override void CalculateGeometry()
         {
-            Debug.Assert(m_FeatureData!=null);
+            Debug.Assert(m_Points!=null);
 
             // Ensure default entity types have been set to the values they had when
             // this edit was originally executed
             CadastralMapModel.Current.DefaultPointType = m_PointType;
             CadastralMapModel.Current.DefaultLineType = m_LineType;
 
-            uint itemCount = Session.CurrentSession.NumItem;
+            // Ensure the session item count is in agreement with the sequence
+            // number of this edit
+            Session.CurrentSession.NumItem = this.EditSequence;
 
-            try
+            // Create stuff
+            List<PointFeature> createdPoints = CreateFeatures();
+            Complete();
+
+            // Attach IDs to point features (need to do this after the Complete call, since
+            // that's where creation sequence is attached to points, which is what we need
+            // to pick up the associated FeatureData).
+
+            foreach (PointFeature p in createdPoints)
             {
-                Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
+                CalculatedFeatureType info = Array.Find<CalculatedFeatureType>(m_Points,
+                    delegate(CalculatedFeatureType t) { return (t.Id == p.DataId); });
 
-                // Create stuff
-                List<PointFeature> createdPoints = CreateFeatures();
-                Complete();
-
-                // Attach IDs to point features (need to do this after the Complete call, since
-                // that's where creation sequence is attached to points, which is what we need
-                // to pick up the associated FeatureData).
-
-                foreach (PointFeature p in createdPoints)
+                if (info != null)
                 {
-                    CalculatedFeatureType info = Array.Find<CalculatedFeatureType>(m_FeatureData,
-                        delegate(CalculatedFeatureType t) { return (t.Id == p.DataId); });
-
-                    if (info != null)
-                    {
-                        FeatureId id = MapModel.FindNativeId(info.Key);
-                        p.SetId(id);
-                    }
+                    FeatureId id = MapModel.FindNativeId(info.Key);
+                    p.SetId(id);
                 }
-
-                m_FeatureData = null;
             }
 
-            finally
-            {
-                Session.CurrentSession.NumItem = itemCount;
-            }
+            m_Points = null;
         }
     }
 }
