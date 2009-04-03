@@ -116,11 +116,6 @@ namespace Backsight.Editor.Observations
             }
         }
 
-        internal override DirectionType DirectionType
-        {
-            get { return DirectionType.Parallel; }
-        }
-
         /// <summary>
         /// Returns true if this parallel refers to the same point features as the
         /// supplied parellel. Stuff in the base class is irrelevant.
@@ -180,26 +175,6 @@ namespace Backsight.Editor.Observations
                 return true;
 
             return base.HasReference(feature);
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteFeatureReference("Start", m_Par1);
-            writer.WriteFeatureReference("End", m_Par2);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "ParallelType"; }
         }
 
         /// <summary>

@@ -34,9 +34,7 @@ namespace Backsight.Editor.Xml
         {
             this.Value = d.ObservedValue;
             this.Unit = (int)d.EntryUnit.UnitType;
-
-            if (d.IsFixed)
-                this.Fixed = true;
+            this.Fixed = d.IsFixed;
         }
 
         /// <summary>

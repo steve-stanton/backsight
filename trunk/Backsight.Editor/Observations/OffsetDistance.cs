@@ -165,22 +165,6 @@ namespace Backsight.Editor.Observations
             set { throw new Exception("The method or operation is not implemented."); }
         }
 
-        /// <summary>
-        /// Saves this offset distance.
-        /// </summary>
-        /// <returns></returns>
-        /*
-        internal override Observation Save()
-        {
-            //	Confirm that an operation is being saved.
-            IOperation oper = (IOperation)SaveOp;
-            if (oper==null)
-                return null;
-
-            return this;
-        }
-         */
-
         internal override void AddReferences(Operation op)
         {
             // nothing to do
@@ -211,35 +195,6 @@ namespace Backsight.Editor.Observations
         internal override void OnRollback(Operation op)
         {
             // nothing to do
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteBool("Left", m_IsLeft);
-        }
-
-        /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-            writer.WriteElement("Distance", m_Offset);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "OffsetDistanceType"; }
         }
 
         /// <summary>

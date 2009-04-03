@@ -111,11 +111,6 @@ namespace Backsight.Editor.Observations
             get { return m_Backsight; }
         }
 
-        internal override DirectionType DirectionType
-        {
-            get { return DirectionType.Angle; }
-        }
-
         internal override void AddReferences(Operation op)
         {
             base.AddReferences(op);
@@ -185,26 +180,6 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Backsight", m_Backsight);
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteAngle("Value", m_Observation);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "AngleType"; }
-        }
-
-        /// <summary>
         /// Returns an object that represents this observation, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// </summary>
@@ -213,10 +188,21 @@ namespace Backsight.Editor.Observations
         {
             AngleType t = new AngleType();
             SetSerializableObservation(t);
+            return t;
+        }
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this direction</param>
+        protected void SetSerializableObservation(AngleType t)
+        {
+            base.SetSerializableObservation(t);
+
             t.Backsight = m_Backsight.DataId;
             t.From = m_From.DataId;
             t.Value = RadianValue.AsShortString(m_Observation);
-            return t;
         }
     }
 }

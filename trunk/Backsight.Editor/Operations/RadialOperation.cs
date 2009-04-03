@@ -439,7 +439,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
             RadialType t = new RadialType();
             t.Id = this.DataId;
 
-            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
             t.Length = m_Length.GetSerializableObservation();
             t.To = new CalculatedFeatureType(m_To);
 

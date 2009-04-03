@@ -89,28 +89,6 @@ namespace Backsight.Editor.Observations
             get { return (m_Point==null ? 0.0 : m_Point.Y); }
         }
 
-        /// <summary>
-        /// Saves this offset point. This ensures that the offset point is cross-referenced
-        /// to the current editing operation.
-        /// </summary>
-        /// <returns></returns>
-        /*
-        internal override Observation Save()
-        {
-            //	Confirm that an operation is being saved.
-            Operation oper = (Operation)SaveOp;
-            if (oper==null)
-                return null;
-
-            if (m_Point==null)
-                throw new Exception("OffsetPoint.Save -- incomplete observation.");
-
-            //	Cross-reference the referenced point to the operation that is being saved.
-	        (m_Point as IEditFeature).AddOp(oper);
-            return this;
-        }
-         */
-
         internal override void AddReferences(Operation op)
         {
             //	Cross-reference the referenced point to the operation that is being saved.
@@ -190,24 +168,6 @@ namespace Backsight.Editor.Observations
         {
         	if (m_Point!=null)
                 m_Point.CutOp(op);
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("Point", m_Point);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "OffsetPointType"; }
         }
 
         /// <summary>

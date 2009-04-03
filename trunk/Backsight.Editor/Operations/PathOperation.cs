@@ -22,6 +22,7 @@ using System.Text;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -1064,6 +1065,15 @@ void CePath::CreateAngleText ( CPtrList& text
             end = vlist[index + 1];
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationType GetSerializableEdit()
+        {
+            throw new NotImplementedException("PathOperation");
         }
 
         /// <summary>

@@ -43,7 +43,6 @@
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttributeData.cs" />
     <Compile Include="BasicList.cs" />
-    <Compile Include="CalculatedFeature.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
@@ -340,7 +339,6 @@
     <Compile Include="Observations\DeflectionDirection.cs" />
     <Compile Include="Observations\Direction.cs" />
     <Compile Include="Observations\DirectionFlags.cs" />
-    <Compile Include="Observations\DirectionType.cs" />
     <Compile Include="Observations\Distance.cs" />
     <Compile Include="Observations\Offset.cs" />
     <Compile Include="Observations\OffsetDistance.cs" />

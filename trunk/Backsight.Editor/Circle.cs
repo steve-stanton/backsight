@@ -27,7 +27,7 @@ namespace Backsight.Editor
     /// The definition of a circle
     /// </summary>
     /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
-    class Circle : Content, ISpatialObject, ICircleGeometry, IFeatureDependent
+    class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
     {
         #region Class data
 
@@ -61,25 +61,6 @@ namespace Backsight.Editor
             m_Radius = radius;
             m_Arcs = new List<ArcFeature>();
         }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the circle</param>
-        /// <param name="t">The serialized version of this circle</param>
-        /*
-        internal Circle(Operation op, CircleType t)
-        {
-            m_Center = op.MapModel.Find<PointFeature>(t.Center);
-            m_Radius = t.Radius;
-            m_Arcs = new List<ArcFeature>();
-
-            // Not sure whether this is the best place to do this (seems inconsistent
-            // that the other constructor doesn't do it, though I can see the sense if
-            // we need to create adhoc circles for some reason).
-            m_Center.AddReference(this);
-        }
-        */
 
         #endregion
 
@@ -414,29 +395,6 @@ namespace Backsight.Editor
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            // When writing out the radius, round if off to 10 decimal places (to
-            // avoid strings with spurious trailing digits, like "237.13320000000002")
-
-            writer.WriteFeatureReference("Center", m_Center);
-            writer.WriteDouble("Radius", Math.Round(m_Radius, 10));
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            m_Center = reader.ReadFeatureByReference<PointFeature>("Center");
-            m_Radius = reader.ReadDouble("Radius");
         }
 
         /// <summary>

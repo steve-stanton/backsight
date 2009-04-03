@@ -431,14 +431,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        //public override string XmlTypeName
-        //{
-        //    get { return "LineExtensionType"; }
-        //}
-
-        /// <summary>
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>

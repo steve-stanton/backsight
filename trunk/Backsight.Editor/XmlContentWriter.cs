@@ -18,8 +18,9 @@ using System.Xml;
 using System.Text;
 using System.Xml.Schema;
 using System.Collections.Generic;
-using Backsight.Editor.Xml;
 using System.Xml.Serialization;
+
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -118,34 +119,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out a top-level element with the specified name. In addition to
-        /// the usual stuff, this will write out a namespace for the element (which
-        /// is required if the XML is destined for storage in a SqlServer database).
-        /// The namespace used is obtained through the static <see cref="TargetNamespace"/>
-        /// property.
-        /// </summary>
-        /// <param name="content">The content to write (not null)</param>
-        /// <param name="name">The name for the XML element</param>
-        /// <exception cref="ArgumentNullException">If the supplied content is null</exception>
-        //void WriteTopElement(string name, IXmlContent content)
-        //{
-        //    if (content==null)
-        //        throw new ArgumentNullException();
-
-        //    // Should encoding be written too?
-        //    m_Writer.WriteProcessingInstruction("xml", "version=\"1.0\"");
-
-        //    // The initial element needs a namespace (for SqlServer)
-        //    m_Writer.WriteStartElement(name, "Backsight");
-
-        //    // Write declaration that allows specification of class type (if you don't do
-        //    // this, an attempt to write out "xsi:type" will only give you "type").
-        //    m_Writer.WriteAttributeString("xmlns", "xsi", null, XmlSchema.InstanceNamespace);
-
-        //    WriteElementContent(content);
-        //}
-
-        /// <summary>
         /// Writes out an element with the specified name
         /// </summary>
         /// <param name="name">The name for the XML element.</param>
@@ -231,64 +204,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Writes out a reference to a previously existing spatial feature (as an attribute)
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <param name="feature">The feature that's referenced</param>
-        internal void WriteFeatureReferenceAsElement(string name, Feature feature)
-        {
-            m_Writer.WriteStartElement(name);
-            m_Writer.WriteString(feature.DataId);
-            m_Writer.WriteEndElement();
-        }
-
-        /// <summary>
-        /// Writes out the supplied <c>Boolean</c> as an attribute
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <param name="value">The value of the attribute</param>
-        public void WriteBool(string name, bool value)
-        {
-            m_Writer.WriteStartAttribute(name);
-            m_Writer.WriteValue(value);
-            m_Writer.WriteEndAttribute();
-        }
-
-        /// <summary>
-        /// Writes out the supplied <c>Double</c> as an attribute
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <param name="value">The value of the attribute</param>
-        public void WriteDouble(string name, double value)
-        {
-            m_Writer.WriteStartAttribute(name);
-            m_Writer.WriteValue(value);
-            m_Writer.WriteEndAttribute();
-        }
-
-        /// <summary>
-        /// Writes an array element for the supplied content
-        /// </summary>
-        /// <param name="itemName">The element name for individual elements in the array</param>
-        /// <param name="data">The content to write out</param>
-        public void WriteArray(string itemName, IXmlContent[] data)
-        {
-            foreach (IXmlContent xc in data)
-                WriteElement(itemName, xc);
-        }
-
-        /// <summary>
-        /// Writes an array element for the supplied content
-        /// </summary>
-        /// <param name="itemName">The element name for individual elements in the array</param>
-        /// <param name="data">The content to write out</param>
-        internal void WriteFeatureReferenceArray(string itemName, Feature[] data)
-        {
-            foreach(Feature f in data)
-                m_Writer.WriteElementString(itemName, f.DataId);
-        }
-
-        /// <summary>
         /// Writes an array of <see cref="FeatureData"/> objects constructed from
         /// an array of spatial features.
         /// </summary>
@@ -299,28 +214,6 @@ namespace Backsight.Editor
         {
             foreach (Feature f in data)
                 WriteElement(itemName, new FeatureData(f));
-        }
-
-        /// <summary>
-        /// Writes out information for a feature with geometry that will be
-        /// re-calculated on deserialization.
-        /// </summary>
-        /// <param name="elementName">The name of the element</param>
-        /// <param name="f">The feature to write out</param>
-        internal void WriteCalculatedFeature(string elementName, Feature f)
-        {
-            WriteElement(elementName, new CalculatedFeature(f));
-        }
-
-        /// <summary>
-        /// Writes out the supplied <c>Double</c> as an angle, expressed
-        /// in short D-M-S format (abbreviated where possible).
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <param name="value">The value of the angle, in radians</param>
-        public void WriteAngle(string name, double value)
-        {
-            WriteString(name, RadianValue.AsShortString(value));
         }
     }
 }

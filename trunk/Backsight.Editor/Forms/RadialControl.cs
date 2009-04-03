@@ -279,7 +279,7 @@ namespace Backsight.Editor.Forms
                     m_IsClockwise = true;
 
                 // Is it a deflection?
-		        m_IsDeflection = (dir.DirectionType == DirectionType.Deflection);
+		        m_IsDeflection = (dir is DeflectionDirection);
             }
 
 	        // Was direction specified using 2 points (not possible

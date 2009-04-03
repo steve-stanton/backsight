@@ -17,7 +17,6 @@ using System;
 using System.Diagnostics;
 
 using Backsight.Environment;
-using XmlDirectionType = Backsight.Editor.Xml.DirectionType;
 using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Observations
@@ -55,7 +54,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Direction(Operation op, XmlDirectionType t)
+        protected Direction(Operation op, DirectionType t)
             : base(op, t)
         {
             if (t.Offset == null)
@@ -107,8 +106,6 @@ namespace Backsight.Editor.Observations
 								 , const CePoint* const pTo ) const = 0;
          */
 
-        abstract internal DirectionType DirectionType { get; }
-
         bool IsFixed
         {
             get { return (m_Flag & DirectionFlags.Fixed)!=0; }
@@ -149,7 +146,7 @@ namespace Backsight.Editor.Observations
         internal bool IsEquivalent(Direction other)
         {
             // Check the simple fields.
-            if (this.DirectionType != other.DirectionType || this.m_Flag != other.m_Flag)
+            if (this.GetType() != other.GetType() || this.m_Flag != other.m_Flag)
                 return false;
 
             // If one direction has an offset & the other doesn't, the directions are different.
@@ -182,29 +179,23 @@ namespace Backsight.Editor.Observations
             // ...not sure what's going on here... (shouldn't this just call an abstract method? -- maybe
             // needs to be a templated method, since both types need to be the same.
 
-            switch(this.DirectionType)
+            if (this is AngleDirection || this is DeflectionDirection)
             {
-                case DirectionType.Angle:
-                case DirectionType.Deflection:
-                    {
-                        AngleDirection rThis = (AngleDirection)this;
-                        AngleDirection rThat = (AngleDirection)other;
-                        return rThis.Equals(rThat);
-                    }
-
-                case DirectionType.Bearing:
-                    {
-                        BearingDirection rThis = (BearingDirection)this;
-                        BearingDirection rThat = (BearingDirection)other;
-                        return rThis.Equals(rThat);
-                    }
-
-                case DirectionType.Parallel:
-                    {
-                        ParallelDirection rThis = (ParallelDirection)this;
-                        ParallelDirection rThat = (ParallelDirection)other;
-                        return rThis.Equals(rThat);
-                    }
+                AngleDirection rThis = (AngleDirection)this;
+                AngleDirection rThat = (AngleDirection)other;
+                return rThis.Equals(rThat);
+            }
+            else if (this is BearingDirection)
+            {
+                BearingDirection rThis = (BearingDirection)this;
+                BearingDirection rThat = (BearingDirection)other;
+                return rThis.Equals(rThat);
+            }
+            else if (this is ParallelDirection)
+            {
+                ParallelDirection rThis = (ParallelDirection)this;
+                ParallelDirection rThat = (ParallelDirection)other;
+                return rThis.Equals(rThat);
             }
 
             return false;
@@ -677,24 +668,11 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
-        {
-            base.WriteChildElements(writer);
-
-            if (m_Offset != null)
-                writer.WriteElement("Offset", m_Offset);
-        }
-
-        /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this direction</param>
-        protected void SetSerializableObservation(XmlDirectionType t)
+        protected void SetSerializableObservation(DirectionType t)
         {
             base.SetSerializableObservation(t);
 
