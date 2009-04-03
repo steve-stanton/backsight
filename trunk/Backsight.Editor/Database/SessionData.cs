@@ -65,10 +65,6 @@ namespace Backsight.Editor.Database
                 // Initialize session capacity in the model
                 model.SetSessionCapacity(sessions.Count+1);
 
-                // Create the loader
-                uint numItem = SumItems(sessions);
-                XmlContentReader xcr = new XmlContentReader(model, numItem);
-
                 // Load information about the edits involved
                 StringBuilder sb = new StringBuilder(200);
                 sb.Append("SELECT [SessionId], [EditSequence], [Data]");
@@ -112,7 +108,7 @@ namespace Backsight.Editor.Database
                         SqlXml data = reader.GetSqlXml(2);
                         using (XmlReader xr = data.CreateReader())
                         {
-                            Operation edit = xcr.ReadEdit(curSession, xr);
+                            Operation edit = Operation.ReadEdit(curSession, xr);
 
                             // The edit sequence is repeated in the XML data
                             Debug.Assert(edit.EditSequence == editSequence);
@@ -127,21 +123,6 @@ namespace Backsight.Editor.Database
                 Trace.Write("Indexing...");
                 model.CreateIndex();
             }
-        }
-
-        /// <summary>
-        /// Returns the summation of the item counts associated with the supplied sessions
-        /// </summary>
-        /// <param name="sessions">The sessions of interest</param>
-        /// <returns>The sum of the <see cref="ItemCount"/> property</returns>
-        static uint SumItems(List<SessionData> sessions)
-        {
-            uint result = 0;
-
-            foreach (SessionData s in sessions)
-                result += s.m_NumItem;
-
-            return result;
         }
 
         /// <summary>
