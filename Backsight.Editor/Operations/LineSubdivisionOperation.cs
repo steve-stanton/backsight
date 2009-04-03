@@ -503,7 +503,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Get adjusted lengths for each section
             Distance[] distances = new Distance[m_Sections.Count];

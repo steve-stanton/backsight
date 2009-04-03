@@ -646,44 +646,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            /*
-
-            // Create the parallel line
-            if (m_RefLine is ArcFeature)
-            {
-                ArcFeature arc = (m_RefLine as ArcFeature);
-                Circle circle = arc.Circle;
-                PointFeature center = circle.CenterPoint;
-                bool iscw = arc.IsClockwise;
-
-                // Need to add a circle first.
-                double parRadius = Geom.Distance(center, spos);
-                Circle parCircle = CadastralMapModel.Current.AddCircle(center, parRadius);
-
-                // Use the reverse arc direction if specified.
-                if (IsArcReversed)
-                    iscw = !iscw;
-
-                // Add the circular arc
-                m_ParLine = reader.CreateCalculatedArc(lineData, from, to, circle, iscw);
-            }
-            else
-            {
-                m_ParLine = reader.CreateCalculatedLine(lineData, from, to);
-            }
-             */
-        }
-
-        /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Calculate the end positions
             IPosition spos, epos;

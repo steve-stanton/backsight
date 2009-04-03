@@ -247,7 +247,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Mark the features as deleted
             foreach (Feature f in m_Deletions)

@@ -192,7 +192,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Move the label's reference position -- the name of this method
             // really needs to be changed.

@@ -461,7 +461,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

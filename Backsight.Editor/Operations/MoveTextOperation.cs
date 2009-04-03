@@ -228,7 +228,7 @@ namespace Backsight.Editor.Operations
         /// Calculates the geometry for any features created by this edit (for use during
         /// deserialization).
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Ensure the text has been moved to the revised position.
             // Should be no need to re-calculate enclosing polygon while deserializing

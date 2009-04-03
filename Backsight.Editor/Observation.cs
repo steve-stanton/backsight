@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Any sort of survey observation.
     /// </summary>
-    abstract class Observation : Content
+    abstract class Observation
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
