@@ -47,9 +47,6 @@
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
-    <Compile Include="Content.cs" />
-    <Compile Include="ContentReader.cs" />
-    <Compile Include="ContentWriter.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
     <Compile Include="Database\DbUtil.cs" />
@@ -63,7 +60,6 @@
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
     <Compile Include="EntityUtil.cs" />
-    <Compile Include="FeatureData.cs" />
     <Compile Include="FindPolygonLabelQuery.cs" />
     <Compile Include="FontInfo.cs" />
     <Compile Include="ForeignId.cs" />
@@ -322,16 +318,12 @@
     <Compile Include="Forms\UpdatePathForm.Designer.cs">
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IContentAttribute.cs" />
-    <Compile Include="IContentElement.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
-    <Compile Include="IXmlContent.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
-    <Compile Include="LineData.cs" />
     <Compile Include="NativeId.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Observations\AngleDirection.cs" />
@@ -348,7 +340,6 @@
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
-    <Compile Include="Operations\SpanContent.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PathParser.cs" />
@@ -1017,7 +1008,6 @@
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="Wildcard.cs" />
     <Compile Include="XmlContentReader.cs" />
-    <Compile Include="XmlContentWriter.cs" />
     <Compile Include="Xml\AngleType.cs" />
     <Compile Include="Xml\ArcType.cs" />
     <Compile Include="Xml\AttachPointType.cs" />
@@ -1057,6 +1047,7 @@
     <Compile Include="Xml\OperationType.cs" />
     <Compile Include="Xml\ParallelLineType.cs" />
     <Compile Include="Xml\ParallelType.cs" />
+    <Compile Include="Xml\PathType.cs" />
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\PolygonSubdivisionType.cs" />
     <Compile Include="Xml\RadialType.cs" />

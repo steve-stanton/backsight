@@ -23,10 +23,10 @@ namespace Backsight.Editor
     /// where position is expressed to the nearest micron on the ground.
     /// </summary>
     /// <remarks>
-    /// Integer values are used largely for historical reasons, since various items
+    /// Integer (long) values are used largely for historical reasons, since various items
     /// of software are coded to accommodate the consequences of roundoff.
     /// </remarks>
-    class PointGeometry : Content, IPointGeometry
+    class PointGeometry : IPointGeometry
     {
         #region Class data
 
@@ -177,37 +177,5 @@ namespace Backsight.Editor
         {
             get { return m_Y; }
         }
-
-        #region IXmlContent Members
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this geometry.
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return null; }
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            writer.WriteLong("X", m_X.Microns);
-            writer.WriteLong("Y", m_Y.Microns);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            m_X = new MicronValue(reader.ReadLong("X"));
-            m_Y = new MicronValue(reader.ReadLong("Y"));
-        }
-
-        #endregion
     }
 }

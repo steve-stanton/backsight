@@ -24,6 +24,9 @@ using Backsight.Editor.Database;
 using Backsight.Data;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
+using System.Xml;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace Backsight.Editor
 {
@@ -31,7 +34,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    abstract class Operation : Content, IFeatureDependent, IXmlContent
+    abstract class Operation : IFeatureDependent
     {
         #region Static
 
@@ -514,26 +517,10 @@ namespace Backsight.Editor
                 point.CutOp(this);
         }
 
-        #region IXmlContent Members
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            writer.WriteString("Id", DataId);
-        }
-
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        /// <remarks>TODO: This should be declared as abstract</remarks>
-        public virtual void CalculateGeometry()
-        {
-        }
-
-        #endregion
+        abstract internal void CalculateGeometry();
 
         /// <summary>
         /// Represents this editing operation in XML (suitable for inserting
@@ -552,7 +539,24 @@ namespace Backsight.Editor
         /// <returns>The XML for this edit</returns>
         internal string ToXml(bool indent)
         {
-            return XmlContentWriter.GetXml("Edit", indent, this);
+            OperationType sed = GetSerializableEdit();
+
+            StringBuilder sb = new StringBuilder(1000);
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.Indent = indent;
+
+            using (XmlWriter writer = XmlWriter.Create(sb, xws))
+            {
+                // Wrap the serializable edit in an EditType object (means we always know what to
+                // cast the result to upon deserialization)
+
+                EditType e = new EditType();
+                e.Operation = new OperationType[] { sed };
+                XmlSerializer xs = new XmlSerializer(typeof(EditType));
+                xs.Serialize(writer, e);
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

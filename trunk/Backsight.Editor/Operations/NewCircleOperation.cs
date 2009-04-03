@@ -364,7 +364,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Get the radius, in meters on the ground.
             double rad = m_Radius.GetDistance(m_Center).Meters;

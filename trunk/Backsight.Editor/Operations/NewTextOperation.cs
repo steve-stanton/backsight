@@ -460,7 +460,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// <summary>
         /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        public override void CalculateGeometry()
+        internal override void CalculateGeometry()
         {
             // Nothing to do
         }

@@ -45,6 +45,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SetTopologyType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RadialType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PolygonSubdivisionType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(PathType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParallelLineType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewTextType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NewSegmentType))]
@@ -1343,6 +1344,115 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.deactivatedLabelField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class PathType : OperationType {
+        
+        private CalculatedFeatureType[] featureField;
+        
+        private string fromField;
+        
+        private string toField;
+        
+        private string entryStringField;
+        
+        private int defaultEntryUnitField;
+        
+        private int pointTypeField;
+        
+        private int lineTypeField;
+        
+        public PathType() {
+            this.defaultEntryUnitField = 0;
+            this.pointTypeField = 0;
+            this.lineTypeField = 0;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Feature")]
+        public CalculatedFeatureType[] Feature {
+            get {
+                return this.featureField;
+            }
+            set {
+                this.featureField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string From {
+            get {
+                return this.fromField;
+            }
+            set {
+                this.fromField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string To {
+            get {
+                return this.toField;
+            }
+            set {
+                this.toField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string EntryString {
+            get {
+                return this.entryStringField;
+            }
+            set {
+                this.entryStringField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(0)]
+        public int DefaultEntryUnit {
+            get {
+                return this.defaultEntryUnitField;
+            }
+            set {
+                this.defaultEntryUnitField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(0)]
+        public int PointType {
+            get {
+                return this.pointTypeField;
+            }
+            set {
+                this.pointTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(0)]
+        public int LineType {
+            get {
+                return this.lineTypeField;
+            }
+            set {
+                this.lineTypeField = value;
             }
         }
     }

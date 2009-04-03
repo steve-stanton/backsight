@@ -38,7 +38,7 @@ namespace Backsight.Editor
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
     [DefaultProperty("EntityType")]
-    abstract class Feature : Content, ISpatialObject, IPossibleList<Feature>, IXmlContent
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>
     {
         #region Class data
 
@@ -847,36 +847,6 @@ namespace Backsight.Editor
         {
             get { return IsFlagSet(FeatureFlag.Void); }
             set { SetFlag(FeatureFlag.Void, value); }
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        /// <remarks>Implements IXmlContent</remarks>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            WriteFeatureAttributes(writer);
-        }
-
-        /// <summary>
-        /// Writes the attributes of just this class (not any derived class, or
-        /// any attributes of the base class).
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        internal void WriteFeatureAttributes(XmlContentWriter writer)
-        {
-            writer.WriteString("Id", DataId);
-            writer.WriteInt("Type", m_What.Id);
-
-            if (m_Id != null)
-            {
-                if (m_Id is NativeId)
-                    writer.WriteUnsignedInt("Key", m_Id.RawId);
-                else
-                    writer.WriteString("ForeignKey", m_Id.FormattedKey);
-            }
         }
 
         /// <summary>

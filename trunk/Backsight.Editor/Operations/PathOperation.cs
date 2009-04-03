@@ -37,17 +37,17 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The point where the path starts.
         /// </summary>
-        PointFeature m_From; // readonly
+        readonly PointFeature m_From;
 
         /// <summary>
         /// The point where the path ends.
         /// </summary>
-        PointFeature m_To; // readonly
+        readonly PointFeature m_To;
 
         /// <summary>
         /// The data entry string that defines the connection path.
         /// </summary>
-        string m_EntryString; // readonly
+        readonly string m_EntryString;
 
         /// <summary>
         /// The legs that make up the path
@@ -75,21 +75,36 @@ namespace Backsight.Editor.Operations
         /// </summary>
         IEntity m_LineType;
 
+        /// <summary>
+        /// Information loaded about created features (this is a hack, to avoid complications
+        /// during deserialization - it will get defined by the constructor that is used during
+        /// deserialization, then used and nulled by CalculateGeometry).
+        /// </summary>
+        CalculatedFeatureType[] m_FeatureData;
+
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor, for use during deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public PathOperation()
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal PathOperation(Session s, PathType t)
+            : base(s, t)
         {
-            m_From = null;
-            m_To = null;
-            m_Legs = null;
-            m_DefaultEntryUnit = null;
-            m_PointType = null;
-            m_LineType = null;
+            CadastralMapModel mapModel = s.MapModel;
+
+            m_From = mapModel.Find<PointFeature>(t.From);
+            m_To = mapModel.Find<PointFeature>(t.To);
+            m_EntryString = t.EntryString;
+            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)t.DefaultEntryUnit);
+            m_PointType = EnvironmentContainer.FindEntityById(t.PointType);
+            m_LineType = EnvironmentContainer.FindEntityById(t.LineType);
+
+            // Remember info about created features
+            m_FeatureData = t.Feature;
         }
 
         internal PathOperation(PointFeature from, PointFeature to, string entryString)
@@ -447,7 +462,8 @@ namespace Backsight.Editor.Operations
             // If the points was freshly created, assign an ID and add to the list of extra points
             if (Object.ReferenceEquals(result.Creator, this))
             {
-                if (result.Id==null)
+                // During deserialization, the ID will be assigned at the end of CalculateGeometry
+                if (result.Id==null && m_FeatureData==null)
                     result.SetNextId();
 
                 extraPoints.Add(result);
@@ -1073,87 +1089,61 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <returns>The serializable version of this edit</returns>
         internal override OperationType GetSerializableEdit()
         {
-            throw new NotImplementedException("PathOperation");
-        }
+            PathType t = new PathType();
 
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteFeatureReference("To", m_To);
+            t.Id = this.DataId;
+            t.From = m_From.DataId;
+            t.To = m_To.DataId;
+            t.EntryString = m_EntryString;
 
             // The default data entry units have a bearing on how the entry string should
             // be interpreted
-            int unitType = (int)m_DefaultEntryUnit.UnitType;
-            if (unitType != 0)
-                writer.WriteInt("EntryUnit", unitType);
+            t.DefaultEntryUnit = (int)m_DefaultEntryUnit.UnitType;
 
             // Default entity types for points and lines
-            writer.WriteInt("PointType", m_PointType.Id);
-            writer.WriteInt("LineType", m_LineType.Id);
+            t.PointType = m_PointType.Id;
+            t.LineType = m_LineType.Id;
 
-            writer.WriteString("EntryString", m_EntryString);
+            Feature[] features = this.Features;
+            t.Feature = new CalculatedFeatureType[features.Length];
+
+            for (int i=0; i<features.Length; i++)
+            {
+                Feature f = features[i];
+                CalculatedFeatureType cf = new CalculatedFeatureType();
+                cf.Id = f.DataId;
+
+                // Can only be a native ID
+                FeatureId fid = f.Id;
+                if (fid != null && fid.RawId != 0)
+                {
+                    cf.Key = fid.RawId;
+                    cf.KeySpecified = true;
+                }
+
+                t.Feature[i] = cf;
+            }
+
+            return t;
         }
 
         /// <summary>
-        /// Writes any child elements of this class. This will be called after
-        /// all attributes have been written via <see cref="WriteAttributes"/>.
+        /// Calculates the geometry for any features created by this edit.
         /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteChildElements(XmlContentWriter writer)
+        internal override void CalculateGeometry()
         {
-            base.WriteChildElements(writer);
-
-            // Write information about created features
-            writer.WriteFeatureDataArray("Feature", this.Features);
-        }
-
-        /// <summary>
-        /// Defines the attributes of this content
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadAttributes(XmlContentReader reader)
-        {
-            base.ReadAttributes(reader);
-
-            m_From = reader.ReadFeatureByReference<PointFeature>("From");
-            m_To = reader.ReadFeatureByReference<PointFeature>("To");
-
-            int unitType = reader.ReadInt("EntryUnit");
-            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)unitType);
+            Debug.Assert(m_FeatureData!=null);
 
             // Ensure default entity types have been set to the values they had when
             // this edit was originally executed
-            m_PointType = EnvironmentContainer.FindEntityById(reader.ReadInt("PointType"));
-            m_LineType = EnvironmentContainer.FindEntityById(reader.ReadInt("LineType"));
-
             CadastralMapModel.Current.DefaultPointType = m_PointType;
             CadastralMapModel.Current.DefaultLineType = m_LineType;
 
-            // Read back the data entry string
-            m_EntryString = reader.ReadString("EntryString");
-        }
-
-        /// <summary>
-        /// Defines any child content related to this instance. This will be called after
-        /// all attributes have been defined via <see cref="ReadAttributes"/>.
-        /// </summary>
-        /// <param name="reader">The reading tool</param>
-        public override void ReadChildElements(XmlContentReader reader)
-        {
-            base.ReadChildElements(reader);
             uint itemCount = Session.CurrentSession.NumItem;
 
             try
             {
                 Session.CurrentSession.NumItem = Operation.CurrentEditSequence;
-
-                // Read back information about created features
-                FeatureData[] featureInfo = reader.ReadArray<FeatureData>("Feature");
 
                 // Create stuff
                 List<PointFeature> createdPoints = CreateFeatures();
@@ -1165,15 +1155,17 @@ void CePath::CreateAngleText ( CPtrList& text
 
                 foreach (PointFeature p in createdPoints)
                 {
-                    FeatureData info = Array.Find<FeatureData>(featureInfo,
-                        delegate(FeatureData t) { return (t.CreationSequence == p.CreatorSequence); });
+                    CalculatedFeatureType info = Array.Find<CalculatedFeatureType>(m_FeatureData,
+                        delegate(CalculatedFeatureType t) { return (t.Id == p.DataId); });
 
                     if (info != null)
                     {
-                        FeatureId id = info.Id;
+                        FeatureId id = MapModel.FindNativeId(info.Key);
                         p.SetId(id);
                     }
                 }
+
+                m_FeatureData = null;
             }
 
             finally

@@ -659,6 +659,52 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="PathType">
+    <xs:annotation>
+      <xs:documentation>A connection path between two points. Like a traverse.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Feature" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The features created along the connection path</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="From" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point where the path starts.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="To" type="IdType" use="required">
+          <xs:annotation>
+            <xs:documentation>The point where the path ends.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="EntryString" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The data entry string that defines the connection path.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="0" name="DefaultEntryUnit" type="xs:int" use="optional">
+          <xs:annotation>
+            <xs:documentation>The default distance units when this edit was originally executed.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="0" name="PointType" type="xs:int" use="optional">
+          <xs:annotation>
+            <xs:documentation>The ID of the entity type assigned to created points</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="0" name="LineType" type="xs:int" use="optional">
+          <xs:annotation>
+            <xs:documentation>The ID of the entity type assigned to created lines</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="PointGeometryType">
     <xs:attribute name="X" type="xs:long" use="required" />
     <xs:attribute name="Y" type="xs:long" use="required" />

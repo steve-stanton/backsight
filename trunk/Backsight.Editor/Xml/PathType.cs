@@ -14,17 +14,23 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// Something that will be serialized as an XML attribute
+    /// Serialized version of the <see cref="PathOperation"/> class.
     /// </summary>
-    interface IContentAttribute
+    public partial class PathType
     {
         /// <summary>
-        /// The formatted value of the attribute that will be serialized
+        /// Loads this editing operation into a session
         /// </summary>
-        string AttributeString { get; }
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new PathOperation(s, this);
+        }
     }
 }
