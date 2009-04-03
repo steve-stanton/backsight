@@ -416,8 +416,8 @@ namespace Backsight.Editor.Operations
             IntersectTwoDirectionsType t = new IntersectTwoDirectionsType();
 
             t.Id = this.DataId;
-            t.Direction1 = (Backsight.Editor.Xml.DirectionType)m_Direction1.GetSerializableObservation();
-            t.Direction2 = (Backsight.Editor.Xml.DirectionType)m_Direction2.GetSerializableObservation();
+            t.Direction1 = (DirectionType)m_Direction1.GetSerializableObservation();
+            t.Direction2 = (DirectionType)m_Direction2.GetSerializableObservation();
             t.To = new CalculatedFeatureType(m_To);
 
             if (m_Line1 != null)

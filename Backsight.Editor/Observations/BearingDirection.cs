@@ -111,11 +111,6 @@ namespace Backsight.Editor.Observations
                 m_From.CutOp(op);
         }
 
-        internal override DirectionType DirectionType
-        {
-            get { return DirectionType.Bearing; }
-        }
-
         /// <summary>
         /// Relational equality test. 
         /// </summary>
@@ -142,25 +137,6 @@ namespace Backsight.Editor.Observations
                 return true;
 
             return base.HasReference(feature);
-        }
-
-        /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteFeatureReference("From", m_From);
-            writer.WriteAngle("Value", m_Observation);
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "BearingType"; }
         }
 
         /// <summary>

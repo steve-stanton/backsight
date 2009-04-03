@@ -120,39 +120,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reads an attribute that is expected to be a <c>UInt64</c> value
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <returns>The attribute value (0 if the attribute is not present)</returns>
-        public ulong ReadUnsignedLong(string name)
-        {
-            XmlAttribute a = m_CurrentNode.Attributes[name];
-            return (a == null ? 0 : UInt64.Parse(a.Value));
-        }
-
-        /// <summary>
-        /// Reads a boolean attribute
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <returns>The value of the attribute (false if the attribute isn't there)</returns>
-        public bool ReadBool(string name)
-        {
-            XmlAttribute a = m_CurrentNode.Attributes[name];
-            return (a == null ? false : Boolean.Parse(a.Value));
-        }
-
-        /// <summary>
-        /// Reads an attribute that is expected to be a <c>Double</c> value
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <returns>The attribute value (0.0 if the attribute is not present)</returns>
-        public double ReadDouble(string name)
-        {
-            XmlAttribute a = m_CurrentNode.Attributes[name];
-            return (a == null ? 0.0 : Double.Parse(a.Value));
-        }
-
-        /// <summary>
         /// Reads an attribute that is expected to be a <c>String</c> value
         /// </summary>
         /// <param name="name">The local name of the attribute</param>
@@ -205,7 +172,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that has been loaded (if null,
         /// nothing gets done)</param>
-        internal void AddFeature(Feature f)
+        void AddFeature(Feature f)
         {
             if (f != null)
             {
@@ -238,39 +205,6 @@ namespace Backsight.Editor
             {
                 m_CurrentNode = initialNode;
             }
-        }
-
-        string[] ReadStringArray(string arrayName, string itemName)
-        {
-            throw new NotImplementedException();
-
-            // Ensure we're at an element
-            //if (!ReadToElement(arrayName))
-            //    throw new Exception("Array element not found");
-
-            // Pick up array size
-            uint capacity = ReadUnsignedInt("Length");
-            string[] result = new string[(int)capacity];
-
-            // Move to the first item (not sure why this is necessary, but otherwise
-            // I get an error with 1-element arrays)
-            m_Reader.Read();
-
-            for (int i=0; i<capacity; i++)
-                result[i] = m_Reader.ReadElementString(itemName);
-
-            return result;
-        }
-
-        internal T[] ReadFeatureReferenceArray<T>(string arrayName, string itemName) where T : Feature
-        {
-            string[] ids = ReadStringArray(arrayName, itemName);
-            T[] result = new T[ids.Length];
-
-            for (int i=0; i<ids.Length; i++)
-                result[i] = (T)ReadFeatureById(ids[i]);
-
-            return result;
         }
 
         /// <summary>
@@ -353,24 +287,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Checks whether an attribute with the specified name is part of
-        /// the current element.
-        /// </summary>
-        /// <param name="name">The local name of the attribute</param>
-        /// <returns>True if the attribute is defined</returns>
-        internal bool HasAttribute(string name)
-        {
-            return (m_CurrentNode.Attributes[name] != null);
-        }
-
-        /// <summary>
         /// Scans back through parent nodes to attempt to locate a node with a specific
         /// type. For example, if you're processing a node for <c>LineGeometry</c>, you should
         /// be able to find the enclosing <c>LineFeature</c> instance using this technique.
         /// </summary>
         /// <typeparam name="T">The type of element to look for</typeparam>
         /// <returns>The first ancestor node with the specified type (null if not found)</returns>
-        internal T FindParent<T>() where T : IXmlContent
+        T FindParent<T>() where T : IXmlContent
         {
             // This works back from the last element that was pushed onto the stack
             foreach (IXmlContent e in m_Elements)
@@ -380,24 +303,6 @@ namespace Backsight.Editor
             }
 
             return default(T);
-        }
-
-        /// <summary>
-        /// Reads back a point feature (without any geometry). A subsequent call
-        /// to <see cref="Operation.CalculateGeometry"/> needs to be made to
-        /// define the geometry for the point.
-        /// </summary>
-        /// <param name="elementName">The name of the element containing the fields
-        /// describing the point</param>
-        /// <returns>The created point (without any geometry)</returns>
-        internal PointFeature ReadPoint(string elementName)
-        {
-            // Pick up the information for the point
-            FeatureData fd = ReadElement<FeatureData>(elementName);
-            if (fd == null)
-                return null;
-            else
-                return CreateCalculatedPoint(fd, null);
         }
 
         /// <summary>
@@ -415,46 +320,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a calculated line feature (with the geometry for a simple line segment)
-        /// </summary>
-        /// <param name="fd">Information to assign to the created line</param>
-        /// <param name="from">The point feature at the start of the line</param>
-        /// <param name="to">The point feature at the end of the line</param>
-        /// <returns>The created line</returns>
-        internal LineFeature CreateCalculatedLine(FeatureData fd, PointFeature from, PointFeature to)
-        {
-            // The LineFeature constructor will also modify the end points by
-            // referencing them to the created line.
-            LineFeature result = new LineFeature(fd.EntityType, FindParent<Operation>(), from, to);
-            InitializeFeature(result, fd);
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a calculated line feature (with the geometry for a circular arc)
-        /// </summary>
-        /// <param name="fd">Information to assign to the created line</param>
-        /// <param name="from">The point feature at the start of the arc</param>
-        /// <param name="to">The point feature at the end of the arc</param>
-        /// <param name="circle">The circle on which the arc lies. This will be modified to refer
-        /// to the newly created arc.</param>
-        /// <param name="clockwise">True if the arc is clockwise.</param>
-        /// <returns>The created arc</returns>
-        internal ArcFeature CreateCalculatedArc(FeatureData fd, PointFeature from, PointFeature to, Circle circle, bool clockwise)
-        {
-            // The LineFeature constructor will also modify the end points by
-            // referencing them to the created line.
-            ArcFeature result = new ArcFeature(fd.EntityType, FindParent<Operation>(), circle, from, to, clockwise);
-            InitializeFeature(result, fd);
-            return result;
-        }
-
-        /// <summary>
         /// Performs initialization upon creation of a calculated point or line.
         /// </summary>
         /// <param name="f">The feature that has just been created</param>
         /// <param name="fd">Information to assign to the created point</param>
-        internal void InitializeFeature(Feature f, FeatureData fd)
+        void InitializeFeature(Feature f, FeatureData fd)
         {
             // Ensure the created feature has the expected session item number
             f.CreatorSequence = fd.CreationSequence;
@@ -471,92 +341,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reads back a calculated line feature. This is suitable only for simple line
-        /// segments and circular arcs (not multi-segments).
-        /// </summary>
-        /// <param name="elementName">The name of the element containing the fields
-        /// desribing the line (and its terminal points)</param>
-        /// <param name="from">The calculated position of the start of the line</param>
-        /// <param name="to">The calculated position of the end of the line</param>
-        /// <param name="isArc">Is the line a circular arc?</param>
-        /// <returns>The created line</returns>
-        /*
-        internal LineFeature ReadCalculatedLine(string elementName, IPosition from, IPosition to, bool isArc)
-        {
-            // Pick up the information for the point
-            LineData lineData = ReadElement<LineData>(elementName);
-            if (lineData == null)
-                return null;
-
-            LineFeature result = null;
-            return result;
-        }
-         */
-
-        /// <summary>
-        /// Reads back an attribute representing an angle that
-        /// has been formatted using <see cref="XmlContentWriter.WriteAngle"/>
-        /// </summary>
-        /// <param name="name">The name of the attribute</param>
-        /// <returns>The angle in radians (0.0 if the attribute isn't there)</returns>
-        public double ReadAngle(string name)
-        {
-            string s = ReadString(name);
-            if (s==null)
-                return 0.0;
-
-            double result;
-            if (RadianValue.TryParse(s, out result))
-                return result;
-
-            throw new Exception("Cannot parse angle: "+s);
-        }
-
-        /// <summary>
         /// The model that's being loaded.
         /// </summary>
         internal CadastralMapModel Model
         {
             get { return m_Model; }
         }
-
-        /// <summary>
-        /// Saves (or clears) information about the features created by the edit
-        /// that is currently being deserialized
-        /// </summary>
-        /// <param name="info">Information about the features created by
-        /// the edit (specify null to clear)</param>
-        //internal void SaveFeatureData(FeatureData[] info)
-        //{
-        //    if (info == null)
-        //        m_FeatureInfo = null;
-        //    else
-        //    {
-        //        m_FeatureInfo = new Dictionary<uint, FeatureData>(info.Length);
-        //        foreach (FeatureData fd in info)
-        //            m_FeatureInfo.Add(fd.CreationSequence, fd);
-        //    }
-        //}
-
-        /// <summary>
-        /// Attempts to obtain information about a specific feature created by
-        /// the edit that is being deserialized.
-        /// </summary>
-        /// <param name="creationSequence">The creation sequence number of the feature</param>
-        /// <returns>The corresponding information (null if the current edit does
-        /// not involve a special feature information cache, or the information cannot
-        /// be found)</returns>
-        //internal FeatureData GetFeatureData(uint creationSequence)
-        //{
-        //    if (m_FeatureInfo==null)
-        //        return null;
-
-        //    FeatureData result;
-        //    if (m_FeatureInfo.TryGetValue(creationSequence, out result))
-        //        return result;
-        //    else
-        //        return null;
-        //}
 
         /// <summary>
         /// The XML type name of the element that is currently being processed

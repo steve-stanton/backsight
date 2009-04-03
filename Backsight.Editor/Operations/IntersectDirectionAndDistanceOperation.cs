@@ -556,7 +556,7 @@ namespace Backsight.Editor.Operations
             t.Id = this.DataId;
             t.From = m_From.DataId;
             t.Default = m_Default;
-            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
             t.Distance = m_Distance.GetSerializableObservation();
             t.To = new CalculatedFeatureType(m_To);
 

@@ -562,7 +562,7 @@ namespace Backsight.Editor.Operations
             t.Id = this.DataId;
             t.Line = m_Line.DataId;
             t.CloseTo = m_CloseTo.DataId;
-            t.Direction = (Backsight.Editor.Xml.DirectionType)m_Direction.GetSerializableObservation();
+            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
             t.To = new CalculatedFeatureType(m_Intersection);
 
             if (m_DirLine != null)

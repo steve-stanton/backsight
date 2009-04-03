@@ -369,33 +369,11 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Writes the attributes of this class.
-        /// </summary>
-        /// <param name="writer">The writing tool</param>
-        public override void WriteAttributes(XmlContentWriter writer)
-        {
-            base.WriteAttributes(writer);
-            writer.WriteDouble("Value", GetDistance());
-            writer.WriteInt("Unit", (int)m_EnteredUnit.UnitType);
-
-            if (m_IsFixed)
-                writer.WriteBool("Fixed", true);
-        }
-
-        /// <summary>
         /// The observed distance value
         /// </summary>
         internal double ObservedValue
         {
             get { return GetDistance(m_EnteredUnit); }
-        }
-
-        /// <summary>
-        /// The string that will be used as the xsi:type for this edit
-        /// </summary>
-        public override string XmlTypeName
-        {
-            get { return "DistanceType"; }
         }
 
         /// <summary>

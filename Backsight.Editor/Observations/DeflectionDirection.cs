@@ -75,17 +75,16 @@ namespace Backsight.Editor.Observations
             }
         }
 
-        internal override DirectionType DirectionType
-        {
-            get { return DirectionType.Deflection; }
-        }
-
         /// <summary>
-        /// The string that will be used as the xsi:type for this edit
+        /// Returns an object that represents this observation, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
         /// </summary>
-        public override string XmlTypeName
+        /// <returns>The serializable version of this observation</returns>
+        internal override ObservationType GetSerializableObservation()
         {
-            get { return "DeflectionType"; }
+            DeflectionType t = new DeflectionType();
+            SetSerializableObservation(t);
+            return t;
         }
     }
 }

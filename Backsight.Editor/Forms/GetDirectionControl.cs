@@ -1166,11 +1166,11 @@ namespace Backsight.Editor.Forms
                 ShowOffset(dir);
 
             // The rest depends on what sort of direction we have.
-            if (dir.DirectionType == DirectionType.Bearing)
+            if (dir is BearingDirection)
                 ShowBearing(dir);
-            else if (dir.DirectionType == DirectionType.Angle) // Deflection too
+            else if (dir is AngleDirection) // Deflection too
                 ShowAngle(dir);
-            else if (dir.DirectionType == DirectionType.Parallel)
+            else if (dir is ParallelDirection)
                 ShowParallel(dir);
             else
                 MessageBox.Show("GetDirectionControl.Show - Cannot display direction info.");
