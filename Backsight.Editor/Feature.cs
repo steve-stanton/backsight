@@ -175,24 +175,32 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// The user-perceived ID (if any) for the feature. This is the ID that
+        /// is used to associate the feature with any miscellaneous attributes
+        /// that may be held in a database.
+        /// </summary>
         [Description("Unique ID")]
         public FeatureId Id
         {
             get { return m_Id; }
         }
 
+        /// <summary>
+        /// The spatial reference system for this feature (is the system associated
+        /// with the editing operation that created this feature).
+        /// </summary>
         [DisplayName("Coordinate system")]
         [Description("Spatial reference for the geometry")]
         public ICoordinateSystem CoordinateSystem
         {
-            // For the time being, return the system via the creating op. By rights, every
-            // feature should have some sort of entity type (which provides slightly more
-            // direct access to the coordinate system), but that rule isn't being enforced
-            // for the time being (see Feature cstr).
-            //get { return m_What.MapModel.CoordinateSystem; }
             get { return (m_Creator==null ? null : m_Creator.CoordinateSystem); }
         }
 
+        /// <summary>
+        /// The map model of this feature (is the model that contains the editing session
+        /// in which this feature was created).
+        /// </summary>
         internal CadastralMapModel MapModel
         {
             get { return (m_Creator==null ? null : (CadastralMapModel)m_Creator.Session.MapModel); }

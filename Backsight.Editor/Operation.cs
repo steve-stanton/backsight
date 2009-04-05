@@ -407,6 +407,9 @@ namespace Backsight.Editor
             {
                 numItem++;
                 feats[i].CreatorSequence = numItem;
+
+                // Remember the feature as part of the map model
+                MapModel.AddFeature(feats[i]);
             }
 
             // Ensure the item count for the session has been updated
