@@ -132,8 +132,8 @@ namespace Backsight.Editor.Forms
             // text, make it the default.
             CadastralMapModel map = CadastralMapModel.Current;
             IEntity curDef = map.DefaultTextType;
-            if (curDef==null || curDef.Id!=m_Entity.Id)
-                map.DefaultTextType = m_Entity;
+            if (curDef == null || curDef.Id != m_Entity.Id)
+                map.SetDefaultEntity(SpatialType.Text, m_Entity);
 
             DialogResult = DialogResult.OK;
             Close();

@@ -777,6 +777,11 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="RevisionType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType" />
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="RowTextType">
     <xs:complexContent mixed="false">
       <xs:extension base="TextType">
