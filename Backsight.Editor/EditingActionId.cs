@@ -66,5 +66,6 @@ namespace Backsight.Editor
         AttachPoint         =40,
         NewCircularArc      =41,
         MovePolygonPosition =42,
+        PropertyChange      =43,
     }
 }

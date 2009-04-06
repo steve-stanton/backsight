@@ -722,6 +722,13 @@ namespace Backsight.Editor
                 throw new NotImplementedException("GetDefaultEntity");
         }
 
+        /// <summary>
+        /// Remembers the default entity type that should be assigned to features with
+        /// a specific geometric type.
+        /// </summary>
+        /// <param name="t">The geometric type</param>
+        /// <param name="e">The default entity type for any new features that
+        /// are created with the specified geometric type (null for the blank type)</param>
         internal void SetDefaultEntity(SpatialType t, IEntity e)
         {
             if (t == SpatialType.Point)
@@ -732,6 +739,27 @@ namespace Backsight.Editor
                 DefaultPolygonType = e;
             else if (t == SpatialType.Text)
                 DefaultTextType = e;
+            else
+                throw new NotImplementedException("SetDefaultEntity");
+        }
+
+        /// <summary>
+        /// Remembers the default entity type that should be assigned to features with
+        /// a specific geometric type.
+        /// </summary>
+        /// <param name="t">The geometric type</param>
+        /// <param name="entityId">The internal ID of the default entity type for any new features that
+        /// are created with the specified geometric type</param>
+        internal void SetDefaultEntityType(SpatialType t, int entityId)
+        {
+            if (t == SpatialType.Point)
+                EditingController.Current.JobFile.Data.DefaultPointType = entityId;
+            else if (t == SpatialType.Line)
+                EditingController.Current.JobFile.Data.DefaultLineType = entityId;
+            else if (t == SpatialType.Polygon)
+                EditingController.Current.JobFile.Data.DefaultPolygonType = entityId;
+            else if (t == SpatialType.Text)
+                EditingController.Current.JobFile.Data.DefaultTextType = entityId;
             else
                 throw new NotImplementedException("SetDefaultEntity");
         }
