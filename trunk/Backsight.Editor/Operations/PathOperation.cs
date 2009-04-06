@@ -1135,8 +1135,11 @@ void CePath::CreateAngleText ( CPtrList& text
 
             // Ensure default entity types have been set to the values they had when
             // this edit was originally executed
-            CadastralMapModel.Current.DefaultPointType = m_PointType;
-            CadastralMapModel.Current.DefaultLineType = m_LineType;
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            mapModel.SetDefaultEntity(SpatialType.Point, m_PointType);
+            mapModel.SetDefaultEntity(SpatialType.Line, m_LineType);
+            //CadastralMapModel.Current.DefaultPointType = m_PointType;
+            //CadastralMapModel.Current.DefaultLineType = m_LineType;
 
             // Ensure the session item count is in agreement with the sequence
             // number of this edit

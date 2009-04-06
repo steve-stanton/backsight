@@ -731,16 +731,10 @@ namespace Backsight.Editor
         /// are created with the specified geometric type (null for the blank type)</param>
         internal void SetDefaultEntity(SpatialType t, IEntity e)
         {
-            if (t == SpatialType.Point)
-                DefaultPointType = e;
-            else if (t == SpatialType.Line)
-                DefaultLineType = e;
-            else if (t == SpatialType.Polygon)
-                DefaultPolygonType = e;
-            else if (t == SpatialType.Text)
-                DefaultTextType = e;
+            if (e == null)
+                SetDefaultEntity(t, 0);
             else
-                throw new NotImplementedException("SetDefaultEntity");
+                SetDefaultEntity(t, e.Id);
         }
 
         /// <summary>
@@ -750,7 +744,7 @@ namespace Backsight.Editor
         /// <param name="t">The geometric type</param>
         /// <param name="entityId">The internal ID of the default entity type for any new features that
         /// are created with the specified geometric type</param>
-        internal void SetDefaultEntityType(SpatialType t, int entityId)
+        internal void SetDefaultEntity(SpatialType t, int entityId)
         {
             if (t == SpatialType.Point)
                 EditingController.Current.JobFile.Data.DefaultPointType = entityId;
@@ -761,7 +755,7 @@ namespace Backsight.Editor
             else if (t == SpatialType.Text)
                 EditingController.Current.JobFile.Data.DefaultTextType = entityId;
             else
-                throw new NotImplementedException("SetDefaultEntity");
+                throw new NotImplementedException("SetDefaultEntityType");
         }
 
         internal IEntity DefaultPointType
@@ -770,12 +764,6 @@ namespace Backsight.Editor
             {
                 int entityId = EditingController.Current.JobFile.Data.DefaultPointType;
                 return EnvironmentContainer.FindEntityById(entityId);
-            }
-
-            set
-            {
-                int entityId = (value == null ? 0 : value.Id);
-                EditingController.Current.JobFile.Data.DefaultPointType = entityId;
             }
         }
 
@@ -786,12 +774,6 @@ namespace Backsight.Editor
                 int entityId = EditingController.Current.JobFile.Data.DefaultLineType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
-
-            set
-            {
-                int entityId = (value == null ? 0 : value.Id);
-                EditingController.Current.JobFile.Data.DefaultLineType = entityId;
-            }
         }
 
         internal IEntity DefaultPolygonType
@@ -801,12 +783,6 @@ namespace Backsight.Editor
                 int entityId = EditingController.Current.JobFile.Data.DefaultPolygonType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
-
-            set
-            {
-                int entityId = (value == null ? 0 : value.Id);
-                EditingController.Current.JobFile.Data.DefaultPolygonType = entityId;
-            }
         }
 
         internal IEntity DefaultTextType
@@ -815,12 +791,6 @@ namespace Backsight.Editor
             {
                 int entityId = EditingController.Current.JobFile.Data.DefaultTextType;
                 return EnvironmentContainer.FindEntityById(entityId);
-            }
-
-            set
-            {
-                int entityId = (value == null ? 0 : value.Id);
-                EditingController.Current.JobFile.Data.DefaultTextType = entityId;
             }
         }
 

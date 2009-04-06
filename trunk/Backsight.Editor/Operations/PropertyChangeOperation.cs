@@ -93,28 +93,28 @@ namespace Backsight.Editor.Operations
                 case PropertyItemType.DefaultPointType:
                 {
                     m_OldValue = mapModel.DefaultPointType.Id.ToString();
-                    mapModel.SetDefaultEntityType(SpatialType.Point, Int32.Parse(m_NewValue));
+                    mapModel.SetDefaultEntity(SpatialType.Point, Int32.Parse(m_NewValue));
                     break;
                 }
 
                 case PropertyItemType.DefaultLineType:
                 {
                     m_OldValue = mapModel.DefaultLineType.Id.ToString();
-                    mapModel.SetDefaultEntityType(SpatialType.Line, Int32.Parse(m_NewValue));
+                    mapModel.SetDefaultEntity(SpatialType.Line, Int32.Parse(m_NewValue));
                     break;
                 }
 
                 case PropertyItemType.DefaultTextType:
                 {
                     m_OldValue = mapModel.DefaultTextType.Id.ToString();
-                    mapModel.SetDefaultEntityType(SpatialType.Text, Int32.Parse(m_NewValue));
+                    mapModel.SetDefaultEntity(SpatialType.Text, Int32.Parse(m_NewValue));
                     break;
                 }
 
                 case PropertyItemType.DefaultPolygonType:
                 {
                     m_OldValue = mapModel.DefaultPolygonType.Id.ToString();
-                    mapModel.SetDefaultEntityType(SpatialType.Polygon, Int32.Parse(m_NewValue));
+                    mapModel.SetDefaultEntity(SpatialType.Polygon, Int32.Parse(m_NewValue));
                     break;
                 }
 
