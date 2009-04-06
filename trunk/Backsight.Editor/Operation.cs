@@ -563,7 +563,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
+        /// the <c>XmlSerializer</c> class.</summary>
         /// <returns>The serializable version of this edit</returns>
         abstract internal OperationType GetSerializableEdit();
 

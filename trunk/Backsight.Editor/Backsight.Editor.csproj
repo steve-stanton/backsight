@@ -339,6 +339,7 @@
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
+    <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="PathData.cs" />
@@ -1049,6 +1050,7 @@
     <Compile Include="Xml\PathType.cs" />
     <Compile Include="Xml\PointType.cs" />
     <Compile Include="Xml\PolygonSubdivisionType.cs" />
+    <Compile Include="Xml\PropertyChangeType.cs" />
     <Compile Include="Xml\RadialType.cs" />
     <Compile Include="Xml\RowTextType.cs" />
     <Compile Include="Xml\SectionType.cs" />
