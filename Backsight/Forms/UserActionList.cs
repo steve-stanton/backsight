@@ -67,5 +67,13 @@ namespace Backsight.Forms
             foreach (IUserAction ua in m_Items)
                 ua.Update();
         }
+
+        /// <summary>
+        /// The actions that have been added to this list
+        /// </summary>
+        public IUserAction[] Actions
+        {
+            get { return m_Items.ToArray(); }
+        }
     }
 }

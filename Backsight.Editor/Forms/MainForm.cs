@@ -870,24 +870,275 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             m_Controller.StartCommand(cmd);
         }
 
+        /// <summary>
+        /// Handles the KeyDown event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
+        /// <remarks>The form only reacts to <c>KeyDown</c> events if the <see cref="Form.KeyPreview"/> property
+        /// is set to true.</remarks>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // If there is no command running, and the user has hit the Enter (or Return) key,
+            // they are indicating that they want to run either the Repeat or the Recall command.
+            // The reason for testing this here is because attempting to set the ShortcutKey to
+            // Keys.Enter (as I originally did in the constructor) leads to a runtime error that
+            // talks about a bad enum value.
+
+            if (e.KeyData == Keys.Enter)
+            {
+                if (e.Alt && IsEditRecallEnabled())
+                {
+                    e.Handled = true;
+                    EditRecall(null);
+                }
+                else if (IsEditRepeatEnabled())
+                {
+                    e.Handled = true;
+                    EditRepeat(null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the Edit - Repeat command is enabled or not.
+        /// </summary>
+        /// <returns>True if the current editing session contains at least one edit, an
+        /// edit is not currently running, and a file check is not in progress</returns>
         private bool IsEditRepeatEnabled()
         {
-            return false;
+            return (m_Controller.IsCommandRunning==false &&
+                    m_Controller.IsChecking==false &&
+                    Session.WorkingSession.LastOperation!=null);
         }
 
+        /// <summary>
+        /// Runs the Edit - Repeat command
+        /// </summary>
+        /// <param name="action">The action that initiated this edit (null if initiated via a keystroke)</param>
         private void EditRepeat(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            // Ignore if a command or check is currently active.
+            if (!IsEditRepeatEnabled())
+                return;
+
+            // Get the last operation.
+            Operation op = Session.WorkingSession.LastOperation;
+            if (op==null)
+                return;
+
+            // Locate the action that initiated the last edit
+            IUserAction lastAction = Array.Find<IUserAction>(m_Actions.Actions, delegate (IUserAction a)
+            {
+                if (a is EditingAction)
+                    return ((a as EditingAction).EditId == op.EditId);
+                else
+                    return false;
+            });
+
+            if (lastAction == null)
+            {
+                MessageBox.Show("Cannot determine action that initiated "+op.Name);
+                return;
+            }
+
+            // debug...
+            string msg = String.Format("Repeat '{0}' command?", op.Name);
+            if (MessageBox.Show(msg, "Repeat command", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            (lastAction as EditingAction).Do(this, null);
         }
 
+        /// <summary>
+        /// Checks whether the Edit - Recall command is enabled or not.
+        /// </summary>
+        /// <returns>True if the current editing session contains at least one edit, and an
+        /// edit is not currently running.</returns>
         private bool IsEditRecallEnabled()
         {
-            return false;
+            return (m_Controller.IsCommandRunning==false && Session.WorkingSession.LastOperation!=null);
         }
 
+        /// <summary>
+        /// Runs the Edit - Recall command
+        /// </summary>
+        /// <param name="action">The action that initiated this edit (null if initiated via a keystroke)</param>
         private void EditRecall(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            MessageBox.Show("Recall");
+
+            /*
+	if ( m_pCommand || m_Op ) {
+		AfxMessageBox("An editing command is already running.");
+		return;
+	}
+
+	CeMap* pMap = CeMap::GetpMap();
+	if ( !pMap ) return;
+
+	CeSession* pSess = pMap->GetpSession();
+	if ( !pSess ) return;
+
+	CdSession dial(*pSess);
+	if ( dial.DoModal()!=IDOK ) return;
+
+	CeOperation* pop = dial.GetOp();
+	if ( !pop ) return;
+
+	// Disable auto-highlight.
+	if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;
+
+	switch ( pop->GetType() ) {
+
+	case CEOP_ARC_SUBDIVISION: {
+
+		CeArc* pSelArc = m_Sel.GetArc();
+		if ( !pSelArc ) {
+			ShowMessage("You must initially select the line you want to subdivide.");
+			return;
+		}
+
+		m_pCommand = new CuiArcSubdivision(*pop,*pSelArc,ID_LINE_SUBDIVIDE,this);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_ARC_EXTEND: {
+
+		CeArc* pSelArc = m_Sel.GetArc();
+		if ( !pSelArc ) {
+			ShowMessage("You must initially select the line you want to extend.");
+			return;
+		}
+
+		m_pCommand = new CuiArcExtend(*pop,*pSelArc,ID_LINE_EXTEND,this);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+
+		break;
+	}
+
+//	case CEOP_AREA_SUBDIVISION: {
+//
+//		OnAreaSubdivide();
+//		break;
+//	}
+
+	case CEOP_DIR_INTERSECT: {
+
+		m_pCommand = new CuiIntersect(ID_INTERSECT_BB,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_DIRDIST_INTERSECT: {
+
+		m_pCommand = new CuiIntersect(ID_INTERSECT_BD,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_DIRLINE_INTERSECT: {
+
+		m_pCommand = new CuiIntersect(ID_INTERSECT_BL,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_DIST_INTERSECT: {
+
+		m_pCommand = new CuiIntersect(ID_INTERSECT_DD,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_LINE_INTERSECT: {
+
+		m_pCommand = new CuiIntersect(ID_INTERSECT_LL,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+//	case CEOP_NEW_ARC: {
+//		OnLineNew();
+//		break;
+//	}
+
+	case CEOP_NEW_CIRCLE: {
+
+		m_pCommand = new CuiNewCircle(*pop,ID_LINE_CIRCLE,this);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_NEW_POINT: {
+
+		m_pCommand = new CuiNewPoint(*pop,ID_POINT_NEW,this);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_PARALLEL: {
+
+		CeArc* pSelArc = m_Sel.GetArc();
+		if ( !pSelArc ) {
+			ShowMessage("You must initially select the reference line for the parallel.");
+			return;
+		}
+
+		m_pCommand = new CuiParallel(*pSelArc,ID_POINT_ON_LINE,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_PATH: {
+
+		m_pCommand = new CuiPath(ID_PATH,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_POINT_ON_LINE: {
+		
+		CeArc* pSelArc = m_Sel.GetArc();
+		if ( !pSelArc ) {
+			ShowMessage( "You must initially select the line you want to subdivide." );
+			return;
+		}
+
+		m_pCommand = new CuiPointOnLine(*pSelArc,ID_POINT_ON_LINE,this,pop);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	case CEOP_RADIAL: {
+
+		CePoint* pSelPoint = m_Sel.GetPoint();
+		m_pCommand = new CuiRadial(*pop,pSelPoint,ID_POINT_SIDESHOT,this);
+		StartEdit((INT4)m_pCommand);
+		m_pCommand->Run();
+		break;
+	}
+
+	default: {
+
+		AfxMessageBox("Specified edit does not have a recall facility.");
+	}
+
+	} // end switch
+             */
         }
 
         private bool IsEditOperationHistoryEnabled()
