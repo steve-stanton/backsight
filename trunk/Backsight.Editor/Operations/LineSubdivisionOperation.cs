@@ -478,10 +478,9 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             LineSubdivisionType t = new LineSubdivisionType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Line = m_Line.DataId;
-
             t.Span = new SpanType[m_Sections.Count];
 
             for (int i = 0; i < m_Sections.Count; i++)
@@ -501,9 +500,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Get adjusted lengths for each section
             Distance[] distances = new Distance[m_Sections.Count];

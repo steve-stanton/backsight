@@ -205,8 +205,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             MoveTextType t = new MoveTextType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Text = m_Text.DataId;
             t.OldX = m_OldPosition.Easting.Microns;
             t.OldY = m_OldPosition.Northing.Microns;
@@ -225,10 +225,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit (for use during
-        /// deserialization).
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Ensure the text has been moved to the revised position.
             // Should be no need to re-calculate enclosing polygon while deserializing

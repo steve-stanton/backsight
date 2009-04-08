@@ -1411,6 +1411,43 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Attempts to locate an editing operation based on its internal ID.
+        /// </summary>
+        /// <param name="s">The formatted version of an internal ID (as produced
+        /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
+        /// <returns>The corresponding operation (null if not found)</returns>
+        internal Operation FindOperation(string s)
+        {
+            InternalIdValue id = new InternalIdValue(s);
+            return FindOperation(id);
+        }
+
+        /// <summary>
+        /// Attempts to locate an editing operation based on its internal ID.
+        /// </summary>
+        /// <param name="id">The ID to look for</param>
+        /// <returns>The corresponding operation (null if not found)</returns>
+        internal Operation FindOperation(InternalIdValue id)
+        {
+            Session s = FindSession(id.SessionId);
+
+            if (s == null)
+                return null;
+            else
+                return s.FindOperation(id.ItemSequence);
+        }
+
+        /// <summary>
+        /// Attempts to locate an editing session within this model
+        /// </summary>
+        /// <param name="sessionId">The sequence number of the session to look for</param>
+        /// <returns>The corresponding session (null if not found)</returns>
+        internal Session FindSession(uint sessionId)
+        {
+            return m_Sessions.Find(delegate(Session s) { return s.Id==sessionId; });
+        }
+
+        /// <summary>
         /// Attempts to locate a spatial feature based on its internal ID.
         /// This is an indexed lookup.
         /// </summary>

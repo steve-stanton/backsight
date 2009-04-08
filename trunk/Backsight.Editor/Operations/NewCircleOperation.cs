@@ -351,8 +351,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             NewCircleType t = new NewCircleType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Radius = m_Radius.GetSerializableObservation();
             t.Center = m_Center.DataId;
             t.ClosingPoint = Line.StartPoint.DataId;
@@ -362,9 +362,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Get the radius, in meters on the ground.
             double rad = m_Radius.GetDistance(m_Center).Meters;

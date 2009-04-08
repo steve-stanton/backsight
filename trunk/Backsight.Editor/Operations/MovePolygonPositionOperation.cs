@@ -172,8 +172,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             MovePolygonPositionType t = new MovePolygonPositionType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Label = m_Label.DataId;
             t.NewX = m_NewPosition.Easting.Microns;
             t.NewY = m_NewPosition.Northing.Microns;
@@ -190,9 +190,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Move the label's reference position -- the name of this method
             // really needs to be changed.

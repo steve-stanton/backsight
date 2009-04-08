@@ -1090,8 +1090,8 @@ void CePath::CreateAngleText ( CPtrList& text
         internal override OperationType GetSerializableEdit()
         {
             PathType t = new PathType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.From = m_From.DataId;
             t.To = m_To.DataId;
             t.EntryString = m_EntryString;
@@ -1127,9 +1127,9 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             Debug.Assert(m_Points!=null);
 

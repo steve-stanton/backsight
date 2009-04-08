@@ -150,17 +150,15 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             SetTopologyType t = new SetTopologyType();
-
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
             t.Line = m_Line.DataId;
-
             return t;
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             m_Line.SwitchTopology();
         }

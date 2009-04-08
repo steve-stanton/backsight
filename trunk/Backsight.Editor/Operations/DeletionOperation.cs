@@ -235,8 +235,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             DeletionType t = new DeletionType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Delete = new string[m_Deletions.Count];
             for (int i = 0; i < t.Delete.Length; i++)
                 t.Delete[i] = m_Deletions[i].DataId;
@@ -245,9 +245,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Mark the features as deleted
             foreach (Feature f in m_Deletions)

@@ -136,7 +136,7 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             ImportType t = new ImportType();
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
 
             FeatureType[] features = new FeatureType[m_Data.Length];
             for (int i = 0; i < features.Length; i++)
@@ -149,9 +149,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Could calculate the radius of circles created by the import. However, this
             // is already done by the LineFeature constructor that accepts an ArcType.

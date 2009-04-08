@@ -75,6 +75,8 @@ namespace Backsight.Editor.Xml {
         
         private string idField;
         
+        private string previousIdField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Id {
@@ -83,6 +85,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PreviousId {
+            get {
+                return this.previousIdField;
+            }
+            set {
+                this.previousIdField = value;
             }
         }
     }

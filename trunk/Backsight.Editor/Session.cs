@@ -277,7 +277,7 @@ namespace Backsight.Editor
         {
             foreach (Operation op in m_Operations)
             {
-                op.CalculateGeometry();
+                op.RunEdit();
                 Feature[] createdFeatures = op.Features;
                 this.MapModel.AddToIndex(createdFeatures);
             }
@@ -479,6 +479,16 @@ namespace Backsight.Editor
         {
             get { return m_Data.Revision; }
             set { m_Data.Revision = value; }
+        }
+
+        /// <summary>
+        /// Attempts to locate an edit within this session
+        /// </summary>
+        /// <param name="editSequence">The sequence number of the edit to look for</param>
+        /// <returns>The corresponding editing operation (null if not found)</returns>
+        internal Operation FindOperation(uint editSequence)
+        {
+            return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
         }
     }
 }
