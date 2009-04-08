@@ -504,8 +504,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             IntersectTwoLinesType t = new IntersectTwoLinesType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Line1 = m_Line1.DataId;
             t.Line2 = m_Line2.DataId;
             t.CloseTo = m_CloseTo.DataId;
@@ -527,9 +527,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

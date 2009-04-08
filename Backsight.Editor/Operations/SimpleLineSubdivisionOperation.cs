@@ -394,8 +394,8 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         internal override OperationType GetSerializableEdit()
         {
             SimpleLineSubdivisionType t = new SimpleLineSubdivisionType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Line = m_Line.DataId;
             t.NewLine1 = m_NewLine1.DataId;
             t.NewLine2 = m_NewLine2.DataId;
@@ -406,9 +406,9 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

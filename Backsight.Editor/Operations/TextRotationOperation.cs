@@ -170,9 +170,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Remember the current default
             m_PrevRotation = MapModel.DefaultTextRotation;

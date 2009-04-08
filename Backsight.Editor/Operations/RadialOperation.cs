@@ -437,7 +437,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
         internal override OperationType GetSerializableEdit()
         {
             RadialType t = new RadialType();
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
 
             t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
             t.Length = m_Length.GetSerializableObservation();
@@ -459,9 +459,9 @@ void CeRadial::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

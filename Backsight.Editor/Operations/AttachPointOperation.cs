@@ -261,8 +261,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             AttachPointType t = new AttachPointType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Line = m_Line.DataId;
             t.PositionRatio = m_PositionRatio;
             t.Point = new CalculatedFeatureType(m_Point);
@@ -271,9 +271,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

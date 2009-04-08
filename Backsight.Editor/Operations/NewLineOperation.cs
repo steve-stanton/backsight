@@ -329,7 +329,7 @@ namespace Backsight.Editor.Operations
                 throw new InvalidOperationException("Unexpected attempt to simultaneously create arc and circle");
 
             NewArcType t = new NewArcType();
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
             t.Line = (ArcType)m_NewLine.GetSerializableLine();
             return t;
         }
@@ -341,15 +341,15 @@ namespace Backsight.Editor.Operations
         OperationType GetSerializableSegment()
         {
             NewSegmentType t = new NewSegmentType();
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
             t.Line = (SegmentType)m_NewLine.GetSerializableLine();
             return t;
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Nothing to do
         }

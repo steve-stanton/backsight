@@ -307,8 +307,7 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             TrimLineType t = new TrimLineType();
-
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
 
             if (m_Lines==null)
                 t.Line = new string[0];
@@ -332,9 +331,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Modify the referenced features...
 

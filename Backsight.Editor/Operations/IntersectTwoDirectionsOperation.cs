@@ -414,8 +414,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             IntersectTwoDirectionsType t = new IntersectTwoDirectionsType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Direction1 = (DirectionType)m_Direction1.GetSerializableObservation();
             t.Direction2 = (DirectionType)m_Direction2.GetSerializableObservation();
             t.To = new CalculatedFeatureType(m_To);
@@ -430,9 +430,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

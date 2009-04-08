@@ -19,14 +19,14 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Data;
+using System.Xml;
+using System.Text;
+using System.Xml.Serialization;
 
 using Backsight.Editor.Database;
 using Backsight.Data;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
-using System.Xml;
-using System.Text;
-using System.Xml.Serialization;
 
 namespace Backsight.Editor
 {
@@ -82,10 +82,19 @@ namespace Backsight.Editor
         /// </summary>
         OperationFlag m_Flag;
 
+        /// <summary>
+        /// A previous edit that this one is based on (null if this edit has never been revised).
+        /// </summary>
+        Operation m_Previous;
+
+        /// <summary>
+        /// The next revision of this edit (null if this edit has never been revised).
+        /// </summary>
+        Operation m_Next;
+
         #endregion
 
         #region Constructors
-
 
         /// <summary>
         /// Creates a new editing operation as part of the current default session. This constructor
@@ -104,6 +113,15 @@ namespace Backsight.Editor
 
             m_Session = s;
             m_Session.Add(this);
+
+            // If this edit represents a revision to a previous edit, chain the
+            // edits together
+            if (t.PreviousId != null)
+            {
+                Operation prev = s.MapModel.FindOperation(t.PreviousId);
+                Debug.Assert(prev!=null);
+                prev.SetNextRevision(this);
+            }
         }
 
         /// <summary>
@@ -116,12 +134,25 @@ namespace Backsight.Editor
             if (s==null)
                 throw new ArgumentNullException();
 
-            s.Add(this);
             m_Session = s;
+            m_Session.Add(this);
             m_Sequence = Session.ReserveNextItem();
         }
 
         #endregion
+
+        /// <summary>
+        /// Chains this editing operation with an edit that represents a revision of this edit
+        /// </summary>
+        /// <param name="next">The revised version of this edit</param>
+        void SetNextRevision(Operation next)
+        {
+            Debug.Assert(m_Next==null);
+            Debug.Assert(next.m_Previous==null);
+
+            m_Next = next;
+            next.m_Previous = this;
+        }
 
         public override string ToString()
         {
@@ -195,22 +226,6 @@ namespace Backsight.Editor
         {
             InternalIdValue.Parse(s, out sessionId, out sequence);
         }
-
-        /// <summary>
-        /// Initializes this operation upon loading of the session that contains it.
-        /// Any overrides should call this version up front.
-        /// </summary>
-        /// <param name="container">The editing session that contains this operation</param>
-        /*
-        internal virtual void OnLoad(Session container)
-        {
-            m_Sequence = container.MapModel.ReserveNextOpSequence();
-
-            Feature[] createdFeatures = this.Features;
-            foreach (Feature f in createdFeatures)
-                f.OnLoad(this, true);
-        }
-        */
 
         /// <summary>
         /// The session in which this operation was originally defined.
@@ -520,9 +535,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
+        /// Edits that involve the creation of new spatial features should calculate and
+        /// assign the geometry for the features.
         /// </summary>
-        abstract internal void CalculateGeometry();
+        abstract internal void RunEdit();
 
         /// <summary>
         /// Represents this editing operation in XML (suitable for inserting
@@ -566,6 +583,19 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.</summary>
         /// <returns>The serializable version of this edit</returns>
         abstract internal OperationType GetSerializableEdit();
+
+        /// <summary>
+        /// Defines the XML attributes and elements that are common to a serialized version
+        /// of a derived instance.
+        /// </summary>
+        /// <param name="t">The serializable version of this edit</param>
+        protected void SetSerializableEdit(OperationType t)
+        {
+            t.Id = this.DataId;
+
+            if (m_Previous!=null)
+                t.PreviousId = m_Previous.DataId;
+        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

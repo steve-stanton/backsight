@@ -453,14 +453,14 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// <param name="t">The serializable version of this edit</param>
         protected void SetSerializableEdit(NewTextType t)
         {
-            t.Id = this.DataId;
+            base.SetSerializableEdit(t);
             t.Text = m_NewText.GetSerializableText();
         }
 
         /// <summary>
-        /// Calculates the geometry for any features created by this edit.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             // Nothing to do
         }

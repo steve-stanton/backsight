@@ -26,6 +26,7 @@ namespace Backsight.Editor.Operations
     /// An edit that changes some sort of global editing property (e.g. change default
     /// entity type for lines).
     /// </summary>
+    /// <remarks>This is experimental (and not currently used)</remarks>
     class PropertyChangeOperation : Operation
     {
         #region Class data
@@ -84,7 +85,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this edit.
         /// </summary>
-        internal override void CalculateGeometry()
+        internal override void RunEdit()
         {
             CadastralMapModel mapModel = this.MapModel;
 
@@ -168,7 +169,7 @@ namespace Backsight.Editor.Operations
             base.OnRollback();
 
             m_NewValue = m_OldValue;
-            CalculateGeometry();
+            RunEdit();
 
             return true;
         }
@@ -210,8 +211,8 @@ namespace Backsight.Editor.Operations
         internal override OperationType GetSerializableEdit()
         {
             PropertyChangeType t = new PropertyChangeType();
+            base.SetSerializableEdit(t);
 
-            t.Id = this.DataId;
             t.Item = m_Item;
             t.Value = m_NewValue;
 
