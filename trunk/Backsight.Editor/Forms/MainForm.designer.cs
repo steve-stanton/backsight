@@ -231,6 +231,7 @@ namespace Backsight.Editor.Forms
             this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxPointInverseCalculator = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
+            this.ctxLineSubdividePolygon = new System.Windows.Forms.ToolStripMenuItem();
             this.multiSelectContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxMultiDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxMultiTrim = new System.Windows.Forms.ToolStripMenuItem();
@@ -293,7 +294,6 @@ namespace Backsight.Editor.Forms
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
             this.propertyDisplay = new Backsight.Editor.Forms.PropertyDisplayControl();
-            this.ctxLineSubdividePolygon = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.vSplitContainer.Panel1.SuspendLayout();
@@ -1705,7 +1705,7 @@ namespace Backsight.Editor.Forms
             this.ctxLineSubdividePolygon});
             this.noSelectionContextMenu.Name = "noSelectionContextMenu";
             this.noSelectionContextMenu.ShowImageMargin = false;
-            this.noSelectionContextMenu.Size = new System.Drawing.Size(226, 468);
+            this.noSelectionContextMenu.Size = new System.Drawing.Size(226, 446);
             // 
             // ctxViewOverview
             // 
@@ -1834,6 +1834,12 @@ namespace Backsight.Editor.Forms
             // 
             this.toolStripSeparator26.Name = "toolStripSeparator26";
             this.toolStripSeparator26.Size = new System.Drawing.Size(222, 6);
+            // 
+            // ctxLineSubdividePolygon
+            // 
+            this.ctxLineSubdividePolygon.Name = "ctxLineSubdividePolygon";
+            this.ctxLineSubdividePolygon.Size = new System.Drawing.Size(225, 22);
+            this.ctxLineSubdividePolygon.Text = "Subdivide Polygon";
             // 
             // multiSelectContextMenu
             // 
@@ -2264,12 +2270,6 @@ namespace Backsight.Editor.Forms
             this.propertyDisplay.TabIndex = 0;
             this.propertyDisplay.ControlClosed += new Backsight.Editor.Forms.OnControlClosed(this.propertyDisplay_ControlClosed);
             // 
-            // ctxLineSubdividePolygon
-            // 
-            this.ctxLineSubdividePolygon.Name = "ctxLineSubdividePolygon";
-            this.ctxLineSubdividePolygon.Size = new System.Drawing.Size(225, 22);
-            this.ctxLineSubdividePolygon.Text = "Subdivide Polygon";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2285,12 +2285,14 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.mainMenuStrip);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "MainForm";
             this.Text = "Map Title";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.statusStrip.ResumeLayout(false);
