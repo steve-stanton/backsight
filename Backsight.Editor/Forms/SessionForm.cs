@@ -18,6 +18,7 @@ using System.Windows.Forms;
 
 namespace Backsight.Editor.Forms
 {
+    /// <written by="Steve Stanton" was="CdSession" />
     /// <summary>
     /// Dialog for listing the edits in a session.
     /// </summary>
@@ -36,7 +37,12 @@ namespace Backsight.Editor.Forms
         readonly Session m_Session;
 
         /// <summary>
-        /// The features currently drawn
+        /// The currently select edit
+        /// </summary>
+        Operation m_SelectedEdit;
+
+        /// <summary>
+        /// The features currently drawn (the features created by <c>m_SelectedEdit</c>
         /// </summary>
         Feature[] m_Draw;
 
@@ -52,6 +58,7 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
             m_Session = s;
             m_Binding = new BindingSource();
+            m_SelectedEdit = null;
             m_Draw = new Feature[0];
         }
 
@@ -117,9 +124,9 @@ namespace Backsight.Editor.Forms
             }
 
             // Get the features (if any) created by the newly selected operation.
-            Operation op = GetSelectedOperation();
-            if (op!=null)
-                m_Draw = op.Features;
+            m_SelectedEdit = GetSelectedOperation();
+            if (m_SelectedEdit!=null)
+                m_Draw = m_SelectedEdit.Features;
         }
 
         Operation GetSelectedOperation()
@@ -159,6 +166,14 @@ namespace Backsight.Editor.Forms
             EditDetailsForm dial = new EditDetailsForm(op);
             dial.ShowDialog();
             dial.Dispose();
+        }
+
+        /// <summary>
+        /// The currently select edit
+        /// </summary>
+        internal Operation SelectedEdit // was GetOp
+        {
+            get { return m_SelectedEdit; }
         }
     }
 }
