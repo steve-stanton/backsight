@@ -520,7 +520,7 @@ namespace Backsight.Editor.Forms
             // mnuEditRepeat
             // 
             this.mnuEditRepeat.Name = "mnuEditRepeat";
-            this.mnuEditRepeat.ShortcutKeyDisplayString = "";
+            this.mnuEditRepeat.ShortcutKeyDisplayString = "Enter";
             this.mnuEditRepeat.Size = new System.Drawing.Size(200, 22);
             this.mnuEditRepeat.Text = "&Repeat";
             // 
@@ -532,7 +532,7 @@ namespace Backsight.Editor.Forms
             // mnuEditRecall
             // 
             this.mnuEditRecall.Name = "mnuEditRecall";
-            this.mnuEditRecall.ShortcutKeyDisplayString = "";
+            this.mnuEditRecall.ShortcutKeyDisplayString = "Alt+Enter";
             this.mnuEditRecall.Size = new System.Drawing.Size(200, 22);
             this.mnuEditRecall.Text = "Re&call";
             // 

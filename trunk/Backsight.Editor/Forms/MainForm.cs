@@ -885,14 +885,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Keys.Enter (as I originally did in the constructor) leads to a runtime error that
             // talks about a bad enum value.
 
-            if (e.KeyData == Keys.Enter)
+            if (e.Alt)
             {
-                if (e.Alt && IsEditRecallEnabled())
+                if (e.KeyData == (Keys.Enter & Keys.Alt) && IsEditRecallEnabled())
                 {
                     e.Handled = true;
                     EditRecall(null);
                 }
-                else if (IsEditRepeatEnabled())
+            }
+            else
+            {
+                if (e.KeyData == Keys.Enter && IsEditRepeatEnabled())
                 {
                     e.Handled = true;
                     EditRepeat(null);
@@ -966,27 +969,30 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// <param name="action">The action that initiated this edit (null if initiated via a keystroke)</param>
         private void EditRecall(IUserAction action)
         {
-            MessageBox.Show("Recall");
+            // Ignore if an edit is currently active.
+            if (!IsEditRecallEnabled())
+            {
+                MessageBox.Show("An editing command is already running.");
+                return;
+            }
 
+            Session s = Session.WorkingSession;
+            Operation op = null;
+
+            using (SessionForm dial = new SessionForm(s))
+            {
+                if (dial.ShowDialog() == DialogResult.OK)
+                    op = dial.SelectedEdit;
+            }
+
+            if (op == null)
+                return;
+
+            MessageBox.Show(op.Name);
+            // Disable auto-highlight.
+            //m_Controller.AutoSelect = false;
             /*
-	if ( m_pCommand || m_Op ) {
-		AfxMessageBox("An editing command is already running.");
-		return;
-	}
 
-	CeMap* pMap = CeMap::GetpMap();
-	if ( !pMap ) return;
-
-	CeSession* pSess = pMap->GetpSession();
-	if ( !pSess ) return;
-
-	CdSession dial(*pSess);
-	if ( dial.DoModal()!=IDOK ) return;
-
-	CeOperation* pop = dial.GetOp();
-	if ( !pop ) return;
-
-	// Disable auto-highlight.
 	if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;
 
 	switch ( pop->GetType() ) {
@@ -1065,11 +1071,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 		m_pCommand->Run();
 		break;
 	}
-
-//	case CEOP_NEW_ARC: {
-//		OnLineNew();
-//		break;
-//	}
 
 	case CEOP_NEW_CIRCLE: {
 
