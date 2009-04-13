@@ -337,9 +337,11 @@ namespace Backsight.Editor.Forms
                 new ToolStripItem[] { mnuLineExtend, ctxLineExtend, toolLineExtend },
                 IsLineExtendEnabled,
                 LineExtend);
-            AddAction(new ToolStripItem[] { mnuLineSubdivideLine
-                                          , ctxLineSubdivide
-                                          , toolLineSubdivideLine }, IsLineSubdivideLineEnabled, LineSubdivideLine);
+            AddEdit(
+                EditingActionId.LineSubdivision,
+                new ToolStripItem[] { mnuLineSubdivideLine, ctxLineSubdivide, toolLineSubdivideLine },
+                IsLineSubdivideLineEnabled,
+                LineSubdivideLine);
             AddEdit(
                 EditingActionId.PointOnLine,
                 new ToolStripItem[] { mnuLineSubdivideLineOneDistance, ctxLineSubdivideOneDistance },
@@ -946,9 +948,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             }
 
             // debug...
-            string msg = String.Format("Repeat '{0}' command?", op.Name);
-            if (MessageBox.Show(msg, "Repeat command", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                return;
+            //string msg = String.Format("Repeat '{0}' command?", op.Name);
+            //if (MessageBox.Show(msg, "Repeat command", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            //    return;
 
             (lastAction as EditingAction).Do(this, null);
         }
@@ -988,9 +990,30 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (op == null)
                 return;
 
-            MessageBox.Show(op.Name);
+            // Locate the action that normally performs the selected edit
+            IUserAction recallAction = Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
+            {
+                if (a is EditingAction)
+                    return ((a as EditingAction).EditId == op.EditId);
+                else
+                    return false;
+            });
+
+            if (recallAction == null)
+            {
+                MessageBox.Show("Cannot determine action that initiated " + op.Name);
+                return;
+            }
+
+
             // Disable auto-highlight.
-            //m_Controller.AutoSelect = false;
+            m_Controller.AutoSelect = false;
+
+            // Wrap the action alongside information about the edit the user
+            // wants to recall
+            RecalledEditingAction recall = new RecalledEditingAction(recallAction, op);
+            recall.Do(this, null);
+
             /*
 
 	if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;
@@ -1458,6 +1481,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             return new ContainerForm(action);
         }
 
+        /// <summary>
+        /// The point feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
         PointFeature SelectedPoint
         {
             get
@@ -1467,6 +1494,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             }
         }
 
+        /// <summary>
+        /// The line feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
         LineFeature SelectedLine
         {
             get
@@ -1479,6 +1510,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             }
         }
 
+        /// <summary>
+        /// The text feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
         TextFeature SelectedText
         {
             get
@@ -1709,9 +1744,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         /// <summary>
         /// Checks whether the Line - Subdivide command is enabled or not.
-        /// A specific line has to be selected, and there can be no other command currently running.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if a specific line has to be selected, and there is no other command
+        /// currently running.</returns>
         private bool IsLineSubdivideLineEnabled()
         {
             return (m_Controller.IsItemSelected(SpatialType.Line) && !m_Controller.IsCommandRunning);
@@ -1719,16 +1754,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void LineSubdivideLine(IUserAction action)
         {
-            LineFeature selLine = this.SelectedLine;
-            if (selLine==null)
+            try
             {
-                MessageBox.Show("You must initially select the line you want to subdivide.");
-                return;
+                IControlContainer cc = CreateContainer(action);
+                CommandUI cmd = new LineSubdivisionUI(cc, action);
+                m_Controller.StartCommand(cmd);
             }
 
-            IControlContainer cc = CreateContainer(action);
-            CommandUI cmd = new LineSubdivisionUI(cc, action, selLine);
-            m_Controller.StartCommand(cmd);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         /// <summary>

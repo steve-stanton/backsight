@@ -100,6 +100,17 @@ namespace Backsight.Forms
             m_Elements.SetHandler(Do);
         }
 
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="action">The action to copy</param>
+        protected UserAction(UserAction action)
+        {
+            m_Elements = action.m_Elements;
+            m_IsActionEnabled = action.m_IsActionEnabled;
+            m_DoAction = action.m_DoAction
+        }
+
         #endregion
 
         /// <summary>

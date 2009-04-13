@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,47 +14,38 @@
 // </remarks>
 
 using System;
-using System.Windows.Forms;
-
-using Backsight.Forms;
 
 namespace Backsight.Editor.Forms
 {
-	/// <written by="Steve Stanton" on="02-FEB-2007" />
     /// <summary>
-    /// An editing action is a <c>UserAction</c> that's associated with a numeric ID.
+    /// An editing action that is being recalled using the Cadastral Editor's
+    /// <c>Edit - Recall</c> command
     /// </summary>
-    class EditingAction : UserAction, IEditingAction
+    class RecalledEditingAction : EditingAction
     {
         #region Class data
 
-        private readonly EditingActionId m_Id;
+        /// <summary>
+        /// The edit that is currently being recalled (if any)
+        /// </summary>
+        readonly Operation m_Recall;
 
         #endregion
 
         #region Constructors
 
-        public EditingAction(EditingActionId id, ToolStripItem[] items, IsActionEnabled isActionEnabled, DoAction doAction)
-            : base(items, isActionEnabled, doAction)
-        {
-            m_Id = id;
-        }
-
         /// <summary>
-        /// Copy constructor
+        /// Initializes a new instance of the <see cref="RecalledEditingAction"/> class.
         /// </summary>
-        /// <param name="action">The action to copy</param>
-        protected EditingAction(EditingAction action)
+        /// <param name="action">The editing action</param>
+        /// <param name="recall">The editing operation that is being recalled</param>
+        internal RecalledEditingAction(EditingAction action, Operation recall)
             : base(action)
         {
-            m_Id = action.m_Id;
+            m_Recall = op;
         }
 
         #endregion
 
-        public EditingActionId EditId
-        {
-            get { return m_Id; }
-        }
     }
 }

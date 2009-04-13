@@ -53,11 +53,15 @@ namespace Backsight.Editor.UI
         /// Constructor for a new line subdivision.
         /// </summary>
         /// <param name="action">The action that initiated this command</param>
-        /// <param name="parent">The line to subdivide (not null).</param>
-        internal LineSubdivisionUI(IControlContainer cc, IUserAction action, LineFeature parent)
+        /// <exception cref="InvalidOperationException">If a specific line is not currently selected</exception>
+        internal LineSubdivisionUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
-            m_Parent = parent;
+            LineFeature selLine = EditingController.SelectedLine;
+            if (selLine == null)
+                throw new InvalidOperationException("You must initially select the line you want to subdivide.");
+
+            m_Parent = selLine;
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace Backsight.Editor.UI
             m_Dialog = null;
             m_UpDial = null;
 
-            // Remember the arc that's being subdivided.
+            // Remember the line that's being subdivided.
 	        m_Parent = parent;
         }
 
