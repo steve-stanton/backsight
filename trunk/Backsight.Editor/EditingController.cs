@@ -1392,5 +1392,47 @@ namespace Backsight.Editor
                     throw new Exception("Cannot undo prior to beginning of File-Check");
             }
         }
+
+        /// <summary>
+        /// The point feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
+        internal static PointFeature SelectedPoint
+        {
+            get
+            {
+                ISpatialObject so = EditingController.Current.SpatialSelection.Item;
+                return (so as PointFeature);
+            }
+        }
+
+        /// <summary>
+        /// The line feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
+        internal static LineFeature SelectedLine
+        {
+            get
+            {
+                ISpatialObject so = EditingController.Current.SpatialSelection.Item;
+                if (so is DividerObject)
+                    return (so as DividerObject).Divider.Line;
+                else
+                    return (so as LineFeature);
+            }
+        }
+
+        /// <summary>
+        /// The text feature that is currently selected (null if a point is not
+        /// selected, or the current selection contains more than one feature).
+        /// </summary>
+        internal static TextFeature SelectedText
+        {
+            get
+            {
+                ISpatialObject so = EditingController.Current.SpatialSelection.Item;
+                return (so as TextFeature);
+            }
+        }
     }
 }

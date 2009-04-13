@@ -276,6 +276,12 @@
     <Compile Include="Forms\PathForm.Designer.cs">
       <DependentUpon>PathForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PickEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PickEditForm.Designer.cs">
+      <DependentUpon>PickEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="Forms\PropertyDisplayControl.cs">
       <SubType>UserControl</SubType>
@@ -295,6 +301,7 @@
     <Compile Include="Forms\PublishForm.Designer.cs">
       <DependentUpon>PublishForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\RecalledEditingAction.cs" />
     <Compile Include="Forms\ScaleSpecificPen.cs" />
     <Compile Include="Forms\SchemaComboBox.cs">
       <SubType>Component</SubType>
