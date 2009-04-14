@@ -344,6 +344,7 @@
     <Compile Include="Observations\OffsetPoint.cs" />
     <Compile Include="Observations\ParallelDirection.cs" />
     <Compile Include="Operations\ImportOperation.cs" />
+    <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
@@ -1145,6 +1146,10 @@
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
     <None Include="Resources\ZoomOut.ico" />
+    <EmbeddedResource Include="Forms\PickEditForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PickEditForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>

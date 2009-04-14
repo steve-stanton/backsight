@@ -981,7 +981,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             Session s = Session.WorkingSession;
             Operation op = null;
 
-            using (SessionForm dial = new SessionForm(s))
+            using (PickEditForm dial = new PickEditForm(s, true))
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                     op = dial.SelectedEdit;
@@ -991,7 +991,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
 
             // Locate the action that normally performs the selected edit
-            IUserAction recallAction = Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
+            EditingAction recallAction = (EditingAction)Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
             {
                 if (a is EditingAction)
                     return ((a as EditingAction).EditId == op.EditId);
@@ -1005,7 +1005,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
             }
 
-
             // Disable auto-highlight.
             m_Controller.AutoSelect = false;
 
@@ -1015,9 +1014,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             recall.Do(this, null);
 
             /*
-
-	if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;
-
 	switch ( pop->GetType() ) {
 
 	case CEOP_ARC_SUBDIVISION: {
@@ -1048,12 +1044,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
 		break;
 	}
-
-//	case CEOP_AREA_SUBDIVISION: {
-//
-//		OnAreaSubdivide();
-//		break;
-//	}
 
 	case CEOP_DIR_INTERSECT: {
 

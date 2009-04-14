@@ -65,23 +65,6 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="parent">The line to subdivide (not null).</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        internal LineSubdivisionUI(IControlContainer cc, IUserAction action, LineFeature parent, Operation op)
-            : base(cc, action, null, op)
-        {
-            // The dialog will be created by Run()
-            m_Dialog = null;
-            m_UpDial = null;
-
-            // Remember the line that's being subdivided.
-	        m_Parent = parent;
-        }
-
-        /// <summary>
         /// Constructor for doing an update.
         /// </summary>
         /// <param name="action">The action that initiated this command</param>
