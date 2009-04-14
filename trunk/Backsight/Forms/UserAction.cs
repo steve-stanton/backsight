@@ -108,7 +108,7 @@ namespace Backsight.Forms
         {
             m_Elements = action.m_Elements;
             m_IsActionEnabled = action.m_IsActionEnabled;
-            m_DoAction = action.m_DoAction
+            m_DoAction = action.m_DoAction;
         }
 
         #endregion

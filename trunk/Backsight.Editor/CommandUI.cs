@@ -94,6 +94,9 @@ namespace Backsight.Editor
             m_UpdCmd = null;
             m_Recall = recall;
 
+            if (cmdId is RecalledEditingAction)
+                m_Recall = (cmdId as RecalledEditingAction).RecalledEdit;
+
             Debug.Assert(m_Draw!=null);
         }
 

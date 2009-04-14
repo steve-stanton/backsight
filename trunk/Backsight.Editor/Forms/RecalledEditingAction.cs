@@ -26,7 +26,7 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The edit that is currently being recalled (if any)
+        /// The edit that is being recalled (not null)
         /// </summary>
         readonly Operation m_Recall;
 
@@ -37,15 +37,25 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Initializes a new instance of the <see cref="RecalledEditingAction"/> class.
         /// </summary>
-        /// <param name="action">The editing action</param>
-        /// <param name="recall">The editing operation that is being recalled</param>
+        /// <param name="action">The editing action (not null)</param>
+        /// <param name="recall">The editing operation that is being recalled (not null)</param>
         internal RecalledEditingAction(EditingAction action, Operation recall)
             : base(action)
         {
-            m_Recall = op;
+            if (recall == null)
+                throw new ArgumentNullException();
+
+            m_Recall = recall;
         }
 
         #endregion
 
+        /// <summary>
+        /// The edit that is being recalled (not null)
+        /// </summary>
+        internal Operation RecalledEdit
+        {
+            get { return m_Recall; }
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace Backsight.Editor.Forms
     /// <summary>
     /// Dialog for listing the edits in a session.
     /// </summary>
+    /// <seealso cref="PickEditForm"/>
     public partial class SessionForm : Form
     {
         #region Class data
@@ -52,10 +53,11 @@ namespace Backsight.Editor.Forms
 
         internal SessionForm(Session s)
         {
+            InitializeComponent();
+
             if (s==null)
                 throw new ArgumentNullException();
 
-            InitializeComponent();
             m_Session = s;
             m_Binding = new BindingSource();
             m_SelectedEdit = null;
