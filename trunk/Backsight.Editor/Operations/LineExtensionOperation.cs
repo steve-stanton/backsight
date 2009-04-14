@@ -29,7 +29,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to extend a line.
     /// </summary>
-    class LineExtensionOperation : Operation
+    class LineExtensionOperation : Operation, IRecallable
     {
         #region Class data
 

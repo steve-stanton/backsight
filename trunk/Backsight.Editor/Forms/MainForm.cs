@@ -978,6 +978,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
             }
 
+            // Get the user to select an edit from the current session (restricted
+            // to those edits that implement IRecallable)
             Session s = Session.WorkingSession;
             Operation op = null;
 
@@ -1016,43 +1018,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             /*
 	switch ( pop->GetType() ) {
 
-	case CEOP_ARC_SUBDIVISION: {
-
-		CeArc* pSelArc = m_Sel.GetArc();
-		if ( !pSelArc ) {
-			ShowMessage("You must initially select the line you want to subdivide.");
-			return;
-		}
-
-		m_pCommand = new CuiArcSubdivision(*pop,*pSelArc,ID_LINE_SUBDIVIDE,this);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_ARC_EXTEND: {
-
-		CeArc* pSelArc = m_Sel.GetArc();
-		if ( !pSelArc ) {
-			ShowMessage("You must initially select the line you want to extend.");
-			return;
-		}
-
-		m_pCommand = new CuiArcExtend(*pop,*pSelArc,ID_LINE_EXTEND,this);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-
-		break;
-	}
-
-	case CEOP_DIR_INTERSECT: {
-
-		m_pCommand = new CuiIntersect(ID_INTERSECT_BB,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
+             * TODO: IntersectUI - two directions (shows up, but where's the recalled stuff?)
+             
 	case CEOP_DIRDIST_INTERSECT: {
 
 		m_pCommand = new CuiIntersect(ID_INTERSECT_BD,this,pop);
@@ -1145,13 +1112,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 		m_pCommand->Run();
 		break;
 	}
-
-	default: {
-
-		AfxMessageBox("Specified edit does not have a recall facility.");
-	}
-
-	} // end switch
              */
         }
 
@@ -1720,16 +1680,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void LineExtend(IUserAction action)
         {
-            LineFeature selLine = this.SelectedLine;
-            if (selLine==null)
+            try
             {
-                MessageBox.Show("You must initially select the line you want to extend.");
-                return;
+                IControlContainer cc = CreateContainer(action);
+                CommandUI cmd = new LineExtensionUI(cc, action);
+                m_Controller.StartCommand(cmd);
             }
 
-            IControlContainer cc = CreateContainer(action);
-            CommandUI cmd = new LineExtensionUI(cc, action, selLine);
-            m_Controller.StartCommand(cmd);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         /// <summary>
