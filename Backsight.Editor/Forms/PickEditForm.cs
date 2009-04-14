@@ -15,7 +15,9 @@
 
 using System;
 using System.Windows.Forms;
+
 using Backsight.Editor.Operations;
+
 
 namespace Backsight.Editor.Forms
 {

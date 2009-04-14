@@ -33,8 +33,8 @@ namespace Backsight.Editor.Forms
             this.EditType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FeatureCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -106,17 +106,6 @@ namespace Backsight.Editor.Forms
             this.splitContainer.SplitterDistance = 302;
             this.splitContainer.TabIndex = 2;
             // 
-            // cancelButton
-            // 
-            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.cancelButton.Location = new System.Drawing.Point(177, 25);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 0;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
-            // 
             // okButton
             // 
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -128,15 +117,27 @@ namespace Backsight.Editor.Forms
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
+            // cancelButton
+            // 
+            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cancelButton.Location = new System.Drawing.Point(177, 25);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(75, 23);
+            this.cancelButton.TabIndex = 0;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
             // PickEditForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(513, 367);
             this.Controls.Add(this.splitContainer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "PickEditForm";
-            this.Text = "PickEditForm";
+            this.Text = "Select Edit";
             this.Shown += new System.EventHandler(this.PickEditForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.splitContainer.Panel1.ResumeLayout(false);

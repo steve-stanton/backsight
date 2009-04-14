@@ -62,36 +62,18 @@ namespace Backsight.Editor.UI
         #region Constructors
 
         /// <summary>
-        /// Constructor for a new extension.
+        /// Constructor to extend the currently selected line.
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
-        /// <param name="line">The line to extend.</param>
-        internal LineExtensionUI(IControlContainer cc, IUserAction action, LineFeature line)
+        /// <exception cref="InvalidOperationException">If a line is not currently selected</exception>
+        internal LineExtensionUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
-            // The dialog will be created by Run().
-            m_Dialog = null;
+            LineFeature line = EditingController.SelectedLine;
+            if (line == null)
+                throw new InvalidOperationException("You must initially select the line you want to extend.");
 
-            // Remember the line that is being extended.
-            m_ExtendLine = line;
-
-            // And initialize the parameters for the operation's Execute() call.
-            m_Length = null;
-            m_IsExtendFromEnd = true;
-            m_LineType = null;
-        }
-
-        /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="cc">The container for any dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        /// <param name="line">The line to extend.</param>
-        internal LineExtensionUI(IControlContainer cc, IUserAction action, Operation op, LineFeature line)
-            : base(cc, action, null, op)
-        {
             // The dialog will be created by Run().
             m_Dialog = null;
 

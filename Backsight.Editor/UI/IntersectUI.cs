@@ -50,17 +50,6 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        internal IntersectUI(IUserAction action, Operation op)
-            : base(null, action, null, op)
-        {
-            Initialize();
-        }
-
-        /// <summary>
         /// Constructor for doing an update.
         /// </summary>
         /// <param name="action">The action that initiated this command</param>
