@@ -1,6 +1,6 @@
 namespace Backsight.Forms
 {
-    partial class TestButton
+    partial class DimmableButton
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,8 @@ namespace Backsight.Forms
             // TestButton
             // 
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Margin = new System.Windows.Forms.Padding(0);
+            this.Size = new System.Drawing.Size(32, 32);
             this.ResumeLayout(false);
 
         }
