@@ -89,11 +89,6 @@ namespace Backsight.Editor
         Session m_WorkingSession;
 
         /// <summary>
-        /// Is the model currently being loaded (deserialized from the database)?
-        /// </summary>
-        bool m_IsLoading;
-
-        /// <summary>
         /// Spatial features that have been loaded (including features that may
         /// have been deactivated).
         /// </summary>
@@ -127,7 +122,6 @@ namespace Backsight.Editor
             m_Sessions = new List<Session>();
             m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
-            m_IsLoading = false;
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
