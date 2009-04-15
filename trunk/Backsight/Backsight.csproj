@@ -80,6 +80,12 @@
     <Compile Include="Forms\BatchRunnerControl.Designer.cs">
       <DependentUpon>BatchRunnerControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\DimmableButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\DimmableButton.designer.cs">
+      <DependentUpon>DimmableButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\DrawInfo.cs" />
     <Compile Include="Forms\DrawStyle.cs" />
     <Compile Include="Forms\Fill.cs" />
@@ -118,12 +124,6 @@
     </Compile>
     <Compile Include="Forms\ScaleForm.designer.cs">
       <DependentUpon>ScaleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TestButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\TestButton.Designer.cs">
-      <DependentUpon>TestButton.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\TypedComboBox.cs">
       <SubType>Component</SubType>
@@ -199,6 +199,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>BatchRunnerControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DimmableButton.resx">
+      <DependentUpon>DimmableButton.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MagnifyForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MagnifyForm.cs</DependentUpon>
@@ -210,10 +214,6 @@
     <EmbeddedResource Include="Forms\ScaleForm.resx">
       <DependentUpon>ScaleForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TestButton.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>TestButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
