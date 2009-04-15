@@ -1018,40 +1018,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             /*
 	switch ( pop->GetType() ) {
 
-             * TODO: IntersectUI - two directions (shows up, but where's the recalled stuff?)
-             
-	case CEOP_DIRDIST_INTERSECT: {
-
-		m_pCommand = new CuiIntersect(ID_INTERSECT_BD,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_DIRLINE_INTERSECT: {
-
-		m_pCommand = new CuiIntersect(ID_INTERSECT_BL,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_DIST_INTERSECT: {
-
-		m_pCommand = new CuiIntersect(ID_INTERSECT_DD,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_LINE_INTERSECT: {
-
-		m_pCommand = new CuiIntersect(ID_INTERSECT_LL,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
 	case CEOP_NEW_CIRCLE: {
 
 		m_pCommand = new CuiNewCircle(*pop,ID_LINE_CIRCLE,this);

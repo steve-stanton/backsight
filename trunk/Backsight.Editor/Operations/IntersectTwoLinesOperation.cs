@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to intersect 2 lines.
     /// </summary>
-    class IntersectTwoLinesOperation : IntersectOperation
+    class IntersectTwoLinesOperation : IntersectOperation, IRecallable
     {
         #region Class data
 

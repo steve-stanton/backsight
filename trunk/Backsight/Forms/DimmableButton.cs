@@ -56,6 +56,8 @@ namespace Backsight.Forms
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         protected override void OnEnabledChanged(EventArgs e)
         {
+            base.OnEnabledChanged(e);
+
             if (this.Enabled)
             {
                 if (m_NormalImage!=null)
