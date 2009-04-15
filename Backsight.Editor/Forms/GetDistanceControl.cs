@@ -141,6 +141,9 @@ namespace Backsight.Editor.Forms
             // we need to know which page this is, to determine whether we
             // should display info for the 1st or 2nd distance.
             IntersectOperation op = parent.GetUpdateOp();
+            if (op == null)
+                op = parent.GetRecall();
+
             ShowUpdate(op, distNum);
 
             // Go to the first text box

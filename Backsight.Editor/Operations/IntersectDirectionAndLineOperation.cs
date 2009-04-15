@@ -29,7 +29,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to intersect a direction with a line.
     /// </summary>
-    class IntersectDirectionAndLineOperation : IntersectOperation
+    class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable
     {
         #region Class data
 

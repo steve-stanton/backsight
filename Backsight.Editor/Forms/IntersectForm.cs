@@ -125,6 +125,16 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
+        /// The intersect operation that is currently being recalled (if any).
+        /// </summary>
+        /// <returns>The edit that is being recalled (null if a previous edit is
+        /// not being recalled).</returns>
+        internal IntersectOperation GetRecall()
+        {
+            return (m_Cmd.Recall as IntersectOperation);
+        }
+
+        /// <summary>
         /// Handles click on the wizard Finish button.
         /// </summary>
         /// <param name="sender"></param>

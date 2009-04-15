@@ -387,7 +387,11 @@ namespace Backsight.Editor.Forms
             // a previous edit), load the original info. For direction-direction intersections,
             // we need to know which page this is, to determine whether we
             // should display info for the 1st or 2nd direction.
+
             IntersectOperation op = parent.GetUpdateOp();
+            if (op == null)
+                op = parent.GetRecall();
+
             if (!ShowUpdate(op, (byte)dirNum))
             {
                 // Display default offset (if there is one). Setting the text will cause
