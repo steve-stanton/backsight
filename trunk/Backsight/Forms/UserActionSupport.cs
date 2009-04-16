@@ -51,10 +51,41 @@ namespace Backsight.Forms
                     throw new ArgumentNullException();
             }
 
+            // If certain items don't have a tooltip, try to pick one up
+            SetUndefinedToolTips(items);
+
             m_Items = items;
         }
 
         #endregion
+
+        /// <summary>
+        /// Attempts to assign tooltips to items that don't have one (by first
+        /// looking for an item that has a defined tooltip, then propogating it
+        /// to those items that don't have one).
+        /// </summary>
+        /// <param name="items">The UI elements (all performing the same action)</param>
+        static void SetUndefinedToolTips(ToolStripItem[] items)
+        {
+            if (items.Length > 1)
+            {
+                ToolStripItem toolTipItem = Array.Find<ToolStripItem>(items, delegate(ToolStripItem t)
+                {
+                    return (t.ToolTipText!=null && t.ToolTipText.Length>0);
+                });
+
+                if (toolTipItem != null)
+                {
+                    string toolTip = toolTipItem.ToolTipText;
+
+                    foreach (ToolStripItem item in items)
+                    {
+                        if (item.ToolTipText==null || item.ToolTipText.Length == 0)
+                            item.ToolTipText = toolTip;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The text associated with the first element of the array returned by

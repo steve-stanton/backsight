@@ -96,26 +96,6 @@ namespace Backsight.Forms
             m_IsActionEnabled = isActionEnabled;
             m_DoAction = doAction;
 
-            // If certain items don't have a tooltip, try to pick one up
-            if (items.Length > 1)
-            {
-                ToolStripItem toolTipItem = Array.Find<ToolStripItem>(items, delegate(ToolStripItem t)
-                {
-                    return (t.ToolTipText!=null && t.ToolTipText.Length>0);
-                });
-
-                if (toolTipItem != null)
-                {
-                    string toolTip = toolTipItem.ToolTipText;
-
-                    foreach (ToolStripItem item in items)
-                    {
-                        if (item.ToolTipText==null || item.ToolTipText.Length == 0)
-                            item.ToolTipText = toolTip;
-                    }
-                }
-            }
-
             // Wire the supplied UI elements to a suitable handler
             m_Elements.SetHandler(Do);
         }
