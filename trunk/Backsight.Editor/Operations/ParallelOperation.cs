@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
-    class ParallelOperation : Operation
+    class ParallelOperation : Operation, IRecallable
     {
         #region Class data
 

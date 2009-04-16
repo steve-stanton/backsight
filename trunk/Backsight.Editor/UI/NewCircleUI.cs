@@ -51,18 +51,6 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="cc">The container for any dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        internal NewCircleUI(IControlContainer cc, IUserAction action, Operation op)
-            : base(cc, action, null, op)
-        {
-            m_Dialog = null;
-        }
-
-        /// <summary>
         /// Constructor for doing an update.
         /// </summary>
         /// <param name="cc">Object for holding any displayed dialogs</param>

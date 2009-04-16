@@ -28,7 +28,7 @@ namespace Backsight.Editor.Operations
     /// Add a point at a specific distance from the start or end of an existing line,
     /// splitting the original line at the point.
     /// </summary>
-    class SimpleLineSubdivisionOperation : Operation
+    class SimpleLineSubdivisionOperation : Operation, IRecallable
     {
         #region Class data
 

@@ -20,7 +20,7 @@ using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
-    class NewPointOperation : Operation
+    class NewPointOperation : Operation, IRecallable
     {
         #region Class data
 

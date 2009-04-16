@@ -52,6 +52,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// Constructor for a new line subdivision.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <exception cref="InvalidOperationException">If a specific line is not currently selected</exception>
         internal LineSubdivisionUI(IControlContainer cc, IUserAction action)

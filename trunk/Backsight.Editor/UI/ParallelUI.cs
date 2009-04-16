@@ -109,14 +109,18 @@ namespace Backsight.Editor.UI
         #region Constructors
 
         /// <summary>
-        /// Constructor for a new parallel line.
+        /// Constructor for generating a line that is parallel to the currently selected line.
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
-        /// <param name="from">The reference line.</param>
-        internal ParallelUI(IControlContainer cc, IUserAction action, LineFeature from)
+        /// <exception cref="InvalidOperationException">If a specific line is not currently selected</exception>
+        internal ParallelUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
+            LineFeature from = EditingController.SelectedLine;
+            if (from == null)
+                throw new InvalidOperationException("You must initially select the reference line for the parallel.");
+
             // Set initial values.
             SetZeroValues();
 

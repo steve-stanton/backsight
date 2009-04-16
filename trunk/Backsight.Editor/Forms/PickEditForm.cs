@@ -32,19 +32,9 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The data for the operations grid
-        /// </summary>
-        readonly BindingSource m_Binding;
-
-        /// <summary>
         /// The session of interest
         /// </summary>
         readonly Session m_Session;
-
-        /// <summary>
-        /// Should the selected edit be restricted to those edits that implement <see cref="IRecallable"/>?
-        /// </summary>
-        readonly bool m_AllowOnlyRecallableEdits;
 
         /// <summary>
         /// The currently select edit
@@ -55,7 +45,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
-        internal PickEditForm(Session s, bool allowOnlyRecallableEdits)
+        internal PickEditForm(Session s)
         {
             InitializeComponent();
 
@@ -63,9 +53,7 @@ namespace Backsight.Editor.Forms
                 throw new ArgumentNullException();
 
             m_Session = s;
-            m_Binding = new BindingSource();
             m_SelectedEdit = null;
-            m_AllowOnlyRecallableEdits = allowOnlyRecallableEdits;
         }
 
         #endregion
@@ -75,9 +63,29 @@ namespace Backsight.Editor.Forms
             // Load the list of operations that were performed in the
             // session (in reverse order).
             Operation[] ops = m_Session.GetOperations(true);
-            m_Binding.DataSource = ops;
-            grid.AutoGenerateColumns = false;
-            grid.DataSource = m_Binding;
+
+            grid.RowCount = ops.Length;
+            for (int i = 0; i < ops.Length; i++)
+            {
+                Operation op = ops[i];
+                DataGridViewRow row = grid.Rows[i];
+
+                row.Tag = op;
+                row.Cells["EditSequence"].Value = op.EditSequence;
+                row.Cells["EditType"].Value = op.Name;
+                row.Cells["FeatureCount"].Value = op.FeatureCount;
+                row.Cells["Recallable"].Value = (op is IRecallable ? "yes" : "no");
+            }
+
+            // The first edit in the grid is selected by default. If it's
+            // recallable, ensure the OK button reflects this and focus there (so
+            // that hitting the Return key will close the dialog).
+            if (ops.Length > 0)
+            {
+                okButton.Enabled = (ops[0] is IRecallable);
+                if (okButton.Enabled)
+                    okButton.Focus();
+            }
         }
 
         Operation GetSelectedOperation()
@@ -87,7 +95,7 @@ namespace Backsight.Editor.Forms
                 return null;
 
             DataGridViewRow row = sel[0];
-            return (m_Binding[row.Index] as Operation);
+            return (row.Tag as Operation);
         }
 
         private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -107,16 +115,11 @@ namespace Backsight.Editor.Forms
             if (op==null)
                 return false;
 
-            if (m_AllowOnlyRecallableEdits)
-            {
-                if (op is IRecallable)
-                    return true;
-
-                MessageBox.Show("Specified edit does not have a recall facility.");
-                return false;
-            }
-            else
+            if (op is IRecallable)
                 return true;
+
+            MessageBox.Show("Specified edit does not have a recall facility.");
+            return false;
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -145,6 +148,12 @@ namespace Backsight.Editor.Forms
         internal Operation SelectedEdit
         {
             get { return m_SelectedEdit; }
+        }
+
+        private void grid_SelectionChanged(object sender, EventArgs e)
+        {
+            Operation op = GetSelectedOperation();
+            okButton.Enabled = (op is IRecallable);
         }
     }
 }
