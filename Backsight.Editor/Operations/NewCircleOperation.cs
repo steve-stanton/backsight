@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new circle
     /// </summary>
-    class NewCircleOperation : NewLineOperation
+    class NewCircleOperation : NewLineOperation, IRecallable
     {
         #region Class data
 

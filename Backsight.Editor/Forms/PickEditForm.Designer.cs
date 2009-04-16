@@ -32,6 +32,7 @@ namespace Backsight.Editor.Forms
             this.EditSequence = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EditType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FeatureCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Recallable = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
@@ -50,7 +51,8 @@ namespace Backsight.Editor.Forms
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EditSequence,
             this.EditType,
-            this.FeatureCount});
+            this.FeatureCount,
+            this.Recallable});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 0);
             this.grid.Name = "grid";
@@ -58,12 +60,13 @@ namespace Backsight.Editor.Forms
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grid.Size = new System.Drawing.Size(513, 302);
             this.grid.TabIndex = 1;
+            this.grid.TabStop = false;
             this.grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellDoubleClick);
+            this.grid.SelectionChanged += new System.EventHandler(this.grid_SelectionChanged);
             // 
             // EditSequence
             // 
             this.EditSequence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.EditSequence.DataPropertyName = "EditSequence";
             this.EditSequence.FillWeight = 50F;
             this.EditSequence.HeaderText = "Edit Sequence";
             this.EditSequence.Name = "EditSequence";
@@ -72,7 +75,6 @@ namespace Backsight.Editor.Forms
             // EditType
             // 
             this.EditType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.EditType.DataPropertyName = "Name";
             this.EditType.HeaderText = "Edit Type";
             this.EditType.Name = "EditType";
             this.EditType.ReadOnly = true;
@@ -80,11 +82,18 @@ namespace Backsight.Editor.Forms
             // FeatureCount
             // 
             this.FeatureCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.FeatureCount.DataPropertyName = "FeatureCount";
             this.FeatureCount.FillWeight = 50F;
             this.FeatureCount.HeaderText = "Feature Count";
             this.FeatureCount.Name = "FeatureCount";
             this.FeatureCount.ReadOnly = true;
+            // 
+            // Recallable
+            // 
+            this.Recallable.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Recallable.FillWeight = 40F;
+            this.Recallable.HeaderText = "Recallable?";
+            this.Recallable.Name = "Recallable";
+            this.Recallable.ReadOnly = true;
             // 
             // splitContainer
             // 
@@ -137,7 +146,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.splitContainer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "PickEditForm";
-            this.Text = "Select Edit";
+            this.Text = "Select the edit to recall";
             this.Shown += new System.EventHandler(this.PickEditForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.splitContainer.Panel1.ResumeLayout(false);
@@ -150,11 +159,12 @@ namespace Backsight.Editor.Forms
         #endregion
 
         private System.Windows.Forms.DataGridView grid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EditSequence;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EditType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FeatureCount;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EditSequence;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EditType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FeatureCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Recallable;
     }
 }

@@ -158,11 +158,11 @@ namespace Backsight.Editor.Forms
 
         private void ShowPosition()
         {
-            northingTextBox.Text = String.Format("{0:4F}", m_Position.Y);
-            eastingTextBox.Text = String.Format("{0:4F}", m_Position.X);
+            northingTextBox.Text = String.Format("{0:0.0000}", m_Position.Y);
+            eastingTextBox.Text = String.Format("{0:0.0000}", m_Position.X);
 
             if (Math.Abs(m_Elevation) > Double.Epsilon)
-                elevationTextBox.Text = String.Format("{0:4F}", m_Elevation);
+                elevationTextBox.Text = String.Format("{0:0.0000}", m_Elevation);
             else
                 elevationTextBox.Text = String.Empty;
         }
@@ -334,9 +334,6 @@ namespace Backsight.Editor.Forms
         {
             // Create an undefined operation.
             NewPointOperation save = new NewPointOperation(Session.WorkingSession);
-
-            // Notify the controller that a save is starting
-            //m_Cmd.Controller.CurrentEdit = save;
 
             // Execute the operation.
 

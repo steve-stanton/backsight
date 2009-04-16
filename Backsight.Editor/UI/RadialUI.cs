@@ -43,27 +43,18 @@ namespace Backsight.Editor.UI
         #region Constructors
 
         /// <summary>
-        /// Constructor for a fresh sideshot.
+        /// Constructor for performing a sideshot from the currently selected point.
         /// </summary>
+        /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
-        /// <param name="from">The point the sideshot is from.</param>
-        internal RadialUI(IControlContainer cc, IUserAction action, PointFeature from)
+        /// <exception cref="InvalidOperationException">If a specific point is not currently selected</exception>
+        internal RadialUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
-            m_Dialog = null;
-            m_From = from;
-        }
-    
-        /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        /// <param name="from">Alternate from-point. Specify null to use the
-        /// same from point as the recalled op.</param>
-        internal RadialUI(IControlContainer cc, IUserAction action, Operation op, PointFeature from)
-            : base(cc, action, null, op)
-        {
+            PointFeature from = EditingController.SelectedPoint;
+            if (from == null)
+                throw new InvalidOperationException("You must initially select the point the sideshot radiates from.");
+
             m_Dialog = null;
             m_From = from;
         }

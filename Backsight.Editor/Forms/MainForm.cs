@@ -983,7 +983,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             Session s = Session.WorkingSession;
             Operation op = null;
 
-            using (PickEditForm dial = new PickEditForm(s, true))
+            using (PickEditForm dial = new PickEditForm(s))
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                     op = dial.SelectedEdit;
@@ -1014,71 +1014,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // wants to recall
             RecalledEditingAction recall = new RecalledEditingAction(recallAction, op);
             recall.Do(this, null);
-
-            /*
-	switch ( pop->GetType() ) {
-
-	case CEOP_NEW_CIRCLE: {
-
-		m_pCommand = new CuiNewCircle(*pop,ID_LINE_CIRCLE,this);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_NEW_POINT: {
-
-		m_pCommand = new CuiNewPoint(*pop,ID_POINT_NEW,this);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_PARALLEL: {
-
-		CeArc* pSelArc = m_Sel.GetArc();
-		if ( !pSelArc ) {
-			ShowMessage("You must initially select the reference line for the parallel.");
-			return;
-		}
-
-		m_pCommand = new CuiParallel(*pSelArc,ID_POINT_ON_LINE,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_PATH: {
-
-		m_pCommand = new CuiPath(ID_PATH,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_POINT_ON_LINE: {
-		
-		CeArc* pSelArc = m_Sel.GetArc();
-		if ( !pSelArc ) {
-			ShowMessage( "You must initially select the line you want to subdivide." );
-			return;
-		}
-
-		m_pCommand = new CuiPointOnLine(*pSelArc,ID_POINT_ON_LINE,this,pop);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-
-	case CEOP_RADIAL: {
-
-		CePoint* pSelPoint = m_Sel.GetPoint();
-		m_pCommand = new CuiRadial(*pop,pSelPoint,ID_POINT_SIDESHOT,this);
-		StartEdit((INT4)m_pCommand);
-		m_pCommand->Run();
-		break;
-	}
-             */
         }
 
         private bool IsEditOperationHistoryEnabled()
@@ -1335,19 +1270,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsPointNewEnabled()
         {
-            return true;
+            return !m_Controller.IsCommandRunning;
         }
 
         private void PointNew(IUserAction action)
         {
             CommandUI cmd = new NewPointUI(this, action);
             m_Controller.StartCommand(cmd);
-
-            /*
-            NewPointForm dial = new NewPointForm();
-            dial.ShowDialog();
-            dial.Dispose();
-             */
         }
 
         private bool IsPointAddOnLineEnabled()
@@ -1379,16 +1308,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointSideshot(IUserAction action)
         {
-            PointFeature selPoint = this.SelectedPoint;
-            if (selPoint==null)
+            try
             {
-                MessageBox.Show("You must initially select the point the sideshot radiates from.");
-                return;
+                IControlContainer cc = CreateContainer(action);
+                CommandUI cmd = new RadialUI(cc, action);
+                m_Controller.StartCommand(cmd);
             }
 
-            IControlContainer cc = CreateContainer(action);
-            CommandUI cmd = new RadialUI(cc, action, selPoint);
-            m_Controller.StartCommand(cmd);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         IControlContainer CreateContainer(IUserAction action)
@@ -1695,16 +1625,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void LineSubdivideLineOneDistance(IUserAction action)
         {
-            LineFeature selLine = this.SelectedLine;
-            if (selLine==null)
+            try
             {
-                MessageBox.Show("You must initially select the line you want to subdivide.");
-                return;
+                IControlContainer cc = CreateContainer(action);
+                CommandUI cmd = new PointOnLineUI(cc, action);
+                m_Controller.StartCommand(cmd);
             }
 
-            IControlContainer cc = CreateContainer(action);
-            CommandUI cmd = new PointOnLineUI(cc, action, selLine);
-            m_Controller.StartCommand(cmd);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private bool IsLineParallelEnabled()
@@ -1714,16 +1645,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void LineParallel(IUserAction action)
         {
-            LineFeature selLine = this.SelectedLine;
-            if (selLine==null)
+            try
             {
-                MessageBox.Show("You must initially select the reference line for the parallel.");
-                return;
+                IControlContainer cc = CreateContainer(action);
+                CommandUI cmd = new ParallelUI(cc, action);
+                m_Controller.StartCommand(cmd);
             }
 
-            IControlContainer cc = CreateContainer(action);
-            CommandUI cmd = new ParallelUI(cc, action, selLine);
-            m_Controller.StartCommand(cmd);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private bool IsLineUpdateEnabled()

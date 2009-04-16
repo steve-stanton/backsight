@@ -57,28 +57,17 @@ namespace Backsight.Editor.UI
         #region Constructors
 
         /// <summary>
-        /// Constructor for a fresh edit.
+        /// Constructor to subdivide the currently selected line.
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
-        /// <param name="line">The line being subdivided.</param>
-        internal PointOnLineUI(IControlContainer cc, IUserAction action, LineFeature line)
+        internal PointOnLineUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
-            SetInitialValues();
-            m_Line = line;
-        }
-    
-        /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="cc">The container for any dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        /// <param name="line">The line to subdivide.</param>
-        internal PointOnLineUI(IControlContainer cc, IUserAction action, Operation op, LineFeature line)
-            : base(cc, action, null, op)
-        {
+            LineFeature line = EditingController.SelectedLine;
+            if (line == null)
+                throw new InvalidOperationException("You must initially select the line you want to subdivide.");
+
             SetInitialValues();
             m_Line = line;
         }
