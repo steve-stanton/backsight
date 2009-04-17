@@ -511,18 +511,18 @@ namespace Backsight.Editor
             return c.PointToScreen(new Point(x,y));
         }
 
-        /// <summary>
-        /// The background color of the display that's being used for this command.
-        /// </summary>
-        internal Color DisplayBackColor
-        {
-            get
-            {
-                ISpatialDisplay d = ActiveDisplay;
-                Control c = d.MapPanel;
-                return c.BackColor;
-            }
-        }
+        ///// <summary>
+        ///// The background color of the display that's being used for this command.
+        ///// </summary>
+        //internal Color DisplayBackColor
+        //{
+        //    get
+        //    {
+        //        ISpatialDisplay d = ActiveDisplay;
+        //        Control c = d.MapPanel;
+        //        return c.BackColor;
+        //    }
+        //}
 
         /// <summary>
         /// Reacts to a situation where the user presses the ESC key. This implementation

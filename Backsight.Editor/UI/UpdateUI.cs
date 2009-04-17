@@ -64,6 +64,12 @@ namespace Backsight.Editor.UI
         /// </summary>
         UpdateForm m_Info;
 
+        /// <summary>
+        /// The last editing operation that was completed prior to the start of the update (null
+        /// if the update was started at the very beginning of the session).
+        /// </summary>
+        readonly Operation m_LastEdit;
+
         #endregion
 
         #region Constructors
@@ -81,6 +87,7 @@ namespace Backsight.Editor.UI
             //m_NumUndo = 0;
             m_DepOps = null;
             m_Problem = null;
+            m_LastEdit = Session.WorkingSession.LastOperation;
         }
 
         #endregion
@@ -114,7 +121,7 @@ namespace Backsight.Editor.UI
         /// </summary>
         /// <param name="update">The feature selected for update.</param>
         /// <returns>True if feature accepted for update. False if an update is already in progress.</returns>
-        bool Run(Feature update)
+        internal bool Run(Feature update)
         {
             // Return if we're currently updating something, or we've
             // hit a problem during rollforward.
@@ -123,7 +130,7 @@ namespace Backsight.Editor.UI
 
             // If we prevously had something selected for update,
             // undo any drawing that we did for it.
-            Erase();
+            ErasePainting();
 
             // Remember the specified feature.
             m_Update = update;
@@ -131,11 +138,8 @@ namespace Backsight.Editor.UI
             // If the info dialog has not already been displayed, display it now.
             if (m_Info == null)
             {
-                throw new NotImplementedException("UpdateUI.Run");
-                /*
-		        m_Info = new UpdateForm(this,m_View);
-		        m_Info.Create(IDD_UPDATE,&m_View);
-                 */
+		        m_Info = new UpdateForm(this);
+                m_Info.Show();
             }
 
             // Get the info window to display stuff about the
@@ -269,55 +273,40 @@ void CuiUpdate::Predecessors ( void ) {
 } // end of Predecessors
          */
 
-        /*
-//	@mfunc	Cancel all updates.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Cancels all updates.
+        /// </summary>
+        internal void Cancel()
+        {
+            // No can do if an update is currently in progress!
+            if (m_Cmd != null)
+            {
+                string msg = "You are in the middle of making an update." + System.Environment.NewLine;
+                msg += "You must cancel that first.";
+                MessageBox.Show(msg);
+                return;
+            }
 
-void CuiUpdate::Cancel ( void ) {
+            // If we've currently got a problem, treat the cancellation
+            // request as a request to undo just the last update.
+            if (m_Problem != null)
+            {
+                Undo();
+                m_Problem = null;
+                if (m_Update != null)
+                    Run(m_Update);
 
-	// No can do if an update is currently in progress!
+                m_Info.OnFinishUpdate(null);
+                ErasePainting();
 
-	if ( m_pCmd ) {
-		CString msg;
-		msg.Format("%s\n%s"
-			, "You are in the middle of making an update."
-			, "You must cancel that first.");
-		AfxMessageBox(msg);
-		return;
-	}
+                return;
+            }
 
-	// Erase anything we've drawn (BEFORE undoing anything).
-	Erase();
+            // If we set any undo points, undo them all.
+            UndoAll();
 
-	// Ensure that the view does not have anything selected
-	// (if the user has selected a polygon for example, the
-	// undo is likely to lead to a crash).
-	m_View.UnHighlight();
-
-	// If we've currently got a problem, treat the cancellation
-	// request as a request to undo just the last update.
-	if ( m_pProblem ) {
-		Undo();
-		m_pProblem = 0;
-		if ( m_pUpdate ) Run(*m_pUpdate);
-		m_pInfo->OnFinishUpdate(0);
-		m_View.InvalidateRect(0);
-		return;
-	}
-
-	// If we set any undo points, undo them all.
-	UndoAll();
-
-	// Force a complete redraw.
-	m_View.InvalidateRect(0);
-
-	// Get the base class to finish up (will destroy this
-	// command).
-	CuiCommand::FinishCommand();
-
-} // end of Cancel
-         */
+            FinishCommand();
+        }
 
         /*
 //	@mfunc	Invoke the update dialog for the selected feature.
@@ -372,58 +361,24 @@ void CuiUpdate::Update ( void ) {
         /// <summary>
         /// Do any drawing that is specific to the current update.
         /// </summary>
-        /// <param name="isDraw">True to draw. False to redraw normal.</param>
-        void Draw(bool isDraw)
+        void Draw()
         {
-            /*
-	        // If we've got an update command running, let it do it's
-	        // own drawing (ignore the un-draw option).
-	        if (m_Cmd!=null)
-            {
-		        m_Cmd.Paint();
-		        return;
-	        }
-
-	        // Get the operation associated with the update feature (or
-	        // the current problem op)
-	        IOperation pop = GetOp();
-	        if (pop==null)
+            // Get the operation associated with the update feature (or
+            // the current problem op)
+            Operation op = GetOp();
+            if (op==null)
                 return;
 
-	        // If not actually updating as yet, draw the features that
-	        // were created by the operation that created the feature
-	        // selected for update.
+            // Draw the features that were created by the operation that created the feature
+            // selected for update.
+            ISpatialDisplay display = ActiveDisplay;
+            IDrawStyle style = Controller.Style(Color.Magenta);
+            op.Render(display, style, true);
 
-        	if (isDraw)
-            {
-		        // Get the operation to draw everything.
-		        pop.Draw(Color.Magenta);
-
-		        // If the update feature is a line, ensure that it
-		        // is highlighted the normal way (so that the direction
-		        // of the line is apparent).
-                if (m_Update is LineFeature)
-                    (m_Update as LineFeature).Highlight();
-        	}
-	        else
-            {
-		        // Ensure update line is not highlighted.
-                if (m_Update is LineFeature)
-                    (m_Update as LineFeature).UnHighlight();
-
-		        // Get the operation to erase everything, and then
-		        // redraw the stuff that's active.
-		        pop.Draw();
-        	}
-             */
-        }
-
-        /// <summary>
-        /// Erases any drawing we might have done.
-        /// </summary>
-        void Erase()
-        {
-            Draw(false);
+            // If the update feature is a line, ensure that it is highlighted the normal
+            // way (so that the direction of the line is apparent).
+            if (m_Update is LineFeature)
+                m_Update.Render(display, Controller.HighlightStyle);
         }
 
         /*
@@ -783,19 +738,27 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
             return false;
         }
 
-        /*
-//	@mfunc	Do any command-specific drawing.
-//	@parm	The specific point (if any) that the parent window has
-//			drawn.
-void CuiUpdate::Paint ( const CePoint* const pPoint ) {
+        /// <summary>
+        /// Override indicates that this command performs painting. This means that the
+        /// controller will periodically call the <see cref="Paint"/> method (probably during
+        /// idle time).
+        /// </summary>
+        internal override bool PerformsPainting
+        {
+            get { return true; }
+        }
 
-	if ( m_pCmd )
-		m_pCmd->Paint(pPoint);
-	else
-		Draw();
-
-} // end of Paint
-        */
+        /// <summary>
+        /// Does any command-specific drawing.
+        /// </summary>
+        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+        internal override void Paint(PointFeature point)
+        {
+            if (m_Cmd == null)
+                Draw();
+            else
+                m_Cmd.Paint(point);
+        }
 
         /*
 //	@mfunc	Handle mouse-move.
@@ -1064,11 +1027,6 @@ void CuiUpdate::SetUndoMarker ( void )
 	if ( m_pInfo ) m_pInfo->SetUpdateCount(m_NumUndo);
 }
          */
-
-        void Draw()
-        {
-            Draw(true);
-        }
 
         internal CommandUI ActiveCommand
         {

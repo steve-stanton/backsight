@@ -231,13 +231,9 @@ namespace Backsight.Editor
             else
             {
                 ClearSelection();
-                m_Command = new UpdateUI(action);
-                /*
-	CuiUpdate* pup = new CuiUpdate(*this);
-	m_pCommand = pup;
-	GetDocument()->OnStartUpdate();
-	pup->Run(*pFeat);
-                 */
+                UpdateUI upui = new UpdateUI(action);
+                m_Command = upui;
+                upui.Run((Feature)so);
             }
         }
 
