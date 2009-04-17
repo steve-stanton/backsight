@@ -887,17 +887,14 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Keys.Enter (as I originally did in the constructor) leads to a runtime error that
             // talks about a bad enum value.
 
-            if (e.Alt)
+            if ((e.KeyData & Keys.Enter) != 0)
             {
-                if (e.KeyData == (Keys.Enter & Keys.Alt) && IsEditRecallEnabled())
+                if (e.Alt && IsEditRecallEnabled())
                 {
                     e.Handled = true;
                     EditRecall(null);
                 }
-            }
-            else
-            {
-                if (e.KeyData == Keys.Enter && IsEditRepeatEnabled())
+                else if (IsEditRepeatEnabled())
                 {
                     e.Handled = true;
                     EditRepeat(null);
@@ -974,7 +971,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Ignore if an edit is currently active.
             if (!IsEditRecallEnabled())
             {
-                MessageBox.Show("An editing command is already running.");
+                if (Session.WorkingSession.LastOperation==null)
+                    MessageBox.Show("There is nothing to recall");
+                else
+                    MessageBox.Show("An editing command is already running");
+
                 return;
             }
 
@@ -1010,8 +1011,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Disable auto-highlight.
             m_Controller.AutoSelect = false;
 
-            // Wrap the action alongside information about the edit the user
-            // wants to recall
+            // Wrap the action alongside information about the edit the user wants to recall
             RecalledEditingAction recall = new RecalledEditingAction(recallAction, op);
             recall.Do(this, null);
         }
