@@ -83,7 +83,7 @@ namespace Backsight.Editor.Forms
             this.dependenciesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.dependenciesButton.Location = new System.Drawing.Point(188, 98);
             this.dependenciesButton.Name = "dependenciesButton";
-            this.dependenciesButton.Size = new System.Drawing.Size(114, 27);
+            this.dependenciesButton.Size = new System.Drawing.Size(114, 23);
             this.dependenciesButton.TabIndex = 1;
             this.dependenciesButton.TabStop = false;
             this.dependenciesButton.Text = "&Dependencies...";
@@ -95,7 +95,7 @@ namespace Backsight.Editor.Forms
             this.predecessorsButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.predecessorsButton.Location = new System.Drawing.Point(53, 98);
             this.predecessorsButton.Name = "predecessorsButton";
-            this.predecessorsButton.Size = new System.Drawing.Size(114, 27);
+            this.predecessorsButton.Size = new System.Drawing.Size(114, 23);
             this.predecessorsButton.TabIndex = 0;
             this.predecessorsButton.TabStop = false;
             this.predecessorsButton.Text = "P&redecessors...";
@@ -117,7 +117,7 @@ namespace Backsight.Editor.Forms
             this.updateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.updateButton.Location = new System.Drawing.Point(376, 41);
             this.updateButton.Name = "updateButton";
-            this.updateButton.Size = new System.Drawing.Size(75, 27);
+            this.updateButton.Size = new System.Drawing.Size(75, 23);
             this.updateButton.TabIndex = 2;
             this.updateButton.Text = "&Update...";
             this.updateButton.UseVisualStyleBackColor = true;
@@ -128,7 +128,7 @@ namespace Backsight.Editor.Forms
             this.finishButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.finishButton.Location = new System.Drawing.Point(376, 75);
             this.finishButton.Name = "finishButton";
-            this.finishButton.Size = new System.Drawing.Size(75, 27);
+            this.finishButton.Size = new System.Drawing.Size(75, 23);
             this.finishButton.TabIndex = 3;
             this.finishButton.Text = "&Finish";
             this.finishButton.UseVisualStyleBackColor = true;
@@ -137,9 +137,9 @@ namespace Backsight.Editor.Forms
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(376, 109);
+            this.cancelButton.Location = new System.Drawing.Point(376, 111);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 27);
+            this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 4;
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
@@ -171,6 +171,7 @@ namespace Backsight.Editor.Forms
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UpdateForm";
             this.Text = "Update";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.UpdateForm_Shown);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lightBox)).EndInit();

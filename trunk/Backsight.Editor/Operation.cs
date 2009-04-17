@@ -605,5 +605,22 @@ namespace Backsight.Editor
         /// <returns>A line that was superseded by this edit in order to produce
         /// the line of interest.</returns>
         abstract internal LineFeature GetPredecessor(LineFeature line);
+
+        /// <summary>
+        /// Draws the features that were created by this editing operation
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        /// <param name="drawInactive">Should features that are currently inactive be drawn too?</param>
+        internal void Render(ISpatialDisplay display, IDrawStyle style, bool drawInactive)
+        {
+            foreach (Feature f in this.Features)
+            {
+                if (!drawInactive && f.IsInactive)
+                    continue;
+
+                f.Render(display, style);
+            }
+        }
     }
 }

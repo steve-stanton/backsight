@@ -81,7 +81,7 @@ namespace Backsight.Editor.Forms
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            //m_Cmd.Cancel();
+            m_Cmd.Cancel();
         }
 
         private void finishButton_Click(object sender, EventArgs e)
