@@ -39,10 +39,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="action">The editing action (not null)</param>
         /// <param name="recall">The editing operation that is being recalled (not null)</param>
+        /// <exception cref="ArgumentNullException">If either parameter is null</exception>
         internal RecalledEditingAction(EditingAction action, Operation recall)
             : base(action)
         {
-            if (recall == null)
+            if (action==null || recall==null)
                 throw new ArgumentNullException();
 
             m_Recall = recall;
