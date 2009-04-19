@@ -298,14 +298,14 @@ void CuiUpdate::Predecessors ( void ) {
 
                 m_Info.OnFinishUpdate(null);
                 ErasePainting();
-
-                return;
             }
+            else
+            {
+                // If we set any undo points, undo them all.
+                UndoAll();
 
-            // If we set any undo points, undo them all.
-            UndoAll();
-
-            FinishCommand();
+                FinishCommand();
+            }
         }
 
         /*
