@@ -59,7 +59,6 @@ namespace Backsight.Editor
         /// before working with the facade (otherwise results will correspond to
         /// default values).
         /// </summary>
-        [NonSerialized]
         private D m_Data;
 
         #endregion

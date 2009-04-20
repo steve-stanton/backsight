@@ -19,6 +19,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.IO;
 
 using Backsight.Data;
 using Backsight.Editor.Database;
@@ -70,7 +73,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Window of all data in the map.
         /// </summary>
-        IEditWindow m_Window;
+        Window m_Window;
 
         /// <summary>
         /// Editing sessions.
@@ -1529,6 +1532,23 @@ namespace Backsight.Editor
                 result.Add(fid);
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Writes a snapshot of the geometry associated with this model. The files created in
+        /// this way are expected to have a short lifetime (there is no provision for
+        /// evolving the content). They get created to represent snapshots of the
+        /// model while the user experiments with updates. This is meant to make it
+        /// easy to undo changes that the user decides to discard.
+        /// </summary>
+        /// <param name="fileName">The name of the file to create</param>
+        internal void WriteGeometry(string fileName)
+        {
+            using (Stream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, this);
+            }
         }
     }
 }

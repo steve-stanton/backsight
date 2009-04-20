@@ -331,6 +331,7 @@
     <Compile Include="Forms\UpdatePathForm.Designer.cs">
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GeometricModel.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
