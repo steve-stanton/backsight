@@ -94,26 +94,19 @@ namespace Backsight.Editor.UI
 
         public void Dispose()
         {
-            /*
-	// If a command is running(!), abort it now.
-	if ( m_pCmd ) {
-		m_pCmd->DialAbort(0);
-		delete m_pCmd;
-		m_pCmd = 0;
-	}
+            // If a command is running(!), abort it now.
+            if (m_Cmd != null)
+            {
+                m_Cmd.DialAbort(null);
+                m_Cmd = null;
+            }
 
-	// Get rid of the dialog that shows info about the
-	// current update feature.
-	if ( m_pInfo ) {
-		m_pInfo->DestroyWindow();
-		delete m_pInfo;
-		m_pInfo = 0;
-	}
-
-	// Get rid of dependent op list.
-	delete m_pDepOps;
-	m_pDepOps = 0;
-             */
+            // Get rid of the dialog that shows info about the current update feature.
+            if (m_Info != null)
+            {
+                m_Info.Dispose();
+                m_Info = null;
+            }
         }
 
         /// <summary>
@@ -234,31 +227,20 @@ void CuiUpdate::Dependencies ( void ) {
             LineFeature prevLine = GetPredecessor(m_Update);
             if (prevLine == null)
                 return;
+
+            // Get a list of all the predecessor lines
+            List<LineFeature> prev = new List<LineFeature>();
+
+            while (prevLine != null)
+            {
+                prev.Add(prevLine);
+                prevLine = prevLine.GetPredecessor();
+            }
+
+            // Display list of the edits
         }
         /*
 void CuiUpdate::Predecessors ( void ) {
-
-	const CeArc* pPrevArc = GetPredecessor(m_pUpdate);
-	if ( !pPrevArc ) return;
-
-	// Get a list of all the predecessor lines (breaking out as soon
-	// as we hit something that has no creating op).
-
-	CeObjectList prevarcs;
-
-	for ( ;
-		  pPrevArc;
-		  pPrevArc = GetPredecessor(pPrevArc) ) {
-
-		// Ensure it's not the result of a split.
-		pPrevArc = pPrevArc->GetUserArc();
-
-		// Break out if the arc does not have a creating operation.
-		if ( !pPrevArc->GetpCreator() ) break;
-
-		// Remember the arc.
-		prevarcs.Append(pPrevArc);
-	}
 
 	CdOpList dial(prevarcs,"Predecessor Operations",TRUE,TRUE);
 	if ( dial.DoModal()==IDOK ) {
@@ -760,119 +742,115 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
                 m_Cmd.Paint(point);
         }
 
-        /*
-//	@mfunc	Handle mouse-move.
-//	@parm	The new position of the mouse, in logical units.
-void CuiUpdate::MouseMove ( const CPoint& lpt ) {
+        /// <summary>
+        /// Handles mouse-move.
+        /// </summary>
+        /// <param name="p">The new position of the mouse</param>
+        internal override void MouseMove(IPosition p)
+        {
+            if (m_Cmd != null)
+                m_Cmd.MouseMove(p);
+        }
 
-	if ( m_pCmd ) m_pCmd->MouseMove(lpt);
+        /// <summary>
+        /// Handles a mouse down event
+        /// </summary>
+        /// <param name="p">The position where the click occurred</param>
+        /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
+        internal override bool LButtonDown(IPosition p)
+        {
+            if (m_Cmd == null)
+                return false;
+            else
+                return m_Cmd.LButtonDown(p);
+        }
 
-} // end of MouseMove
-         */
+        /// <summary>
+        /// Handles left-up mouse click.
+        /// </summary>
+        /// <param name="p">The position where the left-up occurred.</param>
+        internal override void LButtonUp(IPosition p)
+        {
+            if (m_Cmd != null)
+                m_Cmd.LButtonUp(p);
+        }
 
-        /*
-//	@mfunc	Handle left mouse click.
-//	@parm	The position where the left-click occurred, in logical
-//			units.
-void CuiUpdate::LButtonDown ( const CPoint& lpt ) {
+        /// <summary>
+        /// Handles double-click.
+        /// </summary>
+        /// <param name="p">The position where the double-click occurred.</param>
+        internal override void LButtonDblClick(IPosition p)
+        {
+            if (m_Cmd != null)
+                m_Cmd.LButtonDblClick(p);
+        }
 
-	if ( m_pCmd ) m_pCmd->LButtonDown(lpt);
+        /// <summary>
+        /// Creates any applicable context menu
+        /// </summary>
+        /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
+        internal override ContextMenuStrip CreateContextMenu()
+        {
+            if (m_Cmd == null)
+                return null;
+            else
+                return m_Cmd.CreateContextMenu();
+        }
 
-} // end of LButtonDown
-         */
+        /// <summary>
+        /// Reacts to selection of the Cancel button in the dialog. This will forward to
+        /// the current update command if one is running (otherwise it does nothing).
+        /// </summary>
+        /// <param name="wnd">The currently active control (not used)</param>
+        internal override void DialAbort(Control wnd)
+        {
+            if (m_Cmd != null)
+                m_Cmd.DialAbort(wnd);
+        }
 
-        /*
-//	@mfunc	Handle left-up mouse click.
-//	@parm	The position where the left-up occurred, in logical
-//			units.
-void CuiUpdate::LButtonUp ( const CPoint& lpt ) {
+        /// <summary>
+        /// Reacts to selection of the OK button in the dialog. This will forward to
+        /// the current update command if one is running (otherwise it does nothing).
+        /// </summary>
+        /// <param name="wnd">The dialog window</param>
+        /// <returns>True if an update command was in progress and it finished ok.</returns>
+        internal override bool DialFinish(Control wnd)
+        {
+            if (m_Cmd == null)
+                return false;
+            else
+                return m_Cmd.DialFinish(wnd);
+        }
 
-	if ( m_pCmd ) m_pCmd->LButtonUp(lpt);
+        /// <summary>
+        /// Reacts to the selection of a point feature.
+        /// </summary>
+        /// <param name="point">The point (if any) that has been selected.</param>
+        internal override void OnSelectPoint(PointFeature point)
+        {
+            if (m_Cmd != null)
+            {
+                // Can't pick something created by a dependent op.
+                if (IsDependent(point))
+                    DependencyMessage();
+                else
+                    m_Cmd.OnSelectPoint(point);
+            }
+            else if (point != null)
+                Run(point);
+        }
 
-} // end of LButtonUp
-         */
-
-        /*
-//	@mfunc	Handle double-click.
-//	@parm	The position where the double-click occurred, in
-//			logical units.
-void CuiUpdate::LButtonDblClick ( const CPoint& lpt ) {
-
-	if ( m_pCmd )
-		m_pCmd->LButtonDblClick(lpt);
-
-} // end of LButtonDblClick
-         */
-
-        /*
-//	@mfunc	Handle right mouse click.
-//	@parm	The position where the right-click occurred, in
-//			logical units.
-//	@rdesc	TRUE if right click was handled.
-LOGICAL CuiUpdate::RButtonDown ( const CPoint& lpt ) {
-
-	if ( m_pCmd )
-		return m_pCmd->RButtonDown(lpt);
-	else
-		return FALSE;
-
-} // end of RButtonDown
-         */
-
-        /*
-//	@mfunc	React to selection of the Cancel button in the dialog.
-//	@parm	The dialog window.
-void CuiUpdate::DialAbort ( CWnd* pWnd ) {
-
-	if ( m_pCmd ) m_pCmd->DialAbort(pWnd);
-
-} // end of DialAbort
-         */
-
-        /*
-//	@mfunc	React to selection of the OK button in the dialog.
-//	@parm	The dialog window.
-LOGICAL CuiUpdate::DialFinish ( CWnd* pWnd ) {
-
-	if ( m_pCmd )
-		return m_pCmd->DialFinish(pWnd);
-	else
-		return FALSE;
-
-} // end of DialFinish
-         */
-
-        /*
-//	@mfunc	React to the selection of a point feature.
-//	@parm	The point (if any) that has been selected.
-void CuiUpdate::OnSelectPoint ( const CePoint* const pPoint ) {
-
-	if ( m_pCmd ) {
-
-		// Can't pick something created by a dependent op.
-		if ( IsDependent(pPoint) )
-			DependencyMessage();
-		else
-			m_pCmd->OnSelectPoint(pPoint);
-	}
-	else if ( pPoint )
-		Run(*pPoint);
-
-} // end of OnSelectPoint
-         */
-
-        /*
-//	@mfunc	React to the selection of a line feature.
-//	@parm	The line (if any) that has been selected.
-void CuiUpdate::OnSelectArc ( const CeArc* const pArc ) {
-
-	if ( m_pCmd )
-		m_pCmd->OnUpdateSelect(pArc);
-	else if ( pArc )
-		Run(*pArc);
-
-} // end of OnSelectArc
-         */
+        /// <summary>
+        /// Reacts to the selection of a line feature.
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
+        internal override void OnSelectLine(LineFeature line)
+        {
+            if (m_Cmd != null)
+                m_Cmd.OnSelectLine(line);
+            else if (line != null)
+                Run(line);
+        }
 
         /// <summary>
         /// Checks if a feature that the user is trying to select is dependent on the
@@ -920,36 +898,23 @@ void CuiUpdate::OnSelectArc ( const CeArc* const pArc ) {
             MessageBox.Show(msg);
         }
 
-        /*
-//	@mfunc	Receive a sub-command.
-//	@parm	The ID of the sub-command.
-//	@rdesc	TRUE if sub-command was dispatched.
-LOGICAL CuiUpdate::Dispatch ( const INT4 id ) {
+        /// <summary>
+        /// Ensures the command cursor (if any) is shown.
+        /// </summary>
+        internal override void SetCommandCursor()
+        {
+            if (m_Cmd != null)
+                m_Cmd.SetCommandCursor();
+        }
 
-	if ( m_pCmd )
-		return m_pCmd->Dispatch(id);
-	else
-		return FALSE;
-
-} // end of Dispatch
-         */
-
-        /*
-//	@mfunc	Return the ID of the cursor for this command.
-INT4 CuiUpdate::GetCursorId ( void ) const {
-
-	if ( m_pCmd )
-		return m_pCmd->GetCursorId();
-	else
-		return 0;
-
-} // end of GetCursorId
-         */
-
-        /*
-//	@mfunc	Return a pointer to the object selected for update.
-CeObject* CuiUpdate::GetpUpdate ( void ) const { return m_pUpdate; }
-         */
+        /// <summary>
+        /// The object currently selected for update
+        /// </summary>
+        /// <returns></returns>
+        internal Feature GetUpdate()
+        {
+            return m_Update;
+        }
 
         /// <summary>
         /// Accepts a new offset
@@ -1001,21 +966,24 @@ CeObject* CuiUpdate::GetpUpdate ( void ) const { return m_pUpdate; }
              */
         }
 
-        /*
-//	@mfunc	Rolls back all undo points created by this command,
-//			and updates dialog to reflect this.
-void CuiUpdate::UndoAll ( void )
-{
-	CeMap* pMap = CeMap::GetpMap();
-	while ( m_NumUndo )
-	{
-		pMap->Undo();
-		m_NumUndo--;
-	}
+        /// <summary>
+        /// Rolls back all undo points created by this command, and updates dialog to reflect this.
+        /// </summary>
+        void UndoAll()
+        {
+            throw new NotImplementedException("UpdateUI.UndoAll");
 
-	if ( m_pInfo ) m_pInfo->SetUpdateCount(0);
-}
-         */
+            /*
+	        CeMap* pMap = CeMap::GetpMap();
+	        while ( m_NumUndo )
+	        {
+		        pMap->Undo();
+		        m_NumUndo--;
+	        }
+
+	        if ( m_pInfo ) m_pInfo->SetUpdateCount(0);
+             */
+        }
 
         /*
 //	@mfunc	Sets an undo marker and and updates dialog to

@@ -154,8 +154,11 @@ namespace Backsight.Editor
         /// <param name="point">The point (if any) that has been selected.</param>
         abstract internal void OnSelectPoint(PointFeature point);
 
+        /// <summary>
+        /// Reacts to the selection of a line feature.
+        /// </summary>
+        /// <param name="line">The line (if any) that has been selected.</param>
         abstract internal void OnSelectLine(LineFeature line);
-        //abstract internal bool Dispatch(int id);
 
         /// <summary>
         /// Creates any applicable context menu
