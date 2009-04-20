@@ -1954,7 +1954,16 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            MessageBox.Show(Application.ExecutablePath);
+            //MessageBox.Show(Application.ExecutablePath);
+            try
+            {
+                CadastralMapModel.Current.WriteGeometry(@"C:\Temp\Test.ced");
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         #endregion
