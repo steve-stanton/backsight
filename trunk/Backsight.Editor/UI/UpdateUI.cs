@@ -47,7 +47,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// The number of undo markers that have been set.
         /// </summary>
-        //uint m_NumUndo;
+        uint m_NumUndo;
 
         /// <summary>
         /// Dependent operations.
@@ -84,7 +84,7 @@ namespace Backsight.Editor.UI
             m_Update = null;
             m_Info = null;
             m_Cmd = null;
-            //m_NumUndo = 0;
+            m_NumUndo = 0;
             m_DepOps = null;
             m_Problem = null;
             m_LastEdit = Session.WorkingSession.LastOperation;
@@ -143,7 +143,7 @@ namespace Backsight.Editor.UI
             m_Info.Focus();
 
             // Draw stuff.
-            Draw();
+            //Draw();
             return true;
         }
 
@@ -805,7 +805,10 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
         internal override void DialAbort(Control wnd)
         {
             if (m_Cmd != null)
+            {
                 m_Cmd.DialAbort(wnd);
+                m_Cmd = null;
+            }
         }
 
         /// <summary>
@@ -954,16 +957,12 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
         /// </summary>
         void Undo()
         {
-            throw new NotImplementedException("UpdateUI.Undo");
-
-            /*
-	        CadastralMapModel.Current.Undo();
+	        CadastralMapModel.Current.UndoLastRevision();
 	        if (m_NumUndo>0)
                 m_NumUndo--;
 
 	        if (m_Info!=null)
                 m_Info.SetUpdateCount(m_NumUndo);
-             */
         }
 
         /// <summary>
@@ -971,18 +970,15 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
         /// </summary>
         void UndoAll()
         {
-            throw new NotImplementedException("UpdateUI.UndoAll");
+            CadastralMapModel mm = CadastralMapModel.Current;
+            while (m_NumUndo>0)
+            {
+                mm.UndoLastRevision();
+                m_NumUndo--;
+            }
 
-            /*
-	        CeMap* pMap = CeMap::GetpMap();
-	        while ( m_NumUndo )
-	        {
-		        pMap->Undo();
-		        m_NumUndo--;
-	        }
-
-	        if ( m_pInfo ) m_pInfo->SetUpdateCount(0);
-             */
+            if (m_Info != null)
+                m_Info.SetUpdateCount(0);
         }
 
         /*

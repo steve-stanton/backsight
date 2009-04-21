@@ -45,7 +45,7 @@ namespace Backsight.Editor.Forms
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.infoLabel = new System.Windows.Forms.Label();
+            this.infoTextBox = new System.Windows.Forms.TextBox();
             this.dependenciesButton = new System.Windows.Forms.Button();
             this.predecessorsButton = new System.Windows.Forms.Button();
             this.numUpdateLabel = new System.Windows.Forms.Label();
@@ -59,7 +59,7 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.infoLabel);
+            this.groupBox1.Controls.Add(this.infoTextBox);
             this.groupBox1.Controls.Add(this.dependenciesButton);
             this.groupBox1.Controls.Add(this.predecessorsButton);
             this.groupBox1.Location = new System.Drawing.Point(13, 13);
@@ -70,13 +70,17 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 
-            // infoLabel
+            // infoTextBox
             // 
-            this.infoLabel.Location = new System.Drawing.Point(24, 28);
-            this.infoLabel.Name = "infoLabel";
-            this.infoLabel.Size = new System.Drawing.Size(297, 52);
-            this.infoLabel.TabIndex = 2;
-            this.infoLabel.Text = "Info";
+            this.infoTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.infoTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.infoTextBox.Location = new System.Drawing.Point(17, 22);
+            this.infoTextBox.Multiline = true;
+            this.infoTextBox.Name = "infoTextBox";
+            this.infoTextBox.ReadOnly = true;
+            this.infoTextBox.Size = new System.Drawing.Size(310, 63);
+            this.infoTextBox.TabIndex = 7;
+            this.infoTextBox.Text = "Nothing selected for update";
             // 
             // dependenciesButton
             // 
@@ -111,6 +115,7 @@ namespace Backsight.Editor.Forms
             this.numUpdateLabel.TabIndex = 1;
             this.numUpdateLabel.Text = "Update count";
             this.numUpdateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.numUpdateLabel.Visible = false;
             // 
             // updateButton
             // 
@@ -173,7 +178,9 @@ namespace Backsight.Editor.Forms
             this.Text = "Update";
             this.TopMost = true;
             this.Shown += new System.EventHandler(this.UpdateForm_Shown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UpdateForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lightBox)).EndInit();
             this.ResumeLayout(false);
 
@@ -182,7 +189,6 @@ namespace Backsight.Editor.Forms
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label infoLabel;
         private System.Windows.Forms.Button dependenciesButton;
         private System.Windows.Forms.Button predecessorsButton;
         private System.Windows.Forms.Label numUpdateLabel;
@@ -190,5 +196,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Button finishButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.PictureBox lightBox;
+        private System.Windows.Forms.TextBox infoTextBox;
     }
 }

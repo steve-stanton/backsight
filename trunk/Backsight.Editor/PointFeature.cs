@@ -197,17 +197,13 @@ namespace Backsight.Editor
         /// <summary>
         /// Moves the location of this point.
         /// </summary>
-        /// <param name="to">The new position.</param>
+        /// <param name="newPosition">The new position.</param>
         /// <returns>True if the geometry associated with this point was moved. False
         /// if the move wasn't necessary.</returns>
-        internal bool Move(IPosition to)
+        internal bool Move(IPosition newPosition)
         {
-            PointGeometry g = PointGeometry.Create(to);
-            return Move(g);
-        }
+            PointGeometry to = PointGeometry.Create(newPosition);
 
-        internal bool Move(PointGeometry to)
-        {
             // Just return if the new location is at the same position
             // as the old location.
             IPointGeometry g = this.Geometry;
