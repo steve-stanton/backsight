@@ -29,7 +29,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to extend a line.
     /// </summary>
-    class LineExtensionOperation : Operation, IRecallable
+    class LineExtensionOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -153,14 +153,6 @@ namespace Backsight.Editor.Operations
         internal bool IsExtendFromEnd
         {
             get { return m_IsExtendFromEnd; }
-        }
-
-        /// <summary>
-        /// Return true, to indicate that this edit can be corrected.
-        /// </summary>
-        internal bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

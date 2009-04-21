@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <remarks>It was originally planned to also provide a RadialStakeout
     /// operation, that would add a whole bunch of sideshots, but there has
     /// been no need for that so far.</remarks>
-    class RadialOperation : Operation, IRecallable
+    class RadialOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -102,11 +102,6 @@ namespace Backsight.Editor.Operations
             m_Length = null;
             m_To = null;
             m_Line = null;
-        }
-
-        bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

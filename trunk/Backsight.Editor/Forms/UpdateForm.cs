@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using System.Text;
 
 using Backsight.Editor.UI;
+using Backsight.Editor.Operations;
 
 
 namespace Backsight.Editor.Forms
@@ -108,7 +109,6 @@ namespace Backsight.Editor.Forms
             // Nothing to do if feature was not specified.
             if (feat==null)
             {
-                //MessageBox.Show("nothing");
                 infoTextBox.Text = "Nothing selected for update";
                 Enable(false);
             }
@@ -139,15 +139,17 @@ namespace Backsight.Editor.Forms
 
                 // Disable the Predecessors button if the selected
                 // feature doesn't actually have one.
-                //if (!UpdateUI.GetPredecessor(feat))
-                //    predecessorsButton.Enabled = false;
+                if (UpdateUI.GetPredecessor(feat)==null)
+                    predecessorsButton.Enabled = false;
 
                 // Disable the Update button if the operation is not updateable.
-                //if (pop.CanCorrect)
-                //    updateButton.Focus();
-                //else
+                if (pop is IRevisable)
+                    updateButton.Focus();
+                else
+                {
                     updateButton.Enabled = false;
                     cancelButton.Focus();
+                }
            }
         }
 

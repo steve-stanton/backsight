@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
-    class ParallelOperation : Operation, IRecallable
+    class ParallelOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -137,11 +137,6 @@ namespace Backsight.Editor.Operations
         }
 
         #endregion
-
-        bool CanCorrect
-        {
-            get { return true; }
-        }
 
         // Needed by ParallelUI for updating ...
 

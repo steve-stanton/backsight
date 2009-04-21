@@ -28,7 +28,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to subdivide a line.
     /// </summary>
-    class LineSubdivisionOperation : Operation, IRecallable
+    class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -392,11 +392,6 @@ namespace Backsight.Editor.Operations
 
             // Rollforward the base class.
             return base.OnRollforward();
-        }
-
-        internal bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

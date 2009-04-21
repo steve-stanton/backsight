@@ -288,6 +288,12 @@
     <Compile Include="Forms\PickEditForUpdateForm.Designer.cs">
       <DependentUpon>PickEditForUpdateForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PickPredecessorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PickPredecessorForm.Designer.cs">
+      <DependentUpon>PickPredecessorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PositionedIcon.cs" />
     <Compile Include="Forms\PropertyDisplayControl.cs">
       <SubType>UserControl</SubType>
@@ -352,6 +358,7 @@
     <Compile Include="Observations\ParallelDirection.cs" />
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
+    <Compile Include="Operations\IRevisable.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
@@ -1147,6 +1154,10 @@
       <SubType>Designer</SubType>
       <DependentUpon>PickEditForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PickPredecessorForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PickPredecessorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -1194,14 +1205,18 @@
     <Content Include="Resources\CheckPolygonIgnoreIcon.ico" />
     <Content Include="Resources\CheckSmallLineIcon.ico" />
     <Content Include="Resources\CheckSmallPolygonIcon.ico" />
+    <Content Include="Resources\CircleIcon.ico" />
     <Content Include="Resources\DiagonalCursor.cur" />
     <Content Include="Resources\DomainIcon.ico" />
     <Content Include="Resources\Editor.ico" />
     <Content Include="Resources\FieldDefinitionIcon.ico" />
+    <Content Include="Resources\GrayCircleIcon.ico" />
     <Content Include="Resources\GrayReverseArrowCursor.cur" />
     <Content Include="Resources\GrayWandCursor.cur" />
     <Content Include="Resources\GreenTrafficLight.ico" />
     <Content Include="Resources\LayerIcon.ico" />
+    <Content Include="Resources\LineIcon.ico" />
+    <Content Include="Resources\NoEntryIcon.ico" />
     <Content Include="Resources\PenCursor.cur" />
     <Content Include="Resources\Point1Cursor.cur" />
     <Content Include="Resources\Point2Cursor.cur" />
