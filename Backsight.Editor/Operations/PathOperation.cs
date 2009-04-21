@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// A connection path between two points. Like a traverse.
     /// </summary>
-    class PathOperation : Operation, IRecallable
+    class PathOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -351,14 +351,6 @@ namespace Backsight.Editor.Operations
         {
             // This edit doesn't supersede anything
             return null;
-        }
-
-        /// <summary>
-        /// Returns true, to indicate that this edit can be corrected.
-        /// </summary>
-        bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

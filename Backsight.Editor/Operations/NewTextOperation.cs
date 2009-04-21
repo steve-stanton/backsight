@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Edit to add an item of text (perhaps a polygon label).
     /// </summary>
-    class NewTextOperation : Operation
+    class NewTextOperation : Operation, IRevisable
     {
         #region Class data
 
@@ -162,14 +162,6 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
-        }
-
-        /// <summary>
-        /// Returns true, to indicate that this edit can be corrected.
-        /// </summary>
-        bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

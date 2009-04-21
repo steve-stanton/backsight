@@ -208,7 +208,7 @@ void CuiUpdate::Dependencies ( void ) {
         /// </summary>
         /// <param name="feat"></param>
         /// <returns>The predecessor (must be a line). Null if none.</returns>
-        static LineFeature GetPredecessor(Feature feat)
+        internal static LineFeature GetPredecessor(Feature feat)
         {
             LineFeature line = (feat as LineFeature);
             if (line == null)
@@ -238,6 +238,12 @@ void CuiUpdate::Dependencies ( void ) {
             }
 
             // Display list of the edits
+            using (PickPredecessorForm dial = new PickPredecessorForm(prev.ToArray(), true))
+            {
+                if (dial.ShowDialog() == DialogResult.OK)
+                {
+                }
+            }
         }
         /*
 void CuiUpdate::Predecessors ( void ) {

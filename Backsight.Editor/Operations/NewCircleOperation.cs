@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new circle
     /// </summary>
-    class NewCircleOperation : NewLineOperation, IRecallable
+    class NewCircleOperation : NewLineOperation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -114,14 +114,6 @@ namespace Backsight.Editor.Operations
         internal Observation Radius
         {
             get { return m_Radius; }
-        }
-
-        /// <summary>
-        /// Return true, to indicate that this edit can be corrected.
-        /// </summary>
-        internal bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

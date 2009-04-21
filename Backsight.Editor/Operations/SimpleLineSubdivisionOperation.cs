@@ -28,7 +28,7 @@ namespace Backsight.Editor.Operations
     /// Add a point at a specific distance from the start or end of an existing line,
     /// splitting the original line at the point.
     /// </summary>
-    class SimpleLineSubdivisionOperation : Operation, IRecallable
+    class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -130,11 +130,6 @@ namespace Backsight.Editor.Operations
         internal Distance Distance
         {
             get { return m_Distance; }
-        }
-
-        bool CanCorrect
-        {
-            get { return true; }
         }
 
         /// <summary>

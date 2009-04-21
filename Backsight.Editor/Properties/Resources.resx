@@ -274,4 +274,16 @@
   <data name="RedTrafficLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RedTrafficLight.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CircleIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CircleIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GrayCircleIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GrayCircleIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LineIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LineIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NoEntryIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NoEntryIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

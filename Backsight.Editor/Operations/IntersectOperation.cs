@@ -86,14 +86,6 @@ namespace Backsight.Editor.Operations
             return null;
         }
 
-        /// <summary>
-        /// Returns true, to indicate that this edit can be corrected.
-        /// </summary>
-        internal bool CanCorrect
-        {
-            get { return true; }
-        }
-
         /*
 public:
 	virtual	LOGICAL		GetReCentre		( const CeWindow& drawin

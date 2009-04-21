@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Import control points.
     /// </summary>
-    class GetControlOperation : Operation
+    class GetControlOperation : Operation, IRevisable
     {
         #region Class data
 
@@ -66,14 +66,6 @@ namespace Backsight.Editor.Operations
         }
 
         #endregion
-
-        /// <summary>
-        /// Return true, to indicate that this edit can be corrected.
-        /// </summary>
-        internal bool CanCorrect
-        {
-            get { return true; }
-        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
