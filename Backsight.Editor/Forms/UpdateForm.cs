@@ -59,7 +59,7 @@ namespace Backsight.Editor.Forms
 
         private void UpdateForm_Shown(object sender, EventArgs e)
         {
-            infoLabel.Text = "Nothing selected for update";
+            //dataLabel.Text = "Nothing selected for update - shown";
             Enable(false);
 
             // Cancel unless the user explicitly clicks the Finish button
@@ -84,6 +84,17 @@ namespace Backsight.Editor.Forms
             m_Cmd.Cancel();
         }
 
+        private void UpdateForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.DialogResult == DialogResult.Cancel)
+            {
+                // Abort any edit that's still running
+                m_Cmd.DialAbort(this);
+
+                m_Cmd.Cancel();
+            }
+        }
+
         private void finishButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
@@ -92,12 +103,13 @@ namespace Backsight.Editor.Forms
 
         internal void Display(Feature feat)
         {
-            this.Text = "Update";
+            //this.Text = "Update";
 
             // Nothing to do if feature was not specified.
             if (feat==null)
             {
-                infoLabel.Text = "Nothing selected for update";
+                //MessageBox.Show("nothing");
+                infoTextBox.Text = "Nothing selected for update";
                 Enable(false);
             }
             else
@@ -112,7 +124,7 @@ namespace Backsight.Editor.Forms
         {
             if (pop == null)
             {
-                infoLabel.Text = "No editing command";
+                infoTextBox.Text = "No editing command";
                 Enable(false);
             }
             else
@@ -121,8 +133,8 @@ namespace Backsight.Editor.Forms
                 string newLine = System.Environment.NewLine;
                 sb.AppendFormat("{0}\t{1}{2}", "Editor command:", pop.Name, newLine);
                 sb.AppendFormat("{0}\t{1}{2}", "Edit sequence:", pop.EditSequence, newLine);
-                sb.AppendFormat("{0}\t{1}", "Created on:", pop.Session.StartTime.Date);
-                infoLabel.Text = sb.ToString();
+                sb.AppendFormat("{0}\t{1}", "Created on:", pop.Session.StartTime.ToShortDateString());
+                infoTextBox.Text = sb.ToString();                
                 Enable(true);
 
                 // Disable the Predecessors button if the selected
@@ -135,7 +147,8 @@ namespace Backsight.Editor.Forms
                 //    updateButton.Focus();
                 //else
                     updateButton.Enabled = false;
-            }
+                    cancelButton.Focus();
+           }
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -207,21 +220,15 @@ void CdUpdate::OnClose()
 }
          */
 
-        /*
-
-void CdUpdate::SetUpdateCount ( const UINT4 n )
-{
-	if ( n == 0 )
-		GetDlgItem(IDC_NUM_UPDATE)->ShowWindow(SW_HIDE);
-	else
-	{
-		CWnd* pText = GetDlgItem(IDC_NUM_UPDATE);
-		CString text;
-		text.Format("Update %d",n);
-		pText->SetWindowText(text);
-		pText->ShowWindow(SW_SHOW);
-	}
-}
-         */
+        internal void SetUpdateCount(uint n)
+        {
+            if (n==0)
+                numUpdateLabel.Visible = false;
+            else
+            {
+                numUpdateLabel.Text = "Update "+n;
+                numUpdateLabel.Visible = true;
+            }
+        }
     }
 }

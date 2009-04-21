@@ -1550,5 +1550,13 @@ namespace Backsight.Editor
                 formatter.Serialize(stream, this);
             }
         }
+
+        /// <summary>
+        /// Undoes the changes made by the last revision
+        /// </summary>
+        internal void UndoLastRevision()
+        {
+            // TODO!
+        }
     }
 }
