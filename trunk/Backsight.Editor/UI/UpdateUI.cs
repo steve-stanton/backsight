@@ -241,25 +241,9 @@ void CuiUpdate::Dependencies ( void ) {
             using (PickPredecessorForm dial = new PickPredecessorForm(prev.ToArray(), true))
             {
                 if (dial.ShowDialog() == DialogResult.OK)
-                {
-                }
+                    Run(dial.SelectedLine);
             }
         }
-        /*
-void CuiUpdate::Predecessors ( void ) {
-
-	CdOpList dial(prevarcs,"Predecessor Operations",TRUE,TRUE);
-	if ( dial.DoModal()==IDOK ) {
-
-		// Get the selected feature.
-		pPrevArc = dynamic_cast<CeArc*>(dial.GetpFeature());
-
-		// Refresh the dialog.
-		if ( pPrevArc ) Run(*pPrevArc);
-	}
-
-} // end of Predecessors
-         */
 
         /// <summary>
         /// Cancels all updates.

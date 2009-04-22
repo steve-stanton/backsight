@@ -209,7 +209,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The external ID of this edit is a concatenation of the
         /// <see cref="Session.Id"/> and <see cref="EditSequence"/> properties
-        /// (seperated with a period).
+        /// (seperated with a colon).
         /// </summary>
         internal string DataId
         {
@@ -620,6 +620,27 @@ namespace Backsight.Editor
                     continue;
 
                 f.Render(display, style);
+            }
+        }
+
+        /// <summary>
+        /// Ensures that all features created by this edit have been recorded as part of the map model.
+        /// </summary>
+        /// <remarks>
+        /// This is a bit of a hack. It covers the fact that only one of the Feature constructors
+        /// will add to the model (the other constructor cannot add to the model, because the creation
+        /// sequence number may not be available at that stage). Edits that use the "bad" constructor,
+        /// and that do not call the <see cref="Complete"/> method as part of their deserialization
+        /// logic, will need to call this method to ensure the model is complete.
+        /// </remarks>
+        protected void EnsureFeaturesAreIndexed()
+        {
+            CadastralMapModel mapModel = this.MapModel;
+
+            foreach (Feature f in this.Features)
+            {
+                if (mapModel.Find<Feature>(f.InternalId)==null)
+                    mapModel.AddFeature(f);
             }
         }
     }
