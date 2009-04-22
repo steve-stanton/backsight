@@ -57,6 +57,8 @@ namespace Backsight.Editor.Operations
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
+            if (m_Line == null)
+                throw new Exception("Cannot find line "+t.Line);
 
             SpanType[] spans = t.Span;
             m_Sections = new List<MeasuredLineFeature>(spans.Length);
@@ -84,6 +86,8 @@ namespace Backsight.Editor.Operations
 
                 start = end;
             }
+
+            EnsureFeaturesAreIndexed();
         }
 
         /// <summary>

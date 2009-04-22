@@ -791,8 +791,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// Calculates the precision of the connection path.
         /// </summary>
         /// <returns>The precision</returns>
-        /// TODO: Check if still used
-        uint GetPrecision()
+        internal uint GetPrecision()
         {
             double de;				// Misclosure in eastings
             double dn;				// Misclosure in northings

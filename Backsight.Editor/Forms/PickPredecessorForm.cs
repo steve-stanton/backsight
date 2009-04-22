@@ -16,6 +16,8 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using Backsight.Editor.Operations;
+using System.Drawing;
 
 namespace Backsight.Editor.Forms
 {
@@ -56,5 +58,104 @@ namespace Backsight.Editor.Forms
         }
 
         #endregion
+
+        private void PickPredecessorForm_Shown(object sender, EventArgs e)
+        {
+            grid.RowCount = m_Lines.Length;
+
+            for (int i=0; i<m_Lines.Length; i++)
+            {
+                LineFeature line = m_Lines[i];
+                Operation op = line.Creator;
+                DataGridViewRow row = grid.Rows[i];
+
+                row.Tag = line;
+                row.Cells["imageColumn"].Value = GetImage(op, line);
+                row.Cells["opIdColumn"].Value = op.DataId;
+                row.Cells["operationColumn"].Value = op.Name;
+                row.Cells["createdColumn"].Value = op.Session.StartTime.ToShortDateString();
+                row.Cells["editorColumn"].Value = op.Session.User.Name;
+
+                // If the line was created by a connection path, display the precision.
+                if (op is PathOperation)
+                {
+                    PathOperation path = (PathOperation)op;
+                    row.Cells["precisionColumn"].Value = path.GetPrecision();
+                }
+            }
+
+            grid.CurrentCell = null;
+        }
+
+        Image GetImage(Operation op, LineFeature line)
+        {
+            // If the creating op can't be updated, use a no-entry sign.
+            if (!(op is IRevisable))
+                return smallImageList.Images["NoEntry"];
+
+            // If the line is not a circular curve, use the line icon.
+            ArcFeature arc = (line as ArcFeature);
+            if (arc==null)
+                return smallImageList.Images["Line"];
+
+            // This leaves us with either a circle, or gray circle.
+            if (arc.Circle.Creator == op)
+                return smallImageList.Images["Circle"];
+            else
+                return smallImageList.Images["GrayCircle"];
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            if (grid.SelectedRows.Count == 0)
+                MessageBox.Show("You have not selected anything yet.");
+            else
+                CloseOnSelectedLine();
+        }
+
+        LineFeature GetSel()
+        {
+            DataGridViewSelectedRowCollection sel = grid.SelectedRows;
+            if (sel.Count == 0)
+                return null;
+
+            LineFeature line = (LineFeature)sel[0].Tag;
+            if (line.Creator is IRevisable)
+                return line;
+
+            MessageBox.Show("Can't update this sort of edit.");
+            return null;
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            m_Selection = null;
+            this.DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            CloseOnSelectedLine();
+        }
+
+        void CloseOnSelectedLine()
+        {
+            m_Selection = GetSel();
+
+            if (m_Selection != null)
+            {
+                this.DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+
+        /// <summary>
+        /// The selected line (null if user cancelled)
+        /// </summary>
+        internal LineFeature SelectedLine
+        {
+            get { return m_Selection; }
+        }
     }
 }
