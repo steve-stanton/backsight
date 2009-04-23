@@ -173,8 +173,7 @@ namespace Backsight.Editor.Forms
             try
             {
                 string str = GetEnteredPath();
-                op = new PathOperation(m_From, m_To, str);
-                //op = new PathOperation(m_PathData);
+                op = new PathOperation(Session.WorkingSession, m_From, m_To, str);
                 op.Execute();
                 Finish();
             }
