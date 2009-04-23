@@ -78,7 +78,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information loaded about created points (this is a hack, to avoid complications
         /// during deserialization - it will get defined by the constructor that is used during
-        /// deserialization, then used and nulled by CalculateGeometry).
+        /// deserialization, then used and nulled by RunEdit).
         /// </summary>
         CalculatedFeatureType[] m_Points;
 
@@ -105,10 +105,41 @@ namespace Backsight.Editor.Operations
 
             // Remember info about created points
             m_Points = t.Point;
+
+            // Parse the path
+            PathData pd = ParsePath();
+
+            // Get the legs (without any attached features)
+            m_Legs = new List<Leg>(pd.GetLegs());
+
+            // Create point features (without any geometry)
+            PointFeature[] points = new PointFeature[t.Point.Length];
+            for (int i=0; i<points.Length; i++)
+            {
+                CalculatedFeatureType cft = t.Point[i];
+                cft.Type = t.PointType;
+                points[i] = new PointFeature(this, cft);
+            }
+
+            // Attach features to the legs (without any position)
+            foreach (Leg leg in m_Legs)
+            {
+                int nspan = leg.Count;
+                for (int i=0; i<nspan; i++)
+                {
+                }
+            }
         }
 
-        internal PathOperation(PointFeature from, PointFeature to, string entryString)
-            : base(Session.WorkingSession)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PathOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="entryString"></param>
+        internal PathOperation(Session s, PointFeature from, PointFeature to, string entryString)
+            : base(s)
         {
             m_From = from;
             m_To = to;
@@ -121,18 +152,28 @@ namespace Backsight.Editor.Operations
         #endregion
 
         /// <summary>
+        /// Parses the data entry string for this this connection path (with no attached features)
+        /// </summary>
+        /// <returns>The parsed path (includes a collection of legs that have no attached
+        /// features)</returns>
+        PathData ParsePath()
+        {
+            PathItem[] items = PathParser.GetPathItems(m_EntryString);
+            PathData pd = new PathData(m_From, m_To);
+            pd.Create(items);
+            return pd;
+        }
+
+        /// <summary>
         /// Creates the features that represent this connection path
         /// </summary>
         /// <returns>The points that were created</returns>
         List<PointFeature> CreateFeatures()
         {
-            PathItem[] items = PathParser.GetPathItems(m_EntryString);
-            PathData pd = new PathData(m_From, m_To);
-            pd.Create(items);
+            PathData pd = ParsePath();
 
             // Get the legs (without any attached features)
-            Leg[] legs = pd.GetLegs();
-            m_Legs = new List<Leg>(legs);
+            m_Legs = new List<Leg>(pd.GetLegs());
 
             // Get the rotation & scale factor to apply.
             double rotation = pd.RotationInRadians;
@@ -395,28 +436,6 @@ namespace Backsight.Editor.Operations
             // To from and to points MUST be defined.
             if (m_From==null || m_To==null)
                 throw new Exception("PathOperation.Execute -- terminal(s) not defined.");
-
-            /*
-            // Get the rotation & scale factor to apply.
-            double rotation, sfac;
-            GetAdjustment(out rotation, out sfac);
-
-            // Go through each leg, adding features as required. This logic
-            // is basically the same as the Draw() logic ...
-
-            // Initialize position to the start of the path.
-            IPosition gotend = m_From;
-
-            // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
-
-            // Create a list for holding newly created points
-            List<PointFeature> createdPoints = new List<PointFeature>(100);
-
-            // Go through each leg, asking them to make features.
-            foreach (Leg leg in m_Legs)
-                leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
-            */
 
             CreateFeatures();
 
@@ -1129,8 +1148,6 @@ void CePath::CreateAngleText ( CPtrList& text
             CadastralMapModel mapModel = CadastralMapModel.Current;
             mapModel.SetDefaultEntity(SpatialType.Point, m_PointType);
             mapModel.SetDefaultEntity(SpatialType.Line, m_LineType);
-            //CadastralMapModel.Current.DefaultPointType = m_PointType;
-            //CadastralMapModel.Current.DefaultLineType = m_LineType;
 
             // Ensure the session item count is in agreement with the sequence
             // number of this edit
@@ -1157,6 +1174,20 @@ void CePath::CreateAngleText ( CPtrList& text
             }
 
             m_Points = null;
+        }
+
+        /// <summary>
+        /// The last leg in this connection path
+        /// </summary>
+        internal Leg LastLeg
+        {
+            get
+            {
+                if (m_Legs == null || m_Legs.Count == 0)
+                    return null;
+                else
+                    return m_Legs[m_Legs.Count-1];
+            }
         }
     }
 }

@@ -911,7 +911,19 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             return (m_Controller.IsCommandRunning==false &&
                     m_Controller.IsChecking==false &&
-                    Session.WorkingSession.LastOperation!=null);
+                    !IsEmptySession);
+        }
+
+        /// <summary>
+        /// Is the current working session empty (either undefined, or defined but with no edits)?
+        /// </summary>
+        bool IsEmptySession
+        {
+            get
+            {
+                Session s = Session.WorkingSession;
+                return (s==null ? true : s.LastOperation==null);
+            }
         }
 
         /// <summary>
@@ -959,7 +971,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// edit is not currently running.</returns>
         private bool IsEditRecallEnabled()
         {
-            return (m_Controller.IsCommandRunning==false && Session.WorkingSession.LastOperation!=null);
+            return (m_Controller.IsCommandRunning==false && !IsEmptySession);
         }
 
         /// <summary>
@@ -971,7 +983,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Ignore if an edit is currently active.
             if (!IsEditRecallEnabled())
             {
-                if (Session.WorkingSession.LastOperation==null)
+                if (IsEmptySession)
                     MessageBox.Show("There is nothing to recall");
                 else
                     MessageBox.Show("An editing command is already running");

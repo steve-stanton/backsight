@@ -22,6 +22,7 @@ using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -92,6 +93,17 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         abstract internal void Save(PathOperation op, List<PointFeature> createdPoints, ref IPosition terminal,
                                         ref double bearing, double sfac);
+        /// <summary>
+        /// Creates features that correspond to this leg (without attaching any geometry to the features),
+        /// for use during deserialization.
+        /// </summary>
+        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="points">Information about new points along the length of the connection path</param>
+        /// <param name="pointType">The entity type that should be assigned to points</param>
+        /// <param name="lineType">The entity type that should be assigned to lines</param>
+        /// <param name="createdPoints">Newly created point features</param>
+        abstract internal void CreateFeatures(PathOperation op, CalculatedFeatureType[] points, IEntity pointType,
+                                                IEntity lineType, List<PointFeature> createdPoints);
 
         abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);

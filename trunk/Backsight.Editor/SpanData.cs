@@ -18,6 +18,7 @@ using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
