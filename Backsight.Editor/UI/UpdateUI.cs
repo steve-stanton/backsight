@@ -92,7 +92,7 @@ namespace Backsight.Editor.UI
 
         #endregion
 
-        public void Dispose()
+        public override void Dispose()
         {
             // If a command is running(!), abort it now.
             if (m_Cmd != null)
@@ -107,6 +107,8 @@ namespace Backsight.Editor.UI
                 m_Info.Dispose();
                 m_Info = null;
             }
+
+            base.Dispose();
         }
 
         /// <summary>

@@ -1025,6 +1025,7 @@
     <Compile Include="Xml\AttachPointType.cs" />
     <Compile Include="Xml\BearingType.cs" />
     <Compile Include="Xml\CalculatedFeatureType.cs" />
+    <Compile Include="Xml\CircularLegType.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\DeflectionType.cs" />
     <Compile Include="Xml\DeletionType.cs" />
@@ -1042,6 +1043,7 @@
     <Compile Include="Xml\IntersectTwoDistancesType.cs" />
     <Compile Include="Xml\IntersectTwoLinesType.cs" />
     <Compile Include="Xml\KeyTextType.cs" />
+    <Compile Include="Xml\LegType.cs" />
     <Compile Include="Xml\LineExtensionType.cs" />
     <Compile Include="Xml\LineSubdivisionType.cs" />
     <Compile Include="Xml\MiscTextType.cs" />
@@ -1071,6 +1073,7 @@
     <Compile Include="Xml\SharedPointType.cs" />
     <Compile Include="Xml\SimpleLineSubdivisionType.cs" />
     <Compile Include="Xml\SpanType.cs" />
+    <Compile Include="Xml\StraightLegType.cs" />
     <Compile Include="Xml\TextRotationType.cs" />
     <Compile Include="Xml\TrimLineType.cs" />
   </ItemGroup>

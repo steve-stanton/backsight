@@ -101,6 +101,48 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(StraightLegType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(CircularLegType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class LegType {
+        
+        private SpanType[] spanField;
+        
+        private byte faceField;
+        
+        public LegType() {
+            this.faceField = ((byte)(0));
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Span")]
+        public SpanType[] Span {
+            get {
+                return this.spanField;
+            }
+            set {
+                this.spanField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(typeof(byte), "0")]
+        public byte Face {
+            get {
+                return this.faceField;
+            }
+            set {
+                this.faceField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -1125,6 +1167,136 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class StraightLegType : LegType {
+        
+        private string startAngleField;
+        
+        private bool deflectionField;
+        
+        public StraightLegType() {
+            this.deflectionField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string StartAngle {
+            get {
+                return this.startAngleField;
+            }
+            set {
+                this.startAngleField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Deflection {
+            get {
+                return this.deflectionField;
+            }
+            set {
+                this.deflectionField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class CircularLegType : LegType {
+        
+        private DistanceType radiusField;
+        
+        private CalculatedFeatureType centerField;
+        
+        private string angle1Field;
+        
+        private string angle2Field;
+        
+        private bool culDeSacField;
+        
+        private bool clockwiseField;
+        
+        public CircularLegType() {
+            this.culDeSacField = false;
+        }
+        
+        /// <remarks/>
+        public DistanceType Radius {
+            get {
+                return this.radiusField;
+            }
+            set {
+                this.radiusField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public CalculatedFeatureType Center {
+            get {
+                return this.centerField;
+            }
+            set {
+                this.centerField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Angle1 {
+            get {
+                return this.angle1Field;
+            }
+            set {
+                this.angle1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Angle2 {
+            get {
+                return this.angle2Field;
+            }
+            set {
+                this.angle2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool CulDeSac {
+            get {
+                return this.culDeSacField;
+            }
+            set {
+                this.culDeSacField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool Clockwise {
+            get {
+                return this.clockwiseField;
+            }
+            set {
+                this.clockwiseField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class TrimLineType : OperationType {
         
         private string[] lineField;
@@ -1424,7 +1596,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class PathType : OperationType {
         
-        private CalculatedFeatureType[] pointField;
+        private LegType[] legField;
         
         private string fromField;
         
@@ -1445,13 +1617,13 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Point")]
-        public CalculatedFeatureType[] Point {
+        [System.Xml.Serialization.XmlElementAttribute("Leg")]
+        public LegType[] Leg {
             get {
-                return this.pointField;
+                return this.legField;
             }
             set {
-                this.pointField = value;
+                this.legField = value;
             }
         }
         

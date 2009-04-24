@@ -49,11 +49,19 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Default constructor sets everything to null, for use in deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public StraightLeg()
-            : this(0)
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal StraightLeg(Operation op, StraightLegType t)
+            : base(op, t)
         {
+            if (String.IsNullOrEmpty(t.StartAngle))
+                m_StartAngle = 0.0;
+            else
+                m_StartAngle = RadianValue.Parse(t.StartAngle);
+
+            m_IsDeflection = t.Deflection;
         }
 
         /// <summary>
@@ -739,6 +747,25 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         internal bool IsDeflection
         {
             get { return m_IsDeflection; }
+        }
+
+        /// <summary>
+        /// Returns an object that represents this leg, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
+        /// <returns>The serializable version of this leg</returns>
+        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        {
+            StraightLegType t = new StraightLegType();
+            base.SetSerializableFeature(t, ignorableEndPoint);
+
+            if (Math.Abs(m_StartAngle) > Double.Epsilon)
+                t.StartAngle = RadianValue.AsShortString(m_StartAngle);
+
+            t.Deflection = m_IsDeflection;
+
+            return t;
         }
     }
 }

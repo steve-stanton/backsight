@@ -62,7 +62,7 @@ namespace Backsight.Editor.Operations
             // position at this stage.
 
             // ...so for now, just work with a circle that has no radius. This may get changed
-            // when CalculateGeometry is ultimately called.
+            // when RunEdit is ultimately called.
 
             Circle c = new Circle(m_Center, 0.0);
 
