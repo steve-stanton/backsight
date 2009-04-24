@@ -75,13 +75,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         IEntity m_LineType;
 
-        /// <summary>
-        /// Information loaded about created points (this is a hack, to avoid complications
-        /// during deserialization - it will get defined by the constructor that is used during
-        /// deserialization, then used and nulled by RunEdit).
-        /// </summary>
-        CalculatedFeatureType[] m_Points;
-
         #endregion
 
         #region Constructors
@@ -103,32 +96,12 @@ namespace Backsight.Editor.Operations
             m_PointType = EnvironmentContainer.FindEntityById(t.PointType);
             m_LineType = EnvironmentContainer.FindEntityById(t.LineType);
 
-            // Remember info about created points
-            m_Points = t.Point;
+            // Create the legs (without any geometry)
+            LegType[] legs = t.Leg;
+            m_Legs = new List<Leg>(legs.Length);
 
-            // Parse the path
-            PathData pd = ParsePath();
-
-            // Get the legs (without any attached features)
-            m_Legs = new List<Leg>(pd.GetLegs());
-
-            // Create point features (without any geometry)
-            PointFeature[] points = new PointFeature[t.Point.Length];
-            for (int i=0; i<points.Length; i++)
-            {
-                CalculatedFeatureType cft = t.Point[i];
-                cft.Type = t.PointType;
-                points[i] = new PointFeature(this, cft);
-            }
-
-            // Attach features to the legs (without any position)
-            foreach (Leg leg in m_Legs)
-            {
-                int nspan = leg.Count;
-                for (int i=0; i<nspan; i++)
-                {
-                }
-            }
+            for (int i=0; i<m_Legs.Count; i++)
+                m_Legs[i] = t.Leg[i].LoadLeg(this);
         }
 
         /// <summary>
@@ -473,8 +446,7 @@ namespace Backsight.Editor.Operations
             // If the points was freshly created, assign an ID and add to the list of extra points
             if (Object.ReferenceEquals(result.Creator, this))
             {
-                // During deserialization, the ID will be assigned at the end of CalculateGeometry
-                if (result.Id==null && m_Points==null)
+                if (result.Id==null)
                     result.SetNextId();
 
                 extraPoints.Add(result);
@@ -1114,24 +1086,9 @@ void CePath::CreateAngleText ( CPtrList& text
             t.PointType = m_PointType.Id;
             t.LineType = m_LineType.Id;
 
-            Feature[] features = this.Features;
-            List<CalculatedFeatureType> points = new List<CalculatedFeatureType>(features.Length / 2);
-            foreach (Feature f in features)
-            {
-                if (f is PointFeature)
-                {
-                    CalculatedFeatureType cf = new CalculatedFeatureType();
-                    cf.Id = f.DataId;
-
-                    FeatureId fid = f.Id;
-                    Debug.Assert(fid is NativeId);
-                    cf.Key = fid.RawId;
-                    cf.KeySpecified = true;
-
-                    points.Add(cf);
-                }
-            }
-            t.Point = points.ToArray();
+            t.Leg = new LegType[m_Legs.Count];
+            for (int i=0; i<t.Leg.Length; i++)
+                t.Leg[i] = m_Legs[i].GetSerializableLeg(m_To);
 
             return t;
         }
@@ -1141,8 +1098,6 @@ void CePath::CreateAngleText ( CPtrList& text
         /// </summary>
         internal override void RunEdit()
         {
-            Debug.Assert(m_Points!=null);
-
             // Ensure default entity types have been set to the values they had when
             // this edit was originally executed
             CadastralMapModel mapModel = CadastralMapModel.Current;
@@ -1161,6 +1116,7 @@ void CePath::CreateAngleText ( CPtrList& text
             // that's where creation sequence is attached to points, which is what we need
             // to pick up the associated FeatureData).
 
+            /*
             foreach (PointFeature p in createdPoints)
             {
                 CalculatedFeatureType info = Array.Find<CalculatedFeatureType>(m_Points,
@@ -1174,6 +1130,7 @@ void CePath::CreateAngleText ( CPtrList& text
             }
 
             m_Points = null;
+             */
         }
 
         /// <summary>

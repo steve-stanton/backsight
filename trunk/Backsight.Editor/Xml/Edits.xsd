@@ -79,6 +79,44 @@
       <xs:extension base="FeatureType" />
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="CircularLegType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="LegType">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="DistanceType">
+            <xs:annotation>
+              <xs:documentation>The observed radius of the leg.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="1" maxOccurs="1" name="Center" type="CalculatedFeatureType">
+            <xs:annotation>
+              <xs:documentation>The point at the center of the circle that this leg coincides with</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Angle1" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>First angle, in DMS format. Either at the BC, or a central angle (it's a central angle if the CulDeSac attribute is true).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Angle2" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>The angle at the EC, in DMS format.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="CulDeSac" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>Is the leg a cul-de-sac (if so, the Angle1 attribute is the central angle)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Clockwise" type="xs:boolean" use="required">
+          <xs:annotation>
+            <xs:documentation>Are the arcs along the leg directed in a clockwise direction?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="DeflectionType">
     <xs:complexContent mixed="false">
       <xs:extension base="AngleType" />
@@ -379,6 +417,16 @@ Dealing with these two components as a single formatted string may well be "bad"
       <xs:extension base="TextType" />
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="LegType" abstract="true">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Span" type="SpanType" />
+    </xs:sequence>
+    <xs:attribute default="0" name="Face" type="xs:unsignedByte" use="optional">
+      <xs:annotation>
+        <xs:documentation>The face number of this leg (if this leg is staggered). In the range [0,2]. A value of zero means the leg is not staggered.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
   <xs:complexType name="LineType" abstract="true">
     <xs:annotation>
       <xs:documentation>A line feature plus its associated geometry. The base type is suitable for simple line segments (probably 80% of all lines in a cadastral mapping environment).</xs:documentation>
@@ -671,9 +719,9 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
         <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Leg" type="LegType">
             <xs:annotation>
-              <xs:documentation>The points created along the connection path</xs:documentation>
+              <xs:documentation>The legs that make up the path</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
@@ -873,6 +921,22 @@ The first and last positions are assumed to match the positions of the point fea
         </xs:annotation>
       </xs:element>
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StraightLegType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="LegType">
+        <xs:attribute name="StartAngle" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>The angle at the start of the leg, in DMS format. A negated value indicates an anticlockwise angle.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute default="false" name="Deflection" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>Is the angle at the start of this leg a deflection?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="TextRotationType">
     <xs:annotation>

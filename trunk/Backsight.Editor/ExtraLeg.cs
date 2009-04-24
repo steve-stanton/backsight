@@ -258,5 +258,16 @@ namespace Backsight.Editor
             // Turn it over to the base leg.
             return m_Base.SaveFace(op, this);
         }
+
+        /// <summary>
+        /// Returns an object that represents this leg, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
+        /// <returns>The serializable version of this leg</returns>
+        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        {
+            throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
+        }
     }
 }

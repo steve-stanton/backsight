@@ -140,6 +140,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Attempts to parse an angle string into radians
+        /// </summary>
+        /// <param name="str">The angle string (in DMS format)</param>
+        /// <returns>The corresponding angle in radians (may be less than zero)</returns>
+        /// <exception cref="FormatException">If the supplied string cannot be parse using a call to
+        /// the <see cref="TryParse"/> method.</exception>
+        public static double Parse(string str)
+        {
+            double result;
+            if (!TryParse(str, out result))
+                throw new FormatException("Cannot parse angle: "+str);
+
+            return result;
+        }
+
+        /// <summary>
         /// Attempt to convert an angle string from DMS format into radians.
         /// </summary>
         /// <param name="str">The string to convert.</param>

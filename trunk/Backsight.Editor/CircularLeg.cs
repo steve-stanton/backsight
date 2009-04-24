@@ -68,18 +68,35 @@ namespace Backsight.Editor
 
         #region Constructors
 
-
         /// <summary>
-        /// Default constructor sets everything to null, for use in deserialization
+        /// Constructor for use during deserialization
         /// </summary>
-        public CircularLeg()
-            : base(0)
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal CircularLeg(Operation op, CircularLegType t)
+            : base(op, t)
         {
             m_Angle1 = 0.0;
             m_Angle2 = 0.0;
-            m_Radius = null;
-            m_Circle = null;
-            m_Flag = 0;
+
+            if (!String.IsNullOrEmpty(t.Angle1))
+                m_Angle1 = RadianValue.Parse(t.Angle1);
+
+            if (!String.IsNullOrEmpty(t.Angle2))
+            {
+                m_Angle2 = RadianValue.Parse(t.Angle2);
+                this.IsTwoAngles = true;
+            }
+
+            this.IsCulDeSac = t.CulDeSac;
+            this.IsClockwise = t.Clockwise;
+            m_Radius = new Distance(op, t.Radius);
+
+            // Create a circle with no radius (the actual radius may not exactly match
+            // the observed radius, but we won't know the adjusted value until geometry
+            // gets defined)
+            PointFeature center = new PointFeature(op, t.Center);
+            m_Circle = new Circle(center, 0.0);
         }
 
         /// <summary>
@@ -1389,6 +1406,30 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // Ensure the radius is correct.
             if (m_Circle!=null)
                 m_Circle.Radius = span.ScaledRadius;
+        }
+
+        /// <summary>
+        /// Returns an object that represents this leg, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// </summary>
+        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
+        /// <returns>The serializable version of this leg</returns>
+        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        {
+            CircularLegType t = new CircularLegType();
+            base.SetSerializableFeature(t, ignorableEndPoint);
+
+            if (Math.Abs(m_Angle1) > Double.Epsilon)
+                t.Angle1 = RadianValue.AsShortString(m_Angle1);
+            if (Math.Abs(m_Angle2) > Double.Epsilon)
+                t.Angle2 = RadianValue.AsShortString(m_Angle2);
+
+            t.CulDeSac = IsCulDeSac;
+            t.Clockwise = IsClockwise;
+            t.Radius = new DistanceType(m_Radius);
+            t.Center = new CalculatedFeatureType(m_Circle.CenterPoint);
+
+            return t;
         }
     }
 }
