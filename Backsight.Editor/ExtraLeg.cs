@@ -263,9 +263,8 @@ namespace Backsight.Editor
         /// Returns an object that represents this leg, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        internal override LegType GetSerializableLeg()
         {
             throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
         }

@@ -53,8 +53,10 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal StraightLeg(Operation op, StraightLegType t)
-            : base(op, t)
+        /// <param name="startPoint">The point (if any) at the start of this leg (may be
+        /// null if the preceding leg ended with the "omit point" option)</param>
+        internal StraightLeg(Operation op, StraightLegType t, PointFeature startPoint)
+            : base(op, t, startPoint)
         {
             if (String.IsNullOrEmpty(t.StartAngle))
                 m_StartAngle = 0.0;
@@ -753,12 +755,11 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// Returns an object that represents this leg, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        internal override LegType GetSerializableLeg()
         {
             StraightLegType t = new StraightLegType();
-            base.SetSerializableFeature(t, ignorableEndPoint);
+            base.SetSerializableFeature(t);
 
             if (Math.Abs(m_StartAngle) > Double.Epsilon)
                 t.StartAngle = RadianValue.AsShortString(m_StartAngle);

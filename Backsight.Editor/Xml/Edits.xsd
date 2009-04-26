@@ -730,29 +730,10 @@ The first and last positions are assumed to match the positions of the point fea
             <xs:documentation>The point where the path starts.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="To" type="IdType" use="required">
-          <xs:annotation>
-            <xs:documentation>The point where the path ends.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
+        <xs:attribute name="To" type="IdType" use="required" />
         <xs:attribute name="EntryString" type="xs:string" use="required">
           <xs:annotation>
             <xs:documentation>The data entry string that defines the connection path.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute default="0" name="DefaultEntryUnit" type="xs:int" use="optional">
-          <xs:annotation>
-            <xs:documentation>The default distance units when this edit was originally executed.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute default="0" name="PointType" type="xs:int" use="optional">
-          <xs:annotation>
-            <xs:documentation>The ID of the entity type assigned to created points</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute default="0" name="LineType" type="xs:int" use="optional">
-          <xs:annotation>
-            <xs:documentation>The ID of the entity type assigned to created lines</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>
@@ -902,7 +883,11 @@ The first and last positions are assumed to match the positions of the point fea
   </xs:complexType>
   <xs:complexType name="SpanType">
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" name="Length" type="DistanceType" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="DistanceType">
+        <xs:annotation>
+          <xs:documentation>The observed length for the span. May be omitted when dealing with a cul-de-sac specified with center point and central angle.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
       <xs:choice minOccurs="0" maxOccurs="1">
         <xs:element minOccurs="0" maxOccurs="1" name="LineId" type="IdType">
           <xs:annotation>

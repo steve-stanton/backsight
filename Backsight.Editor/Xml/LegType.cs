@@ -30,8 +30,10 @@ namespace Backsight.Editor.Xml
         /// deserialization from the database.
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
+        /// <param name="startPoint">The point (if any) at the start of this leg (may be
+        /// null if the preceding leg ended with the "omit point" option)</param>
         /// <returns>The leg that was loaded</returns>
-        internal virtual Leg LoadLeg(Operation op)
+        internal virtual Leg LoadLeg(Operation op, PointFeature startPoint)
         {
             throw new NotImplementedException("LoadLeg not implemented by: " + GetType().Name);
         }
