@@ -56,8 +56,36 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected Leg(Operation op, LegType t)
+        /// <param name="startPoint">The point (if any) at the start of this leg (may be
+        /// null if the preceding leg ended with the "omit point" option)</param>
+        protected Leg(Operation op, LegType t, PointFeature startPoint)
         {
+            m_FaceNumber = t.Face;
+
+            m_Spans = new SpanData[t.Span.Length];
+            PointFeature start = startPoint;
+            PointFeature end;
+
+            for (int i = 0; i < m_Spans.Length; i++)
+            {
+                SpanType span = t.Span[i];
+                SpanData spanData = new SpanData();
+                spanData.IsMissConnect = (span.LineId == null);
+
+                if (span.EndPoint == null)
+                {
+                    // The end point may be null either if the user specified "omit point", or
+                    // we're dealing with the last span in a connection path.
+
+                }
+                else
+                    end = new PointFeature(op, span.EndPoint);
+
+                Distance d = (span.Length == null ? null : new Distance(op, span.Length));
+                spanData.ObservedDistance = d;
+
+                m_Spans[i] = spanData;
+            }
         }
 
         protected Leg(int nspan)
@@ -144,6 +172,23 @@ namespace Backsight.Editor
                 return false;
             else
                 return sd.HasEndPoint;
+        }
+
+        /// <summary>
+        /// The point (if any) at the end of this leg (may be null if the end
+        /// of the leg was defined with the "omit point" option)
+        /// </summary>
+        internal PointFeature EndPoint
+        {
+            get
+            {
+                SpanData lastSpan = m_Spans[m_Spans.Length - 1];
+                Feature f = lastSpan.CreatedFeature;
+                if (f is LineFeature)
+                    return (f as LineFeature).EndPoint;
+                else
+                    return (f as PointFeature);
+            }
         }
 
         /*
@@ -1333,17 +1378,15 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// Returns an object that represents this leg, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
         /// <returns>The serializable version of this leg</returns>
-        abstract internal LegType GetSerializableLeg(PointFeature ignorableEndPoint);
+        abstract internal LegType GetSerializableLeg();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this leg</param>
-        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
-        protected void SetSerializableFeature(LegType t, PointFeature ignorableEndPoint)
+        protected void SetSerializableFeature(LegType t)
         {
             t.Face = m_FaceNumber;
             t.Span = new SpanType[m_Spans.Length];
@@ -1352,7 +1395,12 @@ void CeLeg::MakeText ( const CeVertex& bs
             {
                 SpanData span = m_Spans[i];
                 SpanType st = new SpanType();
-                st.Length = new DistanceType(span.ObservedDistance);
+
+                // The distance may be null when dealing with a culdesac defined
+                // only with central angle.
+                Distance d = span.ObservedDistance;
+                if (d != null)
+                    st.Length = new DistanceType(d);
 
                 // The feature is either a line, the end point, or null
                 Feature f = span.CreatedFeature;
@@ -1368,7 +1416,7 @@ void CeLeg::MakeText ( const CeVertex& bs
                     p = (f as PointFeature);
                 }
 
-                if (p != null && !object.ReferenceEquals(p, ignorableEndPoint))
+                if (p != null)
                     st.EndPoint = new CalculatedFeatureType(p);
 
                 t.Span[i] = st;

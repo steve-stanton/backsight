@@ -73,8 +73,10 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal CircularLeg(Operation op, CircularLegType t)
-            : base(op, t)
+        /// <param name="startPoint">The point (if any) at the start of this leg (may be
+        /// null if the preceding leg ended with the "omit point" option)</param>
+        internal CircularLeg(Operation op, CircularLegType t, PointFeature startPoint)
+            : base(op, t, startPoint)
         {
             m_Angle1 = 0.0;
             m_Angle2 = 0.0;
@@ -1412,12 +1414,11 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// Returns an object that represents this leg, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// </summary>
-        /// <param name="ignorableEndPoint">Any point that can be ignored at the end of a leg</param>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg(PointFeature ignorableEndPoint)
+        internal override LegType GetSerializableLeg()
         {
             CircularLegType t = new CircularLegType();
-            base.SetSerializableFeature(t, ignorableEndPoint);
+            base.SetSerializableFeature(t);
 
             if (Math.Abs(m_Angle1) > Double.Epsilon)
                 t.Angle1 = RadianValue.AsShortString(m_Angle1);

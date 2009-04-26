@@ -92,16 +92,17 @@ namespace Backsight.Editor.Operations
             m_From = mapModel.Find<PointFeature>(t.From);
             m_To = mapModel.Find<PointFeature>(t.To);
             m_EntryString = t.EntryString;
-            m_DefaultEntryUnit = EditingController.Current.GetUnits((DistanceUnitType)t.DefaultEntryUnit);
-            m_PointType = EnvironmentContainer.FindEntityById(t.PointType);
-            m_LineType = EnvironmentContainer.FindEntityById(t.LineType);
 
             // Create the legs (without any geometry)
             LegType[] legs = t.Leg;
             m_Legs = new List<Leg>(legs.Length);
+            PointFeature startPoint = m_From;
 
-            for (int i=0; i<m_Legs.Count; i++)
-                m_Legs[i] = t.Leg[i].LoadLeg(this);
+            for (int i = 0; i < m_Legs.Count; i++)
+            {
+                m_Legs[i] = t.Leg[i].LoadLeg(this, startPoint);
+                startPoint = m_Legs[i].EndPoint;
+            }
         }
 
         /// <summary>
@@ -1077,18 +1078,10 @@ void CePath::CreateAngleText ( CPtrList& text
             t.From = m_From.DataId;
             t.To = m_To.DataId;
             t.EntryString = m_EntryString;
-
-            // The default data entry units have a bearing on how the entry string should
-            // be interpreted
-            t.DefaultEntryUnit = (int)m_DefaultEntryUnit.UnitType;
-
-            // Default entity types for points and lines
-            t.PointType = m_PointType.Id;
-            t.LineType = m_LineType.Id;
-
             t.Leg = new LegType[m_Legs.Count];
+
             for (int i=0; i<t.Leg.Length; i++)
-                t.Leg[i] = m_Legs[i].GetSerializableLeg(m_To);
+                t.Leg[i] = m_Legs[i].GetSerializableLeg();
 
             return t;
         }
