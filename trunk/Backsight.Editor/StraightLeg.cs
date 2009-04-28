@@ -55,7 +55,10 @@ namespace Backsight.Editor
         /// <param name="t">The serialized version of this feature</param>
         /// <param name="startPoint">The point (if any) at the start of this leg (may be
         /// null if the preceding leg ended with the "omit point" option)</param>
-        internal StraightLeg(PathOperation op, StraightLegType t, PointFeature startPoint)
+        /// <param name="lineType">The entity type to assign to any lines created
+        /// along the length of this leg</param>
+        internal StraightLeg(PathOperation op, StraightLegType t, PointFeature startPoint,
+                                IEntity lineType)
             : base(op, t)
         {
             if (String.IsNullOrEmpty(t.StartAngle))
@@ -65,7 +68,7 @@ namespace Backsight.Editor
 
             m_IsDeflection = t.Deflection;
 
-            CreateSpans(op, t.Span, startPoint);
+            CreateSpans(op, t.Span, startPoint, lineType);
         }
 
         /// <summary>

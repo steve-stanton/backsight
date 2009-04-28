@@ -84,9 +84,12 @@ namespace Backsight.Editor
         /// <param name="spabs">The serialized version of the spans</param>
         /// <param name="startPoint">The point (if any) at the start of this leg (may be
         /// null if the preceding leg ended with the "omit point" option)</param>
+        /// <param name="lineType">The entity type to assign to any lines created
+        /// along the length of this leg</param>
         /// <returns>The point feature at the end of the span (null if the leg ends with
         /// the "omit point" option).</returns>
-        protected PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint)
+        protected PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint,
+                                            IEntity lineType)
         {
             m_Spans = new SpanData[spans.Length];
             PointFeature start = startPoint;
@@ -96,7 +99,6 @@ namespace Backsight.Editor
             {
                 SpanType span = spans[i];
                 SpanData spanData = new SpanData();
-                spanData.IsMissConnect = (span.LineId == null);
 
                 // The end point may be null if the user specified "omit point" (when dealing
                 // with the very last span of the very last leg, the end point is actually
@@ -116,11 +118,13 @@ namespace Backsight.Editor
                     spanData.CreatedFeature = end;
                 }
 
-                if (span.LineId != null)
+                if (span.LineId == null)
+                    spanData.IsMissConnect = true;
+                else
                 {
                     CalculatedFeatureType cft = new CalculatedFeatureType();
                     cft.Id = span.LineId;
-                    cft.Type = op.MapModel.DefaultLineType.Id;
+                    cft.Type = lineType.Id;
 
                     Circle circle = this.Circle;
                     if (circle == null)

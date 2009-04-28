@@ -1604,6 +1604,10 @@ namespace Backsight.Editor.Xml {
         
         private string entryStringField;
         
+        private int lineTypeField;
+        
+        private int pointTypeField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Leg")]
         public LegType[] Leg {
@@ -1645,6 +1649,28 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.entryStringField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LineType {
+            get {
+                return this.lineTypeField;
+            }
+            set {
+                this.lineTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int PointType {
+            get {
+                return this.pointTypeField;
+            }
+            set {
+                this.pointTypeField = value;
             }
         }
     }
