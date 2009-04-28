@@ -193,5 +193,29 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Implements the &lt; operator
+        /// </summary>
+        /// <param name="a">The first ID</param>
+        /// <param name="b">The second ID</param>
+        /// <returns>True if the first ID precedes the second ID. False if the first ID is greater than
+        /// or equal to the second ID.</returns>
+        public static bool operator<(InternalIdValue a, InternalIdValue b)
+        {
+            return (a.CompareTo(b) < 0);
+        }
+
+        /// <summary>
+        /// Implements the &gt; operator
+        /// </summary>
+        /// <param name="a">The first ID</param>
+        /// <param name="b">The second ID</param>
+        /// <returns>True if the first ID comes after the second ID. False if the first ID is less than
+        /// or equal to the second ID.</returns>
+        public static bool operator>(InternalIdValue a, InternalIdValue b)
+        {
+            return (a.CompareTo(b) > 0);
+        }
     }
 }

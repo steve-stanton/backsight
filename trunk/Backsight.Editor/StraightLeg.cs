@@ -51,12 +51,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
         /// <param name="startPoint">The point (if any) at the start of this leg (may be
         /// null if the preceding leg ended with the "omit point" option)</param>
-        internal StraightLeg(Operation op, StraightLegType t, PointFeature startPoint)
-            : base(op, t, startPoint)
+        internal StraightLeg(PathOperation op, StraightLegType t, PointFeature startPoint)
+            : base(op, t)
         {
             if (String.IsNullOrEmpty(t.StartAngle))
                 m_StartAngle = 0.0;
@@ -64,6 +64,8 @@ namespace Backsight.Editor
                 m_StartAngle = RadianValue.Parse(t.StartAngle);
 
             m_IsDeflection = t.Deflection;
+
+            CreateSpans(op, t.Span, startPoint);
         }
 
         /// <summary>

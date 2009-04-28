@@ -54,38 +54,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg (may be
-        /// null if the preceding leg ended with the "omit point" option)</param>
-        protected Leg(Operation op, LegType t, PointFeature startPoint)
+        protected Leg(PathOperation op, LegType t)
         {
+            // The spans are undefined for the time being. The derived constructor should
+            // make a call to CreateSpans after it has initialized everything else.
+            m_Spans = null;
             m_FaceNumber = t.Face;
-
-            m_Spans = new SpanData[t.Span.Length];
-            PointFeature start = startPoint;
-            PointFeature end;
-
-            for (int i = 0; i < m_Spans.Length; i++)
-            {
-                SpanType span = t.Span[i];
-                SpanData spanData = new SpanData();
-                spanData.IsMissConnect = (span.LineId == null);
-
-                if (span.EndPoint == null)
-                {
-                    // The end point may be null either if the user specified "omit point", or
-                    // we're dealing with the last span in a connection path.
-
-                }
-                else
-                    end = new PointFeature(op, span.EndPoint);
-
-                Distance d = (span.Length == null ? null : new Distance(op, span.Length));
-                spanData.ObservedDistance = d;
-
-                m_Spans[i] = spanData;
-            }
         }
 
         protected Leg(int nspan)
@@ -99,6 +75,72 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates features to represent each span along the length of this leg. This will
+        /// be called at the end of constructors in derived classes.
+        /// </summary>
+        /// <param name="op">The editing operation creating the leg</param>
+        /// <param name="spabs">The serialized version of the spans</param>
+        /// <param name="startPoint">The point (if any) at the start of this leg (may be
+        /// null if the preceding leg ended with the "omit point" option)</param>
+        /// <returns>The point feature at the end of the span (null if the leg ends with
+        /// the "omit point" option).</returns>
+        protected PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint)
+        {
+            m_Spans = new SpanData[spans.Length];
+            PointFeature start = startPoint;
+            PointFeature end = null;
+
+            for (int i = 0; i < m_Spans.Length; i++)
+            {
+                SpanType span = spans[i];
+                SpanData spanData = new SpanData();
+                spanData.IsMissConnect = (span.LineId == null);
+
+                // The end point may be null if the user specified "omit point" (when dealing
+                // with the very last span of the very last leg, the end point is actually
+                // the pre-existing point that the connection path terminated on).
+                CalculatedFeatureType ep = span.EndPoint;
+                if (ep == null)
+                    spanData.IsOmitPoint = true;
+                else
+                {
+                    end = op.MapModel.Find<PointFeature>(ep.Id);
+                    if (end == null)
+                        end = new PointFeature(op, ep);
+
+                    // Remember the end point as the feature created by the span (it may actually
+                    // be the very end of the connection path). If we've actually got a line, this
+                    // will be replaced below.
+                    spanData.CreatedFeature = end;
+                }
+
+                if (span.LineId != null)
+                {
+                    CalculatedFeatureType cft = new CalculatedFeatureType();
+                    cft.Id = span.LineId;
+                    cft.Type = op.MapModel.DefaultLineType.Id;
+
+                    Circle circle = this.Circle;
+                    if (circle == null)
+                        spanData.CreatedFeature = new LineFeature(op, start, end, cft);
+                    else
+                    {
+                        bool isClockwise = (this as CircularLeg).IsClockwise;
+                        spanData.CreatedFeature = new ArcFeature(op, circle, start, end, isClockwise, cft);
+                    }
+                }
+
+                Distance d = (span.Length == null ? null : new Distance(op, span.Length));
+                spanData.ObservedDistance = d;
+
+                m_Spans[i] = spanData;
+                start = end;
+            }
+
+            return end;
+        }
 
         abstract public Circle Circle { get; }
         abstract public ILength Length { get; }
