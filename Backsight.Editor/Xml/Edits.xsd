@@ -736,6 +736,8 @@ The first and last positions are assumed to match the positions of the point fea
             <xs:documentation>The data entry string that defines the connection path.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="LineType" type="xs:int" use="required" />
+        <xs:attribute name="PointType" type="xs:int" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

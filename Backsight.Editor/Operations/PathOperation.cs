@@ -98,9 +98,11 @@ namespace Backsight.Editor.Operations
             m_Legs = new List<Leg>(legs.Length);
             PointFeature startPoint = m_From;
 
+            IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
+
             for (int i = 0; i < m_Legs.Count; i++)
             {
-                m_Legs[i] = t.Leg[i].LoadLeg(this, startPoint);
+                m_Legs[i] = t.Leg[i].LoadLeg(this, startPoint, lineType);
                 startPoint = m_Legs[i].EndPoint;
             }
         }
@@ -1078,6 +1080,8 @@ void CePath::CreateAngleText ( CPtrList& text
             t.From = m_From.DataId;
             t.To = m_To.DataId;
             t.EntryString = m_EntryString;
+            t.PointType = MapModel.DefaultPointType.Id;
+            t.LineType = MapModel.DefaultLineType.Id;
             t.Leg = new LegType[m_Legs.Count];
 
             for (int i=0; i<t.Leg.Length; i++)

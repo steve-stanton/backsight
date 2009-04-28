@@ -75,7 +75,10 @@ namespace Backsight.Editor
         /// <param name="t">The serialized version of this feature</param>
         /// <param name="startPoint">The point (if any) at the start of this leg (may be
         /// null if the preceding leg ended with the "omit point" option)</param>
-        internal CircularLeg(PathOperation op, CircularLegType t, PointFeature startPoint)
+        /// <param name="lineType">The entity type to assign to any lines created
+        /// along the length of this leg</param>
+        internal CircularLeg(PathOperation op, CircularLegType t, PointFeature startPoint,
+                                IEntity lineType)
             : base(op, t)
         {
             m_Angle1 = 0.0;
@@ -100,7 +103,7 @@ namespace Backsight.Editor
             PointFeature center = new PointFeature(op, t.Center);
             m_Circle = new Circle(center, 0.0);
 
-            CreateSpans(op, t.Span, startPoint);
+            CreateSpans(op, t.Span, startPoint, lineType);
         }
 
         /// <summary>
