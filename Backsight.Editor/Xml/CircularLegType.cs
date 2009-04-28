@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
@@ -29,7 +30,7 @@ namespace Backsight.Editor.Xml
         /// <param name="startPoint">The point (if any) at the start of this leg (may be
         /// null if the preceding leg ended with the "omit point" option)</param>
         /// <returns>The leg that was loaded</returns>
-        internal override Leg LoadLeg(Operation op, PointFeature startPoint)
+        internal override Leg LoadLeg(PathOperation op, PointFeature startPoint)
         {
             return new CircularLeg(op, this, startPoint);
         }
