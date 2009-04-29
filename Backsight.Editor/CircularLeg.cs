@@ -73,12 +73,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg (may be
-        /// null if the preceding leg ended with the "omit point" option)</param>
-        /// <param name="lineType">The entity type to assign to any lines created
-        /// along the length of this leg</param>
-        internal CircularLeg(PathOperation op, CircularLegType t, PointFeature startPoint,
-                                IEntity lineType)
+        internal CircularLeg(Operation op, CircularLegType t)
             : base(op, t)
         {
             m_Angle1 = 0.0;
@@ -102,8 +97,6 @@ namespace Backsight.Editor
             // gets defined)
             PointFeature center = new PointFeature(op, t.Center);
             m_Circle = new Circle(center, 0.0);
-
-            CreateSpans(op, t.Span, startPoint, lineType);
         }
 
         /// <summary>
@@ -438,18 +431,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates features that correspond to this leg (without attaching any geometry to the features),
-        /// for use during deserialization.
+        /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="points">Information about new points along the length of the connection path</param>
-        /// <param name="pointType">The entity type that should be assigned to points</param>
-        /// <param name="lineType">The entity type that should be assigned to lines</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        internal override void CreateFeatures(PathOperation op, CalculatedFeatureType[] points,
-                                                IEntity pointType, IEntity lineType, List<PointFeature> createdPoints)
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
         {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         /// <summary>

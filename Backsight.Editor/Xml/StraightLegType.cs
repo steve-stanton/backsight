@@ -28,14 +28,10 @@ namespace Backsight.Editor.Xml
         /// Loads this leg as part of an editing operation.
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg (may be
-        /// null if the preceding leg ended with the "omit point" option)</param>
-        /// <param name="lineType">The entity type to assign to any lines created
-        /// along the length of this leg</param>
         /// <returns>The leg that was loaded</returns>
-        internal override Leg LoadLeg(PathOperation op, PointFeature startPoint, IEntity lineType)
+        internal override Leg LoadLeg(Operation op)
         {
-            return new StraightLeg(op, this, startPoint, lineType);
+            return new StraightLeg(op, this);
         }
     }
 }
