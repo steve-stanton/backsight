@@ -439,6 +439,41 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
         {
+            // Create an undefined circular span
+            CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
+
+            // The circle should have been created already, but with an undefined radius
+            Debug.Assert(m_Circle != null);
+            m_Circle.Radius = span.ScaledRadius;
+            m_Circle.CenterPoint.PointGeometry = PointGeometry.Create(span.Center);
+
+            // Create geometry for each span. Note that for cul-de-sacs, there may be
+            // no observed spans.
+            int nspan = Math.Max(1, this.Count);
+
+            for (int i = 0; i < nspan; i++)
+            {
+                // Get info for the current span (this defines the
+                // adjusted start and end positions, among other things).
+                span.Get(i);
+
+                // Create the geometry for the point at the end of the span
+                SpanData data = GetSpanData(i);
+                Feature feat = data.CreatedFeature;
+                PointFeature endPoint = null;
+
+                if (feat is PointFeature)
+                    endPoint = (PointFeature)feat;
+                else if (feat is LineFeature)
+                    endPoint = (feat as LineFeature).EndPoint;
+
+                if (endPoint != null && endPoint.PointGeometry == null)
+                    endPoint.PointGeometry = PointGeometry.Create(span.End);
+            }
+
+            // Update BC info to refer to the EC.
+            terminal = span.EC;
+            bearing = span.ExitBearing;
         }
 
         /// <summary>
