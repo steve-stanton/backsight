@@ -163,21 +163,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates features that correspond to this leg (without attaching any geometry to the features),
-        /// for use during deserialization.
-        /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="points">Information about new points along the length of the connection path</param>
-        /// <param name="pointType">The entity type that should be assigned to points</param>
-        /// <param name="lineType">The entity type that should be assigned to lines</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        internal override void CreateFeatures(PathOperation op, CalculatedFeatureType[] points,
-                                                IEntity pointType, IEntity lineType, List<PointFeature> createdPoints)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        /// <summary>
         /// Rollforward this leg.
         /// </summary>
         /// <param name="insert">The point of the end of any new insert that immediately
@@ -267,6 +252,18 @@ namespace Backsight.Editor
         internal override LegType GetSerializableLeg()
         {
             throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
+        }
+
+        /// <summary>
+        /// Defines the geometry for this leg (for use during deserialization).
+        /// </summary>
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
+        {
+            throw new NotImplementedException("ExtraLeg.CreateGeometry");
         }
     }
 }

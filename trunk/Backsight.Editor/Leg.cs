@@ -56,7 +56,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected Leg(PathOperation op, LegType t)
+        protected Leg(Operation op, LegType t)
         {
             // The spans are undefined for the time being. The derived constructor should
             // make a call to CreateSpans after it has initialized everything else.
@@ -77,8 +77,8 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// Creates features to represent each span along the length of this leg. This will
-        /// be called at the end of constructors in derived classes.
+        /// Creates features to represent each span along the length of this leg.
+        /// For use during deserialization.
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="spabs">The serialized version of the spans</param>
@@ -88,7 +88,7 @@ namespace Backsight.Editor
         /// along the length of this leg</param>
         /// <returns>The point feature at the end of the span (null if the leg ends with
         /// the "omit point" option).</returns>
-        protected PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint,
+        internal PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint,
                                             IEntity lineType)
         {
             m_Spans = new SpanData[spans.Length];
@@ -100,14 +100,14 @@ namespace Backsight.Editor
                 SpanType span = spans[i];
                 SpanData spanData = new SpanData();
 
-                // The end point may be null if the user specified "omit point" (when dealing
-                // with the very last span of the very last leg, the end point is actually
-                // the pre-existing point that the connection path terminated on).
+                // The end point may be null if the user specified "omit point"
                 CalculatedFeatureType ep = span.EndPoint;
                 if (ep == null)
                     spanData.IsOmitPoint = true;
                 else
                 {
+                    // When dealing with the very last span of the very last leg, the end point is
+                    // actually the pre-existing point that the connection path terminated on.
                     end = op.MapModel.Find<PointFeature>(ep.Id);
                     if (end == null)
                         end = new PointFeature(op, ep);
@@ -176,17 +176,15 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         abstract internal void Save(PathOperation op, List<PointFeature> createdPoints, ref IPosition terminal,
                                         ref double bearing, double sfac);
+
         /// <summary>
-        /// Creates features that correspond to this leg (without attaching any geometry to the features),
-        /// for use during deserialization.
+        /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="points">Information about new points along the length of the connection path</param>
-        /// <param name="pointType">The entity type that should be assigned to points</param>
-        /// <param name="lineType">The entity type that should be assigned to lines</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        abstract internal void CreateFeatures(PathOperation op, CalculatedFeatureType[] points, IEntity pointType,
-                                                IEntity lineType, List<PointFeature> createdPoints);
+        /// <param name="terminal">The position for the start of the leg. Updated to be
+        /// the position for the end of the leg.</param>
+        /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        abstract internal void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac);
 
         abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
@@ -220,22 +218,22 @@ namespace Backsight.Editor
                 return sd.HasEndPoint;
         }
 
-        /// <summary>
-        /// The point (if any) at the end of this leg (may be null if the end
-        /// of the leg was defined with the "omit point" option)
-        /// </summary>
-        internal PointFeature EndPoint
-        {
-            get
-            {
-                SpanData lastSpan = m_Spans[m_Spans.Length - 1];
-                Feature f = lastSpan.CreatedFeature;
-                if (f is LineFeature)
-                    return (f as LineFeature).EndPoint;
-                else
-                    return (f as PointFeature);
-            }
-        }
+        ///// <summary>
+        ///// The point (if any) at the end of this leg (may be null if the end
+        ///// of the leg was defined with the "omit point" option)
+        ///// </summary>
+        //internal PointFeature EndPoint
+        //{
+        //    get
+        //    {
+        //        SpanData lastSpan = m_Spans[m_Spans.Length - 1];
+        //        Feature f = lastSpan.CreatedFeature;
+        //        if (f is LineFeature)
+        //            return (f as LineFeature).EndPoint;
+        //        else
+        //            return (f as PointFeature);
+        //    }
+        //}
 
         /*
         internal bool IsDeflection

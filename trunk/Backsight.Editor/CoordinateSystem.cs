@@ -257,7 +257,7 @@ namespace Backsight.Editor
 	        double eta2 = eta*eta;
             double eta4 = eta2*eta2;
             double eta6 = eta4*eta2;
-            double eta8 = eta6*eta4;
+            double eta8 = eta6*eta4; // SS20090428 - UM, IS THIS SUPPOSED TO BE *eta2 ? (old CEdit code had *eta4)
 
             double x2 = x*x;
             double x4 = x2*x2;

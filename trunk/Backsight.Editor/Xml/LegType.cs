@@ -32,12 +32,8 @@ namespace Backsight.Editor.Xml
         /// deserialization from the database.
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg (may be
-        /// null if the preceding leg ended with the "omit point" option)</param>
-        /// <param name="lineType">The entity type to assign to any lines created
-        /// along the length of this leg</param>
         /// <returns>The leg that was loaded</returns>
-        internal virtual Leg LoadLeg(PathOperation op, PointFeature startPoint, IEntity lineType)
+        internal virtual Leg LoadLeg(Operation op)
         {
             throw new NotImplementedException("LoadLeg not implemented by: " + GetType().Name);
         }

@@ -93,17 +93,18 @@ namespace Backsight.Editor.Operations
             m_To = mapModel.Find<PointFeature>(t.To);
             m_EntryString = t.EntryString;
 
-            // Create the legs (without any geometry)
+            // Create the legs
             LegType[] legs = t.Leg;
             m_Legs = new List<Leg>(legs.Length);
             PointFeature startPoint = m_From;
-
             IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
 
             for (int i = 0; i < m_Legs.Count; i++)
             {
-                m_Legs[i] = t.Leg[i].LoadLeg(this, startPoint, lineType);
-                startPoint = m_Legs[i].EndPoint;
+                m_Legs[i] = t.Leg[i].LoadLeg(this);
+
+                // Create features for each span (without any geometry)
+                startPoint = m_Legs[i].CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
             }
         }
 
@@ -1095,53 +1096,22 @@ void CePath::CreateAngleText ( CPtrList& text
         /// </summary>
         internal override void RunEdit()
         {
-            // Ensure default entity types have been set to the values they had when
-            // this edit was originally executed
-            CadastralMapModel mapModel = CadastralMapModel.Current;
-            mapModel.SetDefaultEntity(SpatialType.Point, m_PointType);
-            mapModel.SetDefaultEntity(SpatialType.Line, m_LineType);
+            // Get the rotation & scale factor to apply.
+            PathData pd = ParsePath();
+            double rotation = pd.RotationInRadians;
+            double sfac = pd.ScaleFactor;
 
-            // Ensure the session item count is in agreement with the sequence
-            // number of this edit
-            Session.CurrentSession.NumItem = this.EditSequence;
+            // Go through each leg, creating the geometry for each span...
 
-            // Create stuff
-            List<PointFeature> createdPoints = CreateFeatures();
-            Complete();
+            // Initialize position to the start of the path.
+            IPosition gotend = m_From;
 
-            // Attach IDs to point features (need to do this after the Complete call, since
-            // that's where creation sequence is attached to points, which is what we need
-            // to pick up the associated FeatureData).
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
 
-            /*
-            foreach (PointFeature p in createdPoints)
-            {
-                CalculatedFeatureType info = Array.Find<CalculatedFeatureType>(m_Points,
-                    delegate(CalculatedFeatureType t) { return (t.Id == p.DataId); });
-
-                if (info != null)
-                {
-                    FeatureId id = MapModel.FindNativeId(info.Key);
-                    p.SetId(id);
-                }
-            }
-
-            m_Points = null;
-             */
-        }
-
-        /// <summary>
-        /// The last leg in this connection path
-        /// </summary>
-        internal Leg LastLeg
-        {
-            get
-            {
-                if (m_Legs == null || m_Legs.Count == 0)
-                    return null;
-                else
-                    return m_Legs[m_Legs.Count-1];
-            }
+            // Go through each leg, asking them to make features.
+            foreach (Leg leg in m_Legs)
+                leg.CreateGeometry(ref gotend, ref bearing, sfac);
         }
     }
 }
