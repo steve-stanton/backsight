@@ -167,7 +167,7 @@ namespace Backsight.Editor
                 m_From.Draw(display, Color.DarkBlue);
 
             if (m_To!=null)
-                m_To.Draw(display, Color.LightBlue);
+                m_To.Draw(display, Color.Cyan);
         }
 
         /// <summary>

@@ -470,7 +470,7 @@ namespace Backsight.Editor.Forms
             Color col;
 
             if (field == fromPointTextBox)
-                col = Color.LightBlue;
+                col = Color.Cyan;
             else if (field == distanceTextBox)
                 col = Color.Yellow;
             else

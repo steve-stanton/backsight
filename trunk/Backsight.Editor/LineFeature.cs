@@ -327,12 +327,12 @@ namespace Backsight.Editor
                     if (IsTopological)
                     {
                         StartPoint.Draw(display, Color.DarkBlue);
-                        EndPoint.Draw(display, Color.LightBlue);
+                        EndPoint.Draw(display, Color.Cyan);
                     }
                     else
                     {
                         StartPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.DarkBlue);
-                        EndPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.LightBlue);
+                        EndPoint.Draw(display, HatchStyle.DarkUpwardDiagonal, Color.Cyan);
                     }
                 }
             }

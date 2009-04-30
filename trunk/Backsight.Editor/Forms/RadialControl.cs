@@ -574,7 +574,7 @@ namespace Backsight.Editor.Forms
             ISpatialDisplay view = m_Cmd.ActiveDisplay;
             IDrawStyle style = m_Cmd.Controller.DrawStyle;
 
-            DrawIfDefined(m_From, view, style, Color.LightBlue);
+            DrawIfDefined(m_From, view, style, Color.Cyan);
             DrawIfDefined(m_Backsight, view, style, Color.DarkBlue);
             DrawIfDefined(m_Par1, view, style, Color.Yellow);
             DrawIfDefined(m_Par2, view, style, Color.Yellow);
