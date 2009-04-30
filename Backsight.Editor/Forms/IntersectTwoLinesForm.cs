@@ -52,7 +52,7 @@ namespace Backsight.Editor.Forms
             getLine1.InitializeControl(this, 1);
 
             getLine1.SetLineColor(Color.DarkBlue);
-            getLine2.SetLineColor(Color.LightBlue);
+            getLine2.SetLineColor(Color.Cyan);
         }
 
         internal override void OnDraw(PointFeature point)

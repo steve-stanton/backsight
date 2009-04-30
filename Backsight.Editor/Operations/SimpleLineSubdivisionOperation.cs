@@ -86,10 +86,12 @@ namespace Backsight.Editor.Operations
             m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
             InternalIdValue.Parse(t.NewLine1, out sessionId, out lineSequence);
             m_NewLine1.CreatorSequence = lineSequence;
+            s.MapModel.AddFeature(m_NewLine1);
 
             m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
             InternalIdValue.Parse(t.NewLine2, out sessionId, out lineSequence);
             m_NewLine2.CreatorSequence = lineSequence;
+            s.MapModel.AddFeature(m_NewLine2);
         }
 
         /// <summary>

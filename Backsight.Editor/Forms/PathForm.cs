@@ -295,7 +295,7 @@ namespace Backsight.Editor.Forms
             if (Object.ReferenceEquals(field, fromTextBox))
                 point.Draw(display, Color.DarkBlue);
             else if (Object.ReferenceEquals(field, toTextBox))
-                point.Draw(display, Color.LightBlue);
+                point.Draw(display, Color.Cyan);
         }
 
         /// <summary>

@@ -373,7 +373,7 @@ namespace Backsight.Editor.Forms
                 m_Center = point;
 
                 // Draw the point in appropriate color.
-                m_Center.Draw(ActiveDisplay, Color.LightBlue);
+                m_Center.Draw(ActiveDisplay, Color.Cyan);
 
                 // Display its key (causes a call to OnChangeCentre).
                 centerTextBox.Text = String.Format("+{0}", m_Center.FormattedKey);
@@ -418,7 +418,7 @@ namespace Backsight.Editor.Forms
             else
             {
                 if (Object.ReferenceEquals(point, m_Center))
-                    point.Draw(ActiveDisplay, Color.LightBlue);
+                    point.Draw(ActiveDisplay, Color.Cyan);
                 else if (Object.ReferenceEquals(point, m_RadiusPoint))
                     point.Draw(ActiveDisplay, Color.Yellow);
             }
@@ -436,7 +436,7 @@ namespace Backsight.Editor.Forms
                 m_Circle.Render(display, new DottedStyle());
 
             if (m_Center!=null)
-                m_Center.Draw(display, Color.LightBlue);
+                m_Center.Draw(display, Color.Cyan);
 
             if (m_RadiusPoint!=null)
                 m_RadiusPoint.Draw(display, Color.Yellow);

@@ -173,7 +173,7 @@ namespace Backsight.Editor.UI
                 m_From.Draw(display, Color.DarkBlue);
 
             if (m_To!=null)
-                m_To.Draw(display, Color.LightBlue);
+                m_To.Draw(display, Color.Cyan);
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace Backsight.Editor.UI
         /// </summary>
         void StartTo()
         {
-            m_DialTo = new GetPointForm(this, "Finishing Point", Color.LightBlue, true);
+            m_DialTo = new GetPointForm(this, "Finishing Point", Color.Cyan, true);
             m_DialTo.Show();
             m_DialTo.OnSelectPoint(m_To, false);
         }
@@ -354,7 +354,7 @@ namespace Backsight.Editor.UI
             }
 
             if (m_To!=null)
-                m_To.Draw(ActiveDisplay, Color.LightBlue);
+                m_To.Draw(ActiveDisplay, Color.Cyan);
         }
 
         /// <summary>

@@ -132,7 +132,7 @@ namespace Backsight.Editor.Forms
                 StringBuilder sb = new StringBuilder();
                 string newLine = System.Environment.NewLine;
                 sb.AppendFormat("{0}\t{1}{2}", "Editor command:", pop.Name, newLine);
-                sb.AppendFormat("{0}\t{1}{2}", "Edit sequence:", pop.EditSequence, newLine);
+                sb.AppendFormat("{0}\t{1}{2}", "Edit sequence:", pop.DataId, newLine);
                 sb.AppendFormat("{0}\t{1}", "Created on:", pop.Session.StartTime.ToShortDateString());
                 infoTextBox.Text = sb.ToString();                
                 Enable(true);

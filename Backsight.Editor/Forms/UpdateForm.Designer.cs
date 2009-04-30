@@ -80,6 +80,7 @@ namespace Backsight.Editor.Forms
             this.infoTextBox.ReadOnly = true;
             this.infoTextBox.Size = new System.Drawing.Size(310, 63);
             this.infoTextBox.TabIndex = 7;
+            this.infoTextBox.TabStop = false;
             this.infoTextBox.Text = "Nothing selected for update";
             // 
             // dependenciesButton

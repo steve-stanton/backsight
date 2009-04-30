@@ -910,7 +910,7 @@ namespace Backsight.Editor.Forms
             if (field == backsightTextBox)
                 col = Color.DarkBlue;
             else if (field == fromPointTextBox)
-                col = Color.LightBlue;
+                col = Color.Cyan;
             else if (field == directionTextBox)
                 col = Color.Yellow;
             else if (field == offsetTextBox)
