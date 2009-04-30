@@ -99,12 +99,13 @@ namespace Backsight.Editor.Operations
             PointFeature startPoint = m_From;
             IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
 
-            for (int i = 0; i < m_Legs.Count; i++)
+            for (int i = 0; i < legs.Length; i++)
             {
-                m_Legs[i] = t.Leg[i].LoadLeg(this);
+                Leg leg = t.Leg[i].LoadLeg(this);
+                m_Legs.Add(leg);
 
                 // Create features for each span (without any geometry)
-                startPoint = m_Legs[i].CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
+                startPoint = leg.CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
             }
         }
 

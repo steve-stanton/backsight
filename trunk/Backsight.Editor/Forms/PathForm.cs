@@ -180,8 +180,8 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.Message);
+                Session.WorkingSession.Remove(op);
             }
         }
 

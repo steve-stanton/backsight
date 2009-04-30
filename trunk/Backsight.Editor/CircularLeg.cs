@@ -97,6 +97,7 @@ namespace Backsight.Editor
             // gets defined)
             PointFeature center = new PointFeature(op, t.Center);
             m_Circle = new Circle(center, 0.0);
+            m_Circle.AddReferences();
         }
 
         /// <summary>
