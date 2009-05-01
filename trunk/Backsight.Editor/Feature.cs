@@ -893,8 +893,13 @@ namespace Backsight.Editor
             if (t.Key > 0)
                 return mapModel.FindNativeId(t.Key);
 
-            if (t.ForeignKey != null)
-                return mapModel.FindForeignId(t.ForeignKey);
+            string key = t.ForeignKey;
+            if (key != null)
+            {
+                ForeignId fid = mapModel.FindForeignId(key);
+                if (fid == null)
+                    return mapModel.AddForeignId(key);
+            }
 
             return null;
         }

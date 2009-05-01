@@ -102,7 +102,13 @@ namespace Backsight.Editor
             // two IDs have the same formatted key)
             Dictionary<string, FeatureId> keyIds = new Dictionary<string, FeatureId>(fids.Length);
             foreach (FeatureId fid in fids)
-                keyIds.Add(fid.FormattedKey, fid);
+            {
+                string key = fid.FormattedKey;
+                if (keyIds.ContainsKey(key))
+                    throw new Exception("Duplicate ID: "+key);
+
+                keyIds.Add(key, fid);
+            }
 
             int nFound = 0;
 
