@@ -47,6 +47,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly SpatialIndex m_Index;
 
+        /// <summary>
+        /// The IDs of features created during this import
+        /// </summary>
+        readonly Dictionary<string, ForeignId> m_KeyIndex;
+
         #endregion
 
         #region Constructors
@@ -56,6 +61,7 @@ namespace Backsight.Editor
             m_Translator = t;
             m_Result = new List<Feature>(1000);
             m_Index = new SpatialIndex();
+            m_KeyIndex = new Dictionary<string, ForeignId>(1000);
         }
 
         #endregion
@@ -521,7 +527,8 @@ namespace Backsight.Editor
                 result.SetTopology(true);
 
                 // Define the label's foreign ID and form a two-way association
-                FeatureId fid = new ForeignId(keystr);
+                ForeignId fid = GetFeatureId(keystr);
+                Debug.Assert(fid != null);
                 fid.Add(result);
 
                 // Remember the reference position of the label.
@@ -589,13 +596,42 @@ namespace Backsight.Editor
 
             // Define foreign ID (if any) ...
             string keystr = symbol.Key;
-            if (!String.IsNullOrEmpty(keystr))
-            {
-                ForeignId fid = new ForeignId(keystr);
+            ForeignId fid = GetFeatureId(keystr);
+            if (fid != null)
                 fid.Add(p);
-            }
 
             return p;
         }
+
+        /// <summary>
+        /// Obtains the ID object that corresponds to the supplied formatted key.
+        /// </summary>
+        /// <param name="keystr">The formatted key obtained during the import</param>
+        /// <returns>The ID corresponding to the supplied key (null if the supplied key is null
+        /// or blank)</returns>
+        ForeignId GetFeatureId(string keystr)
+        {
+            if (String.IsNullOrEmpty(keystr))
+                return null;
+
+            // First check the current map model to see if the supplied key matches a
+            // previously created ID
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            ForeignId result = mapModel.FindForeignId(keystr);
+            if (result != null)
+                return result;
+
+            // Check the index of keys that have been created during this import (they
+            // won't be added to the map model until the loading phase has been completed).
+            if (m_KeyIndex.TryGetValue(keystr, out result))
+                return result;
+
+            // Remember a new foreign key as part of this import (it will be added to the model
+            // after the loading phase has been completed)
+            result = new ForeignId(keystr);
+            m_KeyIndex.Add(keystr, result);
+            return result;
+        }
     }
+
 }

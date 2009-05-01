@@ -1496,23 +1496,42 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains a foreign ID for a feature, adding it to the model if it was not
-        /// previously loaded.
+        /// Tries to obtains a foreign ID for a feature.
         /// </summary>
-        /// <param name="name">The name of the attribute holding the foreign ID string</param>
-        /// <param name="f">The feature that will receive the ID</param>
-        /// <returns>The ID assigned to the feature</returns>
+        /// <param name="key">The formatted key to look for</param>
+        /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID - make
+        /// a call to <see cref="AddForeignId"/> to register a new ID.</returns>
         internal ForeignId FindForeignId(string key)
         {
             ForeignId result;
 
-            if (!m_ForeignIds.TryGetValue(key, out result))
-            {
-                result = new ForeignId(key);
-                m_ForeignIds.Add(key, result);
-            }
+            if (m_ForeignIds.TryGetValue(key, out result))
+                return result;
+            else
+                return null;
+        }
 
+        /// <summary>
+        /// Creates a new foreign ID and remembers it as part of this model. This will fail
+        /// if a foreign key with the same key has already been added - first make a call
+        /// to <see cref="FindForeignId"/> to see if the add is needed.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        internal ForeignId AddForeignId(string key)
+        {
+            ForeignId result = new ForeignId(key);
+            m_ForeignIds.Add(key, result);
             return result;
+        }
+
+        /// <summary>
+        /// Remembers a foreign ID as part of this model.
+        /// </summary>
+        /// <param name="fid">The ID to index as part of this model</param>
+        internal void AddForeignId(ForeignId fid)
+        {
+            m_ForeignIds.Add(fid.FormattedKey, fid);
         }
 
         /// <summary>
