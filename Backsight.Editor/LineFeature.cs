@@ -369,7 +369,7 @@ namespace Backsight.Editor
                         RenderDivider(d, display, style);
                 }
             }
-            else if (m_Topology is IDivider)
+            else if (m_Topology is IDivider && !style.IsFixed)
                 RenderDivider(m_Topology as IDivider, display, style);
             else
                 m_Geom.Render(display, style);
@@ -385,7 +385,7 @@ namespace Backsight.Editor
         internal void RenderDivider(IDivider d, ISpatialDisplay display, IDrawStyle style)
         {
             // If we're highlightling, don't attempt to pick up any other display color
-            if (style is HighlightStyle)
+            if (style is HighlightStyle || style.IsFixed)
             {
                 d.LineGeometry.Render(display, style);
                 return;

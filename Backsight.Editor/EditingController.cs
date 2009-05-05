@@ -1158,25 +1158,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Asks the user to supply the name of a file
-        /// </summary>
-        /// <param name="title">Title for the dialog</param>
-        /// <returns>The entered file name (null if not specified)</returns>
-        /*
-        internal static string AskForFileName(string title)
-        {
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Title = title;
-            dial.Filter = "Cadastral editor files (*.ce)|*.ce|All files (*)|*";
-            dial.DefaultExt = "ce";
-            if (dial.ShowDialog() == DialogResult.OK)
-                return dial.FileName;
-
-            return null;
-        }
-        */
-
-        /// <summary>
         /// The units that should be used on display of observed lengths.
         /// </summary>
         internal DistanceUnit DisplayUnit

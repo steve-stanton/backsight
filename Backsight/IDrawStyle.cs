@@ -116,5 +116,10 @@ namespace Backsight
         /// The pen to use for drawing lines
         /// </summary>
         Pen Pen { get; set; }
+
+        /// <summary>
+        /// Is this a fixed style (meaning that color and fill should be retain their current values)
+        /// </summary>
+        bool IsFixed { get; set; }
     }
 }

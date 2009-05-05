@@ -137,15 +137,15 @@ namespace Backsight.Editor.UI
                 m_Info.Show();
             }
 
-            // Get the info window to display stuff about the
-            // selected feature.
+            // Get the info window to display stuff about the selected feature.
             m_Info.Display(m_Update);
 
             // Leave keyboard focus with the info dialog.
             m_Info.Focus();
 
             // Draw stuff.
-            //Draw();
+            Draw();
+            ActiveDisplay.PaintNow();
             return true;
         }
 
@@ -347,6 +347,7 @@ void CuiUpdate::Update ( void ) {
             // selected for update.
             ISpatialDisplay display = ActiveDisplay;
             IDrawStyle style = Controller.Style(Color.Magenta);
+            style.IsFixed = true;
             op.Render(display, style, true);
 
             // If the update feature is a line, ensure that it is highlighted the normal
