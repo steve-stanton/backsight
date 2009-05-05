@@ -38,6 +38,12 @@ namespace Backsight.Forms
         /// </summary>
         private ILength m_PointHeight;
 
+        /// <summary>
+        /// Is this a fixed style (meaning that color and fill should be retain the values they
+        /// currently have).
+        /// </summary>
+        private bool m_IsFixedStyle;
+
         #endregion
 
         #region Constructors
@@ -47,6 +53,7 @@ namespace Backsight.Forms
         /// </summary>
         public DrawStyle() : this(Color.Black)
         {
+            m_IsFixedStyle = false;
         }
 
         /// <summary>
@@ -59,9 +66,20 @@ namespace Backsight.Forms
             m_Fill = new Fill(c);
             m_Path = new GraphicsPath();
             m_PointHeight = new Length(1.0);
+            m_IsFixedStyle = false;
         }
 
         #endregion
+
+        /// <summary>
+        /// Is this a fixed style (meaning that color and fill should be retain the values they
+        /// currently have).
+        /// </summary>
+        public bool IsFixed
+        {
+            get { return m_IsFixedStyle; }
+            set { m_IsFixedStyle = value; }
+        }
 
         public Pen Pen
         {
