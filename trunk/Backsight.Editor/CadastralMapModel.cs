@@ -491,6 +491,41 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Ensures that any IDs associated with an array of features have been indexed
+        /// as part of this model.
+        /// </summary>
+        /// <param name="fa">The features that need to be indexed</param>
+        internal void AddFeatureIds(Feature[] fa)
+        {
+            foreach (Feature f in fa)
+            {
+                FeatureId fid = f.Id;
+
+                if (fid != null)
+                {
+                    if (fid is ForeignId)
+                    {
+                        ForeignId foreignId = (fid as ForeignId);
+                        ForeignId existingId = FindForeignId(foreignId.FormattedKey);
+                        if (existingId == null)
+                            AddForeignId(foreignId);
+                        else if (!object.ReferenceEquals(foreignId, existingId))
+                            throw new Exception("More than one foreign ID object for: "+foreignId.FormattedKey);
+                    }
+                    else
+                    {
+                        NativeId nativeId = (fid as NativeId);
+                        NativeId existingId = FindNativeId(nativeId.RawId);
+                        if (existingId == null)
+                            m_NativeIds.Add(nativeId.RawId, nativeId);
+                        else if (!object.ReferenceEquals(nativeId, existingId))
+                            throw new Exception("More than one native ID object for: "+nativeId.RawId);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// The circles associated with an array of features
         /// </summary>
         /// <param name="fa">The features of interest</param>
@@ -1473,25 +1508,36 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains a native ID for a feature, adding it to the model if it was not
-        /// previously loaded.
+        /// Tries to obtains a native ID for a feature.
         /// </summary>
         /// <param name="rawId">The raw ID to look for</param>
-        /// <returns>The corresponding ID (not null)</returns>
-        /// <exception cref="ArgumentException">If an ID group that encloses the specified
-        /// raw ID cannot be found</exception>
+        /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID - make
+        /// a call to <see cref="AddNativeId"/> to register a new ID.</returns>
         internal NativeId FindNativeId(uint rawId)
         {
             NativeId result;
 
-            if (!m_NativeIds.TryGetValue(rawId, out result))
-            {
-                IdGroup group = m_IdManager.FindGroupByRawId(rawId);
-                Debug.Assert(group != null);
-                result = new NativeId(group, rawId);
-                m_NativeIds.Add(rawId, result);
-            }
+            if (m_NativeIds.TryGetValue(rawId, out result))
+                return result;
+            else
+                return null;
+        }
 
+        /// <summary>
+        /// Creates a new native ID and remembers it as part of this model. This will fail
+        /// if a native key with the same key has already been added - first make a call
+        /// to <see cref="FindNativeId"/> to see if the add is needed.
+        /// </summary>
+        /// <param name="rawId">The raw key for the new ID</param>
+        /// <returns>The corresponding ID (not null)</returns>
+        /// <exception cref="ArgumentException">If an ID group that encloses the specified
+        /// raw key cannot be found</exception>
+        internal NativeId AddNativeId(uint rawId)
+        {
+            IdGroup group = m_IdManager.FindGroupByRawId(rawId);
+            Debug.Assert(group != null);
+            NativeId result = new NativeId(group, rawId);
+            m_NativeIds.Add(rawId, result);
             return result;
         }
 
@@ -1517,7 +1563,7 @@ namespace Backsight.Editor
         /// to <see cref="FindForeignId"/> to see if the add is needed.
         /// </summary>
         /// <param name="key"></param>
-        /// <returns></returns>
+        /// <returns>The new ID object</returns>
         internal ForeignId AddForeignId(string key)
         {
             ForeignId result = new ForeignId(key);

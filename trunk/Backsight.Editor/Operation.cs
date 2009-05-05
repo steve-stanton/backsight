@@ -414,6 +414,9 @@ namespace Backsight.Editor
             {
                 AttributeData.Load(feats);
                 MapModel.AddToIndex(feats);
+
+                // Ensure user-perceived ID objects have been indexed too
+                MapModel.AddFeatureIds(feats);
             }
 
             // Assign 1-based creation sequence to each created feature
