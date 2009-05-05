@@ -177,6 +177,14 @@ void CuiUpdate::Finish ( void ) {
             if (pop == null)
                 return;
 
+            // Get the edits that depend on features created by the update op
+            pop.MapModel.Touch(pop);
+
+            // Initialize dependent ops to refer to the edit we're changing
+
+            // While we get more stuff, loop through all edits, appending those
+            // edits that refer to a a feature in our list.
+
             throw new NotImplementedException("UpdateUI.Dependencies");
         }
         /*
@@ -189,6 +197,7 @@ void CuiUpdate::Dependencies ( void ) {
 
 	// Display all the dependent features (includes the operation
 	// that we're changing).
+         * draws all the supplied features in magenta
 	Draw(feats,FALSE);
 
 	// List the dependent operations.
@@ -197,9 +206,11 @@ void CuiUpdate::Dependencies ( void ) {
 
 	// Draw all the dependent features in their normal way
 	// (except for features that are no longer active).
+         * revert to original draw
 	Draw(feats,TRUE);
 
 	// Ensure the original draw looks the same.
+         * draw the current update op in magenta
 	Draw();
 
 } // end of Dependencies

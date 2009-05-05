@@ -1623,5 +1623,71 @@ namespace Backsight.Editor
         {
             // TODO!
         }
+
+        /// <summary>
+        /// Obtains the edits that are dependent on features created by a specific edit.
+        /// This is used by dialogs that provide rollforward previews. It returns 
+        /// the subsequent operations that could be impacted as a result of the change.
+        /// </summary>
+        /// <param name="op">The operation in which the change will occur</param>
+        /// <returns>The dependent edits (starting with the supplied edit)</returns>
+        /// 
+        internal Operation[] Touch(Operation op)
+        {
+            List<Operation> result = new List<Operation>();
+            result.Add(op);
+
+            // If the edit didn't create any spatial data, it can't impact any
+            // other edits.
+            if (op.Features.Length > 0)
+            {
+                Dictionary<string, Operation> deps = new Dictionary<string, Operation>();
+                deps.Add(op.DataId, op);
+                /*
+                    // Get the session in which the operation was defined. It
+                    // MUST be defined.
+                    const CeSession* pOpSession = changeop.GetpSession();
+                    if ( !pOpSession ) {
+                        ShowMessage("CeMap::Touch\nOperation has no session pointer");
+                        return 0;
+                    }
+
+                    // Get the position of the session that contains the change op.
+
+                    POSITION curs = m_Sessions.GetHeadPosition();
+                    LOGICAL found = FALSE;
+
+                    while ( curs ) {
+
+                        // Get next session in the list.
+                        CeSession* pCurSession = (CeSession*)m_Sessions.GetNext(curs);
+
+                        // If we have not yet got to the session we want, see if we're
+                        // there now. If so, scan till we find the starting operation &
+                        // process from there.
+
+                        if ( pOpSession==pCurSession ) {
+
+                            found = pCurSession->Touch(oplist,flist,&changeop);
+
+                            if ( !found ) {
+                                ShowMessage("CeMap::Touch\nOperation is not in specified session");
+                                return FALSE;
+                            }
+                        }
+                        else if ( found ) {
+
+                //			We previously found the operation, so ask every
+                //			operation in this session to touch itself.
+                            pCurSession->Touch(oplist,flist);
+                        }
+
+                    } // next session
+
+                 */
+            }
+
+            return result.ToArray();
+        }
     }
 }
