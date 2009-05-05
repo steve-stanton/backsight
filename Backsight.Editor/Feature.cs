@@ -890,8 +890,16 @@ namespace Backsight.Editor
         /// a user-perceived ID).</returns>
         FeatureId GetFeatureId(CadastralMapModel mapModel, FeatureType t)
         {
-            if (t.Key > 0)
+            uint nativeKey = t.Key;
+            if (nativeKey > 0)
+            {
+                NativeId nid = mapModel.FindNativeId(nativeKey);
+                if (nid == null)
+                    return mapModel.AddNativeId(nativeKey);
+                else
+                    return nid;
                 return mapModel.FindNativeId(t.Key);
+            }
 
             string key = t.ForeignKey;
             if (key != null)

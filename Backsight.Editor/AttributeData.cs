@@ -90,25 +90,42 @@ namespace Backsight.Editor
         /// </remarks>
         internal static int Load(FeatureId[] fids)
         {
+            // Cross-reference the supplied IDs to their formatted key
+            Dictionary<string, FeatureId> keyIds = new Dictionary<string, FeatureId>(fids.Length);
+            foreach (FeatureId fid in fids)
+            {
+                string key = fid.FormattedKey;
+                FeatureId existingId;
+
+                if (keyIds.TryGetValue(key, out existingId))
+                {
+                    if (!object.ReferenceEquals(existingId, fid))
+                        throw new Exception("More than one ID object for: "+key);
+                }
+                else
+                {
+                    keyIds.Add(key, fid);
+                }
+            }
+
+            return Load(keyIds);
+        }
+
+        /// <summary>
+        /// Attaches miscellaneous attribute data to the features that have been loaded.
+        /// </summary>
+        /// <param name="keyIds">Index of the IDs to look for (indexed by formatted key)</param>
+        /// <returns>The number of rows that were found (-1 if no database tables have
+        /// been associated with Backsight)</returns>
+        static int Load(Dictionary<string, FeatureId> keyIds)
+        {
             // Locate information about the tables associated with Backsight
             ITable[] tables = EnvironmentContainer.Current.Tables;
             if (tables.Length == 0)
                 return -1;
 
             // Copy the required keys into a temp table
-            Trace.WriteLine(String.Format("Locating attributes for {0} features in {1} tables", fids.Length, tables.Length));
-
-            // Cross-reference the supplied IDs to their formatted key (assumes that no
-            // two IDs have the same formatted key)
-            Dictionary<string, FeatureId> keyIds = new Dictionary<string, FeatureId>(fids.Length);
-            foreach (FeatureId fid in fids)
-            {
-                string key = fid.FormattedKey;
-                if (keyIds.ContainsKey(key))
-                    throw new Exception("Duplicate ID: "+key);
-
-                keyIds.Add(key, fid);
-            }
+            Trace.WriteLine(String.Format("Locating attributes for {0} feature IDs in {1} tables", keyIds.Count, tables.Length));
 
             int nFound = 0;
 
@@ -116,7 +133,7 @@ namespace Backsight.Editor
             {
                 SqlConnection c = ic.Value;
                 const string KEYS_TABLE_NAME = "#Ids";
-                CopyKeysToTable(c, fids, KEYS_TABLE_NAME);
+                CopyKeysToTable(c, keyIds, KEYS_TABLE_NAME);
 
                 foreach (ITable t in tables)
                 {
@@ -216,19 +233,21 @@ namespace Backsight.Editor
         /// <param name="tableName">The name of the table to create and load. This will
         /// typically be a temporary table (a name starting with the "#" character
         /// in SqlServer systems).</param>
-        static void CopyKeysToTable(SqlConnection con, FeatureId[] keys, string tableName)
+        static void CopyKeysToTable(SqlConnection con, Dictionary<string, FeatureId> keys, string tableName)
         {
             // Stick session IDs into an array of row objects
             DataTable dt = new DataTable(tableName);
             DataColumn dc = new DataColumn("FeatureId", typeof(string));
             dc.MaxLength = 16;
             dt.Columns.Add(dc);
-            DataRow[] rows = new DataRow[keys.Length];
+            DataRow[] rows = new DataRow[keys.Count];
 
-            for (int i=0; i<rows.Length; i++)
+            int i = 0;
+            foreach (string key in keys.Keys)
             {
                 rows[i] = dt.NewRow();
-                rows[i][0] = keys[i];
+                rows[i][0] = key;
+                i++;
             }
 
             // Create the temp table
