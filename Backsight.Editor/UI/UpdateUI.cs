@@ -178,12 +178,8 @@ void CuiUpdate::Finish ( void ) {
                 return;
 
             // Get the edits that depend on features created by the update op
-            pop.MapModel.Touch(pop);
+            Operation[] deps = pop.MapModel.Touch(pop);
 
-            // Initialize dependent ops to refer to the edit we're changing
-
-            // While we get more stuff, loop through all edits, appending those
-            // edits that refer to a a feature in our list.
 
             throw new NotImplementedException("UpdateUI.Dependencies");
         }

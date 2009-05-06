@@ -490,5 +490,39 @@ namespace Backsight.Editor
         {
             return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
         }
+
+        /// <summary>
+        /// Obtains dependent edits within this session.
+        /// </summary>
+        /// <param name="deps">The dependent edits.</param>
+        /// <param name="startOp">The first operation that should be touched (specify null
+        /// for all edits in this session).</param>
+        internal void Touch(List<Operation> deps, Operation startOp)
+        {
+            // If a starting op has been specified, process only from there
+            if (startOp != null)
+            {
+                int opIndex = m_Operations.FindIndex(delegate(Operation o)
+                {
+                    return object.ReferenceEquals(o, startOp);
+                });
+
+                if (opIndex < 0)
+                    throw new Exception("Cannot locate starting edit within session");
+
+                // Touch the starting edit
+                startOp.SetTouch();
+
+                // Process the edits within this session, starting with the specified edit
+                for (int i=opIndex+1; i<m_Operations.Count; i++)
+                    m_Operations[i].Touch(deps);
+            }
+            else
+            {
+                // Process all edits performed within this session
+                foreach (Operation op in m_Operations)
+                    op.Touch(deps);
+            }
+        }
     }
 }

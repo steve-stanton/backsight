@@ -408,5 +408,36 @@ namespace Backsight.Editor
                 return t;
             }
         }
+
+        /// <summary>
+        /// Touches this feature for rollforward preview.
+        /// </summary>
+        /// <param name="afterOp">The edit causing the change (only edits that were performed after this
+        /// edit are considered relevant).</param>
+        /// <remarks>The <see cref="PointFeature"/> class overrides</remarks>
+        internal override void Touch(Operation afterOp)
+        {
+            List<IFeatureDependent> deps = base.Dependents;
+            if (deps != null)
+            {
+                foreach (IFeatureDependent fd in deps)
+                {
+                    /*
+		// If it's an incident line, touch it. This covers things like
+		// CeNewArc operations, which make use of existing points, but
+		// which do not reference the terminals to the op (perhaps it
+		// should).
+		CeLine* pLine = dynamic_cast<CeLine*>(pThing);
+		if ( pLine) pLine->Touch(afterseq);
+                     */
+                    if (fd is LineFeature)
+                    {
+                        throw new NotImplementedException("PointFeature.Touch");
+                    }
+                }
+
+                base.Touch(afterOp);
+            }
+        }
     }
 }

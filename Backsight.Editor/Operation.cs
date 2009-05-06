@@ -646,5 +646,71 @@ namespace Backsight.Editor
                     mapModel.AddFeature(f);
             }
         }
+
+        /// <summary>
+        /// Sets the flag bit which indicates that this operation needs to be processed
+        /// if <see cref="Touch"/> is called.
+        /// </summary>
+        internal void SetTouch()
+        {
+            SetFlag(OperationFlag.Touched, true);
+        }
+
+        /// <summary>
+        /// Clears the flag bit which indicates that this operation needs to be processed
+        /// if <see cref="Touch"/> is called.
+        /// </summary>
+        void UnTouch()
+        {
+            SetFlag(OperationFlag.Touched, false);
+        }
+
+        /// <summary>
+        /// Has this edit been marked as "touched" (via a prior call to <see cref="SetTouch"/>).
+        /// </summary>
+        bool IsTouched
+        {
+            get { return IsFlagSet(OperationFlag.Touched); }
+        }
+
+        /// <summary>
+        /// Touches this operation for rollforward preview.
+        /// </summary>
+        /// <param name="deps">The dependent edits (those that have been touched). This edit
+        /// will be appended so long as <see cref="SetTouch"/> has been called.</param>
+        /// <returns>True if this edit was appended to the list of dependents. False if this edit
+        /// was not marked via a prior call to <see cref="SetTouch"/>.</returns>
+        internal bool Touch(List<Operation> deps)
+        {
+            // Return if there is no need to touch this op.
+            if (!IsTouched)
+                return false;
+
+            // Touch the features that were created by this op.
+            foreach (Feature f in this.Features)
+                f.Touch(this);
+
+            // Append this operation to the list of dependent edits and clear the touch flag
+            deps.Add(this);
+            UnTouch();
+            return true;
+        }
+
+        /// <summary>
+        /// Does this edit come after the supplied edit?
+        /// </summary>
+        /// <param name="that">The edit to compare with</param>
+        /// <returns>True if this edit was performed after the supplied edit</returns>
+        internal bool IsAfter(Operation that)
+        {
+            if (this.m_Session.Id > that.m_Session.Id)
+                return true;
+
+            if (this.m_Session.Id < that.m_Session.Id)
+                return false;
+
+            Debug.Assert(this.m_Session.Id == that.m_Session.Id);
+            return (this.m_Sequence > that.m_Sequence);
+        }
     }
 }
