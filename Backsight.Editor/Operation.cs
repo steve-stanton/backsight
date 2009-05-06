@@ -660,7 +660,7 @@ namespace Backsight.Editor
         /// Clears the flag bit which indicates that this operation needs to be processed
         /// if <see cref="Touch"/> is called.
         /// </summary>
-        void UnTouch()
+        internal void UnTouch()
         {
             SetFlag(OperationFlag.Touched, false);
         }

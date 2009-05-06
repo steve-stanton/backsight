@@ -510,12 +510,20 @@ namespace Backsight.Editor
                 if (opIndex < 0)
                     throw new Exception("Cannot locate starting edit within session");
 
-                // Touch the starting edit
-                startOp.SetTouch();
+                try
+                {
+                    // Touch the starting edit
+                    startOp.SetTouch();
 
-                // Process the edits within this session, starting with the specified edit
-                for (int i=opIndex+1; i<m_Operations.Count; i++)
-                    m_Operations[i].Touch(deps);
+                    // Process the edits within this session, starting with the specified edit
+                    for (int i = opIndex; i < m_Operations.Count; i++)
+                        m_Operations[i].Touch(deps);
+                }
+
+                finally
+                {
+                    startOp.UnTouch();
+                }
             }
             else
             {
