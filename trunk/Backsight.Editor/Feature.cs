@@ -918,5 +918,27 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
         abstract internal FeatureType GetSerializableFeature();
+
+        /// <summary>
+        /// Touches this feature for rollforward preview.
+        /// </summary>
+        /// <param name="afterOp">The edit causing the change (only edits that were performed after this
+        /// edit are considered relevant).</param>
+        /// <remarks>The <see cref="PointFeature"/> class overrides</remarks>
+        internal virtual void Touch(Operation afterOp)
+        {
+            if (m_References != null)
+            {
+                foreach (IFeatureDependent fd in m_References)
+                {
+                    if (fd is Operation)
+                    {
+                        Operation depOp = (fd as Operation);
+                        if (depOp.IsAfter(afterOp))
+                            depOp.SetTouch();
+                    }
+                }
+            }
+        }
     }
 }

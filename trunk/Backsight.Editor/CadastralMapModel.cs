@@ -1630,63 +1630,32 @@ namespace Backsight.Editor
         /// the subsequent operations that could be impacted as a result of the change.
         /// </summary>
         /// <param name="op">The operation in which the change will occur</param>
-        /// <returns>The dependent edits (starting with the supplied edit)</returns>
-        /// 
+        /// <returns>The dependent edits (starting with the supplied editing operation)</returns>
         internal Operation[] Touch(Operation op)
         {
-            List<Operation> result = new List<Operation>();
-            result.Add(op);
-
             // If the edit didn't create any spatial data, it can't impact any
             // other edits.
-            if (op.Features.Length > 0)
+            if (op.FeatureCount == 0)
+                return new Operation[] { op };
+
+            // Locate the session containing the edit
+            int sessionIndex = m_Sessions.FindIndex(delegate(Session s)
             {
-                Dictionary<string, Operation> deps = new Dictionary<string, Operation>();
-                deps.Add(op.DataId, op);
-                /*
-                    // Get the session in which the operation was defined. It
-                    // MUST be defined.
-                    const CeSession* pOpSession = changeop.GetpSession();
-                    if ( !pOpSession ) {
-                        ShowMessage("CeMap::Touch\nOperation has no session pointer");
-                        return 0;
-                    }
+                return object.ReferenceEquals(s, op.Session);
+            });
 
-                    // Get the position of the session that contains the change op.
+            if (sessionIndex < 0)
+                throw new Exception("Cannot locate editing session for edit");
 
-                    POSITION curs = m_Sessions.GetHeadPosition();
-                    LOGICAL found = FALSE;
+            // Process the session containing the edit
+            List<Operation> result = new List<Operation>();
+            m_Sessions[sessionIndex].Touch(result, op);
 
-                    while ( curs ) {
+            // Process all subsequent sessions
+            for (int i=sessionIndex+1; i<m_Sessions.Count; i++)
+                m_Sessions[i].Touch(result, null);
 
-                        // Get next session in the list.
-                        CeSession* pCurSession = (CeSession*)m_Sessions.GetNext(curs);
-
-                        // If we have not yet got to the session we want, see if we're
-                        // there now. If so, scan till we find the starting operation &
-                        // process from there.
-
-                        if ( pOpSession==pCurSession ) {
-
-                            found = pCurSession->Touch(oplist,flist,&changeop);
-
-                            if ( !found ) {
-                                ShowMessage("CeMap::Touch\nOperation is not in specified session");
-                                return FALSE;
-                            }
-                        }
-                        else if ( found ) {
-
-                //			We previously found the operation, so ask every
-                //			operation in this session to touch itself.
-                            pCurSession->Touch(oplist,flist);
-                        }
-
-                    } // next session
-
-                 */
-            }
-
+            // Express the edits we found as an array
             return result.ToArray();
         }
     }
