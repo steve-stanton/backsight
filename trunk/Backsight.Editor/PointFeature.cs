@@ -422,18 +422,13 @@ namespace Backsight.Editor
             {
                 foreach (IFeatureDependent fd in deps)
                 {
-                    /*
-		// If it's an incident line, touch it. This covers things like
-		// CeNewArc operations, which make use of existing points, but
-		// which do not reference the terminals to the op (perhaps it
-		// should).
-		CeLine* pLine = dynamic_cast<CeLine*>(pThing);
-		if ( pLine) pLine->Touch(afterseq);
-                     */
-                    if (fd is LineFeature)
-                    {
-                        throw new NotImplementedException("PointFeature.Touch");
-                    }
+                    // If it's an incident line, touch it. This covers things like
+                    // NewLineOperation, which make use of existing points, but
+                    // which do not reference the terminals to the op (perhaps it
+                    // should).
+                    LineFeature line = (fd as LineFeature);
+                    if (line != null)
+                        line.Touch(afterOp);
                 }
 
                 base.Touch(afterOp);

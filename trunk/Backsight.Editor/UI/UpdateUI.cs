@@ -180,37 +180,25 @@ void CuiUpdate::Finish ( void ) {
             // Get the edits that depend on features created by the update op
             Operation[] deps = pop.MapModel.Touch(pop);
 
+            // Draw the features that were created by the dependent edits
+            ISpatialDisplay display = ActiveDisplay;
+            IDrawStyle style = Controller.Style(Color.Magenta);
+            style.IsFixed = true;
+            foreach (Operation d in deps)
+                d.Render(display, style, true);
 
-            throw new NotImplementedException("UpdateUI.Dependencies");
+            // List the dependent operations.
+            using (ListOperationsForm dial = new ListOperationsForm(deps))
+            {
+                dial.ShowDialog();
+            }
+
+            // Redraw the map the normal way (with the current update op
+            // in magenta)
+            m_Cmd.ErasePainting();
+
+            MessageBox.Show("Number of dependent edits=" + deps.Length);
         }
-        /*
-void CuiUpdate::Dependencies ( void ) {
-
-	// Get a list of the impacted operations & features.
-	CeObjectList feats;
-	CeObjectList ops;
-	CeMap::GetpMap()->Touch(*pop,feats,ops);
-
-	// Display all the dependent features (includes the operation
-	// that we're changing).
-         * draws all the supplied features in magenta
-	Draw(feats,FALSE);
-
-	// List the dependent operations.
-	CdOpList dial(ops,"Dependent Operations");
-	dial.DoModal();
-
-	// Draw all the dependent features in their normal way
-	// (except for features that are no longer active).
-         * revert to original draw
-	Draw(feats,TRUE);
-
-	// Ensure the original draw looks the same.
-         * draw the current update op in magenta
-	Draw();
-
-} // end of Dependencies
-         */
 
         /// <summary>
         /// Returns the first predecessor (if any) for a specific feature.
