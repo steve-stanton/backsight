@@ -50,9 +50,9 @@ namespace Backsight.Editor.UI
         uint m_NumUndo;
 
         /// <summary>
-        /// Dependent operations.
+        /// Edits that are dependent on the edit that is currently being revised
         /// </summary>
-        List<Operation> m_DepOps;
+        Operation[] m_DepOps;
 
         /// <summary>
         /// The operation that rollforward has had problems re-executing.
@@ -274,55 +274,47 @@ void CuiUpdate::Finish ( void ) {
             }
         }
 
-        /*
-//	@mfunc	Invoke the update dialog for the selected feature.
-//
-//////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Invokes the update dialog for the selected feature.
+        /// </summary>
+        internal void StartUpdate()
+        {
+            // Nothing to do if update feature is (somehow) undefined.
+            if (m_Update == null)
+                return;
 
-void CuiUpdate::Update ( void ) {
+            // Return if already updating something.
+            if (m_Cmd != null)
+                return;
 
-	// Nothing to do if update feature is (somehow) undefined.
-	if ( !m_pUpdate ) return;
+            // Get the operation that created the feature and re-run that operation.
+            Operation pop = m_Problem;
+            if (pop == null)
+                pop = m_Update.Creator;
 
-	// Return if already updating something.
-	if ( m_pCmd ) return;
+            if (pop == null)
+            {
+                MessageBox.Show("Specified feature is not associated with an edit.");
+                return;
+            }
 
-	// Get the operation (if any) that created the feature and
-	// re-run that operation.
+            // Get a list of the dependent operations.
+            m_DepOps = pop.MapModel.Touch(pop);
 
-	CeOperation* pop = m_pProblem;
-	if ( !pop ) pop = m_pUpdate->GetpCreator();
-	if ( !pop ) {
-		AfxMessageBox("Specified feature is not associated with an edit.");
-		return;
-	}
+            // Erase anything we've drawn (the command should be able
+            // to draw stuff in it's own way, and that might conflict
+            // with what this object does).
+            ErasePainting();
 
-	// Erase anything we've drawn (the command should be able
-	// to draw stuff in it's own way, and that might conflict
-	// with what this object does).
-	Erase();
-
-	// Get a list of the dependent operations.
-	if ( !m_pDepOps )
-		m_pDepOps = new CeObjectList();
-	else
-		m_pDepOps->Remove();
-
-	CeObjectList feats;
-	CeMap* pMap = CeMap::GetpMap();
-	pMap->Touch(*pop,feats,*m_pDepOps);
-	feats.Remove();
-
-	// Run the update command. If it's left running, declare
-	// a save point (so long as we're not responding to a problem
-	// that has arisen during rollforward).
-	if ( RunUpdate() ) {
-		if ( m_pProblem==0 )
-			SetUndoMarker();
-	}
-
-} // end of Update
-         */
+            // Run the update command. If it's left running, declare
+            // a save point (so long as we're not responding to a problem
+            // that has arisen during rollforward).
+            if (RunUpdate())
+            {
+                if (m_Problem == null)
+                    SetUndoMarker();
+            }
+        }
 
         /// <summary>
         /// Do any drawing that is specific to the current update.
@@ -413,13 +405,16 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 } // end of Draw
          */
 
+        /// <summary>
+        /// Runs the update for the current update feature.
+        /// </summary>
+        /// <returns>True if an update command dialog has been started.</returns>
+        bool RunUpdate()
+        {
+            throw new NotImplementedException("RunUpdate");
+            return false;
+        }
         /*
-//	@mfunc	Run the update for the current update feature.
-//
-//	@rdesc	TRUE if a modeless command dialog has been started.
-//
-//////////////////////////////////////////////////////////////////////
-
 LOGICAL CuiUpdate::RunUpdate ( void ) {
 
 	// Get the operation that created the feature selected
@@ -872,7 +867,7 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
 
 	        // Get the operation that created the feature.
 	        Operation op = feat.Creator;
-	        return m_DepOps.Contains(op);
+            return (Array.IndexOf(m_DepOps, op) >= 0);
         }
 
         /// <summary>
@@ -966,16 +961,19 @@ LOGICAL CuiUpdate::RunUpdate ( void ) {
                 m_Info.SetUpdateCount(0);
         }
 
-        /*
-//	@mfunc	Sets an undo marker and and updates dialog to
-//			reflect this.
-void CuiUpdate::SetUndoMarker ( void )
-{
-	CeMap::GetpMap()->SetUndoMarker();
-	m_NumUndo++;
-	if ( m_pInfo ) m_pInfo->SetUpdateCount(m_NumUndo);
-}
-         */
+        /// <summary>
+        /// Sets an undo marker and and updates dialog to reflect this.
+        /// </summary>
+        void SetUndoMarker()
+        {
+            throw new NotImplementedException("SetUndoMarker");
+            /*
+            CeMap::GetpMap()->SetUndoMarker();
+             */
+            m_NumUndo++;
+            if (m_Info != null)
+                m_Info.SetUpdateCount(m_NumUndo);
+        }
 
         internal CommandUI ActiveCommand
         {

@@ -939,6 +939,9 @@ namespace Backsight.Editor
             // If a single item has been selected
             if (item!=null)
             {
+                if (item is DividerObject)
+                    item = (item as DividerObject).Divider.Line;
+
                 if (item is PointFeature)
                 {
                     if (ArePointsDrawn)
