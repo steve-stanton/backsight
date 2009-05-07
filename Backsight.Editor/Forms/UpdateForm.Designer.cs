@@ -82,6 +82,7 @@ namespace Backsight.Editor.Forms
             this.infoTextBox.TabIndex = 7;
             this.infoTextBox.TabStop = false;
             this.infoTextBox.Text = "Nothing selected for update";
+            this.infoTextBox.WordWrap = false;
             // 
             // dependenciesButton
             // 
