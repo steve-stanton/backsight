@@ -146,10 +146,12 @@ namespace Backsight.Geometry
 
         public static bool GetPosition(IPosition start, IPosition end, double d, out IPosition result)
         {
+            const double TOL = 0.000002;
+
             // Check for distance that is real close to the start (less
             // than 1 micron or so, since that's the smallest number we
             // can store).
-            if (d < 0.000002)
+            if (d < TOL)
             {
                 result = start;
                 return (d>=0.0);
@@ -160,10 +162,10 @@ namespace Backsight.Geometry
 
             // If the required distance is within the limiting tolerance
             // of the end of the line (or beyond it), return the end.
-            if (d>len || (len-d)<0.000002)
+            if (d>len || (len-d)<TOL)
             {
                 result = end;
-                return (d<=len);
+                return (d<=(len+TOL));
             }
 
             // How far up the line do we need to go?
