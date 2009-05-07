@@ -927,6 +927,9 @@ namespace Backsight.Editor
         /// <remarks>The <see cref="PointFeature"/> class overrides</remarks>
         internal virtual void Touch(Operation afterOp)
         {
+            if (m_Creator.IsAfter(afterOp))
+                m_Creator.SetTouch();
+
             if (m_References != null)
             {
                 foreach (IFeatureDependent fd in m_References)

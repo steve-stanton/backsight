@@ -193,11 +193,8 @@ void CuiUpdate::Finish ( void ) {
                 dial.ShowDialog();
             }
 
-            // Redraw the map the normal way (with the current update op
-            // in magenta)
-            m_Cmd.ErasePainting();
-
-            MessageBox.Show("Number of dependent edits=" + deps.Length);
+            // Redraw the map the normal way (with the current update op in magenta)
+            ErasePainting();
         }
 
         /// <summary>

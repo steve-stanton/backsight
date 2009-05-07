@@ -60,8 +60,7 @@ namespace Backsight.Editor.Forms
 
         private void UpdateForm_Shown(object sender, EventArgs e)
         {
-            //dataLabel.Text = "Nothing selected for update - shown";
-            Enable(false);
+            //Enable(false);
 
             // Cancel unless the user explicitly clicks the Finish button
             this.DialogResult = DialogResult.Cancel;
