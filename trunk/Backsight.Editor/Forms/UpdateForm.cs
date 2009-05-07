@@ -155,7 +155,7 @@ namespace Backsight.Editor.Forms
         private void updateButton_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-            //m_Cmd.Update();
+            m_Cmd.StartUpdate();
         }
 
         internal void OnFinishUpdate(Operation problem) 
