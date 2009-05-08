@@ -43,6 +43,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PointStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
@@ -57,6 +58,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -69,12 +71,76 @@
     </Compile>
     <Compile Include="SurveyPoint.cs" />
     <Compile Include="ViewController.cs" />
+    <Compile Include="ViewStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
       <Name>Backsight</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_Shot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_Default.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_Killed.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_Laid.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_PendingLayout.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_PendingPickup.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_PendingQC.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_PendingTroubleshoot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Receiver_PickedUp.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_Default.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_DefaultPointcodeE.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_DefaultPointcodeS.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_Killed.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_PendingDrill.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_PendingDrillPointcodeE.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_PendingDrillPointcodeS.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_PendingLoad.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_PendingShoot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_ReadyToLoad.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Source_ReadyToShoot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultSurveyPoint.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

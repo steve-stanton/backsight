@@ -32,7 +32,12 @@ namespace BNS
         /// The main window of the application.
         /// </summary>
         private readonly MainForm m_Main;
-        
+
+        /// <summary>
+        /// The drawing style used by this application
+        /// </summary>
+        private readonly IDrawStyle m_ViewStyle;
+
         #endregion
 
         #region Constructors
@@ -47,6 +52,7 @@ namespace BNS
                 throw new ArgumentNullException();
 
             m_Main = main;
+            m_ViewStyle = new ViewStyle();
         }
         
         #endregion
@@ -106,6 +112,14 @@ namespace BNS
         {
             ContextMenuStrip menu = m_Main.CreateContextMenu(SpatialSelection);
             where.ShowContextMenu(p, menu);
+        }
+
+        /// <summary>
+        /// The style to use for rendering the map model
+        /// </summary>
+        public override IDrawStyle DrawStyle
+        {
+            get { return m_ViewStyle; }
         }
     }
 }

@@ -115,7 +115,7 @@ namespace Backsight.Forms
         /// </summary>
         /// <param name="display">The display to draw to</param>
         /// <param name="position">The position of the center of the point</param>
-        public void Render(ISpatialDisplay display, IPosition position)
+        public virtual void Render(ISpatialDisplay display, IPosition position)
         {
             float size = display.LengthToDisplay(m_PointHeight.Meters);
             if (size>1.0F)
