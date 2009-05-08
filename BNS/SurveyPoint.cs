@@ -21,7 +21,7 @@ using Backsight.Geometry;
 
 namespace BNS
 {
-    class SurveyPoint : ISpatialObject, IPoint
+    class SurveyPoint : ISpatialObject, IPoint, IPosition
     {
         #region Static
 
@@ -56,8 +56,7 @@ namespace BNS
 
         public void Render(ISpatialDisplay display, IDrawStyle style)
         {
-            style.PointHeight = HEIGHT;
-            style.RenderPlus(display, m_Position);
+            style.Render(display, this); // see ViewStyle implementation
         }
 
         public IWindow Extent
@@ -81,5 +80,29 @@ namespace BNS
         }
 
         #endregion
+
+        #region IPosition Members
+
+        public double X
+        {
+            get { return m_Position.X; }
+        }
+
+        public double Y
+        {
+            get { return m_Position.Y; }
+        }
+
+        public bool IsAt(IPosition p, double tol)
+        {
+            return Position.IsCoincident(this, p, tol);
+        }
+
+        #endregion
+
+        internal PointStatus Status
+        {
+            get { return (PointStatus)m_Row["status"]; }
+        }
     }
 }

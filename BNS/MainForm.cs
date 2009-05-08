@@ -20,6 +20,7 @@ using System.Drawing;
 
 using Backsight.Forms;
 using Backsight;
+using System.Diagnostics;
 
 namespace BNS
 {
@@ -79,8 +80,14 @@ namespace BNS
         private void MainForm_Shown(object sender, EventArgs e)
         {
             // Load a specific database for now
+            //Stopwatch sw = Stopwatch.StartNew();
             ISpatialData data = new BnsDatabase("lunklet", "DurhamRanch");
             m_Controller.MapModel = new SimpleMapModel(data);
+            //sw.Stop();
+            //MessageBox.Show("Load took "+sw.ElapsedMilliseconds);
+
+            // Ensure the controller knows about the map display and force an overview
+            //m_Controller.Register(mapControl);
 
             // All properties are readonly, and by default they will show up in
             // a pale grey that's difficult to see. Change it to black so the
@@ -92,6 +99,8 @@ namespace BNS
 
             // Ensure the map control has focus, so that things like the ESC key will be recognized
             //mapControl.Focus();
+
+            m_Controller.RefreshAllDisplays();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

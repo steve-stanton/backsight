@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BNS.Properties
-{
-
-
+namespace BNS.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,49 +22,188 @@ namespace BNS.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if ((resourceMan == null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BNS.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
+            }
+        }
+        
+        internal static System.Drawing.Icon DefaultSurveyPoint {
+            get {
+                object obj = ResourceManager.GetObject("DefaultSurveyPoint", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_Default {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_Default", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_Killed {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_Killed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_Laid {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_Laid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_PendingLayout {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_PendingLayout", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_PendingPickup {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_PendingPickup", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_PendingQC {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_PendingQC", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_PendingTroubleshoot {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_PendingTroubleshoot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Receiver_PickedUp {
+            get {
+                object obj = ResourceManager.GetObject("Receiver_PickedUp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_Default {
+            get {
+                object obj = ResourceManager.GetObject("Source_Default", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_DefaultPointcodeE {
+            get {
+                object obj = ResourceManager.GetObject("Source_DefaultPointcodeE", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_DefaultPointcodeS {
+            get {
+                object obj = ResourceManager.GetObject("Source_DefaultPointcodeS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_Killed {
+            get {
+                object obj = ResourceManager.GetObject("Source_Killed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_PendingDrill {
+            get {
+                object obj = ResourceManager.GetObject("Source_PendingDrill", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_PendingDrillPointcodeE {
+            get {
+                object obj = ResourceManager.GetObject("Source_PendingDrillPointcodeE", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_PendingDrillPointcodeS {
+            get {
+                object obj = ResourceManager.GetObject("Source_PendingDrillPointcodeS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_PendingLoad {
+            get {
+                object obj = ResourceManager.GetObject("Source_PendingLoad", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_PendingShoot {
+            get {
+                object obj = ResourceManager.GetObject("Source_PendingShoot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_ReadyToLoad {
+            get {
+                object obj = ResourceManager.GetObject("Source_ReadyToLoad", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_ReadyToShoot {
+            get {
+                object obj = ResourceManager.GetObject("Source_ReadyToShoot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Source_Shot {
+            get {
+                object obj = ResourceManager.GetObject("Source_Shot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
