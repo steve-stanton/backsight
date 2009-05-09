@@ -24,14 +24,11 @@ namespace Backsight.Editor.Forms
     /// <summary>
     /// A form for holding some sort of dialog (user control).
     /// </summary>
-    public partial class ContainerForm : Form, IActionContainer
+    public partial class ContainerForm : Form, IControlContainer
     {
         #region Class data
 
-        /// <summary>
-        /// The action the container is required for.
-        /// </summary>
-        private readonly IUserAction m_Action;
+        // None
 
         #endregion
 
@@ -40,14 +37,11 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Creates a container for some sort of user action.
         /// </summary>
-        /// <param name="action">The action the container is required for.</param>
-        public ContainerForm(IUserAction action)
+        /// <param name="title">The title for the dialog</param>
+        public ContainerForm(string title)
         {
             InitializeComponent();
-            m_Action = action;
-
-            // The action title may contain a mnemonic
-            Text = m_Action.Title.Replace("&", String.Empty);
+            Text = title;
         }
 
         #endregion
@@ -74,15 +68,6 @@ namespace Backsight.Editor.Forms
         {
             Hide();
             Controls.Clear();
-        }
-
-        #endregion
-
-        #region IActionContainer Members
-
-        public IUserAction Action
-        {
-            get { return m_Action; }
         }
 
         #endregion

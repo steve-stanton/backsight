@@ -132,10 +132,10 @@ namespace Backsight.Editor.UI
         /// Constructor for doing an update.
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal ParallelUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
-            : base(cc, action, updcmd)
+        internal ParallelUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+            : base(cc, editId, updcmd)
         {
             // Just set zero values for everything (we'll pick up stuff in Run).
             SetZeroValues();

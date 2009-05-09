@@ -79,10 +79,10 @@ namespace Backsight.Editor
         /// Creates new <c>SimpleCommandUI</c> for use during an editing update. This doesn't refer to
         /// the UpdateUI itself, it refers to a command that is the subject of the update.
         /// </summary>
-        /// <param name="cmdId">The item used to invoke the command.</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command (not null) that is controlling this command.</param>
-        protected SimpleCommandUI(IControlContainer cc, IUserAction cmdId, UpdateUI updcmd)
-            : base(cc, cmdId, updcmd)
+        protected SimpleCommandUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+            : base(cc, editId, updcmd)
         {
         }
 

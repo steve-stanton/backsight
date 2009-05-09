@@ -52,10 +52,10 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// Constructor for doing an update.
         /// </summary>
-        /// <param name="action">The action that initiated this command</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal IntersectUI(IUserAction action, UpdateUI updcmd)
-            : base(null, action, updcmd)
+        internal IntersectUI(EditingActionId editId, UpdateUI updcmd)
+            : base(null, editId, updcmd)
         {
             Initialize();
         }

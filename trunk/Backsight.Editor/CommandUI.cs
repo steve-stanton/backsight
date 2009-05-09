@@ -40,9 +40,9 @@ namespace Backsight.Editor
         private readonly IControlContainer m_Container;
 
         /// <summary>
-        /// The item used to invoke the command.
+        /// The ID of the edit this command deals with.
         /// </summary>
-        private readonly IUserAction m_CommandId;
+        private readonly EditingActionId m_EditId;
 
         /// <summary>
         /// The active display at the time the command was started.
@@ -88,11 +88,15 @@ namespace Backsight.Editor
         protected CommandUI(IControlContainer cc, IUserAction cmdId, ISpatialObject update, Operation recall)
         {
             m_Container = cc;
-            m_CommandId = cmdId;
             m_Draw = EditingController.Current.ActiveDisplay;
             m_Update = update;
             m_UpdCmd = null;
             m_Recall = recall;
+
+            if (cmdId is EditingAction)
+                m_EditId = (cmdId as EditingAction).EditId;
+            else
+                m_EditId = EditingActionId.Null;
 
             if (cmdId is RecalledEditingAction)
                 m_Recall = (cmdId as RecalledEditingAction).RecalledEdit;
@@ -104,15 +108,15 @@ namespace Backsight.Editor
         /// Creates new <c>CommandUI</c> for use during an editing update. This doesn't refer to
         /// the UpdateUI itself, it refers to a command that is the subject of the update.
         /// </summary>
-        /// <param name="cmdId">The item used to invoke the command.</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command (not null) that is controlling this command.</param>
-        protected CommandUI(IControlContainer cc, IUserAction cmdId, UpdateUI updcmd)
+        protected CommandUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
         {
             if (updcmd==null)
                 throw new ArgumentNullException();
 
             m_Container = cc;
-            m_CommandId = cmdId;
+            m_EditId = editId;
             m_UpdCmd = updcmd;
             m_Draw = updcmd.ActiveDisplay;
             m_Update = updcmd.SelectedObject;
@@ -426,13 +430,7 @@ namespace Backsight.Editor
 
         internal EditingActionId EditId
         {
-            get
-            {
-                if (m_CommandId is IEditingAction)
-                    return (m_CommandId as IEditingAction).EditId;
-                else
-                    return EditingActionId.Null;
-            }
+            get { return m_EditId; }
         }
         /*
 	virtual CeObject*		GetUpdate			( void ) const { return m_pUpdate; }
@@ -486,18 +484,6 @@ namespace Backsight.Editor
         internal void ErasePainting()
         {
             m_Draw.RestoreLastDraw();
-        }
-
-        /// <summary>
-        /// Experimental
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        protected IControlContainer DisplayContainerForm(Control c)
-        {
-            ContainerForm cf = new ContainerForm(m_CommandId);
-            cf.Display(c);
-            return cf;
         }
 
         /// <summary>

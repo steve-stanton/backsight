@@ -288,15 +288,8 @@ void CuiUpdate::Finish ( void ) {
                 return;
 
             // Get the operation that created the feature and re-run that operation.
-            Operation pop = m_Problem;
-            if (pop == null)
-                pop = m_Update.Creator;
-
-            if (pop == null)
-            {
-                MessageBox.Show("Specified feature is not associated with an edit.");
-                return;
-            }
+            Operation pop = GetOp();
+            Debug.Assert(pop != null);
 
             // Get a list of the dependent operations.
             m_DepOps = pop.MapModel.Touch(pop);
@@ -411,121 +404,93 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// <returns>True if an update command dialog has been started.</returns>
         bool RunUpdate()
         {
-            throw new NotImplementedException("RunUpdate");
+            // Get the operation that created the feature selected for update.
+            Operation pop = GetOp();
+            if (pop == null)
+                return false;
+
+            // There shouldn't already be a command running.
+            if (m_Cmd != null)
+            {
+                MessageBox.Show("UpdateUI.RunUpdate - Update already running?");
+                return false;
+            }
+
+            // The IControlContainer is a bit of a dodo.
+            IControlContainer cc = new ContainerForm("Update");
+
+            switch (pop.EditId)
+            {
+                case EditingActionId.LineExtend:
+                {
+                    m_Cmd = new LineExtensionUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.LineSubdivision:
+                {
+                    m_Cmd = new LineSubdivisionUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.DirIntersect:
+                case EditingActionId.DirDistIntersect:
+                case EditingActionId.DirLineIntersect:
+                case EditingActionId.DistIntersect:
+                case EditingActionId.LineIntersect:
+                {
+                    m_Cmd = new IntersectUI(pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.NewPoint:
+                case EditingActionId.GetControl:
+                {
+                    m_Cmd = new NewPointUI(cc, pop.EditId, this);
+                    break;
+
+                }
+
+                case EditingActionId.NewCircle:
+                {
+                    m_Cmd = new NewCircleUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.Path:
+                {
+                    m_Cmd = new PathUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.Parallel:
+                {
+                    m_Cmd = new ParallelUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.PointOnLine:
+                {
+                    m_Cmd = new PointOnLineUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.Radial:
+                {
+                    m_Cmd = new RadialUI(cc, pop.EditId, this);
+                    break;
+                }
+            }
+
+            if (m_Cmd != null)
+            {
+                m_Cmd.Run();
+                return true;
+            }
+
+            MessageBox.Show("You cannot update the selected feature this way.");
             return false;
         }
-        /*
-LOGICAL CuiUpdate::RunUpdate ( void ) {
-
-	// Get the operation that created the feature selected
-	// for update.
-	CeOperation* pop = GetOp();
-	if ( !pop ) return FALSE;
-
-	// There shouldn't already be a command running.
-	if ( m_pCmd ) {
-		ShowMessage("CuiUpdate::RunUpdate\nUpdate already running?");
-		return FALSE;
-	}
-
-	switch ( pop->GetType() ) {
-
-	case CEOP_ARC_EXTEND:
-	{
-		m_pCmd = new CuiArcExtend(ID_LINE_EXTEND,*this);
-		break;
-	}
-
-	case CEOP_ARC_SUBDIVISION:
-	{
-		m_pCmd = new CuiArcSubdivision(ID_LINE_SUBDIVIDE,*this);
-		break;
-	}
-
-	case CEOP_DIR_INTERSECT:
-	{
-		m_pCmd = new CuiIntersect(ID_INTERSECT_BB,*this);
-		break;
-	}
-
-	case CEOP_DIRDIST_INTERSECT:
-	{
-		m_pCmd = new CuiIntersect(ID_INTERSECT_BD,*this);
-		break;
-	}
-
-	case CEOP_DIRLINE_INTERSECT:
-	{
-		m_pCmd = new CuiIntersect(ID_INTERSECT_BL,*this);
-		break;
-	}
-
-	case CEOP_DIST_INTERSECT:
-	{
-		m_pCmd = new CuiIntersect(ID_INTERSECT_DD,*this);
-		break;
-	}
-
-	case CEOP_GET_CONTROL:
-	{
-		m_pCmd = new CuiNewPoint(ID_GETCONTROL,*this);
-		break;
-	}
-
-	case CEOP_LINE_INTERSECT:
-	{
-		m_pCmd = new CuiIntersect(ID_INTERSECT_LL,*this);
-		break;
-	}
-
-	case CEOP_NEW_CIRCLE:
-	{
-		m_pCmd = new CuiNewCircle(ID_LINE_CIRCLE,*this);
-		break;
-	}
-
-	case CEOP_NEW_POINT:
-	{
-		m_pCmd = new CuiNewPoint(ID_POINT_NEW,*this);
-		break;
-	}
-
-	case CEOP_PATH:
-	{
-		m_pCmd = new CuiPath(ID_PATH,*this);
-		break;
-	}
-
-	case CEOP_PARALLEL:
-	{
-		m_pCmd = new CuiParallel(ID_LINE_PARALLEL,*this);
-		break;
-	}
-
-	case CEOP_POINT_ON_LINE:
-	{
-		m_pCmd = new CuiPointOnLine(ID_POINT_ON_LINE,*this);
-		break;
-	}
-
-	case CEOP_RADIAL:
-	{
-		m_pCmd = new CuiRadial(ID_POINT_SIDESHOT,*this);
-		break;
-	}
-
-	} // end switch
-
-	if ( m_pCmd ) {
-		m_pCmd->Run();
-		return TRUE;
-	}
-
-	ShowMessage("You cannot update the selected feature this way.");
-	return FALSE;
-
-} // end of RunUpdate
-         */
 
         /// <summary>
         /// Returns the operation that created the feature that is currently selected for update.
