@@ -54,10 +54,10 @@ namespace Backsight.Editor.UI
         /// Constructor for doing an update.
         /// </summary>
         /// <param name="cc">Object for holding any displayed dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal NewCircleUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
-            : base(cc, action, updcmd)
+        internal NewCircleUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+            : base(cc, editId, updcmd)
         {
             m_Dialog = null;
         }

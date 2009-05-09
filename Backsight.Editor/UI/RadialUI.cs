@@ -62,10 +62,10 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// Constructor for doing an update.
         /// </summary>
-        /// <param name="action">The action that initiated this command</param>
+        /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal RadialUI(IControlContainer cc, IUserAction action, UpdateUI updcmd)
-            : base(cc, action, updcmd)
+        internal RadialUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+            : base(cc, editId, updcmd)
         {
             m_Dialog = null;
             m_From = null;

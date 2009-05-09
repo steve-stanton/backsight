@@ -1335,8 +1335,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         IControlContainer CreateContainer(IUserAction action)
         {
-            //return this;
-            return new ContainerForm(action);
+            // The action title may contain a mnemonic
+            string title = action.Title.Replace("&", String.Empty);
+
+            return new ContainerForm(title);
         }
 
         /// <summary>
