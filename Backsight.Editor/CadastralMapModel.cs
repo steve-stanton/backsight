@@ -1617,14 +1617,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Undoes the changes made by the last revision
-        /// </summary>
-        internal void UndoLastRevision()
-        {
-            // TODO!
-        }
-
-        /// <summary>
         /// Obtains the edits that are dependent on features created by a specific edit.
         /// This is used by dialogs that provide rollforward previews. It returns 
         /// the subsequent operations that could be impacted as a result of the change.

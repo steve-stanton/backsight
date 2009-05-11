@@ -200,6 +200,7 @@ namespace Backsight.Editor
         /// <param name="newPosition">The new position.</param>
         /// <returns>True if the geometry associated with this point was moved. False
         /// if the move wasn't necessary.</returns>
+        [Obsolete("Use MovePoint(UpdateContext, IPosition) instead")]
         internal bool Move(IPosition newPosition)
         {
             PointGeometry to = PointGeometry.Create(newPosition);
@@ -210,30 +211,63 @@ namespace Backsight.Editor
             if (g.IsCoincident(to))
                 return false;
 
-            // If the point coincides with an interior vertex on a
-            // multi-segment, update the multi-segment to refer to a
-            // new location... ignore
+            MovePoint(to);
+            return true;
+        }
 
-            // Remove this point from spatial index
-            //CadastralMapModel map = this.MapModel;
-            //IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
-            //index.Remove(this);
-
+        /// <summary>
+        /// Unconditionally moves the location of this point (this will also drag along the
+        /// position of any additional points that share the geometry). This point (and any
+        /// lines connected to it) will be removed from the spatial index prior to the move,
+        /// then re-indexed after the move.
+        /// </summary>
+        /// <param name="to">The new position for this point</param>
+        void MovePoint(PointGeometry to)
+        {
             // Notify all dependents that this point is about to move (and remove
             // this feature from spatial index)
             PreMove();
 
-            // Move the geometry for this feature and re-insert into the index
-            //(g as PointGeometry).Move(to);
-            // alternatively, just assign the supplied geometry ?
+            // Take the point(s) attached to the geometry for this point, and
+            // attach them to a new geometry.
             PointFeature[] pts = m_Geom.Points;
             m_Geom = new Node(pts, to);
-            //index.Add(this);
 
             // Notify all dependents that this point has been moved (and add
             // this feature back into the spatial index)
             PostMove();
+        }
 
+        /// <summary>
+        /// Moves the location of this point, to reflect some sort of editing revision.
+        /// </summary>
+        /// <param name="uc">The context in which the move is taking place (not null). If a
+        /// move actually takes place, it will be recorded as part of this context.</param>
+        /// <param name="to">The new position for this point</param>
+        /// <returns>True if a move was made. False if this point already has a position that
+        /// is exactly the same as the supplied position.</returns>
+        internal bool MovePoint(UpdateContext uc, IPosition newLocation)
+        {
+            PointGeometry newPosition = PointGeometry.Create(newLocation);
+            if (newPosition.IsCoincident(m_Geom))
+                return false;
+
+            uc.AddMove(this);
+            MovePoint(newPosition);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Undoes a positional change that arose during some sort of editing revision (see
+        /// the <see cref="UpdateContext"/> class). This method will be called if the user
+        /// decides to discard the revision.
+        /// </summary>
+        /// <param name="oldPosition">The position this feature should be moved back to</param>
+        /// <returns>True (always), indicating that this point was moved back to its old position.</returns>
+        internal override bool UndoMove(PointGeometry oldPosition)
+        {
+            MovePoint(oldPosition);
             return true;
         }
 

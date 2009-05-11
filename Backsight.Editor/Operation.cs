@@ -329,8 +329,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <returns>True if operation has been re-executed successfully</returns>
-        abstract internal bool Rollforward();
+        abstract internal bool Rollforward(UpdateContext uc);
 
         /// <summary>
         /// Is a flag bit set?
