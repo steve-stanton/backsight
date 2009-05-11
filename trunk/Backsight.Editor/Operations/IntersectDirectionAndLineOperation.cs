@@ -278,8 +278,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
+        internal override bool Rollforward(UpdateContext uc)
         {
             // Return if this operation has not been marked as changed.
             if (!IsChanged)
@@ -292,7 +294,7 @@ namespace Backsight.Editor.Operations
                 throw new RollforwardException(this, "Cannot re-calculate intersection point.");
 
             // Update the intersection point to the new position.
-            m_Intersection.Move(xsect);
+            m_Intersection.MovePoint(uc, xsect);
 
                 /*
                 // Defective logic means the intersection point may not

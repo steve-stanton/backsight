@@ -404,10 +404,12 @@ void CeRadial::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Rollforward this operation.
+        /// Rollforward this edit in response to some sort of update.
         /// </summary>
-        /// <returns>True on success</returns>
-        internal override bool Rollforward()
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
+        /// <returns>True if operation has been re-executed successfully</returns>
+        internal override bool Rollforward(UpdateContext uc)
         {
             // Return if this operation has not been marked as changed.
             if (!IsChanged)
@@ -419,7 +421,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
                 throw new RollforwardException(this, "Cannot re-calculate position of sideshot point.");
 
         	// Move the sideshot point.
-	        m_To.Move(to);
+            m_To.MovePoint(uc, to);
 
             // Rollforward the base class.
             return base.OnRollforward();

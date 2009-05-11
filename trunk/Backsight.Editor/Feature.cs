@@ -943,5 +943,19 @@ namespace Backsight.Editor
                 }
             }
         }
+
+        /// <summary>
+        /// Undoes a positional change that arose during some sort of editing revision (see
+        /// the <see cref="UpdateContext"/> class). This method will be called if the user
+        /// decides to discard the revision.
+        /// </summary>
+        /// <param name="oldPosition">The position this feature should be moved back to</param>
+        /// <returns>True if the feature was moved. False if this type of feature does not
+        /// support positional changes. This implementation always returns false. The
+        /// <see cref="PointFeature"/> class overrides.</returns>
+        internal virtual bool UndoMove(PointGeometry oldPosition)
+        {
+            return false;
+        }
     }
 }

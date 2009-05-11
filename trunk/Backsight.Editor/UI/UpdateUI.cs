@@ -45,9 +45,9 @@ namespace Backsight.Editor.UI
         Feature m_Update;
 
         /// <summary>
-        /// The number of undo markers that have been set.
+        /// Information about any updates that have been made
         /// </summary>
-        uint m_NumUndo;
+        readonly UpdateContext m_Context;
 
         /// <summary>
         /// Edits that are dependent on the edit that is currently being revised
@@ -64,12 +64,6 @@ namespace Backsight.Editor.UI
         /// </summary>
         UpdateForm m_Info;
 
-        /// <summary>
-        /// The last editing operation that was completed prior to the start of the update (null
-        /// if the update was started at the very beginning of the session).
-        /// </summary>
-        readonly Operation m_LastEdit;
-
         #endregion
 
         #region Constructors
@@ -84,10 +78,9 @@ namespace Backsight.Editor.UI
             m_Update = null;
             m_Info = null;
             m_Cmd = null;
-            m_NumUndo = 0;
             m_DepOps = null;
             m_Problem = null;
-            m_LastEdit = Session.WorkingSession.LastOperation;
+            m_Context = new UpdateContext();
         }
 
         #endregion
@@ -557,7 +550,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        // changed, so that rollforward will re-calculate stuff.
 
         	if (newpos!=null)
-		        point.Move(newpos);
+                point.MovePoint(m_Context, newpos);
 	        else
 		        pop.OnMove(null);
 
@@ -902,12 +895,10 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void Undo()
         {
-	        CadastralMapModel.Current.UndoLastRevision();
-	        if (m_NumUndo>0)
-                m_NumUndo--;
+            m_Context.Undo();
 
 	        if (m_Info!=null)
-                m_Info.SetUpdateCount(m_NumUndo);
+                m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
         }
 
         /// <summary>
@@ -915,12 +906,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void UndoAll()
         {
-            CadastralMapModel mm = CadastralMapModel.Current;
-            while (m_NumUndo>0)
-            {
-                mm.UndoLastRevision();
-                m_NumUndo--;
-            }
+            m_Context.UndoAll();
 
             if (m_Info != null)
                 m_Info.SetUpdateCount(0);
@@ -931,13 +917,10 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void SetUndoMarker()
         {
-            throw new NotImplementedException("SetUndoMarker");
-            /*
-            CeMap::GetpMap()->SetUndoMarker();
-             */
-            m_NumUndo++;
+            m_Context.SetUndoMarker();
+
             if (m_Info != null)
-                m_Info.SetUpdateCount(m_NumUndo);
+                m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
         }
 
         internal CommandUI ActiveCommand

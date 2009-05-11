@@ -350,6 +350,7 @@
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
+    <Compile Include="Move.cs" />
     <Compile Include="NativeId.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Observations\AngleDirection.cs" />
@@ -1024,6 +1025,7 @@
     <Compile Include="UI\UndoUI.cs" />
     <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
+    <Compile Include="UpdateContext.cs" />
     <Compile Include="Wildcard.cs" />
     <Compile Include="Xml\AngleType.cs" />
     <Compile Include="Xml\ArcType.cs" />

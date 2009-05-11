@@ -221,10 +221,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this operation.
+        /// Rollforward this edit in response to some sort of update.
         /// </summary>
-        /// <returns>True on success</returns>
-        internal override bool Rollforward()
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
+        /// <returns>True if operation has been re-executed successfully</returns>
+        internal override bool Rollforward(UpdateContext uc)
         {
             // Return if this operation has not been marked as changed.
             if (!IsChanged)
@@ -256,7 +258,7 @@ namespace Backsight.Editor.Operations
             PointFeature pe = CreatedEndPoint;
 
             if (ps!=null)
-                ps.Move(spar);
+                ps.MovePoint(uc, spar);
             else
             {
                 // Get the location at the start of the parallel and
@@ -277,7 +279,7 @@ namespace Backsight.Editor.Operations
 
             // Same for the end of the parallel
             if (pe!=null)
-                pe.Move(epar);
+                pe.MovePoint(uc, epar);
             else
             {
                 IPointGeometry loc = m_ParLine.EndPoint;
