@@ -228,7 +228,7 @@ namespace Backsight.Editor
                 span.Get(i);
 
                 // Save the span
-                Feature feat = SaveSpan(span, op, createdPoints, null, null, null);
+                Feature feat = SaveSpan(span, op, createdPoints, null, null, null, null);
                 SetFeature(i, feat);
             }
 
@@ -287,6 +287,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that
         /// immediately precedes this leg. This will be updated if this leg also
         /// ends with a new insert (if not, it will be returned as a null value).</param>
@@ -297,7 +299,7 @@ namespace Backsight.Editor
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
         /// <returns></returns>
-        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
+        internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
             ref IPosition terminal, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
@@ -338,10 +340,10 @@ namespace Backsight.Editor
                     // See if the span previously had a saved feature.
                     Feature old = GetFeature(i);
                     if (old!=null)
-                        SaveSpan(span, op, createdPoints, insert, old, veryEnd);
+                        SaveSpan(span, op, createdPoints, insert, old, veryEnd, uc);
                     else
                     {
-                        Feature feat = SaveSpan(span, op, createdPoints, insert, null, veryEnd);
+                        Feature feat = SaveSpan(span, op, createdPoints, insert, null, veryEnd, uc);
                         SetFeature(i, feat);
                     }
 
@@ -365,15 +367,18 @@ namespace Backsight.Editor
         /// this span. Defined only during rollforward.</param>
         /// <param name="old">Pointer to the feature that was previously associated with
         /// this span. This will be not null when the span is being saved as part of
-        /// rollforward processing.</param>
+        /// rollforward processing (in that case, <paramref name="uc"/> must also be supplied).</param>
         /// <param name="veryEnd">The location at the very end of the connection path
         /// that this span is part of.</param>
+        /// <param name="uc">The context in which editing revisions are being made (null if
+        /// not making revisions). Must be specified if <paramref name="old"/> is not null.</param>
         /// <returns>The feature (if any) that represents the span. If the span has a line,
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
         internal Feature SaveSpan(StraightSpan span, PathOperation op,
-                                  List<PointFeature> createdPoints, PointFeature insert, Feature old, PointFeature veryEnd)
+                                  List<PointFeature> createdPoints, PointFeature insert, Feature old,
+                                  PointFeature veryEnd, UpdateContext uc)
         {
             // Get map info.
             CadastralMapModel map = CadastralMapModel.Current;
@@ -395,6 +400,8 @@ namespace Backsight.Editor
 
             if (old!=null)
             {
+                Debug.Assert(uc!=null);
+
                 if (span.HasLine) // Feature should therefore be a line
                 {
                     LineFeature line = (old as LineFeature);
@@ -403,18 +410,20 @@ namespace Backsight.Editor
 
                     if (insert!=null)
                     {
-                        line.ChangeEnds(insert, line.EndPoint);
-                        if (!line.EndPoint.IsCoincident(veryEnd))
-                            line.EndPoint.Move(eloc);
+                        throw new NotImplementedException("StraightLeg.SaveSpan - insert");
+
+                        //line.ChangeEnds(insert, line.EndPoint);
+                        //if (!line.EndPoint.IsCoincident(veryEnd))
+                        //    line.EndPoint.Move(eloc);
                     }
                     else
                     {
                         if (line.EndPoint.IsCoincident(veryEnd))
-                            line.StartPoint.Move(sloc);
+                            line.StartPoint.MovePoint(uc, sloc);
                         else
                         {
-                            line.StartPoint.Move(sloc);
-                            line.EndPoint.Move(eloc);
+                            line.StartPoint.MovePoint(uc, sloc);
+                            line.EndPoint.MovePoint(uc, eloc);
                         }
                     }
                 }
@@ -425,7 +434,7 @@ namespace Backsight.Editor
                         throw new Exception("StraightSpan.Save - Mismatched point");
 
                     if (!point.IsCoincident(veryEnd))
-                        point.Move(eloc);
+                        point.MovePoint(uc, eloc);
                 }
             }
             else
@@ -755,6 +764,8 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// <summary>
         /// Rollforward the second face of this leg.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that immediately precedes
         /// this leg. This will be updated if this leg also ends with a new insert (if not, it
         /// will be returned as a null value).</param>
@@ -768,10 +779,11 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// They are passed in because this leg may contain miss-connects (and maybe even missing
         /// end points). So it would be tricky trying trying to work it out now.
         /// </remarks>
-        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
+        internal override bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op,
+                                                ExtraLeg face, IPosition spos, IPosition epos)
         {
             // Get the extra face to do it.
-            return face.UpdateSegments(insert, op, spos, epos);
+            return face.UpdateSegments(uc, insert, op, spos, epos);
         }
 
         /// <summary>

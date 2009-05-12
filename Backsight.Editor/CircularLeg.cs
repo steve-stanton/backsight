@@ -397,8 +397,8 @@ namespace Backsight.Editor
                     // Get the span to modify the radius of the circle.
                     SetCircle(span, m_Circle);
 
-                    // Move the center point.
-                    center.Move(span.Center);
+                    // Define the position of the center point.
+                    center.PointGeometry = PointGeometry.Create(span.Center);
                 }
                 else
                 {
@@ -423,7 +423,7 @@ namespace Backsight.Editor
 
             for (int i = 0; i < nspan; i++)
             {
-                Feature feat = SaveSpan(ref noInsert, op, createdPoints, span, i);
+                Feature feat = SaveSpan(ref noInsert, op, createdPoints, span, i, null);
             }
 
             // Update BC info to refer to the EC.
@@ -500,6 +500,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that
         /// immediately precedes this leg. This will be updated if this leg also
         /// ends with a new insert (if not, it will be returned as a null value).</param>
@@ -510,7 +512,7 @@ namespace Backsight.Editor
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
         /// <returns></returns>
-        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
+        internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
             ref IPosition terminal, ref double bearing, double sfac)
         {
             // SS:20080314 - This looks like Save...
@@ -555,7 +557,7 @@ namespace Backsight.Editor
                     SetCircle(span, m_Circle);
 
                     // Move the center point.
-                    center.Move(span.Center);
+                    center.MovePoint(uc, span.Center);
                 }
                 else
                 {
@@ -579,7 +581,7 @@ namespace Backsight.Editor
 
             for (int i = 0; i < nspan; i++)
             {
-                SaveSpan(ref insert, op, createdPoints, span, i);
+                SaveSpan(ref insert, op, createdPoints, span, i, uc);
             }
 
             // Update BC info to refer to the EC.
@@ -598,12 +600,14 @@ namespace Backsight.Editor
         /// <param name="createdPoints">Newly created point features</param>
         /// <param name="span">The span for the leg.</param>
         /// <param name="index">The index of the span to save.</param>
+        /// <param name="uc">The context in which editing revisions are being made (defined only
+        /// when performing rollforward). Used to hold a record of any positional changes.</param>
         /// <returns>The feature (if any) that represents the span. If the span has a line,
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
         Feature SaveSpan(ref PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
-                            CircularSpan span, int index)
+                            CircularSpan span, int index, UpdateContext uc)
         {
             // The very end of a connection path should never be moved.
             PointFeature veryEnd = op.EndPoint;
@@ -634,7 +638,7 @@ namespace Backsight.Editor
                 Feature old = GetFeature(index);
 
                 // Save the span.
-                Feature feat = SaveSpan(insert, op, createdPoints, span, old, veryEnd);
+                Feature feat = SaveSpan(insert, op, createdPoints, span, old, veryEnd, uc);
 
                 // If the saved span is different from what we had before,
                 // tell the base class about it.
@@ -717,15 +721,17 @@ namespace Backsight.Editor
         /// <param name="span">The span for the leg.</param>
         /// <param name="old">Pointer to the feature that was previously associated with
         /// the span. This will be not null when the span is being saved as part of
-        /// rollforward processing.</param>
+        /// rollforward processing (in that case, <paramref name="uc"/> must also be supplied).</param>
         /// <param name="veryEnd">The location at the very end of the connection path
         /// that this leg is part of.</param>
+        /// <param name="uc">The context in which editing revisions are being made (null if
+        /// not making revisions). Must be specified if <paramref name="old"/> is not null.</param>
         /// <returns>The feature (if any) that represents the span. If the span has a line,
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
         Feature SaveSpan(PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
-                            CircularSpan span, Feature old, PointFeature veryEnd)
+                            CircularSpan span, Feature old, PointFeature veryEnd, UpdateContext uc)
         {
             // The circle on which the span is based should already be defined
             // (see the call that CircularLeg.Save makes to AddCircle).
@@ -752,6 +758,8 @@ namespace Backsight.Editor
 
             if (old!=null)
             {
+                Debug.Assert(uc!=null);
+
                 if (span.HasLine) // Feature should therefore be a line
                 {
                     LineFeature line = (old as LineFeature);
@@ -760,14 +768,16 @@ namespace Backsight.Editor
 
                     if (insert!=null)
                     {
-                        line.ChangeEnds(insert, line.EndPoint);
-                        if (!line.EndPoint.IsCoincident(veryEnd))
-                            line.EndPoint.Move(eloc);
+                        throw new NotImplementedException("CircularLeg.SaveSpan - insert");
+
+                        //line.ChangeEnds(insert, line.EndPoint);
+                        //if (!line.EndPoint.IsCoincident(veryEnd))
+                        //    line.EndPoint.Move(eloc);
                     }
                     else
                     {
                         if (line.EndPoint.IsCoincident(veryEnd))
-                            line.StartPoint.Move(sloc);
+                            line.StartPoint.MovePoint(uc, sloc);
                         else
                         {
                             throw new NotImplementedException("CircularSpan.Save");
@@ -784,7 +794,7 @@ namespace Backsight.Editor
                         throw new Exception("CircularSpan.Save - Mismatched point");
 
                     if (!point.IsCoincident(veryEnd))
-                        point.Move(eloc);
+                        point.MovePoint(uc, eloc);
                 }
 
                 feat = old; // SS:20080308 - Not sure if this is correct (it's not in the comparable block of StraightSpan.cs)
@@ -1405,6 +1415,8 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// <summary>
         /// Rollforward the second face of this leg.
         /// </summary>
+        /// <param name="uc">The context in which editing revisions are being made (not null).
+        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that immediately precedes
         /// this leg. This will be updated if this leg also ends with a new insert (if not, it
         /// will be returned as a null value).</param>
@@ -1418,10 +1430,11 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// They are passed in because this leg may contain miss-connects (and maybe even missing
         /// end points). So it would be tricky trying trying to work it out now.
         /// </remarks>
-        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face, IPosition spos, IPosition epos)
+        internal override bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op,
+                                                ExtraLeg face, IPosition spos, IPosition epos)
         {
             // Get the extra face to do it.
-            return face.UpdateCurves(insert, op, spos, epos, m_Circle, IsClockwise);
+            return face.UpdateCurves(uc, insert, op, spos, epos, m_Circle, IsClockwise);
         }
 
         /// <summary>

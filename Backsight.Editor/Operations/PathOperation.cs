@@ -274,8 +274,6 @@ namespace Backsight.Editor.Operations
             if (!IsChanged)
                 return base.OnRollforward();
 
-            throw new NotImplementedException("PathOperation.Rollforward");
-
             // If a line was originally attached to the start point (but
             // is now preceded by one or more inserts), alter the start
             // location so that its at a duplicate location.
@@ -301,65 +299,71 @@ namespace Backsight.Editor.Operations
             // to make sure the end of the existing line does move, since
             // an insert will be taking its place).
 
+            if (IsInsertAtEnd())
+            {
+                throw new NotImplementedException("PathOperation.Rollforward - insert at end");
+
+                //LineFeature last = GetLastLine();
+                //if (object.ReferenceEquals(last.EndPoint, m_To))
+                //{
+                    /*
+			        CeMap* pMap = CeMap::GetpMap();
+			        CeLocation* pS = pLast->GetpStart();
+			        CeLocation* pE = pMap->AddDuplicate(*pEnd);
+			        CePoint* pPoint = pMap->AddPoint(pE,0);
+			        pPoint->SetpCreator(*this);
+			        pPoint->SetNextId();
+			        pLast->GetpLine()->ChangeEnds(*pS,*pE);
+                    */
+                //}
+            }
+
+            // Get the rotation & scale factor to apply.
+            double rotation, scale;
+            GetAdjustment(out rotation, out scale);
+
+            // Notify each leg of the change ...
+
+            // Initialize position to the start of the path.
+            IPosition start = m_From;
+            IPosition gotend = m_From;
+            PointFeature insert = null; // No insert prior to start
+
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
+
+            // Go through each leg, telling them to "save" (the leg actually
+            // checks whether it already refers to features).
+            foreach (Leg leg in m_Legs)
+            {
+                // For the second face of a staggered leg, we need to supply
+                // the newly adjusted ends of the leg that has just been
+                // processed (the regular version of it's rollforward function
+                // does nothing).
+
+                if (leg.FaceNumber == 2)
+                {
+                    throw new NotImplementedException("PathOperation.Rollforward - extra leg");
+                    /*
+			        CeExtraLeg* pLeg = dynamic_cast<CeExtraLeg*>(m_pLegs[i]);
+			        if ( !pLeg ) {
+				        AfxMessageBox("Second face has unexpected data type");
+				        return FALSE;
+			        }
+			        if ( !pLeg->Rollforward(pInsert,*this,start,gotend) ) return FALSE;
+                     */
+                }
+                else
+                {
+                    start = gotend;
+                    if (!leg.Rollforward(uc, ref insert, this, ref gotend, ref bearing, scale))
+                        return false;
+                }
+            }
+
             // Rollforward the base class.
-            //return base.OnRollforward();
+            return base.OnRollforward();
         }
-
-        /*
-	if ( IsInsertAtEnd() ) {
-		CeArc* pLast = GetLastArc();
-		CeLocation* pEnd = (CeLocation*)m_pTo->GetpVertex();
-		if ( pLast->GetpEnd() == pEnd ) {
-			CeMap* pMap = CeMap::GetpMap();
-			CeLocation* pS = pLast->GetpStart();
-			CeLocation* pE = pMap->AddDuplicate(*pEnd);
-			CePoint* pPoint = pMap->AddPoint(pE,0);
-			pPoint->SetpCreator(*this);
-			pPoint->SetNextId();
-			pLast->GetpLine()->ChangeEnds(*pS,*pE);
-		}
-	}
-
-	// Get the rotation & scale factor to apply.
-	FLOAT8 rotation;
-	FLOAT8 sfac;
-	GetAdjustment( rotation, sfac );
-
-//	Notify each leg of the change ...
-
-//	Initialize position to the start of the path.
-	CeVertex start(*m_pFrom);
-	CeVertex gotend(start);		// Un-adjusted end point
-	CeLocation* pInsert = 0;	// No insert prior to start
-
-//	Initial bearing is whatever the desired rotation is.
-	FLOAT8 bearing = rotation;
-
-	// Go through each leg, telling them to "save" (the leg actually
-	// checks whether it already refers to features).
-
-	for ( UINT2 i=0; i<m_NumLeg; i++ ) {
-
-		// For the second face of a staggered leg, we need to supply
-		// the newly adjusted ends of the leg that has just been
-		// processed (the regular version of it's rollforward function
-		// does nothing).
-
-		if ( m_pLegs[i]->GetFaceNumber()==2 ) {
-			CeExtraLeg* pLeg = dynamic_cast<CeExtraLeg*>(m_pLegs[i]);
-			if ( !pLeg ) {
-				AfxMessageBox("Second face has unexpected data type");
-				return FALSE;
-			}
-			if ( !pLeg->Rollforward(pInsert,*this,start,gotend) ) return FALSE;
-		}
-		else {
-			start = gotend;
-			if ( !(m_pLegs[i]->Rollforward(pInsert,*this,gotend,bearing,sfac)) ) return FALSE;
-		}
-
-	} // next leg
-         */
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

@@ -195,27 +195,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Moves the location of this point.
-        /// </summary>
-        /// <param name="newPosition">The new position.</param>
-        /// <returns>True if the geometry associated with this point was moved. False
-        /// if the move wasn't necessary.</returns>
-        [Obsolete("Use MovePoint(UpdateContext, IPosition) instead")]
-        internal bool Move(IPosition newPosition)
-        {
-            PointGeometry to = PointGeometry.Create(newPosition);
-
-            // Just return if the new location is at the same position
-            // as the old location.
-            IPointGeometry g = this.Geometry;
-            if (g.IsCoincident(to))
-                return false;
-
-            MovePoint(to);
-            return true;
-        }
-
-        /// <summary>
         /// Unconditionally moves the location of this point (this will also drag along the
         /// position of any additional points that share the geometry). This point (and any
         /// lines connected to it) will be removed from the spatial index prior to the move,

@@ -32,7 +32,7 @@ namespace Backsight.Editor
         /// Items that have been moved as a result of editing revision. Each list contains the
         /// moves relating to a single revision.
         /// </summary>
-        readonly Stack<List<Move>> m_Moves;
+        readonly Stack<UpdateUndoMarker> m_Moves;
 
         /// <summary>
         /// The last editing operation that was completed prior to the creation of this context
@@ -49,7 +49,7 @@ namespace Backsight.Editor
         /// </summary>
         internal UpdateContext()
         {
-            m_Moves = new Stack<List<Move>>();
+            m_Moves = new Stack<UpdateUndoMarker>();
             m_LastEdit = Session.WorkingSession.LastOperation;
         }
 
@@ -69,7 +69,13 @@ namespace Backsight.Editor
         /// </summary>
         internal void SetUndoMarker()
         {
-            m_Moves.Push(new List<Move>());
+            UpdateUndoMarker uum = new UpdateUndoMarker();
+
+            UpdateUndoMarker lastMarker = m_Moves.Peek();
+            if (lastMarker!=null && lastMarker.EditSequence==uum.EditSequence)
+                throw new InvalidOperationException("Attempt to create another undo marker for the same edit");
+
+            m_Moves.Push(uum);
         }
 
         /// <summary>
@@ -78,10 +84,9 @@ namespace Backsight.Editor
         /// <param name="p">The point that is about to move</param>
         internal void AddMove(PointFeature p)
         {
-            Move m = new Move(p);
-            List<Move> moves = m_Moves.Peek();
-            Debug.Assert(moves != null);
-            moves.Add(m);
+            UpdateUndoMarker um = m_Moves.Peek();
+            Debug.Assert(um != null);
+            um.AddMove(p);
         }
 
         /// <summary>
@@ -95,13 +100,9 @@ namespace Backsight.Editor
             if (m_Moves.Count == 0)
                 return false;
 
-            List<Move> moves = m_Moves.Pop();
-            Debug.Assert(moves != null);
-
-            // It probably shouldn't matter, but undo the moves in reverse order
-            for (int i=moves.Count-1; i>=0; i--)
-                moves[i].Undo();
-
+            UpdateUndoMarker um = m_Moves.Pop();
+            Debug.Assert(um != null);
+            um.Undo();
             return true;
         }
 
