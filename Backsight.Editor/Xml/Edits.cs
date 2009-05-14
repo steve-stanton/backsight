@@ -39,6 +39,8 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(UpdateType))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(LineExtensionUpdateType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TrimLineType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TextRotationType))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SimpleLineSubdivisionType))]
@@ -1287,6 +1289,68 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.clockwiseField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(LineExtensionUpdateType))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class UpdateType : OperationType {
+        
+        private string revisedEditField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string RevisedEdit {
+            get {
+                return this.revisedEditField;
+            }
+            set {
+                this.revisedEditField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class LineExtensionUpdateType : UpdateType {
+        
+        private DistanceType distanceField;
+        
+        private bool extendFromEndField;
+        
+        public LineExtensionUpdateType() {
+            this.extendFromEndField = false;
+        }
+        
+        /// <remarks/>
+        public DistanceType Distance {
+            get {
+                return this.distanceField;
+            }
+            set {
+                this.distanceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ExtendFromEnd {
+            get {
+                return this.extendFromEndField;
+            }
+            set {
+                this.extendFromEndField = value;
             }
         }
     }

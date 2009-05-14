@@ -475,6 +475,24 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="LineExtensionUpdateType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="UpdateType">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="Distance" type="DistanceType">
+            <xs:annotation>
+              <xs:documentation>The observed length of the extension.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute default="false" name="ExtendFromEnd" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>True if extending from the end of the line. False if extending from the start.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="LineSubdivisionType">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
@@ -969,6 +987,13 @@ The first and last positions are assumed to match the positions of the point fea
             </xs:annotation>
           </xs:element>
         </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UpdateType" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationType">
+        <xs:attribute name="RevisedEdit" type="IdType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
