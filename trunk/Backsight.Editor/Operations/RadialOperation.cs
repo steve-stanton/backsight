@@ -260,8 +260,6 @@ LOGICAL CeRadial::Execute	( const CeDirection& dir
             m_Length = length;
             m_Length.AddReferences(this);
 
-            // Mark this op as modified and tell the map we're done.
-            OnMove(null);
             return true;
         }
 

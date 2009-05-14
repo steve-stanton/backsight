@@ -98,5 +98,13 @@ namespace Backsight.Editor
             for (int i=m_Moves.Count-1; i>=0; i--)
                 m_Moves[i].Undo();
         }
+
+        /// <summary>
+        /// Is this an empty undo marker (with no moves recorded)?
+        /// </summary>
+        internal bool IsEmpty
+        {
+            get { return (m_Moves.Count == 0); }
+        }
     }
 }
