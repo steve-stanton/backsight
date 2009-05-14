@@ -366,11 +366,13 @@
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
+    <Compile Include="Operations\LineExtensionUpdate.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
+    <Compile Include="OperationUpdate.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />
