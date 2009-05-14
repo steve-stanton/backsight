@@ -69,13 +69,23 @@ namespace Backsight.Editor
         /// </summary>
         internal void SetUndoMarker()
         {
-            UpdateUndoMarker uum = new UpdateUndoMarker();
+            UpdateUndoMarker um = new UpdateUndoMarker();
 
-            UpdateUndoMarker lastMarker = m_Moves.Peek();
-            if (lastMarker!=null && lastMarker.EditSequence==uum.EditSequence)
-                throw new InvalidOperationException("Attempt to create another undo marker for the same edit");
+            if (m_Moves.Count > 0)
+            {
+                UpdateUndoMarker lastMarker = m_Moves.Peek();
+                if (lastMarker!=null && lastMarker.EditSequence==um.EditSequence)
+                {
+                    // If the last marker is empty, just get rid of it (user may have cancelled
+                    // from previous edit)
+                    if (lastMarker.IsEmpty)
+                        m_Moves.Pop();
+                    else
+                        throw new InvalidOperationException("Attempt to create another undo marker for the same edit");
+                }
+            }
 
-            m_Moves.Push(uum);
+            m_Moves.Push(um);
         }
 
         /// <summary>
