@@ -23,6 +23,7 @@ using Backsight.Editor.Operations;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.UI
 {
@@ -38,6 +39,13 @@ namespace Backsight.Editor.UI
         /// The update that is currently being executed.
         /// </summary>
         CommandUI m_Cmd;
+
+        /// <summary>
+        /// The parameters describing the changes that should be applied to the editing
+        /// operation that is currently being updated.
+        /// </summary>
+        /// <remarks>May be better as part of the UpdateContext</remarks>
+        UpdateType m_UpdateParameters;
 
         /// <summary>
         /// The feature currently selected for update.
@@ -512,6 +520,11 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        if (pop==null)
                 return false;
 
+            // Confirm that update parameters have been defined (this is supposed to be done by
+            // the UI's implementation of the DialFinish command).
+            if (m_UpdateParameters==null)
+                throw new InvalidOperationException("Update parameters are not available");
+
 	        // Were we just updating the absolute position of a point?
 	        // If so, grab the new position before destroying the
 	        // command (we need to do this because CeNewPoint::Rollforward
@@ -549,10 +562,10 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        // just move it. Otherwise mark the modified operation as
 	        // changed, so that rollforward will re-calculate stuff.
 
-        	if (newpos!=null)
+            if (newpos!=null)
                 point.MovePoint(m_Context, newpos);
-	        else
-		        pop.OnMove(null);
+            else
+                pop.IsChanged = true;
 
 	        // Propagate the change (breaking if an operation can no
 	        // longer be calculated, which assigns m_Problem)
@@ -926,6 +939,16 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         internal CommandUI ActiveCommand
         {
             get { return m_Cmd; }
+        }
+
+        /// <summary>
+        /// The parameters describing the changes that should be applied to the editing
+        /// operation that is currently being updated.
+        /// </summary>
+        internal UpdateType UpdateParameters
+        {
+            get { return m_UpdateParameters; }
+            set { m_UpdateParameters = value; }
         }
     }
 }

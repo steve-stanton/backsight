@@ -236,12 +236,36 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Applies an update to this edit (by modifying the parameters that describe
+        /// the edit). To re-execute the edit and propogate any positional changes, you
+        /// must make a subsequent call to <see cref="CadastralMapModel.Rollforward"/>.
+        /// </summary>
+        /// <param name="ut">Information about the update (expected to have a type that is
+        /// consistent with this editing operation)</param>
+        /// <returns>The parameters this editing operation originally had (before the
+        /// supplied information was applied). Holding on to this information makes it
+        /// possible to later revert things to the way they were originally.</returns>
+        public override UpdateType ApplyUpdate(UpdateType ut)
+        {
+            LineExtensionUpdateType current = new LineExtensionUpdateType();
+            current.ExtendFromEnd = m_IsExtendFromEnd;
+            current.Distance = new DistanceType(m_Length);
+
+            LineExtensionUpdateType u = (LineExtensionUpdateType)ut;
+            m_IsExtendFromEnd = u.ExtendFromEnd;
+            m_Length = new Distance(this, u.Distance);
+
+            return current;
+        }
+
+        /// <summary>
         /// Corrects this operation.
         /// </summary>
         /// <param name="isFromEnd">True if extending from the end of the line</param>
         /// <param name="length">The observed length of the extension</param>
         /// <returns>True if operation updated ok.</returns>
-        internal bool Correct(bool isFromEnd, Distance length)
+        /*
+        bool Correct(bool isFromEnd, Distance length)
         {
             // TODO: This is a bit awkward. Should have a Calculate method that accepts
             // parameters. Should also avoid MessageBox.Show (throw an exception instead).
@@ -275,6 +299,7 @@ namespace Backsight.Editor.Operations
 
             return isOk;
         }
+        */
 
         /// <summary>
         /// A user-perceived title for this operation.
