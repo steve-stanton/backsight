@@ -14,14 +14,20 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
-    /// <written by="Steve Stanton" on="14-MAY-2009" />
-    /// <summary>
-    /// Base for classes that hold information about editing revisions.
-    /// </summary>
-    class OperationUpdate
+    public partial class UpdateType
     {
+        /// <summary>
+        /// Loads this update into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new UpdateOperation(s, this);
+        }
     }
 }

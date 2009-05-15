@@ -253,10 +253,10 @@ namespace Backsight.Editor
             get { return (m_Session==null ? null : m_Session.MapModel); }
         }
 
-        public void OnMove(Feature f)
-        {
-            throw new NotImplementedException("Operation.OnMove");
-        }
+        //public void OnMove(Feature f)
+        //{
+        //    throw new NotImplementedException("Operation.OnMove");
+        //}
 
         /// <summary>
         /// Convenience method that marks a line as "moved" (first checks whether
@@ -362,9 +362,10 @@ namespace Backsight.Editor
         /// Has this operation been marked as changed. This indicates whether the
         /// operation needs to be re-executed as part of rollforward processing.
         /// </summary>
-        protected bool IsChanged
+        internal bool IsChanged
         {
             get { return IsFlagSet(OperationFlag.Changed); }
+            set { SetFlag(OperationFlag.Changed, value); }
         }
 
         /// <summary>
@@ -713,6 +714,25 @@ namespace Backsight.Editor
 
             Debug.Assert(this.m_Session.Id == that.m_Session.Id);
             return (this.m_Sequence > that.m_Sequence);
+        }
+
+        /// <summary>
+        /// Applies an update to this edit (by modifying the parameters that describe
+        /// the edit). To re-execute the edit and propogate any positional changes, you
+        /// must make a subsequent call to <see cref="CadastralMapModel.Rollforward"/>.
+        /// </summary>
+        /// <param name="ut">Information about the update (expected to have a type that is
+        /// consistent with this editing operation)</param>
+        /// <returns>The parameters this editing operation originally had (before the
+        /// supplied information was applied). Holding on to this information makes it
+        /// possible to later revert things to the way they were originally.</returns>
+        public virtual UpdateType ApplyUpdate(UpdateType ut)
+        {
+            // This method should be declared by the IRevisable interface once it
+            // has been implemented by derived classes. At that time, this implementation
+            // should be discarded.
+
+            return null;
         }
     }
 }

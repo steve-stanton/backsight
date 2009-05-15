@@ -366,13 +366,12 @@
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
-    <Compile Include="Operations\LineExtensionUpdate.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
-    <Compile Include="OperationUpdate.cs" />
+    <Compile Include="Operations\UpdateOperation.cs" />
     <Compile Include="PathData.cs" />
     <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />
@@ -1086,6 +1085,7 @@
     <Compile Include="Xml\StraightLegType.cs" />
     <Compile Include="Xml\TextRotationType.cs" />
     <Compile Include="Xml\TrimLineType.cs" />
+    <Compile Include="Xml\UpdateType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />
