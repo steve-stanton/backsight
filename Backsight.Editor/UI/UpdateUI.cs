@@ -945,6 +945,11 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// The parameters describing the changes that should be applied to the editing
         /// operation that is currently being updated.
         /// </summary>
+        /// <remarks>This is a bit rough, kind of experimental. To perform updates, the *UI class
+        /// is expected to define the parameters as part of it's implementation of the DialFinish
+        /// method. When the *UI class calls CommandUI.FinishCommand, that will call UpdateUI.FinishCommand
+        /// (given that updates are in progress), where the update parameters can be picked up. It should
+        /// probably be a bit more direct, since the current logic is a bit convoluted.</remarks>
         internal UpdateType UpdateParameters
         {
             get { return m_UpdateParameters; }
