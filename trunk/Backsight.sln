@@ -49,12 +49,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.ShapeViewer", "Ba
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BNS", "BNS\BNS.csproj", "{AB4AB590-0661-4D79-81CD-6927157BADAE}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,16 +139,6 @@ Global
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Win32.ActiveCfg = Release|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{AB4AB590-0661-4D79-81CD-6927157BADAE}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
