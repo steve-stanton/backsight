@@ -681,7 +681,10 @@ REFERENCES [ced].[Users] ([UserId])
 GO
 ALTER TABLE [ced].[IdAllocations] CHECK CONSTRAINT [FK_IdAllocation_User]
 GO
-
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_IdFree_IdGroup]') AND parent_object_id = OBJECT_ID(N'[ced].[IdFree]'))
+ALTER TABLE [ced].[IdFree]  WITH CHECK ADD  CONSTRAINT [FK_IdFree_IdGroup] FOREIGN KEY([GroupId])
+REFERENCES [ced].[IdGroups] ([GroupId])
+GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_Job_Layer]') AND parent_object_id = OBJECT_ID(N'[ced].[Jobs]'))
 ALTER TABLE [ced].[Jobs]  WITH CHECK ADD  CONSTRAINT [FK_Job_Layer] FOREIGN KEY([LayerId])
 REFERENCES [ced].[Layers] ([LayerId])

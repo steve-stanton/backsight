@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -13,34 +13,28 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
+using System.Windows.Forms;
+
+namespace Backsight.Environment.Editor
 {
-	/// <written by="Steve Stanton" on="13-MAR-2007" />
     /// <summary>
-    /// Methods for controlling the editing process.
+    /// Information needed for the <see cref="SimpleListControl"/>
     /// </summary>
-    public interface IEditControl
+    interface ISimpleListData
     {
         /// <summary>
-        /// Begins a series of edits to an item.
+        /// Obtains the environment items that should be displayed.
         /// </summary>
-        void BeginEdit();
+        /// <returns>The active set of environment items</returns>
+        IEnvironmentItem[] GetEnvironmentItems();
 
         /// <summary>
-        /// Undoes changes since edits were last committed.
+        /// Creates a dialog that is suitable for entering a new environment item, or
+        /// modifying an existing item.
         /// </summary>
-        void CancelEdit();
-
-        /// <summary>
-        /// Commits an edit. If the item is brand new, this will add the item into an
-        /// instance of <c>IEnvironmentContainer</c>. If the item was previously part
-        /// of a container, constraint checking will be enabled.
-        /// </summary>
-        void FinishEdit();
-
-        /// <summary>
-        /// Marks something for deletion
-        /// </summary>
-        void Delete();
+        /// <param name="item">An existing item that needs to be updated (specify null
+        /// if creating a brand new item)</param>
+        /// <returns>The dialog to display</returns>
+        Form GetEntryDialog(IEnvironmentItem item);
     }
 }

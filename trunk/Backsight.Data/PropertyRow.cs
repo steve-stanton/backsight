@@ -21,8 +21,22 @@ namespace Backsight.Data
 {
     public partial class BacksightDataSet
     {
-        partial class PropertyRow : IProperty
+        partial class PropertyRow : IEditProperty
         {
+            public void FinishEdit()
+            {
+                if (IsAdded(this))
+                    this.EndEdit();
+                else
+                    this.tableProperty.AddPropertyRow(this);
+            }
+
+            public static BacksightDataSet.PropertyRow CreatePropertyRow(BacksightDataSet ds)
+            {
+                PropertyRow result = ds.Property.NewPropertyRow();
+                result.Name = result.Value = result.Description = String.Empty;
+                return result;
+            }
         }
     }
 }

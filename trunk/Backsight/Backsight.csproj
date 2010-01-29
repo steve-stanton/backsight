@@ -56,6 +56,7 @@
     <Compile Include="Environment\IEditFont.cs" />
     <Compile Include="Environment\IEditIdGroup.cs" />
     <Compile Include="Environment\IEditLayer.cs" />
+    <Compile Include="Environment\IEditProperty.cs" />
     <Compile Include="Environment\IEditTable.cs" />
     <Compile Include="Environment\IEditTemplate.cs" />
     <Compile Include="Environment\IEditTheme.cs" />

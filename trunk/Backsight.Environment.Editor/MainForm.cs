@@ -19,6 +19,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Diagnostics;
 
 using Microsoft.SqlServer.Management.Smo;
 
@@ -37,11 +38,6 @@ namespace Backsight.Environment.Editor
         #region Class data
 
         /// <summary>
-        /// The type of info that's currently displayed 
-        /// </summary>
-        ItemType m_CurrentType = ItemType.None;
-
-        /// <summary>
         /// The container that holds the environment settings.
         /// </summary>
         EnvironmentDatabase m_Data;
@@ -51,6 +47,15 @@ namespace Backsight.Environment.Editor
         public MainForm()
         {
             InitializeComponent();
+
+            //helpProvider.SetHelpNavigator(this, HelpNavigator.TableOfContents);
+            //helpProvider.SetHelpNavigator(this, HelpNavigator.KeywordIndex);//HelpNavigator.Topic);
+            //helpProvider.SetHelpKeyword(this, "Thecedxfile");
+
+            //helpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
+            //helpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
+            //helpProvider.SetHelpKeyword(this, "DatabaseTables.htm");
+            //SendKeys.Send(Keys.F1);
         }
 
         void OnIdle(object sender, EventArgs args)
@@ -72,7 +77,6 @@ namespace Backsight.Environment.Editor
         private void MainForm_Shown(object sender, EventArgs e)
         {
             bool doClose = false;
-            m_CurrentType = ItemType.Entity;
 
             // If a database connection isn't defined, see if a database called 'Backsight' exists
             // on the local server. If not, ask the user to locate a database.
@@ -125,6 +129,7 @@ namespace Backsight.Environment.Editor
             else
             {
                 Application.Idle += OnIdle;
+                tabControl.SelectedTab = entityTypesPage;
                 RefreshList();
             }
         }
@@ -323,275 +328,129 @@ namespace Backsight.Environment.Editor
 
         private void newButton_Click(object sender, EventArgs e)
         {
-            Form dial = null;
-
-            if (m_CurrentType == ItemType.Domain)
-                dial = new DomainForm();
-            else if (m_CurrentType == ItemType.Entity)
-                dial = new EntityForm();
-            else if (m_CurrentType == ItemType.Font)
-                dial = new FontForm();
-            else if (m_CurrentType == ItemType.IdGroup)
-                dial = new IdGroupForm();
-            else if (m_CurrentType == ItemType.Layer)
-                dial = new LayerForm();
-            else if (m_CurrentType == ItemType.Schema)
-                dial = new TableForm();
-            else if (m_CurrentType == ItemType.Theme)
-                dial = new ThemeForm();
-            else if (m_CurrentType == ItemType.Template)
-                dial = new TemplateForm();
-            else if (m_CurrentType == ItemType.Zone)
-                dial = new ZoneForm();
-
-            if (dial==null)
-            {
-                MessageBox.Show("Unexpected item type: "+m_CurrentType);
-                return;
-            }
-
-            bool ok = (dial.ShowDialog() == DialogResult.OK);
-            dial.Dispose();
-
-            if (ok)
-                RefreshList();
+            IDisplayControl display = GetCurrentDisplay();
+            if (display != null)
+                display.NewItem();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
         {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item==null)
-            {
-                MessageBox.Show("You must first select an item from the list");
-                return;
-            }
-
-            Update(item);
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item!=null)
-                Update(item);
-        }
-
-        void Update(IEnvironmentItem item)
-        {
-            Form dial =null;
-
-            if (m_CurrentType == ItemType.Domain)
-            {
-                MessageBox.Show("Domain tables cannot be updated. You can only create them, or remove them.");
-                return;
-            }
-
-            if (m_CurrentType == ItemType.Entity)
-                dial = new EntityForm((IEditEntity)item);
-            else if (m_CurrentType == ItemType.Font)
-                dial = new FontForm((IEditFont)item);
-            else if (m_CurrentType == ItemType.IdGroup)
-                dial = new IdGroupForm((IEditIdGroup)item);
-            else if (m_CurrentType == ItemType.Layer)
-                dial = new LayerForm((IEditLayer)item);
-            else if (m_CurrentType == ItemType.Schema)
-                dial = new TableForm((IEditTable)item);
-            else if (m_CurrentType == ItemType.Theme)
-                dial = new ThemeForm((IEditTheme)item);
-            else if (m_CurrentType == ItemType.Template)
-                dial = new TemplateForm((IEditTemplate)item);
-            else if (m_CurrentType == ItemType.Zone)
-                dial = new ZoneForm((IEditZone)item);
-
-            if (dial==null)
-            {
-                MessageBox.Show("Unexpected item type: "+m_CurrentType);
-                return;
-            }
-
-            bool ok = (dial.ShowDialog() == DialogResult.OK);
-            dial.Dispose();
-
-            if (ok)
-                RefreshList();
+            IDisplayControl display = GetCurrentDisplay();
+            if (display != null)
+                display.UpdateSelectedItem();
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item==null)
+            IDisplayControl display = GetCurrentDisplay();
+            if (display != null)
+                display.DeleteSelectedItem();
+        }
+
+        private void RefreshList()
+        {
+            IDisplayControl display = GetCurrentDisplay();
+            if (display != null)
+                display.RefreshList();
+        }
+
+        /// <summary>
+        /// Reacts to the selection of a specific tab page by ensuring that
+        /// a display has been attached.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            IDisplayControl display = (IDisplayControl)e.TabPage.Tag;
+            if (display == null)
             {
-                MessageBox.Show("You must first select an item from the list");
-                return;
+                if (e.TabPage == domainsPage)
+                    AttachListData<DomainListData>(domainsPage);
+                else if (e.TabPage == entityTypesPage)
+                    AttachListData<EntityListData>(entityTypesPage);
+                else if (e.TabPage == fontsPage)
+                    AttachListData<FontListData>(fontsPage);
+                else if (e.TabPage == idGroupsPage)
+                    AttachListData<IdGroupListData>(idGroupsPage);
+                else if (e.TabPage == layersPage)
+                    AttachListData<LayerListData>(layersPage);
+                else if (e.TabPage == propertiesPage)
+                    AttachDisplay<PropertyGridControl>(propertiesPage);
+                else if (e.TabPage == tablesPage)
+                    AttachListData<TableListData>(tablesPage);
+                else if (e.TabPage == templatesPage)
+                    AttachListData<TemplateListData>(templatesPage);
+                else if (e.TabPage == themesPage)
+                    AttachListData<ThemeListData>(themesPage);
+                else if (e.TabPage == zonesPage)
+                    AttachListData<ZoneListData>(zonesPage);
+                else
+                    throw new Exception("No display for tab page");
+
+                display = (IDisplayControl)e.TabPage.Tag;
             }
 
-            // Deletions should be disallowed if the environment has been "published"
+            Debug.Assert(display != null);
 
-            if (item is IEditControl)
-            {
-                (item as IEditControl).Delete();
-                RefreshList();
-            }
-            else
-                throw new NotSupportedException();
+            // Ensure the display is up to date. This is meant to cover the
+            // fact that items on one page may have been removed via changes
+            // on other pages.
+            display.RefreshList();
         }
 
-        void RefreshList()
+        /// <summary>
+        /// Attaches a display to a tab page. For a given tab page, this should
+        /// be done only once while the application is running.
+        /// </summary>
+        /// <typeparam name="T">The type of display to attach</typeparam>
+        /// <param name="page">The page to add the display to</param>
+        void AttachDisplay<T>(TabPage page) where T : UserControl, IDisplayControl, new()
         {
-            string typeName = String.Empty;
-
-            switch (m_CurrentType)
-            {
-                case ItemType.Domain:
-                {
-                    typeName = "domain";
-                    RefreshList(m_CurrentType, m_Data.DomainTables);
-                    break;
-                }
-
-                case ItemType.Entity:
-                {
-                    typeName = "entity type";
-                    RefreshList(m_CurrentType, m_Data.EntityTypes);
-                    break;
-                }
-
-                case ItemType.Font:
-                {
-                    typeName = "font";
-                    RefreshList(m_CurrentType, m_Data.Fonts);
-                    break;
-                }
-
-                case ItemType.IdGroup:
-                {
-                    typeName = "ID group";
-                    RefreshList(m_CurrentType, m_Data.IdGroups);
-                    break;
-                }
-
-                case ItemType.Layer:
-                {
-                    typeName = "layer";
-                    RefreshList(m_CurrentType, m_Data.Layers);
-                    break;
-                }
-
-                case ItemType.Schema:
-                {
-                    typeName = "table";
-                    RefreshList(m_CurrentType, m_Data.Tables);
-                    break;
-                }
-
-                case ItemType.Template:
-                {
-                    typeName = "template";
-                    RefreshList(m_CurrentType, m_Data.Templates);
-                    break;
-                }
-
-                case ItemType.Theme:
-                {
-                    typeName = "theme";
-                    RefreshList(m_CurrentType, m_Data.Themes);
-                    break;
-                }
-
-                case ItemType.Zone:
-                {
-                    typeName = "zone";
-                    RefreshList(m_CurrentType, m_Data.Zones);
-                    break;
-                }
-
-                default:
-                {
-                    MessageBox.Show("Unexpected item type: "+m_CurrentType);
-                    break;
-                }
-            }
-
-            int nRows = listBox.Items.Count;
-            if (nRows>1)
-                typeName += "s";
-
-            countLabel.Text = String.Format("{0} {1}", nRows, typeName);
+            AttachDisplay<T>(page, new T());
         }
 
-        private void viewDomainsMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Attaches a display to a tab page. For a given tab page, this should
+        /// be done only once while the application is running.
+        /// </summary>
+        /// <typeparam name="T">The type of display to attach</typeparam>
+        /// <param name="page">The page to add the display to</param>
+        /// <param name="display">The display control to add</param>
+        void AttachDisplay<T>(TabPage page, T display) where T : UserControl, IDisplayControl
         {
-            RefreshList(ItemType.Domain);
+            display.Dock = DockStyle.Fill;
+            page.Tag = display;
+            page.Controls.Add(display);
+            display.RefreshList();
         }
 
-        private void viewEntityTypesMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Attaches an instance of <see cref="SimpleListControl"/> to a tab page, using
+        /// a specific data provider. For a given tab page, this should be done only once
+        /// while the application is running.
+        /// </summary>
+        /// <typeparam name="T">The object that provides data for the display</typeparam>
+        /// <param name="page">The page to add the display to</param>
+        void AttachListData<T>(TabPage page) where T : ISimpleListData, new()
         {
-            RefreshList(ItemType.Entity);
+            T listData = new T();
+            SimpleListControl display = new SimpleListControl(listData);
+            AttachDisplay<SimpleListControl>(page, display);
         }
 
-        private void viewFontsMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Obtains the display associated with the currently selected tab page.
+        /// </summary>
+        /// <returns>The selected display (null if no tabs are selected, or
+        /// a display is not attached to the tab).</returns>
+        IDisplayControl GetCurrentDisplay()
         {
-            RefreshList(ItemType.Font);
-        }
+            TabPage page = tabControl.SelectedTab;
+            if (page == null)
+                return null;
 
-        private void viewIdGroupsMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.IdGroup);
-        }
-
-        private void viewLayersMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Layer);
-        }
-
-        private void viewTablesMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Schema);
-        }
-
-        private void viewTemplateMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Template);
-        }
-
-        private void viewThemesMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Theme);
-        }
-
-        private void viewZonesMenuItem_Click(object sender, EventArgs e)
-        {
-            RefreshList(ItemType.Zone);
-        }
-
-        void RefreshList(ItemType t)
-        {
-            m_CurrentType = t;
-            RefreshList();
-        }
-
-        void RefreshList(ItemType itemType, IEnvironmentItem[] items)
-        {
-            m_CurrentType = itemType;
-
-            listBox.Items.Clear();
-            listBox.Items.AddRange(items);
-
-            // The Update button isn't relevant when dealing with domain tables
-            updateButton.Enabled = (itemType != ItemType.Domain);
-
-            // If the first item is blank, remove it (all "real" items should have
-            // a defined name, blanks refer to rows that exist only to accommodate
-            // foreign key constraints)
-            if (items.Length>0 && listBox.Items[0].ToString().Length==0)
-                listBox.Items.RemoveAt(0);
-        }
-
-        private void viewPropertiesMenuItem_Click(object sender, EventArgs e)
-        {
-            PropertyListForm dial = new PropertyListForm();
-            dial.ShowDialog();
-            dial.Dispose();
+            return (page.Tag as IDisplayControl);
         }
     }
 }

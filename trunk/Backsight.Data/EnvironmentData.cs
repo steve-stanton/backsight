@@ -140,6 +140,12 @@ namespace Backsight.Data
             return row;
         }
 
+        public IEditProperty CreateProperty()
+        {
+            EnvData.PropertyRow row = EnvData.PropertyRow.CreatePropertyRow(m_Data);
+            return row;
+        }
+
         public IEditTable CreateTableAssociation()
         {
             EnvData.SchemaRow row = EnvData.SchemaRow.CreateSchemaRow(m_Data);
