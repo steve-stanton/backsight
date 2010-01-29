@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -13,34 +13,32 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
+using System.Windows.Forms;
+
+namespace Backsight.Environment.Editor
 {
-	/// <written by="Steve Stanton" on="13-MAR-2007" />
     /// <summary>
-    /// Methods for controlling the editing process.
+    /// Information about fonts that is used in conjunction with
+    /// the <see cref="SimpleListControl"/>
     /// </summary>
-    public interface IEditControl
+    class FontListData : ISimpleListData
     {
         /// <summary>
-        /// Begins a series of edits to an item.
+        /// Obtains the environment items that should be displayed.
         /// </summary>
-        void BeginEdit();
+        /// <returns>The active set of environment items</returns>
+        public IEnvironmentItem[] GetEnvironmentItems()
+        {
+            return EnvironmentContainer.Current.Fonts;
+        }
 
         /// <summary>
-        /// Undoes changes since edits were last committed.
+        /// Creates a dialog that is suitable for entering a new environment item.
         /// </summary>
-        void CancelEdit();
-
-        /// <summary>
-        /// Commits an edit. If the item is brand new, this will add the item into an
-        /// instance of <c>IEnvironmentContainer</c>. If the item was previously part
-        /// of a container, constraint checking will be enabled.
-        /// </summary>
-        void FinishEdit();
-
-        /// <summary>
-        /// Marks something for deletion
-        /// </summary>
-        void Delete();
+        /// <returns>The dialog to display</returns>
+        public Form GetEntryDialog(IEnvironmentItem item)
+        {
+            return new FontForm(item as IEditFont);
+        }
     }
 }

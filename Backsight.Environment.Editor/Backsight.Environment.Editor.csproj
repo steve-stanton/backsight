@@ -65,18 +65,21 @@
     <Compile Include="DomainForm.Designer.cs">
       <DependentUpon>DomainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DomainListData.cs" />
     <Compile Include="EntityForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EntityForm.Designer.cs">
       <DependentUpon>EntityForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EntityListData.cs" />
     <Compile Include="FontForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FontForm.Designer.cs">
       <DependentUpon>FontForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FontListData.cs" />
     <Compile Include="IdFormatForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,12 +92,16 @@
     <Compile Include="IdGroupForm.designer.cs">
       <DependentUpon>IdGroupForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IdGroupListData.cs" />
+    <Compile Include="IDisplayControl.cs" />
+    <Compile Include="ISimpleListData.cs" />
     <Compile Include="LayerForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="LayerForm.Designer.cs">
       <DependentUpon>LayerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LayerListData.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -148,10 +155,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>PropertyForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyListForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PropertyListForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="TableForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TableForm.cs</DependentUpon>
@@ -188,11 +191,17 @@
     <Compile Include="PropertyForm.Designer.cs">
       <DependentUpon>PropertyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropertyListForm.cs">
-      <SubType>Form</SubType>
+    <Compile Include="PropertyGridControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyListForm.Designer.cs">
-      <DependentUpon>PropertyListForm.cs</DependentUpon>
+    <Compile Include="PropertyGridControl.Designer.cs">
+      <DependentUpon>PropertyGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SimpleListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SimpleListControl.Designer.cs">
+      <DependentUpon>SimpleListControl.cs</DependentUpon>
     </Compile>
     <Compile Include="TableForm.cs">
       <SubType>Form</SubType>
@@ -200,24 +209,28 @@
     <Compile Include="TableForm.Designer.cs">
       <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TableListData.cs" />
     <Compile Include="TemplateForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TemplateForm.Designer.cs">
       <DependentUpon>TemplateForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TemplateListData.cs" />
     <Compile Include="ThemeForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ThemeForm.Designer.cs">
       <DependentUpon>ThemeForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ThemeListData.cs" />
     <Compile Include="ZoneForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ZoneForm.Designer.cs">
       <DependentUpon>ZoneForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ZoneListData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ArrowUp.bmp" />
@@ -234,7 +247,16 @@
       <SubType>Designer</SubType>
       <DependentUpon>DomainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PropertyGridControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PropertyGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\CreateTables.sql" />
+    <EmbeddedResource Include="SimpleListControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SimpleListControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Resources\Delete.bmp" />
     <None Include="Resources\Minus.bmp" />
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +276,12 @@
       <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
       <Name>WizardLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Update.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\New.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

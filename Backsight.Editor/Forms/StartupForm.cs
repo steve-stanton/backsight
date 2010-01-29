@@ -18,11 +18,11 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.IO;
 using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.SqlServer;
 using Backsight.Data;
 using Backsight.Editor.Properties;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -90,7 +90,7 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                if (m_Parent.OpenFile())
+                if (m_Parent.OpenFile(true))
                 {
                     DialogResult = DialogResult.OK;
                     Close();
@@ -126,8 +126,9 @@ namespace Backsight.Editor.Forms
                 openLastButton.BackColor = Color.Yellow;
                 openLastButton.Refresh();
 
-                JobFile jf = new JobFile(lastFile);
-                EditingController.Current.OpenJob(jf);
+                m_Parent.OpenJobFile(lastFile);
+                //JobFile jf = new JobFile(lastFile);
+                //EditingController.Current.OpenJob(jf);
                 Close();
             }
 

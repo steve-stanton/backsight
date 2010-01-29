@@ -58,6 +58,12 @@ namespace Backsight.Environment
         IEditIdGroup CreateIdGroup();
 
         /// <summary>
+        /// Creates a miscellaneous property
+        /// </summary>
+        /// <returns>The newly created property</returns>
+        IEditProperty CreateProperty();
+
+        /// <summary>
         /// Creates a new association with a database table
         /// </summary>
         /// <returns>The newly created table association</returns>

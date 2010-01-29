@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2009 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -15,20 +15,20 @@
 
 namespace Backsight.Environment
 {
-    public enum ItemType
+    /// <written by="Steve Stanton" on="02-NOV-2009"/>
+    /// <summary>
+    /// A mutable version of <c>IProperty</c>
+    /// </summary>
+    public interface IEditProperty : IProperty, IEditControl
     {
-        None,
-        Domain,
-        DomainEntry,
-        Entity,
-        Field,
-        Font,
-        IdGroup,
-        Layer,
-        Property,
-        Schema,
-        Template,
-        Theme,
-        Zone,
-    };
+        /// <summary>
+        /// The name of the property
+        /// </summary>
+        new string Name { get; set; }
+
+        /// <summary>
+        /// The value for the property
+        /// </summary>
+        new string Value { get; set; }
+    }
 }

@@ -236,6 +236,26 @@ namespace Backsight.Forms
             SetScrollBars();
             //Rectangle rect = new Rectangle(0, 0, mapPanel.Width, mapPanel.Height);
             //m_Display.Graphics.FillRectangle(Brushes.White, rect);
+
+            // TEST: Try drawing an image (in Selkirk)
+            try
+            {
+                IWindow w = this.Extent;
+                IWindow testw = new Window(651000.0, 5555000.0, 652000.0, 5556000.0);
+                if (w.IsOverlap(testw))
+                {
+                    float fx = EastingToDisplay(651000.0);
+                    float fy = NorthingToDisplay(5556000.0);
+                    float fsz = LengthToDisplay(1000.0);
+                    Rectangle r = new Rectangle((int)fx, (int)fy, (int)fsz, (int)fsz);
+                    Image i = Bitmap.FromFile(@"C:\Users\sstanton\Data\6515555.tif");
+                    m_Display.Graphics.DrawImage(i, r);
+                }
+            }
+
+            catch { }
+            // end test
+
             mapModel.Render(this, controller.DrawStyle);
 
             // Paint the map panel

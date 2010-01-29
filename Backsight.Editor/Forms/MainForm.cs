@@ -94,70 +94,78 @@ namespace Backsight.Editor.Forms
             SplashScreen.SetStatus(msg);
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
+        internal void OpenJobFile(string jobFile)
         {
-            if (!String.IsNullOrEmpty(m_InitialJobFile) && File.Exists(m_InitialJobFile))
+            if (String.IsNullOrEmpty(jobFile))
+                return;
+
+            if (!File.Exists(jobFile))
+                return;
+
+            ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
+            Stopwatch sw = Stopwatch.StartNew();
+            JobFile jf = null;
+
+            try
             {
-                ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
-                Stopwatch sw = Stopwatch.StartNew();
-                JobFile jf = null;
+                jf = new JobFile(jobFile);
+                string increment = jf.Data.SplashIncrement;
+                string percents = jf.Data.SplashPercents;
 
-                try
+                // Don't show splash screen if it's a brand new file
+                //if (percents.Length > 0)
+                SplashScreen.ShowSplashScreen(increment, percents);
+
+                Trace.Listeners.Add(trace);
+                Trace.Write("Loading " + jobFile);
+
+                // Display the map name in the dialog title (nice to see what's loading
+                // rather than the default "Map Title" text)
+                this.Text = jobFile;
+                m_Controller.OpenJob(jf);
+            }
+
+            catch (Exception ex)
+            {
+                SplashScreen.CloseForm();
+                MessageBox.Show(ex.Message);
+
+                // Don't save any changes to the job file
+                jf = null;
+            }
+
+            finally
+            {
+                sw.Stop();
+                Trace.Listeners.Remove(trace);
+                SplashScreen ss = SplashScreen.SplashForm;
+
+                // If the splash screen has been displayed for less than two seconds, WAIT (block
+                // this thread!)
+                int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
+                if (ss != null && waitTime > 0)
+                    System.Threading.Thread.Sleep(waitTime);
+
+                ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
+                SplashScreen.CloseForm();
+
+                if (jf != null && ss != null)
                 {
-                    jf = new JobFile(m_InitialJobFile);
-                    string increment = jf.Data.SplashIncrement;
-                    string percents = jf.Data.SplashPercents;
-
-                    // Don't show splash screen if it's a brand new file
-                    //if (percents.Length > 0)
-                        SplashScreen.ShowSplashScreen(increment, percents);
-
-                    Trace.Listeners.Add(trace);
-                    Trace.Write("Loading " + m_InitialJobFile);
-
-                    // Display the map name in the dialog title (nice to see what's loading
-                    // rather than the default "Map Title" text)
-                    this.Text = m_InitialJobFile;
-                    m_Controller.OpenJob(jf);
-                }
-
-                catch (Exception ex)
-                {
-                    SplashScreen.CloseForm();
-                    MessageBox.Show(ex.Message);
-
-                    // Don't save any changes to the job file
-                    jf = null;
-                }
-
-                finally
-                {
-                    sw.Stop();
-                    Trace.Listeners.Remove(trace);
-                    SplashScreen ss = SplashScreen.SplashForm;
-
-                    // If the splash screen has been displayed for less than two seconds, WAIT (block
-                    // this thread!)
-                    int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
-                    if (ss!=null && waitTime > 0)
-                        System.Threading.Thread.Sleep(waitTime);
-
-                    ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
-                    SplashScreen.CloseForm();
-
-                    if (jf!=null && ss!=null)
-                    {                        
-                        // Save the splash settings now. This is perhaps a little premature, since
-                        // the original splash screen implementation waited until the screen had
-                        // completely faded away. The drawback with that is that the job file would
-                        // then be rewritten on another thread, which could trample on things that
-                        // are happening here.
-                        jf.Data.SplashIncrement = ss.GetIncrement();
-                        jf.Data.SplashPercents = ss.GetPercents();
-                        jf.Save();
-                    }
+                    // Save the splash settings now. This is perhaps a little premature, since
+                    // the original splash screen implementation waited until the screen had
+                    // completely faded away. The drawback with that is that the job file would
+                    // then be rewritten on another thread, which could trample on things that
+                    // are happening here.
+                    jf.Data.SplashIncrement = ss.GetIncrement();
+                    jf.Data.SplashPercents = ss.GetPercents();
+                    jf.Save();
                 }
             }
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            OpenJobFile(m_InitialJobFile);
 
             // If a model hasn't been obtained, ask
             if (m_Controller.CadastralMapModel==null)
@@ -658,18 +666,26 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileOpen(IUserAction action)
         {
-            OpenFile();
+            OpenFile(false);
         }
 
-        internal bool OpenFile()
+        internal bool OpenFile(bool showSplash)
         {
             OpenFileDialog dial = new OpenFileDialog();
             dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
             bool isOk = (dial.ShowDialog() == DialogResult.OK);
             if (isOk)
             {
-                JobFile jf = new JobFile(dial.FileName);
-                m_Controller.OpenJob(jf);
+                if (showSplash)
+                {
+                    OpenJobFile(dial.FileName);
+                }
+                else
+                {
+                    JobFile jf = new JobFile(dial.FileName);
+                    m_Controller.OpenJob(jf);
+                }
+
                 AddRecentFile(dial.FileName);
             }
 
