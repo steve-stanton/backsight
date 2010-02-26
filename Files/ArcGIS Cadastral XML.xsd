@@ -90,6 +90,92 @@
       <xs:enumeration value="VT_BSTR" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="ControlPoint">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="pointID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>PointID of the fabric point that the control point is connected to</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Control point name, usually an alphanumeric string assigned by the government authority</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="x" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Control easting of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="y" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Control northing of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="z" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Height of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="active" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>This is a flag to indicate if the control point is to be included in the least-squares adjustment.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="accuracyXY" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Accuracy class of the point in xy. Documentation states that the default value is a hyphen, although this presumably means there is no default (I have assumed the latter).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="accuracyZ" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Accuracy class of the point in z. Documentation states that the default value is a hyphen, although this presumably means there is no default (I have assumed the latter).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="none" name="surveyDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Date when this control point was surveyed in ISO 8601 format</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="type" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point type. Documentation refers to a Point Type table that does not appear. Further, while the data type is specified as an char, the default value is the string 'normal'. Note that the Point element also has a 'type' column, but it is specified as an int.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database ID number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExtendedAttribute">
+    <xs:annotation>
+      <xs:documentation>The XML format for the cadastral fabric data needs to allow the schema to be extended by the user to store additional data values for each plan, parcel, line, or point. The &amp;lt;extendedAttributes&amp;gt; tag is used for this purpose.
+
+The extended attributes are allowed for parcels, plans, lines, and points. Any number of extended attributes can be defined.
+
+Note that the units used in any data values in the extended attributes for an entity are known only to the originator of the extended attribute. Values for extended attributes should ideally use the same units as the rest of the data file, as specified in the header information of the file.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Name of the attribute</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Data value of the attribute</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="type" type="ExtendedAttributeType">
+        <xs:annotation>
+          <xs:documentation>Data type of the attribute.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="JobParameter">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="1" name="Owner">
@@ -227,7 +313,7 @@
           <xs:documentation>Database ID number.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttribute" type="ExtendedAttributeType" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="LinePoint">
@@ -377,7 +463,7 @@
           <xs:documentation>Parcel is under construction.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttribute" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Point">
@@ -445,7 +531,7 @@
           <xs:documentation>Database point number or entity ID</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttribute" type="ExtendedAttributeType" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Plan">
@@ -533,7 +619,7 @@
           <xs:documentation>Database object ID number</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttribute" type="ExtendedAttributeType">
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute">
         <xs:annotation>
           <xs:documentation>Extended parcel attributes</xs:documentation>
         </xs:annotation>
