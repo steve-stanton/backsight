@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="geoSurveyPacketData" type="GeoSurveyPacketData" />
   <xs:simpleType name="AreaUnit">
     <xs:annotation>
       <xs:documentation>This type is not documented. Values need to be inferred from example files.</xs:documentation>
@@ -90,6 +91,50 @@
       <xs:enumeration value="VT_BSTR" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="Accuracy">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="category" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Category number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Text description of the category</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="brgSD" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Bearings standard deviation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="distSD" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Distances standard deviation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="pPM" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Distances parts per million</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="true" name="default" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Indicates this is the default category for measurements with no accuracy category</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="compiled" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>This category is to be used for measurements on compiled plans.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Accuracies">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="accuracy" type="Accuracy" />
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="ControlPoint">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="pointID" type="xs:int">
@@ -147,7 +192,12 @@
           <xs:documentation>Database ID number</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ControlPoints">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="controlPoint" type="ControlPoint" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ExtendedAttribute">
@@ -176,9 +226,14 @@ Note that the units used in any data values in the extended attributes for an en
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="JobParameter">
+  <xs:complexType name="ExtendedAttributes">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="1" name="Owner">
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="JobParameters">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="owner">
         <xs:annotation>
           <xs:documentation>The name of the operator, the person who created this dataset</xs:documentation>
         </xs:annotation>
@@ -313,7 +368,12 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Database ID number.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ExtendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Lines">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="line" type="Line" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="LinePoint">
@@ -341,6 +401,16 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Database ID number</xs:documentation>
         </xs:annotation>
       </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GeoSurveyPacketData">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="units" type="Units" />
+      <xs:element minOccurs="1" maxOccurs="1" name="jobParameters" type="JobParameters" />
+      <xs:element minOccurs="1" maxOccurs="1" name="accuracies" type="Accuracies" />
+      <xs:element minOccurs="1" maxOccurs="1" name="plans" type="Plans" />
+      <xs:element minOccurs="1" maxOccurs="1" name="points" type="Points" />
+      <xs:element minOccurs="1" maxOccurs="1" name="controlPoints" type="ControlPoints" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Parcel">
@@ -463,7 +533,13 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Parcel is under construction.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+      <xs:element minOccurs="1" maxOccurs="1" name="lines" type="Lines" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Parcels">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="parcel" type="Parcel" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Point">
@@ -531,7 +607,12 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Database point number or entity ID</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ExtendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Points">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="point" type="Point" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Plan">
@@ -619,14 +700,45 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Database object ID number</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute">
-        <xs:annotation>
-          <xs:documentation>Extended parcel attributes</xs:documentation>
-        </xs:annotation>
-      </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" default="false" name="internalAngles" type="xs:boolean">
         <xs:annotation>
           <xs:documentation>Flag for angle mode on line in parcels</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+      <xs:element minOccurs="1" maxOccurs="1" name="parcels" type="Parcels" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Plans">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="plan" type="Plan" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Units">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="distanceUnits" type="DistanceUnit">
+        <xs:annotation>
+          <xs:documentation>Units for distances and coordinates in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="areaUnits" type="AreaUnit">
+        <xs:annotation>
+          <xs:documentation>Units for area values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="angleUnits" type="DirectionUnit">
+        <xs:annotation>
+          <xs:documentation>Units for angle values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="directionUnits" type="DirectionUnit">
+        <xs:annotation>
+          <xs:documentation>Units for bearing and direction values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="directionFormat" type="DirectionFormat">
+        <xs:annotation>
+          <xs:documentation>Origin for directions (bearings).</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
