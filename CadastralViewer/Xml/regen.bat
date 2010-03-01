@@ -1,0 +1,1 @@
+xsd ArcCadastral.xsd /classes /n:CadastralViewer.Xml
