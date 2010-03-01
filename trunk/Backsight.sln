@@ -49,6 +49,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.ShapeViewer", "Ba
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadastralViewer", "CadastralViewer\CadastralViewer.csproj", "{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +145,16 @@ Global
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{188333D8-50A7-4847-83CD-A0AD2D9A48C9}.Release|Win32.ActiveCfg = Release|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{94E269E2-E1D5-4697-B4C2-A6853BF26F7C}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="geoSurveyPacketData" type="GeoSurveyPacketData" />
+  <xs:simpleType name="AreaUnit">
+    <xs:annotation>
+      <xs:documentation>This type is not documented. Values need to be inferred from example files.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="square meter" />
+      <xs:enumeration value="square foot" />
+      <xs:enumeration value="square link" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CadastralLineCategory">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boundary" />
+      <xs:enumeration value="Dependent" />
+      <xs:enumeration value="Precise" />
+      <xs:enumeration value="Connection" />
+      <xs:enumeration value="Radial" />
+      <xs:enumeration value="Road" />
+      <xs:enumeration value="OriginConnection" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CadastralLineParameter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bearingAndDistance" />
+      <xs:enumeration value="angleAndDistance" />
+      <xs:enumeration value="chordBearingAndDeltaAndRadius" />
+      <xs:enumeration value="deltaAndRadius" />
+      <xs:enumeration value="chordBearingAndChordLengthAndRadius" />
+      <xs:enumeration value="chordLengthAndRadius" />
+      <xs:enumeration value="chordBearingAndArcLengthAndRadius" />
+      <xs:enumeration value="arcLengthAndRadius" />
+      <xs:enumeration value="chordBearingAndDeltaAndArcLength" />
+      <xs:enumeration value="deltaAndArcLength" />
+      <xs:enumeration value="radialBearingAndDeltaAndRadius" />
+      <xs:enumeration value="radialBearingAndChordLengthAndRadius" />
+      <xs:enumeration value="radialBearingAndArcLengthAndRadius" />
+      <xs:enumeration value="radialBearingAndDeltaAndArcLength" />
+      <xs:enumeration value="tangentBearingAndDeltaAndRadius" />
+      <xs:enumeration value="tangentBearingAndChordLengthAndRadius" />
+      <xs:enumeration value="tangentBearingAndArcLengthAndRadius" />
+      <xs:enumeration value="tangentBearingAndDeltaAndArcLength" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CadastralPointCategory">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boundary" />
+      <xs:enumeration value="Tie-in" />
+      <xs:enumeration value="Construction" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DirectionFormat">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="north azimuth" />
+      <xs:enumeration value="south azimuth" />
+      <xs:enumeration value="Polar" />
+      <xs:enumeration value="Quadrant" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DirectionUnit">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Radian" />
+      <xs:enumeration value="Degree" />
+      <xs:enumeration value="Dms" />
+      <xs:enumeration value="Gradian" />
+      <xs:enumeration value="Gon" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DistanceUnit">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Meter" />
+      <xs:enumeration value="Metre" />
+      <xs:enumeration value="Foot" />
+      <xs:enumeration value="Chain" />
+      <xs:enumeration value="Link" />
+      <xs:enumeration value="Foot_US" />
+      <xs:enumeration value="Chain_US" />
+      <xs:enumeration value="Link_US" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ExtendedAttributeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="VT_I2" />
+      <xs:enumeration value="VT_I4" />
+      <xs:enumeration value="VT_R4" />
+      <xs:enumeration value="VT_R8" />
+      <xs:enumeration value="VT_DATE" />
+      <xs:enumeration value="VT_BSTR" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Accuracy">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="category" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Category number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Text description of the category</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="brgSD" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Bearings standard deviation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="distSD" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Distances standard deviation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="pPM" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Distances parts per million</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="true" name="default" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Indicates this is the default category for measurements with no accuracy category</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="compiled" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>This category is to be used for measurements on compiled plans.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Accuracies">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="accuracy" type="Accuracy" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ControlPoint">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="pointID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>PointID of the fabric point that the control point is connected to</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Control point name, usually an alphanumeric string assigned by the government authority</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="x" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Control easting of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="y" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Control northing of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="z" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Height of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="active" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>This is a flag to indicate if the control point is to be included in the least-squares adjustment.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="accuracyXY" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Accuracy class of the point in xy. Documentation states that the default value is a hyphen, although this presumably means there is no default (I have assumed the latter).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="accuracyZ" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Accuracy class of the point in z. Documentation states that the default value is a hyphen, although this presumably means there is no default (I have assumed the latter).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="none" name="surveyDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Date when this control point was surveyed in ISO 8601 format</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="type" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point type. Documentation refers to a Point Type table that does not appear. Further, while the data type is specified as an char, the default value is the string 'normal'. Note that the Point element also has a 'type' column, but it is specified as an int.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database ID number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ControlPoints">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="controlPoint" type="ControlPoint" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExtendedAttribute">
+    <xs:annotation>
+      <xs:documentation>The XML format for the cadastral fabric data needs to allow the schema to be extended by the user to store additional data values for each plan, parcel, line, or point. The &amp;lt;extendedAttributes&amp;gt; tag is used for this purpose.
+
+The extended attributes are allowed for parcels, plans, lines, and points. Any number of extended attributes can be defined.
+
+Note that the units used in any data values in the extended attributes for an entity are known only to the originator of the extended attribute. Values for extended attributes should ideally use the same units as the rest of the data file, as specified in the header information of the file.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Name of the attribute</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Data value of the attribute</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="type" type="ExtendedAttributeType">
+        <xs:annotation>
+          <xs:documentation>Data type of the attribute.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExtendedAttributes">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="extendedAttribute" type="ExtendedAttribute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="JobParameters">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="owner">
+        <xs:annotation>
+          <xs:documentation>The name of the operator, the person who created this dataset</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="packetId">
+        <xs:annotation>
+          <xs:documentation>Job OID. This can be used to identify the job in the database.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="esriSpatialReference">
+        <xs:annotation>
+          <xs:documentation>ESRI Spatial Reference (prj) string</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="400" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Line">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="fromPoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the start point of the line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="toPoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the end point of the line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="bearing" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Bearing of the line in decimal degrees. Documentation states that this has 'bearing' data type, which does not appear to be defined.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="distance" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Length of the line in units defined in header section of the file</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="type" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>A number indicating the type of line, as defined by the model implemented in the cadastral fabric</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="calculated" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Line is calculated.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" default="Boundary" name="category" type="CadastralLineCategory">
+        <xs:annotation>
+          <xs:documentation>Indicates the usage of the line in the parcel network.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="radius" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>If curved, the radius of the circle/curve in units defined in header section of the file</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="arcLength" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Length of the arc for curved line units defined in header section of the file</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="delta" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Angle at the center for a curved line in decimal degrees</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="centerPoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>If curved, the point number of the center point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="radialBearing" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Bearing of the line from the center point to the start point of the curve in decimal degrees</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="tangentBearing" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Tangent bearing at the start point of the curve. This is the radial bearing rotated clockwise by 90 degrees in decimal degrees.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="internalAngle" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>The internal angle of the line in decimal degrees. Documentation states that this has 'angle' data type, which does not appear to be defined.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="referenceObject" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the reference point for this line when in angles mode</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="bearingAndDistance" name="lineParameter" type="CadastralLineParameter">
+        <xs:annotation>
+          <xs:documentation>Display method for a curved line.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="computedMinusObserved" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>The difference between the computed line distance from the coordinates and the observed line distance. This length difference is in units defined in header section of the file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="accuracy">
+        <xs:annotation>
+          <xs:documentation>Accuracy class, a number from 0 to 6</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0" />
+            <xs:maxInclusive value="6" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" default="0" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database ID number.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ExtendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Lines">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="line" type="Line" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LinePoint">
+    <xs:annotation>
+      <xs:documentation>A line point is a parcel network rule that constrains a point to lie along a line. This enforces the intention of the parcel network design.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="fromPoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the start point of the line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="toPoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the end point of the line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="linePoint" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point number of the line point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" default="0" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database ID number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GeoSurveyPacketData">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="units" type="Units" />
+      <xs:element minOccurs="1" maxOccurs="1" name="jobParameters" type="JobParameters" />
+      <xs:element minOccurs="1" maxOccurs="1" name="accuracies" type="Accuracies" />
+      <xs:element minOccurs="1" maxOccurs="1" name="plans" type="Plans" />
+      <xs:element minOccurs="1" maxOccurs="1" name="points" type="Points" />
+      <xs:element minOccurs="1" maxOccurs="1" name="controlPoints" type="ControlPoints" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Parcel">
+    <xs:sequence>
+      <xs:annotation>
+        <xs:documentation>Flag for true mid bearings</xs:documentation>
+      </xs:annotation>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Lot number as shown on the plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="type" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>A number indicating the lot type</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="statedArea" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Stated area on the plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="compiled" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Parcel is compiled. The parcel dimensions were not measured in the field, they were derived from measurements on other plans.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="historical" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Flag to indicate parcel has been superseded by other parcels and hence is of historical interest only</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="legalStartDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Date when this parcel became the legal definition for the land parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="legalEndDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Date when this parcel ceased to be the legal definition for the land parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="groupID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Group number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="accuracy" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Accuracy class, a number from 0 to 7</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0.0" name="rotation" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Parcel rotation angle in decimal degrees</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="1.0" name="scale" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Parcel scale factor</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="backsightBearing" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Backsight bearing of the first line when in angles mode</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="unclosed" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Parcel is closed or not</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="miscloseRatio" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Misclose error ratio</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="miscloseBearing" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Bearing of the misclose in decimal degrees</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0.0" name="miscloseDistance" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>The length of the parcel misclose error of the main close of the parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="joined" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Parcel is joined or not joined</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" default="false" name="trueMidBearing" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Flag for true mid bearings</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="shapeStdErrorE" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Parcel distortion in the easting</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="shapeStdErrorN" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Parcel distortion in the northing</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database ID number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="true" name="locked" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Parcel is locked in the database and can be changed.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="construction" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Parcel is under construction.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+      <xs:element minOccurs="1" maxOccurs="1" name="lines" type="Lines" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Parcels">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="parcel" type="Parcel" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Point">
+    <xs:annotation>
+      <xs:documentation>The coordinate units and projection are defined in the header section of the file.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="pointNo" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The point number. Data type appears to be inconsistent -- is it meant to be int?</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="x" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Easting of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="y" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Northing of the point</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="z" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Height of the point (usually natural surface rl)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="type" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Point type. Documentation refers to a Point Type table that does not appear. Further, while the data type is specified as an int, the default value is the string 'normal'.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="Boundary" name="category" type="CadastralPointCategory">
+        <xs:annotation>
+          <xs:documentation>Point usage. Documentation indicates that it is an int with a default value of 0. However, my impression was that the CadastralPointCategory was an enum of strings (perhaps numbers are implied).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="historical" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Indicates if the point is not used by any "current" parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The point name; this can be the control mark name if it is a control point.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="none" name="legalStartDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Date when this point became the legal definition for the land parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="none" name="legalEndDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Date when this point ceased to be the legal definition for the land parcel</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="centerPoint" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Point is a center point.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element default="0" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database point number or entity ID</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ExtendedAttributes" type="ExtendedAttributes" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Points">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="point" type="Point" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Plan">
+    <xs:annotation>
+      <xs:documentation>The &lt;Plan&gt; entity represents one or more parcels of land. A plan has legal status that needs to be modeled as part of a land information system.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Plan name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The description of the plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="surveyor" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The name of the person who entered/created the plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="company" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The company who lodged the plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="surveyDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>The date of survey on the plan in ISO 8601 format (yyyy-mm-dd)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="legalDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>The date of registration of the plan in ISO 8601 format (yyyy-mm-dd)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="Degree" name="angleUnits" type="DirectionUnit">
+        <xs:annotation>
+          <xs:documentation>Display units for angles.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="square meter" name="areaUnits" type="AreaUnit">
+        <xs:annotation>
+          <xs:documentation>Units for the display of areas.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="Meter" name="distanceUnits" type="DistanceUnit">
+        <xs:annotation>
+          <xs:documentation>Units for the display of linear distances.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="north azimuth" name="directionFormat" type="DirectionFormat">
+        <xs:annotation>
+          <xs:documentation>Angle origin for directions (bearings).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="bearingAndDistance" name="lineParameters" type="CadastralLineParameter">
+        <xs:annotation>
+          <xs:documentation>Display method for a curved line.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="true" name="distanceAtGround" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Flag to indicate the distance is a ground distance</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="1.0" name="combinedGridFactor" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Grid scale factor for grid distances on this plan</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="trueMidBearing" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Flag for true mid bearings</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="accuracy" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Accuracy class number, usually a number 0–7</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="0" name="oID" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Database object ID number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="internalAngles" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Flag for angle mode on line in parcels</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
+      <xs:element minOccurs="1" maxOccurs="1" name="parcels" type="Parcels" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Plans">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="plan" type="Plan" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Units">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="distanceUnits" type="DistanceUnit">
+        <xs:annotation>
+          <xs:documentation>Units for distances and coordinates in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="areaUnits" type="AreaUnit">
+        <xs:annotation>
+          <xs:documentation>Units for area values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="angleUnits" type="DirectionUnit">
+        <xs:annotation>
+          <xs:documentation>Units for angle values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="directionUnits" type="DirectionUnit">
+        <xs:annotation>
+          <xs:documentation>Units for bearing and direction values in this file.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="directionFormat" type="DirectionFormat">
+        <xs:annotation>
+          <xs:documentation>Origin for directions (bearings).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
