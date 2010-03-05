@@ -65,12 +65,19 @@ namespace CadastralViewer.Xml
             xrs.ConformanceLevel = ConformanceLevel.Document;
             xrs.ValidationType = ValidationType.Schema;
             xrs.Schemas.Add(schema);
+            //xrs.ValidationEventHandler +=new ValidationEventHandler(ValidationEventHandler);
 
             using (StringReader sr = new StringReader(s))
             {
                 XmlReader reader = XmlReader.Create(sr, xrs);
                 while (reader.Read()) { }
             }
+        }
+
+        static void ValidationEventHandler(object sender, ValidationEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show(e.Message);
+            throw new Exception("not valid");
         }
     }
 }
