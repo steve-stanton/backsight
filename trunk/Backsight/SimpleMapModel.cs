@@ -48,6 +48,13 @@ namespace Backsight
         }
 
         #endregion
+        /// <summary>
+        /// A user-perceived name for the model.
+        /// </summary>
+        public string Name
+        {
+            get { return m_Data.Name; }
+        }
 
         /// <summary>
         /// Draws this model on the specified display

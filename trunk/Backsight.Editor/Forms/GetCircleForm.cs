@@ -17,6 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using Backsight.Forms;
+
+
 namespace Backsight.Editor.Forms
 {
     public partial class GetCircleForm : Form

@@ -17,18 +17,19 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using Backsight.Forms;
-
-namespace Backsight.Editor
+namespace Backsight.Forms
 {
-    class DottedStyle : DrawStyle
+    /// <summary>
+    /// A drawing style in which lines are drawn with a dotted pattern.
+    /// </summary>
+    public class DottedStyle : DrawStyle
     {
-        internal DottedStyle()
+        public DottedStyle()
             : this(Color.Magenta)
         {
         }
 
-        internal DottedStyle(Color col)
+        public DottedStyle(Color col)
             : base(col)
         {
             base.Pen.DashPattern = new float[] { 5.0F, 5.0F };

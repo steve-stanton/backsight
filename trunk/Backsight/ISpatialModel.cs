@@ -26,6 +26,11 @@ namespace Backsight
     public interface ISpatialModel : IExpandablePropertyItem
     {
         /// <summary>
+        /// A user-perceived name for the model.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Draws this model on the specified display
         /// </summary>
         /// <param name="display">The display to render to</param>

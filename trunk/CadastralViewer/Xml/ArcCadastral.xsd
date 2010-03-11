@@ -4,11 +4,14 @@
   <xs:element name="geoSurveyPacketData" type="GeoSurveyPacketData" />
   <xs:simpleType name="AreaUnit">
     <xs:annotation>
-      <xs:documentation>This type is not documented. Values need to be inferred from example files.</xs:documentation>
+      <xs:documentation>This type is not documented. Values need to be inferred from example files. There seems to be an inconsistent use of case - in one file, I saw "Square meter" in addition to "Square Meter".</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
+      <xs:enumeration value="Square meter" />
       <xs:enumeration value="Square Meter" />
+      <xs:enumeration value="Square foot" />
       <xs:enumeration value="Square Foot" />
+      <xs:enumeration value="Square link" />
       <xs:enumeration value="Square Link" />
     </xs:restriction>
   </xs:simpleType>
@@ -24,12 +27,16 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="CadastralLineParameter">
+    <xs:annotation>
+      <xs:documentation>Seems to be relatively permissive with case. The only observed case I have seen is ChordBearingAndChordLengthAndRadius, which I added to the enum. May want to just switch the capitalization on all items.</xs:documentation>
+    </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:enumeration value="bearingAndDistance" />
       <xs:enumeration value="angleAndDistance" />
       <xs:enumeration value="chordBearingAndDeltaAndRadius" />
       <xs:enumeration value="deltaAndRadius" />
       <xs:enumeration value="chordBearingAndChordLengthAndRadius" />
+      <xs:enumeration value="ChordBearingAndChordLengthAndRadius" />
       <xs:enumeration value="chordLengthAndRadius" />
       <xs:enumeration value="chordBearingAndArcLengthAndRadius" />
       <xs:enumeration value="arcLengthAndRadius" />
@@ -255,11 +262,11 @@ Note that the units used in any data values in the extended attributes for an en
       </xs:element>
       <xs:element minOccurs="1" maxOccurs="1" name="esriSpatialReference">
         <xs:annotation>
-          <xs:documentation>ESRI Spatial Reference (prj) string</xs:documentation>
+          <xs:documentation>ESRI Spatial Reference (prj) string. The documented max length is 400, but that's not enough, so I changed it to 1000.</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:maxLength value="400" />
+            <xs:maxLength value="1000" />
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -339,7 +346,7 @@ Note that the units used in any data values in the extended attributes for an en
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="radius" type="xs:double">
         <xs:annotation>
-          <xs:documentation>If curved, the radius of the circle/curve in units defined in header section of the file</xs:documentation>
+          <xs:documentation>If curved, the radius of the circle/curve in units defined in header section of the file. It appears that the radius is a signed value - a positive value indicates a clockwise arc, while a negative value denotes a counter-clockwise arc.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="arcLength" type="xs:double">
@@ -437,6 +444,11 @@ Note that the units used in any data values in the extended attributes for an en
         </xs:annotation>
       </xs:element>
     </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LinePoints">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="linePoint" type="LinePoint" />
+    </xs:sequence>
   </xs:complexType>
   <xs:complexType name="GeoSurveyPacketData">
     <xs:all>
@@ -538,9 +550,9 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Parcel is joined or not joined</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" default="false" name="trueMidBearing" type="xs:boolean">
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="trueMidBearing" type="xs:boolean">
         <xs:annotation>
-          <xs:documentation>Flag for true mid bearings</xs:documentation>
+          <xs:documentation>Flag for true mid bearings. Documentation states that this is mandatory, but there is a default value. It is not present in the data I have seen, so I have dropped the mandatory condition.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="shapeStdErrorE" type="xs:double">
@@ -570,6 +582,7 @@ Note that the units used in any data values in the extended attributes for an en
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="extendedAttributes" type="ExtendedAttributes" />
       <xs:element minOccurs="1" maxOccurs="1" name="lines" type="Lines" />
+      <xs:element minOccurs="0" maxOccurs="1" name="linePoints" type="LinePoints" />
     </xs:all>
   </xs:complexType>
   <xs:complexType name="Parcels">
@@ -582,9 +595,9 @@ Note that the units used in any data values in the extended attributes for an en
       <xs:documentation>The coordinate units and projection are defined in the header section of the file.</xs:documentation>
     </xs:annotation>
     <xs:all>
-      <xs:element minOccurs="1" maxOccurs="1" name="pointNo" type="xs:string">
+      <xs:element minOccurs="1" maxOccurs="1" name="pointNo" type="xs:int">
         <xs:annotation>
-          <xs:documentation>The point number. Data type appears to be inconsistent -- is it meant to be int?</xs:documentation>
+          <xs:documentation>The point number. Data type appears to be inconsistent -- documentation states that it is a string, but the Line element references points using an int. In the data I have seen, it looks like an int, so I'm assuming that's what it should be.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element minOccurs="1" maxOccurs="1" name="x" type="xs:double">
@@ -643,6 +656,16 @@ Note that the units used in any data values in the extended attributes for an en
         </xs:annotation>
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="ExtendedAttributes" type="ExtendedAttributes" />
+      <xs:element minOccurs="0" maxOccurs="1" name="maxDE" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Not documented</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="maxDN" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>Not documented</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="Points">
@@ -675,7 +698,7 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>The company who lodged the plan</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="surveyDate" type="xs:date">
+      <xs:element minOccurs="0" maxOccurs="1" name="surveyDate" type="xs:string">
         <xs:annotation>
           <xs:documentation>The date of survey on the plan in ISO 8601 format (yyyy-mm-dd)</xs:documentation>
         </xs:annotation>
@@ -690,7 +713,7 @@ Note that the units used in any data values in the extended attributes for an en
           <xs:documentation>Display units for angles.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" default="Square Meter" name="areaUnits" type="AreaUnit">
+      <xs:element minOccurs="0" maxOccurs="1" default="Square meter" name="areaUnits" type="AreaUnit">
         <xs:annotation>
           <xs:documentation>Units for the display of areas.</xs:documentation>
         </xs:annotation>

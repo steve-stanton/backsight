@@ -17,6 +17,7 @@ using System;
 using System.Drawing;
 
 using Backsight.Geometry;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
