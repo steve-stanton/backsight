@@ -17,6 +17,9 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 
+using Backsight.Forms;
+
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="08-FEB-1998" was="CeStraightSpan" />

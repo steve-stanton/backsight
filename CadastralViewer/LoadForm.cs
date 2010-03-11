@@ -5,6 +5,9 @@ using System.Xml.Schema;
 using System.Collections.Generic;
 using System.Xml;
 using System.Reflection;
+using System.Xml.Serialization;
+using CadastralViewer.Xml;
+using CadastralViewer.Properties;
 
 namespace CadastralViewer
 {
@@ -26,6 +29,12 @@ namespace CadastralViewer
         /// </summary>
         readonly List<string> m_Errors;
 
+        /// <summary>
+        /// The successfully deserialized version of the file (null if it could
+        /// not be deserialized).
+        /// </summary>
+        GeoSurveyPacketData m_Data;
+
         #endregion
 
         #region Constructors
@@ -45,40 +54,64 @@ namespace CadastralViewer
 
         private void LoadForm_Shown(object sender, EventArgs e)
         {
-            // Load the cadastral schema
-            XmlSchema schema = GetSchema();
-
-            ShowMessage("Loading data");
-            string data = File.ReadAllText(m_FileName);
-
-            using (StringReader sr = new StringReader(data))
+            try
             {
-                XmlReaderSettings xrs = new XmlReaderSettings();
-                xrs.ConformanceLevel = ConformanceLevel.Document;
-                xrs.ValidationType = ValidationType.Schema;
-                xrs.Schemas.Add(schema);
-                xrs.ValidationEventHandler += new ValidationEventHandler(ValidationEventHandler);
+                // Load the cadastral schema
+                XmlSchema schema = GetSchema();
 
-                XmlReader reader = XmlReader.Create(sr, xrs);
-                while (reader.Read()) { }
+                ShowMessage("Checking data");
+                string data = File.ReadAllText(m_FileName);
 
-                //using (XmlReader xr = XmlReader.Create(sr))
-                //{
-                //    XmlSerializer xs = new XmlSerializer(typeof(GeoSurveyPacketData));
-                //    GeoSurveyPacketData packet = (GeoSurveyPacketData)xs.Deserialize(xr);
-                //}
+                using (StringReader sr = new StringReader(data))
+                {
+                    XmlReaderSettings xrs = new XmlReaderSettings();
+                    xrs.ConformanceLevel = ConformanceLevel.Document;
+                    xrs.ValidationType = ValidationType.Schema;
+                    xrs.Schemas.Add(schema);
+                    xrs.ValidationEventHandler += new ValidationEventHandler(ValidationEventHandler);
+
+                    XmlReader reader = XmlReader.Create(sr, xrs);
+                    while (reader.Read())
+                    {
+                        if (m_Errors.Count > 100)
+                            throw new ApplicationException("Too many problems. Ignoring the rest of the file.");
+                    }
+
+                }
+
+                if (m_Errors.Count == 1)
+                    ShowMessage("1 problem detected");
+                else
+                    ShowMessage(m_Errors.Count + " problems detected");
+
+                // Load the data into objects so long as there were no errors
+                if (m_Errors.Count == 0)
+                {
+                    ShowMessage("Deserializing...");
+                    m_Data = CadastralFile.ReadXmlString(data);
+                    //using (StringReader sr = new StringReader(data))
+                    //{
+                    //    using (XmlReader xr = XmlReader.Create(sr))
+                    //    {
+                    //        XmlSerializer xs = new XmlSerializer(typeof(GeoSurveyPacketData));
+                    //        GeoSurveyPacketData packet = (GeoSurveyPacketData)xs.Deserialize(xr);
+                    //    }
+                    //}
+                    ShowMessage("Done");
+                }
             }
 
-            if (m_Errors.Count == 1)
-                ShowMessage("1 problem detected");
-            else
-                ShowMessage(m_Errors.Count+" problems detected");
+            catch (Exception ex)
+            {
+                ShowMessage(ex.Message);
+            }
         }
 
         void ShowMessage(string msg)
         {
             listBox.Items.Add(msg);
             listBox.Refresh();
+
             Application.DoEvents();
         }
 
@@ -112,8 +145,17 @@ namespace CadastralViewer
             if (!m_Errors.Contains(e.Message))
             {
                 m_Errors.Add(e.Message);
-                ShowMessage(e.Message);
+                textBox.Lines = m_Errors.ToArray();
             }
+        }
+
+        /// <summary>
+        /// The successfully deserialized version of the file (null if it could
+        /// not be deserialized).
+        /// </summary>
+        internal GeoSurveyPacketData Data
+        {
+            get { return m_Data; }
         }
     }
 }

@@ -421,7 +421,6 @@
     <Compile Include="IDivider.cs" />
     <Compile Include="DividerCheck.cs" />
     <Compile Include="LineDivider.cs" />
-    <Compile Include="DottedStyle.cs" />
     <Compile Include="DisplayId.cs" />
     <Compile Include="DistanceUnit.cs" />
     <Compile Include="DistanceUnitType.cs" />

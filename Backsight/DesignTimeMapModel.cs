@@ -25,10 +25,46 @@ namespace Backsight
     /// </summary>
     public class DesignTimeMapModel : ISpatialModel
     {
+        /// <summary>
+        /// A user-perceived name for the model.
+        /// </summary>
+        /// <value>String.Empty</value>
+        public string Name { get { return String.Empty; } }
+
+        /// <summary>
+        /// Draws this model on the specified display (does nothing).
+        /// </summary>
+        /// <param name="display">The display to render to</param>
+        /// <param name="style">The display style to use</param>
         public void Render(ISpatialDisplay display, IDrawStyle style) { }
+
+        /// <summary>
+        /// Is this model currently empty?
+        /// </summary>
+        /// <value>True</value>
         public bool IsEmpty { get { return true; } }
+
+        /// <summary>
+        /// The ground extent of the data in the model (null if the model is empty)
+        /// </summary>
+        /// <value>null</value>
         public IWindow Extent { get { return null; } }
+
+        /// <summary>
+        /// Locates the object closest to a specific position.
+        /// </summary>
+        /// <param name="p">The search position</param>
+        /// <param name="radius">The search radius</param>
+        /// <param name="types">The type(s) of object to look for</param>
+        /// <returns>
+        /// The closest object of the requested type (always null)
+        /// </returns>
         public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types) { return null; }
+
+        /// <summary>
+        /// The coordinate system for model positions.
+        /// </summary>
+        /// <value>null</value>
         public ISpatialSystem SpatialSystem { get { return null; } }
     }
 }

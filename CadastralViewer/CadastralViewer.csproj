@@ -36,6 +36,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CadastralFile.cs" />
     <Compile Include="LoadForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,10 +84,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ViewController.cs" />
     <Compile Include="Xml\ArcCadastral.cs">
       <DependentUpon>ArcCadastral.xsd</DependentUpon>
     </Compile>
     <Compile Include="Xml\Content.cs" />
+    <Compile Include="Xml\Line.cs" />
+    <Compile Include="Xml\Point.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Backsight\Backsight.csproj">
+      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
+      <Name>Backsight</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

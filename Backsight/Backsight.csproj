@@ -87,6 +87,7 @@
     <Compile Include="Forms\DimmableButton.designer.cs">
       <DependentUpon>DimmableButton.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\DottedStyle.cs" />
     <Compile Include="Forms\DrawInfo.cs" />
     <Compile Include="Forms\DrawStyle.cs" />
     <Compile Include="Forms\Fill.cs" />
