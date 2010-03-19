@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\Line.cs" />
+    <Compile Include="Xml\Parcel.cs" />
     <Compile Include="Xml\Point.cs" />
   </ItemGroup>
   <ItemGroup>

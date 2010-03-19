@@ -131,7 +131,8 @@ namespace CadastralViewer
             {
                 foreach (Parcel parcel in plan.parcels)
                 {
-                    // Relate the parcel to it's plan?
+                    // Relate the parcel to it's plan
+                    parcel.Plan = plan;
 
                     foreach (Line line in parcel.lines)
                     {
@@ -147,6 +148,13 @@ namespace CadastralViewer
                             line.Center = m_Points[line.centerPoint];
 
                         index.Add(line);
+                    }
+
+                    foreach (LinePoint lp in parcel.linePoints)
+                    {
+                        // Relate to the parcel it's referenced by
+
+                        // Relate the associated point 
                     }
                 }
             }
