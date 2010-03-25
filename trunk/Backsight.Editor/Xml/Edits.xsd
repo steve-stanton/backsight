@@ -185,6 +185,12 @@
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
+  <xs:complexType name="FeatureTableType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Points" type="PointArrayType" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Lines" type="LineArrayType" />
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="GetControlType">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationType">
@@ -438,6 +444,23 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LineArrayType">
+    <xs:annotation>
+      <xs:documentation>An array of line features</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="FeatureType">
+        <xs:annotation>
+          <xs:documentation>The line features in the array</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="DefaultType" type="xs:int" use="optional">
+      <xs:annotation>
+        <xs:documentation>The ID of the default entity type for lines in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
   <xs:complexType name="LineExtensionType">
     <xs:annotation>
@@ -758,6 +781,23 @@ The first and last positions are assumed to match the positions of the point fea
         <xs:attribute name="PointType" type="xs:int" use="required" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointArrayType">
+    <xs:annotation>
+      <xs:documentation>An array of point features</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="FeatureType">
+        <xs:annotation>
+          <xs:documentation>The point features in the array</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="DefaultType" type="xs:int" use="optional">
+      <xs:annotation>
+        <xs:documentation>The ID of the default entity type for points in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
   <xs:complexType name="PointGeometryType">
     <xs:attribute name="X" type="xs:long" use="required" />
