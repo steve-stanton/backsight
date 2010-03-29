@@ -366,6 +366,7 @@
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
+    <Compile Include="Operations\LineSubdivisionInput.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
