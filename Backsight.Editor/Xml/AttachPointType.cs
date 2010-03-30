@@ -29,6 +29,16 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             return new AttachPointOperation(s, this);
+            //return new AttachPointOperation(GetInput());
+        }
+
+        internal AttachPointInput GetInput()
+        {
+            //AttachPointInput result = new AttachPointInput(); // need default cstr
+            //result.Line = CadastralMapModel.Current.Find<LineFeature>(this.Line);
+            //result.PositionRatio = this.PositionRatio;
+            //return result;
+            return null;
         }
     }
 }
