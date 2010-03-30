@@ -179,6 +179,7 @@ namespace Backsight.Editor.UI
 
             // Attach a new point to the line
             AttachPointOperation op = null;
+            //AttachPointInput api = new AttachPointInput(m_Line, 0);
 
             try
             {

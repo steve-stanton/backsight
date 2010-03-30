@@ -122,8 +122,9 @@ namespace Backsight.Editor
         /// </summary>
         internal void UndoAll()
         {
-            for (;;)
-                Undo();
+            while (Undo())
+            {
+            }
         }
     }
 }

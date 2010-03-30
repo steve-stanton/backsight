@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2009 - Steve Stanton. This file is part of Backsight
+// Copyright 2010 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -13,16 +13,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
-using Backsight.Editor.Operations;
-
-namespace Backsight.Editor.Xml
+namespace Backsight.Editor.Operations
 {
-    interface IAttachPoint
+    /// <summary>
+    /// Some sort of input data class for an editing operation.
+    /// </summary>
+    abstract class OperationInput
     {
-        string Line { get; }
-        uint PositionRatio { get; }
-        CalculatedFeatureType Point { get; }
     }
 }
