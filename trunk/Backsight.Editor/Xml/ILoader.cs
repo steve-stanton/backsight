@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2009 - Steve Stanton. This file is part of Backsight
+// Copyright 2010 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -13,21 +13,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using Backsight.Editor.Operations;
-
 namespace Backsight.Editor.Xml
 {
-    public partial class SimpleLineSubdivisionType
+    /// <summary>
+    /// Helps with deserialization of XML data (when loading from the database).
+    /// </summary>
+    interface ILoader
     {
         /// <summary>
-        /// Loads this editing operation into a session
+        /// Attempts to locate a spatial feature based on its internal ID.
         /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            return new SimpleLineSubdivisionOperation(s, this);
-        }
+        /// <param name="s">The formatted version of an internal ID (as produced
+        /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
+        /// <returns>The corresponding feature (null if not found)</returns>
+        T Find<T>(string s) where T : Feature;
     }
 }

@@ -30,10 +30,11 @@ using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Index;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
-    class CadastralMapModel : ISpatialModel, ISpatialData
+    class CadastralMapModel : ISpatialModel, ISpatialData, ILoader
     {
         #region Static Methods
 
@@ -1486,7 +1487,7 @@ namespace Backsight.Editor
         /// <param name="s">The formatted version of an internal ID (as produced
         /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
         /// <returns>The corresponding feature (null if not found)</returns>
-        internal T Find<T>(string s) where T : Feature
+        public T Find<T>(string s) where T : Feature
         {
             InternalIdValue id = new InternalIdValue(s);
             return Find<T>(id);
