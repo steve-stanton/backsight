@@ -1031,49 +1031,18 @@
     <Compile Include="UpdateContext.cs" />
     <Compile Include="UpdateUndoMarker.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="Xml\ArcType.cs" />
-    <Compile Include="Xml\AttachPointType.cs" />
     <Compile Include="Xml\CircularLegType.cs" />
     <Compile Include="Xml\Content.cs" />
-    <Compile Include="Xml\DeletionType.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
     <Compile Include="Xml\Features.cs" />
-    <Compile Include="Xml\GetControlType.cs" />
-    <Compile Include="Xml\ImportType.cs" />
-    <Compile Include="Xml\IntersectDirectionAndDistanceType.cs" />
-    <Compile Include="Xml\IntersectDirectionAndLineType.cs" />
-    <Compile Include="Xml\IntersectTwoDirectionsType.cs" />
-    <Compile Include="Xml\IntersectTwoDistancesType.cs" />
-    <Compile Include="Xml\IntersectTwoLinesType.cs" />
+    <Compile Include="Xml\ILoader.cs" />
     <Compile Include="Xml\LegType.cs" />
-    <Compile Include="Xml\LineExtensionType.cs" />
-    <Compile Include="Xml\LineSubdivisionType.cs" />
-    <Compile Include="Xml\MovePolygonPositionType.cs" />
-    <Compile Include="Xml\MoveTextType.cs" />
-    <Compile Include="Xml\MultiSegmentType.cs" />
-    <Compile Include="Xml\NewArcType.cs" />
-    <Compile Include="Xml\NewCircleType.cs" />
-    <Compile Include="Xml\NewSegmentType.cs" />
-    <Compile Include="Xml\NewPointType.cs" />
-    <Compile Include="Xml\NewTextType.cs" />
     <Compile Include="Xml\Observations.cs" />
-    <Compile Include="Xml\OperationType.cs" />
-    <Compile Include="Xml\ParallelLineType.cs" />
-    <Compile Include="Xml\PathType.cs" />
-    <Compile Include="Xml\PolygonSubdivisionType.cs" />
-    <Compile Include="Xml\PropertyChangeType.cs" />
-    <Compile Include="Xml\RadialType.cs" />
-    <Compile Include="Xml\SectionType.cs" />
-    <Compile Include="Xml\SegmentType.cs" />
-    <Compile Include="Xml\SetTopologyType.cs" />
-    <Compile Include="Xml\SimpleLineSubdivisionType.cs" />
+    <Compile Include="Xml\Operations.cs" />
     <Compile Include="Xml\SpanType.cs" />
     <Compile Include="Xml\StraightLegType.cs" />
-    <Compile Include="Xml\TextRotationType.cs" />
-    <Compile Include="Xml\TrimLineType.cs" />
-    <Compile Include="Xml\UpdateType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

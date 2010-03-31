@@ -39,6 +39,72 @@ namespace Backsight.Editor.Xml
     }
 
     /// <summary>
+    /// A serialized line feature with geometry defined by a circular arc.
+    /// </summary>
+    public partial class ArcType
+    {
+        /// <summary>
+        /// Loads this feature as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
+        {
+            return new ArcFeature(op, this);
+        }
+
+        internal string FirstArc
+        {
+            get
+            {
+                if (ItemElementName == ItemChoiceType.FirstArc)
+                    return Item;
+                else
+                    return null;
+            }
+
+            set
+            {
+                Item = value;
+                ItemElementName = ItemChoiceType.FirstArc;
+            }
+        }
+
+        internal string Center
+        {
+            get
+            {
+                if (ItemElementName == ItemChoiceType.Center)
+                    return Item;
+                else
+                    return null;
+            }
+
+            set
+            {
+                Item = value;
+                ItemElementName = ItemChoiceType.Center;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A serialized line feature with geometry defined by an array of positions.
+    /// </summary>
+    public partial class MultiSegmentType
+    {
+        /// <summary>
+        /// Loads this feature as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
+        {
+            return new LineFeature(op, this);
+        }
+    }
+
+    /// <summary>
     /// A serialized point feature.
     /// </summary>
     public partial class PointType
@@ -51,6 +117,38 @@ namespace Backsight.Editor.Xml
         internal override Feature LoadFeature(Operation op)
         {
             return new PointFeature(op, this);
+        }
+    }
+
+    /// <summary>
+    /// A serialized line feature with geometry defined as a section of another line.
+    /// </summary>
+    public partial class SectionType
+    {
+        /// <summary>
+        /// Loads this feature as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
+        {
+            return new LineFeature(op, this);
+        }
+    }
+
+    /// <summary>
+    /// A serialized line feature with geometry defined by two positions.
+    /// </summary>
+    public partial class SegmentType
+    {
+        /// <summary>
+        /// Loads this feature as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The spatial feature that was loaded</returns>
+        internal override Feature LoadFeature(Operation op)
+        {
+            return new LineFeature(op, this);
         }
     }
 
