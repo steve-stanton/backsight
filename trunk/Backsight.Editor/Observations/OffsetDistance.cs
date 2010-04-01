@@ -48,7 +48,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal OffsetDistance(Operation op, OffsetDistanceType t)
+        internal OffsetDistance(Operation op, OffsetDistanceData t)
             : base(op, t)
         {
             m_Offset = new Distance(op, t.Distance);
@@ -202,9 +202,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            return new OffsetDistanceType(this);
+            return new OffsetDistanceData(this);
         }
     }
 }

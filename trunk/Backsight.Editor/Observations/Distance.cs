@@ -77,7 +77,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal Distance(Operation op, DistanceType t)
+        internal Distance(Operation op, DistanceData t)
             : base(op, t)
         {
             DistanceUnitType dut = (DistanceUnitType)t.Unit;
@@ -381,9 +381,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            return new DistanceType(this);
+            return new DistanceData(this);
         }
     }
 }

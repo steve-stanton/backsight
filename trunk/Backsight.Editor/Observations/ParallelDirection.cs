@@ -54,7 +54,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal ParallelDirection(Operation op, ParallelType t)
+        internal ParallelDirection(Operation op, ParallelData t)
             : base(op, t)
         {
             CadastralMapModel mapModel = op.MapModel;
@@ -182,9 +182,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            ParallelType t = new ParallelType();
+            ParallelData t = new ParallelData();
             SetSerializableObservation(t);
             t.From = m_From.DataId;
             t.Start = m_Par1.DataId;

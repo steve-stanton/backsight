@@ -107,7 +107,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal IntersectDirectionAndLineOperation(Session s, IntersectDirectionAndLineType t)
+        internal IntersectDirectionAndLineOperation(Session s, IntersectDirectionAndLineData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -557,18 +557,18 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            IntersectDirectionAndLineType t = new IntersectDirectionAndLineType();
+            IntersectDirectionAndLineData t = new IntersectDirectionAndLineData();
             base.SetSerializableEdit(t);
 
             t.Line = m_Line.DataId;
             t.CloseTo = m_CloseTo.DataId;
-            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
-            t.To = new CalculatedFeatureType(m_Intersection);
+            t.Direction = (DirectionData)m_Direction.GetSerializableObservation();
+            t.To = new CalculatedFeatureData(m_Intersection);
 
             if (m_DirLine != null)
-                t.DirLine = new CalculatedFeatureType(m_DirLine);
+                t.DirLine = new CalculatedFeatureData(m_DirLine);
 
             if (m_LineA != null)
                 t.SplitBefore = m_LineA.DataId;

@@ -219,9 +219,9 @@ namespace Backsight.Editor.UI
                 }
 
                 // Hold onto the update info
-                LineExtensionUpdateType ut = new LineExtensionUpdateType();
+                LineExtensionUpdateData ut = new LineExtensionUpdateData();
                 ut.ExtendFromEnd = m_Dialog.IsExtendFromEnd;
-                ut.Distance = new DistanceType(m_Dialog.Length);
+                ut.Distance = new DistanceData(m_Dialog.Length);
                 up.UpdateParameters = ut;
 
                 // Make the update.

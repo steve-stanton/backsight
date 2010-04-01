@@ -68,7 +68,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal AttachPointOperation(Session s, AttachPointType t)
+        internal AttachPointOperation(Session s, AttachPointData t)
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
@@ -260,14 +260,14 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            AttachPointType t = new AttachPointType();
+            AttachPointData t = new AttachPointData();
             base.SetSerializableEdit(t);
 
             t.Line = m_Line.DataId;
             t.PositionRatio = m_PositionRatio;
-            t.Point = new CalculatedFeatureType(m_Point);
+            t.Point = new CalculatedFeatureData(m_Point);
 
             return t;
         }

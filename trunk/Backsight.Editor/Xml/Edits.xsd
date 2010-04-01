@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="Edit" type="EditType" />
-  <xs:complexType name="AngleType">
+  <xs:element name="Edit" type="EditData" />
+  <xs:complexType name="AngleData">
     <xs:complexContent mixed="false">
-      <xs:extension base="DirectionType">
+      <xs:extension base="DirectionData">
         <xs:attribute name="Value" type="xs:string" use="required">
           <xs:annotation>
             <xs:documentation>The angle in DMS format. A negated value indicates an anticlockwise angle.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="From" type="IdType" use="required">
+        <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The occupied station</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Backsight" type="IdType" use="required">
+        <xs:attribute name="Backsight" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The backsight point</xs:documentation>
           </xs:annotation>
@@ -23,20 +23,20 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ArcType">
+  <xs:complexType name="ArcData">
     <xs:annotation>
       <xs:documentation>A circular arc</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="LineType">
+      <xs:extension base="LineData">
         <xs:sequence>
           <xs:choice minOccurs="1" maxOccurs="1">
-            <xs:element name="Center" type="IdType">
+            <xs:element name="Center" type="IdData">
               <xs:annotation>
                 <xs:documentation>The point at the center of the circle that this arc lies on, defined only for the very first arc attached to the circle (all subsequently created arcs pick up the center point via the FirstArc attribute). The radius of the circle is derived from the position of the center point, and the position of the point at the start (or end) of the first arc.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="FirstArc" type="IdType">
+            <xs:element name="FirstArc" type="IdData">
               <xs:annotation>
                 <xs:documentation>The ID of the first arc attached to the circle that this arc coincides with</xs:documentation>
               </xs:annotation>
@@ -47,26 +47,26 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="AttachPointType">
+  <xs:complexType name="AttachPointData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Point" type="CalculatedFeatureType" />
+          <xs:element name="Point" type="CalculatedFeatureData" />
         </xs:sequence>
-        <xs:attribute name="Line" type="IdType" use="required" />
+        <xs:attribute name="Line" type="IdData" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="BearingType">
+  <xs:complexType name="BearingData">
     <xs:complexContent mixed="false">
-      <xs:extension base="DirectionType">
+      <xs:extension base="DirectionData">
         <xs:attribute name="Value" type="xs:string" use="required">
           <xs:annotation>
             <xs:documentation>The bearing value in radians - in the range [0,2*Pi)</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="From" type="IdType" use="required">
+        <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point from which the bearing was observed</xs:documentation>
           </xs:annotation>
@@ -74,21 +74,21 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="CalculatedFeatureType">
+  <xs:complexType name="CalculatedFeatureData">
     <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType" />
+      <xs:extension base="FeatureData" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="CircularLegType">
+  <xs:complexType name="CircularLegData">
     <xs:complexContent mixed="false">
-      <xs:extension base="LegType">
+      <xs:extension base="LegData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="DistanceType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="DistanceData">
             <xs:annotation>
               <xs:documentation>The observed radius of the leg.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="Center" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Center" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The point at the center of the circle that this leg coincides with</xs:documentation>
             </xs:annotation>
@@ -117,34 +117,34 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="DeflectionType">
+  <xs:complexType name="DeflectionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="AngleType" />
+      <xs:extension base="AngleData" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="DeletionType">
+  <xs:complexType name="DeletionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
-          <xs:element name="Delete" type="IdType" />
+          <xs:element name="Delete" type="IdData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="DirectionType">
+  <xs:complexType name="DirectionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="ObservationType">
+      <xs:extension base="ObservationData">
         <xs:sequence minOccurs="0" maxOccurs="1">
-          <xs:element name="Offset" type="OffsetType" />
+          <xs:element name="Offset" type="OffsetData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="DistanceType">
+  <xs:complexType name="DistanceData">
     <xs:complexContent mixed="false">
-      <xs:extension base="ObservationType">
+      <xs:extension base="ObservationData">
         <xs:attribute name="Value" type="xs:double" use="required" />
-        <xs:attribute default="0" name="Unit" type="DistanceUnitType" use="optional">
+        <xs:attribute default="0" name="Unit" type="DistanceUnitData" use="optional">
           <xs:annotation>
             <xs:documentation>The default for the Unit attribute denotes metric values</xs:documentation>
           </xs:annotation>
@@ -153,54 +153,54 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="DistanceUnitType">
+  <xs:simpleType name="DistanceUnitData">
     <xs:restriction base="xs:int">
       <xs:minInclusive value="0" />
       <xs:maxInclusive value="3" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="EditType">
+  <xs:complexType name="EditData">
     <xs:annotation>
       <xs:documentation>The top level element, corresponding to a row in the ced.Edits table. The system currently works with just one operation - however, the notion of an edit that consists of multiple operations is probably quite useful.</xs:documentation>
     </xs:annotation>
     <xs:sequence minOccurs="1" maxOccurs="unbounded">
-      <xs:element name="Operation" type="OperationType" />
+      <xs:element name="Operation" type="OperationData" />
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="FeatureType" abstract="true">
-    <xs:attribute name="Id" type="IdType" use="required" />
-    <xs:attribute default="0" name="Type" type="xs:int" use="optional">
+  <xs:complexType name="FeatureData" abstract="true">
+    <xs:attribute name="Id" type="IdData" use="required" />
+    <xs:attribute default="0" name="Entity" type="xs:int" use="optional">
       <xs:annotation>
         <xs:documentation>The ID of the entity type that describes the real-world significance of a feature. The default value of 0 may either signify a construction line (with no real-world significance), or that the type can be obtained from the editing context.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="Key" type="xs:unsignedInt" use="optional">
       <xs:annotation>
-        <xs:documentation>A native ID value. This is a value that falls within one of the ID groups that are defined as part of the Backsight environment. The value is not formatted according to the ID group (i.e. it is not decorated with any leading and/or tralling characters). Sometimes referred to as a raw ID. If the Key attribute is present, the ForeignKey attribute should not be present.</xs:documentation>
+        <xs:documentation>A native ID value. This is a value that falls within one of the ID groups that are defined as part of the Backsight environment. The value is not formatted according to the ID group (i.e. it is not decorated with any leading and/or tralling characters). Sometimes referred to as a raw ID.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="ForeignKey" type="xs:string" use="optional">
       <xs:annotation>
-        <xs:documentation>An  ID value that originates from some foreign source (defined by edits that import data). If present, the Key attribute should not be present.</xs:documentation>
+        <xs:documentation>An  ID value that originates from some foreign source (defined by edits that import data).</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="FeatureTableType">
+  <xs:complexType name="FeatureTableData">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="1" name="Points" type="PointArrayType" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Lines" type="LineArrayType" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Points" type="PointArray" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Lines" type="LineArray" />
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="GetControlType">
+  <xs:complexType name="GetControlData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="PointType" />
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="PointData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="IdType">
+  <xs:simpleType name="IdData">
     <xs:annotation>
       <xs:documentation>The ID for features and editing operations. Backsight defines this by concatenating the ID of the sesion in which the item was created, followed by a sequence number indicating the creation order within the session. The very first ID is 1.1
 
@@ -210,46 +210,46 @@ Dealing with these two components as a single formatted string may well be "bad"
       <xs:pattern value="[0-9]{1,10}:[0-9]{1,10}" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="ImportType">
+  <xs:complexType name="ImportData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
-          <xs:element name="Feature" type="FeatureType" />
+          <xs:element name="Feature" type="FeatureData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IntersectDirectionAndDistanceType">
+  <xs:complexType name="IntersectDirectionAndDistanceData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionData">
             <xs:annotation>
               <xs:documentation>The observed direction</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the the point at which the distance was observed, to the intersection point.</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="From" type="IdType" use="required">
+        <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point the distance was measured from.</xs:documentation>
           </xs:annotation>
@@ -262,42 +262,42 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IntersectDirectionAndLineType">
+  <xs:complexType name="IntersectDirectionAndLineData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionData">
             <xs:annotation>
               <xs:documentation>The observed direction</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="CloseTo" type="IdType" use="required">
+        <xs:attribute name="CloseTo" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point closest to the intersection (usually defaulted to one of the end points for the lines, or the origin of the direction).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Line" type="IdType" use="required">
+        <xs:attribute name="Line" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The line the direction intersects</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitBefore" type="IdType" use="optional">
+        <xs:attribute name="SplitBefore" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter attribute will also be present.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitAfter" type="IdType" use="optional">
+        <xs:attribute name="SplitAfter" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore attribute will also be present.</xs:documentation>
           </xs:annotation>
@@ -305,23 +305,23 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IntersectTwoDirectionsType">
+  <xs:complexType name="IntersectTwoDirectionsData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Direction1" type="DirectionType" />
-          <xs:element minOccurs="1" maxOccurs="1" name="Direction2" type="DirectionType" />
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction1" type="DirectionData" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction2" type="DirectionData" />
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the first direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the point at which the second direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -330,42 +330,42 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IntersectTwoDistancesType">
+  <xs:complexType name="IntersectTwoDistancesData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance1" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance1" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The first observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance2" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance2" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The second observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="From1" type="IdType" use="required">
+        <xs:attribute name="From1" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point the first distance was measured from.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="From2" type="IdType" use="required">
+        <xs:attribute name="From2" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point the second distance was measured from.</xs:documentation>
           </xs:annotation>
@@ -378,39 +378,39 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="IntersectTwoLinesType">
+  <xs:complexType name="IntersectTwoLinesData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="Line1" type="IdType" use="required" />
-        <xs:attribute name="Line2" type="IdType" use="required" />
-        <xs:attribute name="CloseTo" type="IdType" use="required">
+        <xs:attribute name="Line1" type="IdData" use="required" />
+        <xs:attribute name="Line2" type="IdData" use="required" />
+        <xs:attribute name="CloseTo" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point closest to the intersection (usually defaulted to one of the end points for the 2 lines).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitBefore1" type="IdType" use="optional">
+        <xs:attribute name="SplitBefore1" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the first line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter1 attribute will also be present.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitAfter1" type="IdType" use="optional">
+        <xs:attribute name="SplitAfter1" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the first line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore1 attribute will also be present.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitBefore2" type="IdType" use="optional">
+        <xs:attribute name="SplitBefore2" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the second line that precedes the intersection (present only if the line needs to be split). If present, it is assumed that the SplitAfter2 attribute will also be present.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="SplitAfter2" type="IdType" use="optional">
+        <xs:attribute name="SplitAfter2" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The internal ID of the portion of the second line that comes after the intersection (present only if the line needs to be split). If present, it is assumed that the SplitBefore2 attribute will also be present.</xs:documentation>
           </xs:annotation>
@@ -418,14 +418,14 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="KeyTextType">
+  <xs:complexType name="KeyTextData">
     <xs:complexContent mixed="false">
-      <xs:extension base="TextType" />
+      <xs:extension base="TextData" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LegType" abstract="true">
+  <xs:complexType name="LegData" abstract="true">
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="Span" type="SpanType" />
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Span" type="SpanData" />
     </xs:sequence>
     <xs:attribute default="0" name="Face" type="xs:unsignedByte" use="optional">
       <xs:annotation>
@@ -433,59 +433,59 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="LineType" abstract="true">
+  <xs:complexType name="LineData" abstract="true">
     <xs:annotation>
       <xs:documentation>A line feature plus its associated geometry. The base type is suitable for simple line segments (probably 80% of all lines in a cadastral mapping environment).</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType">
-        <xs:attribute name="From" type="IdType" />
-        <xs:attribute name="To" type="IdType" />
+      <xs:extension base="FeatureData">
+        <xs:attribute name="From" type="IdData" />
+        <xs:attribute name="To" type="IdData" />
         <xs:attribute default="true" name="Topological" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LineArrayType">
+  <xs:complexType name="LineArray">
     <xs:annotation>
       <xs:documentation>An array of line features</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="FeatureType">
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="FeatureData">
         <xs:annotation>
           <xs:documentation>The line features in the array</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="DefaultType" type="xs:int" use="optional">
+    <xs:attribute name="DefaultEntity" type="xs:int" use="optional">
       <xs:annotation>
         <xs:documentation>The ID of the default entity type for lines in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="LineExtensionType">
+  <xs:complexType name="LineExtensionData">
     <xs:annotation>
       <xs:documentation>Operation to extend a line.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceData">
             <xs:annotation>
               <xs:documentation>The observed length of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The actual extension line (if any).</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="Line" type="IdType" use="required">
+        <xs:attribute name="Line" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The line being extended.</xs:documentation>
           </xs:annotation>
@@ -498,11 +498,11 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LineExtensionUpdateType">
+  <xs:complexType name="LineExtensionUpdateData">
     <xs:complexContent mixed="false">
-      <xs:extension base="UpdateType">
+      <xs:extension base="UpdateData">
         <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="1" name="Distance" type="DistanceType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Distance" type="DistanceData">
             <xs:annotation>
               <xs:documentation>The observed length of the extension.</xs:documentation>
             </xs:annotation>
@@ -516,13 +516,13 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LineSubdivisionType">
+  <xs:complexType name="LineSubdivisionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="2" maxOccurs="unbounded" name="Span" type="SpanType" />
+          <xs:element minOccurs="2" maxOccurs="unbounded" name="Span" type="SpanData" />
         </xs:sequence>
-        <xs:attribute name="Line" type="IdType" use="required">
+        <xs:attribute name="Line" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The line that was subdivided.</xs:documentation>
           </xs:annotation>
@@ -530,17 +530,17 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="MiscTextType">
+  <xs:complexType name="MiscTextData">
     <xs:complexContent mixed="false">
-      <xs:extension base="TextType">
+      <xs:extension base="TextData">
         <xs:attribute name="Text" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="MovePolygonPositionType">
+  <xs:complexType name="MovePolygonPositionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:attribute name="Label" type="IdType" use="required" />
+      <xs:extension base="OperationData">
+        <xs:attribute name="Label" type="IdData" use="required" />
         <xs:attribute name="NewX" type="xs:long" use="required" />
         <xs:attribute name="NewY" type="xs:long" use="required" />
         <xs:attribute name="OldX" type="xs:long" use="optional" />
@@ -548,10 +548,10 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="MoveTextType">
+  <xs:complexType name="MoveTextData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:attribute name="Text" type="IdType" use="required" />
+      <xs:extension base="OperationData">
+        <xs:attribute name="Text" type="IdData" use="required" />
         <xs:attribute name="OldX" type="xs:long" use="required" />
         <xs:attribute name="OldY" type="xs:long" use="required" />
         <xs:attribute name="OldPolygonX" type="xs:long" use="optional">
@@ -565,53 +565,53 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="MultiSegmentType">
+  <xs:complexType name="MultiSegmentData">
     <xs:annotation>
       <xs:documentation>A line feature with geometry defined by many positions. In a cadastral mapping environment, this usually corresponds to things like river lines (imported from some external source).
 
 The first and last positions are assumed to match the positions of the point features that must exist at the ends of all lines.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="LineType">
+      <xs:extension base="LineData">
         <xs:sequence>
-          <xs:element minOccurs="3" maxOccurs="unbounded" name="Point" type="PointGeometryType" />
+          <xs:element minOccurs="3" maxOccurs="unbounded" name="Point" type="PointGeometryData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewArcType">
+  <xs:complexType name="NewArcData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="ArcType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="ArcData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewCircleType">
+  <xs:complexType name="NewCircleData">
     <xs:annotation>
       <xs:documentation>Edit for adding a construction line that runs round the circumference of a circle.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Radius" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The radius of the circle (either a DistanceType object, or an OffsetPointType that sits on the circumference of the circle).</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="Center" type="IdType" use="required">
+        <xs:attribute name="Center" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The existing point at the center of the circle.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="ClosingPoint" type="IdType" use="required">
+        <xs:attribute name="ClosingPoint" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point that acts as the closing point for the circular arc that runs round the complete circumference of the circle. If the radius was specified using an offset point, the closing point will be the same as the offset point. Otherwise a construction point (with an undefined entity type) gets created at the very top of the circle.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Arc" type="IdType" use="required">
+        <xs:attribute name="Arc" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The construction line that represents the entire circumference of the circle. This newly created line has no entity type, and no user-perceived key. Note that the underlying circle may have been created via a prior editing operation.</xs:documentation>
           </xs:annotation>
@@ -619,29 +619,29 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewPointType">
+  <xs:complexType name="NewPointData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Point" type="PointType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Point" type="PointData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewSegmentType">
+  <xs:complexType name="NewSegmentData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="SegmentType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Line" type="SegmentData" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="NewTextType">
+  <xs:complexType name="NewTextData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element name="Text" type="TextType">
+          <xs:element name="Text" type="TextData">
             <xs:annotation>
               <xs:documentation>The text label that was created</xs:documentation>
             </xs:annotation>
@@ -650,76 +650,76 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ObservationType" abstract="true" />
-  <xs:complexType name="OffsetDistanceType">
+  <xs:complexType name="ObservationData" abstract="true" />
+  <xs:complexType name="OffsetDistanceData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OffsetType">
+      <xs:extension base="OffsetData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceData" />
         </xs:sequence>
         <xs:attribute default="false" name="Left" type="xs:boolean" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="OffsetPointType">
+  <xs:complexType name="OffsetPointData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OffsetType">
-        <xs:attribute name="Point" type="IdType" use="required" />
+      <xs:extension base="OffsetData">
+        <xs:attribute name="Point" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="OffsetType" abstract="true">
+  <xs:complexType name="OffsetData" abstract="true">
     <xs:complexContent mixed="false">
-      <xs:extension base="ObservationType" />
+      <xs:extension base="ObservationData" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="OperationType" abstract="true">
-    <xs:attribute name="Id" type="IdType" use="required" />
-    <xs:attribute name="PreviousId" type="IdType" use="optional">
+  <xs:complexType name="OperationData" abstract="true">
+    <xs:attribute name="Id" type="IdData" use="required" />
+    <xs:attribute name="PreviousId" type="IdData" use="optional">
       <xs:annotation>
         <xs:documentation>The ID of a previous edit that this edit is based on.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="ParallelLineType">
+  <xs:complexType name="ParallelLineData">
     <xs:annotation>
       <xs:documentation>Operation to create a parallel line.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Offset" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Offset" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The offset to the parallel (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="From" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="From" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The point at the start of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="LineType">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="LineData">
             <xs:annotation>
               <xs:documentation>The parallel that got created.</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="RefLine" type="IdType" use="required">
+        <xs:attribute name="RefLine" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The reference line for the parallel.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Term1" type="IdType" use="optional">
+        <xs:attribute name="Term1" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The 1st terminal arc (if any).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Term2" type="IdType" use="optional">
+        <xs:attribute name="Term2" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>The 2nd terminal line (if any). May be the same as Term1 (e.g. could be a multi-segment that bends round).</xs:documentation>
           </xs:annotation>
@@ -732,20 +732,20 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="ParallelType">
+  <xs:complexType name="ParallelData">
     <xs:complexContent mixed="false">
-      <xs:extension base="DirectionType">
-        <xs:attribute name="From" type="IdType" use="required">
+      <xs:extension base="DirectionData">
+        <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The origin of the direction line</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Start" type="IdType" use="required">
+        <xs:attribute name="Start" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The starting point of the direction line</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="End" type="IdType" use="required">
+        <xs:attribute name="End" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The ending point of the direction line</xs:documentation>
           </xs:annotation>
@@ -753,25 +753,25 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PathType">
+  <xs:complexType name="PathData">
     <xs:annotation>
       <xs:documentation>A connection path between two points. Like a traverse.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="unbounded" name="Leg" type="LegType">
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Leg" type="LegData">
             <xs:annotation>
               <xs:documentation>The legs that make up the path</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="From" type="IdType" use="required">
+        <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The point where the path starts.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="To" type="IdType" use="required" />
+        <xs:attribute name="To" type="IdData" use="required" />
         <xs:attribute name="EntryString" type="xs:string" use="required">
           <xs:annotation>
             <xs:documentation>The data entry string that defines the connection path.</xs:documentation>
@@ -782,48 +782,48 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PointArrayType">
+  <xs:complexType name="PointArray">
     <xs:annotation>
       <xs:documentation>An array of point features</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="FeatureType">
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="FeatureData">
         <xs:annotation>
           <xs:documentation>The point features in the array</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="DefaultType" type="xs:int" use="optional">
+    <xs:attribute name="DefaultEntity" type="xs:int" use="optional">
       <xs:annotation>
         <xs:documentation>The ID of the default entity type for points in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="PointGeometryType">
+  <xs:complexType name="PointGeometryData">
     <xs:attribute name="X" type="xs:long" use="required" />
     <xs:attribute name="Y" type="xs:long" use="required" />
     <xs:attribute name="Z" type="xs:long" use="optional" />
   </xs:complexType>
-  <xs:complexType name="PointType">
+  <xs:complexType name="PointData">
     <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType">
+      <xs:extension base="FeatureData">
         <xs:attribute name="X" type="xs:long" use="required" />
         <xs:attribute name="Y" type="xs:long" use="required" />
         <xs:attribute name="Z" type="xs:long" use="optional" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PolygonSubdivisionType">
+  <xs:complexType name="PolygonSubdivisionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="SegmentType">
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="SegmentData">
             <xs:annotation>
               <xs:documentation>The lines that were created.</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="DeactivatedLabel" type="IdType" use="optional">
+        <xs:attribute name="DeactivatedLabel" type="IdData" use="optional">
           <xs:annotation>
             <xs:documentation>Any polygon label that was de-activated as a result of the subdivision. This will be defined only if the polygon originally had just one enclosed label (if it had more than one, none of them should get deactivated).</xs:documentation>
           </xs:annotation>
@@ -831,15 +831,15 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PropertyChangeType">
+  <xs:complexType name="PropertyChangeData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:attribute name="Item" type="PropertyItemType" use="required" />
+      <xs:extension base="OperationData">
+        <xs:attribute name="Item" type="PropertyItemData" use="required" />
         <xs:attribute name="Value" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="PropertyItemType">
+  <xs:simpleType name="PropertyItemData">
     <xs:restriction base="xs:string">
       <xs:enumeration value="DefaultPointType" />
       <xs:enumeration value="DefaultLineType" />
@@ -847,22 +847,22 @@ The first and last positions are assumed to match the positions of the point fea
       <xs:enumeration value="DefaultPolygonType" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="RadialType">
+  <xs:complexType name="RadialData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionType" />
-          <xs:element minOccurs="1" maxOccurs="1" name="Length" type="ObservationType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Direction" type="DirectionData" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Length" type="ObservationData">
             <xs:annotation>
               <xs:documentation>The length of the sideshot arm (either a DistanceType or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the sideshot arm.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureType">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The line (if any) that was added to correspond to the sideshot arm.</xs:documentation>
             </xs:annotation>
@@ -871,69 +871,69 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="RowTextType">
+  <xs:complexType name="RowTextData">
     <xs:complexContent mixed="false">
-      <xs:extension base="TextType">
+      <xs:extension base="TextData">
         <xs:attribute name="Table" type="xs:unsignedInt" use="required" />
         <xs:attribute name="Template" type="xs:unsignedInt" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SectionType">
+  <xs:complexType name="SectionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="LineType">
-        <xs:attribute name="Base" type="IdType" use="required" />
+      <xs:extension base="LineData">
+        <xs:attribute name="Base" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SegmentType">
+  <xs:complexType name="SegmentData">
     <xs:complexContent mixed="false">
-      <xs:extension base="LineType" />
+      <xs:extension base="LineData" />
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SetTopologyType">
+  <xs:complexType name="SetTopologyData">
     <xs:annotation>
       <xs:documentation>Edit that toggles the topological status of a line.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:attribute name="Line" type="IdType" use="required" />
+      <xs:extension base="OperationData">
+        <xs:attribute name="Line" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SharedPointType">
+  <xs:complexType name="SharedPointData">
     <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType">
-        <xs:attribute name="FirstPoint" type="IdType" use="required" />
+      <xs:extension base="FeatureData">
+        <xs:attribute name="FirstPoint" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SimpleLineSubdivisionType">
+  <xs:complexType name="SimpleLineSubdivisionData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceType">
+          <xs:element minOccurs="1" maxOccurs="1" name="Distance" type="DistanceData">
             <xs:annotation>
               <xs:documentation>The distance to the point. A negated distance refers to the distance from the end of the line.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureType">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureData">
             <xs:annotation>
               <xs:documentation>The added point (between the 2 new lines)</xs:documentation>
             </xs:annotation>
           </xs:element>
         </xs:sequence>
-        <xs:attribute name="Line" type="IdType" use="required">
+        <xs:attribute name="Line" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The line that was subdivided.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="NewLine1" type="IdType" use="required">
+        <xs:attribute name="NewLine1" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The internal ID assigned to the line section running from the start of the subdivided line to the subdivision point</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="NewLine2" type="IdType" use="required">
+        <xs:attribute name="NewLine2" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The internal ID assigned to the line section running from the subdivision point to the end of the subdivided line</xs:documentation>
           </xs:annotation>
@@ -941,35 +941,35 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SpanType">
+  <xs:complexType name="SpanData">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="DistanceType">
+      <xs:element minOccurs="0" maxOccurs="1" name="Length" type="DistanceData">
         <xs:annotation>
           <xs:documentation>The observed length for the span. May be omitted when dealing with a cul-de-sac specified with center point and central angle.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:choice minOccurs="0" maxOccurs="1">
-        <xs:element minOccurs="0" maxOccurs="1" name="LineId" type="IdType">
+        <xs:element minOccurs="0" maxOccurs="1" name="LineId" type="IdData">
           <xs:annotation>
             <xs:documentation>The internal ID of the line representing the span</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureType">
+        <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureData">
           <xs:annotation>
             <xs:documentation>Information about the line that was created to represent this span.</xs:documentation>
           </xs:annotation>
         </xs:element>
       </xs:choice>
-      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureType">
+      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureData">
         <xs:annotation>
           <xs:documentation>Information about the point at the end of the span.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="StraightLegType">
+  <xs:complexType name="StraightLegData">
     <xs:complexContent mixed="false">
-      <xs:extension base="LegType">
+      <xs:extension base="LegData">
         <xs:attribute name="StartAngle" type="xs:string" use="optional">
           <xs:annotation>
             <xs:documentation>The angle at the start of the leg, in DMS format. A negated value indicates an anticlockwise angle.</xs:documentation>
@@ -983,12 +983,12 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="TextRotationType">
+  <xs:complexType name="TextRotationData">
     <xs:annotation>
       <xs:documentation>Edit to define the default angle for subsequently added text.</xs:documentation>
     </xs:annotation>
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:attribute name="Value" type="xs:string" use="required">
           <xs:annotation>
             <xs:documentation>The new default rotation (as a clockwise rotation from horizontal axis (+X), in D-M-S format)</xs:documentation>
@@ -997,9 +997,9 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="TextType" abstract="true">
+  <xs:complexType name="TextData" abstract="true">
     <xs:complexContent mixed="false">
-      <xs:extension base="FeatureType">
+      <xs:extension base="FeatureData">
         <xs:attribute name="X" type="xs:long" use="required" />
         <xs:attribute name="Y" type="xs:long" use="required" />
         <xs:attribute name="Height" type="xs:double" use="required" />
@@ -1012,16 +1012,16 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="TrimLineType">
+  <xs:complexType name="TrimLineData">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
+      <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="IdType">
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="IdData">
             <xs:annotation>
               <xs:documentation>The lines that were selected for trimming.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="IdType">
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="IdData">
             <xs:annotation>
               <xs:documentation>Any dangling end points.</xs:documentation>
             </xs:annotation>
@@ -1030,10 +1030,10 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="UpdateType" abstract="true">
+  <xs:complexType name="UpdateData" abstract="true">
     <xs:complexContent mixed="false">
-      <xs:extension base="OperationType">
-        <xs:attribute name="RevisedEdit" type="IdType" use="required" />
+      <xs:extension base="OperationData">
+        <xs:attribute name="RevisedEdit" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

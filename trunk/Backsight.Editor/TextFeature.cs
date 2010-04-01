@@ -78,7 +78,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        private TextFeature(Operation op, TextType t)
+        private TextFeature(Operation op, TextData t)
             : base(op, t)
         {
             SetTopology(t.Topological);
@@ -94,8 +94,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, MiscTextType t)
-            : this(op, (TextType)t)
+        internal TextFeature(Operation op, MiscTextData t)
+            : this(op, (TextData)t)
         {
             m_Geom = new MiscText(this, t);
         }
@@ -105,8 +105,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, KeyTextType t)
-            : this(op, (TextType)t)
+        internal TextFeature(Operation op, KeyTextData t)
+            : this(op, (TextData)t)
         {
             m_Geom = new KeyTextGeometry(this, t);
         }
@@ -116,8 +116,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, RowTextType t)
-            : this(op, (TextType)t)
+        internal TextFeature(Operation op, RowTextData t)
+            : this(op, (TextData)t)
         {
             // Rather than creating an instance of RowTextGeometry, create a placeholder
             // that can be replaced after attributes have been loaded from the database
@@ -410,7 +410,7 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureType GetSerializableFeature()
+        internal override FeatureData GetSerializableFeature()
         {
             return GetSerializableText();
         }
@@ -419,10 +419,10 @@ namespace Backsight.Editor
         /// Returns an object that represents this text, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this text</returns>
-        internal TextType GetSerializableText()
+        internal TextData GetSerializableText()
         {
             // Get the geometry class to return an appropriate TextType
-            TextType t = m_Geom.GetSerializableText();
+            TextData t = m_Geom.GetSerializableText();
 
             // Fill in base class stuff
             SetSerializableFeature(t);

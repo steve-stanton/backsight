@@ -55,7 +55,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Direction(Operation op, DirectionType t)
+        protected Direction(Operation op, DirectionData t)
             : base(op, t)
         {
             if (t.Offset == null)
@@ -673,12 +673,12 @@ namespace Backsight.Editor.Observations
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this direction</param>
-        protected void SetSerializableObservation(DirectionType t)
+        protected void SetSerializableObservation(DirectionData t)
         {
             base.SetSerializableObservation(t);
 
             if (m_Offset != null)
-                t.Offset = (OffsetType)m_Offset.GetSerializableObservation();
+                t.Offset = (OffsetData)m_Offset.GetSerializableObservation();
         }
     }
 }

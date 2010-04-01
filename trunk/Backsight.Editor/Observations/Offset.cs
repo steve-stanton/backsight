@@ -36,7 +36,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Offset(Operation op, OffsetType t)
+        protected Offset(Operation op, OffsetData t)
             : base(op, t)
         {
         }

@@ -44,7 +44,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewLineOperation(Session s, NewSegmentType t)
+        internal NewLineOperation(Session s, NewSegmentData t)
             : base(s, t)
         {
             m_NewLine = new LineFeature(this, t.Line);
@@ -55,7 +55,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewLineOperation(Session s, NewArcType t)
+        internal NewLineOperation(Session s, NewArcData t)
             : base(s, t)
         {
             m_NewLine = new ArcFeature(this, t.Line);
@@ -66,7 +66,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        protected NewLineOperation(Session s, NewCircleType t)
+        protected NewLineOperation(Session s, NewCircleData t)
             : base(s, t)
         {
             m_NewLine = null;
@@ -310,7 +310,7 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
             if (m_NewLine is ArcFeature)
                 return GetSerializableArc();
@@ -322,7 +322,7 @@ namespace Backsight.Editor.Operations
         /// Obtains an object representing an edit that created a circular arc
         /// </summary>
         /// <returns>The serializable version of this edit</returns>
-        OperationType GetSerializableArc()
+        OperationData GetSerializableArc()
         {
             // The deserialization logic works on the assumption that this edit can only
             // attach arcs to existing circles.
@@ -330,9 +330,9 @@ namespace Backsight.Editor.Operations
             if (arc.Circle.Creator == this)
                 throw new InvalidOperationException("Unexpected attempt to simultaneously create arc and circle");
 
-            NewArcType t = new NewArcType();
+            NewArcData t = new NewArcData();
             base.SetSerializableEdit(t);
-            t.Line = (ArcType)m_NewLine.GetSerializableLine();
+            t.Line = (ArcData)m_NewLine.GetSerializableLine();
             return t;
         }
 
@@ -340,11 +340,11 @@ namespace Backsight.Editor.Operations
         /// Obtains an object representing an edit that created a simple line segment
         /// </summary>
         /// <returns>The serializable version of this edit</returns>
-        OperationType GetSerializableSegment()
+        OperationData GetSerializableSegment()
         {
-            NewSegmentType t = new NewSegmentType();
+            NewSegmentData t = new NewSegmentData();
             base.SetSerializableEdit(t);
-            t.Line = (SegmentType)m_NewLine.GetSerializableLine();
+            t.Line = (SegmentData)m_NewLine.GetSerializableLine();
             return t;
         }
 

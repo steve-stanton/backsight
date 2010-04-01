@@ -14,32 +14,24 @@
 // </remarks>
 
 using System;
-
-using Backsight.Editor.Observations;
-
+using Backsight.Editor.Operations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
-    public partial class SpanType
+    /// <summary>
+    /// Serializable version of the <see cref="StraightLeg"/> class.
+    /// </summary>
+    public partial class StraightLegData : LegData
     {
         /// <summary>
-        /// The internal ID of the line representing the span (if this is defined, the
-        /// <see cref="Line"/> property should be null).
+        /// Loads this leg as part of an editing operation.
         /// </summary>
-        internal string LineId
+        /// <param name="op">The editing operation creating the leg</param>
+        /// <returns>The leg that was loaded</returns>
+        internal override Leg LoadLeg(Operation op)
         {
-            get { return (this.Item as string); }
-            set { this.Item = value; }
-        }
-
-        /// <summary>
-        /// Information about the line that was created to represent this span (if this is defined, the
-        /// <see cref="LineId"/> property should be null).
-        /// </summary>
-        internal CalculatedFeatureType Line
-        {
-            get { return (this.Item as CalculatedFeatureType); }
-            set { this.Item = value; }
+            return new StraightLeg(op, this);
         }
     }
 }

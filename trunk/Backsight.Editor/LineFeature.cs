@@ -67,7 +67,7 @@ namespace Backsight.Editor
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal LineFeature(Operation op, PointFeature start, PointFeature end, CalculatedFeatureType t)
+        internal LineFeature(Operation op, PointFeature start, PointFeature end, CalculatedFeatureData t)
             : this(op, start, end, new SegmentGeometry(start, end), t)
         {
         }
@@ -82,7 +82,7 @@ namespace Backsight.Editor
         /// <param name="end">The point at the end of the line</param>
         /// <param name="geom">The basic geometry for the line (with undefined position)</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, CalculatedFeatureType t)
+        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, CalculatedFeatureData t)
             : base(op, t)
         {
             m_Geom = geom;
@@ -106,7 +106,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        private LineFeature(Operation op, LineType t)
+        private LineFeature(Operation op, LineData t)
             : base(op, t)
         {
             CadastralMapModel mapModel = op.MapModel;
@@ -130,8 +130,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, ArcType t)
-            : this(op, (LineType)t)
+        internal LineFeature(Operation op, ArcData t)
+            : this(op, (LineData)t)
         {
             Circle c = null;
 
@@ -162,8 +162,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, SegmentType t)
-            : this(op, (LineType)t)
+        internal LineFeature(Operation op, SegmentData t)
+            : this(op, (LineData)t)
         {
             m_Geom = new SegmentGeometry(m_From, m_To);
         }
@@ -173,14 +173,14 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, MultiSegmentType t)
-            : this(op, (LineType)t)
+        internal LineFeature(Operation op, MultiSegmentData t)
+            : this(op, (LineData)t)
         {
-            PointGeometryType[] pts = t.Point;
+            PointGeometryData[] pts = t.Point;
             IPointGeometry[] pgs = new IPointGeometry[pts.Length];
             for (int i=0; i<pts.Length; i++)
             {
-                PointGeometryType pt = pts[i];
+                PointGeometryData pt = pts[i];
                 pgs[i] = new PointGeometry(pt.X, pt.Y);
             }
 
@@ -192,8 +192,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, SectionType t)
-            : this(op, (LineType)t)
+        internal LineFeature(Operation op, SectionData t)
+            : this(op, (LineData)t)
         {
             LineFeature baseLine = op.MapModel.Find<LineFeature>(t.Base);
             m_Geom = new SectionGeometry(baseLine, m_From, m_To);
@@ -1367,7 +1367,7 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureType GetSerializableFeature()
+        internal override FeatureData GetSerializableFeature()
         {
             return GetSerializableLine();
         }
@@ -1376,15 +1376,15 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// Returns an object that represents this line, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this line</returns>
-        internal LineType GetSerializableLine()
+        internal LineData GetSerializableLine()
         {
-            // Get the geometry class to return an appropriate LineType
-            LineType t = m_Geom.GetSerializableLine();
+            // Get the geometry class to return an appropriate LineData
+            LineData t = m_Geom.GetSerializableLine();
 
             // Fill in base class stuff
             SetSerializableFeature(t);
 
-            // Fill in the stuff specific to LineType
+            // Fill in the stuff specific to LineData
             t.From = m_From.DataId;
             t.To = m_To.DataId;
             t.Topological = IsTopological;

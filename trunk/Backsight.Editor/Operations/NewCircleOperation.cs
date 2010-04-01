@@ -50,7 +50,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewCircleOperation(Session s, NewCircleType t)
+        internal NewCircleOperation(Session s, NewCircleData t)
             : base(s, t)
         {
             m_Center = s.MapModel.Find<PointFeature>(t.Center);
@@ -70,14 +70,14 @@ namespace Backsight.Editor.Operations
             PointFeature p = s.MapModel.Find<PointFeature>(t.ClosingPoint);
             if (p == null)
             {
-                CalculatedFeatureType ft = new CalculatedFeatureType();
+                CalculatedFeatureData ft = new CalculatedFeatureData();
                 ft.Id = t.ClosingPoint;
                 p = new PointFeature(this, ft);
             }
 
             // Form the construction line (this will also cross-reference the circle to
             // the new arc)
-            CalculatedFeatureType at = new CalculatedFeatureType();
+            CalculatedFeatureData at = new CalculatedFeatureData();
             at.Id = t.Arc;
             ArcFeature arc = new ArcFeature(this, c, p, p, true, at);
 
@@ -342,9 +342,9 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            NewCircleType t = new NewCircleType();
+            NewCircleData t = new NewCircleData();
             base.SetSerializableEdit(t);
 
             t.Radius = m_Radius.GetSerializableObservation();

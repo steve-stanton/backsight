@@ -69,7 +69,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The path created from the items.
         /// </summary>
-        PathData m_PathData;
+        PathInfo m_PathData;
 
         /// <summary>
         /// True if the path has been drawn.
@@ -614,7 +614,7 @@ namespace Backsight.Editor.Forms
             try
             {
                 // Create new path data
-                PathData pd = new PathData(m_From, m_To);
+                PathInfo pd = new PathInfo(m_From, m_To);
                 pd.Create(m_Items);
                 m_PathData = pd;
 

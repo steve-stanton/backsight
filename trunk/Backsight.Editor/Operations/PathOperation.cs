@@ -84,7 +84,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal PathOperation(Session s, PathType t)
+        internal PathOperation(Session s, PathData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -94,7 +94,7 @@ namespace Backsight.Editor.Operations
             m_EntryString = t.EntryString;
 
             // Create the legs
-            LegType[] legs = t.Leg;
+            LegData[] legs = t.Leg;
             m_Legs = new List<Leg>(legs.Length);
             PointFeature startPoint = m_From;
             IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
@@ -134,10 +134,10 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <returns>The parsed path (includes a collection of legs that have no attached
         /// features)</returns>
-        PathData ParsePath()
+        PathInfo ParsePath()
         {
             PathItem[] items = PathParser.GetPathItems(m_EntryString);
-            PathData pd = new PathData(m_From, m_To);
+            PathInfo pd = new PathInfo(m_From, m_To);
             pd.Create(items);
             return pd;
         }
@@ -148,7 +148,7 @@ namespace Backsight.Editor.Operations
         /// <returns>The points that were created</returns>
         List<PointFeature> CreateFeatures()
         {
-            PathData pd = ParsePath();
+            PathInfo pd = ParsePath();
 
             // Get the legs (without any attached features)
             m_Legs = new List<Leg>(pd.GetLegs());
@@ -474,7 +474,7 @@ namespace Backsight.Editor.Operations
         /// <returns></returns>
         bool GetAdjustment(out double rotation, out double sfac)
         {
-            PathData pd = new PathData(this);
+            PathInfo pd = new PathInfo(this);
 
             double dN;			// Misclosure in northings
             double dE;			// Misclosure in eastings
@@ -802,7 +802,7 @@ void CePath::CreateAngleText ( CPtrList& text
             double rotation;		// Rotation for adjustment
             double sfac;			// Adjustment scaling factor
 
-            PathData pd = new PathData(this);
+            PathInfo pd = new PathInfo(this);
             pd.Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
 
             // If it's REALLY good, return 1 billion.
@@ -1080,9 +1080,9 @@ void CePath::CreateAngleText ( CPtrList& text
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            PathType t = new PathType();
+            PathData t = new PathData();
             base.SetSerializableEdit(t);
 
             t.From = m_From.DataId;
@@ -1090,7 +1090,7 @@ void CePath::CreateAngleText ( CPtrList& text
             t.EntryString = m_EntryString;
             t.PointType = MapModel.DefaultPointType.Id;
             t.LineType = MapModel.DefaultLineType.Id;
-            t.Leg = new LegType[m_Legs.Count];
+            t.Leg = new LegData[m_Legs.Count];
 
             for (int i=0; i<t.Leg.Length; i++)
                 t.Leg[i] = m_Legs[i].GetSerializableLeg();
@@ -1104,7 +1104,7 @@ void CePath::CreateAngleText ( CPtrList& text
         internal override void RunEdit()
         {
             // Get the rotation & scale factor to apply.
-            PathData pd = ParsePath();
+            PathInfo pd = ParsePath();
             double rotation = pd.RotationInRadians;
             double sfac = pd.ScaleFactor;
 

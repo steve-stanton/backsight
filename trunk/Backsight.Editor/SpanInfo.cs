@@ -27,7 +27,7 @@ namespace Backsight.Editor
     /// Information for defining a single span in a connection path. A span
     /// is part of a <see cref="Leg"/>.
     /// </summary>
-    class SpanData
+    class SpanInfo
     {
         #region Class data
 
@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates new <c>SpanData</c> with everything set to null.
         /// </summary>
-        internal SpanData()
+        internal SpanInfo()
         {
             m_Distance = null;
             m_Feature = null;

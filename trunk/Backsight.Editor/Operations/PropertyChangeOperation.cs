@@ -34,7 +34,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The property this edit relates to
         /// </summary>
-        readonly PropertyItemType m_Item;
+        readonly PropertyItemData m_Item;
 
         /// <summary>
         /// The new value of the property
@@ -57,7 +57,7 @@ namespace Backsight.Editor.Operations
         /// <param name="propertyItem">The property this edit relates to</param>
         /// <param name="oldPropertyValue">The original value for the property</param>
         /// <param name="newPropertyValue">The new value for the property</param>
-        internal PropertyChangeOperation(Session s, PropertyItemType propertyItem, string oldPropertyValue, string newPropertyValue)
+        internal PropertyChangeOperation(Session s, PropertyItemData propertyItem, string oldPropertyValue, string newPropertyValue)
             : base(s)
         {
             m_Item = propertyItem;
@@ -72,7 +72,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal PropertyChangeOperation(Session s, PropertyChangeType t)
+        internal PropertyChangeOperation(Session s, PropertyChangeData t)
             : base(s, t)
         {
             m_Item = t.Item;
@@ -91,28 +91,28 @@ namespace Backsight.Editor.Operations
 
             switch (m_Item)
             {
-                case PropertyItemType.DefaultPointType:
+                case PropertyItemData.DefaultPointType:
                 {
                     m_OldValue = mapModel.DefaultPointType.Id.ToString();
                     mapModel.SetDefaultEntity(SpatialType.Point, Int32.Parse(m_NewValue));
                     break;
                 }
 
-                case PropertyItemType.DefaultLineType:
+                case PropertyItemData.DefaultLineType:
                 {
                     m_OldValue = mapModel.DefaultLineType.Id.ToString();
                     mapModel.SetDefaultEntity(SpatialType.Line, Int32.Parse(m_NewValue));
                     break;
                 }
 
-                case PropertyItemType.DefaultTextType:
+                case PropertyItemData.DefaultTextType:
                 {
                     m_OldValue = mapModel.DefaultTextType.Id.ToString();
                     mapModel.SetDefaultEntity(SpatialType.Text, Int32.Parse(m_NewValue));
                     break;
                 }
 
-                case PropertyItemType.DefaultPolygonType:
+                case PropertyItemData.DefaultPolygonType:
                 {
                     m_OldValue = mapModel.DefaultPolygonType.Id.ToString();
                     mapModel.SetDefaultEntity(SpatialType.Polygon, Int32.Parse(m_NewValue));
@@ -210,9 +210,9 @@ namespace Backsight.Editor.Operations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            PropertyChangeType t = new PropertyChangeType();
+            PropertyChangeData t = new PropertyChangeData();
             base.SetSerializableEdit(t);
 
             t.Item = m_Item;

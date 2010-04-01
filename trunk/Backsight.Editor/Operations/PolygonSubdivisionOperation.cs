@@ -49,7 +49,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal PolygonSubdivisionOperation(Session s, PolygonSubdivisionType t)
+        internal PolygonSubdivisionOperation(Session s, PolygonSubdivisionData t)
             : base(s, t)
         {
             // Pick up any label to deactivate (this won't actually happen until
@@ -62,7 +62,7 @@ namespace Backsight.Editor.Operations
 
             // Pick up the line segments that were created
 
-            SegmentType[] lines = t.Line;
+            SegmentData[] lines = t.Line;
             m_Lines = new LineFeature[lines.Length];
 
             for (int i=0; i<lines.Length; i++)
@@ -190,18 +190,18 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            PolygonSubdivisionType t = new PolygonSubdivisionType();
+            PolygonSubdivisionData t = new PolygonSubdivisionData();
             base.SetSerializableEdit(t);
 
             if (m_Label != null)
                 t.DeactivatedLabel = m_Label.DataId;
 
-            SegmentType[] lines = new SegmentType[m_Lines.Length];
+            SegmentData[] lines = new SegmentData[m_Lines.Length];
             for (int i=0; i<lines.Length; i++)
             {
-                lines[i] = (SegmentType)m_Lines[i].GetSerializableLine();
+                lines[i] = (SegmentData)m_Lines[i].GetSerializableLine();
             }
 
             t.Line = lines;

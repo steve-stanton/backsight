@@ -22,7 +22,7 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    public partial class FeatureType
+    public partial class FeatureData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation. Derived types
@@ -36,12 +36,31 @@ namespace Backsight.Editor.Xml
         {
             throw new NotImplementedException("LoadFeature not implemented by: " + GetType().Name);
         }
+
+        /*
+        internal string ForeignKey
+        {
+            get
+            {
+                if (ItemElementName == Item2ChoiceType.)
+                    return Item;
+                else
+                    return null;
+            }
+
+            set
+            {
+                Item = value;
+                ItemElementName = ItemChoiceType.FirstArc;
+            }
+        }
+        */
     }
 
     /// <summary>
     /// A serialized line feature with geometry defined by a circular arc.
     /// </summary>
-    public partial class ArcType
+    public partial class ArcData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -91,7 +110,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized line feature with geometry defined by an array of positions.
     /// </summary>
-    public partial class MultiSegmentType
+    public partial class MultiSegmentData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -107,7 +126,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized point feature.
     /// </summary>
-    public partial class PointType
+    public partial class PointData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -123,7 +142,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized line feature with geometry defined as a section of another line.
     /// </summary>
-    public partial class SectionType
+    public partial class SectionData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -139,7 +158,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized line feature with geometry defined by two positions.
     /// </summary>
-    public partial class SegmentType
+    public partial class SegmentData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -156,7 +175,7 @@ namespace Backsight.Editor.Xml
     /// Serialized version of a point feature that shares geometry with
     /// another point feature.
     /// </summary>
-    public partial class SharedPointType
+    public partial class SharedPointData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -169,31 +188,31 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class CalculatedFeatureType
+    public partial class CalculatedFeatureData
     {
-        public CalculatedFeatureType()
+        public CalculatedFeatureData()
         {
         }
 
-        internal CalculatedFeatureType(Feature f)
+        internal CalculatedFeatureData(Feature f)
             : this(f, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CalculatedFeatureType"/> class.
+        /// Initializes a new instance of the <see cref="CalculatedFeatureData"/> class.
         /// </summary>
         /// <param name="f">The feature that is being serialized</param>
         /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
         /// if the feature actually represents something that previously existed at the calculated
         /// position.</param>
-        internal CalculatedFeatureType(Feature f, bool allFields)
+        internal CalculatedFeatureData(Feature f, bool allFields)
         {
             this.Id = f.DataId;
 
             if (allFields)
             {
-                this.Type = f.EntityType.Id;
+                this.Entity = f.EntityType.Id;
 
                 FeatureId fid = f.Id;
                 if (fid != null)
@@ -213,7 +232,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized text feature.
     /// </summary>
-    public partial class RowTextType
+    public partial class RowTextData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -229,7 +248,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized text feature.
     /// </summary>
-    public partial class MiscTextType
+    public partial class MiscTextData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -245,7 +264,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized text feature that represents the user-perceived key for a spatial feature.
     /// </summary>
-    public partial class KeyTextType
+    public partial class KeyTextData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation

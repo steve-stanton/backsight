@@ -53,7 +53,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal AngleDirection(Operation op, AngleType t)
+        internal AngleDirection(Operation op, AngleData t)
             : base(op, t)
         {
             if (!RadianValue.TryParse(t.Value, out m_Observation))
@@ -184,9 +184,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            AngleType t = new AngleType();
+            AngleData t = new AngleData();
             SetSerializableObservation(t);
             return t;
         }
@@ -196,7 +196,7 @@ namespace Backsight.Editor.Observations
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this direction</param>
-        protected void SetSerializableObservation(AngleType t)
+        protected void SetSerializableObservation(AngleData t)
         {
             base.SetSerializableObservation(t);
 

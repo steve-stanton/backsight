@@ -68,7 +68,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal RadialOperation(Session s, RadialType t)
+        internal RadialOperation(Session s, RadialData t)
             : base(s, t)
         {
             m_Direction = (Direction)t.Direction.LoadObservation(this);
@@ -429,17 +429,17 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            RadialType t = new RadialType();
+            RadialData t = new RadialData();
             base.SetSerializableEdit(t);
 
-            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
+            t.Direction = (DirectionData)m_Direction.GetSerializableObservation();
             t.Length = m_Length.GetSerializableObservation();
-            t.To = new CalculatedFeatureType(m_To);
+            t.To = new CalculatedFeatureData(m_To);
 
             if (m_Line != null)
-                t.Line = new CalculatedFeatureType(m_Line);
+                t.Line = new CalculatedFeatureData(m_Line);
 
             return t;
         }

@@ -38,12 +38,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal ArcFeature(Operation op, ArcType t)
+        internal ArcFeature(Operation op, ArcData t)
             : base(op, t)
         {
             // Associate this line with the circle (this is ordinarily done
             // by the ArcFeature.AddRefernces override that is called by the
-            // LineFeature(LineType) constructor - however, in this context,
+            // LineFeature(LineData) constructor - however, in this context,
             // the Circle doesn't get defined until a bit later.
 
             Circle.AddArc(this);
@@ -59,7 +59,7 @@ namespace Backsight.Editor
         /// <param name="ec">The point at the end of the arc</param>
         /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, CalculatedFeatureType t)
+        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, CalculatedFeatureData t)
             : base(op, bc, ec, new ArcGeometry(c, bc, ec, isClockwise), t)
         {
             // Confirm that there is no need to call Circle.AddArc in this context

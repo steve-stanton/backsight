@@ -37,7 +37,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal DeflectionDirection(Operation op, DeflectionType t)
+        internal DeflectionDirection(Operation op, DeflectionData t)
             : base(op, t)
         {
         }
@@ -80,9 +80,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            DeflectionType t = new DeflectionType();
+            DeflectionData t = new DeflectionData();
             SetSerializableObservation(t);
             return t;
         }

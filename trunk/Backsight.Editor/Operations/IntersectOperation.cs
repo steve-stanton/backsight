@@ -45,7 +45,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        protected IntersectOperation(Session s, OperationType t)
+        protected IntersectOperation(Session s, OperationData t)
             : base(s, t)
         {
         }

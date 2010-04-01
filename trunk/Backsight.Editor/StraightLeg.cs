@@ -53,7 +53,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this leg</param>
-        internal StraightLeg(Operation op, StraightLegType t)
+        internal StraightLeg(Operation op, StraightLegData t)
             : base(op, t)
         {
             if (String.IsNullOrEmpty(t.StartAngle))
@@ -267,7 +267,7 @@ namespace Backsight.Editor
                 span.Get(i);
 
                 // Create the geometry for the point at the end of the span
-                SpanData data = GetSpanData(i);
+                SpanInfo data = GetSpanData(i);
                 Feature feat = data.CreatedFeature;
                 PointFeature endPoint = null;
 
@@ -799,9 +799,9 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg()
+        internal override LegData GetSerializableLeg()
         {
-            StraightLegType t = new StraightLegType();
+            StraightLegData t = new StraightLegData();
             base.SetSerializableFeature(t);
 
             if (Math.Abs(m_StartAngle) > Double.Epsilon)

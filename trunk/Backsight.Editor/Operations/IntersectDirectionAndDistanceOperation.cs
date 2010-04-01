@@ -81,7 +81,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal IntersectDirectionAndDistanceOperation(Session s, IntersectDirectionAndDistanceType t)
+        internal IntersectDirectionAndDistanceOperation(Session s, IntersectDirectionAndDistanceData t)
             : base(s, t)
         {
             m_From = s.MapModel.Find<PointFeature>(t.From);
@@ -551,22 +551,22 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            IntersectDirectionAndDistanceType t = new IntersectDirectionAndDistanceType();
+            IntersectDirectionAndDistanceData t = new IntersectDirectionAndDistanceData();
             base.SetSerializableEdit(t);
 
             t.From = m_From.DataId;
             t.Default = m_Default;
-            t.Direction = (DirectionType)m_Direction.GetSerializableObservation();
+            t.Direction = (DirectionData)m_Direction.GetSerializableObservation();
             t.Distance = m_Distance.GetSerializableObservation();
-            t.To = new CalculatedFeatureType(m_To);
+            t.To = new CalculatedFeatureData(m_To);
 
             if (m_DirLine != null)
-                t.DirLine = new CalculatedFeatureType(m_DirLine);
+                t.DirLine = new CalculatedFeatureData(m_DirLine);
 
             if (m_DistLine != null)
-                t.DistLine = new CalculatedFeatureType(m_DistLine);
+                t.DistLine = new CalculatedFeatureData(m_DistLine);
 
             return t;
         }

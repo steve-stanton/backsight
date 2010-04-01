@@ -451,9 +451,9 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineType GetSerializableLine()
+        internal override LineData GetSerializableLine()
         {
-            return new SegmentType();
+            return new SegmentData();
         }
     }
 }

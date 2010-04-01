@@ -82,7 +82,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal ParallelOperation(Session s, ParallelLineType t)
+        internal ParallelOperation(Session s, ParallelLineData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -618,9 +618,9 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            ParallelLineType t = new ParallelLineType();
+            ParallelLineData t = new ParallelLineData();
             base.SetSerializableEdit(t);
 
             t.RefLine = m_RefLine.DataId;
@@ -635,8 +635,8 @@ namespace Backsight.Editor.Operations
                 t.ReverseArc = true;
 
             t.Offset = m_Offset.GetSerializableObservation();
-            t.From = new CalculatedFeatureType(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator==this));
-            t.To = new CalculatedFeatureType(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator==this));
+            t.From = new CalculatedFeatureData(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator == this));
+            t.To = new CalculatedFeatureData(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator == this));
             t.NewLine = m_ParLine.GetSerializableLine();
 
             return t;

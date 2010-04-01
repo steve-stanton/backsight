@@ -55,13 +55,13 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal GetControlOperation(Session s, GetControlType t)
+        internal GetControlOperation(Session s, GetControlData t)
             : base(s, t)
         {
-            PointType[] pts = t.Point;
+            PointData[] pts = t.Point;
             m_Features = new List<PointFeature>(pts.Length);
 
-            foreach (PointType p in pts)
+            foreach (PointData p in pts)
                 m_Features.Add(new PointFeature(this, p));
         }
 
@@ -216,14 +216,14 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            GetControlType t = new GetControlType();
+            GetControlData t = new GetControlData();
             base.SetSerializableEdit(t);
 
-            t.Point = new PointType[m_Features.Count];
+            t.Point = new PointData[m_Features.Count];
             for (int i = 0; i < t.Point.Length; i++)
-                t.Point[i] = (PointType)m_Features[i].GetSerializableFeature();
+                t.Point[i] = (PointData)m_Features[i].GetSerializableFeature();
 
             return t;
         }

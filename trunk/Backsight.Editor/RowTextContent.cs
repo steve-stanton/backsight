@@ -47,7 +47,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal RowTextContent(TextFeature f, RowTextType t)
+        internal RowTextContent(TextFeature f, RowTextData t)
             : base(f, t)
         {
             m_TableId = (int)t.Table;

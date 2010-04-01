@@ -65,7 +65,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal OffsetPoint(Operation op, OffsetPointType t)
+        internal OffsetPoint(Operation op, OffsetPointData t)
             : base(op, t)
         {
             m_Point = op.MapModel.Find<PointFeature>(t.Point);
@@ -175,9 +175,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            return new OffsetPointType(this);
+            return new OffsetPointData(this);
         }
     }
 }

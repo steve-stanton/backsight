@@ -255,7 +255,7 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg()
+        internal override LegData GetSerializableLeg()
         {
             throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
         }

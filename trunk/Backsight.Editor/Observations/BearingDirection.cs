@@ -47,7 +47,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal BearingDirection(Operation op, BearingType t)
+        internal BearingDirection(Operation op, BearingData t)
             : base(op, t)
         {
             if (!RadianValue.TryParse(t.Value, out m_Observation))
@@ -144,9 +144,9 @@ namespace Backsight.Editor.Observations
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        internal override ObservationType GetSerializableObservation()
+        internal override ObservationData GetSerializableObservation()
         {
-            BearingType t = new BearingType();
+            BearingData t = new BearingData();
             SetSerializableObservation(t);
             t.From = m_From.DataId;
             t.Value = RadianValue.AsShortString(m_Observation);

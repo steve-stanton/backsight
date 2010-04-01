@@ -35,7 +35,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Observation(Operation op, ObservationType t)
+        protected Observation(Operation op, ObservationData t)
         {
         }
 
@@ -118,14 +118,14 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this observation</returns>
-        abstract internal ObservationType GetSerializableObservation();
+        abstract internal ObservationData GetSerializableObservation();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this observation</param>
-        protected void SetSerializableObservation(ObservationType t)
+        protected void SetSerializableObservation(ObservationData t)
         {
             // Nothing to do
         }

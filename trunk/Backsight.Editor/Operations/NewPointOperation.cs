@@ -38,7 +38,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewPointOperation(Session s, NewPointType t)
+        internal NewPointOperation(Session s, NewPointData t)
             : base(s, t)
         {
             m_NewPoint = new PointFeature(this, t.Point);
@@ -145,11 +145,11 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            NewPointType t = new NewPointType();
+            NewPointData t = new NewPointData();
             base.SetSerializableEdit(t);
-            t.Point = (PointType)m_NewPoint.GetSerializableFeature();
+            t.Point = (PointData)m_NewPoint.GetSerializableFeature();
             return t;
         }
 

@@ -43,7 +43,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal KeyTextGeometry(TextFeature f, KeyTextType t)
+        internal KeyTextGeometry(TextFeature f, KeyTextData t)
             : base(f, t)
         {
             m_Feature = f;
@@ -94,9 +94,9 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        internal override TextType GetSerializableText()
+        internal override TextData GetSerializableText()
         {
-            TextType t = new KeyTextType();
+            TextData t = new KeyTextData();
             SetSerializableText(t);
             return t;
         }

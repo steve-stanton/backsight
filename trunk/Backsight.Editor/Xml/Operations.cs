@@ -23,7 +23,7 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    abstract public partial class OperationType
+    abstract public partial class OperationData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -44,7 +44,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class AttachPointType
+    public partial class AttachPointData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -69,7 +69,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class DeletionType
+    public partial class DeletionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -82,7 +82,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class GetControlType
+    public partial class GetControlData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -95,7 +95,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class ImportType
+    public partial class ImportData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -108,7 +108,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class IntersectDirectionAndDistanceType
+    public partial class IntersectDirectionAndDistanceData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -121,7 +121,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class IntersectDirectionAndLineType
+    public partial class IntersectDirectionAndLineData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -134,7 +134,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class IntersectTwoDirectionsType
+    public partial class IntersectTwoDirectionsData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -147,7 +147,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class IntersectTwoDistancesType
+    public partial class IntersectTwoDistancesData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -160,7 +160,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class IntersectTwoLinesType
+    public partial class IntersectTwoLinesData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -173,7 +173,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class LineExtensionType
+    public partial class LineExtensionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -186,7 +186,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class LineSubdivisionType
+    public partial class LineSubdivisionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -199,7 +199,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class MovePolygonPositionType
+    public partial class MovePolygonPositionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -212,7 +212,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class MoveTextType
+    public partial class MoveTextData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -225,7 +225,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class NewArcType
+    public partial class NewArcData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -238,7 +238,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class NewCircleType
+    public partial class NewCircleData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -251,7 +251,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class NewPointType
+    public partial class NewPointData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -264,7 +264,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class NewSegmentType
+    public partial class NewSegmentData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -277,7 +277,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class NewTextType
+    public partial class NewTextData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -290,7 +290,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class ParallelLineType
+    public partial class ParallelLineData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -303,7 +303,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class PathType
+    public partial class PathData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -316,7 +316,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class PolygonSubdivisionType
+    public partial class PolygonSubdivisionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -329,7 +329,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class PropertyChangeType
+    public partial class PropertyChangeData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -342,7 +342,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class RadialType
+    public partial class RadialData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -355,7 +355,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class SetTopologyType
+    public partial class SetTopologyData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -368,7 +368,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class SimpleLineSubdivisionType
+    public partial class SimpleLineSubdivisionData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -381,7 +381,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class TextRotationType
+    public partial class TextRotationData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -394,7 +394,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class TrimLineType
+    public partial class TrimLineData
     {
         /// <summary>
         /// Loads this editing operation into a session
@@ -407,7 +407,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class UpdateType
+    public partial class UpdateData
     {
         /// <summary>
         /// Loads this update into a session

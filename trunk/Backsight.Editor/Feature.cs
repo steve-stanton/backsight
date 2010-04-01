@@ -85,7 +85,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected Feature(Operation op, FeatureType t)
+        protected Feature(Operation op, FeatureData t)
         {
             if (op==null || t==null)
                 throw new ArgumentNullException();
@@ -102,7 +102,7 @@ namespace Backsight.Editor
             if (fid != null)
                 fid.Add(this);
 
-            int entId = (int)t.Type;
+            int entId = (int)t.Entity;
             m_What = EnvironmentContainer.FindEntityById(entId);
 
             // Remember this feature as part of the model
@@ -862,10 +862,10 @@ namespace Backsight.Editor
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this feature</param>
-        protected void SetSerializableFeature(FeatureType t)
+        protected void SetSerializableFeature(FeatureData t)
         {
             t.Id = DataId;
-            t.Type = m_What.Id;
+            t.Entity = m_What.Id;
 
             if (m_Id != null)
             {
@@ -878,7 +878,7 @@ namespace Backsight.Editor
                     t.ForeignKey = m_Id.FormattedKey;
             }
 
-            // Should Topological be here? (currently it's defined in LineType & TextType)
+            // Should Topological be here? (currently it's defined in LineData & TextType)
         }
 
         /// <summary>
@@ -888,7 +888,7 @@ namespace Backsight.Editor
         /// <param name="t">The serialized version of this feature</param>
         /// <returns>The corresponding ID (null if this feature does not have
         /// a user-perceived ID).</returns>
-        FeatureId GetFeatureId(CadastralMapModel mapModel, FeatureType t)
+        FeatureId GetFeatureId(CadastralMapModel mapModel, FeatureData t)
         {
             uint nativeKey = t.Key;
             if (nativeKey > 0)
@@ -917,7 +917,7 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        abstract internal FeatureType GetSerializableFeature();
+        abstract internal FeatureData GetSerializableFeature();
 
         /// <summary>
         /// Touches this feature for rollforward preview.
