@@ -70,7 +70,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal IntersectTwoDirectionsOperation(Session s, IntersectTwoDirectionsType t)
+        internal IntersectTwoDirectionsOperation(Session s, IntersectTwoDirectionsData t)
             : base(s, t)
         {
             m_Direction1 = (Direction)t.Direction1.LoadObservation(this);
@@ -413,20 +413,20 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            IntersectTwoDirectionsType t = new IntersectTwoDirectionsType();
+            IntersectTwoDirectionsData t = new IntersectTwoDirectionsData();
             base.SetSerializableEdit(t);
 
-            t.Direction1 = (DirectionType)m_Direction1.GetSerializableObservation();
-            t.Direction2 = (DirectionType)m_Direction2.GetSerializableObservation();
-            t.To = new CalculatedFeatureType(m_To);
+            t.Direction1 = (DirectionData)m_Direction1.GetSerializableObservation();
+            t.Direction2 = (DirectionData)m_Direction2.GetSerializableObservation();
+            t.To = new CalculatedFeatureData(m_To);
 
             if (m_Line1 != null)
-                t.Line1 = new CalculatedFeatureType(m_Line1);
+                t.Line1 = new CalculatedFeatureData(m_Line1);
 
             if (m_Line2 != null)
-                t.Line2 = new CalculatedFeatureType(m_Line2);
+                t.Line2 = new CalculatedFeatureData(m_Line2);
 
             return t;
         }

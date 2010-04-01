@@ -53,20 +53,20 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal LineSubdivisionOperation(Session s, LineSubdivisionType t)
+        internal LineSubdivisionOperation(Session s, LineSubdivisionData t)
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
             if (m_Line == null)
                 throw new Exception("Cannot find line "+t.Line);
 
-            SpanType[] spans = t.Span;
+            SpanData[] spans = t.Span;
             m_Sections = new List<MeasuredLineFeature>(spans.Length);
             PointFeature start = m_Line.StartPoint;
             PointFeature end;
 
             // Define sections without any geometry
-            foreach (SpanType span in spans)
+            foreach (SpanData span in spans)
             {
                 if (span.EndPoint == null)
                     end = m_Line.EndPoint;
@@ -476,23 +476,23 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            LineSubdivisionType t = new LineSubdivisionType();
+            LineSubdivisionData t = new LineSubdivisionData();
             base.SetSerializableEdit(t);
 
             t.Line = m_Line.DataId;
-            t.Span = new SpanType[m_Sections.Count];
+            t.Span = new SpanData[m_Sections.Count];
 
             for (int i = 0; i < m_Sections.Count; i++)
             {
                 MeasuredLineFeature mf = m_Sections[i];
-                SpanType st = new SpanType();
-                st.Length = new DistanceType(mf.ObservedLength);
+                SpanData st = new SpanData();
+                st.Length = new DistanceData(mf.ObservedLength);
                 st.LineId = mf.Line.DataId;
 
                 if (i < (m_Sections.Count - 1))
-                    st.EndPoint = new CalculatedFeatureType(mf.Line.EndPoint);
+                    st.EndPoint = new CalculatedFeatureData(mf.Line.EndPoint);
 
                 t.Span[i] = st;
             }

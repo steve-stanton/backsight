@@ -39,7 +39,7 @@ namespace Backsight.Editor
         /// The data that defines each span on this leg (should always contain at least
         /// one element).
         /// </summary>
-        SpanData[] m_Spans;
+        SpanInfo[] m_Spans;
 
         /// <summary>
         /// The face number of this leg (if this leg is staggered). In the range [0,2]. A value
@@ -56,7 +56,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected Leg(Operation op, LegType t)
+        protected Leg(Operation op, LegData t)
         {
             // The spans are undefined for the time being. The derived constructor should
             // make a call to CreateSpans after it has initialized everything else.
@@ -67,9 +67,9 @@ namespace Backsight.Editor
         protected Leg(int nspan)
         {
             // Allocate an array of spans (always at least ONE).
-            m_Spans = new SpanData[Math.Max(1, nspan)];
+            m_Spans = new SpanInfo[Math.Max(1, nspan)];
             for (int i = 0; i < m_Spans.Length; i++)
-                m_Spans[i] = new SpanData();
+                m_Spans[i] = new SpanInfo();
 
             m_FaceNumber = 0;
         }
@@ -88,20 +88,20 @@ namespace Backsight.Editor
         /// along the length of this leg</param>
         /// <returns>The point feature at the end of the span (null if the leg ends with
         /// the "omit point" option).</returns>
-        internal PointFeature CreateSpans(PathOperation op, SpanType[] spans, PointFeature startPoint,
+        internal PointFeature CreateSpans(PathOperation op, SpanData[] spans, PointFeature startPoint,
                                             IEntity lineType)
         {
-            m_Spans = new SpanData[spans.Length];
+            m_Spans = new SpanInfo[spans.Length];
             PointFeature start = startPoint;
             PointFeature end = null;
 
             for (int i = 0; i < m_Spans.Length; i++)
             {
-                SpanType span = spans[i];
-                SpanData spanData = new SpanData();
+                SpanData span = spans[i];
+                SpanInfo spanData = new SpanInfo();
 
                 // The end point may be null if the user specified "omit point"
-                CalculatedFeatureType ep = span.EndPoint;
+                CalculatedFeatureData ep = span.EndPoint;
                 if (ep == null)
                     spanData.IsOmitPoint = true;
                 else
@@ -122,9 +122,9 @@ namespace Backsight.Editor
                     spanData.IsMissConnect = true;
                 else
                 {
-                    CalculatedFeatureType cft = new CalculatedFeatureType();
+                    CalculatedFeatureData cft = new CalculatedFeatureData();
                     cft.Id = span.LineId;
-                    cft.Type = lineType.Id;
+                    cft.Entity = lineType.Id;
 
                     Circle circle = this.Circle;
                     if (circle == null)
@@ -210,7 +210,7 @@ namespace Backsight.Editor
 
         public bool HasEndPoint(int index)
         {
-            SpanData sd = GetSpanData(index);
+            SpanInfo sd = GetSpanData(index);
 
             if (sd==null)
                 return false;
@@ -303,7 +303,7 @@ namespace Backsight.Editor
         {
             double total = 0.0;
 
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 Distance d = sd.ObservedDistance;
                 if (d!=null)
@@ -413,7 +413,7 @@ namespace Backsight.Editor
         void Intersect(Operation op)
         {
             // Go through each span, intersecting every feature that was created.
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 Feature feat = sd.CreatedFeature;
                 if (feat != null)
@@ -431,7 +431,7 @@ namespace Backsight.Editor
         /// <returns>Reference to the distance (null if not found).</returns>
         internal Distance GetDistance(Feature feat)
         {
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 Feature f = sd.CreatedFeature;
                 if (Object.ReferenceEquals(f, feat))
@@ -461,7 +461,7 @@ namespace Backsight.Editor
         /// appended to, so you may want to clear the list prior to call.</param>
         internal void GetFeatures(Operation op, List<Feature> flist)
         {
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 Feature f = sd.CreatedFeature;
 
@@ -503,7 +503,7 @@ namespace Backsight.Editor
         /// <param name="distances">The list of Distance objects to load.</param>
         internal void GetSpans(List<Distance> distances)
         {
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 Distance d = sd.ObservedDistance;
                 if (d == null)
@@ -544,7 +544,7 @@ namespace Backsight.Editor
             // to also search for inactive points.
             //LOGICAL onlyActive = feature.IsActive();
 
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 // Skip if this was a null span.
                 Feature f = sd.CreatedFeature;
@@ -664,7 +664,7 @@ namespace Backsight.Editor
         public bool HasLine(int index)
         {
             // No feature if the span index is out of range.
-            SpanData sd = GetSpanData(index);
+            SpanInfo sd = GetSpanData(index);
             if (sd==null)
                 return false;
             else
@@ -803,14 +803,14 @@ void CeLeg::MakeText ( const CeVertex& bs
         {
             // Expand the array of span data
             int numSpan = NumSpan;
-            SpanData[] newSpans = new SpanData[numSpan + 1];
+            SpanInfo[] newSpans = new SpanInfo[numSpan + 1];
 
             // Copy over stuff prior to the new distance
             for (int i=0; i<index; i++)
                 newSpans[i] = m_Spans[i];
 
             // Stick in the new guy with miss-connect flag
-            SpanData extraSpan = new SpanData();
+            SpanInfo extraSpan = new SpanInfo();
             extraSpan.ObservedDistance = newdist;
             extraSpan.Flags = LegItemFlag.MissConnect;
             newSpans[index] = extraSpan;
@@ -908,7 +908,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             int numSpan = index;
-            SpanData[] newSpans = new SpanData[numSpan];
+            SpanInfo[] newSpans = new SpanInfo[numSpan];
 
             // Copy over the initial stuff.
             for (int i=0; i<numSpan; i++)
@@ -927,7 +927,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>True if new span.</returns>
         internal bool IsNewSpan(int index)
         {
-            SpanData sd = GetSpanData(index);
+            SpanInfo sd = GetSpanData(index);
 
             if (sd==null)
                 return false;
@@ -942,7 +942,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="newspan">The line to refer to.</param>
         protected void AddNewSpan(int index, LineFeature newspan)
         {
-            SpanData sd = GetSpanData(index);
+            SpanInfo sd = GetSpanData(index);
             Debug.Assert(sd!=null);
             Debug.Assert(sd.IsNewSpan);
 
@@ -958,7 +958,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <returns>The first line (null if no lines were created).</returns>
         internal LineFeature GetFirstLine()
         {
-            foreach (SpanData sd in m_Spans)
+            foreach (SpanInfo sd in m_Spans)
             {
                 LineFeature line = (sd.CreatedFeature as LineFeature);
                 if (line!=null)
@@ -1417,7 +1417,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <param name="index">The array index of the desired span</param>
         /// <returns>The corresponding span data (null if specified array index was
         /// out of bounds)</returns>
-        internal SpanData GetSpanData(int index)
+        internal SpanInfo GetSpanData(int index)
         {
             if (index<0 || index>=m_Spans.Length)
                 return null;
@@ -1430,28 +1430,28 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        abstract internal LegType GetSerializableLeg();
+        abstract internal LegData GetSerializableLeg();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this leg</param>
-        protected void SetSerializableFeature(LegType t)
+        protected void SetSerializableFeature(LegData t)
         {
             t.Face = m_FaceNumber;
-            t.Span = new SpanType[m_Spans.Length];
+            t.Span = new SpanData[m_Spans.Length];
 
             for (int i=0; i<m_Spans.Length; i++)
             {
-                SpanData span = m_Spans[i];
-                SpanType st = new SpanType();
+                SpanInfo span = m_Spans[i];
+                SpanData st = new SpanData();
 
                 // The distance may be null when dealing with a culdesac defined
                 // only with central angle.
                 Distance d = span.ObservedDistance;
                 if (d != null)
-                    st.Length = new DistanceType(d);
+                    st.Length = new DistanceData(d);
 
                 // The feature is either a line, the end point, or null
                 Feature f = span.CreatedFeature;
@@ -1468,7 +1468,7 @@ void CeLeg::MakeText ( const CeVertex& bs
                 }
 
                 if (p != null)
-                    st.EndPoint = new CalculatedFeatureType(p);
+                    st.EndPoint = new CalculatedFeatureData(p);
 
                 t.Span[i] = st;
             }

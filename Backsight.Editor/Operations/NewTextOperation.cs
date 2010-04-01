@@ -44,7 +44,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewTextOperation(Session s, NewTextType t)
+        internal NewTextOperation(Session s, NewTextData t)
             : base(s, t)
         {
             m_NewText = (TextFeature)t.Text.LoadFeature(this);
@@ -433,9 +433,9 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            NewTextType t = new NewTextType();
+            NewTextData t = new NewTextData();
             SetSerializableEdit(t);
             return t;
         }
@@ -445,7 +445,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this edit</param>
-        protected void SetSerializableEdit(NewTextType t)
+        protected void SetSerializableEdit(NewTextData t)
         {
             base.SetSerializableEdit(t);
             t.Text = m_NewText.GetSerializableText();

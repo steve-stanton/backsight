@@ -45,7 +45,7 @@ namespace Backsight.Editor.UI
         /// operation that is currently being updated.
         /// </summary>
         /// <remarks>May be better as part of the UpdateContext</remarks>
-        UpdateType m_UpdateParameters;
+        UpdateData m_UpdateParameters;
 
         /// <summary>
         /// The feature currently selected for update.
@@ -950,7 +950,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// method. When the *UI class calls CommandUI.FinishCommand, that will call UpdateUI.FinishCommand
         /// (given that updates are in progress), where the update parameters can be picked up. It should
         /// probably be a bit more direct, since the current logic is a bit convoluted.</remarks>
-        internal UpdateType UpdateParameters
+        internal UpdateData UpdateParameters
         {
             get { return m_UpdateParameters; }
             set { m_UpdateParameters = value; }

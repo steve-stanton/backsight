@@ -20,22 +20,18 @@ using Backsight.Environment;
 namespace Backsight.Editor.Xml
 {
     /// <summary>
-    /// Base class for any sort of serialized leg in a connection path.
+    /// Serializable version of the <see cref="CircularLeg"/> class.
     /// </summary>
-    /// <remarks>The remainder of this class is auto-generated, and may be found
-    /// in the <c>Edits.cs</c> file.</remarks>
-    public partial class LegType
+    public partial class CircularLegData : LegData
     {
         /// <summary>
-        /// Loads this leg as part of an editing operation. Derived types
-        /// must implement this method, otherwise you will get an exception on
-        /// deserialization from the database.
+        /// Loads this leg as part of an editing operation.
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <returns>The leg that was loaded</returns>
-        internal virtual Leg LoadLeg(Operation op)
+        internal override Leg LoadLeg(Operation op)
         {
-            throw new NotImplementedException("LoadLeg not implemented by: " + GetType().Name);
+            return new CircularLeg(op, this);
         }
     }
 }

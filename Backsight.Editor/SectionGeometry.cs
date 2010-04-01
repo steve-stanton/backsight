@@ -260,9 +260,9 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineType GetSerializableLine()
+        internal override LineData GetSerializableLine()
         {
-            SectionType t = new SectionType();
+            SectionData t = new SectionData();
             t.Base = m_Base.DataId;
             return t;
         }

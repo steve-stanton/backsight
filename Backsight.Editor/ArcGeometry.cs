@@ -708,9 +708,9 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineType GetSerializableLine()
+        internal override LineData GetSerializableLine()
         {
-            ArcType t = new ArcType();
+            ArcData t = new ArcData();
 
             t.Clockwise = m_IsClockwise;
 

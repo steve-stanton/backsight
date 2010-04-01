@@ -86,7 +86,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        protected TextGeometry(TextFeature f, TextType t)
+        protected TextGeometry(TextFeature f, TextData t)
         {
             m_Font = EnvironmentContainer.FindFontById((int)t.Font);
             m_Position = new PointGeometry(t.X, t.Y);
@@ -386,14 +386,14 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        abstract internal TextType GetSerializableText();
+        abstract internal TextData GetSerializableText();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this text</param>
-        protected void SetSerializableText(TextType t)
+        protected void SetSerializableText(TextData t)
         {
             t.X = m_Position.Easting.Microns;
             t.Y = m_Position.Northing.Microns;

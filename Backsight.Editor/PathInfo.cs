@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// half-way between the fairly unstructured world of the dialog class, and the
     /// regimented world of the operation class.
     /// </summary>
-    class PathData
+    class PathInfo
     {
         #region Class data
 
@@ -69,11 +69,11 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>PathData</c> object
+        /// Creates a new <c>PathInfo</c> object
         /// </summary>
         /// <param name="from">The point where the path starts.</param>
         /// <param name="to">The point where the path ends.</param>
-        internal PathData(PointFeature from, PointFeature to)
+        internal PathInfo(PointFeature from, PointFeature to)
         {
             m_From = from;
             m_To = to;
@@ -85,13 +85,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Create a new <c>PathData</c> object that corresponds to a previously
+        /// Create a new <c>PathInfo</c> object that corresponds to a previously
         /// saved connection path. For consistency with the other constructor, this
         /// does not attempt to adjust the path (the Rotation and ScaleFactory properties
         /// will retain zero values unless a call is made to Adjust).
         /// </summary>
         /// <param name="pop">The saved connection path</param>
-        internal PathData(PathOperation pop)
+        internal PathInfo(PathOperation pop)
         {
             m_From = pop.StartPoint;
             m_To = pop.EndPoint;
@@ -200,7 +200,7 @@ namespace Backsight.Editor
             // Count the number of legs.
             int numLeg = CountLegs(items);
             if (numLeg==0)
-                throw new Exception("PathData.Create -- No connection legs");
+                throw new Exception("PathInfo.Create -- No connection legs");
 
             m_Legs.Capacity = numLeg;
 
@@ -220,7 +220,7 @@ namespace Backsight.Editor
 
                 // Confirm the leg count is valid.
                 if (legnum+1>numLeg)
-                    throw new Exception("PathData.Create -- Bad number of path legs.");
+                    throw new Exception("PathInfo.Create -- Bad number of path legs.");
 
                 // Create the leg.
                 Leg newLeg;
@@ -231,14 +231,14 @@ namespace Backsight.Editor
 
                 // Exit if we failed to create the leg.
                 if (newLeg==null)
-                    throw new Exception("PathData.Create -- Unable to create leg");
+                    throw new Exception("PathInfo.Create -- Unable to create leg");
 
                 m_Legs.Add(newLeg);
             }
 
             // Confirm we created the number of legs we expected.
             if (numLeg!=m_Legs.Count)
-                throw new Exception("PathData.Create -- Unexpected number of legs");
+                throw new Exception("PathInfo.Create -- Unexpected number of legs");
         }
 
         /// <summary>

@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        protected RowTextGeometry(TextFeature f, RowTextType t)
+        protected RowTextGeometry(TextFeature f, RowTextData t)
             : base(f, t)
         {
             // The row will be defined after attributes have been loaded
@@ -310,9 +310,9 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        internal override TextType GetSerializableText()
+        internal override TextData GetSerializableText()
         {
-            RowTextType t = new RowTextType();
+            RowTextData t = new RowTextData();
             SetSerializableText(t);
             t.Table = (uint)m_Row.Table.Id;
             t.Template = (uint)m_Template.Id;

@@ -375,14 +375,13 @@
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />
     <Compile Include="Operations\UpdateOperation.cs" />
-    <Compile Include="PathData.cs" />
+    <Compile Include="PathInfo.cs" />
     <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />
     <Compile Include="PositionLoader.cs" />
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
     <Compile Include="RowTextGeometry.cs" />
-    <Compile Include="SpanData.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndLineOperation.cs" />
@@ -604,6 +603,7 @@
     <Compile Include="Forms\Style.cs" />
     <Compile Include="Forms\StyleEntry.cs" />
     <Compile Include="Forms\StyleFile.cs" />
+    <Compile Include="SpanInfo.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
@@ -1031,18 +1031,18 @@
     <Compile Include="UpdateContext.cs" />
     <Compile Include="UpdateUndoMarker.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="Xml\CircularLegType.cs" />
+    <Compile Include="Xml\CircularLegData.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
     <Compile Include="Xml\Features.cs" />
     <Compile Include="Xml\ILoader.cs" />
-    <Compile Include="Xml\LegType.cs" />
+    <Compile Include="Xml\LegData.cs" />
     <Compile Include="Xml\Observations.cs" />
     <Compile Include="Xml\Operations.cs" />
-    <Compile Include="Xml\SpanType.cs" />
-    <Compile Include="Xml\StraightLegType.cs" />
+    <Compile Include="Xml\SpanData.cs" />
+    <Compile Include="Xml\StraightLegData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

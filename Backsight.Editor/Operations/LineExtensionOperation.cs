@@ -84,7 +84,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal LineExtensionOperation(Session s, LineExtensionType t)
+        internal LineExtensionOperation(Session s, LineExtensionData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -245,13 +245,13 @@ namespace Backsight.Editor.Operations
         /// <returns>The parameters this editing operation originally had (before the
         /// supplied information was applied). Holding on to this information makes it
         /// possible to later revert things to the way they were originally.</returns>
-        public override UpdateType ApplyUpdate(UpdateType ut)
+        public override UpdateData ApplyUpdate(UpdateData ut)
         {
-            LineExtensionUpdateType current = new LineExtensionUpdateType();
+            LineExtensionUpdateData current = new LineExtensionUpdateData();
             current.ExtendFromEnd = m_IsExtendFromEnd;
-            current.Distance = new DistanceType(m_Length);
+            current.Distance = new DistanceData(m_Length);
 
-            LineExtensionUpdateType u = (LineExtensionUpdateType)ut;
+            LineExtensionUpdateData u = (LineExtensionUpdateData)ut;
             m_IsExtendFromEnd = u.ExtendFromEnd;
             m_Length = new Distance(this, u.Distance);
 
@@ -453,18 +453,18 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            LineExtensionType t = new LineExtensionType();
+            LineExtensionData t = new LineExtensionData();
             base.SetSerializableEdit(t);
 
             t.Line = m_ExtendLine.DataId;
             t.ExtendFromEnd = m_IsExtendFromEnd;
-            t.Distance = new DistanceType(m_Length);
-            t.NewPoint = new CalculatedFeatureType(m_NewPoint);
+            t.Distance = new DistanceData(m_Length);
+            t.NewPoint = new CalculatedFeatureData(m_NewPoint);
 
             if (m_NewLine != null)
-                t.NewLine = new CalculatedFeatureType(m_NewLine);
+                t.NewLine = new CalculatedFeatureData(m_NewLine);
 
             return t;
         }

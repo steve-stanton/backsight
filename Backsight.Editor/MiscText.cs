@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal MiscText(TextFeature f, MiscTextType t)
+        internal MiscText(TextFeature f, MiscTextData t)
             : base(f, t)
         {
             m_Text = t.Text;
@@ -145,9 +145,9 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        internal override TextType GetSerializableText()
+        internal override TextData GetSerializableText()
         {
-            MiscTextType t = new MiscTextType();
+            MiscTextData t = new MiscTextData();
             SetSerializableText(t);
             t.Text = m_Text;
             return t;

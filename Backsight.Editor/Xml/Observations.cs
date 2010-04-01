@@ -23,7 +23,7 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    public partial class ObservationType
+    public partial class ObservationData
     {
         /// <summary>
         /// Loads this observation as part of an editing operation
@@ -39,13 +39,13 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="Distance"/>
     /// </summary>
-    public partial class DistanceType
+    public partial class DistanceData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DistanceType"/> class.
+        /// Initializes a new instance of the <see cref="DistanceData"/> class.
         /// </summary>
         /// <param name="d">The object to serialize</param>
-        internal DistanceType(Distance d)
+        internal DistanceData(Distance d)
             : base()
         {
             this.Value = d.ObservedValue;
@@ -67,7 +67,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="AngleDirection"/>
     /// </summary>
-    public partial class AngleType
+    public partial class AngleData
     {
         /// <summary>
         /// Loads this observation as part of an editing operation
@@ -83,7 +83,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="DeflectionDirection"/>
     /// </summary>
-    public partial class DeflectionType
+    public partial class DeflectionData
     {
         /// <summary>
         /// Loads this observation as part of an editing operation
@@ -99,7 +99,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="BearingDirection"/>
     /// </summary>
-    public partial class BearingType
+    public partial class BearingData
     {
         /// <summary>
         /// Loads this observation as part of an editing operation
@@ -115,7 +115,7 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="ParallelDirection"/>
     /// </summary>
-    public partial class ParallelType
+    public partial class ParallelData
     {
         /// <summary>
         /// Loads this observation as part of an editing operation
@@ -131,17 +131,17 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="OffsetPoint"/>
     /// </summary>
-    public partial class OffsetPointType
+    public partial class OffsetPointData
     {
-        public OffsetPointType()
+        public OffsetPointData()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OffsetPointType"/> class.
+        /// Initializes a new instance of the <see cref="OffsetPointData"/> class.
         /// </summary>
         /// <param name="o">The object to serialize</param>
-        internal OffsetPointType(OffsetPoint o)
+        internal OffsetPointData(OffsetPoint o)
             : base()
         {
             this.Point = o.Point.DataId;
@@ -161,16 +161,16 @@ namespace Backsight.Editor.Xml
     /// <summary>
     /// A serialized <see cref="OffsetDistance"/>
     /// </summary>
-    public partial class OffsetDistanceType
+    public partial class OffsetDistanceData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OffsetDistanceType"/> class.
+        /// Initializes a new instance of the <see cref="OffsetDistanceData"/> class.
         /// </summary>
         /// <param name="o">The object to serialize</param>
-        internal OffsetDistanceType(OffsetDistance o)
+        internal OffsetDistanceData(OffsetDistance o)
             : base()
         {
-            Distance = new DistanceType(o.Offset);
+            Distance = new DistanceData(o.Offset);
             Left = !o.IsRight;
         }
 

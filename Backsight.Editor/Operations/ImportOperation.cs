@@ -45,13 +45,13 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal ImportOperation(Session s, ImportType t)
+        internal ImportOperation(Session s, ImportData t)
             : base(s, t)
         {
             m_Data = new Feature[t.Feature.Length];
             for (int i=0; i<m_Data.Length; i++)
             {
-                FeatureType f = t.Feature[i];
+                FeatureData f = t.Feature[i];
                 m_Data[i] = f.LoadFeature(this);
             }
         }
@@ -139,12 +139,12 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            ImportType t = new ImportType();
+            ImportData t = new ImportData();
             base.SetSerializableEdit(t);
 
-            FeatureType[] features = new FeatureType[m_Data.Length];
+            FeatureData[] features = new FeatureData[m_Data.Length];
             for (int i = 0; i < features.Length; i++)
             {
                 features[i] = m_Data[i].GetSerializableFeature();

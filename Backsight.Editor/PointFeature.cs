@@ -50,7 +50,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(Operation op, PointType t)
+        internal PointFeature(Operation op, PointData t)
             : base(op, t)
         {
             PointGeometry pg = new PointGeometry(t.X, t.Y);
@@ -65,7 +65,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal PointFeature(Operation op, CalculatedFeatureType t)
+        internal PointFeature(Operation op, CalculatedFeatureData t)
             : base(op, t)
         {
             m_Geom = null;
@@ -77,7 +77,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(Operation op, SharedPointType t)
+        internal PointFeature(Operation op, SharedPointData t)
             : base(op, t)
         {
             PointFeature firstPoint = op.MapModel.Find<PointFeature>(t.FirstPoint);
@@ -403,11 +403,11 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureType GetSerializableFeature()
+        internal override FeatureData GetSerializableFeature()
         {
             if (m_Geom.FirstPoint == this)
             {
-                PointType t = new PointType();
+                PointData t = new PointData();
                 SetSerializableFeature(t);
                 t.X = m_Geom.Easting.Microns;
                 t.Y = m_Geom.Northing.Microns;
@@ -415,7 +415,7 @@ namespace Backsight.Editor
             }
             else
             {
-                SharedPointType t = new SharedPointType();
+                SharedPointData t = new SharedPointData();
                 SetSerializableFeature(t);
                 t.FirstPoint = m_Geom.FirstPoint.DataId;
                 return t;

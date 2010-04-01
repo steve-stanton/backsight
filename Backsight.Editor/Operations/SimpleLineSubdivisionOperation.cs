@@ -72,7 +72,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal SimpleLineSubdivisionOperation(Session s, SimpleLineSubdivisionType t)
+        internal SimpleLineSubdivisionOperation(Session s, SimpleLineSubdivisionData t)
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
@@ -390,16 +390,16 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            SimpleLineSubdivisionType t = new SimpleLineSubdivisionType();
+            SimpleLineSubdivisionData t = new SimpleLineSubdivisionData();
             base.SetSerializableEdit(t);
 
             t.Line = m_Line.DataId;
             t.NewLine1 = m_NewLine1.DataId;
             t.NewLine2 = m_NewLine2.DataId;
-            t.Distance = new DistanceType(m_Distance);
-            t.NewPoint = new CalculatedFeatureType(m_NewPoint);
+            t.Distance = new DistanceData(m_Distance);
+            t.NewPoint = new CalculatedFeatureData(m_NewPoint);
 
             return t;
         }

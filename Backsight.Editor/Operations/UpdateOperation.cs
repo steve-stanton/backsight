@@ -37,7 +37,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null)
         /// </summary>
-        readonly UpdateType m_Update;
+        readonly UpdateData m_Update;
 
         #endregion
 
@@ -48,7 +48,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal UpdateOperation(Session s, UpdateType t)
+        internal UpdateOperation(Session s, UpdateData t)
             : base(s, t)
         {
             m_Edit = s.MapModel.FindOperation(t.RevisedEdit);
@@ -105,7 +105,7 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
             return m_Update;
         }

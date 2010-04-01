@@ -48,10 +48,10 @@ namespace Backsight.Editor
         /// <remarks>Edits are converted into xml using the <see cref="ToXml"/> method.</remarks>
         static internal Operation ReadEdit(Session s, XmlReader data)
         {
-            XmlSerializer xs = new XmlSerializer(typeof(EditType));
-            EditType et = (EditType)xs.Deserialize(data);
+            XmlSerializer xs = new XmlSerializer(typeof(EditData));
+            EditData et = (EditData)xs.Deserialize(data);
             Debug.Assert(et.Operation.Length == 1);
-            OperationType ot = et.Operation[0];
+            OperationData ot = et.Operation[0];
             Operation result = ot.LoadOperation(s);
 
             // Note that calculated geometry is NOT defined at this stage. That happens
@@ -102,7 +102,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        protected Operation(Session s, OperationType t)
+        protected Operation(Session s, OperationData t)
         {
             if (s==null || t==null)
                 throw new ArgumentNullException();
@@ -564,7 +564,7 @@ namespace Backsight.Editor
         /// <returns>The XML for this edit</returns>
         internal string ToXml(bool indent)
         {
-            OperationType sed = GetSerializableEdit();
+            OperationData sed = GetSerializableEdit();
 
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
@@ -575,9 +575,9 @@ namespace Backsight.Editor
                 // Wrap the serializable edit in an EditType object (means we always know what to
                 // cast the result to upon deserialization)
 
-                EditType e = new EditType();
-                e.Operation = new OperationType[] { sed };
-                XmlSerializer xs = new XmlSerializer(typeof(EditType));
+                EditData e = new EditData();
+                e.Operation = new OperationData[] { sed };
+                XmlSerializer xs = new XmlSerializer(typeof(EditData));
                 xs.Serialize(writer, e);
             }
 
@@ -588,14 +588,14 @@ namespace Backsight.Editor
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.</summary>
         /// <returns>The serializable version of this edit</returns>
-        abstract internal OperationType GetSerializableEdit();
+        abstract internal OperationData GetSerializableEdit();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this edit</param>
-        protected void SetSerializableEdit(OperationType t)
+        protected void SetSerializableEdit(OperationData t)
         {
             t.Id = this.DataId;
 
@@ -726,7 +726,7 @@ namespace Backsight.Editor
         /// <returns>The parameters this editing operation originally had (before the
         /// supplied information was applied). Holding on to this information makes it
         /// possible to later revert things to the way they were originally.</returns>
-        public virtual UpdateType ApplyUpdate(UpdateType ut)
+        public virtual UpdateData ApplyUpdate(UpdateData ut)
         {
             // This method should be declared by the IRevisable interface once it
             // has been implemented by derived classes. At that time, this implementation

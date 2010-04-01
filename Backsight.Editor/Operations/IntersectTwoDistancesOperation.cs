@@ -85,7 +85,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal IntersectTwoDistancesOperation(Session s, IntersectTwoDistancesType t)
+        internal IntersectTwoDistancesOperation(Session s, IntersectTwoDistancesData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -599,23 +599,23 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            IntersectTwoDistancesType t = new IntersectTwoDistancesType();
+            IntersectTwoDistancesData t = new IntersectTwoDistancesData();
             base.SetSerializableEdit(t);
 
             t.From1 = m_From1.DataId;
             t.Distance1 = m_Distance1.GetSerializableObservation();
             t.From2 = m_From2.DataId;
             t.Distance2 = m_Distance2.GetSerializableObservation();
-            t.To = new CalculatedFeatureType(m_To);
+            t.To = new CalculatedFeatureData(m_To);
             t.Default = m_Default;
 
             if (m_Line1 != null)
-                t.Line1 = new CalculatedFeatureType(m_Line1);
+                t.Line1 = new CalculatedFeatureData(m_Line1);
 
             if (m_Line2 != null)
-                t.Line2 = new CalculatedFeatureType(m_Line2);
+                t.Line2 = new CalculatedFeatureData(m_Line2);
 
             return t;
         }

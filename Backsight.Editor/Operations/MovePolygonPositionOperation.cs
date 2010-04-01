@@ -54,7 +54,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal MovePolygonPositionOperation(Session s, MovePolygonPositionType t)
+        internal MovePolygonPositionOperation(Session s, MovePolygonPositionData t)
             : base(s, t)
         {
             m_Label = s.MapModel.Find<TextFeature>(t.Label);
@@ -169,9 +169,9 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            MovePolygonPositionType t = new MovePolygonPositionType();
+            MovePolygonPositionData t = new MovePolygonPositionData();
             base.SetSerializableEdit(t);
 
             t.Label = m_Label.DataId;

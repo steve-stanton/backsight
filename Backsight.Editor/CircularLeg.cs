@@ -73,7 +73,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal CircularLeg(Operation op, CircularLegType t)
+        internal CircularLeg(Operation op, CircularLegData t)
             : base(op, t)
         {
             m_Angle1 = 0.0;
@@ -459,7 +459,7 @@ namespace Backsight.Editor
                 span.Get(i);
 
                 // Create the geometry for the point at the end of the span
-                SpanData data = GetSpanData(i);
+                SpanInfo data = GetSpanData(i);
                 Feature feat = data.CreatedFeature;
                 PointFeature endPoint = null;
 
@@ -1458,9 +1458,9 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegType GetSerializableLeg()
+        internal override LegData GetSerializableLeg()
         {
-            CircularLegType t = new CircularLegType();
+            CircularLegData t = new CircularLegData();
             base.SetSerializableFeature(t);
 
             if (Math.Abs(m_Angle1) > Double.Epsilon)
@@ -1470,8 +1470,8 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             t.CulDeSac = IsCulDeSac;
             t.Clockwise = IsClockwise;
-            t.Radius = new DistanceType(m_Radius);
-            t.Center = new CalculatedFeatureType(m_Circle.CenterPoint);
+            t.Radius = new DistanceData(m_Radius);
+            t.Center = new CalculatedFeatureData(m_Circle.CenterPoint);
 
             return t;
         }

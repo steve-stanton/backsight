@@ -58,7 +58,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal MoveTextOperation(Session s, MoveTextType t)
+        internal MoveTextOperation(Session s, MoveTextData t)
             : base(s, t)
         {
             m_Text = s.MapModel.Find<TextFeature>(t.Text);
@@ -202,9 +202,9 @@ namespace Backsight.Editor.Operations
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationType GetSerializableEdit()
+        internal override OperationData GetSerializableEdit()
         {
-            MoveTextType t = new MoveTextType();
+            MoveTextData t = new MoveTextData();
             base.SetSerializableEdit(t);
 
             t.Text = m_Text.DataId;
