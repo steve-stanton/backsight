@@ -80,7 +80,7 @@ namespace Backsight.Editor.Operations
                 SectionGeometry section = new SectionGeometry(m_Line, start, end);
                 LineFeature line = m_Line.MakeSubSection(section, this);
                 line.CreatorSequence = lineSequence;
-                Distance d = new Distance(this, span.Length);
+                Distance d = (Distance)span.Length.LoadObservation(this);
                 MeasuredLineFeature mf = new MeasuredLineFeature(line, d);
                 m_Sections.Add(mf);
 

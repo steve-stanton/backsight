@@ -175,6 +175,15 @@ namespace Backsight.Editor.Xml
 
     public partial class LineExtensionData
     {
+        internal LineExtensionData(LineExtensionOperation op)
+        {
+            this.Id = "123:45";
+            this.Line = "45:67";
+            this.ExtendFromEnd = true;
+            this.Distance = new DistanceData(new Backsight.Editor.Observations.Distance(123.0, new DistanceUnit(DistanceUnitType.Meters), false));
+            this.NewPoint = new CalculatedFeatureData();
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>

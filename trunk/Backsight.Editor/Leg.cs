@@ -136,7 +136,7 @@ namespace Backsight.Editor
                     }
                 }
 
-                Distance d = (span.Length == null ? null : new Distance(op, span.Length));
+                Distance d = (span.Length == null ? null : (Distance)span.Length.LoadObservation(op));
                 spanData.ObservedDistance = d;
 
                 m_Spans[i] = spanData;

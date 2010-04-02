@@ -51,7 +51,7 @@ namespace Backsight.Editor.Observations
         internal OffsetDistance(Operation op, OffsetDistanceData t)
             : base(op, t)
         {
-            m_Offset = new Distance(op, t.Distance);
+            m_Offset = (Distance)t.Distance.LoadObservation(op);
             m_IsLeft = t.Left;
         }
 

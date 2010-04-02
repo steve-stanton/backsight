@@ -90,7 +90,7 @@ namespace Backsight.Editor
 
             this.IsCulDeSac = t.CulDeSac;
             this.IsClockwise = t.Clockwise;
-            m_Radius = new Distance(op, t.Radius);
+            m_Radius = (Distance)t.Radius.LoadObservation(op);
 
             // Create a circle with no radius (the actual radius may not exactly match
             // the observed radius, but we won't know the adjusted value until geometry

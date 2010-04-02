@@ -76,7 +76,7 @@ namespace Backsight.Editor.Operations
             : base(s, t)
         {
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
-            m_Distance = new Distance(this, t.Distance);
+            m_Distance = (Distance)t.Distance.LoadObservation(this);
             m_NewPoint = new PointFeature(this, t.NewPoint);
 
             // Create the sections

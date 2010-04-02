@@ -73,25 +73,12 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal Distance(Operation op, DistanceData t)
-            : base(op, t)
-        {
-            DistanceUnitType dut = (DistanceUnitType)t.Unit;
-            m_EnteredUnit = EditingController.Current.GetUnits(dut);
-            m_ObservedMetric = m_EnteredUnit.ToMetric(t.Value);
-            m_IsFixed = t.Fixed;
-        }
-
-        /// <summary>
         /// Creates a distance (regarded as non-fixed)
         /// </summary>
         /// <param name="distance">The entered distance value</param>
         /// <param name="unit">The units for the entered distance.</param>
-        internal Distance(double distance, DistanceUnit unit) : this(distance, unit, false)
+        internal Distance(double distance, DistanceUnit unit)
+            : this(distance, unit, false)
         {
         }
 
@@ -101,7 +88,7 @@ namespace Backsight.Editor.Observations
         /// <param name="distance">The entered distance value</param>
         /// <param name="unit">The units for the entered distance.</param>
         /// <param name="isFixed">Should the distance be treated as fixed?</param>
-        Distance(double distance, DistanceUnit unit, bool isFixed)
+        internal Distance(double distance, DistanceUnit unit, bool isFixed)
         {
 	        m_ObservedMetric = unit.ToMetric(distance);
 	        m_EnteredUnit = unit;
