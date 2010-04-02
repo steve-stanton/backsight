@@ -90,7 +90,7 @@ namespace Backsight.Editor.Operations
             CadastralMapModel mapModel = s.MapModel;
             m_ExtendLine = mapModel.Find<LineFeature>(t.Line);
             m_NewPoint = new PointFeature(this, t.NewPoint);
-            m_Length = new Distance(this, t.Distance);
+            m_Length = (Distance)t.Distance.LoadObservation(this);
             m_IsExtendFromEnd = t.ExtendFromEnd;
 
             if (t.NewLine == null)
@@ -253,7 +253,7 @@ namespace Backsight.Editor.Operations
 
             LineExtensionUpdateData u = (LineExtensionUpdateData)ut;
             m_IsExtendFromEnd = u.ExtendFromEnd;
-            m_Length = new Distance(this, u.Distance);
+            m_Length = (Distance)u.Distance.LoadObservation(this);
 
             return current;
         }

@@ -60,7 +60,9 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation that was loaded</returns>
         internal override Observation LoadObservation(Operation op)
         {
-            return new Distance(op, this);
+            DistanceUnitType dut = (DistanceUnitType)this.Unit;
+            DistanceUnit enteredUnit = EditingController.Current.GetUnits(dut);
+            return new Distance(this.Value, enteredUnit, this.Fixed);
         }
     }
 
