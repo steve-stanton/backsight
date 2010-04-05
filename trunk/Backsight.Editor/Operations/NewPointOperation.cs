@@ -147,10 +147,11 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            NewPointData t = new NewPointData();
-            base.SetSerializableEdit(t);
-            t.Point = (PointData)m_NewPoint.GetSerializableFeature();
-            return t;
+            return new NewPointData(this);
+            //NewPointData t = new NewPointData();
+            //base.SetSerializableEdit(t);
+            //t.Point = (PointData)m_NewPoint.GetSerializableFeature();
+            //return t;
         }
 
         /// <summary>

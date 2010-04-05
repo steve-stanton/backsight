@@ -56,7 +56,6 @@ namespace Backsight.Editor.Observations
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
         protected Direction(Operation op, DirectionData t)
-            : base(op, t)
         {
             if (t.Offset == null)
                 m_Offset = null;
@@ -668,17 +667,12 @@ namespace Backsight.Editor.Observations
             return Geom.Distance(x.Min, x.Max);
         }
 
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this direction</param>
-        protected void SetSerializableObservation(DirectionData t)
-        {
-            base.SetSerializableObservation(t);
+        //protected void SetSerializableObservation(DirectionData t)
+        //{
+        //    base.SetSerializableObservation(t);
 
-            if (m_Offset != null)
-                t.Offset = (OffsetData)m_Offset.GetSerializableObservation();
-        }
+        //    if (m_Offset != null)
+        //        t.Offset = (OffsetData)m_Offset.GetSerializableObservation();
+        //}
     }
 }

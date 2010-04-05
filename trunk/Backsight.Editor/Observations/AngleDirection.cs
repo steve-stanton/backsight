@@ -178,31 +178,5 @@ namespace Backsight.Editor.Observations
 
             return base.HasReference(feature);
         }
-
-        /// <summary>
-        /// Returns an object that represents this observation, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this observation</returns>
-        internal override ObservationData GetSerializableObservation()
-        {
-            AngleData t = new AngleData();
-            SetSerializableObservation(t);
-            return t;
-        }
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this direction</param>
-        protected void SetSerializableObservation(AngleData t)
-        {
-            base.SetSerializableObservation(t);
-
-            t.Backsight = m_Backsight.DataId;
-            t.From = m_From.DataId;
-            t.Value = RadianValue.AsShortString(m_Observation);
-        }
     }
 }

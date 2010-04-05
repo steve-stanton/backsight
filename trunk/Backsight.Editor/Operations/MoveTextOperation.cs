@@ -103,6 +103,22 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The old reference position (null if its identical to m_OldPosition)
+        /// </summary>
+        internal PointGeometry OldPolPosition
+        {
+            get { return m_OldPolPosition; }
+        }
+
+        /// <summary>
+        /// Where the text was moved to. This doubles as the new polygon reference position.
+        /// </summary>
+        internal PointGeometry NewPosition
+        {
+            get { return m_NewPosition; }
+        }
+
+        /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
         public override string Name
@@ -204,24 +220,25 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            MoveTextData t = new MoveTextData();
-            base.SetSerializableEdit(t);
+            return new MoveTextData(this);
+            //MoveTextData t = new MoveTextData();
+            //base.SetSerializableEdit(t);
 
-            t.Text = m_Text.DataId;
-            t.OldX = m_OldPosition.Easting.Microns;
-            t.OldY = m_OldPosition.Northing.Microns;
-            t.NewX = m_NewPosition.Easting.Microns;
-            t.NewY = m_NewPosition.Northing.Microns;
+            //t.Text = m_Text.DataId;
+            //t.OldX = m_OldPosition.Easting.Microns;
+            //t.OldY = m_OldPosition.Northing.Microns;
+            //t.NewX = m_NewPosition.Easting.Microns;
+            //t.NewY = m_NewPosition.Northing.Microns;
 
-            if (m_OldPolPosition != null)
-            {
-                t.OldPolygonX = m_OldPolPosition.Easting.Microns;
-                t.OldPolygonY = m_OldPolPosition.Northing.Microns;
+            //if (m_OldPolPosition != null)
+            //{
+            //    t.OldPolygonX = m_OldPolPosition.Easting.Microns;
+            //    t.OldPolygonY = m_OldPolPosition.Northing.Microns;
 
-                t.OldPolygonXSpecified = t.OldPolygonYSpecified = true;
-            }
+            //    t.OldPolygonXSpecified = t.OldPolygonYSpecified = true;
+            //}
 
-            return t;
+            //return t;
         }
 
         /// <summary>

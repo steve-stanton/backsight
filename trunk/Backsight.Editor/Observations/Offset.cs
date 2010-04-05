@@ -37,7 +37,6 @@ namespace Backsight.Editor.Observations
         /// <param name="op">The editing operation utilizing the observation</param>
         /// <param name="t">The serialized version of this observation</param>
         protected Offset(Operation op, OffsetData t)
-            : base(op, t)
         {
         }
 
@@ -51,7 +50,6 @@ namespace Backsight.Editor.Observations
 
         abstract internal double GetMetric (Direction dir);
         abstract internal PointFeature Point { get; set; }
-        //abstract internal Observation Save();
         abstract internal void CutRef(Operation op);
     }
 }

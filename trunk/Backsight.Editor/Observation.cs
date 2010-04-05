@@ -16,7 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
+//using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -29,15 +29,6 @@ namespace Backsight.Editor
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <param name="t">The serialized version of this observation</param>
-        protected Observation(Operation op, ObservationData t)
-        {
-        }
 
         protected Observation() : base()
         {
@@ -112,22 +103,5 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that makes use of this observation</param>
         internal abstract void AddReferences(Operation op);
-
-        /// <summary>
-        /// Returns an object that represents this observation, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this observation</returns>
-        abstract internal ObservationData GetSerializableObservation();
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this observation</param>
-        protected void SetSerializableObservation(ObservationData t)
-        {
-            // Nothing to do
-        }
     }
 }

@@ -74,17 +74,5 @@ namespace Backsight.Editor.Observations
                 return new RadianValue(Direction.Normalize(a));
             }
         }
-
-        /// <summary>
-        /// Returns an object that represents this observation, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this observation</returns>
-        internal override ObservationData GetSerializableObservation()
-        {
-            DeflectionData t = new DeflectionData();
-            SetSerializableObservation(t);
-            return t;
-        }
     }
 }

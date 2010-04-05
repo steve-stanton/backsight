@@ -415,20 +415,21 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            IntersectTwoDirectionsData t = new IntersectTwoDirectionsData();
-            base.SetSerializableEdit(t);
+            return new IntersectTwoDirectionsData(this);
+            //IntersectTwoDirectionsData t = new IntersectTwoDirectionsData();
+            //base.SetSerializableEdit(t);
 
-            t.Direction1 = (DirectionData)m_Direction1.GetSerializableObservation();
-            t.Direction2 = (DirectionData)m_Direction2.GetSerializableObservation();
-            t.To = new CalculatedFeatureData(m_To);
+            //t.Direction1 = DataFactory.Instance.ToData<DirectionData>(m_Direction1);
+            //t.Direction2 = DataFactory.Instance.ToData<DirectionData>(m_Direction2);
+            //t.To = new CalculatedFeatureData(m_To);
 
-            if (m_Line1 != null)
-                t.Line1 = new CalculatedFeatureData(m_Line1);
+            //if (m_Line1 != null)
+            //    t.Line1 = new CalculatedFeatureData(m_Line1);
 
-            if (m_Line2 != null)
-                t.Line2 = new CalculatedFeatureData(m_Line2);
+            //if (m_Line2 != null)
+            //    t.Line2 = new CalculatedFeatureData(m_Line2);
 
-            return t;
+            //return t;
         }
 
         /// <summary>

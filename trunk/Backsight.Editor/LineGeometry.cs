@@ -226,15 +226,5 @@ namespace Backsight.Editor
         /// The serializable version of this line geometry
         /// </returns>
         abstract internal LineData GetSerializableLine();
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this line geometry</param>
-        //protected void SetSerializableLine(LineType t)
-        //{
-            // The start and end of the line geometry will be defined by LineFeature
-        //}
     }
 }

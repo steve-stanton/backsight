@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to add a new line (either a simple line segment, or a circular arc).
     /// </summary>
-    class NewLineOperation : Operation
+    abstract class NewLineOperation : Operation
     {
         #region Class data
 
@@ -44,7 +44,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewLineOperation(Session s, NewSegmentData t)
+        protected NewLineOperation(Session s, NewSegmentData t)
             : base(s, t)
         {
             m_NewLine = new LineFeature(this, t.Line);
@@ -55,7 +55,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal NewLineOperation(Session s, NewArcData t)
+        protected NewLineOperation(Session s, NewArcData t)
             : base(s, t)
         {
             m_NewLine = new ArcFeature(this, t.Line);
@@ -157,67 +157,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Creates a new simple line segment.
-        /// </summary>
-        /// <param name="start">The point at the start of the new line.</param>
-        /// <param name="end">The point at the end of the new line.</param>
-        /// <returns>True if new line added ok.</returns>
-        internal bool Execute(PointFeature start, PointFeature end)
-        {
-            // Disallow an attempt to add a null line.
-            if (start.Geometry.IsCoincident(end.Geometry))
-                throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
-
-            // Add the new line with default entity type.
-            CadastralMapModel map = CadastralMapModel.Current;
-            m_NewLine = map.AddLine(start, end, map.DefaultLineType, this);
-
-            // Peform standard completion steps
-            Complete();
-            return true;
-        }
-
-        /// <summary>
-        /// Creates a new circular arc.
-        /// </summary>
-        /// <param name="start">The point at the start of the new arc.</param>
-        /// <param name="end">The point at the end of the new arc.</param>
-        /// <param name="circle">The circle that the new arc should sit on.</param>
-        /// <param name="isShortArc">True if the new arc refers to the short arc. False
-        /// if it's a long arc (i.e. greater than half the circumference of the circle).</param>
-        /// <returns>True if new arc added ok.</returns>
-        internal bool Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
-        {
-            // Disallow an attempt to add a null line.
-            if (start.Geometry.IsCoincident(end.Geometry))
-                throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
-
-            // Figure out whether the arc should go clockwise or not.
-            IPointGeometry centre = circle.Center;
-
-            // Get the clockwise angle from the start to the end.
-            Turn sturn = new Turn(centre, start);
-            double angle = sturn.GetAngleInRadians(end);
-
-            // Figure out which direction the curve should go, depending
-            // on whether the user wants the short arc or the long one.
-            bool iscw;
-            if (angle < Constants.PI)
-                iscw = isShortArc;
-            else
-                iscw = !isShortArc;
-
-            // Add the new arc with default line entity type (this will
-            // cross-reference the circle to the arc that gets created).
-            CadastralMapModel map = CadastralMapModel.Current;
-            m_NewLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this);
-
-            // Peform standard completion steps
-            Complete();
-            return true;
-        }
-
-        /// <summary>
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
         /// <param name="uc">The context in which editing revisions are being made (not null).
@@ -304,48 +243,6 @@ namespace Backsight.Editor.Operations
                 clist.Add((m_NewLine as ArcFeature).Circle);
 
             return true;
-        }
-
-        /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            if (m_NewLine is ArcFeature)
-                return GetSerializableArc();
-            else
-                return GetSerializableSegment();
-        }
-
-        /// <summary>
-        /// Obtains an object representing an edit that created a circular arc
-        /// </summary>
-        /// <returns>The serializable version of this edit</returns>
-        OperationData GetSerializableArc()
-        {
-            // The deserialization logic works on the assumption that this edit can only
-            // attach arcs to existing circles.
-            ArcFeature arc = (ArcFeature)m_NewLine;
-            if (arc.Circle.Creator == this)
-                throw new InvalidOperationException("Unexpected attempt to simultaneously create arc and circle");
-
-            NewArcData t = new NewArcData();
-            base.SetSerializableEdit(t);
-            t.Line = (ArcData)m_NewLine.GetSerializableLine();
-            return t;
-        }
-
-        /// <summary>
-        /// Obtains an object representing an edit that created a simple line segment
-        /// </summary>
-        /// <returns>The serializable version of this edit</returns>
-        OperationData GetSerializableSegment()
-        {
-            NewSegmentData t = new NewSegmentData();
-            base.SetSerializableEdit(t);
-            t.Line = (SegmentData)m_NewLine.GetSerializableLine();
-            return t;
         }
 
         /// <summary>

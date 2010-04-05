@@ -262,14 +262,15 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            AttachPointData t = new AttachPointData();
-            base.SetSerializableEdit(t);
+            return new AttachPointData(this);
+            //AttachPointData t = new AttachPointData();
+            //base.SetSerializableEdit(t);
 
-            t.Line = m_Line.DataId;
-            t.PositionRatio = m_PositionRatio;
-            t.Point = new CalculatedFeatureData(m_Point);
+            //t.Line = m_Line.DataId;
+            //t.PositionRatio = m_PositionRatio;
+            //t.Point = new CalculatedFeatureData(m_Point);
 
-            return t;
+            //return t;
         }
 
         /// <summary>

@@ -141,17 +141,18 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            ImportData t = new ImportData();
-            base.SetSerializableEdit(t);
+            return new ImportData(this);
+            //ImportData t = new ImportData();
+            //base.SetSerializableEdit(t);
 
-            FeatureData[] features = new FeatureData[m_Data.Length];
-            for (int i = 0; i < features.Length; i++)
-            {
-                features[i] = m_Data[i].GetSerializableFeature();
-            }
+            //FeatureData[] features = new FeatureData[m_Data.Length];
+            //for (int i = 0; i < features.Length; i++)
+            //{
+            //    features[i] = m_Data[i].GetSerializableFeature();
+            //}
 
-            t.Feature = features;
-            return t;
+            //t.Feature = features;
+            //return t;
         }
 
         /// <summary>

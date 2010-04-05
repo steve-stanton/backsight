@@ -24,6 +24,27 @@ namespace Backsight.Editor.Xml
     /// in the <c>Edits.cs</c> file.</remarks>
     public partial class FeatureData
     {
+        // should be protected
+        internal FeatureData(Feature f)
+        {
+            this.Id = f.DataId;
+            this.Entity = f.EntityType.Id;
+
+            FeatureId fid = f.Id;
+            if (fid != null)
+            {
+                if (fid is NativeId)
+                {
+                    this.Key = fid.RawId;
+                    this.KeySpecified = true;
+                }
+                else
+                {
+                    this.ForeignKey = fid.FormattedKey;
+                }
+            }
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation. Derived types
         /// must implement this method, otherwise you will get an exception on
@@ -62,6 +83,23 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class ArcData
     {
+        internal ArcData(ArcFeature arc)
+            : base(arc)
+        {
+            ArcGeometry geom = arc.Geometry;
+            this.Clockwise = geom.IsClockwise;
+
+            // If this is the first arc associated with the circle, write out
+            // the ID of the point at the center of the circle.
+
+            Circle c = (Circle)geom.Circle;
+            ArcFeature firstArc = c.FirstArc;
+            if (Object.ReferenceEquals(firstArc.Geometry, this))
+                this.Center = c.CenterPoint.DataId;
+            else
+                this.FirstArc = firstArc.DataId;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -128,6 +166,15 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class PointData
     {
+        internal PointData(PointFeature f)
+            : base(f)
+        {
+            IPointGeometry geom = f.Geometry;
+
+            this.X = geom.Easting.Microns;
+            this.Y = geom.Northing.Microns;            
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -160,6 +207,11 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class SegmentData
     {
+        internal SegmentData(LineFeature line)
+            : base(line)
+        {
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -246,9 +298,9 @@ namespace Backsight.Editor.Xml
     }
 
     /// <summary>
-    /// A serialized text feature.
+    /// A serialized text feature that represents the user-perceived key for a spatial feature.
     /// </summary>
-    public partial class MiscTextData
+    public partial class KeyTextData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
@@ -261,10 +313,22 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    public partial class LineData
+    {
+        // should be protected
+        internal LineData(LineFeature line)
+            : base(line)
+        {
+            this.From = line.StartPoint.DataId;
+            this.To = line.EndPoint.DataId;
+            this.Topological = line.IsTopological;
+        }
+    }
+
     /// <summary>
-    /// A serialized text feature that represents the user-perceived key for a spatial feature.
+    /// A serialized text feature.
     /// </summary>
-    public partial class KeyTextData
+    public partial class MiscTextData
     {
         /// <summary>
         /// Loads this feature as part of an editing operation
