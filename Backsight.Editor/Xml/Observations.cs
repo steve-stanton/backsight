@@ -37,6 +37,102 @@ namespace Backsight.Editor.Xml
     }
 
     /// <summary>
+    /// A serialized <see cref="AngleDirection"/>
+    /// </summary>
+    public partial class AngleData
+    {
+        public AngleData()
+        {
+        }
+
+        internal AngleData(AngleDirection d)
+            : base(d)
+        {
+            this.Backsight = d.Backsight.DataId;
+            this.From = d.From.DataId;
+            this.Value = RadianValue.AsShortString(d.ObservationInRadians);
+        }
+
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal override Observation LoadObservation(Operation op)
+        {
+            return new AngleDirection(op, this);
+        }
+    }
+
+    /// <summary>
+    /// A serialized <see cref="BearingDirection"/>
+    /// </summary>
+    public partial class BearingData
+    {
+        public BearingData()
+        {
+        }
+
+        internal BearingData(BearingDirection d)
+            : base(d)
+        {
+            this.From = d.From.DataId;
+            this.Value = RadianValue.AsShortString(d.ObservationInRadians);
+        }
+
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal override Observation LoadObservation(Operation op)
+        {
+            return new BearingDirection(op, this);
+        }
+    }
+
+    /// <summary>
+    /// A serialized <see cref="DeflectionDirection"/>
+    /// </summary>
+    public partial class DeflectionData
+    {
+        public DeflectionData()
+        {
+        }
+
+        internal DeflectionData(DeflectionDirection d)
+            : base(d)
+        {
+            // nothing to do
+        }
+
+        /// <summary>
+        /// Loads this observation as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <returns>The observation that was loaded</returns>
+        internal override Observation LoadObservation(Operation op)
+        {
+            return new DeflectionDirection(op, this);
+        }
+    }
+
+    public partial class DirectionData
+    {
+        public DirectionData()
+        {
+        }
+
+        // should be protected
+        internal DirectionData(Direction d)
+        {
+            Offset o = d.Offset;
+            if (o != null)
+                this.Offset = DataFactory.Instance.ToData<OffsetData>(o);
+        }
+    }
+
+    /// <summary>
     /// A serialized <see cref="Distance"/>
     /// </summary>
     public partial class DistanceData
@@ -67,58 +163,22 @@ namespace Backsight.Editor.Xml
     }
 
     /// <summary>
-    /// A serialized <see cref="AngleDirection"/>
-    /// </summary>
-    public partial class AngleData
-    {
-        /// <summary>
-        /// Loads this observation as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
-        {
-            return new AngleDirection(op, this);
-        }
-    }
-
-    /// <summary>
-    /// A serialized <see cref="DeflectionDirection"/>
-    /// </summary>
-    public partial class DeflectionData
-    {
-        /// <summary>
-        /// Loads this observation as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
-        {
-            return new DeflectionDirection(op, this);
-        }
-    }
-
-    /// <summary>
-    /// A serialized <see cref="BearingDirection"/>
-    /// </summary>
-    public partial class BearingData
-    {
-        /// <summary>
-        /// Loads this observation as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
-        {
-            return new BearingDirection(op, this);
-        }
-    }
-
-    /// <summary>
     /// A serialized <see cref="ParallelDirection"/>
     /// </summary>
     public partial class ParallelData
     {
+        public ParallelData()
+        {
+        }
+
+        internal ParallelData(ParallelDirection d)
+            : base(d)
+        {
+            this.From = d.From.DataId;
+            this.Start = d.Start.DataId;
+            this.End = d.End.DataId;
+        }
+
         /// <summary>
         /// Loads this observation as part of an editing operation
         /// </summary>
@@ -172,8 +232,8 @@ namespace Backsight.Editor.Xml
         internal OffsetDistanceData(OffsetDistance o)
             : base()
         {
-            Distance = new DistanceData(o.Offset);
-            Left = !o.IsRight;
+            this.Distance = new DistanceData(o.Offset);
+            this.Left = !o.IsRight;
         }
 
         /// <summary>

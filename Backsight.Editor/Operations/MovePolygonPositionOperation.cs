@@ -171,22 +171,23 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            MovePolygonPositionData t = new MovePolygonPositionData();
-            base.SetSerializableEdit(t);
+            return new MovePolygonPositionData(this);
+            //MovePolygonPositionData t = new MovePolygonPositionData();
+            //base.SetSerializableEdit(t);
 
-            t.Label = m_Label.DataId;
-            t.NewX = m_NewPosition.Easting.Microns;
-            t.NewY = m_NewPosition.Northing.Microns;
+            //t.Label = m_Label.DataId;
+            //t.NewX = m_NewPosition.Easting.Microns;
+            //t.NewY = m_NewPosition.Northing.Microns;
 
-            if (m_OldPosition != null)
-            {
-                t.OldX = m_OldPosition.Easting.Microns;
-                t.OldY = m_OldPosition.Northing.Microns;
+            //if (m_OldPosition != null)
+            //{
+            //    t.OldX = m_OldPosition.Easting.Microns;
+            //    t.OldY = m_OldPosition.Northing.Microns;
 
-                t.OldXSpecified = t.OldYSpecified = true;
-            }
+            //    t.OldXSpecified = t.OldYSpecified = true;
+            //}
 
-            return t;
+            //return t;
         }
 
         /// <summary>
@@ -235,6 +236,28 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        internal TextFeature Label
+        {
+            get { return m_Label; }
+        }
+
+        /// <summary>
+        /// The original position of the reference point (null if the old position coincided
+        /// with the top-left corner of the text).
+        /// </summary>
+        internal PointGeometry OldPosition
+        {
+            get { return m_OldPosition; }
+        }
+
+        /// <summary>
+        /// The revised position of the reference point.
+        /// </summary>
+        internal PointGeometry NewPosition
+        {
+            get { return m_NewPosition; }
         }
     }
 }

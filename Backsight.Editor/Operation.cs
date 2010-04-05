@@ -734,5 +734,13 @@ namespace Backsight.Editor
 
             return null;
         }
+
+        /// <summary>
+        /// A previous edit that this one is based on (null if this edit has never been revised).
+        /// </summary>
+        internal Operation Previous
+        {
+            get { return m_Previous; }
+        }
     }
 }

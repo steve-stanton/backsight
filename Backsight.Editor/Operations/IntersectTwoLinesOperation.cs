@@ -505,27 +505,28 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            IntersectTwoLinesData t = new IntersectTwoLinesData();
-            base.SetSerializableEdit(t);
+            return new IntersectTwoLinesData(this);
+            //IntersectTwoLinesData t = new IntersectTwoLinesData();
+            //base.SetSerializableEdit(t);
 
-            t.Line1 = m_Line1.DataId;
-            t.Line2 = m_Line2.DataId;
-            t.CloseTo = m_CloseTo.DataId;
-            t.To = new CalculatedFeatureData(m_Intersection);
+            //t.Line1 = m_Line1.DataId;
+            //t.Line2 = m_Line2.DataId;
+            //t.CloseTo = m_CloseTo.DataId;
+            //t.To = new CalculatedFeatureData(m_Intersection);
 
-            if (m_Line1a != null)
-                t.SplitBefore1 = m_Line1a.DataId;
+            //if (m_Line1a != null)
+            //    t.SplitBefore1 = m_Line1a.DataId;
 
-            if (m_Line1b != null)
-                t.SplitAfter1 = m_Line1b.DataId;
+            //if (m_Line1b != null)
+            //    t.SplitAfter1 = m_Line1b.DataId;
 
-            if (m_Line2a != null)
-                t.SplitBefore2 = m_Line2a.DataId;
+            //if (m_Line2a != null)
+            //    t.SplitBefore2 = m_Line2a.DataId;
 
-            if (m_Line2b != null)
-                t.SplitAfter2 = m_Line2b.DataId;
+            //if (m_Line2b != null)
+            //    t.SplitAfter2 = m_Line2b.DataId;
 
-            return t;
+            //return t;
         }
 
         /// <summary>
@@ -536,6 +537,26 @@ namespace Backsight.Editor.Operations
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
             m_Intersection.PointGeometry = pg;
+        }
+
+        internal LineFeature Line1BeforeSplit
+        {
+            get { return m_Line1a; }
+        }
+
+        internal LineFeature Line1AfterSplit
+        {
+            get { return m_Line1b; }
+        }
+
+        internal LineFeature Line2BeforeSplit
+        {
+            get { return m_Line2a; }
+        }
+
+        internal LineFeature Line2AfterSplit
+        {
+            get { return m_Line2b; }
         }
     }
 }

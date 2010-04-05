@@ -236,14 +236,15 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            DeletionData t = new DeletionData();
-            base.SetSerializableEdit(t);
+            return new DeletionData(this);
+            //DeletionData t = new DeletionData();
+            //base.SetSerializableEdit(t);
 
-            t.Delete = new string[m_Deletions.Count];
-            for (int i = 0; i < t.Delete.Length; i++)
-                t.Delete[i] = m_Deletions[i].DataId;
+            //t.Delete = new string[m_Deletions.Count];
+            //for (int i = 0; i < t.Delete.Length; i++)
+            //    t.Delete[i] = m_Deletions[i].DataId;
 
-            return t;
+            //return t;
         }
 
         /// <summary>

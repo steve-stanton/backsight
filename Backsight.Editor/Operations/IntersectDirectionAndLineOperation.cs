@@ -559,24 +559,35 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            IntersectDirectionAndLineData t = new IntersectDirectionAndLineData();
-            base.SetSerializableEdit(t);
+            return new IntersectDirectionAndLineData(this);
+            //IntersectDirectionAndLineData t = new IntersectDirectionAndLineData();
+            //base.SetSerializableEdit(t);
 
-            t.Line = m_Line.DataId;
-            t.CloseTo = m_CloseTo.DataId;
-            t.Direction = (DirectionData)m_Direction.GetSerializableObservation();
-            t.To = new CalculatedFeatureData(m_Intersection);
+            //t.Line = m_Line.DataId;
+            //t.CloseTo = m_CloseTo.DataId;
+            //t.Direction = DataFactory.Instance.ToData<DirectionData>(m_Direction);
+            //t.To = new CalculatedFeatureData(m_Intersection);
 
-            if (m_DirLine != null)
-                t.DirLine = new CalculatedFeatureData(m_DirLine);
+            //if (m_DirLine != null)
+            //    t.DirLine = new CalculatedFeatureData(m_DirLine);
 
-            if (m_LineA != null)
-                t.SplitBefore = m_LineA.DataId;
+            //if (m_LineA != null)
+            //    t.SplitBefore = m_LineA.DataId;
 
-            if (m_LineB != null)
-                t.SplitAfter = m_LineB.DataId;
+            //if (m_LineB != null)
+            //    t.SplitAfter = m_LineB.DataId;
 
-            return t;
+            //return t;
+        }
+
+        internal LineFeature LineBeforeSplit
+        {
+            get { return m_LineA; }
+        }
+
+        internal LineFeature LineAfterSplit
+        {
+            get { return m_LineB; }
         }
 
         /// <summary>

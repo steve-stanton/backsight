@@ -176,20 +176,5 @@ namespace Backsight.Editor.Observations
 
             return base.HasReference(feature);
         }
-
-        /// <summary>
-        /// Returns an object that represents this observation, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this observation</returns>
-        internal override ObservationData GetSerializableObservation()
-        {
-            ParallelData t = new ParallelData();
-            SetSerializableObservation(t);
-            t.From = m_From.DataId;
-            t.Start = m_Par1.DataId;
-            t.End = m_Par2.DataId;
-            return t;
-        }
     }
 }

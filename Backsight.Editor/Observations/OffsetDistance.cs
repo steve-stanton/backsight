@@ -196,15 +196,5 @@ namespace Backsight.Editor.Observations
         {
             // nothing to do
         }
-
-        /// <summary>
-        /// Returns an object that represents this observation, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this observation</returns>
-        internal override ObservationData GetSerializableObservation()
-        {
-            return new OffsetDistanceData(this);
-        }
     }
 }

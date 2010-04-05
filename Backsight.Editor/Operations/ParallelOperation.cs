@@ -634,7 +634,7 @@ namespace Backsight.Editor.Operations
             if (IsArcReversed)
                 t.ReverseArc = true;
 
-            t.Offset = m_Offset.GetSerializableObservation();
+            t.Offset = DataFactory.Instance.ToData<ObservationData>(m_Offset);
             t.From = new CalculatedFeatureData(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator == this));
             t.To = new CalculatedFeatureData(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator == this));
             t.NewLine = m_ParLine.GetSerializableLine();

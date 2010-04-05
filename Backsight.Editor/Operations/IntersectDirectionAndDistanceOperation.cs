@@ -553,22 +553,23 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            IntersectDirectionAndDistanceData t = new IntersectDirectionAndDistanceData();
-            base.SetSerializableEdit(t);
+            return new IntersectDirectionAndDistanceData(this);
+            //IntersectDirectionAndDistanceData t = new IntersectDirectionAndDistanceData();
+            //base.SetSerializableEdit(t);
 
-            t.From = m_From.DataId;
-            t.Default = m_Default;
-            t.Direction = (DirectionData)m_Direction.GetSerializableObservation();
-            t.Distance = m_Distance.GetSerializableObservation();
-            t.To = new CalculatedFeatureData(m_To);
+            //t.From = m_From.DataId;
+            //t.Default = m_Default;
+            //t.Direction = DataFactory.Instance.ToData<DirectionData>(m_Direction);
+            //t.Distance = DataFactory.Instance.ToData<ObservationData>(m_Distance);
+            //t.To = new CalculatedFeatureData(m_To);
 
-            if (m_DirLine != null)
-                t.DirLine = new CalculatedFeatureData(m_DirLine);
+            //if (m_DirLine != null)
+            //    t.DirLine = new CalculatedFeatureData(m_DirLine);
 
-            if (m_DistLine != null)
-                t.DistLine = new CalculatedFeatureData(m_DistLine);
+            //if (m_DistLine != null)
+            //    t.DistLine = new CalculatedFeatureData(m_DistLine);
 
-            return t;
+            //return t;
         }
 
         /// <summary>
