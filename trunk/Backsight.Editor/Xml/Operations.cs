@@ -481,6 +481,38 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    public partial class NewKeyTextData
+    {
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new NewKeyTextOperation(s, this);
+        }
+    }
+
+    public partial class NewMiscTextData
+    {
+        //internal NewTextData(NewTextOperation op)
+        //    : base(op)
+        //{
+        //    this.Text = new TextData();
+        //}
+
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new NewMiscTextOperation(s, this);
+        }
+    }
+
     public partial class NewPointData
     {
         internal NewPointData(NewPointOperation op)
@@ -500,6 +532,19 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    public partial class NewRowTextData
+    {
+        /// <summary>
+        /// Loads this editing operation into a session
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <returns>The editing operation that was loaded</returns>
+        internal override Operation LoadOperation(Session s)
+        {
+            return new NewRowTextOperation(s, this);
+        }
+    }
+
     public partial class NewSegmentData
     {
         internal NewSegmentData(NewSegmentOperation op)
@@ -516,19 +561,6 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             return new NewSegmentOperation(s, this);
-        }
-    }
-
-    public partial class NewTextData
-    {
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            return new NewTextOperation(s, this);
         }
     }
 

@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Edit to add an item of text (perhaps a polygon label).
     /// </summary>
-    class NewTextOperation : Operation, IRevisable
+    abstract class NewTextOperation : Operation, IRevisable
     {
         #region Class data
 
@@ -174,81 +174,6 @@ namespace Backsight.Editor.Operations
         bool HasReference(Feature feat)
         {
             return false;
-        }
-
-        /// <summary>
-        /// Executes the new label operation.
-        /// </summary>
-        /// <param name="vtx">The position of the new label.</param>
-        /// <param name="polygonId">The ID and entity type to assign to the new label.</param>
-        /// <param name="pol">The polygon that the label falls inside. It should not already refer to a label.</param>
-        /// <param name="height">The height of the text, in meters on the ground.</param>
-        /// <param name="width">The width of the text, in meters on the ground.</param>
-        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
-        internal void Execute(IPosition vtx, IdHandle polygonId, Polygon pol, 
-                                double height, double width, double rotation)
-        {
-            // Add the label.
-            CadastralMapModel map = MapModel;
-            m_NewText = map.AddKeyLabel(this, polygonId, vtx, height, width, rotation);
-
-            // Associate the polygon with the label, and vice versa.
-            m_NewText.SetTopology(true);
-            pol.ClaimLabel(m_NewText);
-
-            Complete();
-        }
-
-        /// <summary>
-        /// Executes the new label operation.
-        /// </summary>
-        /// <param name="vtx">The position of the new label.</param>
-        /// <param name="polygonId">The ID and entity type to assign to the new label.</param>
-        /// <param name="row">The data to use for creating a row for the new label.</param>
-        /// <param name="atemplate">The template to use in creating the RowTextGeometry
-        /// for the new label.</param>
-        /// <param name="pol">The polygon that the label falls inside. It should not already
-        /// refer to a label. Not null.</param>
-        /// <param name="height">The height of the text, in meters on the ground.</param>
-        /// <param name="width">The width of the new label, in meters on the ground.</param>
-        /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
-        internal void Execute(IPosition vtx, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol,
-                                double height, double width, double rotation)
-        {
-            if (pol == null)
-                throw new ArgumentNullException();
-
-            // Add the label.
-            CadastralMapModel map = MapModel;
-            m_NewText = map.AddRowLabel(this, polygonId, vtx, row, atemplate, height, width, rotation);
-
-            // Associate the polygon with the label, and vice versa.
-            m_NewText.SetTopology(true);
-            pol.ClaimLabel(m_NewText);
-
-            Complete();
-        }
-
-        /// <summary>
-        /// Executes this operation. This version is suitable for adding miscellaneous
-        /// non-topological trim.
-        /// </summary>
-        /// <param name="trim">The text of the label.</param>
-        /// <param name="ent">The entity type to assign to the new label (default was null)</param>
-        /// <param name="position">The reference position for the label.</param>
-        /// <param name="ght">The height of the new label, in meters on the ground.</param>
-        /// <param name="gwd">The width of the new label, in meters on the ground.</param>
-        /// <param name="rot">The clockwise rotation of the text, in radians from the horizontal.</param>
-        internal void Execute(string trim, IEntity ent, IPosition position, double ght, double gwd, double rot)
-        {
-            // Add the label.
-            CadastralMapModel cmm = MapModel;
-            m_NewText = cmm.AddMiscText(this, trim, ent, position, ght, gwd, rot);
-
-            // The trim is always non-topological.
-            m_NewText.SetTopology(false);
-
-            Complete();
         }
 
 /*
@@ -435,6 +360,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
+            //return new NewTextData(this);
             NewTextData t = new NewTextData();
             SetSerializableEdit(t);
             return t;

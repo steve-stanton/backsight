@@ -1,340 +1,340 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Font Name="Microsoft Sans Serif" Size="8.25" />
-  <Class Name="Backsight.Editor.Xml.ObservationType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.DeflectionData" Collapsed="true">
     <Position X="3.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.DistanceType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.DistanceData" Collapsed="true">
     <Position X="0.75" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\DistanceType.cs</FileName>
+      <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAIAAAAMAQAAACAAAAAAAgAABAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.OffsetPointType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.OffsetPointData" Collapsed="true">
     <Position X="6.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAIAAAAAAAgAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.OffsetDistanceType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.OffsetDistanceData" Collapsed="true">
     <Position X="8.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AABAAAAAAAAAAAAAAAAAAIAAAAAAAABACAAAABAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.ParallelType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.ParallelData" Collapsed="true">
     <Position X="4.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgIAAQAAACAQAAAAAAAAAIAAAAAAAAAAAAAAAAAAgAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.BearingType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.BearingData" Collapsed="true">
     <Position X="3" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\BearingType.cs</FileName>
+      <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAAAAAAAAAQAAAAAAAAAIAAAAACAAAAAAAgAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.AngleType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.AngleData" Collapsed="true">
     <Position X="1.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\AngleType.cs</FileName>
+      <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAAAAAAAAAQAAAAAAAAAIAAAAwCAAAAAAAgAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.DeflectionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.ObservationData" Collapsed="true">
     <Position X="1.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\DeflectionType.cs</FileName>
+      <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.OffsetType" Collapsed="true">
-    <Position X="7.25" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Backsight.Editor.Xml.DirectionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.DirectionData" Collapsed="true">
     <Position X="3" Y="2" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.OperationType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.OperationData" Collapsed="true">
     <Position X="0.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAAKAAAAAAEAAAAAQAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AQAKAAAAAAEAAAAAQAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.AttachPointType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.AttachPointData" Collapsed="true">
     <Position X="3.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\AttachPointType.cs</FileName>
-      <HashCode>AAAAIAAAAAEAgAAAgAAAAACAAEAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Xml\Edits.cs</FileName>
+      <HashCode>AQAAIAAAAAEAgAAAgAAAAACAAEAAAAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.DeletionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.DeletionData" Collapsed="true">
     <Position X="3.25" Y="15" Width="1.5" />
     <TypeIdentifier>
-      <FileName>Xml\DeletionType.cs</FileName>
+      <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAAAAAAAAAAAEAACAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.UpdateType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.UpdateData" Collapsed="true">
     <Position X="3.25" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAgAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.TrimLineType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.TrimLineData" Collapsed="true">
     <Position X="3.25" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAIAAAAAEAgAAAgAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.TextRotationType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.PropertyChangeData" Collapsed="true">
     <Position X="3.25" Y="11.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAEAAACAAAAAAAgAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.SimpleLineSubdivisionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.SimpleLineSubdivisionData" Collapsed="true">
     <Position X="3.25" Y="12" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AQAAAAAAAAEAQAAEgAAACAACAAAAAABAAAAAABABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.SetTopologyType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.NewArcData" Collapsed="true">
     <Position X="3.25" Y="16.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.RadialType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.RadialData" Collapsed="true">
     <Position X="3.25" Y="18" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAIEAAAAAgCAAAABAAAAIAAAAgAAAAQABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.PropertyChangeType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.TextRotationData" Collapsed="true">
     <Position X="3.25" Y="19.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAEAAACAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.PolygonSubdivisionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.PolygonSubdivisionData" Collapsed="true">
     <Position X="3.25" Y="21" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAoAAAAAAAAAAABAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.PathType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.PathData" Collapsed="true">
     <Position X="3.25" Y="21.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAIAAAAAAEQCIAAAAAAAAAAAAAIAoAAgIAAEAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.ParallelLineType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.ParallelLineData" Collapsed="true">
     <Position X="3.25" Y="12.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAAAABAQAEQIAAAAAAAAAAAAgAIACAAkAwCAAAAwAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.NewTextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.NewTextData" Collapsed="true">
     <Position X="3.25" Y="15.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAABAAAEAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.NewSegmentType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.SetTopologyData" Collapsed="true">
     <Position X="3.25" Y="14.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.NewPointType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.NewPointData" Collapsed="true">
     <Position X="3.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAIAAAAAEAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.NewCircleType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.NewCircleData" Collapsed="true">
     <Position X="3.25" Y="9" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AQAIAAAAAgEAAAAAAAAAAAEAAAAAAIAAAAABAAAIAQA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.NewArcType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.NewSegmentData" Collapsed="true">
     <Position X="3.25" Y="17.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.MoveTextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.MoveTextData" Collapsed="true">
     <Position X="3.25" Y="18.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>gBAAAABkAAkDAAAAIAAAAEAQggAAAAABAAAACAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.MovePolygonPositionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.MovePolygonPositionData" Collapsed="true">
     <Position X="3.25" Y="20.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAABgEAEDAIAAIAAAAFAAgAAgAAABBABAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.LineSubdivisionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.LineSubdivisionData" Collapsed="true">
     <Position X="3.25" Y="13.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAEAAAIBAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.LineExtensionType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.LineExtensionData" Collapsed="true">
     <Position X="3.25" Y="22.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAEAQAAAgAgAQAAAAAAAAABAAAQCABABAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.IntersectTwoLinesType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.IntersectTwoLinesData" Collapsed="true">
     <Position X="3.25" Y="23.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAIAAAGAAQEAAAAEAAAACAAIBAAggAgAQAgABAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.IntersectTwoDistancesType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.IntersectTwoDistancesData" Collapsed="true">
     <Position X="3.25" Y="24" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AFAAAAAAAAGAEQACCAAAIAAAAAAIACBggAAAQAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.IntersectTwoDirectionsType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.IntersectTwoDirectionsData" Collapsed="true">
     <Position X="3.25" Y="24.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>EgAAAAAAAAGACQAAAAAAAAAAAAAIAAAggAAAQAAQAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.IntersectDirectionAndLineType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.IntersectDirectionAndLineData" Collapsed="true">
     <Position X="3.25" Y="25.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAQAAIAAAEAAQAAgCCEAAABAAAIBAAAgAAAAQgBAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.IntersectDirectionAndDistanceType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.IntersectDirectionAndDistanceData" Collapsed="true">
     <Position X="3.25" Y="26.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAAAAIAAAEQEVAAACAAIAAAAAAIAABAgAAAARAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.ImportType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.ImportData" Collapsed="true">
     <Position X="3.25" Y="27" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAABAEAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.GetControlType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.GetControlData" Collapsed="true">
     <Position X="3.25" Y="27.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAIAAAAAEAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.FeatureType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.FeatureData" Collapsed="true">
     <Position X="6.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAACCAAAAAACAAQACAAAAAQAAAIAACAAAYAAAAAAQAA=</HashCode>
+      <HashCode>GAACCAAAAAAAAAQACAAAAAQAAAIAACAAAIAAAAAAQAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.CalculatedFeatureType" Collapsed="true">
-    <Position X="8.5" Y="7.25" Width="1.5" />
-    <TypeIdentifier>
-      <FileName>Xml\CalculatedFeatureType.cs</FileName>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Backsight.Editor.Xml.TextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.TextData" Collapsed="true">
     <Position X="6.25" Y="8.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>CAEAAAACDAAACIASAgABAMBIAAAIAAIAEAABBAACYCA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.SharedPointType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.SharedPointData" Collapsed="true">
     <Position X="8.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.PointType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.PointData" Collapsed="true">
     <Position X="8.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAQAAAAAAAAAIAAAABAAAAAIAAAAEIAAAAAAYAE=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.LineType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.LineData" Collapsed="true">
     <Position X="8.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AgAAAAAACAAQAAAAAAAAAIAAAAAIAAAAgAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.RowTextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.RowTextData" Collapsed="true">
     <Position X="8.5" Y="8.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAEAAAAEAAAAAAAAAAQAAAAAAAABAAAIAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.MiscTextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.MiscTextData" Collapsed="true">
     <Position X="8.5" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAACAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="Backsight.Editor.Xml.KeyTextType" Collapsed="true">
+  <Class Name="Backsight.Editor.Xml.KeyTextData" Collapsed="true">
     <Position X="8.5" Y="10" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Xml.CalculatedFeatureData" Collapsed="true">
+    <Position X="8.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Xml\Edits.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Backsight.Editor.Xml.OffsetData" Collapsed="true">
+    <Position X="6.25" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <FileName>Xml\Edits.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
 </ClassDiagram>

@@ -370,6 +370,9 @@
     <Compile Include="Operations\LineSubdivisionInput.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewArcOperation.cs" />
+    <Compile Include="Operations\NewKeyTextOperation.cs" />
+    <Compile Include="Operations\NewMiscTextOperation.cs" />
+    <Compile Include="Operations\NewRowTextOperation.cs" />
     <Compile Include="Operations\NewSegmentOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\OperationInput.cs" />
