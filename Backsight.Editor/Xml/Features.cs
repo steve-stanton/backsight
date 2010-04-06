@@ -166,6 +166,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class PointData
     {
+        public PointData()
+        {
+        }
+
         internal PointData(PointFeature f)
             : base(f)
         {
@@ -207,6 +211,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class SegmentData
     {
+        public SegmentData()
+        {
+        }
+
         internal SegmentData(LineFeature line)
             : base(line)
         {
