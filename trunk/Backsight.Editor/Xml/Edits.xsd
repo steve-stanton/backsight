@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.2.746 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditData" />
   <xs:complexType name="AngleData">
@@ -171,7 +171,7 @@
     <xs:attribute name="Id" type="IdData" use="required" />
     <xs:attribute default="0" name="Entity" type="xs:int" use="optional">
       <xs:annotation>
-        <xs:documentation>The ID of the entity type that describes the real-world significance of a feature. The default value of 0 may either signify a construction line (with no real-world significance), or that the type can be obtained from the editing context.</xs:documentation>
+        <xs:documentation>The ID of the entity type that describes the real-world significance of a feature. The default value of 0 may either signify a construction line (with no real-world significance), or mean that the type can be obtained from the editing context.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="Key" type="xs:unsignedInt" use="optional">
@@ -202,9 +202,9 @@
   </xs:complexType>
   <xs:simpleType name="IdData">
     <xs:annotation>
-      <xs:documentation>The ID for features and editing operations. Backsight defines this by concatenating the ID of the sesion in which the item was created, followed by a sequence number indicating the creation order within the session. The very first ID is 1.1
+      <xs:documentation>The ID for features and editing operations. Backsight defines this by concatenating the ID of the sesion in which the item was created, followed by a sequence number indicating the creation order within the session. The very first ID is 1:1
 
-Dealing with these two components as a single formatted string may well be "bad" from a design point of view. The main reason for doing so is that it's more natural to think of an identifier as a single attribute value (could make it an element, but that's a bit messier).</xs:documentation>
+Dealing with these two components as a single formatted string may well be "bad" from a design point of view. The main reason for doing so is that it's more natural to think of an identifier as a single attribute value (making it an element is obviously easy to do, just a bit messier).</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="[0-9]{1,10}:[0-9]{1,10}" />

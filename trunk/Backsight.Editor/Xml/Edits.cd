@@ -2,7 +2,7 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Font Name="Microsoft Sans Serif" Size="8.25" />
   <Class Name="Backsight.Editor.Xml.DeflectionData" Collapsed="true">
-    <Position X="3.75" Y="0.75" Width="1.5" />
+    <Position X="1.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -16,14 +16,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Backsight.Editor.Xml.OffsetPointData" Collapsed="true">
-    <Position X="6.5" Y="3.25" Width="1.5" />
+    <Position X="6.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAIAAAAAAAgAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="Backsight.Editor.Xml.OffsetDistanceData" Collapsed="true">
-    <Position X="8.25" Y="3.25" Width="1.5" />
+    <Position X="8.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AABAAAAAAAAAAAAAAAAAAIAAAAAAAABACAAAABAAAAA=</HashCode>
@@ -51,7 +51,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Backsight.Editor.Xml.ObservationData" Collapsed="true">
-    <Position X="1.25" Y="4.5" Width="1.5" />
+    <Position X="4" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -159,7 +159,7 @@
     <Position X="3.25" Y="15.75" Width="1.5" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
-      <HashCode>AAAAAABAAAEAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
   <Class Name="Backsight.Editor.Xml.SetTopologyData" Collapsed="true">
@@ -331,7 +331,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Backsight.Editor.Xml.OffsetData" Collapsed="true">
-    <Position X="6.25" Y="1.25" Width="2.25" />
+    <Position X="7" Y="2" Width="2.25" />
     <TypeIdentifier>
       <FileName>Xml\Edits.cs</FileName>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
