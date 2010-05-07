@@ -102,6 +102,7 @@ namespace Backsight.Editor.Xml
             m_TypeIndex = GetTypeIndex();
             m_DataMapping = new Dictionary<Type, ConstructorInfo>();
 
+            // Observations
             AddMapping("AngleDirection", "AngleData");
             AddMapping("BearingDirection", "BearingData");
             AddMapping("DeflectionDirection", "DeflectionData");
@@ -189,7 +190,7 @@ namespace Backsight.Editor.Xml
             return (T)ci.Invoke(new object[] { o });
         }
 
-        FeatureData ToData(Feature f)
+        internal T ToData<T>(Feature f) where T : FeatureData
         {
             return null;
         }

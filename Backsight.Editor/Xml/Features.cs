@@ -294,6 +294,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class RowTextData
     {
+        public RowTextData()
+        {
+        }
+
         internal RowTextData(TextFeature t)
             : base(t)
         {
@@ -318,6 +322,16 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class KeyTextData
     {
+        public KeyTextData()
+        {
+        }
+
+        internal KeyTextData(TextFeature t)
+            : base(t)
+        {
+            // nothing to do
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -346,6 +360,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class MiscTextData
     {
+        public MiscTextData()
+        {
+        }
+
         internal MiscTextData(TextFeature t)
             : base(t)
         {
