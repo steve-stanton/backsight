@@ -345,15 +345,15 @@ namespace Backsight.Editor.Operations
         internal override OperationData GetSerializableEdit()
         {
             return new NewCircleData(this);
-            NewCircleData t = new NewCircleData();
-            base.SetSerializableEdit(t);
+            //NewCircleData t = new NewCircleData();
+            //base.SetSerializableEdit(t);
 
-            t.Radius = DataFactory.Instance.ToData<ObservationData>(m_Radius);
-            t.Center = m_Center.DataId;
-            t.ClosingPoint = Line.StartPoint.DataId;
-            t.Arc = Line.DataId;
+            //t.Radius = DataFactory.Instance.ToData<ObservationData>(m_Radius);
+            //t.Center = m_Center.DataId;
+            //t.ClosingPoint = Line.StartPoint.DataId;
+            //t.Arc = Line.DataId;
 
-            return t;
+            //return t;
         }
 
         /// <summary>

@@ -294,6 +294,14 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class RowTextData
     {
+        internal RowTextData(TextFeature t)
+            : base(t)
+        {
+            RowTextGeometry g = (RowTextGeometry)t.TextGeometry;
+            this.Table = (uint)g.Row.Table.Id;
+            this.Template = (uint)g.Template.Id;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -338,6 +346,13 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class MiscTextData
     {
+        internal MiscTextData(TextFeature t)
+            : base(t)
+        {
+            MiscText mt = (MiscText)t.TextGeometry;
+            this.Text = mt.Text;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -346,6 +361,40 @@ namespace Backsight.Editor.Xml
         internal override Feature LoadFeature(Operation op)
         {
             return new TextFeature(op, this);
+        }
+    }
+
+    /// <summary>
+    /// A serialized text feature.
+    /// </summary>
+    public partial class TextData
+    {
+        // should be protected
+        internal TextData(TextFeature t)
+            : base(t)
+        {
+            this.Topological = t.IsTopological;
+
+            IPointGeometry p = t.GetPolPosition();
+            if (p != null)
+            {
+                this.PolygonX = p.Easting.Microns;
+                this.PolygonY = p.Northing.Microns;
+
+                this.polygonXFieldSpecified = this.PolygonYSpecified = true;
+            }
+
+            p = t.Position;
+            this.X = p.Easting.Microns;
+            this.Y = p.Northing.Microns;
+
+            TextGeometry tg = t.TextGeometry;
+            this.Height = Math.Round((double)tg.Height, 2);
+            this.Width = Math.Round((double)tg.Width, 2);
+            this.Font = (tg.Font == null ? 0 : tg.Font.Id);
+
+            // TODO: May want to cover indirect rotations
+            this.Rotation = RadianValue.AsString(tg.Rotation.Radians);
         }
     }
 }
