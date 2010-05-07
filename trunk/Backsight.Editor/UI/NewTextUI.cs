@@ -267,11 +267,11 @@ namespace Backsight.Editor.UI
         internal override TextFeature AddNewLabel(IPosition posn)
         {
             // Execute the edit
-            NewTextOperation op = null;
+            NewMiscTextOperation op = null;
 
             try
             {
-                op = new NewTextOperation(Session.WorkingSession);
+                op = new NewMiscTextOperation(Session.WorkingSession);
                 op.Execute(m_NewText, Entity, posn, Height, Width, Rotation);
                 return op.Text;
             }

@@ -605,17 +605,17 @@ namespace Backsight.Editor.UI
              */
 
             // Execute the edit
-            NewTextOperation op = null;
+            NewTextOperation txop = null;
 
             try
             {
-                op = new NewTextOperation(Session.WorkingSession);
-
                 if (m_Template!=null && m_LastRow!=null)
                 {
                     // Save the attributes in the database
                     DbUtil.SaveRow(m_LastRow);
 
+                    NewRowTextOperation op = new NewRowTextOperation(Session.WorkingSession);
+                    txop = op;
                     op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
                     // Confirm that the row got cross-referenced to an ID (not
@@ -628,15 +628,17 @@ namespace Backsight.Editor.UI
                 }
                 else
                 {
+                    NewKeyTextOperation op = new NewKeyTextOperation(Session.WorkingSession);
+                    txop = op;
                     op.Execute(posn, m_PolygonId, m_Polygon, Height, Width, Rotation);
                 }
 
-                newLabel = op.Text;
+                newLabel = txop.Text;
             }
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(op);
+                Session.WorkingSession.Remove(txop);
                 MessageBox.Show(ex.Message);
             }
 

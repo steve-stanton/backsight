@@ -40,17 +40,6 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal NewTextOperation(Session s, NewTextData t)
-            : base(s, t)
-        {
-            m_NewText = (TextFeature)t.Text.LoadFeature(this);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NewTextOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
@@ -58,6 +47,39 @@ namespace Backsight.Editor.Operations
             : base(s)
         {
             m_NewText = null;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected NewTextOperation(Session s, NewMiscTextData t)
+            : base(s, t)
+        {
+            m_NewText = new TextFeature(this, t.Text);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected NewTextOperation(Session s, NewKeyTextData t)
+            : base(s, t)
+        {
+            m_NewText = new TextFeature(this, t.Text);
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        protected NewTextOperation(Session s, NewRowTextData t)
+            : base(s, t)
+        {
+            m_NewText = new TextFeature(this, t.Text);
         }
 
         #endregion
@@ -358,24 +380,24 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
         /// Returns an object that represents this edit, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            //return new NewTextData(this);
-            NewTextData t = new NewTextData();
-            SetSerializableEdit(t);
-            return t;
-        }
+        //internal override OperationData GetSerializableEdit()
+        //{
+        //    //return new NewTextData(this);
+        //    NewTextData t = new NewTextData();
+        //    SetSerializableEdit(t);
+        //    return t;
+        //}
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this edit</param>
-        protected void SetSerializableEdit(NewTextData t)
-        {
-            base.SetSerializableEdit(t);
-            t.Text = m_NewText.GetSerializableText();
-        }
+        //protected void SetSerializableEdit(NewTextData t)
+        //{
+        //    base.SetSerializableEdit(t);
+        //    t.Text = m_NewText.GetSerializableText();
+        //}
 
         /// <summary>
         /// Performs the data processing associated with this editing operation.

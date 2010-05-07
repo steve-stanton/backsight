@@ -150,12 +150,14 @@ namespace CadastralViewer
                         index.Add(line);
                     }
 
+                    /*
                     foreach (LinePoint lp in parcel.linePoints)
                     {
                         // Relate to the parcel it's referenced by
 
                         // Relate the associated point 
                     }
+                     */
                 }
             }
 

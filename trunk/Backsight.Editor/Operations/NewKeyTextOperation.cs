@@ -20,6 +20,21 @@ namespace Backsight.Editor.Operations
 {
     class NewKeyTextOperation : NewTextOperation
     {
+        internal NewKeyTextOperation(Session s)
+            : base(s)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal NewKeyTextOperation(Session s, NewKeyTextData t)
+            : base(s, t)
+        {
+        }
+
         /// <summary>
         /// Executes the new label operation.
         /// </summary>

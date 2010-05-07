@@ -479,6 +479,12 @@ namespace Backsight.Editor.Xml
 
     public partial class NewKeyTextData
     {
+        internal NewKeyTextData(NewKeyTextOperation op)
+            : base(op)
+        {
+            this.Text = new KeyTextData(op.Text);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>

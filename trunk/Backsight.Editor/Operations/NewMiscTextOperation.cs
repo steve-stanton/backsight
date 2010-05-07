@@ -21,6 +21,21 @@ namespace Backsight.Editor.Operations
 {
     class NewMiscTextOperation : NewTextOperation
     {
+        internal NewMiscTextOperation(Session s)
+            : base(s)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="t">The serialized version of this instance</param>
+        internal NewMiscTextOperation(Session s, NewMiscTextData t)
+            : base(s, t)
+        {
+        }
+
         /// <summary>
         /// Executes this operation. This version is suitable for adding miscellaneous
         /// non-topological trim.
