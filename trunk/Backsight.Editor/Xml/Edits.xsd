@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.2.746 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditData" />
   <xs:complexType name="AngleData">
@@ -619,6 +619,24 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="NewKeyTextData">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationData">
+        <xs:sequence>
+          <xs:element name="Text" type="KeyTextData" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NewMiscTextData">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationData">
+        <xs:sequence>
+          <xs:element name="Text" type="MiscTextData" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="NewPointData">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
@@ -628,24 +646,20 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="NewRowTextData">
+    <xs:complexContent mixed="false">
+      <xs:extension base="OperationData">
+        <xs:sequence>
+          <xs:element name="Text" type="RowTextData" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="NewSegmentData">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
           <xs:element minOccurs="1" maxOccurs="1" name="Line" type="SegmentData" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="NewTextData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="OperationData">
-        <xs:sequence>
-          <xs:element name="Text" type="TextData">
-            <xs:annotation>
-              <xs:documentation>The text label that was created</xs:documentation>
-            </xs:annotation>
-          </xs:element>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -996,9 +1010,6 @@ The first and last positions are assumed to match the positions of the point fea
   <xs:complexType name="TextData" abstract="true">
     <xs:complexContent mixed="false">
       <xs:extension base="FeatureData">
-        <xs:sequence>
-          <xs:element name="Geometry" type="TextGeometryData" />
-        </xs:sequence>
         <xs:attribute name="X" type="xs:long" use="required" />
         <xs:attribute name="Y" type="xs:long" use="required" />
         <xs:attribute name="Height" type="xs:double" use="required" />
@@ -1033,36 +1044,6 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:attribute name="RevisedEdit" type="IdData" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="GeometryData" abstract="true">
-    <xs:annotation>
-      <xs:documentation>Base class for all geometric types</xs:documentation>
-    </xs:annotation>
-  </xs:complexType>
-  <xs:complexType name="TextGeometryData" abstract="true">
-    <xs:complexContent mixed="false">
-      <xs:extension base="GeometryData" />
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="RowTextGeometryData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="TextGeometryData">
-        <xs:attribute name="Table" type="xs:unsignedInt" use="required" />
-        <xs:attribute name="Template" type="xs:unsignedInt" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="KeyTextGeometryData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="TextGeometryData" />
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="MiscTextGeometryData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="TextGeometryData">
-        <xs:attribute name="Text" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

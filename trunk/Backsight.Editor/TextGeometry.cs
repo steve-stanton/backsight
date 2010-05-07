@@ -160,6 +160,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The total width of the text, in meters on the ground.
+        /// </summary>
+        internal float Width
+        {
+            get { return m_Width; }
+        }
+
+        /// <summary>
         /// The text style
         /// </summary>
         internal IFont Font

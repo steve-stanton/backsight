@@ -86,15 +86,6 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            return GetSerializableArc();
-        }
-
-        /// <summary>
-        /// Obtains an object representing an edit that created a circular arc
-        /// </summary>
-        /// <returns>The serializable version of this edit</returns>
-        OperationData GetSerializableArc()
-        {
             // The deserialization logic works on the assumption that this edit can only
             // attach arcs to existing circles.
             ArcFeature arc = (ArcFeature)base.Line;

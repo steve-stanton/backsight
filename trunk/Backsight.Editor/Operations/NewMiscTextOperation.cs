@@ -15,6 +15,7 @@
 
 using System;
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -41,6 +42,15 @@ namespace Backsight.Editor.Operations
             text.SetTopology(false);
 
             Complete();
+        }
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationData GetSerializableEdit()
+        {
+            return new NewMiscTextData(this);
         }
     }
 }

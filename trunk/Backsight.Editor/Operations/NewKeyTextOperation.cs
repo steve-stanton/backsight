@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -41,6 +42,15 @@ namespace Backsight.Editor.Operations
             pol.ClaimLabel(text);
 
             Complete();
+        }
+
+        /// <summary>
+        /// Returns an object that represents this edit, and that can be serialized using
+        /// the <c>XmlSerializer</c> class.
+        /// <returns>The serializable version of this edit</returns>
+        internal override OperationData GetSerializableEdit()
+        {
+            return new NewKeyTextData(this);
         }
     }
 }

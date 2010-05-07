@@ -457,10 +457,6 @@ namespace Backsight.Editor.Xml
 
     public partial class NewCircleData
     {
-        public NewCircleData()
-        {
-        }
-
         internal NewCircleData(NewCircleOperation op)
             : base(op)
         {
@@ -496,11 +492,11 @@ namespace Backsight.Editor.Xml
 
     public partial class NewMiscTextData
     {
-        //internal NewTextData(NewTextOperation op)
-        //    : base(op)
-        //{
-        //    this.Text = new TextData();
-        //}
+        internal NewMiscTextData(NewMiscTextOperation op)
+            : base(op)
+        {
+            this.Text = new MiscTextData(op.Text);
+        }
 
         /// <summary>
         /// Loads this editing operation into a session
@@ -534,6 +530,12 @@ namespace Backsight.Editor.Xml
 
     public partial class NewRowTextData
     {
+        internal NewRowTextData(NewRowTextOperation op)
+            : base(op)
+        {
+            this.Text = new RowTextData(op.Text);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
