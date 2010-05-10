@@ -212,13 +212,14 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            PropertyChangeData t = new PropertyChangeData();
-            base.SetSerializableEdit(t);
+            return new PropertyChangeData(this);
+            //PropertyChangeData t = new PropertyChangeData();
+            //base.SetSerializableEdit(t);
 
-            t.Item = m_Item;
-            t.Value = m_NewValue;
+            //t.Item = m_Item;
+            //t.Value = m_NewValue;
 
-            return t;
+            //return t;
         }
 
         /// <summary>
@@ -230,6 +231,30 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// The property this edit relates to
+        /// </summary>
+        internal PropertyItemData Item
+        {
+            get { return m_Item; }
+        }
+
+        /// <summary>
+        /// The new value of the property
+        /// </summary>
+        internal string NewValue
+        {
+            get { return m_NewValue; }
+        }
+
+        /// <summary>
+        /// The original value of the property
+        /// </summary>
+        internal string OldValue
+        {
+            get { return m_OldValue; }
         }
     }
 }

@@ -121,16 +121,26 @@ namespace Backsight.Editor.Operations
             get { return m_To; }
         }
 
+        /// <summary>
+        /// The line (if any) that was added to correspond to the sideshot arm.
+        /// </summary>
         internal LineFeature Line
         {
             get { return m_Line; }
         }
 
+        /// <summary>
+        /// The length of the sideshot arm (either a <c>Distance</c> or
+        /// an <c>OffsetPoint</c>).
+        /// </summary>
         internal Observation Length
         {
             get { return m_Length; }
         }
 
+        /// <summary>
+        /// The direction (could contain an offset).
+        /// </summary>
         internal Direction Direction
         {
             get { return m_Direction; }
@@ -431,17 +441,18 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            RadialData t = new RadialData();
-            base.SetSerializableEdit(t);
+            return new RadialData(this);
+            //RadialData t = new RadialData();
+            //base.SetSerializableEdit(t);
 
-            t.Direction = DataFactory.Instance.ToData<DirectionData>(m_Direction);
-            t.Length = DataFactory.Instance.ToData<ObservationData>(m_Length);
-            t.To = new CalculatedFeatureData(m_To);
+            //t.Direction = DataFactory.Instance.ToData<DirectionData>(m_Direction);
+            //t.Length = DataFactory.Instance.ToData<ObservationData>(m_Length);
+            //t.To = new CalculatedFeatureData(m_To);
 
-            if (m_Line != null)
-                t.Line = new CalculatedFeatureData(m_Line);
+            //if (m_Line != null)
+            //    t.Line = new CalculatedFeatureData(m_Line);
 
-            return t;
+            //return t;
         }
 
         /// <summary>

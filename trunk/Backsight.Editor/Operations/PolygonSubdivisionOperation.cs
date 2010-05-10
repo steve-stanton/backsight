@@ -106,6 +106,14 @@ namespace Backsight.Editor.Operations
             get { return m_Lines; }
         }
 
+        /// <summary>
+        /// The lines that were created.
+        /// </summary>
+        internal LineFeature[] NewLines
+        {
+            get { return m_Lines; }
+        }
+
         internal override EditingActionId EditId
         {
             get { return EditingActionId.PolygonSubdivision; }
@@ -192,20 +200,21 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            PolygonSubdivisionData t = new PolygonSubdivisionData();
-            base.SetSerializableEdit(t);
+            return new PolygonSubdivisionData(this);
+            //PolygonSubdivisionData t = new PolygonSubdivisionData();
+            //base.SetSerializableEdit(t);
 
-            if (m_Label != null)
-                t.DeactivatedLabel = m_Label.DataId;
+            //if (m_Label != null)
+            //    t.DeactivatedLabel = m_Label.DataId;
 
-            SegmentData[] lines = new SegmentData[m_Lines.Length];
-            for (int i=0; i<lines.Length; i++)
-            {
-                lines[i] = (SegmentData)m_Lines[i].GetSerializableLine();
-            }
+            //SegmentData[] lines = new SegmentData[m_Lines.Length];
+            //for (int i=0; i<lines.Length; i++)
+            //{
+            //    lines[i] = (SegmentData)m_Lines[i].GetSerializableLine();
+            //}
 
-            t.Line = lines;
-            return t;
+            //t.Line = lines;
+            //return t;
         }
 
         /// <summary>
@@ -226,6 +235,14 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// Any polygon label that was de-activated as a result of the subdivision.
+        /// </summary>
+        internal TextFeature DeactivatedLabel
+        {
+            get { return m_Label; }
         }
     }
 }

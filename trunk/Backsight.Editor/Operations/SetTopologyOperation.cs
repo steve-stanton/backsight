@@ -151,10 +151,11 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            SetTopologyData t = new SetTopologyData();
-            base.SetSerializableEdit(t);
-            t.Line = m_Line.DataId;
-            return t;
+            return new SetTopologyData(this);
+            //SetTopologyData t = new SetTopologyData();
+            //base.SetSerializableEdit(t);
+            //t.Line = m_Line.DataId;
+            //return t;
         }
 
         /// <summary>
@@ -174,6 +175,14 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// The line altered by the edit.
+        /// </summary>
+        internal LineFeature Line
+        {
+            get { return m_Line; }
         }
     }
 }
