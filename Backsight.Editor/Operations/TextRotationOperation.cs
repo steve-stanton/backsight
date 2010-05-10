@@ -166,9 +166,10 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            TextRotationData t = new TextRotationData();
-            t.Value = RadianValue.AsString(m_Rotation);
-            return t;
+            return new TextRotationData(this);
+            //TextRotationData t = new TextRotationData();
+            //t.Value = RadianValue.AsString(m_Rotation);
+            //return t;
         }
 
         /// <summary>
@@ -192,6 +193,14 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// The new default rotation (as a clockwise rotation from horizontal axis (+X), in radians)
+        /// </summary>
+        internal double RotationInRadians
+        {
+            get { return m_Rotation; }
         }
     }
 }

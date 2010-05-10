@@ -574,6 +574,27 @@ namespace Backsight.Editor.Xml
 
     public partial class ParallelLineData
     {
+        internal ParallelLineData(ParallelOperation op)
+            : base(op)
+        {
+            this.RefLine = op.ReferenceLine.DataId;
+
+            if (op.Terminal1 != null)
+                this.Term1 = op.Terminal1.DataId;
+
+            if (op.Terminal2 != null)
+                this.Term2 = op.Terminal2.DataId;
+
+            if (op.IsArcReversed)
+                this.ReverseArc = true;
+
+            this.Offset = DataFactory.Instance.ToData<ObservationData>(op.Offset);
+            LineFeature parLine = op.ParallelLine;
+            this.From = new CalculatedFeatureData(parLine.StartPoint, (parLine.StartPoint.Creator == op));
+            this.To = new CalculatedFeatureData(parLine.EndPoint, (parLine.EndPoint.Creator == op));
+            this.NewLine = parLine.GetSerializableLine();
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -600,6 +621,22 @@ namespace Backsight.Editor.Xml
 
     public partial class PolygonSubdivisionData
     {
+        internal PolygonSubdivisionData(PolygonSubdivisionOperation op)
+            : base(op)
+        {
+            if (op.DeactivatedLabel != null)
+                this.DeactivatedLabel = op.DeactivatedLabel.DataId;
+
+            LineFeature[] newLines = op.NewLines;
+            SegmentData[] data = new SegmentData[newLines.Length];
+            for (int i = 0; i < newLines.Length; i++)
+            {
+                data[i] = (SegmentData)newLines[i].GetSerializableLine();
+            }
+
+            this.Line = data;
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -613,6 +650,13 @@ namespace Backsight.Editor.Xml
 
     public partial class PropertyChangeData
     {
+        internal PropertyChangeData(PropertyChangeOperation op)
+            : base(op)
+        {
+            this.Item = op.Item;
+            this.Value = op.NewValue;
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -626,6 +670,17 @@ namespace Backsight.Editor.Xml
 
     public partial class RadialData
     {
+        internal RadialData(RadialOperation op)
+            : base(op)
+        {
+            this.Direction = DataFactory.Instance.ToData<DirectionData>(op.Direction);
+            this.Length = DataFactory.Instance.ToData<ObservationData>(op.Length);
+            this.To = new CalculatedFeatureData(op.Point);
+
+            if (op.Line != null)
+                this.Line = new CalculatedFeatureData(op.Line);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -639,6 +694,12 @@ namespace Backsight.Editor.Xml
 
     public partial class SetTopologyData
     {
+        internal SetTopologyData(SetTopologyOperation op)
+            : base(op)
+        {
+            this.Line = op.Line.DataId;
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -652,6 +713,16 @@ namespace Backsight.Editor.Xml
 
     public partial class SimpleLineSubdivisionData
     {
+        internal SimpleLineSubdivisionData(SimpleLineSubdivisionOperation op)
+            : base(op)
+        {
+            this.Line = op.Line.DataId;
+            this.NewLine1 = op.NewLine1.DataId;
+            this.NewLine2 = op.NewLine2.DataId;
+            this.Distance = DataFactory.Instance.ToData<DistanceData>(op.Distance);
+            this.NewPoint = new CalculatedFeatureData(op.NewPoint);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -665,6 +736,12 @@ namespace Backsight.Editor.Xml
 
     public partial class TextRotationData
     {
+        internal TextRotationData(TextRotationOperation op)
+            : base(op)
+        {
+            this.Value = RadianValue.AsString(op.RotationInRadians);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -678,6 +755,30 @@ namespace Backsight.Editor.Xml
 
     public partial class TrimLineData
     {
+        internal TrimLineData(TrimLineOperation op)
+            : base(op)
+        {
+            LineFeature[] trimmedLines = op.TrimmedLines;
+            if (trimmedLines == null)
+                this.Line = new string[0];
+            else
+            {
+                this.Line = new string[trimmedLines.Length];
+                for (int i = 0; i < trimmedLines.Length; i++)
+                    this.Line[i] = trimmedLines[i].DataId;
+            }
+
+            PointFeature[] trimPoints = op.TrimPoints;
+            if (trimPoints == null)
+                this.Point = new string[0];
+            else
+            {
+                this.Point = new string[trimPoints.Length];
+                for (int i = 0; i < trimPoints.Length; i++)
+                    this.Point[i] = trimPoints[i].DataId;
+            }
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>

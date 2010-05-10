@@ -308,28 +308,29 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            TrimLineData t = new TrimLineData();
-            base.SetSerializableEdit(t);
+            return new TrimLineData(this);
+            //TrimLineData t = new TrimLineData();
+            //base.SetSerializableEdit(t);
 
-            if (m_Lines==null)
-                t.Line = new string[0];
-            else
-            {
-                t.Line = new string[m_Lines.Count];
-                for (int i=0; i<m_Lines.Count; i++)
-                    t.Line[i] = m_Lines[i].DataId;
-            }
+            //if (m_Lines==null)
+            //    t.Line = new string[0];
+            //else
+            //{
+            //    t.Line = new string[m_Lines.Count];
+            //    for (int i=0; i<m_Lines.Count; i++)
+            //        t.Line[i] = m_Lines[i].DataId;
+            //}
 
-            if (m_Points==null)
-                t.Point = new string[0];
-            else
-            {
-                t.Point = new string[m_Points.Count];
-                for (int i=0; i<m_Points.Count; i++)
-                    t.Point[i] = m_Points[i].DataId;
-            }
+            //if (m_Points==null)
+            //    t.Point = new string[0];
+            //else
+            //{
+            //    t.Point = new string[m_Points.Count];
+            //    for (int i=0; i<m_Points.Count; i++)
+            //        t.Point[i] = m_Points[i].DataId;
+            //}
 
-            return t;
+            //return t;
         }
 
         /// <summary>
@@ -344,6 +345,22 @@ namespace Backsight.Editor.Operations
 
             foreach (PointFeature point in m_Points)
                 point.IsTrimmed = true;
+        }
+
+        /// <summary>
+        /// The lines that were selected for trimming.
+        /// </summary>
+        internal LineFeature[] TrimmedLines
+        {
+            get { return m_Lines.ToArray(); }
+        }
+
+        /// <summary>
+        /// Any dangling end points.
+        /// </summary>
+        internal PointFeature[] TrimPoints
+        {
+            get { return m_Points.ToArray(); }
         }
     }
 }

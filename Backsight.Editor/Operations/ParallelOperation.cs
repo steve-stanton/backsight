@@ -620,26 +620,27 @@ namespace Backsight.Editor.Operations
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            ParallelLineData t = new ParallelLineData();
-            base.SetSerializableEdit(t);
+            return new ParallelLineData(this);
+            //ParallelLineData t = new ParallelLineData();
+            //base.SetSerializableEdit(t);
 
-            t.RefLine = m_RefLine.DataId;
+            //t.RefLine = m_RefLine.DataId;
 
-            if (m_Term1!=null)
-                t.Term1 = m_Term1.DataId;
+            //if (m_Term1!=null)
+            //    t.Term1 = m_Term1.DataId;
 
-            if (m_Term2!=null)
-                t.Term2 = m_Term2.DataId;
+            //if (m_Term2!=null)
+            //    t.Term2 = m_Term2.DataId;
 
-            if (IsArcReversed)
-                t.ReverseArc = true;
+            //if (IsArcReversed)
+            //    t.ReverseArc = true;
 
-            t.Offset = DataFactory.Instance.ToData<ObservationData>(m_Offset);
-            t.From = new CalculatedFeatureData(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator == this));
-            t.To = new CalculatedFeatureData(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator == this));
-            t.NewLine = m_ParLine.GetSerializableLine();
+            //t.Offset = DataFactory.Instance.ToData<ObservationData>(m_Offset);
+            //t.From = new CalculatedFeatureData(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator == this));
+            //t.To = new CalculatedFeatureData(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator == this));
+            //t.NewLine = m_ParLine.GetSerializableLine();
 
-            return t;
+            //return t;
         }
 
         /// <summary>

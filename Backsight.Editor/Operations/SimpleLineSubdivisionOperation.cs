@@ -119,11 +119,27 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// The line created prior to the new point.
+        /// </summary>
+        internal LineFeature NewLine1
+        {
+            get { return m_NewLine1; }
+        }
+
+        /// <summary>
         /// The added point (between the 2 new lines)
         /// </summary>
         internal PointFeature NewPoint
         {
             get { return m_NewPoint; }
+        }
+
+        /// <summary>
+        /// The line created after the point.
+        /// </summary>
+        internal LineFeature NewLine2
+        {
+            get { return m_NewLine2; }
         }
 
         /// <summary>
@@ -392,16 +408,17 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            SimpleLineSubdivisionData t = new SimpleLineSubdivisionData();
-            base.SetSerializableEdit(t);
+            return new SimpleLineSubdivisionData(this);
+            //SimpleLineSubdivisionData t = new SimpleLineSubdivisionData();
+            //base.SetSerializableEdit(t);
 
-            t.Line = m_Line.DataId;
-            t.NewLine1 = m_NewLine1.DataId;
-            t.NewLine2 = m_NewLine2.DataId;
-            t.Distance = new DistanceData(m_Distance);
-            t.NewPoint = new CalculatedFeatureData(m_NewPoint);
+            //t.Line = m_Line.DataId;
+            //t.NewLine1 = m_NewLine1.DataId;
+            //t.NewLine2 = m_NewLine2.DataId;
+            //t.Distance = new DistanceData(m_Distance);
+            //t.NewPoint = new CalculatedFeatureData(m_NewPoint);
 
-            return t;
+            //return t;
         }
 
         /// <summary>
