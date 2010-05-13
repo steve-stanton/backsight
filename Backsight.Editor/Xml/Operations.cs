@@ -341,20 +341,32 @@ namespace Backsight.Editor.Xml
             : base(op)
         {
             this.Line = op.Parent.DataId;
+            this.EntryString = op.GetEntryString();
             MeasuredLineFeature[] sections = op.Sections;
-            this.Span = new SpanData[sections.Length];
+
+            this.Result = new FeatureTableData();
+            this.Result.Lines = new LineArray();
+            this.Result.Lines.DefaultEntity = sections[0].Line.EntityType.Id;
+            this.Result.Lines.Line = new FeatureData[sections.Length];
+
+            this.Result.Points = new PointArray();
+            this.Result.Points.DefaultEntity = sections[0].Line.EndPoint.EntityType.Id;
+            this.Result.Points.Point = new FeatureData[sections.Length - 1];
 
             for (int i = 0; i < sections.Length; i++)
             {
                 MeasuredLineFeature mf = sections[i];
-                SpanData st = new SpanData();
-                st.Length = new DistanceData(mf.ObservedLength);
-                st.LineId = mf.Line.DataId;
+                this.Result.Lines.Line[i].Id = mf.Line.DataId;
 
                 if (i < (sections.Length - 1))
-                    st.EndPoint = new CalculatedFeatureData(mf.Line.EndPoint);
+                {
+                    FeatureData fd = this.Result.Points.Point[i];
+                    PointFeature p = mf.Line.EndPoint;
+                    fd.Id = p.DataId;
 
-                this.Span[i] = st;
+                    if (p.Id != null)
+                        fd.Key = p.Id.RawId;
+                }
             }
         }
 
