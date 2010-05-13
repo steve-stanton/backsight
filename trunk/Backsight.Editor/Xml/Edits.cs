@@ -105,48 +105,6 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(StraightLegData))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(CircularLegData))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public abstract partial class LegData {
-        
-        private SpanData[] spanField;
-        
-        private byte faceField;
-        
-        public LegData() {
-            this.faceField = ((byte)(0));
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Span")]
-        public SpanData[] Span {
-            get {
-                return this.spanField;
-            }
-            set {
-                this.spanField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(typeof(byte), "0")]
-        public byte Face {
-            get {
-                return this.faceField;
-            }
-            set {
-                this.faceField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -1166,6 +1124,48 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(StraightLegData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(CircularLegData))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class LegData {
+        
+        private SpanData[] spanField;
+        
+        private byte faceField;
+        
+        public LegData() {
+            this.faceField = ((byte)(0));
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Span")]
+        public SpanData[] Span {
+            get {
+                return this.spanField;
+            }
+            set {
+                this.spanField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(typeof(byte), "0")]
+        public byte Face {
+            get {
+                return this.faceField;
+            }
+            set {
+                this.faceField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -1291,6 +1291,135 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.clockwiseField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class LineArray {
+        
+        private FeatureData[] lineField;
+        
+        private int defaultEntityField;
+        
+        private bool defaultEntityFieldSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Line")]
+        public FeatureData[] Line {
+            get {
+                return this.lineField;
+            }
+            set {
+                this.lineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DefaultEntity {
+            get {
+                return this.defaultEntityField;
+            }
+            set {
+                this.defaultEntityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DefaultEntitySpecified {
+            get {
+                return this.defaultEntityFieldSpecified;
+            }
+            set {
+                this.defaultEntityFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class PointArray {
+        
+        private FeatureData[] pointField;
+        
+        private int defaultEntityField;
+        
+        private bool defaultEntityFieldSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Point")]
+        public FeatureData[] Point {
+            get {
+                return this.pointField;
+            }
+            set {
+                this.pointField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DefaultEntity {
+            get {
+                return this.defaultEntityField;
+            }
+            set {
+                this.defaultEntityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DefaultEntitySpecified {
+            get {
+                return this.defaultEntityFieldSpecified;
+            }
+            set {
+                this.defaultEntityFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class FeatureTableData {
+        
+        private PointArray pointsField;
+        
+        private LineArray linesField;
+        
+        /// <remarks/>
+        public PointArray Points {
+            get {
+                return this.pointsField;
+            }
+            set {
+                this.pointsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public LineArray Lines {
+            get {
+                return this.linesField;
+            }
+            set {
+                this.linesField = value;
             }
         }
     }
@@ -2275,18 +2404,19 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class LineSubdivisionData : OperationData {
         
-        private SpanData[] spanField;
+        private FeatureTableData resultField;
         
         private string lineField;
         
+        private string entryStringField;
+        
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Span")]
-        public SpanData[] Span {
+        public FeatureTableData Result {
             get {
-                return this.spanField;
+                return this.resultField;
             }
             set {
-                this.spanField = value;
+                this.resultField = value;
             }
         }
         
@@ -2298,6 +2428,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.lineField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string EntryString {
+            get {
+                return this.entryStringField;
+            }
+            set {
+                this.entryStringField = value;
             }
         }
     }

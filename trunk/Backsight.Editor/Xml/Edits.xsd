@@ -520,11 +520,20 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="2" maxOccurs="unbounded" name="Span" type="SpanData" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Result" type="FeatureTableData">
+            <xs:annotation>
+              <xs:documentation>The lines sections that were produced (together with the points between each section), arranged in the same order as the values in the data entry string.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
         </xs:sequence>
         <xs:attribute name="Line" type="IdData" use="required">
           <xs:annotation>
             <xs:documentation>The line that was subdivided.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="EntryString" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>The entered distances, from the start of the subdivided line</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>

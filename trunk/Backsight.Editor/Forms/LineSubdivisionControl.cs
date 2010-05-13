@@ -21,6 +21,7 @@ using System.Drawing;
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using System.Text;
 
 
 namespace Backsight.Editor.Forms
@@ -193,6 +194,36 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
+        /// Obtains a string holding the currently entered distances.
+        /// </summary>
+        /// <returns>The entered distances (each seperated by a space character).</returns>
+        string GetEntryString()
+        {
+            StringBuilder result = new StringBuilder(1000);
+
+            foreach (string t in distancesTextBox.Lines)
+            {
+                string s = t.Trim();
+
+                // Skip empty lines
+                if (s.Length == 0)
+                    continue;
+
+                // The user may have entered the *, about to append a repeat count. In that
+                // case, ignore the trailing *.
+                if (s.EndsWith("*"))
+                    s = s.Substring(0, t.Length - 1);
+
+                if (result.Length > 0)
+                    result.Append(" ");
+
+                result.Append(s);
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
         /// Parses the distances list box. This defines <see cref="m_Distances"/>.
         /// </summary>
         /// <returns>The total distance entered, in meters.</returns>
@@ -207,12 +238,11 @@ namespace Backsight.Editor.Forms
             double tot = 0.0;
             List<Distance> ds = new List<Distance>();
 
-            foreach (string t in distancesTextBox.Lines)
-            {
-                // Skip empty lines
-                if (t.Length==0)
-                    continue;
+            string entryString = GetEntryString();
+            string[] items = entryString.Split(' ');
 
+            foreach (string t in items)
+            {
                 // Hold seperate reference, since may attempt to change foreach iterator variable below
                 string s = t;
 
@@ -223,8 +253,6 @@ namespace Backsight.Editor.Forms
                 {
                     string rest = s.Substring(repeat+1);
 
-                    // The user may have entered the *, and still has to append something else.
-                    // In that case, just default to a repear count of 1.
                     if (rest.Length > 0)
                     {
                         nRepeat = int.Parse(rest);

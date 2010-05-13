@@ -21,6 +21,7 @@ using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
+using System.Text;
 
 namespace Backsight.Editor.Operations
 {
@@ -59,6 +60,8 @@ namespace Backsight.Editor.Operations
             m_Line = s.MapModel.Find<LineFeature>(t.Line);
             if (m_Line == null)
                 throw new Exception("Cannot find line "+t.Line);
+
+            //FeatureTableData ft = t.Result;
 
             SpanData[] spans = t.Span;
             m_Sections = new List<MeasuredLineFeature>(spans.Length);
@@ -567,6 +570,44 @@ namespace Backsight.Editor.Operations
 
 	return 0;
              */
+        }
+
+        internal string GetEntryString()
+        {
+            StringBuilder sb = new StringBuilder(1000);
+            Distance lastDistance = m_Sections[0].ObservedLength;
+            int nRepeat = 1;
+
+            for (int i=1; i<m_Sections.Count; i++)
+            {
+                MeasuredLineFeature m = m_Sections[i];
+                Distance d = m.ObservedLength;
+
+                if (d.Equals(lastDistance))
+                    nRepeat++;
+                else
+                {
+                    AppendEnteredDistance(sb, lastDistance, nRepeat);
+                    lastDistance = d;
+                    nRepeat = 1;
+                }
+            }
+
+            // Process the last distance
+            AppendEnteredDistance(sb, lastDistance, nRepeat);
+
+            return sb.ToString();
+        }
+
+        void AppendEnteredDistance(StringBuilder sb, Distance d, int nRepeat)
+        {
+            if (sb.Length > 0)
+                sb.Append(" ");
+
+            sb.Append(d.Format());
+
+            if (nRepeat > 0)
+                sb.AppendFormat("*{0}", nRepeat);
         }
     }
 }
