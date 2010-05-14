@@ -442,17 +442,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
         internal override OperationData GetSerializableEdit()
         {
             return new RadialData(this);
-            //RadialData t = new RadialData();
-            //base.SetSerializableEdit(t);
-
-            //t.Direction = DataFactory.Instance.ToData<DirectionData>(m_Direction);
-            //t.Length = DataFactory.Instance.ToData<ObservationData>(m_Length);
-            //t.To = new CalculatedFeatureData(m_To);
-
-            //if (m_Line != null)
-            //    t.Line = new CalculatedFeatureData(m_Line);
-
-            //return t;
         }
 
         /// <summary>

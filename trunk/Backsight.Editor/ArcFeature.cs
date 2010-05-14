@@ -59,7 +59,7 @@ namespace Backsight.Editor
         /// <param name="ec">The point at the end of the arc</param>
         /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, CalculatedFeatureData t)
+        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, FeatureData t)
             : base(op, bc, ec, new ArcGeometry(c, bc, ec, isClockwise), t)
         {
             // Confirm that there is no need to call Circle.AddArc in this context

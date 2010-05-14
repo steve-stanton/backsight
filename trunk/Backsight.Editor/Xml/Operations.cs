@@ -67,7 +67,7 @@ namespace Backsight.Editor.Xml
         {
             this.Line = op.Line.DataId;
             this.PositionRatio = op.PositionRatio;
-            this.Point = new CalculatedFeatureData(op.NewPoint);
+            this.Point = new FeatureData(op.NewPoint);
         }
 
         /// <summary>
@@ -168,13 +168,13 @@ namespace Backsight.Editor.Xml
             this.Default = op.IsDefault;
             this.Direction = DataFactory.Instance.ToData<DirectionData>(op.Direction);
             this.Distance = DataFactory.Instance.ToData<ObservationData>(op.Distance);
-            this.To = new CalculatedFeatureData(op.IntersectionPoint);
+            this.To = new FeatureData(op.IntersectionPoint);
 
             if (op.CreatedDirectionLine != null)
-                this.DirLine = new CalculatedFeatureData(op.CreatedDirectionLine);
+                this.DirLine = new FeatureData(op.CreatedDirectionLine);
 
             if (op.CreatedDistanceLine != null)
-                this.DistLine = new CalculatedFeatureData(op.CreatedDistanceLine);
+                this.DistLine = new FeatureData(op.CreatedDistanceLine);
         }
 
         /// <summary>
@@ -196,10 +196,10 @@ namespace Backsight.Editor.Xml
             this.Line = op.Line.DataId;
             this.CloseTo = op.ClosePoint.DataId;
             this.Direction = DataFactory.Instance.ToData<DirectionData>(op.Direction);
-            this.To = new CalculatedFeatureData(op.IntersectionPoint);
+            this.To = new FeatureData(op.IntersectionPoint);
 
             if (op.CreatedDirectionLine != null)
-                this.DirLine = new CalculatedFeatureData(op.CreatedDirectionLine);
+                this.DirLine = new FeatureData(op.CreatedDirectionLine);
 
             if (op.LineBeforeSplit != null)
                 this.SplitBefore = op.LineBeforeSplit.DataId;
@@ -226,13 +226,13 @@ namespace Backsight.Editor.Xml
         {
             this.Direction1 = DataFactory.Instance.ToData<DirectionData>(op.Direction1);
             this.Direction2 = DataFactory.Instance.ToData<DirectionData>(op.Direction2);
-            this.To = new CalculatedFeatureData(op.IntersectionPoint);
+            this.To = new FeatureData(op.IntersectionPoint);
 
             if (op.CreatedLine1 != null)
-                this.Line1 = new CalculatedFeatureData(op.CreatedLine1);
+                this.Line1 = new FeatureData(op.CreatedLine1);
 
             if (op.CreatedLine2 != null)
-                this.Line2 = new CalculatedFeatureData(op.CreatedLine2);
+                this.Line2 = new FeatureData(op.CreatedLine2);
         }
 
         /// <summary>
@@ -255,14 +255,14 @@ namespace Backsight.Editor.Xml
             this.Distance1 = DataFactory.Instance.ToData<ObservationData>(op.Distance1);
             this.From2 = op.Distance2FromPoint.DataId;
             this.Distance2 = DataFactory.Instance.ToData<ObservationData>(op.Distance2);
-            this.To = new CalculatedFeatureData(op.IntersectionPoint);
+            this.To = new FeatureData(op.IntersectionPoint);
             this.Default = op.IsDefault;
 
             if (op.CreatedLine1 != null)
-                this.Line1 = new CalculatedFeatureData(op.CreatedLine1);
+                this.Line1 = new FeatureData(op.CreatedLine1);
 
             if (op.CreatedLine2 != null)
-                this.Line2 = new CalculatedFeatureData(op.CreatedLine2);
+                this.Line2 = new FeatureData(op.CreatedLine2);
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace Backsight.Editor.Xml
             this.Line1 = op.Line1.DataId;
             this.Line2 = op.Line2.DataId;
             this.CloseTo = op.ClosePoint.DataId;
-            this.To = new CalculatedFeatureData(op.IntersectionPoint);
+            this.To = new FeatureData(op.IntersectionPoint);
 
             if (op.Line1BeforeSplit != null)
                 this.SplitBefore1 = op.Line1BeforeSplit.DataId;
@@ -318,10 +318,10 @@ namespace Backsight.Editor.Xml
             this.Line = op.ExtendedLine.DataId;
             this.ExtendFromEnd = op.IsExtendFromEnd;
             this.Distance = new DistanceData(op.Length);
-            this.NewPoint = new CalculatedFeatureData(op.NewPoint);
+            this.NewPoint = new FeatureData(op.NewPoint);
 
             if (op.NewLine != null)
-                this.NewLine = new CalculatedFeatureData(op.NewLine);
+                this.NewLine = new FeatureData(op.NewLine);
         }
 
         /// <summary>
@@ -602,8 +602,8 @@ namespace Backsight.Editor.Xml
 
             this.Offset = DataFactory.Instance.ToData<ObservationData>(op.Offset);
             LineFeature parLine = op.ParallelLine;
-            this.From = new CalculatedFeatureData(parLine.StartPoint, (parLine.StartPoint.Creator == op));
-            this.To = new CalculatedFeatureData(parLine.EndPoint, (parLine.EndPoint.Creator == op));
+            this.From = new FeatureData(parLine.StartPoint, (parLine.StartPoint.Creator == op));
+            this.To = new FeatureData(parLine.EndPoint, (parLine.EndPoint.Creator == op));
             this.NewLine = parLine.GetSerializableLine();
         }
 
@@ -687,10 +687,10 @@ namespace Backsight.Editor.Xml
         {
             this.Direction = DataFactory.Instance.ToData<DirectionData>(op.Direction);
             this.Length = DataFactory.Instance.ToData<ObservationData>(op.Length);
-            this.To = new CalculatedFeatureData(op.Point);
+            this.To = new FeatureData(op.Point);
 
             if (op.Line != null)
-                this.Line = new CalculatedFeatureData(op.Line);
+                this.Line = new FeatureData(op.Line);
         }
 
         /// <summary>
@@ -732,7 +732,7 @@ namespace Backsight.Editor.Xml
             this.NewLine1 = op.NewLine1.DataId;
             this.NewLine2 = op.NewLine2.DataId;
             this.Distance = DataFactory.Instance.ToData<DistanceData>(op.Distance);
-            this.NewPoint = new CalculatedFeatureData(op.NewPoint);
+            this.NewPoint = new FeatureData(op.NewPoint);
         }
 
         /// <summary>

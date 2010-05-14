@@ -485,26 +485,6 @@ namespace Backsight.Editor.Operations
         internal override OperationData GetSerializableEdit()
         {
             return new LineSubdivisionData(this);
-            //LineSubdivisionData t = new LineSubdivisionData();
-            //base.SetSerializableEdit(t);
-
-            //t.Line = m_Line.DataId;
-            //t.Span = new SpanData[m_Sections.Count];
-
-            //for (int i = 0; i < m_Sections.Count; i++)
-            //{
-            //    MeasuredLineFeature mf = m_Sections[i];
-            //    SpanData st = new SpanData();
-            //    st.Length = new DistanceData(mf.ObservedLength);
-            //    st.LineId = mf.Line.DataId;
-
-            //    if (i < (m_Sections.Count - 1))
-            //        st.EndPoint = new CalculatedFeatureData(mf.Line.EndPoint);
-
-            //    t.Span[i] = st;
-            //}
-
-            //return t;
         }
 
         /// <summary>
