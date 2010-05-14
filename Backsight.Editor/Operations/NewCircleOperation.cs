@@ -70,14 +70,14 @@ namespace Backsight.Editor.Operations
             PointFeature p = s.MapModel.Find<PointFeature>(t.ClosingPoint);
             if (p == null)
             {
-                CalculatedFeatureData ft = new CalculatedFeatureData();
+                FeatureData ft = new FeatureData();
                 ft.Id = t.ClosingPoint;
                 p = new PointFeature(this, ft);
             }
 
             // Form the construction line (this will also cross-reference the circle to
             // the new arc)
-            CalculatedFeatureData at = new CalculatedFeatureData();
+            FeatureData at = new FeatureData();
             at.Id = t.Arc;
             ArcFeature arc = new ArcFeature(this, c, p, p, true, at);
 

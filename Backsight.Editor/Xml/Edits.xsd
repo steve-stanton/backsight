@@ -51,7 +51,7 @@
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Point" type="CalculatedFeatureData" />
+          <xs:element name="Point" type="FeatureData" />
         </xs:sequence>
         <xs:attribute name="Line" type="IdData" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
@@ -74,11 +74,6 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="CalculatedFeatureData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="FeatureData" />
-    </xs:complexContent>
-  </xs:complexType>
   <xs:complexType name="CircularLegData">
     <xs:complexContent mixed="false">
       <xs:extension base="LegData">
@@ -88,7 +83,7 @@
               <xs:documentation>The observed radius of the leg.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="Center" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="Center" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The point at the center of the circle that this leg coincides with</xs:documentation>
             </xs:annotation>
@@ -167,7 +162,7 @@
       <xs:element name="Operation" type="OperationData" />
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="FeatureData" abstract="true">
+  <xs:complexType name="FeatureData">
     <xs:attribute name="Id" type="IdData" use="required" />
     <xs:attribute default="0" name="Entity" type="xs:int" use="optional">
       <xs:annotation>
@@ -233,17 +228,17 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the the point at which the distance was observed, to the intersection point.</xs:documentation>
             </xs:annotation>
@@ -271,12 +266,12 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed direction</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -311,17 +306,17 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:sequence>
           <xs:element minOccurs="1" maxOccurs="1" name="Direction1" type="DirectionData" />
           <xs:element minOccurs="1" maxOccurs="1" name="Direction2" type="DirectionData" />
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the first direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the point at which the second direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -344,17 +339,17 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The second observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -382,7 +377,7 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
@@ -474,12 +469,12 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed length of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The actual extension line (if any).</xs:documentation>
             </xs:annotation>
@@ -716,12 +711,12 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The offset to the parallel (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="From" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="From" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The point at the start of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
@@ -880,12 +875,12 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The length of the sideshot arm (either a DistanceType or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The point at the end of the sideshot arm.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The line (if any) that was added to correspond to the sideshot arm.</xs:documentation>
             </xs:annotation>
@@ -940,7 +935,7 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The distance to the point. A negated distance refers to the distance from the end of the line.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="CalculatedFeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The added point (between the 2 new lines)</xs:documentation>
             </xs:annotation>
@@ -977,13 +972,13 @@ The first and last positions are assumed to match the positions of the point fea
             <xs:documentation>The internal ID of the line representing the span</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element minOccurs="0" maxOccurs="1" name="Line" type="CalculatedFeatureData">
+        <xs:element minOccurs="0" maxOccurs="1" name="Line" type="FeatureData">
           <xs:annotation>
             <xs:documentation>Information about the line that was created to represent this span.</xs:documentation>
           </xs:annotation>
         </xs:element>
       </xs:choice>
-      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="CalculatedFeatureData">
+      <xs:element minOccurs="0" maxOccurs="1" name="EndPoint" type="FeatureData">
         <xs:annotation>
           <xs:documentation>Information about the point at the end of the span.</xs:documentation>
         </xs:annotation>

@@ -67,7 +67,7 @@ namespace Backsight.Editor
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal LineFeature(Operation op, PointFeature start, PointFeature end, CalculatedFeatureData t)
+        internal LineFeature(Operation op, PointFeature start, PointFeature end, FeatureData t)
             : this(op, start, end, new SegmentGeometry(start, end), t)
         {
         }
@@ -82,7 +82,7 @@ namespace Backsight.Editor
         /// <param name="end">The point at the end of the line</param>
         /// <param name="geom">The basic geometry for the line (with undefined position)</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, CalculatedFeatureData t)
+        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, FeatureData t)
             : base(op, t)
         {
             m_Geom = geom;

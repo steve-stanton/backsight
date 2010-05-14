@@ -409,16 +409,6 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         internal override OperationData GetSerializableEdit()
         {
             return new SimpleLineSubdivisionData(this);
-            //SimpleLineSubdivisionData t = new SimpleLineSubdivisionData();
-            //base.SetSerializableEdit(t);
-
-            //t.Line = m_Line.DataId;
-            //t.NewLine1 = m_NewLine1.DataId;
-            //t.NewLine2 = m_NewLine2.DataId;
-            //t.Distance = new DistanceData(m_Distance);
-            //t.NewPoint = new CalculatedFeatureData(m_NewPoint);
-
-            //return t;
         }
 
         /// <summary>

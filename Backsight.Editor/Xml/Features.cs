@@ -24,23 +24,36 @@ namespace Backsight.Editor.Xml
     /// in the <c>Edits.cs</c> file.</remarks>
     public partial class FeatureData
     {
-        // should be protected
         internal FeatureData(Feature f)
+            : this(f, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// </summary>
+        /// <param name="f">The feature that is being serialized</param>
+        /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
+        /// if the feature actually represents something that previously existed at the calculated
+        /// position.</param>
+        internal FeatureData(Feature f, bool allFields)
         {
             this.Id = f.DataId;
-            this.Entity = f.EntityType.Id;
 
-            FeatureId fid = f.Id;
-            if (fid != null)
+            if (allFields)
             {
-                if (fid is NativeId)
+                this.Entity = f.EntityType.Id;
+
+                FeatureId fid = f.Id;
+                if (fid != null)
                 {
-                    this.Key = fid.RawId;
-                    this.KeySpecified = true;
-                }
-                else
-                {
-                    this.ForeignKey = fid.FormattedKey;
+                    if (fid is NativeId)
+                    {
+                        this.Key = fid.RawId;
+                        this.KeySpecified = true;
+                    }
+                    else
+                        this.ForeignKey = fid.FormattedKey;
                 }
             }
         }
@@ -245,47 +258,6 @@ namespace Backsight.Editor.Xml
         internal override Feature LoadFeature(Operation op)
         {
             return new PointFeature(op, this);
-        }
-    }
-
-    public partial class CalculatedFeatureData
-    {
-        public CalculatedFeatureData()
-        {
-        }
-
-        internal CalculatedFeatureData(Feature f)
-            : this(f, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CalculatedFeatureData"/> class.
-        /// </summary>
-        /// <param name="f">The feature that is being serialized</param>
-        /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
-        /// if the feature actually represents something that previously existed at the calculated
-        /// position.</param>
-        internal CalculatedFeatureData(Feature f, bool allFields)
-        {
-            this.Id = f.DataId;
-
-            if (allFields)
-            {
-                this.Entity = f.EntityType.Id;
-
-                FeatureId fid = f.Id;
-                if (fid != null)
-                {
-                    if (fid is NativeId)
-                    {
-                        this.Key = fid.RawId;
-                        this.KeySpecified = true;
-                    }
-                    else
-                        this.ForeignKey = fid.FormattedKey;
-                }
-            }
         }
     }
 

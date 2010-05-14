@@ -621,26 +621,6 @@ namespace Backsight.Editor.Operations
         internal override OperationData GetSerializableEdit()
         {
             return new ParallelLineData(this);
-            //ParallelLineData t = new ParallelLineData();
-            //base.SetSerializableEdit(t);
-
-            //t.RefLine = m_RefLine.DataId;
-
-            //if (m_Term1!=null)
-            //    t.Term1 = m_Term1.DataId;
-
-            //if (m_Term2!=null)
-            //    t.Term2 = m_Term2.DataId;
-
-            //if (IsArcReversed)
-            //    t.ReverseArc = true;
-
-            //t.Offset = DataFactory.Instance.ToData<ObservationData>(m_Offset);
-            //t.From = new CalculatedFeatureData(m_ParLine.StartPoint, (m_ParLine.StartPoint.Creator == this));
-            //t.To = new CalculatedFeatureData(m_ParLine.EndPoint, (m_ParLine.EndPoint.Creator == this));
-            //t.NewLine = m_ParLine.GetSerializableLine();
-
-            //return t;
         }
 
         /// <summary>

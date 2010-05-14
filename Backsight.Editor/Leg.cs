@@ -101,7 +101,7 @@ namespace Backsight.Editor
                 SpanInfo spanData = new SpanInfo();
 
                 // The end point may be null if the user specified "omit point"
-                CalculatedFeatureData ep = span.EndPoint;
+                FeatureData ep = span.EndPoint;
                 if (ep == null)
                     spanData.IsOmitPoint = true;
                 else
@@ -122,7 +122,7 @@ namespace Backsight.Editor
                     spanData.IsMissConnect = true;
                 else
                 {
-                    CalculatedFeatureData cft = new CalculatedFeatureData();
+                    FeatureData cft = new FeatureData();
                     cft.Id = span.LineId;
                     cft.Entity = lineType.Id;
 
@@ -1468,7 +1468,7 @@ void CeLeg::MakeText ( const CeVertex& bs
                 }
 
                 if (p != null)
-                    st.EndPoint = new CalculatedFeatureData(p);
+                    st.EndPoint = new FeatureData(p);
 
                 t.Span[i] = st;
             }

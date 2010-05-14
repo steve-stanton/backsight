@@ -602,23 +602,6 @@ namespace Backsight.Editor.Operations
         internal override OperationData GetSerializableEdit()
         {
             return new IntersectTwoDistancesData(this);
-            //IntersectTwoDistancesData t = new IntersectTwoDistancesData();
-            //base.SetSerializableEdit(t);
-
-            //t.From1 = m_From1.DataId;
-            //t.Distance1 = DataFactory.Instance.ToData<ObservationData>(m_Distance1);
-            //t.From2 = m_From2.DataId;
-            //t.Distance2 = DataFactory.Instance.ToData<ObservationData>(m_Distance2);
-            //t.To = new CalculatedFeatureData(m_To);
-            //t.Default = m_Default;
-
-            //if (m_Line1 != null)
-            //    t.Line1 = new CalculatedFeatureData(m_Line1);
-
-            //if (m_Line2 != null)
-            //    t.Line2 = new CalculatedFeatureData(m_Line2);
-
-            //return t;
         }
 
         /// <summary>

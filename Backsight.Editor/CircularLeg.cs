@@ -1471,7 +1471,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             t.CulDeSac = IsCulDeSac;
             t.Clockwise = IsClockwise;
             t.Radius = new DistanceData(m_Radius);
-            t.Center = new CalculatedFeatureData(m_Circle.CenterPoint);
+            t.Center = new FeatureData(m_Circle.CenterPoint);
 
             return t;
         }

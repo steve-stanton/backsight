@@ -456,18 +456,6 @@ namespace Backsight.Editor.Operations
         internal override OperationData GetSerializableEdit()
         {
             return new LineExtensionData(this);
-            //LineExtensionData t = new LineExtensionData();
-            //base.SetSerializableEdit(t);
-
-            //t.Line = m_ExtendLine.DataId;
-            //t.ExtendFromEnd = m_IsExtendFromEnd;
-            //t.Distance = new DistanceData(m_Length);
-            //t.NewPoint = new CalculatedFeatureData(m_NewPoint);
-
-            //if (m_NewLine != null)
-            //    t.NewLine = new CalculatedFeatureData(m_NewLine);
-
-            //return t;
         }
 
         /// <summary>

@@ -36,9 +36,9 @@ namespace Backsight.Editor.Xml
         /// Information about the line that was created to represent this span (if this is defined, the
         /// <see cref="LineId"/> property should be null).
         /// </summary>
-        internal CalculatedFeatureData Line
+        internal FeatureData Line
         {
-            get { return (this.Item as CalculatedFeatureData); }
+            get { return (this.Item as FeatureData); }
             set { this.Item = value; }
         }
     }
