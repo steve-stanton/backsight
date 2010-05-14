@@ -61,30 +61,33 @@ namespace Backsight.Editor.Operations
             if (m_Line == null)
                 throw new Exception("Cannot find line "+t.Line);
 
-            //FeatureTableData ft = t.Result;
+            Distance[] dists = GetDistances(t.EntryString);
+            FeatureData[] lines = t.Result.Lines.Line;
+            FeatureData[] points = t.Result.Points.Point;
 
-            SpanData[] spans = t.Span;
-            m_Sections = new List<MeasuredLineFeature>(spans.Length);
+            Debug.Assert(dists.Length == lines.Length);
+            Debug.Assert(dists.Length == 1+points.Length);
+
+            m_Sections = new List<MeasuredLineFeature>(dists.Length);
             PointFeature start = m_Line.StartPoint;
             PointFeature end;
 
             // Define sections without any geometry
-            foreach (SpanData span in spans)
+            for (int i=0; i<dists.Length; i++)
             {
-                if (span.EndPoint == null)
+                if (i == (dists.Length-1))
                     end = m_Line.EndPoint;
                 else
-                    end = new PointFeature(this, span.EndPoint);
+                    end = new PointFeature(this, points[i]);
 
                 // Get the internal ID to assign to the line
                 uint sessionId, lineSequence;
-                InternalIdValue.Parse(span.LineId, out sessionId, out lineSequence);
+                InternalIdValue.Parse(lines[i].Id, out sessionId, out lineSequence);
 
                 SectionGeometry section = new SectionGeometry(m_Line, start, end);
                 LineFeature line = m_Line.MakeSubSection(section, this);
                 line.CreatorSequence = lineSequence;
-                Distance d = (Distance)span.Length.LoadObservation(this);
-                MeasuredLineFeature mf = new MeasuredLineFeature(line, d);
+                MeasuredLineFeature mf = new MeasuredLineFeature(line, dists[i]);
                 m_Sections.Add(mf);
 
                 start = end;
@@ -608,6 +611,51 @@ namespace Backsight.Editor.Operations
 
             if (nRepeat > 0)
                 sb.AppendFormat("*{0}", nRepeat);
+        }
+
+        /// <summary>
+        /// Converts a data entry string into the corresponding observations.
+        /// </summary>
+        /// <param name="entryString">The data entry string</param>
+        /// <returns>The distances that correspond to the entry string</returns>
+        internal static Distance[] GetDistances(string entryString)
+        {
+            string[] items = entryString.Split(' ');
+            List<Distance> result = new List<Distance>(items.Length);
+
+            foreach (string t in items)
+            {
+                // Hold seperate reference, since may attempt to change foreach iterator variable below
+                string s = t;
+
+                // Strip out any repeat count
+                int nRepeat = 1;
+                int repeat = s.IndexOf('*');
+                if (repeat>=0)
+                {
+                    string rest = s.Substring(repeat+1);
+
+                    if (rest.Length > 0)
+                    {
+                        nRepeat = int.Parse(rest);
+                        if (nRepeat<=0)
+                            throw new Exception("Repeat count cannot be less than or equal to zero");
+                    }
+
+                    s = s.Substring(0, repeat);
+                }
+
+                // Parse the distance
+                Distance d = new Distance(s);
+                if (!d.IsDefined)
+                    throw new Exception("Cannot parse distance: "+s);
+
+                // Append distances to results list
+                for (int i=0; i<nRepeat; i++)
+                    result.Add(d);
+            }
+
+            return result.ToArray();
         }
     }
 }
