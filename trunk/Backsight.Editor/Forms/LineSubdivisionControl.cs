@@ -231,52 +231,15 @@ namespace Backsight.Editor.Forms
         /// <c>m_Distances</c> will be null.</exception>
         double GetDistances()
         {
-            // Delete any distances & positions previously obtained.
-            m_Distances = null;
-
-            // Initialize total distance.
-            double tot = 0.0;
-            List<Distance> ds = new List<Distance>();
-
             string entryString = GetEntryString();
-            string[] items = entryString.Split(' ');
+            Distance[] dists = LineSubdivisionOperation.GetDistances(entryString);
 
-            foreach (string t in items)
-            {
-                // Hold seperate reference, since may attempt to change foreach iterator variable below
-                string s = t;
+            // Get the total distance (in meters)
+            double tot = 0.0;
+            foreach (Distance d in dists)
+                tot += d.Meters;
 
-                // Strip out any repeat count
-                int nRepeat = 1;
-                int repeat = s.IndexOf('*');
-                if (repeat>=0)
-                {
-                    string rest = s.Substring(repeat+1);
-
-                    if (rest.Length > 0)
-                    {
-                        nRepeat = int.Parse(rest);
-                        if (nRepeat<=0)
-                            throw new Exception("Repeat count cannot be less than or equal to zero");
-                    }
-
-                    s = s.Substring(0, repeat);
-                }
-
-                // Parse the distance (return on any error)
-                Distance d = new Distance(s);
-                if (!d.IsDefined)
-                    return 0.0;
-
-                // Append distances to results list
-                for (int i=0; i<nRepeat; i++)
-                    ds.Add(d);
-
-                // Update total length
-                tot += (nRepeat * d.Meters);
-            }
-
-            m_Distances = ds;
+            m_Distances = new List<Distance>(dists);
             return tot;
         }
 
