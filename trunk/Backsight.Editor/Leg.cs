@@ -51,19 +51,6 @@ namespace Backsight.Editor
 
         #region Constructors
 
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the leg</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected Leg(Operation op, LegData t)
-        {
-            // The spans are undefined for the time being. The derived constructor should
-            // make a call to CreateSpans after it has initialized everything else.
-            m_Spans = null;
-            m_FaceNumber = t.Face;
-        }
-
         protected Leg(int nspan)
         {
             // Allocate an array of spans (always at least ONE).
@@ -88,6 +75,7 @@ namespace Backsight.Editor
         /// along the length of this leg</param>
         /// <returns>The point feature at the end of the span (null if the leg ends with
         /// the "omit point" option).</returns>
+        /*
         internal PointFeature CreateSpans(PathOperation op, SpanData[] spans, PointFeature startPoint,
                                             IEntity lineType)
         {
@@ -145,6 +133,7 @@ namespace Backsight.Editor
 
             return end;
         }
+         */
 
         abstract public Circle Circle { get; }
         abstract public ILength Length { get; }
@@ -1430,13 +1419,14 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        abstract internal LegData GetSerializableLeg();
+        //abstract internal LegData GetSerializableLeg();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this leg</param>
+        /*
         protected void SetSerializableFeature(LegData t)
         {
             t.Face = m_FaceNumber;
@@ -1473,5 +1463,6 @@ void CeLeg::MakeText ( const CeVertex& bs
                 t.Span[i] = st;
             }
         }
+         */
     }
 }

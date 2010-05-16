@@ -65,16 +65,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         DistanceUnit m_DefaultEntryUnit;
 
-        /// <summary>
-        /// The entity type assigned to created points
-        /// </summary>
-        IEntity m_PointType;
-
-        /// <summary>
-        /// The entity type assigned to created lines.
-        /// </summary>
-        IEntity m_LineType;
-
         #endregion
 
         #region Constructors
@@ -84,6 +74,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
+        /*
         internal PathOperation(Session s, PathData t)
             : base(s, t)
         {
@@ -108,6 +99,7 @@ namespace Backsight.Editor.Operations
                 startPoint = leg.CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
             }
         }
+        */
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PathOperation"/> class
@@ -123,8 +115,6 @@ namespace Backsight.Editor.Operations
             m_To = to;
             m_EntryString = entryString;
             m_DefaultEntryUnit = EditingController.Current.EntryUnit;
-            m_PointType = CadastralMapModel.Current.DefaultPointType;
-            m_LineType = CadastralMapModel.Current.DefaultLineType;
         }
 
         #endregion
@@ -1088,9 +1078,7 @@ void CePath::CreateAngleText ( CPtrList& text
             t.From = m_From.DataId;
             t.To = m_To.DataId;
             t.EntryString = m_EntryString;
-            t.PointType = MapModel.DefaultPointType.Id;
-            t.LineType = MapModel.DefaultLineType.Id;
-            t.Leg = new LegData[m_Legs.Count];
+            t.Result = new FeatureTableData();
 
             for (int i=0; i<t.Leg.Length; i++)
                 t.Leg[i] = m_Legs[i].GetSerializableLeg();

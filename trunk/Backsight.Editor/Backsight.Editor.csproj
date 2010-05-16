@@ -1036,7 +1036,6 @@
     <Compile Include="UpdateContext.cs" />
     <Compile Include="UpdateUndoMarker.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="Xml\CircularLegData.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\DataFactory.cs" />
     <Compile Include="Xml\Edits.cs">
@@ -1044,11 +1043,8 @@
     </Compile>
     <Compile Include="Xml\Features.cs" />
     <Compile Include="Xml\ILoader.cs" />
-    <Compile Include="Xml\LegData.cs" />
     <Compile Include="Xml\Observations.cs" />
     <Compile Include="Xml\Operations.cs" />
-    <Compile Include="Xml\SpanData.cs" />
-    <Compile Include="Xml\StraightLegData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />

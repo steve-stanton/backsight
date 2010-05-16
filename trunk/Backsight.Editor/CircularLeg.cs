@@ -73,6 +73,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this feature</param>
+        /*
         internal CircularLeg(Operation op, CircularLegData t)
             : base(op, t)
         {
@@ -99,6 +100,7 @@ namespace Backsight.Editor
             m_Circle = new Circle(center, 0.0);
             m_Circle.AddReferences();
         }
+        */
 
         /// <summary>
         /// Creates a new <c>CircularLeg</c> with no spans.
@@ -1458,6 +1460,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
+        /*
         internal override LegData GetSerializableLeg()
         {
             CircularLegData t = new CircularLegData();
@@ -1475,5 +1478,6 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             return t;
         }
+         */
     }
 }
