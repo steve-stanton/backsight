@@ -53,7 +53,7 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates new <c>SpanData</c> with everything set to null.
+        /// Creates new <c>SpanInfo</c> with everything set to null.
         /// </summary>
         internal SpanInfo()
         {

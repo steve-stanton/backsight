@@ -53,6 +53,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the leg</param>
         /// <param name="t">The serialized version of this leg</param>
+        /*
         internal StraightLeg(Operation op, StraightLegData t)
             : base(op, t)
         {
@@ -63,6 +64,7 @@ namespace Backsight.Editor
 
             m_IsDeflection = t.Deflection;
         }
+        */
 
         /// <summary>
         /// Creates a new <c>StraightLeg</c>
@@ -799,6 +801,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
+        /*
         internal override LegData GetSerializableLeg()
         {
             StraightLegData t = new StraightLegData();
@@ -811,5 +814,6 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
 
             return t;
         }
+         */
     }
 }

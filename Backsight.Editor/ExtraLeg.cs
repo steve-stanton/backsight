@@ -255,10 +255,10 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this leg</returns>
-        internal override LegData GetSerializableLeg()
-        {
-            throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
-        }
+        //internal override LegData GetSerializableLeg()
+        //{
+        //    throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
+        //}
 
         /// <summary>
         /// Defines the geometry for this leg (for use during deserialization).
