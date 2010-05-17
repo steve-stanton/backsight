@@ -376,6 +376,7 @@
     <Compile Include="Operations\NewSegmentOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\OperationInput.cs" />
+    <Compile Include="Operations\PathInput.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />

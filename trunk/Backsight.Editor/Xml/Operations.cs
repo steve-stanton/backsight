@@ -629,6 +629,19 @@ namespace Backsight.Editor.Xml
         {
             return new PathOperation(s, this);
         }
+
+        /// <summary>
+        /// Converts XML data into the input for an editing operation.
+        /// </summary>
+        /// <param name="loader">Deserialization helper</param>
+        /// <returns>The input for the editing operation</returns>
+        /// <remarks>This should ultimately be declared as an abstract method</remarks>
+        internal override OperationInput GetInput(ILoader loader)
+        {
+            PointFeature from = loader.Find<PointFeature>(this.From);
+            PointFeature to = loader.Find<PointFeature>(this.To);
+            return new PathInput(from, to, this.EntryString);
+        }
     }
 
     public partial class PolygonSubdivisionData
