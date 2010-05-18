@@ -59,6 +59,32 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// </summary>
+        /// <param name="f">The feature that is being serialized</param>
+        /// <param name="defaultEntityId">The ID of the default entity type. If the feature's
+        /// entity type matches, it will not be recorded as part of this instance.</param>
+        internal FeatureData(Feature f, int defaultEntityId)
+        {
+            this.Id = f.DataId;
+
+            if (f.EntityType.Id != defaultEntityId)
+                this.Entity = f.EntityType.Id;
+
+            FeatureId fid = f.Id;
+            if (fid != null)
+            {
+                if (fid is NativeId)
+                {
+                    this.Key = fid.RawId;
+                    this.KeySpecified = true;
+                }
+                else
+                    this.ForeignKey = fid.FormattedKey;
+            }
+        }
+
+        /// <summary>
         /// Loads this feature as part of an editing operation. Derived types
         /// must implement this method, otherwise you will get an exception on
         /// deserialization from the database.

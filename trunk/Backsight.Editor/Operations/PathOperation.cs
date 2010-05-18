@@ -1072,18 +1072,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <returns>The serializable version of this edit</returns>
         internal override OperationData GetSerializableEdit()
         {
-            PathData t = new PathData();
-            base.SetSerializableEdit(t);
-
-            t.From = m_From.DataId;
-            t.To = m_To.DataId;
-            t.EntryString = m_EntryString;
-            t.Result = new FeatureTableData();
-
-            for (int i=0; i<t.Leg.Length; i++)
-                t.Leg[i] = m_Legs[i].GetSerializableLeg();
-
-            return t;
+            return new PathData(this);
         }
 
         /// <summary>

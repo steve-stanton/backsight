@@ -19,6 +19,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Xml
 {
@@ -193,6 +194,31 @@ namespace Backsight.Editor.Xml
         internal T ToData<T>(Feature f) where T : FeatureData
         {
             return null;
+        }
+
+        /// <summary>
+        /// Loads the content of an editing operation. Prior to call, the current editing session
+        /// must be defined using the <see cref="Session.CurrentSession"/> property.
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <param name="data">The data that describes the edit</param>
+        /// <returns>The created editing object</returns>
+        /// <remarks>Edits are converted into xml using the <see cref="Operation.ToXml"/> method.</remarks>
+        internal Operation ToOperation(Session s, XmlReader data)
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(EditData));
+            EditData et = (EditData)xs.Deserialize(data);
+            Debug.Assert(et.Operation.Length == 1);
+            OperationData ot = et.Operation[0];
+            Operation result = ot.LoadOperation(s);
+
+            // Note that calculated geometry is NOT defined at this stage. That happens
+            // when the model is asked to index the data.
+
+            // Associate referenced features with the edit
+            result.AddReferences();
+
+            return result;
         }
     }
 }

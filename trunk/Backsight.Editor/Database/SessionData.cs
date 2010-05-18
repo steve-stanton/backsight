@@ -24,6 +24,7 @@ using System.Xml;
 
 using Backsight.Data;
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Database
 {
@@ -108,7 +109,7 @@ namespace Backsight.Editor.Database
                         SqlXml data = reader.GetSqlXml(2);
                         using (XmlReader xr = data.CreateReader())
                         {
-                            Operation edit = Operation.ReadEdit(curSession, xr);
+                            Operation edit = DataFactory.Instance.ToOperation(curSession, xr);
 
                             // The edit sequence is repeated in the XML data
                             Debug.Assert(edit.EditSequence == editSequence);
