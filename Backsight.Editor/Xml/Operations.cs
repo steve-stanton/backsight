@@ -15,6 +15,7 @@
 
 using System;
 using Backsight.Editor.Operations;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Xml
 {
@@ -134,6 +135,60 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             return new GetControlOperation(s, this);
+        }
+    }
+
+    public partial class FeatureTableData
+    {
+        internal FeatureTableData(Operation op)
+        {
+            Feature[] feats = op.Features;
+
+            List<PointFeature> points = GetFeaturesByType<PointFeature>(feats);
+
+            if (points != null)
+            {
+                int defaultEntityId = points[0].EntityType.Id;
+
+                this.Points = new PointArray();
+                this.Points.DefaultEntity = defaultEntityId;
+                this.Points.Point = new FeatureData[points.Count];
+
+                for (int i=0; i<points.Count; i++)
+                    this.Points.Point[i] = new FeatureData(points[i], defaultEntityId);
+            }
+
+            List<LineFeature> lines = GetFeaturesByType<LineFeature>(feats);
+
+            if (lines != null)
+            {
+                int defaultEntityId = lines[0].EntityType.Id;
+
+                this.Lines = new LineArray();
+                this.Lines.DefaultEntity = defaultEntityId;
+                this.Lines.Line = new FeatureData[lines.Count];
+
+                for (int i = 0; i < lines.Count; i++)
+                    this.Lines.Line[i] = new FeatureData(lines[i], defaultEntityId);
+            }
+        }
+
+        List<T> GetFeaturesByType<T>(Feature[] features) where T : Feature
+        {
+            List<T> result = null;
+
+            foreach (Feature f in features)
+            {
+                if (f is T)
+                {
+                    if (result == null)
+                        result = new List<T>();
+
+                    result.Add((T)f);
+                }
+            }
+
+            return result;
         }
     }
 
@@ -344,7 +399,8 @@ namespace Backsight.Editor.Xml
             this.EntryString = op.GetEntryString();
             MeasuredLineFeature[] sections = op.Sections;
 
-            this.Result = new FeatureTableData();
+            this.Result = new FeatureTableData(op);
+            /*
             this.Result.Lines = new LineArray();
             this.Result.Lines.DefaultEntity = sections[0].Line.EntityType.Id;
             this.Result.Lines.Line = new FeatureData[sections.Length];
@@ -368,6 +424,7 @@ namespace Backsight.Editor.Xml
                         fd.Key = p.Id.RawId;
                 }
             }
+             */
         }
 
         /// <summary>
@@ -620,6 +677,15 @@ namespace Backsight.Editor.Xml
 
     public partial class PathData
     {
+        internal PathData(PathOperation op)
+            : base(op)
+        {
+            this.From = op.StartPoint.DataId;
+            this.To = op.EndPoint.DataId;
+            this.EntryString = op.EntryString;
+            this.Result = new FeatureTableData(op);
+        }
+
         /// <summary>
         /// Loads this editing operation into a session
         /// </summary>
@@ -627,7 +693,8 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new PathOperation(s, this);
+            throw new NotImplementedException("PathData.LoadOperation");
+            //return new PathOperation(s, this);
         }
 
         /// <summary>
