@@ -194,11 +194,6 @@ namespace Backsight.Editor.Forms
                 new EntityUtil().Open();
 
                 InitializeActions();
-
-                LineExtensionOperation t = new LineExtensionOperation(Session.WorkingSession);
-                DataFactory df = new DataFactory();
-                //string res = df.ToXml<LineExtensionOperation>(t);
-                string res = df.ToXml(t);
             }
 
             catch (Exception ex)

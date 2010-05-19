@@ -122,6 +122,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class ArcData
     {
+        //public ArcData()
+        //{
+        //}
+
         internal ArcData(ArcFeature arc)
             : base(arc)
         {
@@ -189,6 +193,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class MultiSegmentData
     {
+        public MultiSegmentData()
+        {
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -234,6 +242,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class SectionData
     {
+        public SectionData()
+        {
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -276,6 +288,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class SharedPointData
     {
+        public SharedPointData()
+        {
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -343,6 +359,10 @@ namespace Backsight.Editor.Xml
 
     public partial class LineData
     {
+        //public LineData()
+        //{
+        //}
+
         // should be protected
         internal LineData(LineFeature line)
             : base(line)
@@ -385,6 +405,10 @@ namespace Backsight.Editor.Xml
     /// </summary>
     public partial class TextData
     {
+        //public TextData()
+        //{
+        //}
+
         // should be protected
         internal TextData(TextFeature t)
             : base(t)

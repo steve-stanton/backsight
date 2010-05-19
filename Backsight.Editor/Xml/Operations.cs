@@ -153,6 +153,13 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    public partial class EditData
+    {
+        public EditData()
+        {
+        }
+    }
+
     public partial class FeatureTableData
     {
         internal FeatureTableData(Operation op)
@@ -209,6 +216,10 @@ namespace Backsight.Editor.Xml
 
     public partial class ImportData
     {
+        public ImportData()
+        {
+        }
+
         internal ImportData(ImportOperation op)
             : base(op)
         {
