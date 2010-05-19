@@ -110,6 +110,27 @@ namespace Backsight.Editor
             m_Sequence = Session.ReserveNextItem();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Operation"/> class.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        protected Operation(Session s, uint sequence)
+        {
+            if (s==null)
+                throw new ArgumentNullException();
+
+            m_Session = s;
+            m_Session.Add(this);
+
+            if (sequence == 0)
+                m_Sequence = Session.ReserveNextItem();
+            else
+                m_Sequence = sequence;
+        }
+
         #endregion
 
         /// <summary>

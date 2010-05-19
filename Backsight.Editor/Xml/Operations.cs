@@ -16,6 +16,7 @@
 using System;
 using Backsight.Editor.Operations;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Xml
 {
@@ -36,6 +37,20 @@ namespace Backsight.Editor.Xml
 
             if (op.Previous != null)
                 this.PreviousId = op.Previous.DataId;
+        }
+
+        /// <summary>
+        /// Obtains the session sequence number associated with this edit.
+        /// </summary>
+        /// <param name="s">The session that this edit is supposedly part of (used for internal
+        /// consistency check)</param>
+        /// <returns>The sequence number of this edit.</returns>
+        internal uint GetEditSequence(Session s)
+        {
+            uint sessionId, sequence;
+            InternalIdValue.Parse(this.Id, out sessionId, out sequence);
+            Debug.Assert(s.Id == sessionId);
+            return sequence;
         }
 
         /// <summary>
@@ -210,7 +225,18 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new ImportOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            ImportOperation op = new ImportOperation(s, sequence);
+
+            Feature[] data = new Feature[this.Feature.Length];
+            for (int i=0; i<data.Length; i++)
+            {
+                FeatureData f = this.Feature[i];
+                data[i] = f.LoadFeature(op);
+            }
+
+            op.SetFeatures(data);
+            return op;
         }
     }
 
