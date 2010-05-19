@@ -145,7 +145,7 @@ namespace Backsight.Editor.Xml
         /// into the database)
         /// </summary>
         /// <returns>The XML for this edit</returns>
-        internal string ToXml(Operation op)
+        internal string ToXml<T>(T op) where T : Operation
         {
             return ToXml(op, false);
         }
@@ -155,7 +155,7 @@ namespace Backsight.Editor.Xml
         /// </summary>
         /// <param name="indent">Should the XML be indented or not?</param>
         /// <returns>The XML for this edit</returns>
-        internal string ToXml(Operation op, bool indent)
+        internal string ToXml<T>(T op, bool indent) where T : Operation
         {
             string typeName = op.GetType().Name;
             const string TAIL = "Operation";
@@ -167,6 +167,7 @@ namespace Backsight.Editor.Xml
             Assembly a = Assembly.GetExecutingAssembly();
             Type t = a.GetType(typeName, true);
 
+            // Get the constructor of the form *Data(*Operation)
             ConstructorInfo ci = t.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null,
                 new Type[] { op.GetType() }, null);
 
