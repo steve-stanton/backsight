@@ -553,15 +553,6 @@ namespace Backsight.Editor.Operations
             return true;
         }
 
-        /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new IntersectDirectionAndLineData(this);
-        }
-
         internal LineFeature LineBeforeSplit
         {
             get { return m_LineA; }

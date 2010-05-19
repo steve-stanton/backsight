@@ -377,29 +377,6 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
          */
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        //internal override OperationData GetSerializableEdit()
-        //{
-        //    //return new NewTextData(this);
-        //    NewTextData t = new NewTextData();
-        //    SetSerializableEdit(t);
-        //    return t;
-        //}
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this edit</param>
-        //protected void SetSerializableEdit(NewTextData t)
-        //{
-        //    base.SetSerializableEdit(t);
-        //    t.Text = m_NewText.GetSerializableText();
-        //}
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

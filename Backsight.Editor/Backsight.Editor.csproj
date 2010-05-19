@@ -376,6 +376,7 @@
     <Compile Include="Operations\NewSegmentOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
     <Compile Include="Operations\OperationInput.cs" />
+    <Compile Include="Operations\ParallelLineOperation.cs" />
     <Compile Include="Operations\PathInput.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
@@ -634,7 +635,6 @@
     <Compile Include="OperationFlag.cs" />
     <Compile Include="Operations\LineSubdivisionOperation.cs" />
     <Compile Include="Operations\NewLineOperation.cs" />
-    <Compile Include="Operations\ParallelOperation.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="Geom.cs" />
     <Compile Include="HorizontalRay.cs" />

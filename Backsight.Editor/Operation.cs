@@ -434,7 +434,7 @@ namespace Backsight.Editor
             Trace.Write("Saving to database");
 
             // Save the last edit in the database
-            string x = this.ToXml();
+            string x = DataFactory.Instance.ToXml(this);
 
             // Dump the file out (to help with debugging)
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
@@ -517,62 +517,6 @@ namespace Backsight.Editor
         /// assign the geometry for the features.
         /// </summary>
         abstract internal void RunEdit();
-
-        /// <summary>
-        /// Represents this editing operation in XML (suitable for inserting
-        /// into the database)
-        /// </summary>
-        /// <returns>The XML for this edit</returns>
-        internal string ToXml()
-        {
-            return ToXml(false);
-        }
-
-        /// <summary>
-        /// Represents this editing operation in XML, with optional indentation of elements.
-        /// </summary>
-        /// <param name="indent">Should the XML be indented or not?</param>
-        /// <returns>The XML for this edit</returns>
-        internal string ToXml(bool indent)
-        {
-            OperationData sed = GetSerializableEdit();
-
-            StringBuilder sb = new StringBuilder(1000);
-            XmlWriterSettings xws = new XmlWriterSettings();
-            xws.Indent = indent;
-
-            using (XmlWriter writer = XmlWriter.Create(sb, xws))
-            {
-                // Wrap the serializable edit in an EditType object (means we always know what to
-                // cast the result to upon deserialization)
-
-                EditData e = new EditData();
-                e.Operation = new OperationData[] { sed };
-                XmlSerializer xs = new XmlSerializer(typeof(EditData));
-                xs.Serialize(writer, e);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.</summary>
-        /// <returns>The serializable version of this edit</returns>
-        abstract internal OperationData GetSerializableEdit();
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this edit</param>
-        protected void SetSerializableEdit(OperationData t)
-        {
-            t.Id = this.DataId;
-
-            if (m_Previous!=null)
-                t.PreviousId = m_Previous.DataId;
-        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

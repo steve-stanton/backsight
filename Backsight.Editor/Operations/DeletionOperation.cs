@@ -231,23 +231,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new DeletionData(this);
-            //DeletionData t = new DeletionData();
-            //base.SetSerializableEdit(t);
-
-            //t.Delete = new string[m_Deletions.Count];
-            //for (int i = 0; i < t.Delete.Length; i++)
-            //    t.Delete[i] = m_Deletions[i].DataId;
-
-            //return t;
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

@@ -303,37 +303,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new TrimLineData(this);
-            //TrimLineData t = new TrimLineData();
-            //base.SetSerializableEdit(t);
-
-            //if (m_Lines==null)
-            //    t.Line = new string[0];
-            //else
-            //{
-            //    t.Line = new string[m_Lines.Count];
-            //    for (int i=0; i<m_Lines.Count; i++)
-            //        t.Line[i] = m_Lines[i].DataId;
-            //}
-
-            //if (m_Points==null)
-            //    t.Point = new string[0];
-            //else
-            //{
-            //    t.Point = new string[m_Points.Count];
-            //    for (int i=0; i<m_Points.Count; i++)
-            //        t.Point[i] = m_Points[i].DataId;
-            //}
-
-            //return t;
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

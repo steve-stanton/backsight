@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
-    class ParallelOperation : Operation, IRecallable, IRevisable
+    class ParallelLineOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -82,7 +82,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal ParallelOperation(Session s, ParallelLineData t)
+        internal ParallelLineOperation(Session s, ParallelLineData t)
             : base(s, t)
         {
             CadastralMapModel mapModel = s.MapModel;
@@ -120,7 +120,7 @@ namespace Backsight.Editor.Operations
         /// Initializes a new instance of the <see cref="ParallelOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal ParallelOperation(Session s)
+        internal ParallelLineOperation(Session s)
             : base(s)
         {
             // Input ...
@@ -613,15 +613,6 @@ namespace Backsight.Editor.Operations
 	    	epar = pos;
 	        return true;
 	    }
-
-        /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new ParallelLineData(this);
-        }
 
         /// <summary>
         /// Performs the data processing associated with this editing operation.

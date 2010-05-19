@@ -465,7 +465,7 @@ namespace Backsight.Editor.Forms
         bool InitUpdate()
         {
             // Get the creating op.
-            ParallelOperation op = UpdateOp;
+            ParallelLineOperation op = UpdateOp;
             if (op==null)
                 return false;
 
@@ -479,7 +479,7 @@ namespace Backsight.Editor.Forms
 
         bool InitRecall()
         {
-            ParallelOperation op = (m_Cmd.Recall as ParallelOperation);
+            ParallelLineOperation op = (m_Cmd.Recall as ParallelLineOperation);
             if (op==null)
                 return false;
 
@@ -491,7 +491,7 @@ namespace Backsight.Editor.Forms
             return true;
         }
 
-        void InitOp(ParallelOperation op)
+        void InitOp(ParallelLineOperation op)
         {
             // The direction is significant only if an offset distance
             // has been specified.
@@ -527,12 +527,12 @@ namespace Backsight.Editor.Forms
             get { return (m_Cmd is UpdateUI); }
         }
 
-        ParallelOperation UpdateOp
+        ParallelLineOperation UpdateOp
         {
             get
             {
                 UpdateUI up = (m_Cmd as UpdateUI);
-                return (up==null ? null : (ParallelOperation)up.GetOp());
+                return (up==null ? null : (ParallelLineOperation)up.GetOp());
             }
         }
     }

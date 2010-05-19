@@ -215,33 +215,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new MoveTextData(this);
-            //MoveTextData t = new MoveTextData();
-            //base.SetSerializableEdit(t);
-
-            //t.Text = m_Text.DataId;
-            //t.OldX = m_OldPosition.Easting.Microns;
-            //t.OldY = m_OldPosition.Northing.Microns;
-            //t.NewX = m_NewPosition.Easting.Microns;
-            //t.NewY = m_NewPosition.Northing.Microns;
-
-            //if (m_OldPolPosition != null)
-            //{
-            //    t.OldPolygonX = m_OldPolPosition.Easting.Microns;
-            //    t.OldPolygonY = m_OldPolPosition.Northing.Microns;
-
-            //    t.OldPolygonXSpecified = t.OldPolygonYSpecified = true;
-            //}
-
-            //return t;
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()
