@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -31,8 +30,7 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
-        /// The features that were imported (null until the <see cref="Execute"/> method
-        /// is called).
+        /// The features that were imported.
         /// </summary>
         Feature[] m_Data;
 
@@ -45,15 +43,10 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="t">The serialized version of this instance</param>
-        internal ImportOperation(Session s, ImportData t)
-            : base(s, t)
+        internal ImportOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Data = new Feature[t.Feature.Length];
-            for (int i=0; i<m_Data.Length; i++)
-            {
-                FeatureData f = t.Feature[i];
-                m_Data[i] = f.LoadFeature(this);
-            }
+            m_Data = null;
         }
 
         /// <summary>
@@ -62,9 +55,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal ImportOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Data = null;
         }
 
         #endregion
@@ -79,11 +71,30 @@ namespace Backsight.Editor.Operations
             Complete();
         }
 
+        /// <summary>
+        /// The features created by this editing operation (may be an empty array, but
+        /// never null).
+        /// </summary>
         internal override Feature[] Features
         {
             get { return m_Data; }
         }
 
+        /// <summary>
+        /// Records the features created by this edit (for use during deserialization).
+        /// </summary>
+        /// <param name="data">The features created by this import.</param>
+        internal void SetFeatures(Feature[] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException();
+
+            m_Data = data;
+        }
+
+        /// <summary>
+        /// The unique identifier for this edit.
+        /// </summary>
         internal override EditingActionId EditId
         {
             get { return EditingActionId.DataImport; }
