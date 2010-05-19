@@ -140,7 +140,22 @@ namespace Backsight.Editor.Xml
             m_DataMapping.Add(fromType, ci);
         }
 
+        /// <summary>
+        /// Represents an editing operation in XML (suitable for inserting
+        /// into the database)
+        /// </summary>
+        /// <returns>The XML for this edit</returns>
         internal string ToXml(Operation op)
+        {
+            return ToXml(op, false);
+        }
+
+        /// <summary>
+        /// Represents an editing operation in XML, with optional indentation of elements.
+        /// </summary>
+        /// <param name="indent">Should the XML be indented or not?</param>
+        /// <returns>The XML for this edit</returns>
+        internal string ToXml(Operation op, bool indent)
         {
             string typeName = op.GetType().Name;
             const string TAIL = "Operation";
@@ -165,11 +180,11 @@ namespace Backsight.Editor.Xml
 
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
-            xws.Indent = true;
+            xws.Indent = indent;
 
             using (XmlWriter writer = XmlWriter.Create(sb, xws))
             {
-                // Wrap the serializable edit in an EditType object (means we always know what to
+                // Wrap the serializable edit in an EditData object (means we always know what to
                 // cast the result to upon deserialization)
 
                 EditData e = new EditData();
@@ -178,7 +193,6 @@ namespace Backsight.Editor.Xml
                 xs.Serialize(writer, e);
             }
 
-            System.Windows.Forms.MessageBox.Show(sb.ToString());
             return sb.ToString();
         }
 

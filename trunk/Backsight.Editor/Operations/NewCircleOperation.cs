@@ -339,24 +339,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new NewCircleData(this);
-            //NewCircleData t = new NewCircleData();
-            //base.SetSerializableEdit(t);
-
-            //t.Radius = DataFactory.Instance.ToData<ObservationData>(m_Radius);
-            //t.Center = m_Center.DataId;
-            //t.ClosingPoint = Line.StartPoint.DataId;
-            //t.Arc = Line.DataId;
-
-            //return t;
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

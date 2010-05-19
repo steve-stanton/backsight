@@ -105,11 +105,6 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        internal override OperationData GetSerializableEdit()
-        {
-            return m_Update;
-        }
-
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;

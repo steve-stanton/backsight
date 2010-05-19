@@ -195,29 +195,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new PolygonSubdivisionData(this);
-            //PolygonSubdivisionData t = new PolygonSubdivisionData();
-            //base.SetSerializableEdit(t);
-
-            //if (m_Label != null)
-            //    t.DeactivatedLabel = m_Label.DataId;
-
-            //SegmentData[] lines = new SegmentData[m_Lines.Length];
-            //for (int i=0; i<lines.Length; i++)
-            //{
-            //    lines[i] = (SegmentData)m_Lines[i].GetSerializableLine();
-            //}
-
-            //t.Line = lines;
-            //return t;
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

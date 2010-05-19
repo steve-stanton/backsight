@@ -79,24 +79,5 @@ namespace Backsight.Editor.Operations
             Complete();
             return true;
         }
-
-        /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            // The deserialization logic works on the assumption that this edit can only
-            // attach arcs to existing circles.
-            ArcFeature arc = (ArcFeature)base.Line;
-            if (arc.Circle.Creator == this)
-                throw new InvalidOperationException("Unexpected attempt to simultaneously create arc and circle");
-
-            return new NewArcData(this);
-            //NewArcData t = new NewArcData();
-            //base.SetSerializableEdit(t);
-            //t.Line = (ArcData)arc.GetSerializableLine();
-            //return t;
-        }
     }
 }

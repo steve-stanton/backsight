@@ -327,7 +327,7 @@ namespace Backsight.Editor.Forms
         int InitUpdate()
         {
             // Get the creating op.
-            ParallelOperation op = UpdateOp;
+            ParallelLineOperation op = UpdateOp;
             if (op==null)
                 return 0;
 
@@ -382,12 +382,12 @@ namespace Backsight.Editor.Forms
             get { return (m_Cmd is UpdateUI); }
         }
 
-        ParallelOperation UpdateOp
+        ParallelLineOperation UpdateOp
         {
             get
             {
                 UpdateUI up = (m_Cmd as UpdateUI);
-                return (up==null ? null : (ParallelOperation)up.GetOp());
+                return (up==null ? null : (ParallelLineOperation)up.GetOp());
             }
         }
 

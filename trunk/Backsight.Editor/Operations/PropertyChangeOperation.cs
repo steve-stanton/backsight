@@ -206,23 +206,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new PropertyChangeData(this);
-            //PropertyChangeData t = new PropertyChangeData();
-            //base.SetSerializableEdit(t);
-
-            //t.Item = m_Item;
-            //t.Value = m_NewValue;
-
-            //return t;
-        }
-
-        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

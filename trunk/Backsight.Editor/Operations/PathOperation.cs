@@ -1067,15 +1067,6 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new PathData(this);
-        }
-
-        /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
         internal override void RunEdit()

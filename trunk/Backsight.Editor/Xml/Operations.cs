@@ -643,7 +643,7 @@ namespace Backsight.Editor.Xml
 
     public partial class ParallelLineData
     {
-        internal ParallelLineData(ParallelOperation op)
+        internal ParallelLineData(ParallelLineOperation op)
             : base(op)
         {
             this.RefLine = op.ReferenceLine.DataId;
@@ -671,7 +671,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new ParallelOperation(s, this);
+            return new ParallelLineOperation(s, this);
         }
     }
 

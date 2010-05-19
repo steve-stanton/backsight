@@ -436,15 +436,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Returns an object that represents this edit, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this edit</returns>
-        internal override OperationData GetSerializableEdit()
-        {
-            return new RadialData(this);
-        }
-
-        /// <summary>
         /// Calculates the position of the sideshot point.
         /// </summary>
         /// <returns>The calculated position</returns>

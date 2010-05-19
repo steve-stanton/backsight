@@ -185,12 +185,12 @@ namespace Backsight.Editor.UI
                 throw new Exception("ParallelUI.Run - Command is already running.");
 
             // If we're doing an update, get the reference line from the original op.
-            ParallelOperation op = null;
+            ParallelLineOperation op = null;
             UpdateUI up = this.Update;
 
             if (up!=null)
             {
-                op = (up.GetOp() as ParallelOperation);
+                op = (up.GetOp() as ParallelLineOperation);
                 if (op==null)
                     throw new Exception("ParallelUI.Run - Unexpected edit type.");
 
@@ -200,7 +200,7 @@ namespace Backsight.Editor.UI
 
             // If it wasn't an update, we might be recalling an old op.
             if (op==null)
-                op = (this.Recall as ParallelOperation);
+                op = (this.Recall as ParallelLineOperation);
 
             // Get old observations if necessary.
             if (op!=null)
@@ -531,7 +531,7 @@ namespace Backsight.Editor.UI
             if (up!=null)
             {
                 // Get the original operation.
-                ParallelOperation op = (ParallelOperation)up.GetOp();
+                ParallelLineOperation op = (ParallelLineOperation)up.GetOp();
                 if (op==null)
                     throw new Exception("ParallelUI.DialFinish - Unexpected edit type.");
 
@@ -544,7 +544,7 @@ namespace Backsight.Editor.UI
             else
             {
                 // Create the persistent edit (adds to current session)
-                ParallelOperation op = new ParallelOperation(Session.WorkingSession);
+                ParallelLineOperation op = new ParallelLineOperation(Session.WorkingSession);
                 bool ok = false;
                 
                 if (m_Offset!=null)

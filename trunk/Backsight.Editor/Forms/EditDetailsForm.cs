@@ -16,6 +16,8 @@
 using System;
 using System.Windows.Forms;
 
+using Backsight.Editor.Xml;
+
 namespace Backsight.Editor.Forms
 {
     /// <summary>
@@ -27,7 +29,7 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
 
-            detailsLabel.Text = op.ToXml(true);
+            detailsLabel.Text = DataFactory.Instance.ToXml(op, true);
         }
 
         private void closeButton_Click(object sender, EventArgs e)
