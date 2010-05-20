@@ -363,7 +363,6 @@
     <Compile Include="Observations\OffsetDistance.cs" />
     <Compile Include="Observations\OffsetPoint.cs" />
     <Compile Include="Observations\ParallelDirection.cs" />
-    <Compile Include="Operations\AttachPointInput.cs" />
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
@@ -375,9 +374,7 @@
     <Compile Include="Operations\NewRowTextOperation.cs" />
     <Compile Include="Operations\NewSegmentOperation.cs" />
     <Compile Include="Operations\NewTextOperation.cs" />
-    <Compile Include="Operations\OperationInput.cs" />
     <Compile Include="Operations\ParallelLineOperation.cs" />
-    <Compile Include="Operations\PathInput.cs" />
     <Compile Include="Operations\PropertyChangeOperation.cs" />
     <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
     <Compile Include="Operations\TextRotationOperation.cs" />

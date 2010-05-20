@@ -59,17 +59,6 @@ namespace Backsight.Editor.Xml
         /// <param name="s">The session the editing operation should be appended to</param>
         /// <returns>The editing operation that was loaded</returns>
         abstract internal Operation LoadOperation(Session s);
-
-        /// <summary>
-        /// Converts XML data into the input for an editing operation.
-        /// </summary>
-        /// <param name="loader">Deserialization helper</param>
-        /// <returns>The input for the editing operation</returns>
-        /// <remarks>This should ultimately be declared as an abstract method</remarks>
-        internal virtual OperationInput GetInput(ILoader loader)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public partial class AttachPointData
@@ -94,18 +83,6 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             return new AttachPointOperation(s, this);
-        }
-
-        /// <summary>
-        /// Converts XML data into the input for an editing operation.
-        /// </summary>
-        /// <param name="loader">Deserialization helper</param>
-        /// <returns>The input for the editing operation</returns>
-        /// <remarks>This should ultimately be declared as an abstract method</remarks>
-        internal override OperationInput GetInput(ILoader loader)
-        {
-            LineFeature line = loader.Find<LineFeature>(this.Line);
-            return new AttachPointInput(line, this.PositionRatio);
         }
     }
 
@@ -816,19 +793,6 @@ namespace Backsight.Editor.Xml
         {
             throw new NotImplementedException("PathData.LoadOperation");
             //return new PathOperation(s, this);
-        }
-
-        /// <summary>
-        /// Converts XML data into the input for an editing operation.
-        /// </summary>
-        /// <param name="loader">Deserialization helper</param>
-        /// <returns>The input for the editing operation</returns>
-        /// <remarks>This should ultimately be declared as an abstract method</remarks>
-        internal override OperationInput GetInput(ILoader loader)
-        {
-            PointFeature from = loader.Find<PointFeature>(this.From);
-            PointFeature to = loader.Find<PointFeature>(this.To);
-            return new PathInput(from, to, this.EntryString);
         }
     }
 
