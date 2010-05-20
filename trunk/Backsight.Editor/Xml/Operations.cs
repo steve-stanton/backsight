@@ -681,7 +681,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new NewPointOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            NewPointOperation op = new NewPointOperation(s, sequence);
+            op.SetNewPoint((PointFeature)this.Point.LoadFeature(op));
+            return op;
         }
     }
 
@@ -727,7 +730,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new NewSegmentOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            NewSegmentOperation op = new NewSegmentOperation(s, sequence);
+            op.SetNewLine((LineFeature)this.Line.LoadFeature(op));
+            return op;
         }
     }
 

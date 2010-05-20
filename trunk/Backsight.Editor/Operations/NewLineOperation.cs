@@ -43,11 +43,12 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewLineOperation(Session s, NewSegmentData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        protected NewLineOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_NewLine = new LineFeature(this, t.Line);
         }
 
         /// <summary>
@@ -93,10 +94,10 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the new line for this operation (used by the <c>NewCircleOperation</c>).
+        /// Records the new line for this operation.
         /// </summary>
         /// <param name="line">The line created by this operation.</param>
-        protected void SetNewLine(LineFeature line)
+        internal void SetNewLine(LineFeature line)
         {
             m_NewLine = line;
         }
