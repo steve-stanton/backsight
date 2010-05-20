@@ -111,6 +111,10 @@ namespace Backsight.Editor.Xml
 
     public partial class DeletionData
     {
+        public DeletionData()
+        {
+        }
+
         internal DeletionData(DeletionOperation op)
             : base(op)
         {
@@ -133,6 +137,10 @@ namespace Backsight.Editor.Xml
 
     public partial class GetControlData
     {
+        public GetControlData()
+        {
+        }
+
         internal GetControlData(GetControlOperation op)
             : base(op)
         {
@@ -162,6 +170,10 @@ namespace Backsight.Editor.Xml
 
     public partial class FeatureTableData
     {
+        public FeatureTableData()
+        {
+        }
+
         internal FeatureTableData(Operation op)
         {
             Feature[] feats = op.Features;
@@ -253,6 +265,10 @@ namespace Backsight.Editor.Xml
 
     public partial class IntersectDirectionAndDistanceData
     {
+        //public IntersectDirectionAndDistanceData()
+        //{
+        //}
+
         internal IntersectDirectionAndDistanceData(IntersectDirectionAndDistanceOperation op)
             : base(op)
         {
@@ -282,6 +298,10 @@ namespace Backsight.Editor.Xml
 
     public partial class IntersectDirectionAndLineData
     {
+        public IntersectDirectionAndLineData()
+        {
+        }
+
         internal IntersectDirectionAndLineData(IntersectDirectionAndLineOperation op)
             : base(op)
         {
@@ -313,6 +333,10 @@ namespace Backsight.Editor.Xml
 
     public partial class IntersectTwoDirectionsData
     {
+        public IntersectTwoDirectionsData()
+        {
+        }
+
         internal IntersectTwoDirectionsData(IntersectTwoDirectionsOperation op)
             : base(op)
         {
@@ -340,6 +364,10 @@ namespace Backsight.Editor.Xml
 
     public partial class IntersectTwoDistancesData
     {
+        //public IntersectTwoDistancesData()
+        //{
+        //}
+
         internal IntersectTwoDistancesData(IntersectTwoDistancesOperation op)
             : base(op)
         {
@@ -370,6 +398,10 @@ namespace Backsight.Editor.Xml
 
     public partial class IntersectTwoLinesData
     {
+        public IntersectTwoLinesData()
+        {
+        }
+
         internal IntersectTwoLinesData(IntersectTwoLinesOperation op)
             : base(op)
         {
@@ -404,6 +436,10 @@ namespace Backsight.Editor.Xml
 
     public partial class LineExtensionData
     {
+        //public LineExtensionData()
+        //{
+        //}
+
         internal LineExtensionData(LineExtensionOperation op)
             : base(op)
         {
@@ -429,6 +465,10 @@ namespace Backsight.Editor.Xml
 
     public partial class LineSubdivisionData
     {
+        public LineSubdivisionData()
+        {
+        }
+
         internal LineSubdivisionData(LineSubdivisionOperation op)
             : base(op)
         {
@@ -477,6 +517,10 @@ namespace Backsight.Editor.Xml
 
     public partial class MovePolygonPositionData
     {
+        public MovePolygonPositionData()
+        {
+        }
+
         internal MovePolygonPositionData(MovePolygonPositionOperation op)
             : base(op)
         {
@@ -509,6 +553,10 @@ namespace Backsight.Editor.Xml
 
     public partial class MoveTextData
     {
+        public MoveTextData()
+        {
+        }
+
         internal MoveTextData(MoveTextOperation op)
             : base(op)
         {
@@ -540,6 +588,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewArcData
     {
+        public NewArcData()
+        {
+        }
+
         internal NewArcData(NewArcOperation op)
             : base(op)
         {
@@ -563,6 +615,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewCircleData
     {
+        public NewCircleData()
+        {
+        }
+
         internal NewCircleData(NewCircleOperation op)
             : base(op)
         {
@@ -585,6 +641,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewKeyTextData
     {
+        public NewKeyTextData()
+        {
+        }
+
         internal NewKeyTextData(NewKeyTextOperation op)
             : base(op)
         {
@@ -604,6 +664,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewMiscTextData
     {
+        public NewMiscTextData()
+        {
+        }
+
         internal NewMiscTextData(NewMiscTextOperation op)
             : base(op)
         {
@@ -623,6 +687,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewPointData
     {
+        public NewPointData()
+        {
+        }
+
         internal NewPointData(NewPointOperation op)
             : base(op)
         {
@@ -642,6 +710,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewRowTextData
     {
+        public NewRowTextData()
+        {
+        }
+
         internal NewRowTextData(NewRowTextOperation op)
             : base(op)
         {
@@ -661,6 +733,10 @@ namespace Backsight.Editor.Xml
 
     public partial class NewSegmentData
     {
+        public NewSegmentData()
+        {
+        }
+
         internal NewSegmentData(NewSegmentOperation op)
             : base(op)
         {
@@ -680,6 +756,10 @@ namespace Backsight.Editor.Xml
 
     public partial class ParallelLineData
     {
+        //public ParallelLineData()
+        //{
+        //}
+
         internal ParallelLineData(ParallelLineOperation op)
             : base(op)
         {
@@ -714,6 +794,10 @@ namespace Backsight.Editor.Xml
 
     public partial class PathData
     {
+        public PathData()
+        {
+        }
+
         internal PathData(PathOperation op)
             : base(op)
         {
@@ -750,6 +834,10 @@ namespace Backsight.Editor.Xml
 
     public partial class PolygonSubdivisionData
     {
+        public PolygonSubdivisionData()
+        {
+        }
+
         internal PolygonSubdivisionData(PolygonSubdivisionOperation op)
             : base(op)
         {
@@ -779,6 +867,10 @@ namespace Backsight.Editor.Xml
 
     public partial class PropertyChangeData
     {
+        public PropertyChangeData()
+        {
+        }
+
         internal PropertyChangeData(PropertyChangeOperation op)
             : base(op)
         {
@@ -799,6 +891,10 @@ namespace Backsight.Editor.Xml
 
     public partial class RadialData
     {
+        public RadialData()
+        {
+        }
+
         internal RadialData(RadialOperation op)
             : base(op)
         {
@@ -823,6 +919,10 @@ namespace Backsight.Editor.Xml
 
     public partial class SetTopologyData
     {
+        public SetTopologyData()
+        {
+        }
+
         internal SetTopologyData(SetTopologyOperation op)
             : base(op)
         {
@@ -842,6 +942,10 @@ namespace Backsight.Editor.Xml
 
     public partial class SimpleLineSubdivisionData
     {
+        public SimpleLineSubdivisionData()
+        {
+        }
+
         internal SimpleLineSubdivisionData(SimpleLineSubdivisionOperation op)
             : base(op)
         {
@@ -865,6 +969,10 @@ namespace Backsight.Editor.Xml
 
     public partial class TextRotationData
     {
+        public TextRotationData()
+        {
+        }
+
         internal TextRotationData(TextRotationOperation op)
             : base(op)
         {
@@ -884,6 +992,10 @@ namespace Backsight.Editor.Xml
 
     public partial class TrimLineData
     {
+        public TrimLineData()
+        {
+        }
+
         internal TrimLineData(TrimLineOperation op)
             : base(op)
         {
@@ -921,6 +1033,10 @@ namespace Backsight.Editor.Xml
 
     public partial class UpdateData
     {
+        public UpdateData()
+        {
+        }
+
         /// <summary>
         /// Loads this update into a session
         /// </summary>
