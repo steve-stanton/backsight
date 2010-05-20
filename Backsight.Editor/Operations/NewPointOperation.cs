@@ -16,7 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
+
 
 namespace Backsight.Editor.Operations
 {
@@ -37,11 +37,12 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal NewPointOperation(Session s, NewPointData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal NewPointOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_NewPoint = new PointFeature(this, t.Point);
         }
 
         /// <summary>
@@ -59,6 +60,11 @@ namespace Backsight.Editor.Operations
         public PointFeature Point
         {
             get { return m_NewPoint; }
+        }
+
+        internal void SetNewPoint(PointFeature p)
+        {
+            m_NewPoint = p;
         }
 
         internal override Feature[] Features
