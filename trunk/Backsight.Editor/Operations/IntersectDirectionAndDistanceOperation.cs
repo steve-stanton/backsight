@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -80,33 +79,11 @@ namespace Backsight.Editor.Operations
         /// is needed to define the geometry.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal IntersectDirectionAndDistanceOperation(Session s, IntersectDirectionAndDistanceData t)
-            : base(s, t)
-        {
-            m_From = s.MapModel.Find<PointFeature>(t.From);
-            m_Default = t.Default;
-            m_Direction = (Direction)t.Direction.LoadObservation(this);
-            m_Distance = t.Distance.LoadObservation(this);
-            m_To = new PointFeature(this, t.To);
-
-            if (t.DirLine == null)
-                m_DirLine = null;
-            else
-                m_DirLine = new LineFeature(this, m_Direction.From, m_To, t.DirLine);
-
-            if (t.DistLine == null)
-                m_DistLine = null;
-            else
-                m_DistLine = new LineFeature(this, m_From, m_To, t.DistLine);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectDirectionAndDistanceOperation(Session s)
-            : base(s)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal IntersectDirectionAndDistanceOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             m_Direction = null;
             m_Distance = null;
@@ -116,6 +93,15 @@ namespace Backsight.Editor.Operations
             m_To = null;
             m_DirLine = null;
             m_DistLine = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal IntersectDirectionAndDistanceOperation(Session s)
+            : this(s, 0)
+        {
         }
 
         #endregion
@@ -142,6 +128,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature DistanceFromPoint // was GetpDistFrom
         {
             get { return m_From; }
+            set { m_From = value; }
         }
 
         /// <summary>
@@ -151,6 +138,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDirectionLine // was GetpDirArc
         {
             get { return m_DirLine; }
+            set { m_DirLine = value; }
         }
 
         /// <summary>
@@ -159,6 +147,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDistanceLine // was GetpDistArc
         {
             get { return m_DistLine; }
+            set { m_DistLine = value; }
         }
 
         /// <summary>
@@ -167,6 +156,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_To; }
+            set { m_To = value; }
         }
 
         /// <summary>
@@ -298,6 +288,22 @@ namespace Backsight.Editor.Operations
 
             // Rollforward the base class.
             return base.OnRollforward();
+        }
+
+        /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="dir">Direction observation.</param>
+        /// <param name="dist">Distance observation.</param>
+        /// <param name="from">The point the distance was observed from.</param>
+        /// <param name="usedefault">True if the default intersection is required (the one 
+        /// closer to the origin of the direction line). False for the other one (if any).</param>
+        internal void SetInput(Direction dir, Observation dist, PointFeature from, bool useDefault)
+        {
+            m_Direction = dir;
+            m_Distance = dist;
+            m_From = from;
+            m_Default = useDefault;
         }
 
         /// <summary>

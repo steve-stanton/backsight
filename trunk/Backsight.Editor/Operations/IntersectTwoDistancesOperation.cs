@@ -183,6 +183,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_To; }
+            set { m_To = value; }
         }
 
         /// <summary>

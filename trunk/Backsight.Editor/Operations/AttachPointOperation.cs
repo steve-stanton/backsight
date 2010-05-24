@@ -22,7 +22,6 @@ using System.IO;
 using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -67,13 +66,13 @@ namespace Backsight.Editor.Operations
         /// is needed to define the geometry.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal AttachPointOperation(Session s, AttachPointData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal AttachPointOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Line = s.MapModel.Find<LineFeature>(t.Line);
-            m_PositionRatio = t.PositionRatio;
-            m_Point = new PointFeature(this, t.Point);
+            SetInitialValues();
         }
 
         /// <summary>
@@ -81,9 +80,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal AttachPointOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            SetInitialValues();
         }
 
         #endregion
@@ -236,6 +234,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature Line
         {
             get { return m_Line; }
+            set { m_Line = value; }
         }
 
         /// <summary>
@@ -244,6 +243,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature NewPoint
         {
             get { return m_Point; }
+            set { m_Point = value; }
         }
 
         /// <summary>
@@ -254,6 +254,7 @@ namespace Backsight.Editor.Operations
         internal uint PositionRatio
         {
             get { return m_PositionRatio; }
+            set { m_PositionRatio = value; }
         }
 
         /// <summary>

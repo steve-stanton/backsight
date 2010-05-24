@@ -235,6 +235,16 @@ namespace Backsight.Editor.Xml
         {
             return new PointFeature(op, this);
         }
+
+        /// <summary>
+        /// Loads this point as part of an editing operation
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <returns>The point that was loaded</returns>
+        internal PointFeature LoadPoint(Operation op)
+        {
+            return new PointFeature(op, this);
+        }
     }
 
     /// <summary>
