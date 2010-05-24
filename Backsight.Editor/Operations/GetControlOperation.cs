@@ -18,7 +18,6 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -45,24 +44,21 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal GetControlOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Features = new List<PointFeature>();
         }
 
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal GetControlOperation(Session s, GetControlData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal GetControlOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            PointData[] pts = t.Point;
-            m_Features = new List<PointFeature>(pts.Length);
-
-            foreach (PointData p in pts)
-                m_Features.Add(new PointFeature(this, p));
+            m_Features = new List<PointFeature>();
         }
 
         #endregion
@@ -218,6 +214,15 @@ namespace Backsight.Editor.Operations
         internal override void RunEdit()
         {
             // Nothing to do
+        }
+
+        /// <summary>
+        /// Records an additional control point as part of this edit.
+        /// </summary>
+        /// <param name="p">The point created by this edit.</param>
+        internal void AddControlPoint(PointFeature p)
+        {
+            m_Features.Add(p);
         }
     }
 }

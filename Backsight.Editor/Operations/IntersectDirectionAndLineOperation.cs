@@ -20,7 +20,6 @@ using System.Diagnostics;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -88,7 +87,20 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal IntersectDirectionAndLineOperation(Session s)
-            : base(s)
+            : this(s, 0)
+        {
+        }
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal IntersectDirectionAndLineOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             m_Direction = null;
             m_Line = null;
@@ -98,31 +110,6 @@ namespace Backsight.Editor.Operations
             m_LineA = null;
             m_LineB = null;
             m_IsSplit = false;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal IntersectDirectionAndLineOperation(Session s, IntersectDirectionAndLineData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-
-            m_Direction = (Direction)t.Direction.LoadObservation(this);
-            m_Line = mapModel.Find<LineFeature>(t.Line);
-            m_CloseTo = mapModel.Find<PointFeature>(t.CloseTo);
-            m_Intersection = new PointFeature(this, t.To);
-
-            if (t.DirLine == null)
-                m_DirLine = null;
-            else
-                m_DirLine = new LineFeature(this, m_Direction.From, m_Intersection, t.DirLine);
-
-            m_IsSplit = MakeSections(m_Line, t.SplitBefore, m_Intersection, t.SplitAfter, out m_LineA, out m_LineB);
         }
 
         #endregion
@@ -142,6 +129,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDirectionLine // was GetpDirArc
         {
             get { return m_DirLine; }
+            set { m_DirLine = value; }
         }
 
         /// <summary>
@@ -158,6 +146,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit
         {
             get { return m_IsSplit; }
+            set { m_IsSplit = value; }
         }
 
         /// <summary>
@@ -166,6 +155,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_Intersection; }
+            set { m_Intersection = value; }
         }
 
         /// <summary>
@@ -364,6 +354,21 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="dir">Direction observation.</param>
+        /// <param name="line">The line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        internal void SetInput(Direction dir, LineFeature line, PointFeature closeTo)
+        {
+            m_Direction = dir;
+            m_Line = line;
+            m_CloseTo = closeTo;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="dir">The direction to intersect.</param>
@@ -556,11 +561,13 @@ namespace Backsight.Editor.Operations
         internal LineFeature LineBeforeSplit
         {
             get { return m_LineA; }
+            set { m_LineA = value; }
         }
 
         internal LineFeature LineAfterSplit
         {
             get { return m_LineB; }
+            set { m_LineB = value; }
         }
 
         /// <summary>

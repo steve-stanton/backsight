@@ -17,6 +17,7 @@ using System;
 using Backsight.Editor.Operations;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Xml
 {
@@ -82,7 +83,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new AttachPointOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            AttachPointOperation op = new AttachPointOperation(s, sequence);
+            op.Line = s.MapModel.Find<LineFeature>(this.Line);
+            op.PositionRatio = this.PositionRatio;
+            op.NewPoint = new PointFeature(op, this.Point);
+            return op;
         }
     }
 
@@ -108,7 +114,18 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new DeletionOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            DeletionOperation op = new DeletionOperation(s, sequence);
+            CadastralMapModel mapModel = s.MapModel;
+
+            foreach (string id in this.Delete)
+            {
+                Feature f = mapModel.Find<Feature>(id);
+                Debug.Assert(f != null);
+                op.AddDeletion(f);
+            }
+
+            return op;
         }
     }
 
@@ -134,7 +151,16 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new GetControlOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            GetControlOperation op = new GetControlOperation(s, sequence);
+
+            foreach (PointData p in this.Point)
+            {
+                PointFeature pf = p.LoadPoint(op);
+                op.AddControlPoint(pf);
+            }
+
+            return op;
         }
     }
 
@@ -269,7 +295,25 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new IntersectDirectionAndDistanceOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            IntersectDirectionAndDistanceOperation op = new IntersectDirectionAndDistanceOperation(s, sequence);
+
+            Direction dir = (Direction)this.Direction.LoadObservation(op);
+            Observation dist = this.Distance.LoadObservation(op);
+            PointFeature from = s.MapModel.Find<PointFeature>(this.From);
+            op.SetInput(dir, dist, from, this.Default);
+
+            op.IntersectionPoint = new PointFeature(op, this.To);
+
+            if (this.DirLine == null)
+                op.CreatedDirectionLine = null;
+            else
+                op.CreatedDirectionLine = new LineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
+
+            if (this.DistLine != null)
+                op.CreatedDistanceLine = new LineFeature(op, op.DistanceFromPoint, op.IntersectionPoint, this.DistLine);
+
+            return op;
         }
     }
 
@@ -304,7 +348,29 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new IntersectDirectionAndLineOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            IntersectDirectionAndLineOperation op = new IntersectDirectionAndLineOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            Direction dir = (Direction)this.Direction.LoadObservation(op);
+            LineFeature line = mapModel.Find<LineFeature>(this.Line);
+            PointFeature closeTo = mapModel.Find<PointFeature>(this.CloseTo);
+            op.SetInput(dir, line, closeTo);
+
+            op.IntersectionPoint = new PointFeature(op, this.To);
+
+            if (this.DirLine == null)
+                op.CreatedDirectionLine = null;
+            else
+                op.CreatedDirectionLine = new LineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
+
+            LineFeature lineA, lineB;
+            op.IsSplit = op.MakeSections(line, this.SplitBefore, op.IntersectionPoint, this.SplitAfter,
+                                            out lineA, out lineB);
+            op.LineBeforeSplit = lineA;
+            op.LineAfterSplit = lineB;
+
+            return op;
         }
     }
 
@@ -335,7 +401,26 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new IntersectTwoDirectionsOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            IntersectTwoDirectionsOperation op = new IntersectTwoDirectionsOperation(s, sequence);
+
+            Direction dir1 = (Direction)this.Direction1.LoadObservation(op);
+            Direction dir2 = (Direction)this.Direction2.LoadObservation(op);
+            op.SetInput(dir1, dir2);
+
+            op.IntersectionPoint = new PointFeature(op, this.To);
+
+            if (this.Line1 == null)
+                op.CreatedLine1 = null;
+            else
+                op.CreatedLine1 = new LineFeature(op, dir1.From, op.IntersectionPoint, this.Line1);
+
+            if (this.Line2 == null)
+                op.CreatedLine2 = null;
+            else
+                op.CreatedLine2 = new LineFeature(op, dir2.From, op.IntersectionPoint, this.Line2);
+
+            return op;
         }
     }
 

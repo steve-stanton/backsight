@@ -50,6 +50,20 @@ namespace Backsight.Editor.Operations
         {
         }
 
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        protected IntersectOperation(Session s, uint sequence)
+            : base(s, sequence)
+        {
+        }
+
         protected IntersectOperation(Session s)
             : base(s)
         {
@@ -60,7 +74,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The point feature at the intersection created by this edit.
         /// </summary>
-        abstract internal PointFeature IntersectionPoint { get; } // was GetpIntersect
+        abstract internal PointFeature IntersectionPoint { get; set; } // was GetpIntersect
 
         /// <summary>
         /// Was the intersection created at it's default position?
@@ -267,7 +281,7 @@ protected:
         /// <param name="lineAfter">The line section after to the intersection (null if no
         /// split was required)</param>
         /// <returns>True if sections were created</returns>
-        protected bool MakeSections(LineFeature parent, string idBefore, PointFeature x, string idAfter,
+        internal bool MakeSections(LineFeature parent, string idBefore, PointFeature x, string idAfter,
                                         out LineFeature lineBefore, out LineFeature lineAfter)
         {
             lineBefore = lineAfter = null;

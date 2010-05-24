@@ -18,7 +18,6 @@ using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -69,23 +68,20 @@ namespace Backsight.Editor.Operations
         /// is needed to define the geometry.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal IntersectTwoDirectionsOperation(Session s, IntersectTwoDirectionsData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal IntersectTwoDirectionsOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Direction1 = (Direction)t.Direction1.LoadObservation(this);
-            m_Direction2 = (Direction)t.Direction2.LoadObservation(this);
-            m_To = new PointFeature(this, t.To);
+            m_Direction1 = null;
+            m_Direction2 = null;
+            m_To = null;
+            m_Line1 = null;
+            m_Line2 = null;
 
-            if (t.Line1 == null)
-                m_Line1 = null;
-            else
-                m_Line1 = new LineFeature(this, m_Direction1.From, m_To, t.Line1);
-
-            if (t.Line2 == null)
-                m_Line2 = null;
-            else
-                m_Line2 = new LineFeature(this, m_Direction2.From, m_To, t.Line2);
+            /*
+             */
         }
 
         /// <summary>
@@ -93,13 +89,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal IntersectTwoDirectionsOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Direction1 = null;
-            m_Direction2 = null;
-            m_To = null;
-            m_Line1 = null;
-            m_Line2 = null;
         }
 
         #endregion
@@ -110,6 +101,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint // was GetpIntersect
         {
             get { return m_To; }
+            set { m_To = value; }
         }
 
         /// <summary>
@@ -118,6 +110,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine1 // was GetpArc1
         {
             get { return m_Line1; }
+            set { m_Line1 = value; }
         }
 
         /// <summary>
@@ -126,6 +119,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine2 // was GetpArc2
         {
             get { return m_Line2; }
+            set { m_Line2 = value; }
         }
 
         /// <summary>
@@ -418,5 +412,16 @@ namespace Backsight.Editor.Operations
             PointGeometry pg = PointGeometry.Create(p);
             m_To.PointGeometry = pg;
         }
+
+        /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="dir">Direction observation.</param>
+        internal void SetInput(Direction dir1, Direction dir2)
+        {
+            m_Direction1 = dir1;
+            m_Direction2 = dir2;
+        }
+
     }
 }

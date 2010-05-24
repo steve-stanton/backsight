@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -57,20 +56,12 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal DeletionOperation(Session s, DeletionData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal DeletionOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            string[] items = t.Delete;
-            m_Deletions = new List<Feature>(items.Length);
-            CadastralMapModel mapModel = s.MapModel;
-
-            foreach (string id in items)
-            {
-                Feature f = mapModel.Find<Feature>(id);
-                Debug.Assert(f != null);
-                m_Deletions.Add(f);
-            }
         }
 
         #endregion
