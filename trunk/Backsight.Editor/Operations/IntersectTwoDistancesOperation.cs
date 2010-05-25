@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -77,44 +76,17 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
-
         /// <summary>
         /// Constructor for use during deserialization. The point created by this edit
         /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
         /// is needed to define the geometry.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal IntersectTwoDistancesOperation(Session s, IntersectTwoDistancesData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-
-            m_Distance1 = t.Distance1.LoadObservation(this);
-            m_From1 = mapModel.Find<PointFeature>(t.From1);
-            m_Distance2 = t.Distance2.LoadObservation(this);
-            m_From2 = mapModel.Find<PointFeature>(t.From2);
-            m_Default = t.Default;
-            m_To = new PointFeature(this, t.To);
-
-            if (t.Line1 == null)
-                m_Line1 = null;
-            else
-                m_Line1 = new LineFeature(this, m_From1, m_To, t.Line1);
-
-            if (t.Line2 == null)
-                m_Line2 = null;
-            else
-                m_Line2 = new LineFeature(this, m_From2, m_To, t.Line2);
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectTwoDistancesOperation(Session s)
-            : base(s)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal IntersectTwoDistancesOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             m_Distance1 = null;
             m_From1 = null;
@@ -125,6 +97,16 @@ namespace Backsight.Editor.Operations
             m_To = null;
             m_Line1 = null;
             m_Line2 = null;
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal IntersectTwoDistancesOperation(Session s)
+            : this(s, 0)
+        {
         }
 
         #endregion
@@ -167,6 +149,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine1 // was GetpArc1
         {
             get { return m_Line1; }
+            set { m_Line1 = value; }
         }
 
         /// <summary>
@@ -175,6 +158,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine2 // was GetpArc2
         {
             get { return m_Line2; }
+            set { m_Line2 = value; }
         }
 
         /// <summary>
@@ -328,6 +312,19 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        internal void SetInput(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2,
+                                bool isdefault)
+        {
+            m_Distance1 = dist1;
+            m_From1 = from1;
+            m_Distance2 = dist2;
+            m_From2 = from2;
+            m_Default = isdefault;
+        }
+
+        /// <summary>
         /// Executes this operation. 
         /// </summary>
         /// <param name="dist1">1st distance observation.</param>
@@ -351,11 +348,7 @@ namespace Backsight.Editor.Operations
             m_To = AddIntersection(xsect, pointId);
 
             // Remember input
-            m_Distance1 = dist1;
-            m_From1 = from1;
-            m_Distance2 = dist2;
-            m_From2 = from2;
-            m_Default = isdefault;
+            SetInput(dist1, from1, dist2, from2, isdefault);
 
             // If we have a defined entity types for lines, add them too.
             CadastralMapModel map = MapModel;

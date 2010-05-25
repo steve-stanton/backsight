@@ -454,7 +454,29 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new IntersectTwoDistancesOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            IntersectTwoDistancesOperation op = new IntersectTwoDistancesOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            Observation dist1 = this.Distance1.LoadObservation(op);
+            PointFeature from1 = mapModel.Find<PointFeature>(this.From1);
+            Observation dist2 = this.Distance2.LoadObservation(op);
+            PointFeature from2 = mapModel.Find<PointFeature>(this.From2);
+            op.SetInput(dist1, from1, dist2, from2, this.Default);
+
+            op.IntersectionPoint = new PointFeature(op, this.To);
+
+            if (this.Line1 == null)
+                op.CreatedLine1 = null;
+            else
+                op.CreatedLine1 = new LineFeature(op, from1, op.IntersectionPoint, this.Line1);
+
+            if (this.Line2 == null)
+                op.CreatedLine2 = null;
+            else
+                op.CreatedLine2 = new LineFeature(op, from2, op.IntersectionPoint, this.Line2);
+
+            return op;
         }
     }
 
@@ -492,7 +514,27 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new IntersectTwoLinesOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            IntersectTwoLinesOperation op = new IntersectTwoLinesOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature line1 = mapModel.Find<LineFeature>(this.Line1);
+            LineFeature line2 = mapModel.Find<LineFeature>(this.Line2);
+            PointFeature closeTo = mapModel.Find<PointFeature>(this.CloseTo);
+            op.SetInput(line1, line2, closeTo);
+
+            op.IntersectionPoint = new PointFeature(op, this.To);
+
+            LineFeature lineA, lineB;
+            op.IsSplit1 = op.MakeSections(line1, this.SplitBefore1, op.IntersectionPoint, this.SplitAfter1, out lineA, out lineB);
+            op.Line1BeforeSplit = lineA;
+            op.Line1AfterSplit = lineB;
+
+            op.IsSplit2 = op.MakeSections(line2, this.SplitBefore2, op.IntersectionPoint, this.SplitAfter2, out lineA, out lineB);
+            op.Line2BeforeSplit = lineA;
+            op.Line2AfterSplit = lineB;
+
+            return op;
         }
     }
 

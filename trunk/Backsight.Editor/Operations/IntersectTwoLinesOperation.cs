@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -93,7 +92,21 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal IntersectTwoLinesOperation(Session s)
-            : base(s)
+            : this(s, 0)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal IntersectTwoLinesOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             m_Line1 = null;
             m_Line2 = null;
@@ -105,25 +118,6 @@ namespace Backsight.Editor.Operations
             m_Line2b = null;
             m_IsSplit1 = false;
             m_IsSplit2 = false;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal IntersectTwoLinesOperation(Session s, IntersectTwoLinesData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-            m_Line1 = mapModel.Find<LineFeature>(t.Line1);
-            m_Line2 = mapModel.Find<LineFeature>(t.Line2);
-            m_CloseTo = mapModel.Find<PointFeature>(t.CloseTo);
-            m_Intersection = new PointFeature(this, t.To);
-            m_IsSplit1 = MakeSections(m_Line1, t.SplitBefore1, m_Intersection, t.SplitAfter1, out m_Line1a, out m_Line1b);
-            m_IsSplit2 = MakeSections(m_Line2, t.SplitBefore2, m_Intersection, t.SplitAfter2, out m_Line2a, out m_Line2b);
         }
 
         #endregion
@@ -142,6 +136,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit1
         {
             get { return m_IsSplit1; }
+            set { m_IsSplit1 = value; }
         }
 
         /// <summary>
@@ -158,6 +153,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit2
         {
             get { return m_IsSplit2; }
+            set { m_IsSplit2 = value; }
         }
 
         /// <summary>
@@ -404,6 +400,21 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        internal void SetInput(LineFeature line1, LineFeature line2, PointFeature closeTo)
+        {
+            m_Line1 = line1;
+            m_Line2 = line2;
+            m_CloseTo = closeTo;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="line1">The 1st line to intersect.</param>
@@ -513,21 +524,25 @@ namespace Backsight.Editor.Operations
         internal LineFeature Line1BeforeSplit
         {
             get { return m_Line1a; }
+            set { m_Line1a = value; }
         }
 
         internal LineFeature Line1AfterSplit
         {
             get { return m_Line1b; }
+            set { m_Line1b = value; }
         }
 
         internal LineFeature Line2BeforeSplit
         {
             get { return m_Line2a; }
+            set { m_Line2a = value; }
         }
 
         internal LineFeature Line2AfterSplit
         {
             get { return m_Line2b; }
+            set { m_Line2b = value; }
         }
     }
 }
