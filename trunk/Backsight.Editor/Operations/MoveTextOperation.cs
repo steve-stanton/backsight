@@ -17,7 +17,6 @@ using System;
 
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -57,18 +56,16 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal MoveTextOperation(Session s, MoveTextData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal MoveTextOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Text = s.MapModel.Find<TextFeature>(t.Text);
-            m_OldPosition = new PointGeometry(t.OldX, t.OldY);
-            m_NewPosition = new PointGeometry(t.NewX, t.NewY);
-
-            if (t.OldPolygonXSpecified && t.OldPolygonYSpecified)
-                m_OldPolPosition = new PointGeometry(t.OldPolygonX, t.OldPolygonY);
-            else
-                m_OldPolPosition = null;
+            m_Text = null;
+            m_OldPosition = null;
+            m_OldPolPosition = null;
+            m_NewPosition = null;
         }
 
         /// <summary>
@@ -76,12 +73,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal MoveTextOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Text = null;
-            m_OldPosition = null;
-            m_OldPolPosition = null;
-            m_NewPosition = null;
         }
 
         #endregion
@@ -92,14 +85,16 @@ namespace Backsight.Editor.Operations
         internal TextFeature MovedText // was GetpLabel
         {
             get { return m_Text; }
+            set { m_Text = value; }
         }
 
         /// <summary>
         /// Where the text used to be.
         /// </summary>
-        internal IPointGeometry OldPosition
+        internal PointGeometry OldPosition
         {
             get { return m_OldPosition; }
+            set { m_OldPosition = value; }
         }
 
         /// <summary>
@@ -108,6 +103,7 @@ namespace Backsight.Editor.Operations
         internal PointGeometry OldPolPosition
         {
             get { return m_OldPolPosition; }
+            set { m_OldPolPosition = value; }
         }
 
         /// <summary>
@@ -116,6 +112,7 @@ namespace Backsight.Editor.Operations
         internal PointGeometry NewPosition
         {
             get { return m_NewPosition; }
+            set { m_NewPosition = value; }
         }
 
         /// <summary>

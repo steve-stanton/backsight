@@ -16,12 +16,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
-using System.Text;
 
 namespace Backsight.Editor.Operations
 {
@@ -46,6 +46,15 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
 
         /// <summary>
         /// Constructor for use during deserialization. The point created by this edit

@@ -21,7 +21,6 @@ using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -68,49 +67,27 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal LineExtensionOperation(Session s)
-            : base(s)
+            : this(s, 0)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization. The point created by this edit
+        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
+        /// is needed to define the geometry.
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal LineExtensionOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             m_ExtendLine = null;
             m_NewLine = null;
             m_NewPoint = null;
             m_Length = null;
             m_IsExtendFromEnd = true;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The features created by this edit
-        /// are defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal LineExtensionOperation(Session s, LineExtensionData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-            m_ExtendLine = mapModel.Find<LineFeature>(t.Line);
-            m_NewPoint = new PointFeature(this, t.NewPoint);
-            m_Length = (Distance)t.Distance.LoadObservation(this);
-            m_IsExtendFromEnd = t.ExtendFromEnd;
-
-            if (t.NewLine == null)
-                m_NewLine = null;
-            else
-            {
-                PointFeature p = (m_IsExtendFromEnd ? m_ExtendLine.EndPoint : m_ExtendLine.StartPoint);
-
-                if (m_ExtendLine is ArcFeature)
-                {
-                    ArcFeature arc = (m_ExtendLine as ArcFeature);
-                    bool isClockwise = arc.IsClockwise;
-                    if (!m_IsExtendFromEnd)
-                        isClockwise = !isClockwise;
-
-                    m_NewLine = new ArcFeature(this, arc.Circle, p, m_NewPoint, isClockwise, t.NewLine);
-                }
-                else
-                    m_NewLine = new LineFeature(this, p, m_NewPoint, t.NewLine);
-            }
         }
 
         #endregion
@@ -129,6 +106,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature NewLine
         {
             get { return m_NewLine; }
+            set { m_NewLine = value; }
         }
 
         /// <summary>
@@ -137,6 +115,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature NewPoint
         {
             get { return m_NewPoint; }
+            set { m_NewPoint = value; }
         }
 
         /// <summary>
@@ -169,6 +148,19 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="extendLine">The line that's being extended.</param>
+        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
+        /// <param name="length">The length of the extension.</param>
+        internal void SetInput(LineFeature extendLine, bool isFromEnd, Distance length)
+        {
+            m_ExtendLine = extendLine;
+            m_IsExtendFromEnd = isFromEnd;
+            m_Length = length;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="extendLine">The line that's being extended.</param>
@@ -196,12 +188,8 @@ namespace Backsight.Editor.Operations
         	if ( !(isStraight || isCurve) )
                 throw new Exception("Cannot calculate line extension point.");
 
-            // Remember the line that's being extended, and which end.
-            m_ExtendLine = extendLine;
-            m_IsExtendFromEnd = isFromEnd;
-
-            // Save the distance observation.
-            m_Length = length;
+            // Remember editing input
+            SetInput(extendLine, isFromEnd, length);
 
             // Add the extension point to the map.
             CadastralMapModel map = MapModel;
@@ -245,18 +233,18 @@ namespace Backsight.Editor.Operations
         /// <returns>The parameters this editing operation originally had (before the
         /// supplied information was applied). Holding on to this information makes it
         /// possible to later revert things to the way they were originally.</returns>
-        public override UpdateData ApplyUpdate(UpdateData ut)
-        {
-            LineExtensionUpdateData current = new LineExtensionUpdateData();
-            current.ExtendFromEnd = m_IsExtendFromEnd;
-            current.Distance = new DistanceData(m_Length);
+        //public override UpdateData ApplyUpdate(UpdateData ut)
+        //{
+        //    LineExtensionUpdateData current = new LineExtensionUpdateData();
+        //    current.ExtendFromEnd = m_IsExtendFromEnd;
+        //    current.Distance = new DistanceData(m_Length);
 
-            LineExtensionUpdateData u = (LineExtensionUpdateData)ut;
-            m_IsExtendFromEnd = u.ExtendFromEnd;
-            m_Length = (Distance)u.Distance.LoadObservation(this);
+        //    LineExtensionUpdateData u = (LineExtensionUpdateData)ut;
+        //    m_IsExtendFromEnd = u.ExtendFromEnd;
+        //    m_Length = (Distance)u.Distance.LoadObservation(this);
 
-            return current;
-        }
+        //    return current;
+        //}
 
         /// <summary>
         /// Corrects this operation.

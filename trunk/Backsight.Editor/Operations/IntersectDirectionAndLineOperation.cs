@@ -90,6 +90,7 @@ namespace Backsight.Editor.Operations
             : this(s, 0)
         {
         }
+
         /// <summary>
         /// Constructor for use during deserialization. The point created by this edit
         /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
