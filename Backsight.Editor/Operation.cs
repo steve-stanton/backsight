@@ -575,7 +575,7 @@ namespace Backsight.Editor
         /// and that do not call the <see cref="Complete"/> method as part of their deserialization
         /// logic, will need to call this method to ensure the model is complete.
         /// </remarks>
-        protected void EnsureFeaturesAreIndexed()
+        internal void EnsureFeaturesAreIndexed()
         {
             CadastralMapModel mapModel = this.MapModel;
 

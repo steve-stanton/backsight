@@ -370,6 +370,8 @@ namespace Backsight.Editor.Xml
             op.LineBeforeSplit = lineA;
             op.LineAfterSplit = lineB;
 
+            op.EnsureFeaturesAreIndexed();
+
             return op;
         }
     }
@@ -534,6 +536,8 @@ namespace Backsight.Editor.Xml
             op.Line2BeforeSplit = lineA;
             op.Line2AfterSplit = lineB;
 
+            op.EnsureFeaturesAreIndexed();
+
             return op;
         }
     }
@@ -563,7 +567,36 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new LineExtensionOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            LineExtensionOperation op = new LineExtensionOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature extendLine = mapModel.Find<LineFeature>(this.Line);
+            Distance length = (Distance)this.Distance.LoadObservation(op);
+            op.SetInput(extendLine, this.ExtendFromEnd, length);
+
+            op.NewPoint = new PointFeature(op, this.NewPoint);
+
+            if (this.NewLine == null)
+                op.NewLine = null;
+            else
+            {
+                PointFeature p = (this.ExtendFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
+
+                if (extendLine is ArcFeature)
+                {
+                    ArcFeature arc = (extendLine as ArcFeature);
+                    bool isClockwise = arc.IsClockwise;
+                    if (!this.ExtendFromEnd)
+                        isClockwise = !isClockwise;
+
+                    op.NewLine = new ArcFeature(op, arc.Circle, p, op.NewPoint, isClockwise, this.NewLine);
+                }
+                else
+                    op.NewLine = new LineFeature(op, p, op.NewPoint, this.NewLine);
+            }
+
+            return op;
         }
     }
 
@@ -651,7 +684,19 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new MovePolygonPositionOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            MovePolygonPositionOperation op = new MovePolygonPositionOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            op.Label = s.MapModel.Find<TextFeature>(this.Label);
+            op.NewPosition = new PointGeometry(this.NewX, this.NewY);
+
+            if (this.OldXSpecified && this.OldYSpecified)
+                op.OldPosition = new PointGeometry(this.OldX, this.OldY);
+            else
+                op.OldPosition = null;
+
+            return op;
         }
     }
 
@@ -686,7 +731,20 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new MoveTextOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            MoveTextOperation op = new MoveTextOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            op.MovedText = mapModel.Find<TextFeature>(this.Text);
+            op.OldPosition = new PointGeometry(this.OldX, this.OldY);
+            op.NewPosition = new PointGeometry(this.NewX, this.NewY);
+
+            if (this.OldPolygonXSpecified && this.OldPolygonYSpecified)
+                op.OldPolPosition = new PointGeometry(this.OldPolygonX, this.OldPolygonY);
+            else
+                op.OldPolPosition = null;
+
+            return op;
         }
     }
 
@@ -713,7 +771,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new NewArcOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            NewArcOperation op = new NewArcOperation(s, sequence);
+            op.SetNewLine(new ArcFeature(op, this.Line));
+            return op;
         }
     }
 
@@ -739,7 +800,41 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new NewCircleOperation(s, this);
+            uint sequence = GetEditSequence(s);
+            NewCircleOperation op = new NewCircleOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            op.Center = mapModel.Find<PointFeature>(this.Center);
+            op.Radius = this.Radius.LoadObservation(op);
+
+            // In order to create the construction line, we need to have the Circle object,
+            // but to be able to find the circle, the radius has to be known... and if the
+            // radius is specified via an offset point, the point probably has no defined
+            // position at this stage.
+
+            // ...so for now, just work with a circle that has no radius. This may get changed
+            // when RunEdit is ultimately called.
+
+            Circle c = new Circle(op.Center, 0.0);
+
+            // If the closing point does not already exist, create one at some unspecified position
+            PointFeature p = mapModel.Find<PointFeature>(this.ClosingPoint);
+            if (p == null)
+            {
+                FeatureData ft = new FeatureData();
+                ft.Id = this.ClosingPoint;
+                p = new PointFeature(op, ft);
+            }
+
+            // Form the construction line (this will also cross-reference the circle to
+            // the new arc)
+            FeatureData at = new FeatureData();
+            at.Id = this.Arc;
+            ArcFeature arc = new ArcFeature(op, c, p, p, true, at);
+
+            op.SetNewLine(arc);
+
+            return op;
         }
     }
 
@@ -762,6 +857,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new NewKeyTextOperation(s, this);
         }
     }
@@ -785,6 +881,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new NewMiscTextOperation(s, this);
         }
     }
@@ -834,6 +931,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new NewRowTextOperation(s, this);
         }
     }
@@ -898,6 +996,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new ParallelLineOperation(s, this);
         }
     }
@@ -924,6 +1023,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             throw new NotImplementedException("PathData.LoadOperation");
             //return new PathOperation(s, this);
         }
@@ -958,6 +1058,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new PolygonSubdivisionOperation(s, this);
         }
     }
@@ -982,6 +1083,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new PropertyChangeOperation(s, this);
         }
     }
@@ -1010,6 +1112,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new RadialOperation(s, this);
         }
     }
@@ -1033,6 +1136,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new SetTopologyOperation(s, this);
         }
     }
@@ -1060,6 +1164,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new SimpleLineSubdivisionOperation(s, this);
         }
     }
@@ -1083,6 +1188,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new TextRotationOperation(s, this);
         }
     }
@@ -1124,6 +1230,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new TrimLineOperation(s, this);
         }
     }
@@ -1141,6 +1248,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            uint sequence = GetEditSequence(s);
             return new UpdateOperation(s, this);
         }
     }

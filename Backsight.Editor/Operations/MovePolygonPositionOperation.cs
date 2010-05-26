@@ -16,7 +16,6 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -53,17 +52,15 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal MovePolygonPositionOperation(Session s, MovePolygonPositionData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal MovePolygonPositionOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Label = s.MapModel.Find<TextFeature>(t.Label);
-            m_NewPosition = new PointGeometry(t.NewX, t.NewY);
-
-            if (t.OldXSpecified && t.OldYSpecified)
-                m_OldPosition = new PointGeometry(t.OldX, t.OldY);
-            else
-                m_OldPosition = null;
+            m_Label = null;
+            m_OldPosition = null;
+            m_NewPosition = null;
         }
 
         /// <summary>
@@ -71,11 +68,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal MovePolygonPositionOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Label = null;
-            m_OldPosition = null;
-            m_NewPosition = null;
         }
 
         #endregion
@@ -216,6 +210,7 @@ namespace Backsight.Editor.Operations
         internal TextFeature Label
         {
             get { return m_Label; }
+            set { m_Label = value; }
         }
 
         /// <summary>
@@ -225,6 +220,7 @@ namespace Backsight.Editor.Operations
         internal PointGeometry OldPosition
         {
             get { return m_OldPosition; }
+            set { m_OldPosition = value; }
         }
 
         /// <summary>
@@ -233,6 +229,7 @@ namespace Backsight.Editor.Operations
         internal PointGeometry NewPosition
         {
             get { return m_NewPosition; }
+            set { m_NewPosition = value; }
         }
     }
 }

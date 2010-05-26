@@ -49,27 +49,6 @@ namespace Backsight.Editor.Operations
         protected NewLineOperation(Session s, uint sequence)
             : base(s, sequence)
         {
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewLineOperation(Session s, NewArcData t)
-            : base(s, t)
-        {
-            m_NewLine = new ArcFeature(this, t.Line);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewLineOperation(Session s, NewCircleData t)
-            : base(s, t)
-        {
             m_NewLine = null;
         }
 
@@ -77,10 +56,9 @@ namespace Backsight.Editor.Operations
         /// Initializes a new instance of the <see cref="NewLineOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal NewLineOperation(Session s)
-            : base(s)
+        protected NewLineOperation(Session s)
+            : this(s, 0)
         {
-            m_NewLine = null;
         }
 
         #endregion

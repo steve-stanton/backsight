@@ -16,7 +16,6 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -49,40 +48,14 @@ namespace Backsight.Editor.Operations
         /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal NewCircleOperation(Session s, NewCircleData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal NewCircleOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Center = s.MapModel.Find<PointFeature>(t.Center);
-            m_Radius = t.Radius.LoadObservation(this);
-
-            // In order to create the construction line, we need to have the Circle object,
-            // but to be able to find the circle, the radius has to be known... and if the
-            // radius is specified via an offset point, the point probably has no defined
-            // position at this stage.
-
-            // ...so for now, just work with a circle that has no radius. This may get changed
-            // when RunEdit is ultimately called.
-
-            Circle c = new Circle(m_Center, 0.0);
-
-            // If the closing point does not already exist, create one at some unspecified position
-            PointFeature p = s.MapModel.Find<PointFeature>(t.ClosingPoint);
-            if (p == null)
-            {
-                FeatureData ft = new FeatureData();
-                ft.Id = t.ClosingPoint;
-                p = new PointFeature(this, ft);
-            }
-
-            // Form the construction line (this will also cross-reference the circle to
-            // the new arc)
-            FeatureData at = new FeatureData();
-            at.Id = t.Arc;
-            ArcFeature arc = new ArcFeature(this, c, p, p, true, at);
-
-            // Remember the line as part of the base class
-            SetNewLine(arc);
+            m_Center = null;
+            m_Radius = null;
         }
 
         /// <summary>
@@ -90,10 +63,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal NewCircleOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Center = null;
-            m_Radius = null;
         }
 
         #endregion
@@ -104,6 +75,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature Center
         {
             get { return m_Center; }
+            set { m_Center = value; }
         }
 
         /// <summary>
@@ -114,6 +86,7 @@ namespace Backsight.Editor.Operations
         internal Observation Radius
         {
             get { return m_Radius; }
+            set { m_Radius = value; }
         }
 
         /// <summary>

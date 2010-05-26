@@ -14,7 +14,6 @@
 // </remarks>
 
 using System;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -24,20 +23,20 @@ namespace Backsight.Editor.Operations
     class NewArcOperation : NewLineOperation
     {
         internal NewArcOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
         }
-
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal NewArcOperation(Session s, NewArcData t)
-            : base(s, t)
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        internal NewArcOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
         }
-
 
         /// <summary>
         /// Creates a new circular arc.
