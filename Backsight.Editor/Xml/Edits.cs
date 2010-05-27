@@ -46,7 +46,6 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SimpleLineSubdivisionData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SetTopologyData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RadialData))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(PropertyChangeData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PolygonSubdivisionData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PathData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParallelLineData))]
@@ -1463,60 +1462,6 @@ namespace Backsight.Editor.Xml {
                 this.lineField = value;
             }
         }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class PropertyChangeData : OperationData {
-        
-        private PropertyItemData itemField;
-        
-        private string valueField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public PropertyItemData Item {
-            get {
-                return this.itemField;
-            }
-            set {
-                this.itemField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Value {
-            get {
-                return this.valueField;
-            }
-            set {
-                this.valueField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public enum PropertyItemData {
-        
-        /// <remarks/>
-        DefaultPointType,
-        
-        /// <remarks/>
-        DefaultLineType,
-        
-        /// <remarks/>
-        DefaultTextType,
-        
-        /// <remarks/>
-        DefaultPolygonType,
     }
     
     /// <remarks/>

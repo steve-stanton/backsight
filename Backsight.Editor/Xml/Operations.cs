@@ -858,7 +858,9 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new NewKeyTextOperation(s, this);
+            NewKeyTextOperation op = new NewKeyTextOperation(s, sequence);
+            op.SetText(new TextFeature(op, this.Text));
+            return op;
         }
     }
 
@@ -882,7 +884,9 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new NewMiscTextOperation(s, this);
+            NewMiscTextOperation op = new NewMiscTextOperation(s, sequence);
+            op.SetText(new TextFeature(op, this.Text));
+            return op;
         }
     }
 
@@ -932,7 +936,9 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new NewRowTextOperation(s, this);
+            NewRowTextOperation op = new NewRowTextOperation(s, sequence);
+            op.SetText(new TextFeature(op, this.Text));
+            return op;
         }
     }
 
@@ -997,7 +1003,28 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new ParallelLineOperation(s, this);
+            ParallelLineOperation op = new ParallelLineOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature refLine = mapModel.Find<LineFeature>(this.RefLine);
+            Observation offset = this.Offset.LoadObservation(op);
+            LineFeature term1 = (this.Term1==null ? null : mapModel.Find<LineFeature>(this.Term1));
+            LineFeature term2 = (this.Term2==null ? null : mapModel.Find<LineFeature>(this.Term2));
+            op.SetInput(refLine, offset, term1, term2, this.ReverseArc);
+
+            // Ensure the line end points have been created
+
+            PointFeature from = mapModel.Find<PointFeature>(this.From.Id);
+            if (from == null)
+                from = new PointFeature(op, this.From);
+
+            PointFeature to = mapModel.Find<PointFeature>(this.To.Id);
+            if (to == null)
+                to = new PointFeature(op, this.To);
+
+            op.ParallelLine = (LineFeature)this.NewLine.LoadFeature(op);
+
+            return op;
         }
     }
 
@@ -1059,32 +1086,24 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new PolygonSubdivisionOperation(s, this);
-        }
-    }
+            PolygonSubdivisionOperation op = new PolygonSubdivisionOperation(s, sequence);
 
-    public partial class PropertyChangeData
-    {
-        public PropertyChangeData()
-        {
-        }
+            // Pick up any label to deactivate (this won't actually happen until
+            // CalculateGeometry is called)
 
-        internal PropertyChangeData(PropertyChangeOperation op)
-            : base(op)
-        {
-            this.Item = op.Item;
-            this.Value = op.NewValue;
-        }
+            CadastralMapModel mapModel = s.MapModel;
+            if (this.DeactivatedLabel != null)
+                op.DeactivatedLabel = mapModel.Find<TextFeature>(this.DeactivatedLabel);
 
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            uint sequence = GetEditSequence(s);
-            return new PropertyChangeOperation(s, this);
+            // Pick up the line segments that were created
+
+            LineFeature[] newLines = new LineFeature[this.Line.Length];
+
+            for (int i = 0; i < this.Line.Length; i++)
+                newLines[i] = new LineFeature(op, this.Line[i]);
+
+            op.NewLines = newLines;
+            return op;
         }
     }
 
@@ -1113,7 +1132,18 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new RadialOperation(s, this);
+            RadialOperation op = new RadialOperation(s, sequence);
+
+            Direction dir = (Direction)this.Direction.LoadObservation(op);
+            Observation length = this.Length.LoadObservation(op);
+            op.SetInput(dir, length);
+
+            op.Point = new PointFeature(op, this.To);
+
+            if (this.Line != null)
+                op.Line = new LineFeature(op, dir.From, op.Point, this.Line);
+
+            return op;
         }
     }
 
@@ -1136,8 +1166,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature line = mapModel.Find<LineFeature>(this.Line);
             uint sequence = GetEditSequence(s);
-            return new SetTopologyOperation(s, this);
+            return new SetTopologyOperation(s, line, sequence);
         }
     }
 

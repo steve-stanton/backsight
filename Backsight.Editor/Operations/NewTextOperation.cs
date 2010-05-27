@@ -18,7 +18,6 @@ using System.Data;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -40,56 +39,16 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewTextOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        protected NewTextOperation(Session s)
-            : base(s)
-        {
-            m_NewText = null;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewTextOperation(Session s, NewMiscTextData t)
-            : base(s, t)
+        protected NewTextOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_NewText = new TextFeature(this, t.Text);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewTextOperation(Session s, NewKeyTextData t)
-            : base(s, t)
-        {
-            m_NewText = new TextFeature(this, t.Text);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected NewTextOperation(Session s, NewRowTextData t)
-            : base(s, t)
-        {
-            m_NewText = new TextFeature(this, t.Text);
+            m_NewText = null;
         }
 
         #endregion
@@ -106,7 +65,7 @@ namespace Backsight.Editor.Operations
         /// Defines the text created by this edit
         /// </summary>
         /// <param name="label">The created text (not null)</param>
-        protected void SetText(TextFeature label)
+        internal void SetText(TextFeature label)
         {
             m_NewText = label;
         }

@@ -17,7 +17,6 @@ using System;
 using System.Data;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -25,26 +24,19 @@ namespace Backsight.Editor.Operations
     class NewRowTextOperation : NewTextOperation
     {
         internal NewRowTextOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
         }
+
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal NewRowTextOperation(Session s, NewRowTextData t)
-            : base(s, t)
+        internal NewRowTextOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
         }
 

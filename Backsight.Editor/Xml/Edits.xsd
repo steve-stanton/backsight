@@ -798,22 +798,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PropertyChangeData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="OperationData">
-        <xs:attribute name="Item" type="PropertyItemData" use="required" />
-        <xs:attribute name="Value" type="xs:string" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:simpleType name="PropertyItemData">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="DefaultPointType" />
-      <xs:enumeration value="DefaultLineType" />
-      <xs:enumeration value="DefaultTextType" />
-      <xs:enumeration value="DefaultPolygonType" />
-    </xs:restriction>
-  </xs:simpleType>
   <xs:complexType name="RadialData">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
