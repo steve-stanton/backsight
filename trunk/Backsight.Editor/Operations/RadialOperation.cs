@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -62,32 +61,18 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal RadialOperation(Session s, RadialData t)
-            : base(s, t)
+        internal RadialOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Direction = (Direction)t.Direction.LoadObservation(this);
-            m_Length = t.Length.LoadObservation(this);
-            m_To = new PointFeature(this, t.To);
-
-            if (t.Line == null)
-                m_Line = null;
-            else
-                m_Line = new LineFeature(this, m_Direction.From, m_To, t.Line);
+            SetInitialValues();
         }
 
         /// <summary>
@@ -95,9 +80,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal RadialOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            SetInitialValues();
         }
 
         #endregion
@@ -128,6 +112,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature Point
         {
             get { return m_To; }
+            set { m_To = value; }
         }
 
         /// <summary>
@@ -136,6 +121,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature Line
         {
             get { return m_Line; }
+            set { m_Line = value; }
         }
 
         /// <summary>
@@ -169,6 +155,18 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="extendLine">The line that's being extended.</param>
+        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
+        /// <param name="length">The length of the extension.</param>
+        internal void SetInput(Direction dir, Observation length)
+        {
+            m_Direction = dir;
+            m_Length = length;
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="dir">The direction of the sideshot (includes the from-point). Not null.</param>
@@ -184,8 +182,7 @@ namespace Backsight.Editor.Operations
                 throw new Exception("Cannot calculate position of sideshot point.");
 
             // Save the observations.
-            m_Direction = dir;
-            m_Length = length;
+            SetInput(dir, length);
 
             // Add the sideshot point to the map.
             CadastralMapModel map = CadastralMapModel.Current;

@@ -21,7 +21,6 @@ using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -78,60 +77,14 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal ParallelLineOperation(Session s, ParallelLineData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-            m_RefLine = mapModel.Find<LineFeature>(t.RefLine);
-            m_Offset = t.Offset.LoadObservation(this);
-
-            if (t.Term1 == null)
-                m_Term1 = null;
-            else
-                m_Term1 = mapModel.Find<LineFeature>(t.Term1);
-
-            if (t.Term2 == null)
-                m_Term2 = null;
-            else
-                m_Term2 = mapModel.Find<LineFeature>(t.Term2);
-
-            m_Flags = 0;
-            if (t.ReverseArc)
-                m_Flags = 1;
-
-            // Ensure the line end points have been created
-
-            PointFeature from = mapModel.Find<PointFeature>(t.From.Id);
-            if (from == null)
-                from = new PointFeature(this, t.From);
-
-            PointFeature to = mapModel.Find<PointFeature>(t.To.Id);
-            if (to == null)
-                to = new PointFeature(this, t.To);
-
-            m_ParLine = (LineFeature)t.NewLine.LoadFeature(this);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParallelOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal ParallelLineOperation(Session s)
-            : base(s)
+        internal ParallelLineOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
             // Input ...
 
@@ -146,12 +99,25 @@ namespace Backsight.Editor.Operations
             m_ParLine = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParallelOperation"/> class
+        /// </summary>
+        /// <param name="s">The session the new instance should be added to</param>
+        internal ParallelLineOperation(Session s)
+            : this(s, 0)
+        {
+        }
+
         #endregion
 
         // Needed by ParallelUI for updating ...
 
         internal LineFeature ReferenceLine { get { return m_RefLine; } }
-        internal LineFeature ParallelLine { get { return m_ParLine; } }
+        internal LineFeature ParallelLine
+        {
+            get { return m_ParLine; }
+            set { m_ParLine = value; }
+        }
         internal Observation Offset { get { return m_Offset; } }
         internal bool IsArcReversed { get { return (m_Flags==1); } }
         internal LineFeature Terminal1 { get { return m_Term1; } }
@@ -375,6 +341,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="refLine">The reference line.</param>
+        /// <param name="offset">The observed offset (either a <c>Distance</c> or
+        /// an <c>OffsetPoint</c>).</param>
+        /// <param name="term1">A line that the parallel should start on.</param>
+        /// <param name="term2">A line that the parallel should end on.</param>
+        /// <param name="isArcReversed">Should circular arc be reversed?</param>
+        internal void SetInput(LineFeature refLine, Observation offset, LineFeature term1,
+                                LineFeature term2, bool isArcReversed)
+        {
+            m_RefLine = refLine;
+            m_Offset = offset;
+            m_Term1 = term1;
+            m_Term2 = term2;
+            m_Flags = (uint)(isArcReversed ? 1 : 0);
+        }
+
+        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="refLine">The reference line.</param>
@@ -400,11 +385,7 @@ namespace Backsight.Editor.Operations
                 throw new Exception("Parallel line has the same start and end points.");
 
             // Remember supplied info.
-            m_RefLine = refLine;
-            m_Offset = offset;
-            m_Term1 = term1;
-            m_Term2 = term2;
-            m_Flags = (uint)(isArcReversed ? 1 : 0);
+            SetInput(refLine, offset, term1, term2, isArcReversed);
 
             // Add points at the ends of the parallel.
             CadastralMapModel map = CadastralMapModel.Current;

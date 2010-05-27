@@ -14,11 +14,9 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -45,38 +43,15 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal PolygonSubdivisionOperation(Session s, PolygonSubdivisionData t)
-            : base(s, t)
+        internal PolygonSubdivisionOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            // Pick up any label to deactivate (this won't actually happen until
-            // CalculateGeometry is called)
-
-            if (t.DeactivatedLabel == null)
-                m_Label = null;
-            else
-                m_Label = s.MapModel.Find<TextFeature>(t.DeactivatedLabel);
-
-            // Pick up the line segments that were created
-
-            SegmentData[] lines = t.Line;
-            m_Lines = new LineFeature[lines.Length];
-
-            for (int i=0; i<lines.Length; i++)
-                m_Lines[i] = new LineFeature(this, lines[i]);
         }
 
         /// <summary>
@@ -84,7 +59,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal PolygonSubdivisionOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
         }
 
@@ -122,6 +97,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature[] NewLines
         {
             get { return m_Lines; }
+            set { m_Lines = value; }
         }
 
         internal override EditingActionId EditId
@@ -230,6 +206,7 @@ namespace Backsight.Editor.Operations
         internal TextFeature DeactivatedLabel
         {
             get { return m_Label; }
+            set { m_Label = value; }
         }
     }
 }

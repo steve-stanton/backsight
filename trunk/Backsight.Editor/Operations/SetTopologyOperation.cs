@@ -16,7 +16,6 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -38,25 +37,19 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal SetTopologyOperation(Session s, SetTopologyData t)
-            : base(s, t)
+        internal SetTopologyOperation(Session s, LineFeature line, uint sequence)
+            : base(s, sequence)
         {
-            CadastralMapModel mapModel = s.MapModel;
-            m_Line = mapModel.Find<LineFeature>(t.Line);
+            if (line == null)
+                throw new ArgumentNullException();
+
+            m_Line = line;
         }
 
         /// <summary>
@@ -64,12 +57,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="line">The line to change</param>
         internal SetTopologyOperation(Session s, LineFeature line)
-            : base(s)
+            : this(s, line, 0)
         {
-            if (line==null)
-                throw new ArgumentNullException();
-
-            m_Line = line;
         }
 
         #endregion
