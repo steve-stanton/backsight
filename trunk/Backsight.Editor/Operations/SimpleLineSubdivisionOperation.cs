@@ -18,7 +18,6 @@ using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -74,34 +73,14 @@ namespace Backsight.Editor.Operations
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal SimpleLineSubdivisionOperation(Session s, SimpleLineSubdivisionData t)
-            : base(s, t)
+        internal SimpleLineSubdivisionOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            m_Line = s.MapModel.Find<LineFeature>(t.Line);
-            m_Distance = (Distance)t.Distance.LoadObservation(this);
-            m_NewPoint = new PointFeature(this, t.NewPoint);
-
-            // Create the sections
-
-            uint sessionId, lineSequence;
-
-            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
-            InternalIdValue.Parse(t.NewLine1, out sessionId, out lineSequence);
-            m_NewLine1.CreatorSequence = lineSequence;
-            s.MapModel.AddFeature(m_NewLine1);
-
-            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
-            InternalIdValue.Parse(t.NewLine2, out sessionId, out lineSequence);
-            m_NewLine2.CreatorSequence = lineSequence;
-            s.MapModel.AddFeature(m_NewLine2);
+            m_Line = null;
+            m_Distance = null;
+            m_NewLine1 = null;
+            m_NewPoint = null;
+            m_NewLine2 = null;
         }
 
         /// <summary>
@@ -109,13 +88,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal SimpleLineSubdivisionOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Line = null;
-            m_Distance = null;
-            m_NewLine1 = null;
-            m_NewPoint = null;
-            m_NewLine2 = null;
         }
 
         #endregion
@@ -134,6 +108,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature NewLine1
         {
             get { return m_NewLine1; }
+            set { m_NewLine1 = value; }
         }
 
         /// <summary>
@@ -142,6 +117,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature NewPoint
         {
             get { return m_NewPoint; }
+            set { m_NewPoint = value; }
         }
 
         /// <summary>
@@ -150,6 +126,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature NewLine2
         {
             get { return m_NewLine2; }
+            set { m_NewLine2 = value; }
         }
 
         /// <summary>
@@ -170,6 +147,18 @@ namespace Backsight.Editor.Operations
             Distance d = new Distance(m_Distance);
             bool isFromEnd = d.SetPositive();
             return PointOnLineUI.Calculate(m_Line, d, isFromEnd);
+        }
+
+        /// <summary>
+        /// Records the input parameters for this edit.
+        /// </summary>
+        /// <param name="splitLine">The line to split.</param>
+        /// <param name="dist">The distance to the split point (specify a negated distance
+        /// if it's from the end of the line).</param>
+        internal void SetInput(LineFeature splitLine, Distance dist)
+        {
+            m_Line = splitLine;
+            m_Distance = dist;
         }
 
         /// <summary>
@@ -212,12 +201,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Creates a section for this arc subdivision op.
+        /// Creates a section for this subdivision op.
         /// </summary>
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        LineFeature MakeSection(PointFeature start, PointFeature end)
+        internal LineFeature MakeSection(PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(m_Line, start, end);
             LineFeature newLine = m_Line.MakeSubSection(section, this);

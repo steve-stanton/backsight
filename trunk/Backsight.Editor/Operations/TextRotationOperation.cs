@@ -16,7 +16,6 @@
 using System;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -44,28 +43,16 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Constructor for use during deserialization.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal TextRotationOperation(Session s, TextRotationData t)
-            : base(s, t)
+        internal TextRotationOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            // The previous rotation gets defined when CalculateGeometry is called
-            m_PrevRotation = 0.0;
-
-            if (!RadianValue.TryParse(t.Value, out m_Rotation))
-                throw new ArgumentException("Cannot parse angle: "+t.Value);
+            m_Rotation = m_PrevRotation = 0.0;
         }
 
         /// <summary>
@@ -73,9 +60,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal TextRotationOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Rotation = m_PrevRotation = 0.0;
         }
 
         #endregion
@@ -199,6 +185,7 @@ namespace Backsight.Editor.Operations
         internal double RotationInRadians
         {
             get { return m_Rotation; }
+            set { m_Rotation = value; }
         }
     }
 }
