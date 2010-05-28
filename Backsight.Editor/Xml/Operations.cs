@@ -1197,7 +1197,30 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new SimpleLineSubdivisionOperation(s, this);
+            SimpleLineSubdivisionOperation op = new SimpleLineSubdivisionOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature line = mapModel.Find<LineFeature>(this.Line);
+            Distance distance = (Distance)this.Distance.LoadObservation(op);
+            op.SetInput(line, distance);
+
+            op.NewPoint = new PointFeature(op, this.NewPoint);
+
+            // Create the sections
+
+            uint sessionId, lineSequence;
+
+            op.NewLine1 = op.MakeSection(line.StartPoint, op.NewPoint);
+            InternalIdValue.Parse(this.NewLine1, out sessionId, out lineSequence);
+            op.NewLine1.CreatorSequence = lineSequence;
+            mapModel.AddFeature(op.NewLine1);
+
+            op.NewLine2 = op.MakeSection(op.NewPoint, line.EndPoint);
+            InternalIdValue.Parse(this.NewLine2, out sessionId, out lineSequence);
+            op.NewLine2.CreatorSequence = lineSequence;
+            mapModel.AddFeature(op.NewLine2);
+
+            return op;
         }
     }
 
@@ -1221,7 +1244,14 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new TextRotationOperation(s, this);
+            TextRotationOperation op = new TextRotationOperation(s, sequence);
+
+            double rotation;
+            if (!RadianValue.TryParse(this.Value, out rotation))
+                throw new ArgumentException("Cannot parse angle: " + this.Value);
+            op.RotationInRadians = rotation;
+
+            return op;
         }
     }
 
