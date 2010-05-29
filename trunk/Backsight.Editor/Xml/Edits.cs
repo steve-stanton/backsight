@@ -115,8 +115,6 @@ namespace Backsight.Editor.Xml {
         
         private int defaultEntityField;
         
-        private bool defaultEntityFieldSpecified;
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Line")]
         public FeatureData[] Line {
@@ -136,17 +134,6 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.defaultEntityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DefaultEntitySpecified {
-            get {
-                return this.defaultEntityFieldSpecified;
-            }
-            set {
-                this.defaultEntityFieldSpecified = value;
             }
         }
     }
@@ -814,8 +801,6 @@ namespace Backsight.Editor.Xml {
         
         private int defaultEntityField;
         
-        private bool defaultEntityFieldSpecified;
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Point")]
         public FeatureData[] Point {
@@ -835,17 +820,6 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.defaultEntityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DefaultEntitySpecified {
-            get {
-                return this.defaultEntityFieldSpecified;
-            }
-            set {
-                this.defaultEntityFieldSpecified = value;
             }
         }
     }
@@ -1515,6 +1489,8 @@ namespace Backsight.Editor.Xml {
         
         private string entryStringField;
         
+        private int defaultEntryUnitField;
+        
         /// <remarks/>
         public FeatureTableData Result {
             get {
@@ -1555,6 +1531,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.entryStringField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DefaultEntryUnit {
+            get {
+                return this.defaultEntryUnitField;
+            }
+            set {
+                this.defaultEntryUnitField = value;
             }
         }
     }
@@ -2099,6 +2086,8 @@ namespace Backsight.Editor.Xml {
         
         private string entryStringField;
         
+        private int defaultEntryUnitField;
+        
         /// <remarks/>
         public FeatureTableData Result {
             get {
@@ -2128,6 +2117,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.entryStringField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DefaultEntryUnit {
+            get {
+                return this.defaultEntryUnitField;
+            }
+            set {
+                this.defaultEntryUnitField = value;
             }
         }
     }

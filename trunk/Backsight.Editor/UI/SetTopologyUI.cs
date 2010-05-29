@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Operations;
-using System.Windows.Forms;
 
 namespace Backsight.Editor.UI
 {

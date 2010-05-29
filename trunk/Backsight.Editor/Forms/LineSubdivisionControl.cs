@@ -142,8 +142,10 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                op = new LineSubdivisionOperation(m_Line);
-                //op.AddDistances(m_Distances);
+                DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
+                string entryString = GetEntryString();
+                Session session = Session.WorkingSession;
+                op = new LineSubdivisionOperation(m_Line, entryString, defaultEntryUnit, session, 0);
                 op.Execute(m_Distances.ToArray());
                 return true;
             }

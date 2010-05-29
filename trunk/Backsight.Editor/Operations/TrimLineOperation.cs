@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
@@ -105,42 +104,17 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
+        /// Constructor for use during deserialization.
+       /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal TrimLineOperation(Session s, TrimLineData t)
-            : base(s, t)
+        internal TrimLineOperation(Session s, uint sequence)
+            : base(s, sequence)
         {
-            CadastralMapModel mapModel = s.MapModel;
-
-            string[] lineIds = t.Line;
-            m_Lines = new List<LineFeature>(lineIds.Length);
-            foreach (string lineId in lineIds)
-            {
-                LineFeature line = mapModel.Find<LineFeature>(lineId);
-                Debug.Assert(line!=null);
-                m_Lines.Add(line);
-            }
-
-            string[] pointIds = t.Point;
-            m_Points = new List<PointFeature>(pointIds.Length);
-            foreach (string pointId in pointIds)
-            {
-                PointFeature p = mapModel.Find<PointFeature>(pointId);
-                Debug.Assert(p!=null);
-                m_Points.Add(p);
-            }
+            m_Lines = null;
+            m_Points = null;
         }
 
         /// <summary>
@@ -148,10 +122,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         internal TrimLineOperation(Session s)
-            : base(s)
+            : this(s, 0)
         {
-            m_Lines = null;
-            m_Points = null;
         }
 
         #endregion
@@ -332,6 +304,7 @@ namespace Backsight.Editor.Operations
         internal LineFeature[] TrimmedLines
         {
             get { return m_Lines.ToArray(); }
+            set { m_Lines = new List<LineFeature>(value); }
         }
 
         /// <summary>
@@ -340,6 +313,7 @@ namespace Backsight.Editor.Operations
         internal PointFeature[] TrimPoints
         {
             get { return m_Points.ToArray(); }
+            set { m_Points = new List<PointFeature>(value); }
         }
     }
 }

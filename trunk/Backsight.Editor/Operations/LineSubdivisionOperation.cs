@@ -21,7 +21,6 @@ using System.Text;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -39,6 +38,16 @@ namespace Backsight.Editor.Operations
         readonly LineFeature m_Line;
 
         /// <summary>
+        /// The data entry string that defines the subdivision sections.
+        /// </summary>
+        readonly string m_EntryString;
+
+        /// <summary>
+        /// The default distance units to use when decoding the data entry string.
+        /// </summary>
+        readonly DistanceUnit m_DefaultEntryUnit;
+
+        /// <summary>
         /// The sections of the subdivided line.
         /// </summary>
         List<MeasuredLineFeature> m_Sections;
@@ -46,73 +55,25 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
+
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="LineSubdivisionOperation"/> class.
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="line">The line that is being subdivided.</param>
+        /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
+        /// <param name="defaultEntryUnit">The default distance units to use when decoding
+        /// the data entry string.</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        internal LineSubdivisionOperation(Session s, LineSubdivisionData t)
-            : base(s, t)
-        {
-            m_Line = s.MapModel.Find<LineFeature>(t.Line);
-            if (m_Line == null)
-                throw new Exception("Cannot find line "+t.Line);
-
-            Distance[] dists = GetDistances(t.EntryString);
-            FeatureData[] lines = t.Result.Lines.Line;
-            FeatureData[] points = t.Result.Points.Point;
-
-            Debug.Assert(dists.Length == lines.Length);
-            Debug.Assert(dists.Length == 1+points.Length);
-
-            m_Sections = new List<MeasuredLineFeature>(dists.Length);
-            PointFeature start = m_Line.StartPoint;
-            PointFeature end;
-
-            // Define sections without any geometry
-            for (int i=0; i<dists.Length; i++)
-            {
-                if (i == (dists.Length-1))
-                    end = m_Line.EndPoint;
-                else
-                    end = new PointFeature(this, points[i]);
-
-                // Get the internal ID to assign to the line
-                uint sessionId, lineSequence;
-                InternalIdValue.Parse(lines[i].Id, out sessionId, out lineSequence);
-
-                SectionGeometry section = new SectionGeometry(m_Line, start, end);
-                LineFeature line = m_Line.MakeSubSection(section, this);
-                line.CreatorSequence = lineSequence;
-                MeasuredLineFeature mf = new MeasuredLineFeature(line, dists[i]);
-                m_Sections.Add(mf);
-
-                start = end;
-            }
-
-            EnsureFeaturesAreIndexed();
-        }
-
-        /// <summary>
-        /// Creates a new <c>LineSubdivision</c> for the supplied line.
-        /// </summary>
-        /// <param name="line">The line that is being subdivided.</param>
-        internal LineSubdivisionOperation(LineFeature line)
-            : base(Session.WorkingSession)
+        internal LineSubdivisionOperation(LineFeature line, string entryString, DistanceUnit defaultEntryUnit,
+                                            Session session, uint sequence)
+            : base(session, sequence)
         {
             m_Line = line;
+            m_EntryString = entryString;
+            m_DefaultEntryUnit = defaultEntryUnit;
             m_Sections = null;
         }
 
@@ -554,6 +515,14 @@ namespace Backsight.Editor.Operations
 	return 0;
              */
         }
+
+        /// <summary>
+        /// The data entry string that defines the connection path.
+        /// </summary>
+        //internal string EntryString
+        //{
+        //    get { return m_EntryString; }
+        //}
 
         internal string GetEntryString()
         {

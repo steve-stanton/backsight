@@ -403,7 +403,7 @@ Dealing with these two components as a single formatted string may well be "bad"
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="DefaultEntity" type="xs:int" use="optional">
+    <xs:attribute name="DefaultEntity" type="xs:int" use="required">
       <xs:annotation>
         <xs:documentation>The ID of the default entity type for lines in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
       </xs:annotation>
@@ -482,6 +482,17 @@ Dealing with these two components as a single formatted string may well be "bad"
           <xs:annotation>
             <xs:documentation>The entered distances, from the start of the subdivided line</xs:documentation>
           </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="DefaultEntryUnit" use="required">
+          <xs:annotation>
+            <xs:documentation>ID of the default distance units to use when decoding the data entry string (corresponds to the DistanceUnitType enum).</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:int">
+              <xs:minInclusive value="1" />
+              <xs:maxInclusive value="3" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:attribute>
       </xs:extension>
     </xs:complexContent>
@@ -743,6 +754,17 @@ The first and last positions are assumed to match the positions of the point fea
             <xs:documentation>The data entry string that defines the connection path.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="DefaultEntryUnit" use="required">
+          <xs:annotation>
+            <xs:documentation>ID of the default distance units to use when decoding the data entry string (corresponds to the DistanceUnitType enum).</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:int">
+              <xs:minInclusive value="1" />
+              <xs:maxInclusive value="3" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -757,7 +779,7 @@ The first and last positions are assumed to match the positions of the point fea
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="DefaultEntity" type="xs:int" use="optional">
+    <xs:attribute name="DefaultEntity" type="xs:int" use="required">
       <xs:annotation>
         <xs:documentation>The ID of the default entity type for points in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
       </xs:annotation>
