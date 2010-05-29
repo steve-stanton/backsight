@@ -19,9 +19,9 @@ namespace Backsight.Editor
 {
     public enum DistanceUnitType
     {
+        AsEntered = 0,
         Meters,
         Feet,
         Chains,
-        AsEntered,
     }
 }

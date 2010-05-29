@@ -154,6 +154,7 @@ namespace Backsight.Editor.Operations
                 m_Rotation += MathConstants.PIMUL2;
 
             MapModel.DefaultTextRotation = m_Rotation;
+            Complete();
         }
 
         /// <summary>

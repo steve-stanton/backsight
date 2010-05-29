@@ -611,7 +611,8 @@ namespace Backsight.Editor.Xml
         {
             this.Line = op.Parent.DataId;
             this.EntryString = op.GetEntryString();
-            MeasuredLineFeature[] sections = op.Sections;
+            this.DefaultEntryUnit = (int)EditingController.Current.EntryUnit.UnitType;
+            //MeasuredLineFeature[] sections = op.Sections;
 
             this.Result = new FeatureTableData(op);
             /*
@@ -648,7 +649,54 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            return new LineSubdivisionOperation(s, this);
+            CadastralMapModel mapModel = s.MapModel;
+            LineFeature line = mapModel.Find<LineFeature>(this.Line);
+            if (line == null)
+                throw new Exception("Cannot find line " + this.Line);
+
+            DistanceUnitType unitType = (DistanceUnitType)this.DefaultEntryUnit;
+            DistanceUnit defaultEntryUnit = EditingController.Current.GetUnits(unitType);
+
+            uint sequence = GetEditSequence(s);
+            LineSubdivisionOperation op = new LineSubdivisionOperation(line, this.EntryString,
+                defaultEntryUnit, s, sequence);
+
+            /*
+            Distance[] dists = GetDistances(t.EntryString);
+            FeatureData[] lines = t.Result.Lines.Line;
+            FeatureData[] points = t.Result.Points.Point;
+
+            Debug.Assert(dists.Length == lines.Length);
+            Debug.Assert(dists.Length == 1 + points.Length);
+
+            m_Sections = new List<MeasuredLineFeature>(dists.Length);
+            PointFeature start = m_Line.StartPoint;
+            PointFeature end;
+
+            // Define sections without any geometry
+            for (int i = 0; i < dists.Length; i++)
+            {
+                if (i == (dists.Length - 1))
+                    end = m_Line.EndPoint;
+                else
+                    end = new PointFeature(this, points[i]);
+
+                // Get the internal ID to assign to the line
+                uint sessionId, lineSequence;
+                InternalIdValue.Parse(lines[i].Id, out sessionId, out lineSequence);
+
+                SectionGeometry section = new SectionGeometry(m_Line, start, end);
+                LineFeature line = m_Line.MakeSubSection(section, this);
+                line.CreatorSequence = lineSequence;
+                MeasuredLineFeature mf = new MeasuredLineFeature(line, dists[i]);
+                m_Sections.Add(mf);
+
+                start = end;
+            }
+
+            EnsureFeaturesAreIndexed();
+            */
+            return op;
         }
     }
 
@@ -1293,7 +1341,30 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new TrimLineOperation(s, this);
+            TrimLineOperation op = new TrimLineOperation(s, sequence);
+
+            CadastralMapModel mapModel = s.MapModel;
+
+            string[] lineIds = this.Line;
+            LineFeature[] lines = new LineFeature[lineIds.Length];
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = mapModel.Find<LineFeature>(lineIds[i]);
+                Debug.Assert(lines[i] != null);
+            }
+
+            string[] pointIds = this.Point;
+            PointFeature[] points = new PointFeature[pointIds.Length];
+            for (int i=0; i< points.Length; i++)
+            {
+                points[i] = mapModel.Find<PointFeature>(pointIds[i]);
+                Debug.Assert(points[i] != null);
+            }
+
+            op.TrimmedLines = lines;
+            op.TrimPoints = points;
+            return op;
         }
     }
 
