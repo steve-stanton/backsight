@@ -163,7 +163,7 @@ namespace Backsight.Editor.Forms
         private void okButton_Click(object sender, EventArgs e)
         {
             // Ensure the distances are complete
-            GetDistances();
+            m_Distances = new List<Distance>(GetDistances());
             if (m_Distances.Count < 2)
             {
                 MessageBox.Show("You must specify at least 2 distances.");
@@ -226,23 +226,13 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Parses the distances list box. This defines <see cref="m_Distances"/>.
+        /// Parses the distances list box.
         /// </summary>
-        /// <returns>The total distance entered, in meters.</returns>
-        /// <exception cref="Exception">If any parsing error occurred. In that case,
-        /// <c>m_Distances</c> will be null.</exception>
-        double GetDistances()
+        /// <returns>The parsed distances.</returns>
+        Distance[] GetDistances()
         {
             string entryString = GetEntryString();
-            Distance[] dists = LineSubdivisionOperation.GetDistances(entryString);
-
-            // Get the total distance (in meters)
-            double tot = 0.0;
-            foreach (Distance d in dists)
-                tot += d.Meters;
-
-            m_Distances = new List<Distance>(dists);
-            return tot;
+            return LineSubdivisionOperation.GetDistances(entryString);
         }
 
         /// <summary>
@@ -342,7 +332,7 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                GetDistances();
+                m_Distances = new List<Distance>(GetDistances());
                 return AddPoints();
             }
 
