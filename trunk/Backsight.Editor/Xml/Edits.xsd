@@ -494,6 +494,11 @@ Dealing with these two components as a single formatted string may well be "bad"
             </xs:restriction>
           </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="EntryFromEnd" type="xs:boolean" use="required">
+          <xs:annotation>
+            <xs:documentation>Are the distances observed from the end of the line?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

@@ -48,6 +48,11 @@ namespace Backsight.Editor.Operations
         readonly DistanceUnit m_DefaultEntryUnit;
 
         /// <summary>
+        /// Are the distances observed from the end of the line?
+        /// </summary>
+        readonly bool m_IsEntryFromEnd;
+
+        /// <summary>
         /// The sections of the subdivided line.
         /// </summary>
         List<MeasuredLineFeature> m_Sections;
@@ -63,17 +68,19 @@ namespace Backsight.Editor.Operations
         /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
         /// <param name="defaultEntryUnit">The default distance units to use when decoding
         /// the data entry string.</param>
+        /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
         /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
         internal LineSubdivisionOperation(LineFeature line, string entryString, DistanceUnit defaultEntryUnit,
-                                            Session session, uint sequence)
+                                            bool isEntryFromEnd, Session session, uint sequence)
             : base(session, sequence)
         {
             m_Line = line;
             m_EntryString = entryString;
             m_DefaultEntryUnit = defaultEntryUnit;
+            m_IsEntryFromEnd = isEntryFromEnd;
             m_Sections = null;
         }
 
@@ -98,8 +105,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Execute line subdivision.
         /// </summary>
-        internal void Execute(Distance[] distances)
+        internal void Execute()
         {
+            Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
+
             // Must have at least two distances
             if (distances == null)
                 throw new ArgumentNullException();
@@ -446,6 +455,7 @@ namespace Backsight.Editor.Operations
         internal MeasuredLineFeature[] Sections
         {
             get { return m_Sections.ToArray(); }
+            set { m_Sections = new List<MeasuredLineFeature>(value); }
         }
 
         /// <summary>
@@ -519,55 +529,29 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The data entry string that defines the connection path.
         /// </summary>
-        //internal string EntryString
-        //{
-        //    get { return m_EntryString; }
-        //}
-
-        internal string GetEntryString()
+        internal string EntryString
         {
-            StringBuilder sb = new StringBuilder(1000);
-            Distance lastDistance = m_Sections[0].ObservedLength;
-            int nRepeat = 1;
-
-            for (int i=1; i<m_Sections.Count; i++)
-            {
-                MeasuredLineFeature m = m_Sections[i];
-                Distance d = m.ObservedLength;
-
-                if (d.Equals(lastDistance))
-                    nRepeat++;
-                else
-                {
-                    AppendEnteredDistance(sb, lastDistance, nRepeat);
-                    lastDistance = d;
-                    nRepeat = 1;
-                }
-            }
-
-            // Process the last distance
-            AppendEnteredDistance(sb, lastDistance, nRepeat);
-
-            return sb.ToString();
+            get { return m_EntryString; }
         }
 
-        void AppendEnteredDistance(StringBuilder sb, Distance d, int nRepeat)
+        /// <summary>
+        /// Are the distances observed from the end of the line?
+        /// </summary>
+        internal bool EntryFromEnd
         {
-            if (sb.Length > 0)
-                sb.Append(" ");
-
-            sb.Append(d.Format());
-
-            if (nRepeat > 0)
-                sb.AppendFormat("*{0}", nRepeat);
+            get { return m_IsEntryFromEnd; }
         }
 
         /// <summary>
         /// Converts a data entry string into the corresponding observations.
         /// </summary>
         /// <param name="entryString">The data entry string</param>
-        /// <returns>The distances that correspond to the entry string</returns>
-        internal static Distance[] GetDistances(string entryString)
+        ///	<param name="defaultEntryUnit">The default units</param>
+        /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
+        /// <returns>The distances that correspond to the entry string, starting at the
+        /// beginning of the line</returns>
+        internal static Distance[] GetDistances(string entryString, DistanceUnit defaultEntryUnit,
+                                                    bool isEntryFromEnd)
         {
             string[] items = entryString.Split(' ');
             List<Distance> result = new List<Distance>(items.Length);
@@ -595,13 +579,24 @@ namespace Backsight.Editor.Operations
                 }
 
                 // Parse the distance
-                Distance d = new Distance(s);
+                Distance d = new Distance(s, defaultEntryUnit);
                 if (!d.IsDefined)
                     throw new Exception("Cannot parse distance: "+s);
 
                 // Append distances to results list
                 for (int i=0; i<nRepeat; i++)
                     result.Add(d);
+            }
+
+            // Reverse the distances if necessary
+            if (isEntryFromEnd)
+            {
+                for (int i = 0, j = result.Count - 1; i < j; i++, j--)
+                {
+                    Distance tmp = result[i];
+                    result[i] = result[j];
+                    result[j] = tmp;
+                }
             }
 
             return result.ToArray();

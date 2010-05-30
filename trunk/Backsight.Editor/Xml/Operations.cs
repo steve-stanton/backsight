@@ -610,36 +610,10 @@ namespace Backsight.Editor.Xml
             : base(op)
         {
             this.Line = op.Parent.DataId;
-            this.EntryString = op.GetEntryString();
+            this.EntryString = op.EntryString;
             this.DefaultEntryUnit = (int)EditingController.Current.EntryUnit.UnitType;
-            //MeasuredLineFeature[] sections = op.Sections;
-
+            this.EntryFromEnd = op.EntryFromEnd;
             this.Result = new FeatureTableData(op);
-            /*
-            this.Result.Lines = new LineArray();
-            this.Result.Lines.DefaultEntity = sections[0].Line.EntityType.Id;
-            this.Result.Lines.Line = new FeatureData[sections.Length];
-
-            this.Result.Points = new PointArray();
-            this.Result.Points.DefaultEntity = sections[0].Line.EndPoint.EntityType.Id;
-            this.Result.Points.Point = new FeatureData[sections.Length - 1];
-
-            for (int i = 0; i < sections.Length; i++)
-            {
-                MeasuredLineFeature mf = sections[i];
-                this.Result.Lines.Line[i].Id = mf.Line.DataId;
-
-                if (i < (sections.Length - 1))
-                {
-                    FeatureData fd = this.Result.Points.Point[i];
-                    PointFeature p = mf.Line.EndPoint;
-                    fd.Id = p.DataId;
-
-                    if (p.Id != null)
-                        fd.Key = p.Id.RawId;
-                }
-            }
-             */
         }
 
         /// <summary>
@@ -659,43 +633,43 @@ namespace Backsight.Editor.Xml
 
             uint sequence = GetEditSequence(s);
             LineSubdivisionOperation op = new LineSubdivisionOperation(line, this.EntryString,
-                defaultEntryUnit, s, sequence);
+                defaultEntryUnit, this.EntryFromEnd, s, sequence);
 
-            /*
-            Distance[] dists = GetDistances(t.EntryString);
-            FeatureData[] lines = t.Result.Lines.Line;
-            FeatureData[] points = t.Result.Points.Point;
+            Distance[] dists = LineSubdivisionOperation.GetDistances(this.EntryString,
+                                    defaultEntryUnit, this.EntryFromEnd);
+
+            FeatureData[] lines = this.Result.Lines.Line;
+            FeatureData[] points = this.Result.Points.Point;
 
             Debug.Assert(dists.Length == lines.Length);
             Debug.Assert(dists.Length == 1 + points.Length);
 
-            m_Sections = new List<MeasuredLineFeature>(dists.Length);
-            PointFeature start = m_Line.StartPoint;
+            MeasuredLineFeature[] sections = new MeasuredLineFeature[dists.Length];
+            PointFeature start = line.StartPoint;
             PointFeature end;
 
-            // Define sections without any geometry
+            // Define sections without any underlying geometry
             for (int i = 0; i < dists.Length; i++)
             {
                 if (i == (dists.Length - 1))
-                    end = m_Line.EndPoint;
+                    end = line.EndPoint;
                 else
-                    end = new PointFeature(this, points[i]);
+                    end = new PointFeature(op, points[i]);
 
                 // Get the internal ID to assign to the line
                 uint sessionId, lineSequence;
                 InternalIdValue.Parse(lines[i].Id, out sessionId, out lineSequence);
-
-                SectionGeometry section = new SectionGeometry(m_Line, start, end);
-                LineFeature line = m_Line.MakeSubSection(section, this);
-                line.CreatorSequence = lineSequence;
-                MeasuredLineFeature mf = new MeasuredLineFeature(line, dists[i]);
-                m_Sections.Add(mf);
+                SectionGeometry sectionGeom = new SectionGeometry(line, start, end);
+                LineFeature sectionFeature = line.MakeSubSection(sectionGeom, op);
+                sectionFeature.CreatorSequence = lineSequence;
+                MeasuredLineFeature mf = new MeasuredLineFeature(sectionFeature, dists[i]);
+                sections[i] = mf;
 
                 start = end;
             }
 
-            EnsureFeaturesAreIndexed();
-            */
+            op.Sections = sections;
+            op.EnsureFeaturesAreIndexed();
             return op;
         }
     }

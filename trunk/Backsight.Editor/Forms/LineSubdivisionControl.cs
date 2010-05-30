@@ -125,19 +125,7 @@ namespace Backsight.Editor.Forms
                 return false;
             }
 
-            // Reverse the distances if necessary.
-            if (!m_FromStart)
-            {
-                for (int i=0, j=m_Distances.Count-1; i<j; i++, j--)
-                {
-                    Distance tmp = m_Distances[i];
-                    m_Distances[i] = m_Distances[j];
-                    m_Distances[j] = tmp;
-                }
-            }
-
             // Subdivide the line...
-
             LineSubdivisionOperation op = null;
 
             try
@@ -145,8 +133,9 @@ namespace Backsight.Editor.Forms
                 DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
                 string entryString = GetEntryString();
                 Session session = Session.WorkingSession;
-                op = new LineSubdivisionOperation(m_Line, entryString, defaultEntryUnit, session, 0);
-                op.Execute(m_Distances.ToArray());
+                op = new LineSubdivisionOperation(m_Line, entryString, defaultEntryUnit,
+                                                    !m_FromStart, session, 0);
+                op.Execute();
                 return true;
             }
 
@@ -232,7 +221,8 @@ namespace Backsight.Editor.Forms
         Distance[] GetDistances()
         {
             string entryString = GetEntryString();
-            return LineSubdivisionOperation.GetDistances(entryString);
+            DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
+            return LineSubdivisionOperation.GetDistances(entryString, defaultEntryUnit, !m_FromStart);
         }
 
         /// <summary>
