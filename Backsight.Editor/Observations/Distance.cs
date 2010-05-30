@@ -113,16 +113,17 @@ namespace Backsight.Editor.Observations
         /// <param name="s">The string to parse. It should look like a floating
         ///	point number, but may have a units abbreviation stuck on the end (like that
         ///	produced by <c>Distance.Format</c>).</param>
-        internal Distance(string str)
+        ///	<param name="defaultEntryUnit">The default units</param>
+        internal Distance(string str, DistanceUnit defaultEntryUnit)
         {
             // Initialize with undefined values.
-	        m_ObservedMetric = 0.0;
-	        m_EnteredUnit = null;
-	        m_IsFixed = false;
+            m_ObservedMetric = 0.0;
+            m_EnteredUnit = null;
+            m_IsFixed = false;
 
             // Ignore any trailing white space. Return if it's ALL white space.
             string s = str.Trim();
-            if (s.Length==0)
+            if (s.Length == 0)
                 return;
 
             // Split the string into a numeric & abbreviation part
@@ -135,20 +136,32 @@ namespace Backsight.Editor.Observations
                 return;
 
             // If the abbreviation corresponds to some form a data entry, save the
-            // entered distance in those. Otherwise save in the current data entry units.
-            EditingController ec = EditingController.Current;
+            // entered distance in those. Otherwise save in the supplied data entry units.
             if (abbr.Length > 0)
             {
+                EditingController ec = EditingController.Current;
                 m_EnteredUnit = ec.GetUnit(abbr);
-                if (m_EnteredUnit!=null)
+                if (m_EnteredUnit != null)
                     m_ObservedMetric = m_EnteredUnit.ToMetric(dval);
             }
             else
             {
-                DistanceUnit dunit = ec.EntryUnit;
-                m_ObservedMetric = dunit.ToMetric(dval);
-                m_EnteredUnit = dunit;
+                m_ObservedMetric = defaultEntryUnit.ToMetric(dval);
+                m_EnteredUnit = defaultEntryUnit;
             }
+        }
+
+        /// <summary>
+        /// Constructor that accepts a string. Use the <c>IsDefined</c> property to check
+        /// whether the string was parsed ok. Also see <see cref="TryParse"/>.
+        /// </summary>
+        /// <param name="s">The string to parse. It should look like a floating
+        ///	point number, but may have a units abbreviation stuck on the end (like that
+        ///	produced by <c>Distance.Format</c>).</param>
+        [Obsolete("Use the version that accepts the default entry unit")]
+        internal Distance(string str)
+            : this(str, EditingController.Current.EntryUnit)
+        {
         }
 
         #endregion

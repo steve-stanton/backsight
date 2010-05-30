@@ -2088,6 +2088,8 @@ namespace Backsight.Editor.Xml {
         
         private int defaultEntryUnitField;
         
+        private bool entryFromEndField;
+        
         /// <remarks/>
         public FeatureTableData Result {
             get {
@@ -2128,6 +2130,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.defaultEntryUnitField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool EntryFromEnd {
+            get {
+                return this.entryFromEndField;
+            }
+            set {
+                this.entryFromEndField = value;
             }
         }
     }
