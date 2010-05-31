@@ -22,7 +22,6 @@ using System.Text;
 using Backsight.Geometry;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.Operations
 {
@@ -50,81 +49,37 @@ namespace Backsight.Editor.Operations
         readonly string m_EntryString;
 
         /// <summary>
+        /// The default distance units to use when decoding the data entry string.
+        /// </summary>
+        readonly DistanceUnit m_DefaultEntryUnit;
+
+        /// <summary>
         /// The legs that make up the path
         /// </summary>
         List<Leg> m_Legs; // readonly
-
-        /// <summary>
-        /// The default distance units when this edit was originally executed.
-        /// While each <c>Distance</c> observation holds the units, that is
-        /// not sufficient to re-create the original data entry string (starting
-        /// with something like "ft...").  It's useful to include this in the
-        /// data entry string that gets persisted to the database, since the default
-        /// units on deserialization may not be the same as the default units that
-        /// prevailed when the edit was originally performed.
-        /// </summary>
-        DistanceUnit m_DefaultEntryUnit;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="PathOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        /*
-        internal PathOperation(Session s, PathData t)
-            : base(s, t)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-
-            m_From = mapModel.Find<PointFeature>(t.From);
-            m_To = mapModel.Find<PointFeature>(t.To);
-            m_EntryString = t.EntryString;
-
-            // Create the legs
-            LegData[] legs = t.Leg;
-            m_Legs = new List<Leg>(legs.Length);
-            PointFeature startPoint = m_From;
-            IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
-
-            for (int i = 0; i < legs.Length; i++)
-            {
-                Leg leg = t.Leg[i].LoadLeg(this);
-                m_Legs.Add(leg);
-
-                // Create features for each span (without any geometry)
-                startPoint = leg.CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
-            }
-        }
-        */
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="entryString"></param>
-        internal PathOperation(Session s, PointFeature from, PointFeature to, string entryString)
-            : base(s)
+        internal PathOperation(Session session, uint sequence, PointFeature from, PointFeature to,
+                                    string entryString, DistanceUnit defaultEntryUnit)
+            : base(session, sequence)
         {
             m_From = from;
             m_To = to;
             m_EntryString = entryString;
-            m_DefaultEntryUnit = EditingController.Current.EntryUnit;
+            m_DefaultEntryUnit = defaultEntryUnit;
         }
 
         #endregion
@@ -136,7 +91,7 @@ namespace Backsight.Editor.Operations
         /// features)</returns>
         PathInfo ParsePath()
         {
-            PathItem[] items = PathParser.GetPathItems(m_EntryString);
+            PathItem[] items = PathParser.GetPathItems(m_EntryString, m_DefaultEntryUnit);
             PathInfo pd = new PathInfo(m_From, m_To);
             pd.Create(items);
             return pd;
@@ -969,6 +924,14 @@ void CePath::CreateAngleText ( CPtrList& text
         internal string EntryString
         {
             get { return m_EntryString; }
+        }
+
+        /// <summary>
+        /// The default distance units to use when decoding the data entry string.
+        /// </summary>
+        internal DistanceUnit EntryUnit
+        {
+            get { return m_DefaultEntryUnit; }
         }
 
         /// <summary>

@@ -611,7 +611,7 @@ namespace Backsight.Editor.Xml
         {
             this.Line = op.Parent.DataId;
             this.EntryString = op.EntryString;
-            this.DefaultEntryUnit = (int)EditingController.Current.EntryUnit.UnitType;
+            this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
             this.EntryFromEnd = op.EntryFromEnd;
             this.Result = new FeatureTableData(op);
         }
@@ -632,8 +632,8 @@ namespace Backsight.Editor.Xml
             DistanceUnit defaultEntryUnit = EditingController.Current.GetUnits(unitType);
 
             uint sequence = GetEditSequence(s);
-            LineSubdivisionOperation op = new LineSubdivisionOperation(line, this.EntryString,
-                defaultEntryUnit, this.EntryFromEnd, s, sequence);
+            LineSubdivisionOperation op = new LineSubdivisionOperation(s, sequence,
+                line, this.EntryString, defaultEntryUnit, this.EntryFromEnd);
 
             Distance[] dists = LineSubdivisionOperation.GetDistances(this.EntryString,
                                     defaultEntryUnit, this.EntryFromEnd);
@@ -1062,6 +1062,7 @@ namespace Backsight.Editor.Xml
             this.From = op.StartPoint.DataId;
             this.To = op.EndPoint.DataId;
             this.EntryString = op.EntryString;
+            this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
             this.Result = new FeatureTableData(op);
         }
 
@@ -1072,9 +1073,33 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            CadastralMapModel mapModel = s.MapModel;
+            PointFeature from = mapModel.Find<PointFeature>(this.From);
+            PointFeature to = mapModel.Find<PointFeature>(this.To);
+            DistanceUnitType unitType = (DistanceUnitType)this.DefaultEntryUnit;
+            DistanceUnit defaultEntryUnit = EditingController.Current.GetUnits(unitType);
+
             uint sequence = GetEditSequence(s);
-            throw new NotImplementedException("PathData.LoadOperation");
-            //return new PathOperation(s, this);
+            PathOperation op = new PathOperation(s, sequence, from, to, this.EntryString, defaultEntryUnit);
+
+            // Create the legs
+            /*
+            LegData[] legs = t.Leg;
+            m_Legs = new List<Leg>(legs.Length);
+            PointFeature startPoint = m_From;
+            IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
+
+            for (int i = 0; i < legs.Length; i++)
+            {
+                Leg leg = t.Leg[i].LoadLeg(this);
+                m_Legs.Add(leg);
+
+                // Create features for each span (without any geometry)
+                startPoint = leg.CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
+            }
+            */
+
+            return op;
         }
     }
 
