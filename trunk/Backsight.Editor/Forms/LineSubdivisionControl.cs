@@ -133,8 +133,8 @@ namespace Backsight.Editor.Forms
                 DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
                 string entryString = GetEntryString();
                 Session session = Session.WorkingSession;
-                op = new LineSubdivisionOperation(m_Line, entryString, defaultEntryUnit,
-                                                    !m_FromStart, session, 0);
+                op = new LineSubdivisionOperation(session, 0, m_Line, entryString, defaultEntryUnit,
+                                                    !m_FromStart);
                 op.Execute();
                 return true;
             }

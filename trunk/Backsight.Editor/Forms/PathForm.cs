@@ -173,7 +173,8 @@ namespace Backsight.Editor.Forms
             try
             {
                 string str = GetEnteredPath();
-                op = new PathOperation(Session.WorkingSession, m_From, m_To, str);
+                DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
+                op = new PathOperation(Session.WorkingSession, 0, m_From, m_To, str, defaultEntryUnit);
                 op.Execute();
                 Finish();
             }
@@ -583,7 +584,7 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                m_Items = PathParser.GetPathItems(str);
+                m_Items = PathParser.GetPathItems(str, EditingController.Current.EntryUnit);
                 return true;
             }
 

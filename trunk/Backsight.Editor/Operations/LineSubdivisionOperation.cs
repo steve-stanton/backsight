@@ -64,17 +64,17 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="LineSubdivisionOperation"/> class.
         /// </summary>
+        /// <param name="session">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
         /// <param name="line">The line that is being subdivided.</param>
         /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
         /// <param name="defaultEntryUnit">The default distance units to use when decoding
         /// the data entry string.</param>
         /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
-        internal LineSubdivisionOperation(LineFeature line, string entryString, DistanceUnit defaultEntryUnit,
-                                            bool isEntryFromEnd, Session session, uint sequence)
+        internal LineSubdivisionOperation(Session session, uint sequence, LineFeature line,
+                                            string entryString, DistanceUnit defaultEntryUnit, bool isEntryFromEnd)
             : base(session, sequence)
         {
             m_Line = line;
@@ -540,6 +540,14 @@ namespace Backsight.Editor.Operations
         internal bool EntryFromEnd
         {
             get { return m_IsEntryFromEnd; }
+        }
+
+        /// <summary>
+        /// The default distance units to use when decoding the data entry string.
+        /// </summary>
+        internal DistanceUnit EntryUnit
+        {
+            get { return m_DefaultEntryUnit; }
         }
 
         /// <summary>

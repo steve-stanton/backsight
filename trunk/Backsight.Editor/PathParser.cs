@@ -30,11 +30,12 @@ namespace Backsight.Editor
         /// Attempts to parse the supplied string
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="entryUnit">The initial default entry units</param>
         /// <returns>The items in the parsed path</returns>
         /// <exception cref="Exception">If any parsing problem is encountered</exception>
-        static internal PathItem[] GetPathItems(string str)
+        static internal PathItem[] GetPathItems(string str, DistanceUnit entryUnit)
         {
-            PathParser pp = new PathParser(str);
+            PathParser pp = new PathParser(str, entryUnit);
             return pp.m_Items.ToArray();
         }
 
@@ -66,11 +67,12 @@ namespace Backsight.Editor
         /// attempts to parse the supplied string.
         /// </summary>
         /// <param name="str">The string to parse</param>
-        PathParser(string str)
+        /// <param name="entryUnit">The initial default entry units</param>
+        PathParser(string str, DistanceUnit entryUnit)
         {
             m_Items = new List<PathItem>();
             m_Omit = false;
-            m_Units = EditingController.Current.EntryUnit;
+            m_Units = entryUnit;
 
             ParseString(str);
         }
