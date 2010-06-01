@@ -36,8 +36,8 @@ namespace Backsight.Editor.Xml
         {
             this.Id = op.DataId;
 
-            if (op.Previous != null)
-                this.PreviousId = op.Previous.DataId;
+            //if (op.Previous != null)
+            //    this.PreviousId = op.Previous.DataId;
         }
 
         /// <summary>
@@ -226,6 +226,36 @@ namespace Backsight.Editor.Xml
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Creates features (without any geometry), corresponding to each item described
+        /// by this instance.
+        /// </summary>
+        /// <param name="op">The editing operation the features should be associated with</param>
+        /// <returns>The created features (any point features come first, then lines)</returns>
+        Feature[] CreateFeatures(Operation op)
+        {
+            List<Feature> result = new List<Feature>(100);
+
+            if (this.Points != null)
+            {
+                FeatureData[] points = this.Points.Point;
+                foreach (FeatureData fd in points)
+                    result.Add(new PointFeature(op, fd));
+            }
+
+            if (this.Lines != null)
+            {
+                FeatureData[] lines = this.Lines.Line;
+                foreach (FeatureData fd in lines)
+                {
+                    Feature f = fd.LoadFeature(op);
+                    result.Add(f);
+                }
+            }
+
+            return result.ToArray();
         }
     }
 
@@ -1381,7 +1411,8 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            return new UpdateOperation(s, this);
+            //return new UpdateOperation(s, this);
+            throw new NotImplementedException("UpdateData.LoadOperation");
         }
     }
 }

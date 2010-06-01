@@ -21,7 +21,6 @@ using System.IO;
 using System.Data;
 using System.Xml;
 using System.Text;
-using System.Xml.Serialization;
 
 using Backsight.Editor.Database;
 using Backsight.Data;
@@ -56,58 +55,25 @@ namespace Backsight.Editor
         /// <summary>
         /// A previous edit that this one is based on (null if this edit has never been revised).
         /// </summary>
-        Operation m_Previous;
+        //Operation m_Previous;
 
         /// <summary>
         /// The next revision of this edit (null if this edit has never been revised).
         /// </summary>
-        Operation m_Next;
+        //Operation m_Next;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new editing operation as part of the current default session. This constructor
-        /// should be called during de-serialization from the database.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        protected Operation(Session s, OperationData t)
-        {
-            if (s==null || t==null)
-                throw new ArgumentNullException();
-
-            uint sessionId;
-            InternalIdValue.Parse(t.Id, out sessionId, out m_Sequence);
-            Debug.Assert(s.Id == sessionId);
-
-            m_Session = s;
-            m_Session.Add(this);
-
-            // If this edit represents a revision to a previous edit, chain the
-            // edits together
-            if (t.PreviousId != null)
-            {
-                Operation prev = s.MapModel.FindOperation(t.PreviousId);
-                Debug.Assert(prev!=null);
-                prev.SetNextRevision(this);
-            }
-        }
-
-        /// <summary>
         /// Creates a new editing operation as part of the supplied session. This constructor
-        /// should be called during regular editing work.
+        /// is only called during regular editing work.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         protected Operation(Session s)
+            : this(s, 0)
         {
-            if (s==null)
-                throw new ArgumentNullException();
-
-            m_Session = s;
-            m_Session.Add(this);
-            m_Sequence = Session.ReserveNextItem();
         }
 
         /// <summary>
@@ -137,6 +103,7 @@ namespace Backsight.Editor
         /// Chains this editing operation with an edit that represents a revision of this edit
         /// </summary>
         /// <param name="next">The revised version of this edit</param>
+        /*
         void SetNextRevision(Operation next)
         {
             Debug.Assert(m_Next==null);
@@ -145,6 +112,7 @@ namespace Backsight.Editor
             m_Next = next;
             next.m_Previous = this;
         }
+        */
 
         public override string ToString()
         {
@@ -662,6 +630,7 @@ namespace Backsight.Editor
         /// <returns>The parameters this editing operation originally had (before the
         /// supplied information was applied). Holding on to this information makes it
         /// possible to later revert things to the way they were originally.</returns>
+        /*
         public virtual UpdateData ApplyUpdate(UpdateData ut)
         {
             // This method should be declared by the IRevisable interface once it
@@ -670,13 +639,14 @@ namespace Backsight.Editor
 
             return null;
         }
+        */
 
         /// <summary>
         /// A previous edit that this one is based on (null if this edit has never been revised).
         /// </summary>
-        internal Operation Previous
-        {
-            get { return m_Previous; }
-        }
+        //internal Operation Previous
+        //{
+        //    get { return m_Previous; }
+        //}
     }
 }
