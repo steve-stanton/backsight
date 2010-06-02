@@ -597,13 +597,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            uint sequence = GetEditSequence(s);
-            LineExtensionOperation op = new LineExtensionOperation(s, sequence);
-
             CadastralMapModel mapModel = s.MapModel;
+            uint sequence = GetEditSequence(s);
             LineFeature extendLine = mapModel.Find<LineFeature>(this.Line);
-            Distance length = (Distance)this.Distance.LoadObservation(op);
-            op.SetInput(extendLine, this.ExtendFromEnd, length);
+            //Distance length =(Distance)this.Distance.LoadObservation(op);
+            Distance length = null;
+            LineExtensionOperation op = new LineExtensionOperation(s, sequence, extendLine, this.ExtendFromEnd, length);
 
             op.NewPoint = new PointFeature(op, this.NewPoint);
 

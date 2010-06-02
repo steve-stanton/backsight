@@ -35,7 +35,18 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line being extended.
         /// </summary>
-        LineFeature m_ExtendLine;
+        readonly LineFeature m_ExtendLine;
+
+        /// <summary>
+        /// True if extending from the end of <c>m_ExtendLine</c>.
+        /// False if extending from the start.
+        /// </summary>
+        readonly bool m_IsExtendFromEnd;
+
+        /// <summary>
+        /// The observed length of the extension.
+        /// </summary>
+        readonly Distance m_Length;
 
         /// <summary>
         /// The actual extension line (if any).
@@ -47,17 +58,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         PointFeature m_NewPoint;
 
-        /// <summary>
-        /// The observed length of the extension.
-        /// </summary>
-        Distance m_Length;
-
-        /// <summary>
-        /// True if extending from the end of <c>m_ExtendLine</c>.
-        /// False if extending from the start.
-        /// </summary>
-        bool m_IsExtendFromEnd;        
-
         #endregion
 
         #region Constructors
@@ -65,29 +65,23 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal LineExtensionOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal LineExtensionOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="extendLine">The line that's being extended.</param>
+        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
+        /// <param name="length">The length of the extension.</param>
+        internal LineExtensionOperation(Session session, uint sequence,
+                                        LineFeature extendLine, bool isFromEnd, Distance length)
+            : base(session, sequence)
         {
-            m_ExtendLine = null;
+            m_ExtendLine = extendLine;
+            m_IsExtendFromEnd = isFromEnd;
+            m_Length = length;
+
             m_NewLine = null;
             m_NewPoint = null;
-            m_Length = null;
-            m_IsExtendFromEnd = true;
         }
 
         #endregion
@@ -148,33 +142,17 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="extendLine">The line that's being extended.</param>
-        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
-        /// <param name="length">The length of the extension.</param>
-        internal void SetInput(LineFeature extendLine, bool isFromEnd, Distance length)
-        {
-            m_ExtendLine = extendLine;
-            m_IsExtendFromEnd = isFromEnd;
-            m_Length = length;
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="extendLine">The line that's being extended.</param>
-        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
-        /// <param name="length">The length of the extension.</param>
         /// <param name="pointId">The ID (and entity type) for the extension point.</param>
         /// <param name="lineEnt">The entity type for the extension line (null for no line).</param>
-        internal void Execute(LineFeature extendLine, bool isFromEnd, Distance length, IdHandle pointId, IEntity lineEnt)
+        internal void Execute(IdHandle pointId, IEntity lineEnt)
         {
             IPosition start;    // Start of the extension
             IPosition end;      // End of the extension
 
             // See if the extension is a straight line.
-            bool isStraight = LineExtensionUI.Calculate(extendLine, isFromEnd, length, out start, out end);
+            bool isStraight = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length, out start, out end);
 
             // If it's not straight, it should be a circular arc.
             bool isCurve = false;
@@ -182,14 +160,11 @@ namespace Backsight.Editor.Operations
             bool iscw = true;   // Is the curve clockwise?
 
             if (!isStraight)
-                isCurve = LineExtensionUI.Calculate(extendLine, isFromEnd, length, out start, out end, out center, out iscw);
+                isCurve = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length, out start, out end, out center, out iscw);
 
             // Return if it's neither straight or a circular arc.
         	if ( !(isStraight || isCurve) )
                 throw new Exception("Cannot calculate line extension point.");
-
-            // Remember editing input
-            SetInput(extendLine, isFromEnd, length);
 
             // Add the extension point to the map.
             CadastralMapModel map = MapModel;
@@ -204,7 +179,7 @@ namespace Backsight.Editor.Operations
             else
             {
                 // Get the point at the end of the extension line
-                PointFeature s = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
+                PointFeature s = (m_IsExtendFromEnd ? m_ExtendLine.EndPoint : m_ExtendLine.StartPoint);
 
                 if (isStraight)
                     m_NewLine = map.AddLine(s, m_NewPoint, lineEnt, this);
