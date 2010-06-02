@@ -52,15 +52,14 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal ParallelDirection(Operation op, ParallelData t)
-            : base(op, t)
+        internal ParallelDirection(ILoader loader, ParallelData t)
+            : base(loader, t)
         {
-            CadastralMapModel mapModel = op.MapModel;
-            m_From = mapModel.Find<PointFeature>(t.From);
-            m_Par1 = mapModel.Find<PointFeature>(t.Start);
-            m_Par2 = mapModel.Find<PointFeature>(t.End);
+            m_From = loader.Find<PointFeature>(t.From);
+            m_Par1 = loader.Find<PointFeature>(t.Start);
+            m_Par2 = loader.Find<PointFeature>(t.End);
         }
 
         /// <summary>

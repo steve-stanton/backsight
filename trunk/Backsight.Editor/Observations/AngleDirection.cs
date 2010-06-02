@@ -51,16 +51,11 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal AngleDirection(Operation op, AngleData t)
-            : base(op, t)
+        internal AngleDirection(ILoader loader, AngleData t)
+            : base(loader, t)
         {
-            if (!RadianValue.TryParse(t.Value, out m_Observation))
-                throw new Exception("AngleDirection - Cannot parse 'Value' attribute");
-
-            m_Backsight = op.MapModel.Find<PointFeature>(t.Backsight);
-            m_From = op.MapModel.Find<PointFeature>(t.From);
         }
 
         /// <summary>

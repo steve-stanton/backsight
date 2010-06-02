@@ -35,10 +35,10 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal DeflectionDirection(Operation op, DeflectionData t)
-            : base(op, t)
+        internal DeflectionDirection(ILoader loader, DeflectionData t)
+            : base(loader, t)
         {
         }
 

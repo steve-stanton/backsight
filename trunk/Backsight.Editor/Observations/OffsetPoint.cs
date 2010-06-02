@@ -63,12 +63,12 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal OffsetPoint(Operation op, OffsetPointData t)
-            : base(op, t)
+        internal OffsetPoint(ILoader loader, OffsetPointData t)
+            : base(loader, t)
         {
-            m_Point = op.MapModel.Find<PointFeature>(t.Point);
+            m_Point = loader.Find<PointFeature>(t.Point);
         }
 
         #endregion

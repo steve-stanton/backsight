@@ -16,7 +16,6 @@
 using System;
 
 using Backsight.Editor.Observations;
-//using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor

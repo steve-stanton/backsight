@@ -325,12 +325,13 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            ILoader loader = s.MapModel;
             uint sequence = GetEditSequence(s);
             IntersectDirectionAndDistanceOperation op = new IntersectDirectionAndDistanceOperation(s, sequence);
 
-            Direction dir = (Direction)this.Direction.LoadObservation(op);
-            Observation dist = this.Distance.LoadObservation(op);
-            PointFeature from = s.MapModel.Find<PointFeature>(this.From);
+            Direction dir = (Direction)this.Direction.LoadObservation(loader);
+            Observation dist = this.Distance.LoadObservation(loader);
+            PointFeature from = loader.Find<PointFeature>(this.From);
             op.SetInput(dir, dist, from, this.Default);
 
             op.IntersectionPoint = new PointFeature(op, this.To);
@@ -378,13 +379,13 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            ILoader loader = s.MapModel;
             uint sequence = GetEditSequence(s);
             IntersectDirectionAndLineOperation op = new IntersectDirectionAndLineOperation(s, sequence);
 
-            CadastralMapModel mapModel = s.MapModel;
-            Direction dir = (Direction)this.Direction.LoadObservation(op);
-            LineFeature line = mapModel.Find<LineFeature>(this.Line);
-            PointFeature closeTo = mapModel.Find<PointFeature>(this.CloseTo);
+            Direction dir = (Direction)this.Direction.LoadObservation(loader);
+            LineFeature line = loader.Find<LineFeature>(this.Line);
+            PointFeature closeTo = loader.Find<PointFeature>(this.CloseTo);
             op.SetInput(dir, line, closeTo);
 
             op.IntersectionPoint = new PointFeature(op, this.To);
@@ -433,11 +434,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            ILoader loader = s.MapModel;
             uint sequence = GetEditSequence(s);
             IntersectTwoDirectionsOperation op = new IntersectTwoDirectionsOperation(s, sequence);
 
-            Direction dir1 = (Direction)this.Direction1.LoadObservation(op);
-            Direction dir2 = (Direction)this.Direction2.LoadObservation(op);
+            Direction dir1 = (Direction)this.Direction1.LoadObservation(loader);
+            Direction dir2 = (Direction)this.Direction2.LoadObservation(loader);
             op.SetInput(dir1, dir2);
 
             op.IntersectionPoint = new PointFeature(op, this.To);
@@ -489,11 +491,11 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             IntersectTwoDistancesOperation op = new IntersectTwoDistancesOperation(s, sequence);
 
-            CadastralMapModel mapModel = s.MapModel;
-            Observation dist1 = this.Distance1.LoadObservation(op);
-            PointFeature from1 = mapModel.Find<PointFeature>(this.From1);
-            Observation dist2 = this.Distance2.LoadObservation(op);
-            PointFeature from2 = mapModel.Find<PointFeature>(this.From2);
+            ILoader loader = s.MapModel;
+            Observation dist1 = this.Distance1.LoadObservation(loader);
+            PointFeature from1 = loader.Find<PointFeature>(this.From1);
+            Observation dist2 = this.Distance2.LoadObservation(loader);
+            PointFeature from2 = loader.Find<PointFeature>(this.From2);
             op.SetInput(dist1, from1, dist2, from2, this.Default);
 
             op.IntersectionPoint = new PointFeature(op, this.To);
@@ -597,11 +599,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            CadastralMapModel mapModel = s.MapModel;
+            ILoader loader = s.MapModel;
             uint sequence = GetEditSequence(s);
-            LineFeature extendLine = mapModel.Find<LineFeature>(this.Line);
-            //Distance length =(Distance)this.Distance.LoadObservation(op);
-            Distance length = null;
+            LineFeature extendLine = loader.Find<LineFeature>(this.Line);
+            Distance length =(Distance)this.Distance.LoadObservation(loader);
             LineExtensionOperation op = new LineExtensionOperation(s, sequence, extendLine, this.ExtendFromEnd, length);
 
             op.NewPoint = new PointFeature(op, this.NewPoint);
@@ -854,9 +855,9 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             NewCircleOperation op = new NewCircleOperation(s, sequence);
 
-            CadastralMapModel mapModel = s.MapModel;
-            op.Center = mapModel.Find<PointFeature>(this.Center);
-            op.Radius = this.Radius.LoadObservation(op);
+            ILoader loader = s.MapModel;
+            op.Center = loader.Find<PointFeature>(this.Center);
+            op.Radius = this.Radius.LoadObservation(loader);
 
             // In order to create the construction line, we need to have the Circle object,
             // but to be able to find the circle, the radius has to be known... and if the
@@ -869,7 +870,7 @@ namespace Backsight.Editor.Xml
             Circle c = new Circle(op.Center, 0.0);
 
             // If the closing point does not already exist, create one at some unspecified position
-            PointFeature p = mapModel.Find<PointFeature>(this.ClosingPoint);
+            PointFeature p = loader.Find<PointFeature>(this.ClosingPoint);
             if (p == null)
             {
                 FeatureData ft = new FeatureData();
@@ -1056,20 +1057,20 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             ParallelLineOperation op = new ParallelLineOperation(s, sequence);
 
-            CadastralMapModel mapModel = s.MapModel;
-            LineFeature refLine = mapModel.Find<LineFeature>(this.RefLine);
-            Observation offset = this.Offset.LoadObservation(op);
-            LineFeature term1 = (this.Term1==null ? null : mapModel.Find<LineFeature>(this.Term1));
-            LineFeature term2 = (this.Term2==null ? null : mapModel.Find<LineFeature>(this.Term2));
+            ILoader loader = s.MapModel;
+            LineFeature refLine = loader.Find<LineFeature>(this.RefLine);
+            Observation offset = this.Offset.LoadObservation(loader);
+            LineFeature term1 = (this.Term1==null ? null : loader.Find<LineFeature>(this.Term1));
+            LineFeature term2 = (this.Term2==null ? null : loader.Find<LineFeature>(this.Term2));
             op.SetInput(refLine, offset, term1, term2, this.ReverseArc);
 
             // Ensure the line end points have been created
 
-            PointFeature from = mapModel.Find<PointFeature>(this.From.Id);
+            PointFeature from = loader.Find<PointFeature>(this.From.Id);
             if (from == null)
                 from = new PointFeature(op, this.From);
 
-            PointFeature to = mapModel.Find<PointFeature>(this.To.Id);
+            PointFeature to = loader.Find<PointFeature>(this.To.Id);
             if (to == null)
                 to = new PointFeature(op, this.To);
 
@@ -1207,11 +1208,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            ILoader loader = s.MapModel;
             uint sequence = GetEditSequence(s);
             RadialOperation op = new RadialOperation(s, sequence);
 
-            Direction dir = (Direction)this.Direction.LoadObservation(op);
-            Observation length = this.Length.LoadObservation(op);
+            Direction dir = (Direction)this.Direction.LoadObservation(loader);
+            Observation length = this.Length.LoadObservation(loader);
             op.SetInput(dir, length);
 
             op.Point = new PointFeature(op, this.To);
@@ -1277,7 +1279,7 @@ namespace Backsight.Editor.Xml
 
             CadastralMapModel mapModel = s.MapModel;
             LineFeature line = mapModel.Find<LineFeature>(this.Line);
-            Distance distance = (Distance)this.Distance.LoadObservation(op);
+            Distance distance = (Distance)this.Distance.LoadObservation(mapModel);
             op.SetInput(line, distance);
 
             op.NewPoint = new PointFeature(op, this.NewPoint);

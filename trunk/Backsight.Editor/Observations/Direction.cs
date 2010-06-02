@@ -53,14 +53,14 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Direction(Operation op, DirectionData t)
+        protected Direction(ILoader loader, DirectionData t)
         {
             if (t.Offset == null)
                 m_Offset = null;
             else
-                m_Offset = (Offset)t.Offset.LoadObservation(op);
+                m_Offset = (Offset)t.Offset.LoadObservation(loader);
 
             m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
         }

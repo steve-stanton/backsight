@@ -15,6 +15,7 @@
 
 using System;
 using Backsight.Editor.Observations;
+using Backsight.Editor;
 
 namespace Backsight.Editor.Xml
 {
@@ -26,11 +27,11 @@ namespace Backsight.Editor.Xml
     public partial class ObservationData
     {
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal virtual Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal virtual Observation LoadObservation(ILoader loader)
         {
             throw new NotImplementedException("LoadObservation not implemented by: " + GetType().Name);
         }
@@ -54,13 +55,22 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
+            : base(loader)
         {
-            return new AngleDirection(op, this);
+            //return new AngleDirection(loader, this);
+            double observation;
+            if (!RadianValue.TryParse(this.Value, out observation))
+                throw new Exception("AngleData - Cannot parse 'Value' attribute");
+
+            PointFeature backsight = loader.Find<PointFeature>(this.Backsight);
+            PointFeature from = loader.Find<PointFeature>(this.From);
+
+            //return 
         }
     }
 
@@ -81,13 +91,13 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
-            return new BearingDirection(op, this);
+            return new BearingDirection(loader, this);
         }
     }
 
@@ -105,15 +115,14 @@ namespace Backsight.Editor.Xml
         {
             // nothing to do
         }
-
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
-            return new DeflectionDirection(op, this);
+            return new DeflectionDirection(loader, this);
         }
     }
 
@@ -129,6 +138,16 @@ namespace Backsight.Editor.Xml
             Offset o = d.Offset;
             if (o != null)
                 this.Offset = DataFactory.Instance.ToData<OffsetData>(o);
+        }
+
+        /// <summary>
+        /// Deserializes an observation
+        /// </summary>
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
+            : base(loader)
+        {
         }
     }
 
@@ -150,11 +169,11 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
             DistanceUnitType dut = (DistanceUnitType)this.Unit;
             DistanceUnit enteredUnit = EditingController.Current.GetUnits(dut);
@@ -180,13 +199,13 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
-            return new ParallelDirection(op, this);
+            return new ParallelDirection(loader, this);
         }
     }
 
@@ -210,13 +229,13 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
-            return new OffsetPoint(op, this);
+            return new OffsetPoint(loader, this);
         }
     }
 
@@ -237,13 +256,13 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Loads this observation as part of an editing operation
+        /// Deserializes an observation
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
-        /// <returns>The observation that was loaded</returns>
-        internal override Observation LoadObservation(Operation op)
+        /// <param name="loader">Helper for load-related tasks</param>
+        /// <returns>The observation obtained from this data</returns>
+        internal override Observation LoadObservation(ILoader loader)
         {
-            return new OffsetDistance(op, this);
+            return new OffsetDistance(loader, this);
         }
     }
 }

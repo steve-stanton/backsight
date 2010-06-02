@@ -46,12 +46,12 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal OffsetDistance(Operation op, OffsetDistanceData t)
-            : base(op, t)
+        internal OffsetDistance(ILoader loader, OffsetDistanceData t)
+            : base(loader, t)
         {
-            m_Offset = (Distance)t.Distance.LoadObservation(op);
+            m_Offset = (Distance)t.Distance.LoadObservation(loader);
             m_IsLeft = t.Left;
         }
 
