@@ -345,6 +345,7 @@
     </Compile>
     <Compile Include="GeometricModel.cs" />
     <Compile Include="IdPacket.cs" />
+    <Compile Include="ILoader.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
@@ -1038,7 +1039,6 @@
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>
     <Compile Include="Xml\Features.cs" />
-    <Compile Include="Xml\ILoader.cs" />
     <Compile Include="Xml\Observations.cs" />
     <Compile Include="Xml\Operations.cs" />
   </ItemGroup>
