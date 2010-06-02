@@ -34,9 +34,9 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        protected Offset(Operation op, OffsetData t)
+        protected Offset(ILoader loader, OffsetData t)
         {
         }
 

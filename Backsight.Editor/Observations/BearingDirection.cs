@@ -45,15 +45,15 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Constructor for use during deserialization
         /// </summary>
-        /// <param name="op">The editing operation utilizing the observation</param>
+        /// <param name="loader">Helper for load-related tasks</param>
         /// <param name="t">The serialized version of this observation</param>
-        internal BearingDirection(Operation op, BearingData t)
-            : base(op, t)
+        internal BearingDirection(ILoader loader, BearingData t)
+            : base(loader, t)
         {
             if (!RadianValue.TryParse(t.Value, out m_Observation))
                 throw new Exception("BearingDirection - Cannot parse 'Value' attribute");
 
-            m_From = op.MapModel.Find<PointFeature>(t.From);
+            m_From = loader.Find<PointFeature>(t.From);
         }
 
         /// <summary>
