@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor.Xml
+namespace Backsight.Editor
 {
     /// <summary>
     /// Helps with deserialization of XML data (when loading from the database).
