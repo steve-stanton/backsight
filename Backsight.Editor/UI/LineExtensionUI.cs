@@ -241,8 +241,8 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new LineExtensionOperation(Session.WorkingSession);
-                    op.Execute(m_ExtendLine, m_IsExtendFromEnd, m_Length, idh, m_LineType);
+                    op = new LineExtensionOperation(Session.WorkingSession, 0, m_ExtendLine, m_IsExtendFromEnd, m_Length);
+                    op.Execute(idh, m_LineType);
                 }
 
                 catch (Exception ex)
