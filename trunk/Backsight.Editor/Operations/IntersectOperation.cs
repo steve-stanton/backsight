@@ -15,11 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
-using System.Diagnostics;
 
 namespace Backsight.Editor.Operations
 {

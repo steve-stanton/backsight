@@ -16,8 +16,6 @@
 using System;
 using System.Diagnostics;
 
-using Backsight.Editor.Xml;
-
 namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="13-NOV-1997" />
@@ -43,6 +41,13 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="OffsetPoint"/> class.
+        /// </summary>
+        internal OffsetPoint()
+        {
+        }
+
+        /// <summary>
         /// Constructor for an offset at the specified point.
         /// </summary>
         /// <param name="point">The offset point</param>
@@ -58,17 +63,6 @@ namespace Backsight.Editor.Observations
         internal OffsetPoint(OffsetPoint copy) : base(copy)
         {
             m_Point = copy.m_Point;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal OffsetPoint(ILoader loader, OffsetPointData t)
-            : base(loader, t)
-        {
-            m_Point = loader.Find<PointFeature>(t.Point);
         }
 
         #endregion

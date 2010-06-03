@@ -15,7 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
 using Backsight.Editor.Observations;
 
 
@@ -37,7 +36,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null)
         /// </summary>
-        readonly UpdateData m_Update;
+        //readonly UpdateData m_Update;
 
         #endregion
 
