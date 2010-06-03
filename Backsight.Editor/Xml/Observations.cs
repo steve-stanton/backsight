@@ -60,17 +60,23 @@ namespace Backsight.Editor.Xml
         /// <param name="loader">Helper for load-related tasks</param>
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
-            : base(loader)
         {
-            //return new AngleDirection(loader, this);
+            AngleDirection result = new AngleDirection();
+            LoadAngleDirection(loader, result);
+            return result;
+        }
+
+        internal void LoadAngleDirection(ILoader loader, AngleDirection d)
+        {
+            base.LoadDirection(loader, d);
+
             double observation;
             if (!RadianValue.TryParse(this.Value, out observation))
                 throw new Exception("AngleData - Cannot parse 'Value' attribute");
 
-            PointFeature backsight = loader.Find<PointFeature>(this.Backsight);
-            PointFeature from = loader.Find<PointFeature>(this.From);
-
-            //return 
+            d.Backsight = loader.Find<PointFeature>(this.Backsight);
+            d.From = loader.Find<PointFeature>(this.From);
+            d.SetObservationInRadians(observation);
         }
     }
 
@@ -97,7 +103,21 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            return new BearingDirection(loader, this);
+            BearingDirection result = new BearingDirection();
+            LoadBearingDirection(loader, result);
+            return result;
+        }
+
+        void LoadBearingDirection(ILoader loader, BearingDirection d)
+        {
+            base.LoadDirection(loader, d);
+
+            double observation;
+            if (!RadianValue.TryParse(this.Value, out observation))
+                throw new Exception("AngleData - Cannot parse 'Value' attribute");
+
+            d.From = loader.Find<PointFeature>(this.From);
+            d.SetObservationInRadians(observation);
         }
     }
 
@@ -115,6 +135,7 @@ namespace Backsight.Editor.Xml
         {
             // nothing to do
         }
+
         /// <summary>
         /// Deserializes an observation
         /// </summary>
@@ -122,7 +143,9 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            return new DeflectionDirection(loader, this);
+            DeflectionDirection result = new DeflectionDirection();
+            LoadAngleDirection(loader, result);
+            return result;
         }
     }
 
@@ -140,14 +163,10 @@ namespace Backsight.Editor.Xml
                 this.Offset = DataFactory.Instance.ToData<OffsetData>(o);
         }
 
-        /// <summary>
-        /// Deserializes an observation
-        /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <returns>The observation obtained from this data</returns>
-        internal override Observation LoadObservation(ILoader loader)
-            : base(loader)
+        internal void LoadDirection(ILoader loader, Direction d)
         {
+            if (this.Offset != null)
+                d.Offset = (Offset)this.Offset.LoadObservation(loader);
         }
     }
 
@@ -205,7 +224,18 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            return new ParallelDirection(loader, this);
+            ParallelDirection result = new ParallelDirection();
+            LoadParallelDirection(loader, result);
+            return result;
+        }
+
+        void LoadParallelDirection(ILoader loader, ParallelDirection d)
+        {
+            base.LoadDirection(loader, d);
+
+            d.From = loader.Find<PointFeature>(this.From);
+            d.Start = loader.Find<PointFeature>(this.Start);
+            d.End = loader.Find<PointFeature>(this.End);
         }
     }
 
@@ -235,7 +265,9 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            return new OffsetPoint(loader, this);
+            OffsetPoint result = new OffsetPoint();
+            result.Point = loader.Find<PointFeature>(this.Point);
+            return result;
         }
     }
 
@@ -262,7 +294,15 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            return new OffsetDistance(loader, this);
+            OffsetDistance result = new OffsetDistance();
+            result.Offset = (Distance)this.Distance.LoadObservation(loader);
+
+            if (this.Left)
+                result.SetLeft();
+            else
+                result.SetRight();
+
+            return result;
         }
     }
 }

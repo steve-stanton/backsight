@@ -1012,7 +1012,7 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class DirectionData : ObservationData {
+    public abstract partial class DirectionData : ObservationData {
         
         private OffsetData offsetField;
         

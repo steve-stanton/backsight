@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 
 namespace Backsight.Editor.Observations
 {
@@ -32,34 +30,31 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// The angle in radians. A negated value indicates an anticlockwise angle.
         /// </summary>
-        readonly double m_Observation;
+        double m_Observation;
 
         /// <summary>
         /// The backsight point.
         /// </summary>
-        readonly PointFeature m_Backsight;
+        PointFeature m_Backsight;
 
         /// <summary>
         /// The occupied station.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="AngleDirection"/> class.
         /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal AngleDirection(ILoader loader, AngleData t)
-            : base(loader, t)
+        internal AngleDirection()
         {
         }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="AngleDirection"/> class.
         /// </summary>
         /// <param name="backsight">The backsight point.</param>
         /// <param name="occupied">The occupied station.</param>
@@ -78,6 +73,11 @@ namespace Backsight.Editor.Observations
         internal override double ObservationInRadians
         {
             get { return m_Observation; }
+        }
+
+        internal void SetObservationInRadians(double value)
+        {
+            m_Observation = value;
         }
 
         /// <summary>
@@ -99,11 +99,13 @@ namespace Backsight.Editor.Observations
         internal override PointFeature From
         {
             get { return m_From; }
+            set { m_From = value; }
         }
 
         internal PointFeature Backsight
         {
             get { return m_Backsight; }
+            set { m_Backsight = value; }
         }
 
         internal override void AddReferences(Operation op)

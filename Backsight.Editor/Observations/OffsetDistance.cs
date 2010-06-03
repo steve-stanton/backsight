@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 
 namespace Backsight.Editor.Observations
 {
@@ -44,15 +42,10 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
         /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal OffsetDistance(ILoader loader, OffsetDistanceData t)
-            : base(loader, t)
+        internal OffsetDistance()
         {
-            m_Offset = (Distance)t.Distance.LoadObservation(loader);
-            m_IsLeft = t.Left;
         }
 
         /// <summary>
@@ -121,6 +114,7 @@ namespace Backsight.Editor.Observations
         internal Distance Offset
         {
             get { return m_Offset; }
+            set { m_Offset = value; }
         }
 
         /// <summary>

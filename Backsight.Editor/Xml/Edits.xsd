@@ -88,7 +88,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="DirectionData">
+  <xs:complexType name="DirectionData" abstract="true">
     <xs:complexContent mixed="false">
       <xs:extension base="ObservationData">
         <xs:sequence minOccurs="0" maxOccurs="1">

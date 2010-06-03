@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 
 namespace Backsight.Editor.Observations
 {
@@ -33,33 +31,27 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// The origin of the direction.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From;
 
         /// <summary>
         /// Point defining start of parallel.
         /// </summary>
-        readonly PointFeature m_Par1;
+        PointFeature m_Par1;
 
         /// <summary>
         /// Point defining end of parallel.
         /// </summary>
-        readonly PointFeature m_Par2;
+        PointFeature m_Par2;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="ParallelDirection"/> class.
         /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal ParallelDirection(ILoader loader, ParallelData t)
-            : base(loader, t)
+        internal ParallelDirection()
         {
-            m_From = loader.Find<PointFeature>(t.From);
-            m_Par1 = loader.Find<PointFeature>(t.Start);
-            m_Par2 = loader.Find<PointFeature>(t.End);
         }
 
         /// <summary>
@@ -68,7 +60,8 @@ namespace Backsight.Editor.Observations
         /// <param name="from">The point the direction is from.</param>
         /// <param name="par1">The first point in the definition of the parallel line.</param>
         /// <param name="par2">The second point defining the parallel line.</param>
-        internal ParallelDirection(PointFeature from, PointFeature par1, PointFeature par2) : base()
+        internal ParallelDirection(PointFeature from, PointFeature par1, PointFeature par2)
+            : base()
         {
             m_From = from;
             m_Par1 = par1;
@@ -80,16 +73,19 @@ namespace Backsight.Editor.Observations
         internal override PointFeature From
         {
             get { return m_From; }
+            set { m_From = value; }
         }
 
         internal PointFeature Start
         {
             get { return m_Par1; }
+            set { m_Par1 = value; }
         }
 
         internal PointFeature End
         {
             get { return m_Par2; }
+            set { m_Par2 = value; }
         }
 
         /// <summary>

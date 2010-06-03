@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 
 namespace Backsight.Editor.Observations
 {
@@ -33,12 +31,10 @@ namespace Backsight.Editor.Observations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="DeflectionDirection"/> class.
         /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal DeflectionDirection(ILoader loader, DeflectionData t)
-            : base(loader, t)
+        internal DeflectionDirection()
+            : base()
         {
         }
 

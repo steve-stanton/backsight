@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 
 namespace Backsight.Editor.Observations
 {
@@ -31,29 +29,22 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Angle from grid north, in range [0,2*PI].
         /// </summary>
-        readonly double m_Observation;
+        double m_Observation;
 
         /// <summary>
         /// The point which the bearing was taken.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="BearingDirection"/> class.
         /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        internal BearingDirection(ILoader loader, BearingData t)
-            : base(loader, t)
+        internal BearingDirection()
         {
-            if (!RadianValue.TryParse(t.Value, out m_Observation))
-                throw new Exception("BearingDirection - Cannot parse 'Value' attribute");
-
-            m_From = loader.Find<PointFeature>(t.From);
         }
 
         /// <summary>
@@ -82,9 +73,15 @@ namespace Backsight.Editor.Observations
             get { return m_Observation; }
         }
 
+        internal void SetObservationInRadians(double value)
+        {
+            m_Observation = value;
+        }
+
         internal override PointFeature From
         {
             get { return m_From; }
+            set { m_From = value; }
         }
 
         /// <summary>

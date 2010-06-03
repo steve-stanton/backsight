@@ -17,7 +17,6 @@ using System;
 using System.Diagnostics;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 using Backsight.Forms;
 
 namespace Backsight.Editor.Observations
@@ -50,21 +49,6 @@ namespace Backsight.Editor.Observations
             m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
         }
 
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="loader">Helper for load-related tasks</param>
-        /// <param name="t">The serialized version of this observation</param>
-        protected Direction(ILoader loader, DirectionData t)
-        {
-            if (t.Offset == null)
-                m_Offset = null;
-            else
-                m_Offset = (Offset)t.Offset.LoadObservation(loader);
-
-            m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
-        }
-
         #endregion
 
         /// <summary>
@@ -80,7 +64,7 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// The point the direction was measured from (also see the <c>StartPosition</c> property).
         /// </summary>
-        abstract internal PointFeature From { get; }
+        abstract internal PointFeature From { get; set; }
 
         /*
 //	Draw the direction angle.

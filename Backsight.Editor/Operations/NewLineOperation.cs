@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor.Operations
