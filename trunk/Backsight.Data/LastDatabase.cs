@@ -16,6 +16,7 @@
 using System;
 
 using Microsoft.Win32;
+using System.Security.Permissions;
 
 namespace Backsight.Data
 {
@@ -23,12 +24,13 @@ namespace Backsight.Data
     /// The connection string for the last database accessed by the <c>Cadastral Editor</c>
     /// or the <c>Environment Editor</c>.
     /// </summary>
+    //[RegistryPermission(SecurityAction.Assert, Unrestricted=true)]
     public static class LastDatabase
     {
         /// <summary>
         /// The key name of the registry entry that holds database-wide settings.
         /// </summary>
-        static string REGISTRY_BASEKEY = Registry.LocalMachine + @"\Software\Backsight";
+        public static string REGISTRY_BASEKEY = Registry.LocalMachine + @"\Software\Backsight";
 
         /// <summary>
         /// The connection string last used to access the database (blank if a database
@@ -45,9 +47,31 @@ namespace Backsight.Data
         /// </summary>
         /// <param name="settingName">The name of the setting</param>
         /// <param name="val">The value to save</param>
+//        [RegistryPermission(SecurityAction.Demand, Write = @"HKEY_LOCAL_MACHINE\Software\Backsight")]
+//        [RegistryPermission(SecurityAction.Demand, Write = @"HKEY_LOCAL_MACHINE\Software\Backsight\LastDatabase")]
         static void Write(string settingName, string val)
         {
-            Registry.SetValue(REGISTRY_BASEKEY, settingName, val);
+            try
+            {
+                Registry.SetValue(REGISTRY_BASEKEY, settingName, val);
+            }
+
+            catch (Exception ex)
+            {
+                //try
+                //{
+                //    RegistryPermission p = new RegistryPermission(
+                //        RegistryPermissionAccess.Write, REGISTRY_BASEKEY + "\\" + settingName);
+                //    Registry.SetValue(REGISTRY_BASEKEY, settingName, val);
+                //}
+
+                //catch (Exception ex2)
+                //{
+                //    System.Windows.Forms.MessageBox.Show(ex2.Message);
+                //}
+
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
         }
 
         /// <summary>

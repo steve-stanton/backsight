@@ -30,7 +30,6 @@ using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Index;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {

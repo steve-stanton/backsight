@@ -18,7 +18,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {

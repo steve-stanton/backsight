@@ -22,7 +22,6 @@ using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {

@@ -21,7 +21,6 @@ using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor.UI
 {
@@ -217,12 +216,6 @@ namespace Backsight.Editor.UI
                     MessageBox.Show("LineExtensionUI.DialFinish - Unexpected edit type.");
                     return false;
                 }
-
-                // Hold onto the update info
-                LineExtensionUpdateData ut = new LineExtensionUpdateData();
-                ut.ExtendFromEnd = m_Dialog.IsExtendFromEnd;
-                ut.Distance = new DistanceData(m_Dialog.Length);
-                up.UpdateParameters = ut;
 
                 // Make the update.
                 //pop.Correct(m_Dialog.IsExtendFromEnd, m_Dialog.Length);

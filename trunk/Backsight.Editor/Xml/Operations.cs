@@ -607,9 +607,7 @@ namespace Backsight.Editor.Xml
 
             op.NewPoint = new PointFeature(op, this.NewPoint);
 
-            if (this.NewLine == null)
-                op.NewLine = null;
-            else
+            if (this.NewLine != null)
             {
                 PointFeature p = (this.ExtendFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
 
