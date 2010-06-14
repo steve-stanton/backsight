@@ -1,1 +1,1 @@
-xsd Edits.xsd /classes /n:Backsight.Editor.Xml
+"C:\Program Files\Microsoft SDKs\Windows\v6.0A\bin\xsd.exe" Edits.xsd /classes /n:Backsight.Editor.Xml
