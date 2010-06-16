@@ -225,6 +225,6 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        abstract internal LineData GetSerializableLine();
+        //abstract internal LineData GetSerializableLine();
     }
 }

@@ -137,7 +137,7 @@ namespace Backsight.Editor.Xml
 
             Circle c = (Circle)geom.Circle;
             ArcFeature firstArc = c.FirstArc;
-            if (Object.ReferenceEquals(firstArc.Geometry, this))
+            if (Object.ReferenceEquals(firstArc, arc))
                 this.Center = c.CenterPoint.DataId;
             else
                 this.FirstArc = firstArc.DataId;
@@ -195,6 +195,28 @@ namespace Backsight.Editor.Xml
     {
         public MultiSegmentData()
         {
+        }
+
+        internal MultiSegmentData(MultiSegmentLineFeature f)
+            : base(f)
+        {
+            MultiSegmentGeometry g = (MultiSegmentGeometry)f.LineGeometry;
+
+            // Write out array of expanded positions (there aren't that many
+            // multi-segments in a cadastral database).
+            PointGeometry[] data = g.GetUnpackedData();
+            PointGeometryData[] points = new PointGeometryData[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                PointGeometry pg = data[i];
+                PointGeometryData pt = new PointGeometryData();
+                pt.X = pg.Easting.Microns;
+                pt.Y = pg.Northing.Microns;
+                points[i] = pt;
+            }
+
+            this.Point = points;
         }
 
         /// <summary>
@@ -256,6 +278,12 @@ namespace Backsight.Editor.Xml
         {
         }
 
+        internal SectionData(SectionLineFeature f)
+            : base(f)
+        {
+            this.Base = f.BaseLine.DataId;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -302,6 +330,12 @@ namespace Backsight.Editor.Xml
         {
         }
 
+        internal SharedPointData(SharedPointFeature f)
+            : base(f)
+        {
+            this.FirstPoint = f.FirstPoint.DataId;
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation
         /// </summary>
@@ -322,7 +356,7 @@ namespace Backsight.Editor.Xml
         {
         }
 
-        internal RowTextData(TextFeature t)
+        internal RowTextData(RowTextFeature t)
             : base(t)
         {
             RowTextGeometry g = (RowTextGeometry)t.TextGeometry;
@@ -350,7 +384,7 @@ namespace Backsight.Editor.Xml
         {
         }
 
-        internal KeyTextData(TextFeature t)
+        internal KeyTextData(KeyTextFeature t)
             : base(t)
         {
             // nothing to do
@@ -392,10 +426,10 @@ namespace Backsight.Editor.Xml
         {
         }
 
-        internal MiscTextData(TextFeature t)
+        internal MiscTextData(MiscTextFeature t)
             : base(t)
         {
-            MiscText mt = (MiscText)t.TextGeometry;
+            MiscTextGeometry mt = (MiscTextGeometry)t.TextGeometry;
             this.Text = mt.Text;
         }
 

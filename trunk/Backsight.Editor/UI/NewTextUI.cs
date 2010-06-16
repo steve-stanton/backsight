@@ -293,7 +293,7 @@ namespace Backsight.Editor.UI
         internal override bool UpdateLabel(TextFeature label)
         {
             // The label MUST be miscellaneous text.
-            MiscText text = (label.TextGeometry as MiscText);
+            MiscTextGeometry text = (label.TextGeometry as MiscTextGeometry);
             if (text==null)
                 throw new Exception("Can only update miscellaneous text.");
 

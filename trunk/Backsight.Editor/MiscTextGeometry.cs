@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 
@@ -25,7 +25,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A miscellaneous text object
     /// </summary>
-    class MiscText : TextGeometry
+    class MiscTextGeometry : TextGeometry
     {
         #region Class data
 
@@ -44,7 +44,7 @@ namespace Backsight.Editor
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal (default=0.0).</param>
-        internal MiscText(string text, PointGeometry topLeft, IFont font, double height, double width, float rotation)
+        internal MiscTextGeometry(string text, PointGeometry topLeft, IFont font, double height, double width, float rotation)
             : base(topLeft, font, height, width, rotation)
         {
             m_Text = text;
@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal MiscText(TextFeature f, MiscTextData t)
+        internal MiscTextGeometry(TextFeature f, MiscTextData t)
             : base(f, t)
         {
             m_Text = t.Text;
@@ -145,12 +145,12 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        internal override TextData GetSerializableText()
-        {
-            MiscTextData t = new MiscTextData();
-            SetSerializableText(t);
-            t.Text = m_Text;
-            return t;
-        }
+        //internal override TextData GetSerializableText()
+        //{
+        //    MiscTextData t = new MiscTextData();
+        //    SetSerializableText(t);
+        //    t.Text = m_Text;
+        //    return t;
+        //}
     }
 }

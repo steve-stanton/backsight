@@ -141,7 +141,8 @@ namespace Backsight.Editor.Xml
             Feature[] features = op.Features;
             this.Point = new PointData[features.Length];
             for (int i = 0; i < this.Point.Length; i++)
-                this.Point[i] = (PointData)features[i].GetSerializableFeature();
+                this.Point[i] = DataFactory.Instance.ToData<PointData>(features[i]);
+                //this.Point[i] = (PointData)features[i].GetSerializableFeature();
         }
 
         /// <summary>
@@ -271,7 +272,8 @@ namespace Backsight.Editor.Xml
             Feature[] features = op.Features;
             this.Feature = new FeatureData[features.Length];
             for (int i = 0; i < features.Length; i++)
-                this.Feature[i] = features[i].GetSerializableFeature();
+                this.Feature[i] = DataFactory.Instance.ToData<FeatureData>(features[i]);
+                //this.Feature[i] = features[i].GetSerializableFeature();
         }
 
         /// <summary>
@@ -897,7 +899,7 @@ namespace Backsight.Editor.Xml
         internal NewKeyTextData(NewKeyTextOperation op)
             : base(op)
         {
-            this.Text = new KeyTextData(op.Text);
+            this.Text = new KeyTextData((KeyTextFeature)op.Text);
         }
 
         /// <summary>
@@ -923,7 +925,7 @@ namespace Backsight.Editor.Xml
         internal NewMiscTextData(NewMiscTextOperation op)
             : base(op)
         {
-            this.Text = new MiscTextData(op.Text);
+            this.Text = new MiscTextData((MiscTextFeature)op.Text);
         }
 
         /// <summary>
@@ -975,7 +977,7 @@ namespace Backsight.Editor.Xml
         internal NewRowTextData(NewRowTextOperation op)
             : base(op)
         {
-            this.Text = new RowTextData(op.Text);
+            this.Text = new RowTextData((RowTextFeature)op.Text);
         }
 
         /// <summary>
@@ -1042,7 +1044,7 @@ namespace Backsight.Editor.Xml
             LineFeature parLine = op.ParallelLine;
             this.From = new FeatureData(parLine.StartPoint, (parLine.StartPoint.Creator == op));
             this.To = new FeatureData(parLine.EndPoint, (parLine.EndPoint.Creator == op));
-            this.NewLine = parLine.GetSerializableLine();
+            this.NewLine = new FeatureData(parLine);
         }
 
         /// <summary>
@@ -1072,7 +1074,29 @@ namespace Backsight.Editor.Xml
             if (to == null)
                 to = new PointFeature(op, this.To);
 
-            op.ParallelLine = (LineFeature)this.NewLine.LoadFeature(op);
+            if (refLine is ArcFeature)
+            {
+                ArcFeature arc = (ArcFeature)refLine;
+                bool iscw = arc.IsClockwise;
+                if (this.ReverseArc)
+                    iscw = !iscw;
+
+                // Create a circle with an undefined radius - a radius will get
+                // assigned by ParallelLineOperation.RunEdit.
+
+                // Don't add using AddCircle, as that will end up trying to locate
+                // a circle with matching radius (and all circles at this stage will have
+                // a zero radius).
+                //Circle c = s.MapModel.AddCircle(arc.Circle.CenterPoint, 0.0);
+                Circle c = new Circle(arc.Circle.CenterPoint, 0.0);
+                c.AddReferences();
+
+                op.ParallelLine = new ArcFeature(op, c, from, to, iscw, this.NewLine);
+            }
+            else
+            {
+                op.ParallelLine = new LineFeature(op, from, to, this.NewLine);
+            }
 
             return op;
         }
@@ -1147,7 +1171,8 @@ namespace Backsight.Editor.Xml
             SegmentData[] data = new SegmentData[newLines.Length];
             for (int i = 0; i < newLines.Length; i++)
             {
-                data[i] = (SegmentData)newLines[i].GetSerializableLine();
+                data[i] = new SegmentData(newLines[i]);
+                //data[i] = (SegmentData)newLines[i].GetSerializableLine();
             }
 
             this.Line = data;

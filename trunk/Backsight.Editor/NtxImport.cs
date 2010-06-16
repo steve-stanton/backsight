@@ -328,7 +328,7 @@ namespace Backsight.Editor
             if (pts.Length==2)
                 result = new LineFeature(what, creator, ps, pe);
             else
-                result = new LineFeature(what, creator, ps, pe, pts);
+                result = new MultiSegmentLineFeature(what, creator, ps, pe, pts);
 
             if (line.IsTopologicalArc)
                 result.SetTopology(true);
@@ -522,7 +522,7 @@ namespace Backsight.Editor
                 // Create key text
                 string keystr = name.Text;
                 KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
-                result = new TextFeature(kt, entity, creator);
+                result = new KeyTextFeature(entity, creator, kt);
                 kt.Label = result;
                 result.SetTopology(true);
 
@@ -539,8 +539,8 @@ namespace Backsight.Editor
             else
             {
                 // Create a miscellaneous text label.
-                MiscText mt = new MiscText(text, topleft, font, height, width, rotation);
-                result = new TextFeature(mt, entity, creator);
+                MiscTextGeometry mt = new MiscTextGeometry(text, topleft, font, height, width, rotation);
+                result = new MiscTextFeature(entity, creator, mt);
                 result.SetTopology(false);
             }
 

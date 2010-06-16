@@ -46,19 +46,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(Operation op, PointData t)
-            : base(op, t)
-        {
-            PointGeometry pg = new PointGeometry(t.X, t.Y);
-            m_Geom = new Node(this, pg);
-        }
-
-
-        /// <summary>
         /// Constructor for use during deserialization. This version does not define the
         /// position for the new point - the editing operation must subsequently calculate
         /// the geometry.
@@ -69,6 +56,18 @@ namespace Backsight.Editor
             : base(op, t)
         {
             m_Geom = null;
+        }
+
+        /// <summary>
+        /// Constructor for use during deserialization
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        internal PointFeature(Operation op, PointData t)
+            : base(op, t)
+        {
+            PointGeometry pg = new PointGeometry(t.X, t.Y);
+            m_Geom = new Node(this, pg);
         }
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace Backsight.Editor
         /// <param name="f">The point feature that the new point coincides with (not null)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        internal PointFeature(PointFeature f, IEntity e, Operation creator)
+        protected PointFeature(PointFeature f, IEntity e, Operation creator)
             : base(e, creator)
         {
             if (f == null)
@@ -403,24 +402,24 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureData GetSerializableFeature()
-        {
-            if (m_Geom.FirstPoint == this)
-            {
-                PointData t = new PointData();
-                SetSerializableFeature(t);
-                t.X = m_Geom.Easting.Microns;
-                t.Y = m_Geom.Northing.Microns;
-                return t;
-            }
-            else
-            {
-                SharedPointData t = new SharedPointData();
-                SetSerializableFeature(t);
-                t.FirstPoint = m_Geom.FirstPoint.DataId;
-                return t;
-            }
-        }
+        //internal override FeatureData GetSerializableFeature()
+        //{
+        //    if (m_Geom.FirstPoint == this)
+        //    {
+        //        PointData t = new PointData();
+        //        SetSerializableFeature(t);
+        //        t.X = m_Geom.Easting.Microns;
+        //        t.Y = m_Geom.Northing.Microns;
+        //        return t;
+        //    }
+        //    else
+        //    {
+        //        SharedPointData t = new SharedPointData();
+        //        SetSerializableFeature(t);
+        //        t.FirstPoint = m_Geom.FirstPoint.DataId;
+        //        return t;
+        //    }
+        //}
 
         /// <summary>
         /// Touches this feature for rollforward preview.

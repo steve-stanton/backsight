@@ -26,8 +26,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="12-MAY-1998" was="CeText"/>
     /// <summary>
     /// A text object is some sort of string that appears on a map. This is the base class for
-    ///	<see cref="MiscText"/>, <see cref="KeyTextGeometry"/>, <see cref="RowTextGeometry"/>,
-    /// and <see cref="FeatureText"/>.
+    ///	<see cref="MiscTextGeometry"/>, <see cref="KeyTextGeometry"/>, and <see cref="RowTextGeometry"/>.
     /// </summary>
     abstract class TextGeometry : IString
     {
@@ -394,23 +393,23 @@ namespace Backsight.Editor
         ///// the <c>XmlSerializer</c> class.
         ///// </summary>
         ///// <returns>The serializable version of this text</returns>
-        abstract internal TextData GetSerializableText();
+        //abstract internal TextData GetSerializableText();
 
         /// <summary>
         /// Defines the XML attributes and elements that are common to a serialized version
         /// of a derived instance.
         /// </summary>
         /// <param name="t">The serializable version of this text</param>
-        protected void SetSerializableText(TextData t)
-        {
-            t.X = m_Position.Easting.Microns;
-            t.Y = m_Position.Northing.Microns;
-            t.Height = Math.Round((double)m_Height, 2);
-            t.Width = Math.Round((double)m_Width, 2);
-            t.Font = (m_Font == null ? 0 : m_Font.Id);
+        //protected void SetSerializableText(TextData t)
+        //{
+        //    t.X = m_Position.Easting.Microns;
+        //    t.Y = m_Position.Northing.Microns;
+        //    t.Height = Math.Round((double)m_Height, 2);
+        //    t.Width = Math.Round((double)m_Width, 2);
+        //    t.Font = (m_Font == null ? 0 : m_Font.Id);
 
-            // TODO: May want to cover indirect rotations
-            t.Rotation = RadianValue.AsString(m_Rotation.Radians);
-        }
+        //    // TODO: May want to cover indirect rotations
+        //    t.Rotation = RadianValue.AsString(m_Rotation.Radians);
+        //}
     }
 }
