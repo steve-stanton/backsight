@@ -310,13 +310,13 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this text</returns>
-        internal override TextData GetSerializableText()
-        {
-            RowTextData t = new RowTextData();
-            SetSerializableText(t);
-            t.Table = (uint)m_Row.Table.Id;
-            t.Template = (uint)m_Template.Id;
-            return t;
-        }
+        //internal override TextData GetSerializableText()
+        //{
+        //    RowTextData t = new RowTextData();
+        //    SetSerializableText(t);
+        //    t.Table = (uint)m_Row.Table.Id;
+        //    t.Template = (uint)m_Template.Id;
+        //    return t;
+        //}
     }
 }

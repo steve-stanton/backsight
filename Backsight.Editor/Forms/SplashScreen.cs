@@ -494,6 +494,9 @@ namespace Backsight.Editor.Forms
 		// Paint the portion of the panel invalidated during the tick event.
 		private void pnlStatus_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
 		{
+            if (m_rProgress.Width == 0 && m_rProgress.Height == 0)
+                return;
+
 			if( m_bFirstLaunch == false && e.ClipRectangle.Width > 0 && m_iActualTicks > 1 )
 			{
                 // SS: Originally a bluish gradient, but greeny-yellow works better with my background

@@ -846,6 +846,7 @@ namespace Backsight.Editor
         /// <param name="c">The point at the center.</param>
         /// <param name="radius">The radius (on the ground), in meters</param>
         /// <returns></returns>
+        [Obsolete("Calling this during deserialization (before geomtry is defined) is bad")]
         internal Circle AddCircle(PointFeature c, double radius)
         {
             // Try to match the center point with an existing circle with
@@ -1056,7 +1057,7 @@ namespace Backsight.Editor
         {
             // Create the "geometry"
             PointGeometry topLeft = PointGeometry.Create(vtx);
-            MiscText text = new MiscText(s, topLeft, ent.Font, height, width, (float)rotation);
+            MiscTextGeometry text = new MiscTextGeometry(s, topLeft, ent.Font, height, width, (float)rotation);
 
             // If an entity type has not been given, get the default entity type for text.
             IEntity newEnt = ent;
@@ -1067,7 +1068,7 @@ namespace Backsight.Editor
                 throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
 
             // Do standard stuff for adding a label.
-            return AddLabel(creator, text, newEnt, null);
+            return new MiscTextFeature(newEnt, creator, text);
         }
 
         /// <summary>
@@ -1092,7 +1093,7 @@ namespace Backsight.Editor
             IEntity ent = polygonId.Entity;
             PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
-            TextFeature label = AddLabel(creator, text, ent, null);
+            TextFeature label = new KeyTextFeature(ent, creator, text);
 
             // Define the label's ID
       		polygonId.CreateId(label);
@@ -1119,7 +1120,7 @@ namespace Backsight.Editor
             KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
 
             // Do standard stuff for adding a label
-            TextFeature result = AddLabel(creator, text, ent, null);
+            TextFeature result = new KeyTextFeature(ent, creator, text);
             text.Label = result;
             return result;
         }
@@ -1144,7 +1145,7 @@ namespace Backsight.Editor
         {
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
-            TextFeature label = new TextFeature(null, ent, creator);
+            TextFeature label = new RowTextFeature(ent, creator, null);
 
             // Define the label's ID and attach the row to it
             Row r = new Row(id, atemplate.Schema, row);
@@ -1179,7 +1180,7 @@ namespace Backsight.Editor
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
-            TextFeature label = new TextFeature(null, ent, creator);
+            TextFeature label = new RowTextFeature(ent, creator, null);
 
             // Define the label's ID and attach the row to it
             FeatureId id = polygonId.CreateId(label);
@@ -1189,84 +1190,6 @@ namespace Backsight.Editor
             PointGeometry p = PointGeometry.Create(vtx);
             RowTextGeometry text = new RowTextGeometry(r, atemplate, p, ent.Font, height, width, (float)rotation);
             label.TextGeometry = text;
-
-            return label;
-        }
-
-        /// <summary>
-        /// Generic processing for adding a label.
-        /// </summary>
-        /// <param name="creator">The editing operation creating the text</param>
-        /// <param name="text">The text for the label.</param>
-        /// <param name="ent">The entity type for the label.</param>
-        /// <param name="enc">The enclosing polygon (if the label is topological, and if you actually
-        /// know the polygon). If you're adding CeFeatureText that refers to the area of an enclosed
-        /// polygon, it's better to supply this when the label is created. Otherwise the spatial index
-        /// will be initially populated with the default "unknown" text.</param>
-        /// <returns>The newly created text feature</returns>
-        TextFeature AddLabel(Operation creator, TextGeometry text, IEntity ent, Polygon enc)
-        {
-            // Create the new label.
-            TextFeature label = new TextFeature(text, ent, creator);
-
-            // Cross-reference the text to the label.
-            //text.AddObject(*pLabel);
-
-            // Define the text metrics.
-            //text.Spacing = (float)spacing;
-            //text.Rotation = new RadianValue(rotation);
-
-            // If a height has been explicitly given, use that. If no height, but we have a
-            // default font, use the height of that font. Otherwise fall back on the height
-            // of line annotations.
-            //if (height < MathConstants.TINY)
-            //{
-                // If we can, use default font (and height). Otherwise
-                // the text gets the height of line annotation, but
-                // does NOT get a font.
-                //text.Height = (float)m_Annotation.Height;
-
-                /*
-		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
-		{
-			text.SetHeight(((CeEntity*)pEnt)->GetpFont()->GetHeight());
-			text.SetFont(*(((CeEntity*)pEnt)->GetpFont()));
-		}
-		else if ( m_pFont ) {
-			text.SetHeight(m_pFont->GetHeight());
-			text.SetFont(*m_pFont);
-		}
-		else
-			text.SetHeight(FLOAT4(m_LineAnnoHeight));
-                 */
-            //}
-            //else
-            //{
-                //text.Height = (float)m_Annotation.Height; // FOR NOW
-                /*
-//		If we have a default font, initialize with that.
-		if (((CeEntity*)pEnt)->GetpFont()) // entity has font assigned, use that
-			text.SetFont(*(((CeEntity*)pEnt)->GetpFont()));
-		else if ( m_pFont ) text.SetFont(*m_pFont);
-
-//		Use the height supplied. If this height is not
-//		consistent with the font (if any), this may cause
-//		a new font to be added to the map.
-		text.SetHeight(height);
-                 */
-            //}
-
-            // If an enclosing polygon has been supplied, it must be a topological
-            // label. It could also be feature text representing the area of the
-            // enclosed polygon, so set it before adding to the spatial index.
-            // SS 20080409: belay that last bit, since the label isn't added to
-            // the spatial index just yet
-
-            if (enc!=null)
-            {
-                label.SetTopology(true);
-                enc.ClaimLabel(label);
-            }
 
             return label;
         }

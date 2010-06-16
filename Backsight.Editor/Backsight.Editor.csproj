@@ -376,9 +376,13 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
+    <Compile Include="KeyTextFeature.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
+    <Compile Include="MiscTextFeature.cs" />
+    <Compile Include="MiscTextGeometry.cs" />
     <Compile Include="Move.cs" />
+    <Compile Include="MultiSegmentLineFeature.cs" />
     <Compile Include="NativeId.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Observations\AngleDirection.cs" />
@@ -411,6 +415,7 @@
     <Compile Include="PositionLoader.cs" />
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
+    <Compile Include="RowTextFeature.cs" />
     <Compile Include="RowTextGeometry.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
@@ -423,6 +428,7 @@
     <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="PathItem.cs" />
     <Compile Include="PathItemType.cs" />
+    <Compile Include="SectionLineFeature.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />
@@ -633,6 +639,7 @@
     <Compile Include="Forms\Style.cs" />
     <Compile Include="Forms\StyleEntry.cs" />
     <Compile Include="Forms\StyleFile.cs" />
+    <Compile Include="SharedPointFeature.cs" />
     <Compile Include="SpanInfo.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="StraightLeg.cs" />
@@ -699,7 +706,6 @@
     <Compile Include="LineAnnotationOptions.cs" />
     <Compile Include="LineAnnotationStyle.cs" />
     <Compile Include="LineFeature.cs" />
-    <Compile Include="MiscText.cs" />
     <Compile Include="NtxImport.cs" />
     <Compile Include="EditingActionId.cs" />
     <Compile Include="Observation.cs" />
@@ -1144,6 +1150,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\app.manifest" />
     <None Include="Resources\ZoomOut.ico" />
     <EmbeddedResource Include="Forms\ListOperationsForm.resx">

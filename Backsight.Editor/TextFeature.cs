@@ -97,7 +97,7 @@ namespace Backsight.Editor
         internal TextFeature(Operation op, MiscTextData t)
             : this(op, (TextData)t)
         {
-            m_Geom = new MiscText(this, t);
+            m_Geom = new MiscTextGeometry(this, t);
         }
 
         /// <summary>
@@ -127,11 +127,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new text feature
         /// </summary>
-        /// <param name="text">The text geometry (including the text string itself)</param>
         /// <param name="ent">The entity type for the string.</param>
         /// <param name="creator">The operation creating the text</param>
+        /// <param name="text">The text geometry (including the text string itself)</param>
         /// </param>
-        public TextFeature(TextGeometry text, IEntity ent, Operation creator) : base(ent, creator)
+        protected TextFeature(IEntity ent, Operation creator, TextGeometry text)
+            : base(ent, creator)
         {
             m_Geom = text;
             m_Container = null;
@@ -410,36 +411,36 @@ namespace Backsight.Editor
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureData GetSerializableFeature()
-        {
-            return GetSerializableText();
-        }
+        //internal override FeatureData GetSerializableFeature()
+        //{
+        //    return GetSerializableText();
+        //}
 
         /// <summary>
         /// Returns an object that represents this text, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this text</returns>
-        internal TextData GetSerializableText()
-        {
-            // Get the geometry class to return an appropriate TextType
-            TextData t = m_Geom.GetSerializableText();
+        //internal TextData GetSerializableText()
+        //{
+        //    // Get the geometry class to return an appropriate TextType
+        //    TextData t = m_Geom.GetSerializableText();
 
-            // Fill in base class stuff
-            SetSerializableFeature(t);
+        //    // Fill in base class stuff
+        //    SetSerializableFeature(t);
 
-            // Fill in the stuff that's defined here
-            t.Topological = IsTopological;
+        //    // Fill in the stuff that's defined here
+        //    t.Topological = IsTopological;
 
-            if (m_PolygonPosition != null)
-            {
-                t.PolygonX = m_PolygonPosition.Easting.Microns;
-                t.PolygonY = m_PolygonPosition.Northing.Microns;
+        //    if (m_PolygonPosition != null)
+        //    {
+        //        t.PolygonX = m_PolygonPosition.Easting.Microns;
+        //        t.PolygonY = m_PolygonPosition.Northing.Microns;
 
-                t.PolygonXSpecified = t.PolygonYSpecified = true;
-            }
+        //        t.PolygonXSpecified = t.PolygonYSpecified = true;
+        //    }
 
-            return t;
-        }
+        //    return t;
+        //}
 
         /// <summary>
         /// Moves this text to a new position

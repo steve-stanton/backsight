@@ -73,8 +73,8 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Constructor for use during deserialization, for creating a line consisting of
-        /// a simple line segment. This version does not define the position for the new line - the
+        /// Constructor for use during deserialization.
+        /// This version does not define the position for the new line - the
         /// editing operation must subsequently calculate that.
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
@@ -236,38 +236,18 @@ namespace Backsight.Editor
         {
         }
 
-        /// <summary>
-        /// Creates a <c>LineFeature</c> consisting of a series of connected line segments.
-        /// </summary>
-        /// <param name="e">The entity type for the feature.</param>
-        /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="start">The point at the start of the line</param>
-        /// <param name="end">The point at the end of the line</param>
-        /// <param name="data">The positions defining the shape of the line. The first position must
-        /// coincide precisely with the supplied <paramref name="start"/>, and the last position
-        /// must coincide precisely with <paramref name="end"/>. Expected to be more than two positions.</param>
-        internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, IPointGeometry[] data)
-            : this(e, creator, start, end, new MultiSegmentGeometry(start, end, data))
-        {
-            Debug.Assert(data.Length>2);
-            Debug.Assert(start.Geometry.IsCoincident(data[0]));
-            Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
-        }
+        //internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, IPointGeometry[] data)
+        //    : this(e, creator, start, end, new MultiSegmentGeometry(start, end, data))
+        //{
+        //    Debug.Assert(data.Length>2);
+        //    Debug.Assert(start.Geometry.IsCoincident(data[0]));
+        //    Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
+        //}
 
-        /// <summary>
-        /// Creates a <c>LineFeature</c> that corresponds to a circular arc. This constructor
-        /// is used only by <see cref="ArcFeature"/>
-        /// </summary>
-        /// <param name="e">The entity type for the feature.</param>
-        /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="c">The circle the arc coincides with</param>
-        /// <param name="bc">The point at the start of the arc</param>
-        /// <param name="ec">The point at the end of the arc</param>
-        /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
-        internal LineFeature(IEntity e, Operation creator, Circle c, PointFeature bc, PointFeature ec, bool isClockwise)
-            : this(e, creator, bc, ec, new ArcGeometry(c, bc, ec, isClockwise))
-        {
-        }
+        //protected LineFeature(IEntity e, Operation creator, Circle c, PointFeature bc, PointFeature ec, bool isClockwise)
+        //    : this(e, creator, bc, ec, new ArcGeometry(c, bc, ec, isClockwise))
+        //{
+        //}
 
         #endregion
 
@@ -756,10 +736,12 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <returns>The new line</returns>
         internal LineFeature MakeSubSection(SectionGeometry section, Operation op) //const CeSubTheme* const pSubTheme
         {
-            PointFeature start = (PointFeature)section.Start;
-            PointFeature end = (PointFeature)section.End;
+            LineFeature result = new SectionLineFeature(op, section);
 
-            LineFeature result = new LineFeature(this.EntityType, op, start, end, section);
+            //PointFeature start = (PointFeature)section.Start;
+            //PointFeature end = (PointFeature)section.End;
+
+            //LineFeature result = new LineFeature(this.EntityType, op, start, end, section);
             DefineFeature(result);
 
             if (result.IsTopological)
@@ -1367,30 +1349,30 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// the <c>XmlSerializer</c> class.
         /// </summary>
         /// <returns>The serializable version of this feature</returns>
-        internal override FeatureData GetSerializableFeature()
-        {
-            return GetSerializableLine();
-        }
+        //internal override FeatureData GetSerializableFeature()
+        //{
+        //    return GetSerializableLine();
+        //}
 
         /// <summary>
         /// Returns an object that represents this line, and that can be serialized using
         /// the <c>XmlSerializer</c> class.
         /// <returns>The serializable version of this line</returns>
-        internal LineData GetSerializableLine()
-        {
-            // Get the geometry class to return an appropriate LineData
-            LineData t = m_Geom.GetSerializableLine();
+        //internal LineData GetSerializableLine()
+        //{
+        //    // Get the geometry class to return an appropriate LineData
+        //    LineData t = m_Geom.GetSerializableLine();
 
-            // Fill in base class stuff
-            SetSerializableFeature(t);
+        //    // Fill in base class stuff
+        //    SetSerializableFeature(t);
 
-            // Fill in the stuff specific to LineData
-            t.From = m_From.DataId;
-            t.To = m_To.DataId;
-            t.Topological = IsTopological;
+        //    // Fill in the stuff specific to LineData
+        //    t.From = m_From.DataId;
+        //    t.To = m_To.DataId;
+        //    t.Topological = IsTopological;
 
-            return t;
-        }
+        //    return t;
+        //}
 
         /// <summary>
         /// Deactivates this line.

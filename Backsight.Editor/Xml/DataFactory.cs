@@ -111,6 +111,17 @@ namespace Backsight.Editor.Xml
             AddMapping("OffsetDistance", "OffsetDistanceData");
             AddMapping("OffsetPoint", "OffsetPointData");
             AddMapping("ParallelDirection", "ParallelData");
+
+            // Features
+            AddMapping("ArcFeature", "ArcData");
+            AddMapping("KeyTextFeature", "KeyTextData");
+            AddMapping("LineFeature", "SegmentData");
+            AddMapping("MiscTextFeature", "MiscTextData");
+            AddMapping("MultiSegmentLineFeature", "MultiSegmentData");
+            AddMapping("PointFeature", "PointData");
+            AddMapping("RowTextFeature", "RowTextData");
+            AddMapping("SectionLineFeature", "SectionData");
+            AddMapping("SharedPointFeature", "SharedPointData");
         }
 
         #endregion
@@ -199,16 +210,26 @@ namespace Backsight.Editor.Xml
 
         internal T ToData<T>(Observation o) where T : ObservationData
         {
-            ConstructorInfo ci;
-            if (!m_DataMapping.TryGetValue(o.GetType(), out ci))
-                throw new NotImplementedException();
+            return (T)CreateData(o);
+            //ConstructorInfo ci;
+            //if (!m_DataMapping.TryGetValue(o.GetType(), out ci))
+            //    throw new NotImplementedException();
 
-            return (T)ci.Invoke(new object[] { o });
+            //return (T)ci.Invoke(new object[] { o });
         }
 
         internal T ToData<T>(Feature f) where T : FeatureData
         {
-            return null;
+            return (T)CreateData(f);
+        }
+
+        object CreateData(object o)
+        {
+            ConstructorInfo ci;
+            if (!m_DataMapping.TryGetValue(o.GetType(), out ci))
+                throw new NotImplementedException();
+
+            return ci.Invoke(new object[] { o });
         }
 
         /// <summary>

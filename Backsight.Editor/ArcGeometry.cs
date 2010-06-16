@@ -708,22 +708,22 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineData GetSerializableLine()
-        {
-            ArcData t = new ArcData();
+        //internal override LineData GetSerializableLine()
+        //{
+        //    ArcData t = new ArcData();
 
-            t.Clockwise = m_IsClockwise;
+        //    t.Clockwise = m_IsClockwise;
 
-            // If this is the first arc associated with the circle, write out
-            // the ID of the point at the center of the circle.
+        //    // If this is the first arc associated with the circle, write out
+        //    // the ID of the point at the center of the circle.
 
-            ArcFeature firstArc = m_Circle.FirstArc;
-            if (Object.ReferenceEquals(firstArc.Geometry, this))
-                t.Center = m_Circle.CenterPoint.DataId;
-            else
-                t.FirstArc = firstArc.DataId;
+        //    ArcFeature firstArc = m_Circle.FirstArc;
+        //    if (Object.ReferenceEquals(firstArc.Geometry, this))
+        //        t.Center = m_Circle.CenterPoint.DataId;
+        //    else
+        //        t.FirstArc = firstArc.DataId;
 
-            return t;
-        }
+        //    return t;
+        //}
     }
 }

@@ -1125,25 +1125,25 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineData GetSerializableLine()
-        {
-            // Write out array of expanded positions (there aren't that many
-            // multi-segments in a cadastral database).
-            PointGeometry[] data = GetUnpackedData();
+        //internal override LineData GetSerializableLine()
+        //{
+        //    // Write out array of expanded positions (there aren't that many
+        //    // multi-segments in a cadastral database).
+        //    PointGeometry[] data = GetUnpackedData();
 
-            MultiSegmentData t = new MultiSegmentData();
-            PointGeometryData[] points = new PointGeometryData[data.Length];
-            for (int i=0; i<data.Length; i++)
-            {
-                PointGeometry pg = data[i];
-                PointGeometryData pt = new PointGeometryData();
-                pt.X = pg.Easting.Microns;
-                pt.Y = pg.Northing.Microns;
-                points[i] = pt;
-            }
+        //    MultiSegmentData t = new MultiSegmentData();
+        //    PointGeometryData[] points = new PointGeometryData[data.Length];
+        //    for (int i=0; i<data.Length; i++)
+        //    {
+        //        PointGeometry pg = data[i];
+        //        PointGeometryData pt = new PointGeometryData();
+        //        pt.X = pg.Easting.Microns;
+        //        pt.Y = pg.Northing.Microns;
+        //        points[i] = pt;
+        //    }
 
-            t.Point = points;
-            return t;
-        }
+        //    t.Point = points;
+        //    return t;
+        //}
     }
 }

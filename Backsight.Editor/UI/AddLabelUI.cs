@@ -127,7 +127,7 @@ namespace Backsight.Editor.UI
             // Draw the text
             PointGeometry p = PointGeometry.Create(refpos);
             IFont font = (m_Entity==null ? null : m_Entity.Font);
-            MiscText text = new MiscText(m_Text, p, font, m_Height, m_Width, (float)m_Rotation);
+            MiscTextGeometry text = new MiscTextGeometry(m_Text, p, font, m_Height, m_Width, (float)m_Rotation);
             style.Render(ActiveDisplay, text);
 
             // If doing auto-angle stuff, draw an additional line

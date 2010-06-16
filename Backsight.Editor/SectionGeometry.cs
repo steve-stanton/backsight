@@ -40,7 +40,7 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>LineSection</c>
+        /// Creates a new <c>SectionGeometry</c>
         /// </summary>
         /// <param name="baseLine">The line the section is based on (not null).</param>
         /// <param name="start">The point at the start of the section (coincident with
@@ -85,6 +85,14 @@ namespace Backsight.Editor
         internal override UnsectionedLineGeometry SectionBase
         {
             get { return m_Base.LineGeometry.SectionBase; ; }
+        }
+
+        /// <summary>
+        /// The line that the section is based on.
+        /// </summary>
+        internal LineFeature BaseLine
+        {
+            get { return m_Base; }
         }
 
         /// <summary>
@@ -260,11 +268,11 @@ namespace Backsight.Editor
         /// <returns>
         /// The serializable version of this line geometry
         /// </returns>
-        internal override LineData GetSerializableLine()
-        {
-            SectionData t = new SectionData();
-            t.Base = m_Base.DataId;
-            return t;
-        }
+        //internal override LineData GetSerializableLine()
+        //{
+        //    SectionData t = new SectionData();
+        //    t.Base = m_Base.DataId;
+        //    return t;
+        //}
     }
 }

@@ -689,7 +689,7 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The point at the end of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="LineData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="FeatureData">
             <xs:annotation>
               <xs:documentation>The parallel that got created.</xs:documentation>
             </xs:annotation>
