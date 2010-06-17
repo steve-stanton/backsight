@@ -650,13 +650,5 @@ namespace Backsight.Editor.Observations
             IWindow x = display.MaxExtent;
             return Geom.Distance(x.Min, x.Max);
         }
-
-        //protected void SetSerializableObservation(DirectionData t)
-        //{
-        //    base.SetSerializableObservation(t);
-
-        //    if (m_Offset != null)
-        //        t.Offset = (OffsetData)m_Offset.GetSerializableObservation();
-        //}
     }
 }

@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -260,19 +259,5 @@ namespace Backsight.Editor
         {
             return Make().GetRotation(p);
         }
-
-        /// <summary>
-        /// Returns an object that represents this line geometry, and that can be
-        /// serialized using the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>
-        /// The serializable version of this line geometry
-        /// </returns>
-        //internal override LineData GetSerializableLine()
-        //{
-        //    SectionData t = new SectionData();
-        //    t.Base = m_Base.DataId;
-        //    return t;
-        //}
     }
 }

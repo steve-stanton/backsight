@@ -1412,56 +1412,5 @@ void CeLeg::MakeText ( const CeVertex& bs
             else
                 return m_Spans[index];
         }
-
-        /// <summary>
-        /// Returns an object that represents this leg, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this leg</returns>
-        //abstract internal LegData GetSerializableLeg();
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this leg</param>
-        /*
-        protected void SetSerializableFeature(LegData t)
-        {
-            t.Face = m_FaceNumber;
-            t.Span = new SpanData[m_Spans.Length];
-
-            for (int i=0; i<m_Spans.Length; i++)
-            {
-                SpanInfo span = m_Spans[i];
-                SpanData st = new SpanData();
-
-                // The distance may be null when dealing with a culdesac defined
-                // only with central angle.
-                Distance d = span.ObservedDistance;
-                if (d != null)
-                    st.Length = new DistanceData(d);
-
-                // The feature is either a line, the end point, or null
-                Feature f = span.CreatedFeature;
-                PointFeature p = null;
-                    
-                if (f is LineFeature)
-                {
-                    st.LineId = f.DataId;
-                    p = (f as LineFeature).EndPoint;
-                }
-                else
-                {
-                    p = (f as PointFeature);
-                }
-
-                if (p != null)
-                    st.EndPoint = new FeatureData(p);
-
-                t.Span[i] = st;
-            }
-        }
-         */
     }
 }

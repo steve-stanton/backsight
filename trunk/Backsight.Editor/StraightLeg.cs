@@ -21,7 +21,6 @@ using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 using Backsight.Environment;
 
 namespace Backsight.Editor
@@ -795,25 +794,5 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         {
             get { return m_IsDeflection; }
         }
-
-        /// <summary>
-        /// Returns an object that represents this leg, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this leg</returns>
-        /*
-        internal override LegData GetSerializableLeg()
-        {
-            StraightLegData t = new StraightLegData();
-            base.SetSerializableFeature(t);
-
-            if (Math.Abs(m_StartAngle) > Double.Epsilon)
-                t.StartAngle = RadianValue.AsShortString(m_StartAngle);
-
-            t.Deflection = m_IsDeflection;
-
-            return t;
-        }
-         */
     }
 }

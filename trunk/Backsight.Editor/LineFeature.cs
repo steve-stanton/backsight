@@ -130,7 +130,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, ArcData t)
+        protected LineFeature(Operation op, ArcData t)
             : this(op, (LineData)t)
         {
             Circle c = null;
@@ -1343,36 +1343,6 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
 
 } // end of ChangeEnd
          */
-
-        /// <summary>
-        /// Returns an object that represents this feature, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this feature</returns>
-        //internal override FeatureData GetSerializableFeature()
-        //{
-        //    return GetSerializableLine();
-        //}
-
-        /// <summary>
-        /// Returns an object that represents this line, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this line</returns>
-        //internal LineData GetSerializableLine()
-        //{
-        //    // Get the geometry class to return an appropriate LineData
-        //    LineData t = m_Geom.GetSerializableLine();
-
-        //    // Fill in base class stuff
-        //    SetSerializableFeature(t);
-
-        //    // Fill in the stuff specific to LineData
-        //    t.From = m_From.DataId;
-        //    t.To = m_To.DataId;
-        //    t.Topological = IsTopological;
-
-        //    return t;
-        //}
 
         /// <summary>
         /// Deactivates this line.

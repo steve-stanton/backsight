@@ -142,7 +142,6 @@ namespace Backsight.Editor.Xml
             this.Point = new PointData[features.Length];
             for (int i = 0; i < this.Point.Length; i++)
                 this.Point[i] = DataFactory.Instance.ToData<PointData>(features[i]);
-                //this.Point[i] = (PointData)features[i].GetSerializableFeature();
         }
 
         /// <summary>
@@ -273,7 +272,6 @@ namespace Backsight.Editor.Xml
             this.Feature = new FeatureData[features.Length];
             for (int i = 0; i < features.Length; i++)
                 this.Feature[i] = DataFactory.Instance.ToData<FeatureData>(features[i]);
-                //this.Feature[i] = features[i].GetSerializableFeature();
         }
 
         /// <summary>
@@ -1172,7 +1170,6 @@ namespace Backsight.Editor.Xml
             for (int i = 0; i < newLines.Length; i++)
             {
                 data[i] = new SegmentData(newLines[i]);
-                //data[i] = (SegmentData)newLines[i].GetSerializableLine();
             }
 
             this.Line = data;

@@ -88,17 +88,5 @@ namespace Backsight.Editor
                 return (id==null ? "?" : id.FormattedKey);
             }
         }
-
-        /// <summary>
-        /// Returns an object that represents this text, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this text</returns>
-        //internal override TextData GetSerializableText()
-        //{
-        //    TextData t = new KeyTextData();
-        //    SetSerializableText(t);
-        //    return t;
-        //}
     }
 }
