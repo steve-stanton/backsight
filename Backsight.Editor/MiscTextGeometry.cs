@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal MiscTextGeometry(TextFeature f, MiscTextData t)
+        internal MiscTextGeometry(MiscTextFeature f, MiscTextData t)
             : base(f, t)
         {
             m_Text = t.Text;

@@ -18,6 +18,7 @@ using Backsight.Editor.Operations;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
@@ -909,7 +910,8 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewKeyTextOperation op = new NewKeyTextOperation(s, sequence);
-            op.SetText(new TextFeature(op, this.Text));
+            KeyTextFeature f = (KeyTextFeature)this.Text.LoadFeature(op);
+            op.SetText(f);
             return op;
         }
     }
@@ -935,7 +937,8 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewMiscTextOperation op = new NewMiscTextOperation(s, sequence);
-            op.SetText(new TextFeature(op, this.Text));
+            MiscTextFeature f = (MiscTextFeature)this.Text.LoadFeature(op);
+            op.SetText(f);
             return op;
         }
     }
@@ -987,7 +990,8 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewRowTextOperation op = new NewRowTextOperation(s, sequence);
-            op.SetText(new TextFeature(op, this.Text));
+            RowTextFeature f = (RowTextFeature)this.Text.LoadFeature(op);
+            op.SetText(f);
             return op;
         }
     }
