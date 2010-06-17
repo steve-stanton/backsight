@@ -387,29 +387,5 @@ namespace Backsight.Editor
         //    return TextRenderer.MeasureText(text, font, proposedSize,
         //        (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
         //}
-
-        ///// <summary>
-        ///// Returns an object that represents this text, and that can be serialized using
-        ///// the <c>XmlSerializer</c> class.
-        ///// </summary>
-        ///// <returns>The serializable version of this text</returns>
-        //abstract internal TextData GetSerializableText();
-
-        /// <summary>
-        /// Defines the XML attributes and elements that are common to a serialized version
-        /// of a derived instance.
-        /// </summary>
-        /// <param name="t">The serializable version of this text</param>
-        //protected void SetSerializableText(TextData t)
-        //{
-        //    t.X = m_Position.Easting.Microns;
-        //    t.Y = m_Position.Northing.Microns;
-        //    t.Height = Math.Round((double)m_Height, 2);
-        //    t.Width = Math.Round((double)m_Width, 2);
-        //    t.Font = (m_Font == null ? 0 : m_Font.Id);
-
-        //    // TODO: May want to cover indirect rotations
-        //    t.Rotation = RadianValue.AsString(m_Rotation.Radians);
-        //}
     }
 }

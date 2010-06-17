@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -217,14 +216,5 @@ namespace Backsight.Editor
         /// position should be used to obtain the angle.</param>
         /// <returns>The rotation (in radians, clockwise from horizontal)</returns>
         abstract internal double GetRotation(IPointGeometry p);
-
-        /// <summary>
-        /// Returns an object that represents this line geometry, and that can be
-        /// serialized using the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>
-        /// The serializable version of this line geometry
-        /// </returns>
-        //abstract internal LineData GetSerializableLine();
     }
 }

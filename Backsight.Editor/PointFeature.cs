@@ -398,30 +398,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Returns an object that represents this feature, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this feature</returns>
-        //internal override FeatureData GetSerializableFeature()
-        //{
-        //    if (m_Geom.FirstPoint == this)
-        //    {
-        //        PointData t = new PointData();
-        //        SetSerializableFeature(t);
-        //        t.X = m_Geom.Easting.Microns;
-        //        t.Y = m_Geom.Northing.Microns;
-        //        return t;
-        //    }
-        //    else
-        //    {
-        //        SharedPointData t = new SharedPointData();
-        //        SetSerializableFeature(t);
-        //        t.FirstPoint = m_Geom.FirstPoint.DataId;
-        //        return t;
-        //    }
-        //}
-
-        /// <summary>
         /// Touches this feature for rollforward preview.
         /// </summary>
         /// <param name="afterOp">The edit causing the change (only edits that were performed after this

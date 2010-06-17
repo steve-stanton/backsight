@@ -407,42 +407,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Returns an object that represents this feature, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this feature</returns>
-        //internal override FeatureData GetSerializableFeature()
-        //{
-        //    return GetSerializableText();
-        //}
-
-        /// <summary>
-        /// Returns an object that represents this text, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// <returns>The serializable version of this text</returns>
-        //internal TextData GetSerializableText()
-        //{
-        //    // Get the geometry class to return an appropriate TextType
-        //    TextData t = m_Geom.GetSerializableText();
-
-        //    // Fill in base class stuff
-        //    SetSerializableFeature(t);
-
-        //    // Fill in the stuff that's defined here
-        //    t.Topological = IsTopological;
-
-        //    if (m_PolygonPosition != null)
-        //    {
-        //        t.PolygonX = m_PolygonPosition.Easting.Microns;
-        //        t.PolygonY = m_PolygonPosition.Northing.Microns;
-
-        //        t.PolygonXSpecified = t.PolygonYSpecified = true;
-        //    }
-
-        //    return t;
-        //}
-
-        /// <summary>
         /// Moves this text to a new position
         /// </summary>
         /// <param name="to">The new position for the text</param>

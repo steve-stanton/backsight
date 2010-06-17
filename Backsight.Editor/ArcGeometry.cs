@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -700,30 +699,5 @@ namespace Backsight.Editor
 
             return angle;
         }
-
-        /// <summary>
-        /// Returns an object that represents this line geometry, and that can be
-        /// serialized using the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>
-        /// The serializable version of this line geometry
-        /// </returns>
-        //internal override LineData GetSerializableLine()
-        //{
-        //    ArcData t = new ArcData();
-
-        //    t.Clockwise = m_IsClockwise;
-
-        //    // If this is the first arc associated with the circle, write out
-        //    // the ID of the point at the center of the circle.
-
-        //    ArcFeature firstArc = m_Circle.FirstArc;
-        //    if (Object.ReferenceEquals(firstArc.Geometry, this))
-        //        t.Center = m_Circle.CenterPoint.DataId;
-        //    else
-        //        t.FirstArc = firstArc.DataId;
-
-        //    return t;
-        //}
     }
 }

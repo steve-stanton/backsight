@@ -250,16 +250,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Returns an object that represents this leg, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this leg</returns>
-        //internal override LegData GetSerializableLeg()
-        //{
-        //    throw new NotImplementedException("ExtraLeg.GetSerializableLeg");
-        //}
-
-        /// <summary>
         /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
         /// <param name="terminal">The position for the start of the leg. Updated to be

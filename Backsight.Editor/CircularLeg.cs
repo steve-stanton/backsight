@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
 using Backsight.Environment;
 
 namespace Backsight.Editor
@@ -1454,30 +1453,5 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             if (m_Circle!=null)
                 m_Circle.Radius = span.ScaledRadius;
         }
-
-        /// <summary>
-        /// Returns an object that represents this leg, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this leg</returns>
-        /*
-        internal override LegData GetSerializableLeg()
-        {
-            CircularLegData t = new CircularLegData();
-            base.SetSerializableFeature(t);
-
-            if (Math.Abs(m_Angle1) > Double.Epsilon)
-                t.Angle1 = RadianValue.AsShortString(m_Angle1);
-            if (Math.Abs(m_Angle2) > Double.Epsilon)
-                t.Angle2 = RadianValue.AsShortString(m_Angle2);
-
-            t.CulDeSac = IsCulDeSac;
-            t.Clockwise = IsClockwise;
-            t.Radius = new DistanceData(m_Radius);
-            t.Center = new FeatureData(m_Circle.CenterPoint);
-
-            return t;
-        }
-         */
     }
 }

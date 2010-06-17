@@ -304,19 +304,5 @@ namespace Backsight.Editor
                     sb.Append(text.Substring(startIndex));
             }
         }
-
-        /// <summary>
-        /// Returns an object that represents this text, and that can be serialized using
-        /// the <c>XmlSerializer</c> class.
-        /// </summary>
-        /// <returns>The serializable version of this text</returns>
-        //internal override TextData GetSerializableText()
-        //{
-        //    RowTextData t = new RowTextData();
-        //    SetSerializableText(t);
-        //    t.Table = (uint)m_Row.Table.Id;
-        //    t.Template = (uint)m_Template.Id;
-        //    return t;
-        //}
     }
 }
