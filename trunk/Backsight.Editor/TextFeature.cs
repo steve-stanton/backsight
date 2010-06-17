@@ -25,7 +25,7 @@ using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
-    class TextFeature : Feature
+    abstract class TextFeature : Feature
     {
         #region Static
 
@@ -87,41 +87,6 @@ namespace Backsight.Editor
                 m_PolygonPosition = new PointGeometry(t.PolygonX, t.PolygonY);
             else
                 m_PolygonPosition = null;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, MiscTextData t)
-            : this(op, (TextData)t)
-        {
-            m_Geom = new MiscTextGeometry(this, t);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, KeyTextData t)
-            : this(op, (TextData)t)
-        {
-            m_Geom = new KeyTextGeometry(this, t);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal TextFeature(Operation op, RowTextData t)
-            : this(op, (TextData)t)
-        {
-            // Rather than creating an instance of RowTextGeometry, create a placeholder
-            // that can be replaced after attributes have been loaded from the database
-            m_Geom = new RowTextContent(this, t);
         }
 
         /// <summary>

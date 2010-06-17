@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
@@ -371,7 +372,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new TextFeature(op, this);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            RowTextFeature f = new RowTextFeature(e, op, null);
+            f.TextGeometry = new RowTextContent(f, this);
+            return f;
         }
     }
 
@@ -397,7 +401,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new TextFeature(op, this);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            KeyTextFeature f = new KeyTextFeature(e, op, null);
+            f.TextGeometry = new KeyTextGeometry(f, this);
+            return f;
         }
     }
 
@@ -440,7 +447,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new TextFeature(op, this);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            MiscTextFeature f = new MiscTextFeature(e, op, null);
+            f.TextGeometry = new MiscTextGeometry(f, this);
+            return f;
         }
     }
 

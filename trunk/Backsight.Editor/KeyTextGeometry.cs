@@ -43,7 +43,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that makes use of this geometry</param>
         /// <param name="t">The serialized version of the feature</param>
-        internal KeyTextGeometry(TextFeature f, KeyTextData t)
+        internal KeyTextGeometry(KeyTextFeature f, KeyTextData t)
             : base(f, t)
         {
             m_Feature = f;
