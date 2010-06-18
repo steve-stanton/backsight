@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -42,6 +43,11 @@ namespace Backsight.Editor
             Debug.Assert(data.Length>2);
             Debug.Assert(start.Geometry.IsCoincident(data[0]));
             Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
+        }
+
+        internal MultiSegmentLineFeature(Operation creator, MultiSegmentData t)
+            : base(creator, t)
+        {
         }
     }
 }

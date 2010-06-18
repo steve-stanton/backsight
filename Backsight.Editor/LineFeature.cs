@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A line feature.
     /// </summary>
-    class LineFeature : Feature, IFeatureDependent, IIntersectable
+    abstract class LineFeature : Feature, IFeatureDependent, IIntersectable
     {
         #region Class data
 
@@ -57,20 +57,6 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Constructor for use during deserialization, for creating a line consisting of
-        /// a simple line segment. This version does not define the position for the new line - the
-        /// editing operation must subsequently calculate that.
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="start">The point at the start of the line</param>
-        /// <param name="end">The point at the end of the line</param>
-        /// <param name="t">The serialized version of the information describing this feature</param>
-        internal LineFeature(Operation op, PointFeature start, PointFeature end, FeatureData t)
-            : this(op, start, end, new SegmentGeometry(start, end), t)
-        {
-        }
 
         /// <summary>
         /// Constructor for use during deserialization.
@@ -162,7 +148,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, SegmentData t)
+        protected LineFeature(Operation op, SegmentData t)
             : this(op, (LineData)t)
         {
             m_Geom = new SegmentGeometry(m_From, m_To);
@@ -173,7 +159,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, MultiSegmentData t)
+        protected LineFeature(Operation op, MultiSegmentData t)
             : this(op, (LineData)t)
         {
             PointGeometryData[] pts = t.Point;
@@ -192,7 +178,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal LineFeature(Operation op, SectionData t)
+        protected LineFeature(Operation op, SectionData t)
             : this(op, (LineData)t)
         {
             LineFeature baseLine = op.MapModel.Find<LineFeature>(t.Base);
@@ -207,7 +193,7 @@ namespace Backsight.Editor
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
         /// this constructor should always remain private.</note>
-        internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
+        protected LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
             : base(e, creator)
         {
             if (g==null)
@@ -231,10 +217,10 @@ namespace Backsight.Editor
         /// <param name="creator">The operation that created the feature (not null)</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
-        internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end)
-            : this(e, creator, start, end, new SegmentGeometry(start, end))
-        {
-        }
+        //internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end)
+        //    : this(e, creator, start, end, new SegmentGeometry(start, end))
+        //{
+        //}
 
         //internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, IPointGeometry[] data)
         //    : this(e, creator, start, end, new MultiSegmentGeometry(start, end, data))

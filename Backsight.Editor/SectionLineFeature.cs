@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -25,6 +26,11 @@ namespace Backsight.Editor
         internal SectionLineFeature(Operation creator, SectionGeometry section)
             : base(section.BaseLine.EntityType, creator, (PointFeature)section.Start,
                     (PointFeature)section.End, section)
+        {
+        }
+
+        internal SectionLineFeature(Operation creator, SectionData t)
+            : base(creator, t)
         {
         }
 

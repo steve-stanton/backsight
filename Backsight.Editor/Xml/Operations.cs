@@ -340,10 +340,10 @@ namespace Backsight.Editor.Xml
             if (this.DirLine == null)
                 op.CreatedDirectionLine = null;
             else
-                op.CreatedDirectionLine = new LineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
+                op.CreatedDirectionLine = new SegmentLineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
 
             if (this.DistLine != null)
-                op.CreatedDistanceLine = new LineFeature(op, op.DistanceFromPoint, op.IntersectionPoint, this.DistLine);
+                op.CreatedDistanceLine = new SegmentLineFeature(op, op.DistanceFromPoint, op.IntersectionPoint, this.DistLine);
 
             return op;
         }
@@ -394,7 +394,7 @@ namespace Backsight.Editor.Xml
             if (this.DirLine == null)
                 op.CreatedDirectionLine = null;
             else
-                op.CreatedDirectionLine = new LineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
+                op.CreatedDirectionLine = new SegmentLineFeature(op, dir.From, op.IntersectionPoint, this.DirLine);
 
             LineFeature lineA, lineB;
             op.IsSplit = op.MakeSections(line, this.SplitBefore, op.IntersectionPoint, this.SplitAfter,
@@ -448,12 +448,12 @@ namespace Backsight.Editor.Xml
             if (this.Line1 == null)
                 op.CreatedLine1 = null;
             else
-                op.CreatedLine1 = new LineFeature(op, dir1.From, op.IntersectionPoint, this.Line1);
+                op.CreatedLine1 = new SegmentLineFeature(op, dir1.From, op.IntersectionPoint, this.Line1);
 
             if (this.Line2 == null)
                 op.CreatedLine2 = null;
             else
-                op.CreatedLine2 = new LineFeature(op, dir2.From, op.IntersectionPoint, this.Line2);
+                op.CreatedLine2 = new SegmentLineFeature(op, dir2.From, op.IntersectionPoint, this.Line2);
 
             return op;
         }
@@ -504,12 +504,12 @@ namespace Backsight.Editor.Xml
             if (this.Line1 == null)
                 op.CreatedLine1 = null;
             else
-                op.CreatedLine1 = new LineFeature(op, from1, op.IntersectionPoint, this.Line1);
+                op.CreatedLine1 = new SegmentLineFeature(op, from1, op.IntersectionPoint, this.Line1);
 
             if (this.Line2 == null)
                 op.CreatedLine2 = null;
             else
-                op.CreatedLine2 = new LineFeature(op, from2, op.IntersectionPoint, this.Line2);
+                op.CreatedLine2 = new SegmentLineFeature(op, from2, op.IntersectionPoint, this.Line2);
 
             return op;
         }
@@ -622,7 +622,7 @@ namespace Backsight.Editor.Xml
                     op.NewLine = new ArcFeature(op, arc.Circle, p, op.NewPoint, isClockwise, this.NewLine);
                 }
                 else
-                    op.NewLine = new LineFeature(op, p, op.NewPoint, this.NewLine);
+                    op.NewLine = new SegmentLineFeature(op, p, op.NewPoint, this.NewLine);
             }
 
             return op;
@@ -1005,7 +1005,7 @@ namespace Backsight.Editor.Xml
         internal NewSegmentData(NewSegmentOperation op)
             : base(op)
         {
-            this.Line = new SegmentData(op.Line);
+            this.Line = new SegmentData((SegmentLineFeature)op.Line);
         }
 
         /// <summary>
@@ -1097,7 +1097,7 @@ namespace Backsight.Editor.Xml
             }
             else
             {
-                op.ParallelLine = new LineFeature(op, from, to, this.NewLine);
+                op.ParallelLine = new SegmentLineFeature(op, from, to, this.NewLine);
             }
 
             return op;
@@ -1169,7 +1169,7 @@ namespace Backsight.Editor.Xml
             if (op.DeactivatedLabel != null)
                 this.DeactivatedLabel = op.DeactivatedLabel.DataId;
 
-            LineFeature[] newLines = op.NewLines;
+            SegmentLineFeature[] newLines = op.NewLines;
             SegmentData[] data = new SegmentData[newLines.Length];
             for (int i = 0; i < newLines.Length; i++)
             {
@@ -1198,10 +1198,10 @@ namespace Backsight.Editor.Xml
 
             // Pick up the line segments that were created
 
-            LineFeature[] newLines = new LineFeature[this.Line.Length];
+            SegmentLineFeature[] newLines = new SegmentLineFeature[this.Line.Length];
 
             for (int i = 0; i < this.Line.Length; i++)
-                newLines[i] = new LineFeature(op, this.Line[i]);
+                newLines[i] = new SegmentLineFeature(op, this.Line[i]);
 
             op.NewLines = newLines;
             return op;
@@ -1243,7 +1243,7 @@ namespace Backsight.Editor.Xml
             op.Point = new DirectPointFeature(op, this.To);
 
             if (this.Line != null)
-                op.Line = new LineFeature(op, dir.From, op.Point, this.Line);
+                op.Line = new SegmentLineFeature(op, dir.From, op.Point, this.Line);
 
             return op;
         }

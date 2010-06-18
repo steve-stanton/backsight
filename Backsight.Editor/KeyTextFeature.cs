@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -27,6 +28,12 @@ namespace Backsight.Editor
         internal KeyTextFeature(IEntity ent, Operation creator, KeyTextGeometry text)
             : base(ent, creator, text)
         {
+        }
+
+        internal KeyTextFeature(Operation creator, KeyTextData t)
+            : base(creator, t)
+        {
+            base.TextGeometry = new KeyTextGeometry(this, t);
         }
     }
 }

@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -28,6 +29,12 @@ namespace Backsight.Editor
         internal MiscTextFeature(IEntity ent, Operation creator, MiscTextGeometry text)
             : base(ent, creator, text)
         {
+        }
+
+        internal MiscTextFeature(Operation creator, MiscTextData t)
+            : base(creator, t)
+        {
+            base.TextGeometry = new MiscTextGeometry(this, t);
         }
     }
 }

@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -27,6 +28,12 @@ namespace Backsight.Editor
         internal RowTextFeature(IEntity ent, Operation creator, RowTextGeometry text)
             : base(ent, creator, text)
         {
+        }
+
+        internal RowTextFeature(Operation creator, RowTextData t)
+            : base(creator, t)
+        {
+            base.TextGeometry = new RowTextContent(this, t);
         }
     }
 }

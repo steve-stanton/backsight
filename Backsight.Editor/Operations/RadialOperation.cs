@@ -56,7 +56,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line (if any) that was added to correspond to the sideshot arm.
         /// </summary>
-        private LineFeature m_Line;
+        private SegmentLineFeature m_Line;
 
         #endregion
 
@@ -118,7 +118,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line (if any) that was added to correspond to the sideshot arm.
         /// </summary>
-        internal LineFeature Line
+        internal SegmentLineFeature Line
         {
             get { return m_Line; }
             set { m_Line = value; }

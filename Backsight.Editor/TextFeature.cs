@@ -78,7 +78,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        private TextFeature(Operation op, TextData t)
+        protected TextFeature(Operation op, TextData t)
             : base(op, t)
         {
             SetTopology(t.Topological);
