@@ -412,7 +412,7 @@ namespace Backsight.Editor
             if (result==null)
             {
                 IEntity e = creator.MapModel.DefaultPointType;
-                result = new PointFeature(p, e, creator);
+                result = new DirectPointFeature(e, creator, p);
                 m_Index.Add(result);
                 m_Result.Add(result);
             }
@@ -559,7 +559,7 @@ namespace Backsight.Editor
             if (g.Easting.Microns==0 && g.Northing.Microns==0)
                 return null;
 
-            PointFeature p = new PointFeature(g, what, creator);
+            PointFeature p = new DirectPointFeature(what, creator, g);
             /*
 
 	static LOGICAL warned=FALSE;	// debug
