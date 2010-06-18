@@ -227,7 +227,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new LineFeature(op, this);
+            return new MultiSegmentLineFeature(op, this);
         }
     }
 
@@ -296,7 +296,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new LineFeature(op, this);
+            return new SectionLineFeature(op, this);
         }
     }
 
@@ -309,7 +309,7 @@ namespace Backsight.Editor.Xml
         {
         }
 
-        internal SegmentData(LineFeature line)
+        internal SegmentData(SegmentLineFeature line)
             : base(line)
         {
         }
@@ -321,7 +321,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new LineFeature(op, this);
+            return new SegmentLineFeature(op, this);
         }
     }
 
@@ -376,10 +376,11 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            RowTextFeature f = new RowTextFeature(e, op, null);
-            f.TextGeometry = new RowTextContent(f, this);
-            return f;
+            return new RowTextFeature(op, this);
+            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            //RowTextFeature f = new RowTextFeature(e, op, null);
+            //f.TextGeometry = new RowTextContent(f, this);
+            //return f;
         }
     }
 
@@ -405,10 +406,11 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            KeyTextFeature f = new KeyTextFeature(e, op, null);
-            f.TextGeometry = new KeyTextGeometry(f, this);
-            return f;
+            return new KeyTextFeature(op, this);
+            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            //KeyTextFeature f = new KeyTextFeature(e, op, null);
+            //f.TextGeometry = new KeyTextGeometry(f, this);
+            //return f;
         }
     }
 
@@ -451,10 +453,11 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            MiscTextFeature f = new MiscTextFeature(e, op, null);
-            f.TextGeometry = new MiscTextGeometry(f, this);
-            return f;
+            return new MiscTextFeature(op, this);
+            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            //MiscTextFeature f = new MiscTextFeature(e, op, null);
+            //f.TextGeometry = new MiscTextGeometry(f, this);
+            //return f;
         }
     }
 

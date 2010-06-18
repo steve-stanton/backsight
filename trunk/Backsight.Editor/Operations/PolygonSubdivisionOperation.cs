@@ -36,7 +36,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The lines that were created.
         /// </summary>
-        LineFeature[] m_Lines;
+        SegmentLineFeature[] m_Lines;
  
         #endregion
 
@@ -94,7 +94,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The lines that were created.
         /// </summary>
-        internal LineFeature[] NewLines
+        internal SegmentLineFeature[] NewLines
         {
             get { return m_Lines; }
             set { m_Lines = value; }
@@ -115,7 +115,7 @@ namespace Backsight.Editor.Operations
             base.OnRollback();
 
             // Mark each created line for undo
-            foreach (LineFeature line in m_Lines)
+            foreach (SegmentLineFeature line in m_Lines)
                 Rollback(line);
 
             // If the polygon originally had a label, restore it.
@@ -167,7 +167,7 @@ namespace Backsight.Editor.Operations
             IEntity ent = map.DefaultLineType;
 
             // Allocate array to point to the lines we will be creating.
-            m_Lines = new LineFeature[numLine];
+            m_Lines = new SegmentLineFeature[numLine];
 
             // Add lines for each link
             PointFeature start, end;

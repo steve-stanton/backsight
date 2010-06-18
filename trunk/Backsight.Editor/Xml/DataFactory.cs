@@ -115,7 +115,7 @@ namespace Backsight.Editor.Xml
             // Features
             AddMapping("ArcFeature", "ArcData");
             AddMapping("KeyTextFeature", "KeyTextData");
-            AddMapping("LineFeature", "SegmentData");
+            AddMapping("SegmentLineFeature", "SegmentData");
             AddMapping("MiscTextFeature", "MiscTextData");
             AddMapping("MultiSegmentLineFeature", "MultiSegmentData");
             AddMapping("DirectPointFeature", "PointData");
