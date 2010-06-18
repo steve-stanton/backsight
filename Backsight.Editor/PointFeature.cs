@@ -29,7 +29,7 @@ namespace Backsight.Editor
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
     /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
-    class PointFeature : Feature, IPoint, ITerminal
+    abstract class PointFeature : Feature, IPoint, ITerminal
     {
         #region Class data
 
@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of the information describing this feature</param>
-        internal PointFeature(Operation op, FeatureData t)
+        protected PointFeature(Operation op, FeatureData t)
             : base(op, t)
         {
             m_Geom = null;
@@ -63,7 +63,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(Operation op, PointData t)
+        protected PointFeature(Operation op, PointData t)
             : base(op, t)
         {
             PointGeometry pg = new PointGeometry(t.X, t.Y);
@@ -76,7 +76,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        internal PointFeature(Operation op, SharedPointData t)
+        protected PointFeature(Operation op, SharedPointData t)
             : base(op, t)
         {
             PointFeature firstPoint = op.MapModel.Find<PointFeature>(t.FirstPoint);
@@ -88,11 +88,11 @@ namespace Backsight.Editor
         /// Creates a new <c>PointFeature</c> with geometry that isn't shared
         /// with any other point.
         /// </summary>
-        /// <param name="g">The geometry for the point (may be null, although this is only really
-        /// expected during deserialization)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        internal PointFeature(PointGeometry g, IEntity e, Operation creator)
+        /// <param name="g">The geometry for the point (may be null, although this is only really
+        /// expected during deserialization)</param>
+        protected PointFeature(IEntity e, Operation creator, PointGeometry g)
             : base(e, creator)
         {
             if (g == null)

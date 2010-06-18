@@ -256,7 +256,11 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new PointFeature(op, this);
+            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            //PointGeometry pg = new PointGeometry(this.X, this.Y);
+            //return new DirectPointFeature(e, op, pg);
+
+            return new DirectPointFeature(op, this);
         }
 
         /// <summary>
@@ -266,7 +270,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The point that was loaded</returns>
         internal PointFeature LoadPoint(Operation op)
         {
-            return new PointFeature(op, this);
+            return new DirectPointFeature(op, this);
         }
     }
 
@@ -344,7 +348,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new PointFeature(op, this);
+            return new SharedPointFeature(op, this);
         }
     }
 

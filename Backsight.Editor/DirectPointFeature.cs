@@ -20,41 +20,36 @@ using Backsight.Editor.Xml;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// A point that shares the same location as another point.
+    /// A point that has an explicit XY(Z) position.
     /// </summary>
-    class SharedPointFeature : PointFeature
+    class DirectPointFeature : PointFeature
     {
-        #region Constructors
-
         /// <summary>
-        /// Creates a new <c>SharedPointFeature</c> that is coincident with an existing
-        /// point. The new point will share the geometry of the existing point.
+        /// Creates a new <c>DirectPointFeature</c>
         /// </summary>
-        /// <param name="f">The point feature that the new point coincides with (not null)</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        internal SharedPointFeature(PointFeature f, IEntity e, Operation creator)
-            : base(f, e, creator)
+        /// <param name="g">The geometry for the point (may be null, although this is only really
+        /// expected during deserialization)</param>
+        internal DirectPointFeature(IEntity e, Operation creator, PointGeometry g)
+            : base(e, creator, g)
         {
         }
 
-        internal SharedPointFeature(Operation creator, SharedPointData data)
-            : base(creator, data)
+        internal DirectPointFeature(Operation creator, PointData p)
+            : base(creator, p)
         {
         }
-
-        #endregion
 
         /// <summary>
-        /// The point that defines the position that is shared by this point.
+        /// Initializes a new instance of the <see cref="DirectPointFeature"/> class,
+        /// without any defined position.
         /// </summary>
-        internal PointFeature FirstPoint
+        /// <param name="creator">The operation creating the point.</param>
+        /// <param name="f">Information about the point.</param>
+        internal DirectPointFeature(Operation creator, FeatureData f)
+            : base(creator, f)
         {
-            get
-            {
-                Node n = base.Node;
-                return (n == null ? null : n.FirstPoint);
-            }
         }
     }
 }
