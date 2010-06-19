@@ -99,34 +99,65 @@ namespace Backsight.Editor.Xml
             throw new NotImplementedException("LoadFeature not implemented by: " + GetType().Name);
         }
 
-        internal DirectPointFeature CreateDirectPointFeature(Operation op, PointGeometry pg)
+        /// <summary>
+        /// Creates an instance of <see cref="DirectPointFeature"/> using the information stored
+        /// in this data instance.
+        /// </summary>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="g">The geometry for the point (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <returns></returns>
+        internal DirectPointFeature CreateDirectPointFeature(Operation creator, PointGeometry g)
         {
-            if (op == null || pg == null)
-                throw new ArgumentNullException();
-
-            Session session = op.Session;
-
-            uint sessionId, creatorSequence;
-            InternalIdValue.Parse(this.Id, out sessionId, out creatorSequence);
-            Debug.Assert(sessionId == session.Id);
-
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
             IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            CadastralMapModel mapModel = session.MapModel;
-            FeatureId fid = GetFeatureId(mapModel);
-
-            DirectPointFeature result = new DirectPointFeature(e, op, pg);
-            result.CreatorSequence = creatorSequence;
-
-            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
-            if (fid != null)
-                fid.Add(result);
-
-            // Remember this feature as part of the model
-            // ...do it here??
-            mapModel.AddFeature(result);
-
-            return result;
+            return new DirectPointFeature(iid, fid, e, creator, g);
         }
+
+        /// <summary>
+        /// Creates an instance of <see cref="SharedPointFeature"/> using the information stored
+        /// in this data instance.
+        /// </summary>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="g">The geometry for the point (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <returns></returns>
+        internal SharedPointFeature CreateSharedPointFeature(Operation creator, PointFeature firstPoint)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return new SharedPointFeature(iid, fid, e, creator, firstPoint);
+        }
+
+        internal ArcFeature CreateArcFeature(Operation creator, PointFeature start, PointFeature end,
+                                                ArcGeometry g, bool isTopological)
+        {
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return CreateArcFeature(e, creator, start, end, g, isTopological);
+        }
+
+        internal ArcFeature CreateArcFeature(Operation creator, PointFeature start, PointFeature end,
+                                                ArcGeometry g)
+        {
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return CreateArcFeature(e, creator, start, end, g, e.IsPolygonBoundaryValid);
+        }
+
+        ArcFeature CreateArcFeature(IEntity e, Operation creator, PointFeature start, PointFeature end,
+                                                ArcGeometry g, bool isTopological)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            return new ArcFeature(iid, fid, e, creator, start, end, g, isTopological);
+        }
+
+        //internal MultiSegmentLineFeature Create
 
         /// <summary>
         /// Deserializes the user-perceived ID of a feature
@@ -192,7 +223,22 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new ArcFeature(op, this);
+            return CreateArcFeature(op);
+        }
+
+        internal ArcFeature CreateArcFeature(Operation op)
+        {
+            if (this.Center==null)
+            {
+                ArcFeature firstArc = op.MapModel.Find<ArcFeature>(this.FirstArc);
+                Debug.Assert(firstArc != null);
+                return base.CreateArcFeature(op, this.Clockwise, firstArc.Circle);
+            }
+            else
+            {
+                PointFeature center = op.MapModel.Find<PointFeature>(this.Center);
+                return base.CreateArcFeature(op, this.Clockwise, center);
+            }
         }
 
         internal string FirstArc
@@ -268,7 +314,20 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new MultiSegmentLineFeature(op, this);
+            return CreateMultiSegmentLineFeature(op);
+        }
+
+        internal MultiSegmentLineFeature CreateMultiSegmentLineFeature(Operation op)
+        {
+            PointGeometryData[] pts = this.Point;
+            IPointGeometry[] pgs = new IPointGeometry[pts.Length];
+            for (int i=0; i<pts.Length; i++)
+            {
+                PointGeometryData pt = pts[i];
+                pgs[i] = new PointGeometry(pt.X, pt.Y);
+            }
+
+            return base.CreateMultiSegmentLineFeature(op, pgs);
         }
     }
 
@@ -297,27 +356,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            //PointGeometry pg = new PointGeometry(this.X, this.Y);
-            //return new DirectPointFeature(e, op, pg);
-
-            return new DirectPointFeature(op, this);
+            return CreateDirectPointFeature(op);
         }
 
         /// <summary>
-        /// Loads this point as part of an editing operation
+        /// Defines a new spatial feature based on this data instance.
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <returns>The point that was loaded</returns>
-        internal PointFeature LoadPoint(Operation op)
-        {
-            return new DirectPointFeature(op, this);
-        }
-
-        /// <summary>
-        /// Defines a new spatial feature with this data instance.
-        /// </summary>
-        /// <typeparam name="T">The type of feature to create</typeparam>
         /// <param name="op">The editing operation the feature is part of</param>
         /// <returns>The created feature</returns>
         internal DirectPointFeature CreateDirectPointFeature(Operation op)
@@ -401,7 +445,18 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new SharedPointFeature(op, this);
+            return CreateSharedPointFeature(op);
+        }
+
+        /// <summary>
+        /// Defines a new spatial feature based on this data instance.
+        /// </summary>
+        /// <param name="op">The editing operation the feature is part of</param>
+        /// <returns>The created feature</returns>
+        internal SharedPointFeature CreateSharedPointFeature(Operation op)
+        {
+            PointFeature firstPoint = op.MapModel.Find<PointFeature>(this.FirstPoint);
+            return base.CreateSharedPointFeature(op, firstPoint);
         }
     }
 
@@ -480,6 +535,56 @@ namespace Backsight.Editor.Xml
             this.From = line.StartPoint.DataId;
             this.To = line.EndPoint.DataId;
             this.Topological = line.IsTopological;
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ArcFeature"/> that coincides with a previously created circle.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="isClockwise">Is the arc directed clockwise around the circle?</param>
+        /// <param name="circle">The circle that the arc coincides with</param>
+        /// <returns>The created arc</returns>
+        internal ArcFeature CreateArcFeature(Operation op, bool isClockwise, Circle circle)
+        {
+            PointFeature from = op.MapModel.Find<PointFeature>(this.From);
+            PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+            ArcGeometry geom = new ArcGeometry(circle, from, to, isClockwise);
+            return base.CreateArcFeature(op, from, to, geom, this.Topological);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ArcFeature"/> on a new circle.
+        /// </summary>
+        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="isClockwise">Is the arc directed clockwise around the circle?</param>
+        /// <param name="center">The point at the center of the circle</param>
+        /// <returns>The created arc</returns>
+        internal ArcFeature CreateArcFeature(Operation op, bool isClockwise, PointFeature center)
+        {
+            // The arc is the first arc attached to the circle. However, we may be
+            // unable to calculate the radius (whereas the geometry will be available
+            // if the data comes from an import, it will be undefined if the geometry
+            // is calculated).
+
+            PointFeature from = op.MapModel.Find<PointFeature>(this.From);
+            PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+
+            double radius = 0.0;
+            if (center.PointGeometry != null && from.PointGeometry != null)
+                radius = Geom.Distance(center.PointGeometry, from.PointGeometry);
+
+            Circle c = new Circle(center, radius);
+            center.AddReference(c);
+            ArcGeometry geom = new ArcGeometry(c, from, to, isClockwise);
+            return base.CreateArcFeature(op, from, to, geom, this.Topological);
+        }
+
+        internal MultiSegmentLineFeature CreateMultiSegmentLineFeature(Operation op, IPointGeometry[] pgs)
+        {
+            PointFeature from = op.MapModel.Find<PointFeature>(this.From);
+            PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+            MultiSegmentGeometry geom = new MultiSegmentGeometry(from, to, pgs);
+            return base.CreateMultiSegmentFeature();
         }
     }
 

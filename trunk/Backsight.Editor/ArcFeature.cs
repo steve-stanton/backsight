@@ -19,7 +19,6 @@ using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -32,38 +31,6 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal ArcFeature(Operation op, ArcData t)
-            : base(op, t)
-        {
-            // Associate this line with the circle (this is ordinarily done
-            // by the ArcFeature.AddRefernces override that is called by the
-            // LineFeature(LineData) constructor - however, in this context,
-            // the Circle doesn't get defined until a bit later.
-
-            Circle.AddArc(this);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. This version does not define the position for
-        /// the new line - the editing operation must subsequently calculate that.
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="c">The circle the arc coincides with</param>
-        /// <param name="bc">The point at the start of the arc</param>
-        /// <param name="ec">The point at the end of the arc</param>
-        /// <param name="isClockwise">True if the arc is directed clockwise from start to end</param>
-        /// <param name="t">The serialized version of the information describing this feature</param>
-        internal ArcFeature(Operation op, Circle c, PointFeature bc, PointFeature ec, bool isClockwise, FeatureData t)
-            : base(op, bc, ec, new ArcGeometry(c, bc, ec, isClockwise), t)
-        {
-            // Confirm that there is no need to call Circle.AddArc in this context
-        }
 
         /// <summary>
         /// Creates a new <c>ArcFeature</c>
@@ -79,6 +46,27 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArcFeature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="g">The geometry for the line (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        internal ArcFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
+                            PointFeature bc, PointFeature ec, ArcGeometry g, bool isTopological)
+            : base(iid, fid, ent, creator, bc, ec, g, isTopological)
+        {
+        }
+
         #endregion
 
         /// <summary>
@@ -91,8 +79,12 @@ namespace Backsight.Editor
             // The circle may not be known during deserialization. This is taken
             // care of by the appropriate LineFeature constructor
             Circle c = this.Circle;
-            if (c!=null)
-                c.AddArc(this);
+
+            // I think the above is no longer the case
+            //if (c!=null)
+            //    c.AddArc(this);
+            Debug.Assert(c != null);
+            c.AddArc(this);
 
             base.AddReferences();
         }

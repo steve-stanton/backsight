@@ -116,38 +116,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <param name="t">The serialized version of this feature</param>
-        protected LineFeature(Operation op, ArcData t)
-            : this(op, (LineData)t)
-        {
-            Circle c = null;
-
-            if (t.Center==null)
-            {
-                ArcFeature firstArc = op.MapModel.Find<ArcFeature>(t.FirstArc);
-                c = firstArc.Circle;
-            }
-            else
-            {
-                // The arc is the first arc attached to the circle. However, we may be
-                // unable to calculate the radius (depending on the edit involved, the
-                // geometry may still need to be calculated)
-                PointFeature center = op.MapModel.Find<PointFeature>(t.Center);
-                double radius = 0.0;
-                if (center.PointGeometry != null && StartPoint.PointGeometry != null)
-                    radius = Geom.Distance(center.PointGeometry, StartPoint.PointGeometry);
-
-                c = new Circle(center, radius);
-                center.AddReference(c);
-            }
-
-            m_Geom = new ArcGeometry(c, m_From, m_To, t.Clockwise);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
         protected LineFeature(Operation op, SegmentData t)
             : this(op, (LineData)t)
         {
@@ -211,29 +179,65 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a <c>LineFeature</c> consisting of a simple line segment.
+        /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
+        /// as part of the map model. This uses the supplied entity type to determine whether
+        /// the line should be treated as a polygon boundary or not.
         /// </summary>
-        /// <param name="e">The entity type for the feature.</param>
-        /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="start">The point at the start of the line</param>
-        /// <param name="end">The point at the end of the line</param>
-        //internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end)
-        //    : this(e, creator, start, end, new SegmentGeometry(start, end))
-        //{
-        //}
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="start">The point at the start of the line (not null)</param>
+        /// <param name="end">The point at the end of the line (not null)</param>
+        /// <param name="g">The geometry for the line (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> or <paramref name="start"/> or <paramref name="end"/> is null.
+        /// </exception>
+        protected LineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
+                                PointFeature start, PointFeature end, LineGeometry g)
+            : this(iid, fid, ent, creator, start, end, g, ent.IsPolygonBoundaryValid)
+        {
+        }
 
-        //internal LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, IPointGeometry[] data)
-        //    : this(e, creator, start, end, new MultiSegmentGeometry(start, end, data))
-        //{
-        //    Debug.Assert(data.Length>2);
-        //    Debug.Assert(start.Geometry.IsCoincident(data[0]));
-        //    Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
-        //}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="start">The point at the start of the line (not null)</param>
+        /// <param name="end">The point at the end of the line (not null)</param>
+        /// <param name="g">The geometry for the line (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <param name="isTopological">Does the line form part of a polygon boundary?</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> or <paramref name="start"/> or <paramref name="end"/> is null.
+        /// </exception>
+        protected LineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
+                                PointFeature start, PointFeature end, LineGeometry g, bool isTopological)
+            : base(iid, fid, ent, creator)
+        {
+            if (ent==null || creator==null || start==null || end==null)
+                throw new ArgumentNullException();
 
-        //protected LineFeature(IEntity e, Operation creator, Circle c, PointFeature bc, PointFeature ec, bool isClockwise)
-        //    : this(e, creator, bc, ec, new ArcGeometry(c, bc, ec, isClockwise))
-        //{
-        //}
+            m_From = start;
+            m_To = end;
+            m_Geom = g;
+            m_Topology = null;
+            AddReferences();
+
+            if (isTopological)
+                SetTopology(true);
+        }
 
         #endregion
 

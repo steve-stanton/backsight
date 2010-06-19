@@ -13,9 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -27,28 +25,32 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>DirectPointFeature</c>
         /// </summary>
-        /// <param name="e">The entity type for the feature (not null)</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
         /// <param name="g">The geometry for the point (may be null, although this is only really
         /// expected during deserialization)</param>
-        internal DirectPointFeature(IEntity e, Operation creator, PointGeometry g)
-            : base(e, creator, g)
-        {
-        }
-
-        internal DirectPointFeature(Operation creator, PointData p)
-            : base(creator, p)
+        internal DirectPointFeature(IEntity ent, Operation creator, PointGeometry g)
+            : base(ent, creator, g)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectPointFeature"/> class,
-        /// without any defined position.
+        /// Initializes a new instance of the <see cref="DirectPointFeature"/> class, and records it
+        /// as part of the map model.
         /// </summary>
-        /// <param name="creator">The operation creating the point.</param>
-        /// <param name="f">Information about the point.</param>
-        internal DirectPointFeature(Operation creator, FeatureData f)
-            : base(creator, f)
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <param name="g">The geometry for the point (could be null, although this is only really
+        /// expected during deserialization)</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        internal DirectPointFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator, PointGeometry g)
+            : base(iid, fid, ent, creator, g)
         {
         }
     }
