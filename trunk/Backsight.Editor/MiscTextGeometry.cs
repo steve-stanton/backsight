@@ -17,7 +17,6 @@ using System;
 
 using Backsight.Environment;
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -48,17 +47,6 @@ namespace Backsight.Editor
             : base(topLeft, font, height, width, rotation)
         {
             m_Text = text;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="f">The feature that makes use of this geometry</param>
-        /// <param name="t">The serialized version of the feature</param>
-        internal MiscTextGeometry(MiscTextFeature f, MiscTextData t)
-            : base(f, t)
-        {
-            m_Text = t.Text;
         }
 
         #endregion

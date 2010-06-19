@@ -157,7 +157,54 @@ namespace Backsight.Editor.Xml
             return new ArcFeature(iid, fid, e, creator, start, end, g, isTopological);
         }
 
-        //internal MultiSegmentLineFeature Create
+        internal MultiSegmentLineFeature CreateMultiSegmentLineFeature(Operation creator,
+            PointFeature start, PointFeature end, MultiSegmentGeometry g, bool isTopological)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return new MultiSegmentLineFeature(iid, fid, e, creator, start, end, g, isTopological);
+        }
+
+        internal SegmentLineFeature CreateSegmentLineFeature(Operation creator,
+            PointFeature start, PointFeature end, bool isTopological)
+        {
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return CreateSegmentLineFeature(e, creator, start, end, isTopological);
+        }
+
+        internal SegmentLineFeature CreateSegmentLineFeature(Operation creator,
+            PointFeature start, PointFeature end)
+        {
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return CreateSegmentLineFeature(e, creator, start, end, e.IsPolygonBoundaryValid);
+        }
+
+        SegmentLineFeature CreateSegmentLineFeature(IEntity e, Operation creator,
+            PointFeature start, PointFeature end, bool isTopological)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            return new SegmentLineFeature(iid, fid, e, creator, start, end, isTopological);
+        }
+
+        internal SectionLineFeature CreateSectionLineFeature(Operation creator,
+            LineFeature baseLine, PointFeature start, PointFeature end, bool isTopological)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return new SectionLineFeature(iid, fid, e, creator, baseLine, start, end, isTopological);
+        }
+
+        internal MiscTextFeature CreateMiscTextFeature(Operation creator, MiscTextGeometry geom,
+            bool isTopological, PointGeometry polPosition)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return new MiscTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
+        }
 
         /// <summary>
         /// Deserializes the user-perceived ID of a feature
@@ -393,7 +440,13 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new SectionLineFeature(op, this);
+            return CreateSectionLineFeature(op);
+        }
+
+        internal SectionLineFeature CreateSectionLineFeature(Operation op)
+        {
+            LineFeature baseLine = op.MapModel.Find<LineFeature>(this.Base);
+            return base.CreateSectionLineFeature(op, baseLine);
         }
     }
 
@@ -418,7 +471,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new SegmentLineFeature(op, this);
+            return CreateSegmentLineFeature(op);
         }
     }
 
@@ -515,10 +568,6 @@ namespace Backsight.Editor.Xml
         internal override Feature LoadFeature(Operation op)
         {
             return new KeyTextFeature(op, this);
-            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            //KeyTextFeature f = new KeyTextFeature(e, op, null);
-            //f.TextGeometry = new KeyTextGeometry(f, this);
-            //return f;
         }
     }
 
@@ -584,7 +633,21 @@ namespace Backsight.Editor.Xml
             PointFeature from = op.MapModel.Find<PointFeature>(this.From);
             PointFeature to = op.MapModel.Find<PointFeature>(this.To);
             MultiSegmentGeometry geom = new MultiSegmentGeometry(from, to, pgs);
-            return base.CreateMultiSegmentFeature();
+            return base.CreateMultiSegmentLineFeature(op, from, to, geom, this.Topological);
+        }
+
+        internal SegmentLineFeature CreateSegmentLineFeature(Operation op)
+        {
+            PointFeature from = op.MapModel.Find<PointFeature>(this.From);
+            PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+            return base.CreateSegmentLineFeature(op, from, to, this.Topological);
+        }
+
+        internal SectionLineFeature CreateSectionLineFeature(Operation op, LineFeature baseLine)
+        {
+            PointFeature from = op.MapModel.Find<PointFeature>(this.From);
+            PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+            return base.CreateSectionLineFeature(op, baseLine, from, to, this.Topological);
         }
     }
 
@@ -611,11 +674,12 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new MiscTextFeature(op, this);
-            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            //MiscTextFeature f = new MiscTextFeature(e, op, null);
-            //f.TextGeometry = new MiscTextGeometry(f, this);
-            //return f;
+            return CreateMiscTextFeature(op);
+        }
+
+        internal MiscTextFeature CreateMiscTextFeature(Operation op)
+        {
+            return base.CreateMiscTextFeature(op, this.Text);
         }
     }
 
@@ -654,6 +718,21 @@ namespace Backsight.Editor.Xml
 
             // TODO: May want to cover indirect rotations
             this.Rotation = RadianValue.AsString(tg.Rotation.Radians);
+        }
+
+        internal MiscTextFeature CreateMiscTextFeature(Operation op, string text)
+        {
+            IFont font = EnvironmentContainer.FindFontById(this.Font);
+            PointGeometry topLeft = new PointGeometry(this.X, this.Y);
+            double rot = RadianValue.Parse(this.Rotation);
+            MiscTextGeometry geom = new MiscTextGeometry(text, topLeft, font,
+                                            this.Height, this.Width, (float)rot);
+
+            PointGeometry polPosition = null;
+            if (this.PolygonXSpecified && this.PolygonYSpecified)
+                polPosition = new PointGeometry(this.PolygonX, this.PolygonY);
+
+            return base.CreateMiscTextFeature(op, geom, this.Topological, polPosition);
         }
     }
 }
