@@ -129,6 +129,41 @@ namespace Backsight.Editor
             m_CreatorSequence = 0;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Feature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        protected Feature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator)
+        {
+            if (creator==null || ent==null)
+                throw new ArgumentNullException();
+
+            Debug.Assert(iid.SessionId == creator.Session.Id);
+
+            m_Creator = creator;
+            m_CreatorSequence = iid.ItemSequence;
+            m_What = ent;
+            m_References = null;
+            m_Id = fid;
+            m_Flag = 0;
+
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            if (fid != null)
+                fid.Add(this);
+
+            // Remember this feature as part of the model
+            creator.MapModel.AddFeature(this);
+        }
+
         #endregion
 
         /// <summary>
@@ -874,7 +909,6 @@ namespace Backsight.Editor
                     return mapModel.AddNativeId(nativeKey);
                 else
                     return nid;
-                return mapModel.FindNativeId(t.Key);
             }
 
             string key = t.ForeignKey;
