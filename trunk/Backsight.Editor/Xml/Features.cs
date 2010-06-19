@@ -15,6 +15,7 @@
 
 using System;
 using Backsight.Environment;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Xml
 {
@@ -23,7 +24,7 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    public partial class FeatureData
+    partial class FeatureData
     {
         internal FeatureData(Feature f)
             : this(f, true)
@@ -98,24 +99,64 @@ namespace Backsight.Editor.Xml
             throw new NotImplementedException("LoadFeature not implemented by: " + GetType().Name);
         }
 
-        /*
-        internal string ForeignKey
+        internal DirectPointFeature CreateDirectPointFeature(Operation op, PointGeometry pg)
         {
-            get
+            if (op == null || pg == null)
+                throw new ArgumentNullException();
+
+            Session session = op.Session;
+
+            uint sessionId, creatorSequence;
+            InternalIdValue.Parse(this.Id, out sessionId, out creatorSequence);
+            Debug.Assert(sessionId == session.Id);
+
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            CadastralMapModel mapModel = session.MapModel;
+            FeatureId fid = GetFeatureId(mapModel);
+
+            DirectPointFeature result = new DirectPointFeature(e, op, pg);
+            result.CreatorSequence = creatorSequence;
+
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            if (fid != null)
+                fid.Add(result);
+
+            // Remember this feature as part of the model
+            // ...do it here??
+            mapModel.AddFeature(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deserializes the user-perceived ID of a feature
+        /// </summary>
+        /// <param name="mapModel">The model containing this feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        /// <returns>The corresponding ID (null if this feature does not have
+        /// a user-perceived ID).</returns>
+        FeatureId GetFeatureId(CadastralMapModel mapModel)
+        {
+            uint nativeKey = this.Key;
+            if (nativeKey > 0)
             {
-                if (ItemElementName == Item2ChoiceType.)
-                    return Item;
+                NativeId nid = mapModel.FindNativeId(nativeKey);
+                if (nid == null)
+                    return mapModel.AddNativeId(nativeKey);
                 else
-                    return null;
+                    return nid;
             }
 
-            set
+            string key = this.ForeignKey;
+            if (key != null)
             {
-                Item = value;
-                ItemElementName = ItemChoiceType.FirstArc;
+                ForeignId fid = mapModel.FindForeignId(key);
+                if (fid == null)
+                    return mapModel.AddForeignId(key);
             }
+
+            return null;
         }
-        */
     }
 
     /// <summary>
@@ -271,6 +312,18 @@ namespace Backsight.Editor.Xml
         internal PointFeature LoadPoint(Operation op)
         {
             return new DirectPointFeature(op, this);
+        }
+
+        /// <summary>
+        /// Defines a new spatial feature with this data instance.
+        /// </summary>
+        /// <typeparam name="T">The type of feature to create</typeparam>
+        /// <param name="op">The editing operation the feature is part of</param>
+        /// <returns>The created feature</returns>
+        internal DirectPointFeature CreateDirectPointFeature(Operation op)
+        {
+            PointGeometry g = new PointGeometry(this.X, this.Y);
+            return base.CreateDirectPointFeature(op, g);
         }
     }
 
