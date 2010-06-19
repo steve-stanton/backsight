@@ -22,7 +22,6 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -57,101 +56,6 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Constructor for use during deserialization.
-        /// This version does not define the position for the new line - the
-        /// editing operation must subsequently calculate that.
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="start">The point at the start of the line</param>
-        /// <param name="end">The point at the end of the line</param>
-        /// <param name="geom">The basic geometry for the line (with undefined position)</param>
-        /// <param name="t">The serialized version of the information describing this feature</param>
-        protected LineFeature(Operation op, PointFeature start, PointFeature end, LineGeometry geom, FeatureData t)
-            : base(op, t)
-        {
-            m_Geom = geom;
-            m_From = start;
-            m_To = end;
-
-            // Refer the start and end points to this line
-            AddReferences();
-
-            // If we're dealing with a topological line, mark it as "moved" so that
-            // it can be intersected once the model has been loaded
-            if (EntityType.IsPolygonBoundaryValid)
-            {
-                SetTopology(true);
-                IsMoved = true;
-            }
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        private LineFeature(Operation op, LineData t)
-            : base(op, t)
-        {
-            CadastralMapModel mapModel = op.MapModel;
-            m_From = mapModel.Find<PointFeature>(t.From);
-            m_To = mapModel.Find<PointFeature>(t.To);
-
-            // Refer the start and end points to this line
-            AddReferences();
-
-            // If we're dealing with a topological line, mark it as "moved" so that
-            // it can be intersected once the model has been loaded
-            if (t.Topological)
-            {
-                SetTopology(true);
-                IsMoved = true;
-            }
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected LineFeature(Operation op, SegmentData t)
-            : this(op, (LineData)t)
-        {
-            m_Geom = new SegmentGeometry(m_From, m_To);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected LineFeature(Operation op, MultiSegmentData t)
-            : this(op, (LineData)t)
-        {
-            PointGeometryData[] pts = t.Point;
-            IPointGeometry[] pgs = new IPointGeometry[pts.Length];
-            for (int i=0; i<pts.Length; i++)
-            {
-                PointGeometryData pt = pts[i];
-                pgs[i] = new PointGeometry(pt.X, pt.Y);
-            }
-
-            m_Geom = new MultiSegmentGeometry(m_From, m_To, pgs);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected LineFeature(Operation op, SectionData t)
-            : this(op, (LineData)t)
-        {
-            LineFeature baseLine = op.MapModel.Find<LineFeature>(t.Base);
-            m_Geom = new SectionGeometry(baseLine, m_From, m_To);
-        }
 
         /// <summary>
         /// Creates a new <c>LineFeature</c>

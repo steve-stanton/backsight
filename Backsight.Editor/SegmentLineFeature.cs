@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using Backsight.Editor.Xml;
 using Backsight.Environment;
 
 namespace Backsight.Editor
@@ -24,16 +22,6 @@ namespace Backsight.Editor
     /// </summary>
     class SegmentLineFeature : LineFeature
     {
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        internal SegmentLineFeature(Operation op, SegmentData t)
-            : base(op, t)
-        {
-        }
-
         /// <summary>
         /// Creates a <c>LineFeature</c> consisting of a simple line segment.
         /// </summary>
@@ -47,16 +35,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Constructor for use during deserialization, for creating a line consisting of
-        /// a simple line segment. This version does not define the position for the new line - the
-        /// editing operation must subsequently calculate that.
+        /// Initializes a new instance of the <see cref="SegmentLineFeature"/> class, and records it
+        /// as part of the map model.
         /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
+        /// <param name="iid">The internal ID for the feature.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
+        /// this will be modified by cross-referencing it to the newly created feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="creator">The operation creating the feature (not null). Expected to
+        /// refer to an editing session that is consistent with the session ID that is part
+        /// of the feature's internal ID.</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
-        /// <param name="t">The serialized version of the information describing this feature</param>
-        internal SegmentLineFeature(Operation op, PointFeature start, PointFeature end, FeatureData t)
-            : base(op, start, end, new SegmentGeometry(start, end), t)
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        internal SegmentLineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
+                            PointFeature start, PointFeature end, bool isTopological)
+            : base(iid, fid, ent, creator, start, end, new SegmentGeometry(start, end), isTopological)
         {
         }
 
