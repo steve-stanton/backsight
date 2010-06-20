@@ -993,7 +993,7 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewRowTextOperation op = new NewRowTextOperation(s, sequence);
-            RowTextFeature f = (RowTextFeature)this.Text.LoadFeature(op);
+            RowTextFeature f = this.Text.CreateRowTextFeature(op);
             op.SetText(f);
             return op;
         }

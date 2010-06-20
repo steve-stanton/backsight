@@ -128,6 +128,7 @@ namespace Backsight.Editor.Forms
             {
                 SplashScreen.CloseForm();
                 MessageBox.Show(ex.Message);
+                Trace.Write(ex.StackTrace);
 
                 // Don't save any changes to the job file
                 jf = null;

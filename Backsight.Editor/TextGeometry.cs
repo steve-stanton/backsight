@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Drawing;
@@ -19,7 +19,6 @@ using System.Windows.Forms;
 
 using Backsight.Environment;
 using Backsight.Geometry;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -78,25 +77,6 @@ namespace Backsight.Editor
             m_Height = (float)height;
             m_Width = (float)width;
             m_Rotation = new RadianValue((double)rotation);
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="f">The feature that makes use of this geometry</param>
-        /// <param name="t">The serialized version of the feature</param>
-        protected TextGeometry(TextFeature f, TextData t)
-        {
-            m_Font = EnvironmentContainer.FindFontById((int)t.Font);
-            m_Position = new PointGeometry(t.X, t.Y);
-            m_Height = (float)t.Height;
-            m_Width = (float)t.Width;
-
-            double rot;
-            if (RadianValue.TryParse(t.Rotation, out rot))
-                m_Rotation = new RadianValue(rot);
-            else
-                throw new Exception("Cannot parse text rotation");
         }
 
         /// <summary>

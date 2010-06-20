@@ -100,6 +100,7 @@ namespace Backsight.Editor.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                Trace.Write(ex.StackTrace);
             }
         }
 

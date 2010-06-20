@@ -131,8 +131,8 @@ namespace Backsight.Editor
 
             // Get the polygons on either side of the line (the REAL
             // user-perceived polygons, not phantoms).
-            Polygon leftPol = line.Left.RealPolygon;
-            Polygon rightPol = line.Right.RealPolygon;
+            Polygon leftPol = (line.Left==null ? null : line.Left.RealPolygon);
+            Polygon rightPol = (line.Right==null ? null : line.Right.RealPolygon);
 
             // Get the entity types for the adjacent polygons (if any).
             IEntity leftEnt = (leftPol==null ? null : leftPol.EntityType);

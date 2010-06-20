@@ -21,7 +21,6 @@ using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Editor.Operations;
 using Backsight.Forms;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -74,22 +73,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected TextFeature(Operation op, TextData t)
-            : base(op, t)
-        {
-            SetTopology(t.Topological);
-
-            if (t.PolygonXSpecified && t.PolygonYSpecified)
-                m_PolygonPosition = new PointGeometry(t.PolygonX, t.PolygonY);
-            else
-                m_PolygonPosition = null;
-        }
-
-        /// <summary>
         /// Creates a new text feature
         /// </summary>
         /// <param name="ent">The entity type for the string.</param>
@@ -121,9 +104,10 @@ namespace Backsight.Editor
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
         protected TextFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
-            MiscTextGeometry geom, bool isTopological, PointGeometry polPosition)
+            TextGeometry geom, bool isTopological, PointGeometry polPosition)
             : base(iid, fid, ent, creator)
         {
+            m_Geom = geom;
             SetTopology(isTopological);
             m_PolygonPosition = polPosition;
         }
