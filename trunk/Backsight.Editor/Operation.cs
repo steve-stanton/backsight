@@ -414,6 +414,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Represents this editing operation in XML
+        /// </summary>
+        /// <param name="indent">Should the XML be indented for the sake of prettiness</param>
+        /// <returns>The XML for this edit</returns>
+        internal string ToXml(bool indent)
+        {
+            return DataFactory.Instance.ToXml(this, indent);
+        }
+
+        /// <summary>
         /// Saves an editing operation in the database. This writes to the <c>Edits</c>
         /// table and updates the timestamp in the <c>Sessions</c> table.
         /// </summary>
@@ -423,7 +433,7 @@ namespace Backsight.Editor
             Trace.Write("Saving to database");
 
             // Save the last edit in the database
-            string x = DataFactory.Instance.ToXml(this);
+            string x = ToXml(false);
 
             // Dump the file out (to help with debugging)
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))

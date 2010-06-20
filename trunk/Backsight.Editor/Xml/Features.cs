@@ -206,6 +206,27 @@ namespace Backsight.Editor.Xml
             return new MiscTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
         }
 
+        internal KeyTextFeature CreateKeyTextFeature(Operation creator, KeyTextGeometry geom,
+            bool isTopological, PointGeometry polPosition)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            KeyTextFeature result = new KeyTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
+            geom.Label = result;
+            return result;
+        }
+
+        internal RowTextFeature CreateRowTextFeature(Operation creator, RowTextContent geom,
+            bool isTopological, PointGeometry polPosition)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            RowTextFeature result = new RowTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
+            return result;
+        }
+
         /// <summary>
         /// Deserializes the user-perceived ID of a feature
         /// </summary>
@@ -537,11 +558,13 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new RowTextFeature(op, this);
-            //IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            //RowTextFeature f = new RowTextFeature(e, op, null);
-            //f.TextGeometry = new RowTextContent(f, this);
-            //return f;
+            return CreateRowTextFeature(op);
+        }
+
+        internal RowTextFeature CreateRowTextFeature(Operation op)
+        {
+            ITemplate t = EnvironmentContainer.FindTemplateById((int)this.Template);
+            return base.CreateRowTextFeature(op, (int)this.Table, t);
         }
     }
 
@@ -567,7 +590,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return new KeyTextFeature(op, this);
+            return CreateKeyTextFeature(op);
         }
     }
 
@@ -733,6 +756,35 @@ namespace Backsight.Editor.Xml
                 polPosition = new PointGeometry(this.PolygonX, this.PolygonY);
 
             return base.CreateMiscTextFeature(op, geom, this.Topological, polPosition);
+        }
+
+        internal KeyTextFeature CreateKeyTextFeature(Operation op)
+        {
+            IFont font = EnvironmentContainer.FindFontById(this.Font);
+            PointGeometry topLeft = new PointGeometry(this.X, this.Y);
+            double rot = RadianValue.Parse(this.Rotation);
+            KeyTextGeometry geom = new KeyTextGeometry(topLeft, font, this.Height, this.Width, (float)rot);
+
+            PointGeometry polPosition = null;
+            if (this.PolygonXSpecified && this.PolygonYSpecified)
+                polPosition = new PointGeometry(this.PolygonX, this.PolygonY);
+
+            return base.CreateKeyTextFeature(op, geom, this.Topological, polPosition);
+        }
+
+        internal RowTextFeature CreateRowTextFeature(Operation op, int tableId, ITemplate template)
+        {
+            IFont font = EnvironmentContainer.FindFontById(this.Font);
+            PointGeometry topLeft = new PointGeometry(this.X, this.Y);
+            double rot = RadianValue.Parse(this.Rotation);
+            RowTextContent geom = new RowTextContent(tableId, template, topLeft, font,
+                                        this.Height, this.Width, (float)rot);
+
+            PointGeometry polPosition = null;
+            if (this.PolygonXSpecified && this.PolygonYSpecified)
+                polPosition = new PointGeometry(this.PolygonX, this.PolygonY);
+
+            return base.CreateRowTextFeature(op, geom, this.Topological, polPosition);
         }
     }
 }

@@ -13,10 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -33,25 +30,27 @@ namespace Backsight.Editor
         /// </summary>
         int m_TableId;
 
-        /// <summary>
-        /// The ID of the formatting template
-        /// </summary>
-        int m_TemplateId;
-
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="RowTextContent"/> class.
         /// </summary>
-        /// <param name="f">The feature that makes use of this geometry</param>
-        /// <param name="t">The serialized version of the feature</param>
-        internal RowTextContent(RowTextFeature f, RowTextData t)
-            : base(f, t)
+        /// <param name="tableId">The Backsight ID for the database table</param>
+        /// <param name="template">The formatting template</param>
+        /// <param name="row">The row that contains the information to format</param>
+        /// <param name="template">How to form the text string out of the data in the row</param>
+        /// <param name="pos">Position of the text's reference point (always the top left corner of the string).</param>
+        /// <param name="font">The text style (defines the type-face and the height of the text).</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The total width of the text, in meters on the ground.</param>
+        /// <param name="rotation">Clockwise rotation from horizontal</param>
+        internal RowTextContent(int tableId, ITemplate template,
+                                 PointGeometry pos, IFont font, double height, double width, float rotation)
+            : base(null, template, pos, font, height, width, rotation)
         {
-            m_TableId = (int)t.Table;
-            m_TemplateId = (int)t.Template;
+            m_TableId = tableId;
         }
 
         #endregion
@@ -74,14 +73,6 @@ namespace Backsight.Editor
         internal int TableId
         {
             get { return m_TableId; }
-        }
-
-        /// <summary>
-        /// The ID of the formatting template
-        /// </summary>
-        internal int TemplateId
-        {
-            get { return m_TemplateId; }
         }
 
         /// <summary>

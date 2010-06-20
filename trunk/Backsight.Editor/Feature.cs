@@ -23,7 +23,6 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -79,36 +78,6 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        protected Feature(Operation op, FeatureData t)
-        {
-            if (op==null || t==null)
-                throw new ArgumentNullException();
-
-            Session session = op.Session;
-            CadastralMapModel mapModel = session.MapModel;
-
-            uint sessionId;
-            InternalIdValue.Parse(t.Id, out sessionId, out m_CreatorSequence);
-            Debug.Assert(sessionId == session.Id);
-
-            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
-            FeatureId fid = GetFeatureId(mapModel, t);
-            if (fid != null)
-                fid.Add(this);
-
-            int entId = (int)t.Entity;
-            m_What = EnvironmentContainer.FindEntityById(entId);
-
-            // Remember this feature as part of the model
-            m_Creator = op;
-            mapModel.AddFeature(this);
-        }
 
         /// <summary>
         /// Creates a new feature
@@ -890,36 +859,6 @@ namespace Backsight.Editor
         {
             get { return IsFlagSet(FeatureFlag.Void); }
             set { SetFlag(FeatureFlag.Void, value); }
-        }
-
-        /// <summary>
-        /// Deserializes the user-perceived ID of a feature
-        /// </summary>
-        /// <param name="mapModel">The model containing this feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        /// <returns>The corresponding ID (null if this feature does not have
-        /// a user-perceived ID).</returns>
-        FeatureId GetFeatureId(CadastralMapModel mapModel, FeatureData t)
-        {
-            uint nativeKey = t.Key;
-            if (nativeKey > 0)
-            {
-                NativeId nid = mapModel.FindNativeId(nativeKey);
-                if (nid == null)
-                    return mapModel.AddNativeId(nativeKey);
-                else
-                    return nid;
-            }
-
-            string key = t.ForeignKey;
-            if (key != null)
-            {
-                ForeignId fid = mapModel.FindForeignId(key);
-                if (fid == null)
-                    return mapModel.AddForeignId(key);
-            }
-
-            return null;
         }
 
         /// <summary>

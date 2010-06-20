@@ -19,7 +19,6 @@ using System.Diagnostics;
 using System.Data;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -49,21 +48,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. This method is protected, because
-        /// data needs to be initially deserialized to an instance of the derived
-        /// <see cref="RowTextContent"/> class.
-        /// </summary>
-        /// <param name="f">The feature that makes use of this geometry</param>
-        /// <param name="t">The serialized version of the feature</param>
-        protected RowTextGeometry(TextFeature f, RowTextData t)
-            : base(f, t)
-        {
-            // The row will be defined after attributes have been loaded
-            m_Row = null;
-            m_Template = EnvironmentContainer.FindTemplateById((int)t.Template);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RowTextGeometry"/> class.
         /// </summary>
         /// <param name="row">The row that contains the information to format</param>
@@ -77,7 +61,9 @@ namespace Backsight.Editor
                                  PointGeometry pos, IFont font, double height, double width, float rotation)
             : base(pos, font, height, width, rotation)
         {
-            if (row==null || template==null)
+            // The row may be null during deserialization (attributes only get loaded after
+            // all spatial featues have been deserialized).
+            if (template==null)
                 throw new ArgumentNullException();
 
             m_Row = row;
@@ -110,10 +96,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Row = row;
-            m_Template = EnvironmentContainer.FindTemplateById(content.TemplateId);
-
-            if (m_Template == null)
-                throw new InvalidOperationException("Cannot locate text template: "+content.TemplateId);
+            m_Template = content.Template;
         }
 
         #endregion
