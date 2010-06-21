@@ -135,7 +135,7 @@ namespace Backsight.Editor.Operations
         {
             Distance d = new Distance(m_Distance);
             bool isFromEnd = d.SetPositive();
-            return PointOnLineUI.Calculate(m_Line, d, isFromEnd);
+            return SimpleLineSubdivisionUI.Calculate(m_Line, d, isFromEnd);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace Backsight.Editor.Operations
             // Re-calculate the position of the split point.
             Distance dist = new Distance(m_Distance);
             bool isFromEnd = dist.SetPositive();
-            IPosition splitpos = PointOnLineUI.Calculate(m_Line, dist, isFromEnd);
+            IPosition splitpos = SimpleLineSubdivisionUI.Calculate(m_Line, dist, isFromEnd);
             if (splitpos==null)
                 throw new RollforwardException(this, "Cannot re-calculate position of point on line.");
 

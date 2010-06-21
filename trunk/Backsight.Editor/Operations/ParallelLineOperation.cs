@@ -102,7 +102,7 @@ namespace Backsight.Editor.Operations
 
         #endregion
 
-        // Needed by ParallelUI for updating ...
+        // Needed by ParallelLineUI for updating ...
 
         internal LineFeature ReferenceLine { get { return m_RefLine; } }
         internal LineFeature ParallelLine
@@ -545,7 +545,7 @@ namespace Backsight.Editor.Operations
         {
             spar = epar = null;
 
-	        if (!ParallelUI.Calculate(refLine, offset, out spar, out epar))
+	        if (!ParallelLineUI.Calculate(refLine, offset, out spar, out epar))
                 return false;
 
 	        // If the start of the parallel should begin on a specific
@@ -554,7 +554,7 @@ namespace Backsight.Editor.Operations
             IPosition pos = null;
         	if (term1!=null)
             {
-                pos = ParallelUI.GetIntersect(refLine, spar, term1);
+                pos = ParallelLineUI.GetIntersect(refLine, spar, term1);
 		        if (pos==null)
                     throw new Exception("Parallel does not intersect terminal line.");
     		}
@@ -564,7 +564,7 @@ namespace Backsight.Editor.Operations
 
 	        if (term2!=null)
             {
-                pos = ParallelUI.GetIntersect(refLine, epar, term2);
+                pos = ParallelLineUI.GetIntersect(refLine, epar, term2);
                 if (pos==null)
                     throw new Exception("Parallel does not intersect terminal line.");
     		}

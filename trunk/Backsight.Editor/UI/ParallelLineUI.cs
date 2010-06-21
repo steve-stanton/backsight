@@ -30,7 +30,7 @@ namespace Backsight.Editor.UI
     /// <summary>
     /// User interface for generating a parallel line.
     /// </summary>
-    class ParallelUI : SimpleCommandUI, IDisposable
+    class ParallelLineUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -114,7 +114,7 @@ namespace Backsight.Editor.UI
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
         /// <exception cref="InvalidOperationException">If a specific line is not currently selected</exception>
-        internal ParallelUI(IControlContainer cc, IUserAction action)
+        internal ParallelLineUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
             LineFeature from = EditingController.SelectedLine;
@@ -134,7 +134,7 @@ namespace Backsight.Editor.UI
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal ParallelUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+        internal ParallelLineUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
             : base(cc, editId, updcmd)
         {
             // Just set zero values for everything (we'll pick up stuff in Run).
@@ -182,7 +182,7 @@ namespace Backsight.Editor.UI
         {
             // Don't run more than once.
             if (m_ParDial!=null || m_TermDial1!=null || m_TermDial2!=null)
-                throw new Exception("ParallelUI.Run - Command is already running.");
+                throw new Exception("ParallelLineUI.Run - Command is already running.");
 
             // If we're doing an update, get the reference line from the original op.
             ParallelLineOperation op = null;
@@ -192,7 +192,7 @@ namespace Backsight.Editor.UI
             {
                 op = (up.GetOp() as ParallelLineOperation);
                 if (op==null)
-                    throw new Exception("ParallelUI.Run - Unexpected edit type.");
+                    throw new Exception("ParallelLineUI.Run - Unexpected edit type.");
 
                 // Pick up the line that acted as the reference line.
                 m_Line = op.ReferenceLine;
@@ -513,7 +513,7 @@ namespace Backsight.Editor.UI
             }
 
             if (m_TermDial2==null)
-                throw new Exception("ParallelUI.DialFinish - No dialog!");
+                throw new Exception("ParallelLineUI.DialFinish - No dialog!");
 
             // Get the nortthern terminal line (if any). And the position.
             m_TermLine2 = m_TermDial2.TerminalLine;
@@ -533,7 +533,7 @@ namespace Backsight.Editor.UI
                 // Get the original operation.
                 ParallelLineOperation op = (ParallelLineOperation)up.GetOp();
                 if (op==null)
-                    throw new Exception("ParallelUI.DialFinish - Unexpected edit type.");
+                    throw new Exception("ParallelLineUI.DialFinish - Unexpected edit type.");
 
                 // Make the update.
                 if (m_Offset!=null)
@@ -592,17 +592,17 @@ namespace Backsight.Editor.UI
             // Is it an observed distance?
             Distance dist = (offset as Distance);
             if (dist!=null)
-                return ParallelUI.Calculate(line, dist, out sres, out eres);
+                return ParallelLineUI.Calculate(line, dist, out sres, out eres);
 
             // The only other thing it could be is an offset point.
             OffsetPoint offPoint = (offset as OffsetPoint);
             if (offPoint!=null)
             {
                 PointFeature point = offPoint.Point;
-                return ParallelUI.Calculate(line, point, out sres, out eres);
+                return ParallelLineUI.Calculate(line, point, out sres, out eres);
             }
 
-            MessageBox.Show("ParallelUI.Calculate - Unexpected sort of observation");
+            MessageBox.Show("ParallelLineUI.Calculate - Unexpected sort of observation");
             return false;
         }
 
@@ -755,9 +755,9 @@ namespace Backsight.Editor.UI
             bool ok = false;
 
             if (m_Offset!=null)
-                ok = ParallelUI.Calculate(m_Line, m_Offset, out sres, out eres);
+                ok = ParallelLineUI.Calculate(m_Line, m_Offset, out sres, out eres);
             else if (m_OffsetPoint!=null)
-                ok = ParallelUI.Calculate(m_Line, m_OffsetPoint, out sres, out eres);
+                ok = ParallelLineUI.Calculate(m_Line, m_OffsetPoint, out sres, out eres);
 
             // If the calculation succeeded, allocate vertices to hold the results we got.
             if (ok)

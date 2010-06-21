@@ -24,9 +24,9 @@ using Backsight.Editor.UI;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog for the <see cref="PointOnLineUI"/>
+    /// Dialog for the <see cref="SimpleLineSubdivisionUI"/>
     /// </summary>
-    public partial class PointOnLineControl : UserControl
+    public partial class SimpleLineSubdivisionControl : UserControl
     {
         #region Class data
 
@@ -59,7 +59,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
-        internal PointOnLineControl(PointOnLineUI cmd, LineFeature line, Operation recall)
+        internal SimpleLineSubdivisionControl(SimpleLineSubdivisionUI cmd, LineFeature line, Operation recall)
         {
             InitializeComponent();
 
@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
                 m_IsFromEnd = false;
             }
         }
-        internal PointOnLineControl(UpdateUI updcmd)
+        internal SimpleLineSubdivisionControl(UpdateUI updcmd)
         {
             InitializeComponent();
 
@@ -201,7 +201,7 @@ namespace Backsight.Editor.Forms
             m_Line.Render(display, style);
 
             // Calculate the position of the split point.
-            IPosition splitpos = PointOnLineUI.Calculate(m_Line, m_Length, m_IsFromEnd);
+            IPosition splitpos = SimpleLineSubdivisionUI.Calculate(m_Line, m_Length, m_IsFromEnd);
             if (splitpos!=null)
             {
                 style = EditingController.Current.Style(Color.Magenta);

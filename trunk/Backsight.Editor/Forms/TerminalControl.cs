@@ -56,7 +56,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
-        internal TerminalControl(ParallelUI cmd, bool isLast)
+        internal TerminalControl(ParallelLineUI cmd, bool isLast)
         {
             InitializeComponent();
 
@@ -99,7 +99,7 @@ namespace Backsight.Editor.Forms
                 m_Cmd.ErasePainting();
 
             m_Line = null;
-            ParallelUI cmd = Command;
+            ParallelLineUI cmd = Command;
 
             // Draw the parallel point instead.
             if (m_IsLast)
@@ -125,7 +125,7 @@ namespace Backsight.Editor.Forms
             ISpatialDisplay view = m_Cmd.ActiveDisplay;
 
             // Get the "real" command that's running this dialog (not any update).
-            ParallelUI cmd = Command;
+            ParallelLineUI cmd = Command;
             Debug.Assert(cmd!=null);
 
             if (m_IsLast)
@@ -188,7 +188,7 @@ namespace Backsight.Editor.Forms
         bool FindTerminal()
         {
             // Get the position of the parallel point.
-            ParallelUI cmd = this.Command;
+            ParallelLineUI cmd = this.Command;
             IPosition parpos;
 
             if (m_IsLast)
@@ -247,7 +247,7 @@ namespace Backsight.Editor.Forms
         {
             ISpatialDisplay view = m_Cmd.ActiveDisplay;
             IPosition xsect = null;
-            ParallelUI cmd = Command;
+            ParallelLineUI cmd = Command;
 
             // Confirm that the line actually intersects the parallel.
             if (line!=null)
@@ -320,7 +320,7 @@ namespace Backsight.Editor.Forms
         private void otherWayButton_Click(object sender, EventArgs e)
         {
             // Tell the command that's running this dialog.
-            ParallelUI cmd = this.Command;
+            ParallelLineUI cmd = this.Command;
             cmd.ReverseArc();
         }
 
@@ -332,7 +332,7 @@ namespace Backsight.Editor.Forms
                 return 0;
 
             ISpatialDisplay view = m_Cmd.ActiveDisplay;
-            ParallelUI cmd = Command;
+            ParallelLineUI cmd = Command;
 
             // The originally produced parallel may have been
             // changed to have a different offset.
@@ -391,13 +391,13 @@ namespace Backsight.Editor.Forms
             }
         }
 
-        ParallelUI Command
+        ParallelLineUI Command
         {
             get
             {
                 UpdateUI up = (m_Cmd as UpdateUI);
                 CommandUI cmd = (up==null ? m_Cmd : up.ActiveCommand);
-                return (cmd as ParallelUI);
+                return (cmd as ParallelLineUI);
             }
         }
 

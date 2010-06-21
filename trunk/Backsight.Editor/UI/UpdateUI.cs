@@ -465,13 +465,13 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 
                 case EditingActionId.Parallel:
                 {
-                    m_Cmd = new ParallelUI(cc, pop.EditId, this);
+                    m_Cmd = new ParallelLineUI(cc, pop.EditId, this);
                     break;
                 }
 
                 case EditingActionId.PointOnLine:
                 {
-                    m_Cmd = new PointOnLineUI(cc, pop.EditId, this);
+                    m_Cmd = new SimpleLineSubdivisionUI(cc, pop.EditId, this);
                     break;
                 }
 

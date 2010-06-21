@@ -355,6 +355,12 @@
     <Compile Include="Forms\SchemaComboBox.Designer.cs">
       <DependentUpon>SchemaComboBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SimpleLineSubdivisionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\SimpleLineSubdivisionControl.designer.cs">
+      <DependentUpon>SimpleLineSubdivisionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SplashScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -599,12 +605,6 @@
     </Compile>
     <Compile Include="Forms\ParallelControl.Designer.cs">
       <DependentUpon>ParallelControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PointOnLineControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\PointOnLineControl.Designer.cs">
-      <DependentUpon>PointOnLineControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SessionForm.cs">
       <SubType>Form</SubType>
@@ -955,10 +955,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>PathForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PointOnLineControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PointOnLineControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\PreferencesForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreferencesForm.cs</DependentUpon>
@@ -1054,12 +1050,12 @@
     <Compile Include="UI\NewLineUI.cs" />
     <Compile Include="UI\NewPointUI.cs" />
     <Compile Include="UI\NewTextUI.cs" />
-    <Compile Include="UI\ParallelUI.cs" />
+    <Compile Include="UI\ParallelLineUI.cs" />
     <Compile Include="UI\PathUI.cs" />
-    <Compile Include="UI\PointOnLineUI.cs" />
     <Compile Include="UI\PolygonSubdivisionUI.cs" />
     <Compile Include="UI\RadialUI.cs" />
     <Compile Include="UI\SetTopologyUI.cs" />
+    <Compile Include="UI\SimpleLineSubdivisionUI.cs" />
     <Compile Include="UI\TextRotationUI.cs" />
     <Compile Include="UI\TrimLineUI.cs" />
     <Compile Include="UI\UndoUI.cs" />
@@ -1164,6 +1160,9 @@
     <EmbeddedResource Include="Forms\PickPredecessorForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PickPredecessorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SimpleLineSubdivisionControl.resx">
+      <DependentUpon>SimpleLineSubdivisionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
