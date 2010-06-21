@@ -33,23 +33,23 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The observed direction
         /// </summary>
-        Direction m_Direction;
+        readonly Direction m_Direction;
 
         /// <summary>
         /// The observed distance (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        Observation m_Distance;
+        readonly Observation m_Distance;
 
         /// <summary>
         /// The point the distance was measured from.
         /// </summary>
-        PointFeature m_From;
+        readonly PointFeature m_From;
 
         /// <summary>
         /// True if it was the default intersection (the one closest to the
         /// origin of the direction).
         /// </summary>
-        bool m_Default;
+        readonly bool m_Default;
 
         // Creations ...
 
@@ -74,34 +74,25 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal IntersectDirectionAndDistanceOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="dir">Direction observation.</param>
+        /// <param name="dist">Distance observation.</param>
+        /// <param name="from">The point the distance was observed from.</param>
+        /// <param name="usedefault">True if the default intersection is required (the one 
+        /// closer to the origin of the direction line). False for the other one (if any).</param>
+        internal IntersectDirectionAndDistanceOperation(Session session, uint sequence, Direction dir,
+                                                        Observation dist, PointFeature from, bool useDefault)
+            : base(session, sequence)
         {
-            m_Direction = null;
-            m_Distance = null;
-            m_From = null;
-            m_Default = true;
-
-            m_To = null;
-            m_DirLine = null;
-            m_DistLine = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectDirectionAndDistanceOperation(Session s)
-            : this(s, 0)
-        {
+            m_Direction = dir;
+            m_Distance = dist;
+            m_From = from;
+            m_Default = useDefault;
         }
 
         #endregion
@@ -128,7 +119,6 @@ namespace Backsight.Editor.Operations
         internal PointFeature DistanceFromPoint // was GetpDistFrom
         {
             get { return m_From; }
-            set { m_From = value; }
         }
 
         /// <summary>
@@ -291,48 +281,20 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="dir">Direction observation.</param>
-        /// <param name="dist">Distance observation.</param>
-        /// <param name="from">The point the distance was observed from.</param>
-        /// <param name="usedefault">True if the default intersection is required (the one 
-        /// closer to the origin of the direction line). False for the other one (if any).</param>
-        internal void SetInput(Direction dir, Observation dist, PointFeature from, bool useDefault)
-        {
-            m_Direction = dir;
-            m_Distance = dist;
-            m_From = from;
-            m_Default = useDefault;
-        }
-
-        /// <summary>
         /// Executes this operation. 
         /// </summary>
-        /// <param name="dir">Direction observation.</param>
-        /// <param name="dist">Distance observation.</param>
-        /// <param name="from">The point the distance was observed from.</param>
-        /// <param name="usedefault">True if the default intersection is required (the one 
-        /// closer to the origin of the direction line). False for the other one (if any).</param>
         /// <param name="pointId">The ID and entity type for the intersect point</param>
         /// <param name="ent1">The entity type for 1st line (null for no line)</param>
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
-        internal void Execute(Direction dir, Observation distance, PointFeature from, bool isdefault,
-                                IdHandle pointId, IEntity ent1, IEntity ent2)
+        internal void Execute(IdHandle pointId, IEntity ent1, IEntity ent2)
         {
             // Calculate the position of the point of intersection.
-            IPosition xsect = Calculate(dir, distance, from, isdefault);
+            IPosition xsect = Calculate(m_Direction, m_Distance, m_From, m_Default);
             if (xsect==null)
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_To = AddIntersection(xsect, pointId);
-
-            // Remember input
-            m_Direction = dir;
-            m_Distance = distance;
-            m_From = from;
-            m_Default = isdefault;
 
             // If we have a defined entity types for lines, add them too.
             CadastralMapModel map = MapModel;
@@ -484,73 +446,75 @@ namespace Backsight.Editor.Operations
         internal bool Correct(Direction dir, Observation distance, PointFeature from, bool isdefault,
                         IEntity ent1, IEntity ent2)
         {
-            if ((ent1==null && m_DirLine!=null) || (ent2==null && m_DistLine!=null))
-                throw new Exception("You cannot delete lines via update. Use Line Delete.");
+            throw new NotImplementedException();
 
-            // Calculate the position of the point of intersection.
-            IPosition xsect = Calculate(dir, distance, from, isdefault);
-            if (xsect==null)
-                return false;
+            //if ((ent1==null && m_DirLine!=null) || (ent2==null && m_DistLine!=null))
+            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
 
-            // If the point the distance was observed from has changed, cut
-            // the reference the old point makes to this op, and change it
-            // so the operation is referenced by the new point.
+            //// Calculate the position of the point of intersection.
+            //IPosition xsect = Calculate(dir, distance, from, isdefault);
+            //if (xsect==null)
+            //    return false;
 
-            if (!Object.ReferenceEquals(m_From, from))
-            {
-                m_From.CutOp(this);
-                m_From = from;
-                m_From.AddOp(this);
-            }
+            //// If the point the distance was observed from has changed, cut
+            //// the reference the old point makes to this op, and change it
+            //// so the operation is referenced by the new point.
 
-            // Cut the references made by the direction object. If nothing
-            // has changed, the references will be re-inserted when the
-            // direction is re-saved below.
-            m_Direction.CutRef(this);
+            //if (!Object.ReferenceEquals(m_From, from))
+            //{
+            //    m_From.CutOp(this);
+            //    m_From = from;
+            //    m_From.AddOp(this);
+            //}
 
-            // Get rid of the previously defined observations, and replace
-            // with the new ones (we can't necessarily change the old ones
-            // because we may have changed the type of observation).
+            //// Cut the references made by the direction object. If nothing
+            //// has changed, the references will be re-inserted when the
+            //// direction is re-saved below.
+            //m_Direction.CutRef(this);
 
-            m_Direction.OnRollback(this);
-            m_Distance.OnRollback(this);
+            //// Get rid of the previously defined observations, and replace
+            //// with the new ones (we can't necessarily change the old ones
+            //// because we may have changed the type of observation).
 
-            m_Direction = dir;
-            m_Direction.AddReferences(this);
+            //m_Direction.OnRollback(this);
+            //m_Distance.OnRollback(this);
 
-            m_Distance = distance;
-            m_Distance.AddReferences(this);
+            //m_Direction = dir;
+            //m_Direction.AddReferences(this);
 
-            // Save option about whether we want default intersection or not.
-            m_Default = isdefault;
+            //m_Distance = distance;
+            //m_Distance.AddReferences(this);
 
-            // If we have defined entity types for lines, and we did not
-            // have a line before, add a new line now.
+            //// Save option about whether we want default intersection or not.
+            //m_Default = isdefault;
 
-            if (ent1!=null)
-            {
-                if (m_DirLine==null)
-                {
-                    CadastralMapModel map = MapModel;
-                    IPosition start = m_Direction.StartPosition;
-                    PointFeature ps = map.EnsurePointExists(start, this);
-                    m_DirLine = map.AddLine(ps, m_To, ent1, this);
-                }
-                else if (m_DirLine.EntityType.Id != ent1.Id)
-                    throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
-                    //m_DirLine.EntityType = ent1;
-            }
+            //// If we have defined entity types for lines, and we did not
+            //// have a line before, add a new line now.
 
-            if (ent2!=null)
-            {
-                if (m_DistLine==null)
-                    MapModel.AddLine(m_From, m_To, ent2, this);
-                else
-                    throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
-                    //m_DistLine.EntityType = ent2;
-            }
+            //if (ent1!=null)
+            //{
+            //    if (m_DirLine==null)
+            //    {
+            //        CadastralMapModel map = MapModel;
+            //        IPosition start = m_Direction.StartPosition;
+            //        PointFeature ps = map.EnsurePointExists(start, this);
+            //        m_DirLine = map.AddLine(ps, m_To, ent1, this);
+            //    }
+            //    else if (m_DirLine.EntityType.Id != ent1.Id)
+            //        throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
+            //        //m_DirLine.EntityType = ent1;
+            //}
 
-            return true;
+            //if (ent2!=null)
+            //{
+            //    if (m_DistLine==null)
+            //        MapModel.AddLine(m_From, m_To, ent2, this);
+            //    else
+            //        throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
+            //        //m_DistLine.EntityType = ent2;
+            //}
+
+            //return true;
         }
 
         /// <summary>

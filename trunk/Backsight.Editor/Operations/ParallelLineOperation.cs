@@ -38,32 +38,32 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The reference line for the parallel.
         /// </summary>
-        LineFeature m_RefLine; // m_pRefArc
+        readonly LineFeature m_RefLine; // m_pRefArc
 
         /// <summary>
         /// The offset to the parallel (either a <c>Distance</c>, or an <c>OffsetPoint</c>).
         /// </summary>
-        Observation m_Offset;        
+        readonly Observation m_Offset;        
 
         // Optional input ...
 
         /// <summary>
         /// The 1st terminal arc (if any).
         /// </summary>
-        LineFeature m_Term1;
+        readonly LineFeature m_Term1;
 
         /// <summary>
         /// The 2nd terminal line (if any). May be the same as <c>m_Term1</c> (e.g. could be a
         /// multi-segment that bends round).
         /// </summary>
-        LineFeature m_Term2;
+        readonly LineFeature m_Term2;
         
         /// <summary>
         /// Flag bits. Currently a value of 0x1 is the only defined value, and means
         /// that the parallel for a circular arc should go in a direction that
         /// is opposite to that of the reference line.
         /// </summary>
-        uint m_Flags;
+        readonly uint m_Flags;
 
         // Created features ...
 
@@ -77,35 +77,27 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="ParallelLineOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal ParallelLineOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="refLine">The reference line.</param>
+        /// <param name="offset">The observed offset (either a <c>Distance</c> or
+        /// an <c>OffsetPoint</c>).</param>
+        /// <param name="term1">A line that the parallel should start on.</param>
+        /// <param name="term2">A line that the parallel should end on.</param>
+        /// <param name="isArcReversed">Should circular arc be reversed?</param>
+        internal ParallelLineOperation(Session session, uint sequence, LineFeature refLine, Observation offset,
+            LineFeature term1, LineFeature term2, bool isArcReversed)
+            : base(session, sequence)
         {
-            // Input ...
-
-            m_RefLine = null;
-            m_Offset = null;
-            m_Term1 = null;
-            m_Term2 = null;
-            m_Flags = 0;
-
-            // Created features ...
-
-            m_ParLine = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParallelOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal ParallelLineOperation(Session s)
-            : this(s, 0)
-        {
+            m_RefLine = refLine;
+            m_Offset = offset;
+            m_Term1 = term1;
+            m_Term2 = term2;
+            m_Flags = (uint)(isArcReversed ? 1 : 0);
         }
 
         #endregion
@@ -172,7 +164,6 @@ namespace Backsight.Editor.Operations
 
             // If the offset was an offset point, get rid of reference to this op.
             m_Offset.OnRollback(this);
-            m_Offset = null;
 
             // Cut the reference from the reference line to this op. And
 	        // refs from any terminal lines.
@@ -341,25 +332,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="refLine">The reference line.</param>
-        /// <param name="offset">The observed offset (either a <c>Distance</c> or
-        /// an <c>OffsetPoint</c>).</param>
-        /// <param name="term1">A line that the parallel should start on.</param>
-        /// <param name="term2">A line that the parallel should end on.</param>
-        /// <param name="isArcReversed">Should circular arc be reversed?</param>
-        internal void SetInput(LineFeature refLine, Observation offset, LineFeature term1,
-                                LineFeature term2, bool isArcReversed)
-        {
-            m_RefLine = refLine;
-            m_Offset = offset;
-            m_Term1 = term1;
-            m_Term2 = term2;
-            m_Flags = (uint)(isArcReversed ? 1 : 0);
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
         /// <param name="refLine">The reference line.</param>
@@ -369,23 +341,16 @@ namespace Backsight.Editor.Operations
         /// <param name="term2">A line that the parallel should end on.</param>
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
         /// <returns>True if operation executed ok.</returns>
-        internal bool Execute( LineFeature refLine
-                             , Observation offset
-                             , LineFeature term1
-                             , LineFeature term2
-                             , bool isArcReversed)
+        internal bool Execute()
         {
             // Calculate the mathematical position of the parallel points.
             IPosition spar, epar;
-            if (!Calculate(refLine, offset, term1, term2, out spar, out epar))
+            if (!Calculate(m_RefLine, m_Offset, m_Term1, m_Term2, out spar, out epar))
                 return false;
 
             // Don't attempt to add a parallel that starts and stops at the same place.
             if (spar.IsAt(epar, Double.Epsilon))
                 throw new Exception("Parallel line has the same start and end points.");
-
-            // Remember supplied info.
-            SetInput(refLine, offset, term1, term2, isArcReversed);
 
             // Add points at the ends of the parallel.
             CadastralMapModel map = CadastralMapModel.Current;
@@ -397,9 +362,9 @@ namespace Backsight.Editor.Operations
 
             IEntity ent = EditingController.Current.ActiveLayer.DefaultLineType;
 
-            if (refLine is ArcFeature)
+            if (m_RefLine is ArcFeature)
             {
-                ArcFeature arc = (refLine as ArcFeature);
+                ArcFeature arc = (m_RefLine as ArcFeature);
                 Circle circle = arc.Circle;
                 PointFeature center = circle.CenterPoint;
                 bool iscw = arc.IsClockwise;
@@ -409,7 +374,7 @@ namespace Backsight.Editor.Operations
                 Circle parCircle = map.AddCircle(center, parRadius);
 
                 // Use the reverse arc direction if specified.
-                if (isArcReversed)
+                if (IsArcReversed)
                     iscw = !iscw;
 
                 // Add the circular arc
@@ -436,55 +401,57 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation updated ok.</returns>
         internal bool Correct( LineFeature refline, Observation offset, LineFeature term1, LineFeature term2, bool isArcReversed)
         {
-        	// Alter the reference line if necessary.
-	        if (m_RefLine != refline )            
-            {
-                m_RefLine.CutOp(this);
-                m_RefLine = refline;
-                m_RefLine.AddOp(this);
-            }
+            throw new NotImplementedException();
 
-	        // Cut any references made by the offset. If nothing
-	        // has changed, they will be re-inserted when the offset
-	        // is re-saved below.
-	        if (m_Offset!=null)
-                m_Offset.OnRollback(this);
+            //// Alter the reference line if necessary.
+            //if (m_RefLine != refline )            
+            //{
+            //    m_RefLine.CutOp(this);
+            //    m_RefLine = refline;
+            //    m_RefLine.AddOp(this);
+            //}
 
-	        // Get rid of the previously defined offset, and replace with
-	        // the new one (we can't necessarily change the old ones
-	        // because we may have changed the type of observation).
-            m_Offset = offset;
-            m_Offset.AddReferences(this);
+            //// Cut any references made by the offset. If nothing
+            //// has changed, they will be re-inserted when the offset
+            //// is re-saved below.
+            //if (m_Offset!=null)
+            //    m_Offset.OnRollback(this);
 
-	        // If either terminal line is being changed
-	        if (m_Term1!=term1 || m_Term2!=term2)
-            {
-		        // Remember the new terminal lines (actually splitting them
-		        // is the job of Rollforward).
+            //// Get rid of the previously defined offset, and replace with
+            //// the new one (we can't necessarily change the old ones
+            //// because we may have changed the type of observation).
+            //m_Offset = offset;
+            //m_Offset.AddReferences(this);
 
-		        if (m_Term1!=null)
-                    m_Term1.CutOp(this);
+            //// If either terminal line is being changed
+            //if (m_Term1!=term1 || m_Term2!=term2)
+            //{
+            //    // Remember the new terminal lines (actually splitting them
+            //    // is the job of Rollforward).
 
-		        if (m_Term2!=null)
-                    m_Term2.CutOp(this);
+            //    if (m_Term1!=null)
+            //        m_Term1.CutOp(this);
 
-		        m_Term1 = term1;
-		        m_Term2 = term2;
+            //    if (m_Term2!=null)
+            //        m_Term2.CutOp(this);
 
-        		if (m_Term1!=null)
-                    m_Term1.AddOp(this);
+            //    m_Term1 = term1;
+            //    m_Term2 = term2;
 
-		        if (m_Term2!=null)
-                    m_Term2.AddOp(this);
-	        }
+            //    if (m_Term1!=null)
+            //        m_Term1.AddOp(this);
 
-	        // Alter arc direction if necessary.
-	        if (isArcReversed)
-		        m_Flags = 1;
-	        else
-		        m_Flags = 0;
+            //    if (m_Term2!=null)
+            //        m_Term2.AddOp(this);
+            //}
 
-	        return true;
+            //// Alter arc direction if necessary.
+            //if (isArcReversed)
+            //    m_Flags = 1;
+            //else
+            //    m_Flags = 0;
+
+            //return true;
         }
 
         /// <summary>

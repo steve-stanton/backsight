@@ -85,32 +85,25 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectDirectionAndLineOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectDirectionAndLineOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal IntersectDirectionAndLineOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="dir">Direction observation.</param>
+        /// <param name="line">The line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        internal IntersectDirectionAndLineOperation(Session session, uint sequence, Direction dir,
+                                                    LineFeature line, PointFeature closeTo)
+            : base(session, sequence)
         {
-            m_Direction = null;
-            m_Line = null;
-            m_CloseTo = null;
-            m_Intersection = null;
-            m_DirLine = null;
-            m_LineA = null;
-            m_LineB = null;
-            m_IsSplit = false;
+            if (m_Direction==null || m_Line==null || m_CloseTo==null)
+                throw new ArgumentNullException();
+
+            m_Direction = dir;
+            m_Line = line;
+            m_CloseTo = closeTo;
         }
 
         #endregion
@@ -355,53 +348,22 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="dir">Direction observation.</param>
-        /// <param name="line">The line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
-        internal void SetInput(Direction dir, LineFeature line, PointFeature closeTo)
-        {
-            m_Direction = dir;
-            m_Line = line;
-            m_CloseTo = closeTo;
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="dir">The direction to intersect.</param>
-        /// <param name="line">The line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
         /// <param name="wantsplit">True if line should be split at the intersection.</param>
         /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
         /// <param name="dirEnt">The entity type for any line that should be added along the direction
         /// line. Specify null if you don't want a line.</param>
-        internal void Execute(Direction dir, LineFeature line, PointFeature closeTo,
-                                bool wantsplit, IdHandle pointId, IEntity dirEnt)
+        internal void Execute(bool wantsplit, IdHandle pointId, IEntity dirEnt)
         {
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
-            if (!dir.Intersect(line, closeTo, out xsect, out closest))
+            if (!m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_Intersection = AddIntersection(xsect, pointId);
-
-            // Remember input
-            m_Direction = dir;
-            m_Line = line;
-
-            // If a close-to point was not specified, use the one we picked.
-            if (closeTo==null)
-                m_CloseTo = closest;
-            else
-                m_CloseTo = closeTo;
 
             // Are we splitting the input line? If so, do it.
             m_IsSplit = wantsplit;
@@ -417,53 +379,37 @@ namespace Backsight.Editor.Operations
             Complete();
         }
 
-        /// <summary>
-        /// Executes this operation.
-        /// </summary>
-        /// <param name="dir">The direction to intersect.</param>
-        /// <param name="line">The line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
-        /// <param name="wantsplit">True if line should be split at the intersection.</param>
-        /// <param name="pointType">The entity type to assign to the intersection point.</param>
-        /// <param name="dirEnt">The entity type for any line that should be added along the direction
-        /// line. Specify null if you don't want a line.</param>
-        internal void Execute(Direction dir, LineFeature line, PointFeature closeTo,
-                                bool wantsplit, IEntity pointType, IEntity dirEnt)
-        {
-            // Calculate the position of the point of intersection.
-            IPosition xsect;
-            PointFeature closest;
-            if (!dir.Intersect(line, closeTo, out xsect, out closest))
-                throw new Exception("Cannot calculate intersection point");
+        ///// <summary>
+        ///// Executes this operation.
+        ///// </summary>
+        ///// <param name="wantsplit">True if line should be split at the intersection.</param>
+        ///// <param name="pointType">The entity type to assign to the intersection point.</param>
+        ///// <param name="dirEnt">The entity type for any line that should be added along the direction
+        ///// line. Specify null if you don't want a line.</param>
+        //internal void Execute(bool wantsplit, IEntity pointType, IEntity dirEnt)
+        //{
+        //    // Calculate the position of the point of intersection.
+        //    IPosition xsect;
+        //    PointFeature closest;
+        //    if (!m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
+        //        throw new Exception("Cannot calculate intersection point");
 
-            // Add the intersection point
-            m_Intersection = AddIntersection(xsect, pointType);
+        //    // Add the intersection point
+        //    m_Intersection = AddIntersection(xsect, pointType);
 
-            // Remember input
-            m_Direction = dir;
-            m_Line = line;
+        //    // Are we splitting the input line? If so, do it.
+        //    m_IsSplit = wantsplit;
+        //    if (m_IsSplit)
+        //        SplitLine(m_Intersection, m_Line, out m_LineA, out m_LineB);
 
-            // If a close-to point was not specified, use the one we picked.
-            if (closeTo == null)
-                m_CloseTo = closest;
-            else
-                m_CloseTo = closeTo;
+        //    // If we have a defined entity type for the direction line, add a line too.
+        //    CadastralMapModel map = MapModel;
+        //    if (dirEnt != null)
+        //        m_DirLine = map.AddLine(m_Direction.From, m_Intersection, dirEnt, this);
 
-            // Are we splitting the input line? If so, do it.
-            m_IsSplit = wantsplit;
-            if (m_IsSplit)
-                SplitLine(m_Intersection, m_Line, out m_LineA, out m_LineB);
-
-            // If we have a defined entity type for the direction line, add a line too.
-            CadastralMapModel map = MapModel;
-            if (dirEnt != null)
-                m_DirLine = map.AddLine(m_Direction.From, m_Intersection, dirEnt, this);
-
-            // Peform standard completion steps
-            Complete();
-        }
+        //    // Peform standard completion steps
+        //    Complete();
+        //}
 
         /// <summary>
         /// Updates this operation.

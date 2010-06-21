@@ -38,25 +38,25 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The direction (could contain an offset).
         /// </summary>
-        private Direction m_Direction;
+        readonly Direction m_Direction;
 
         /// <summary>
-        /// The length of the sideshot arm (either a <c>Distance</c> or
-        /// an <c>OffsetPoint</c>).
+        /// The length of the sideshot arm (either a <see cref="Distance"/> or
+        /// an <see cref="OffsetPoint"/>).
         /// </summary>
-        private Observation m_Length;
+        readonly Observation m_Length;
 
         // Creations ...
 
         /// <summary>
         /// The point at the end of the sideshot arm.
         /// </summary>
-        private PointFeature m_To;
+        PointFeature m_To;
 
         /// <summary>
         /// The line (if any) that was added to correspond to the sideshot arm.
         /// </summary>
-        private SegmentLineFeature m_Line;
+        SegmentLineFeature m_Line;
 
         #endregion
 
@@ -65,37 +65,21 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Constructor for use during deserialization.
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal RadialOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="dir">The direction (could contain an offset).</param>
+        /// <param name="length">The length of the sideshot arm (either a <see cref="Distance"/> or
+        /// an <see cref="OffsetPoint"/>).</param>
+        internal RadialOperation(Session session, uint sequence, Direction dir, Observation length)
+            : base(session, sequence)
         {
-            SetInitialValues();
-        }
-
-        /// <summary>
-        /// Creates a new <c>RadialOperation</c> as part of an editing session.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal RadialOperation(Session s)
-            : this(s, 0)
-        {
+            m_Direction = dir;
+            m_Length = length;
         }
 
         #endregion
-
-        /// <summary>
-        /// Initializes class data with default values
-        /// </summary>
-        void SetInitialValues()
-        {
-            m_Direction = null;
-            m_Length = null;
-            m_To = null;
-            m_Line = null;
-        }
 
         /// <summary>
         /// The point that the sideshot was observed from (the origin of
@@ -155,34 +139,17 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="extendLine">The line that's being extended.</param>
-        /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
-        /// <param name="length">The length of the extension.</param>
-        internal void SetInput(Direction dir, Observation length)
-        {
-            m_Direction = dir;
-            m_Length = length;
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="dir">The direction of the sideshot (includes the from-point). Not null.</param>
-        /// <param name="length"></param>
         /// <param name="pointId"></param>
         /// <param name="lineType"></param>
         /// <returns>True if operation executed ok.</returns>
-        internal bool Execute(Direction dir, Observation length, IdHandle pointId, IEntity lineType)
+        internal bool Execute(IdHandle pointId, IEntity lineType)
         {
             // Calculate the position of the sideshot point.
-            IPosition to = RadialUI.Calculate(dir, length);
+            IPosition to = RadialUI.Calculate(m_Direction, m_Length);
             if (to==null)
                 throw new Exception("Cannot calculate position of sideshot point.");
-
-            // Save the observations.
-            SetInput(dir, length);
 
             // Add the sideshot point to the map.
             CadastralMapModel map = CadastralMapModel.Current;
@@ -195,7 +162,7 @@ namespace Backsight.Editor.Operations
             if (lineType==null)
                 m_Line = null;
             else
-                m_Line = map.AddLine(dir.From, m_To, lineType, this);
+                m_Line = map.AddLine(m_Direction.From, m_To, lineType, this);
 
             // Peform standard completion steps
             Complete();
@@ -257,26 +224,28 @@ LOGICAL CeRadial::Execute	( const CeDirection& dir
         /// <returns>True if changes are ok.</returns>
         internal bool Correct(Direction dir, Observation length)
         {
-            // Confirm that the sideshot point can be re-calculated.
-            IPosition to = RadialUI.Calculate(dir, length);
-            if (to==null)
-                throw new ArgumentException("Cannot update position of sideshot point.");
+            throw new NotImplementedException();
 
-            // Cut the references made by the direction object. If nothing
-            // has changed, the references will be re-inserted when the
-            // direction is re-saved below.
-            if (m_Direction!=null)
-                m_Direction.OnRollback(this);
+            //// Confirm that the sideshot point can be re-calculated.
+            //IPosition to = RadialUI.Calculate(dir, length);
+            //if (to==null)
+            //    throw new ArgumentException("Cannot update position of sideshot point.");
 
-            if (m_Length!=null)
-                m_Length.OnRollback(this);
+            //// Cut the references made by the direction object. If nothing
+            //// has changed, the references will be re-inserted when the
+            //// direction is re-saved below.
+            //if (m_Direction!=null)
+            //    m_Direction.OnRollback(this);
 
-            m_Direction = dir;
-            m_Direction.AddReferences(this);
-            m_Length = length;
-            m_Length.AddReferences(this);
+            //if (m_Length!=null)
+            //    m_Length.OnRollback(this);
 
-            return true;
+            //m_Direction = dir;
+            //m_Direction.AddReferences(this);
+            //m_Length = length;
+            //m_Length.AddReferences(this);
+
+            //return true;
         }
 
         /// <summary>
@@ -403,10 +372,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             // Delete observations.
             m_Direction.OnRollback(this);
-            m_Direction = null;
-
             m_Length.OnRollback(this);
-            m_Length = null;
 
             // Mark sideshot point for deletion
             Rollback(m_To);
