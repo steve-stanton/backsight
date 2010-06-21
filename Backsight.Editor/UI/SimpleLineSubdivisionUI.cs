@@ -28,7 +28,7 @@ namespace Backsight.Editor.UI
     /// <summary>
     /// User interface for using one observed distance to subdivide a line.
     /// </summary>
-    class PointOnLineUI : SimpleCommandUI, IDisposable
+    class SimpleLineSubdivisionUI : SimpleCommandUI, IDisposable
     {
         #region Class data
 
@@ -40,7 +40,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// The dialog for the command.
         /// </summary>
-        PointOnLineControl m_Dialog;
+        SimpleLineSubdivisionControl m_Dialog;
 
         /// <summary>
         /// The distance to the split point.
@@ -56,7 +56,7 @@ namespace Backsight.Editor.UI
         /// </summary>
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="action">The action that initiated this command</param>
-        internal PointOnLineUI(IControlContainer cc, IUserAction action)
+        internal SimpleLineSubdivisionUI(IControlContainer cc, IUserAction action)
             : base(cc, action)
         {
             LineFeature line = EditingController.SelectedLine;
@@ -73,7 +73,7 @@ namespace Backsight.Editor.UI
         /// <param name="cc">The container for any dialogs</param>
         /// <param name="editId">The ID of the edit this command deals with.</param>
         /// <param name="updcmd">The update command.</param>
-        internal PointOnLineUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+        internal SimpleLineSubdivisionUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
             : base(cc, editId, updcmd)
         {
             SetInitialValues();
@@ -110,14 +110,14 @@ namespace Backsight.Editor.UI
         {
             // Don't run more than once.
             if (m_Dialog!=null)
-                throw new InvalidOperationException("PointOnLineUI.Run - Command is already running.");
+                throw new InvalidOperationException("SimpleLineSubdivisionUI.Run - Command is already running.");
 
             UpdateUI pup = this.Update;
 
             if (pup!=null)
-                m_Dialog = new PointOnLineControl(pup);
+                m_Dialog = new SimpleLineSubdivisionControl(pup);
             else
-                m_Dialog = new PointOnLineControl(this, m_Line, this.Recall);
+                m_Dialog = new SimpleLineSubdivisionControl(this, m_Line, this.Recall);
 
             this.Container.Display(m_Dialog);
             return true;
@@ -182,7 +182,7 @@ namespace Backsight.Editor.UI
         {
             if (m_Dialog==null)
             {
-                MessageBox.Show("PointOnLineUI.DialFinish - No dialog!");
+                MessageBox.Show("SimpleLineSubdivisionUI.DialFinish - No dialog!");
                 return false;
             }
 
@@ -195,7 +195,7 @@ namespace Backsight.Editor.UI
                 SimpleLineSubdivisionOperation pop = (up.GetOp() as SimpleLineSubdivisionOperation);
                 if (pop==null)
                 {
-                    MessageBox.Show("PointOnLineUI.DialFinish - Unexpected edit type.");
+                    MessageBox.Show("SimpleLineSubdivisionUI.DialFinish - Unexpected edit type.");
                     return false;
                 }
 

@@ -74,7 +74,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 		        
-        internal ParallelControl(ParallelUI ui)
+        internal ParallelControl(ParallelLineUI ui)
         {
             InitializeComponent();
 
@@ -401,10 +401,10 @@ namespace Backsight.Editor.Forms
                 else
                     m_Offset.SetPositive();
 
-                ok = ParallelUI.Calculate(m_Line, m_Offset, out south, out north);
+                ok = ParallelLineUI.Calculate(m_Line, m_Offset, out south, out north);
             }
             else if (m_Point!=null)
-                ok = ParallelUI.Calculate(m_Line, m_Point, out south, out north);
+                ok = ParallelLineUI.Calculate(m_Line, m_Point, out south, out north);
 
             // If the calculation succeeded, allocate vertices to
             // hold the results we got.

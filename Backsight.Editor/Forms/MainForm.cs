@@ -1658,7 +1658,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             try
             {
                 IControlContainer cc = CreateContainer(action);
-                CommandUI cmd = new PointOnLineUI(cc, action);
+                CommandUI cmd = new SimpleLineSubdivisionUI(cc, action);
                 m_Controller.StartCommand(cmd);
             }
 
@@ -1678,7 +1678,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             try
             {
                 IControlContainer cc = CreateContainer(action);
-                CommandUI cmd = new ParallelUI(cc, action);
+                CommandUI cmd = new ParallelLineUI(cc, action);
                 m_Controller.StartCommand(cmd);
             }
 

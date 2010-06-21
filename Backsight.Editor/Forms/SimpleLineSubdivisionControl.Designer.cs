@@ -1,6 +1,6 @@
 namespace Backsight.Editor.Forms
 {
-    partial class PointOnLineControl
+    partial class SimpleLineSubdivisionControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -101,7 +101,7 @@ namespace Backsight.Editor.Forms
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // PointOnLineControl
+            // SimpleLineSubdivisionControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -111,7 +111,7 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.otherWayButton);
             this.Controls.Add(this.distanceTextBox);
             this.Controls.Add(this.label1);
-            this.Name = "PointOnLineControl";
+            this.Name = "SimpleLineSubdivisionControl";
             this.Size = new System.Drawing.Size(490, 106);
             this.Load += new System.EventHandler(this.PointOnLineControl_Load);
             this.ResumeLayout(false);
