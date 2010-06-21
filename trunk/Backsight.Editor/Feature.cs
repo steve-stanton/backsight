@@ -122,12 +122,14 @@ namespace Backsight.Editor
             m_CreatorSequence = iid.ItemSequence;
             m_What = ent;
             m_References = null;
-            m_Id = fid;
             m_Flag = 0;
 
             // If a user-defined ID is present, ensure it knows about this feature, and vice versa
             if (fid != null)
+            {
                 fid.Add(this);
+                Debug.Assert(m_Id == fid);
+            }
 
             // Remember this feature as part of the model
             creator.MapModel.AddFeature(this);
