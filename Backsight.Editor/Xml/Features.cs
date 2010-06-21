@@ -721,18 +721,21 @@ namespace Backsight.Editor.Xml
         {
             this.Topological = t.IsTopological;
 
-            IPointGeometry p = t.GetPolPosition();
-            if (p != null)
+            IPointGeometry tp = t.Position;
+            this.X = tp.Easting.Microns;
+            this.Y = tp.Northing.Microns;
+
+            IPointGeometry pp = t.GetPolPosition();
+            if (pp != null)
             {
-                this.PolygonX = p.Easting.Microns;
-                this.PolygonY = p.Northing.Microns;
+                if (pp.Easting.Microns != tp.Easting.Microns || pp.Northing.Microns != tp.Northing.Microns)
+                {
+                    this.PolygonX = pp.Easting.Microns;
+                    this.PolygonY = pp.Northing.Microns;
 
-                this.polygonXFieldSpecified = this.PolygonYSpecified = true;
+                    this.polygonXFieldSpecified = this.PolygonYSpecified = true;
+                }
             }
-
-            p = t.Position;
-            this.X = p.Easting.Microns;
-            this.Y = p.Northing.Microns;
 
             TextGeometry tg = t.TextGeometry;
             this.Height = Math.Round((double)tg.Height, 2);

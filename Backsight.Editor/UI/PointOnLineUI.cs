@@ -47,11 +47,6 @@ namespace Backsight.Editor.UI
         /// </summary>
         Distance m_Length;
 
-        /// <summary>
-        /// True if distance is from the end of the line. False if from start.
-        /// </summary>
-        bool m_IsFromEnd;
-
         #endregion
 
         #region Constructors
@@ -105,7 +100,6 @@ namespace Backsight.Editor.UI
 	        m_Dialog = null;
 	        m_Line = null;
 	        m_Length = new Distance();
-	        m_IsFromEnd = false;
         }
 
         /// <summary>
@@ -214,16 +208,19 @@ namespace Backsight.Editor.UI
                 Controller.ClearSelection();
 
                 // Get info from the dialog.
-                m_IsFromEnd = m_Dialog.IsFromEnd;
                 m_Length = m_Dialog.Length;
+
+                Distance d = new Distance(m_Length);
+                if (m_Dialog.IsFromEnd)
+                    d.SetNegative();
 
                 // Execute the edit
                 SimpleLineSubdivisionOperation op = null;
 
                 try
                 {
-                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession);
-                    op.Execute(m_Line, m_Length, m_IsFromEnd);
+                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession, 0, m_Line, d);
+                    op.Execute();
                 }
 
                 catch (Exception ex)

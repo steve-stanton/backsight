@@ -33,28 +33,28 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// First observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        Observation m_Distance1;
+        readonly Observation m_Distance1;
 
         /// <summary>
         /// The point the 1st distance was measured from.
         /// </summary>
-        PointFeature m_From1;
+        readonly PointFeature m_From1;
 
         /// <summary>
         /// Second observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        Observation m_Distance2;
+        readonly Observation m_Distance2;
 
         /// <summary>
         /// The point the 2nd distance was measured from.
         /// </summary>
-        PointFeature m_From2;
+        readonly PointFeature m_From2;
 
         /// <summary>
         /// True if it was the default intersection (the one with the lowest bearing
         /// with respect to <see cref="m_From1"/> and <see cref="m_From2"/>).
         /// </summary>
-        bool m_Default;
+        readonly bool m_Default;
 
         // Creations ...
 
@@ -76,37 +76,31 @@ namespace Backsight.Editor.Operations
         #endregion
 
         #region Constructors
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
-        internal IntersectTwoDistancesOperation(Session s, uint sequence)
-            : base(s, sequence)
-        {
-            m_Distance1 = null;
-            m_From1 = null;
-            m_Distance2 = null;
-            m_From2 = null;
-            m_Default = true;
-
-            m_To = null;
-            m_Line1 = null;
-            m_Line2 = null;
-        }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectTwoDistancesOperation(Session s)
-            : this(s, 0)
+        /// <param name="session">The session the new instance should be added to</param>
+        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
+        /// a new sequence number should be reserved). A non-zero value is specified during
+        /// deserialization from the database.</param>
+        /// <param name="dist1">First observed distance  (either a <see cref="Distance"/>, or
+        /// an <see cref="OffsetPoint"/>).</param>
+        /// <param name="from1">The point the 1st distance was measured from.</param>
+        /// <param name="dist2">Second observed distance  (either a <see cref="Distance"/>, or
+        /// an <see cref="OffsetPoint"/>).</param>
+        /// <param name="from2">The point the 2nd distance was measured from.</param>
+        /// <param name="isdefault">True if it was the default intersection (the one with the lowest bearing
+        /// with respect to <paramref name="from1"/> and <paramref name="from2"/>).</param>
+        internal IntersectTwoDistancesOperation(Session session, uint sequence, Observation dist1, PointFeature from1,
+                                                Observation dist2, PointFeature from2, bool isdefault)
+            : base(session, sequence)
         {
+            m_Distance1 = dist1;
+            m_From1 = from1;
+            m_Distance2 = dist2;
+            m_From2 = from2;
+            m_Default = isdefault;
         }
 
         #endregion
@@ -312,19 +306,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        internal void SetInput(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2,
-                                bool isdefault)
-        {
-            m_Distance1 = dist1;
-            m_From1 = from1;
-            m_Distance2 = dist2;
-            m_From2 = from2;
-            m_Default = isdefault;
-        }
-
-        /// <summary>
         /// Executes this operation. 
         /// </summary>
         /// <param name="dist1">1st distance observation.</param>
@@ -336,19 +317,15 @@ namespace Backsight.Editor.Operations
         /// <param name="pointId">The ID and entity type for the intersect point</param>
         /// <param name="ent1">The entity type for 1st line (null for no line)</param>
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
-        internal void Execute(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2,
-                                bool isdefault, IdHandle pointId, IEntity ent1, IEntity ent2)
+        internal void Execute(IdHandle pointId, IEntity ent1, IEntity ent2)
         {
             // Calculate the position of the point of intersection.
-            IPosition xsect = Calculate(dist1, from1, dist2, from2, isdefault);
+            IPosition xsect = Calculate(m_Distance1, m_From1, m_Distance2, m_From2, m_Default);
             if (xsect==null)
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_To = AddIntersection(xsect, pointId);
-
-            // Remember input
-            SetInput(dist1, from1, dist2, from2, isdefault);
 
             // If we have a defined entity types for lines, add them too.
             CadastralMapModel map = MapModel;
@@ -517,76 +494,78 @@ namespace Backsight.Editor.Operations
         internal bool Correct(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2,
                         bool isdefault, IEntity ent1, IEntity ent2)
         {
-            if ((ent1==null && m_Line1!=null) || (ent2==null && m_Line2!=null))
-                throw new Exception("You cannot delete lines via update. Use Line Delete.");
+            throw new NotImplementedException();
 
-            // Calculate the position of the point of intersection.
-            IPosition xsect = Calculate(dist1, from1, dist2, from2, isdefault);
-            if (xsect==null)
-                return false;
+            //if ((ent1==null && m_Line1!=null) || (ent2==null && m_Line2!=null))
+            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
 
-            // If the from points have changed, cut references to this
-            // operation from the old points, and change it so the
-            // operation is referenced from the new points.
-            if (!Object.ReferenceEquals(m_From1, from1))
-            {
-                m_From1.CutOp(this);
-                m_From1 = from1;
-                m_From1.AddOp(this);
-            }
+            //// Calculate the position of the point of intersection.
+            //IPosition xsect = Calculate(dist1, from1, dist2, from2, isdefault);
+            //if (xsect==null)
+            //    return false;
 
-            if (!Object.ReferenceEquals(m_From2, from2))
-            {
-                m_From2.CutOp(this);
-                m_From2 = from2;
-                m_From2.AddOp(this);
-            }
+            //// If the from points have changed, cut references to this
+            //// operation from the old points, and change it so the
+            //// operation is referenced from the new points.
+            //if (!Object.ReferenceEquals(m_From1, from1))
+            //{
+            //    m_From1.CutOp(this);
+            //    m_From1 = from1;
+            //    m_From1.AddOp(this);
+            //}
 
-            // If either old observation refers to an offset point, cut the
-            // reference that the point has to this op. If nothing has
-            // changed, the reference will be re-inserted when the
-            // observation is re-saved below.
-            CutOffsetRef(m_Distance1);
-            CutOffsetRef(m_Distance2);
+            //if (!Object.ReferenceEquals(m_From2, from2))
+            //{
+            //    m_From2.CutOp(this);
+            //    m_From2 = from2;
+            //    m_From2.AddOp(this);
+            //}
 
-            // Get rid of the previously defined observations, and replace
-            // with the new ones (we can't necessarily change the old ones
-            // because we may have changed the type of observation).
+            //// If either old observation refers to an offset point, cut the
+            //// reference that the point has to this op. If nothing has
+            //// changed, the reference will be re-inserted when the
+            //// observation is re-saved below.
+            //CutOffsetRef(m_Distance1);
+            //CutOffsetRef(m_Distance2);
 
-            m_Distance1.OnRollback(this);
-            m_Distance2.OnRollback(this);
+            //// Get rid of the previously defined observations, and replace
+            //// with the new ones (we can't necessarily change the old ones
+            //// because we may have changed the type of observation).
 
-            m_Distance1 = dist1;
-            m_Distance1.AddReferences(this);
+            //m_Distance1.OnRollback(this);
+            //m_Distance2.OnRollback(this);
 
-            m_Distance2 = dist2;
-            m_Distance2.AddReferences(this);
+            //m_Distance1 = dist1;
+            //m_Distance1.AddReferences(this);
 
-            // Save option about whether we want default intersection or not.
-            m_Default = isdefault;
+            //m_Distance2 = dist2;
+            //m_Distance2.AddReferences(this);
 
-            // If we have defined entity types for lines, and we did not
-            // have a line before, add a new line now.
+            //// Save option about whether we want default intersection or not.
+            //m_Default = isdefault;
 
-            if (ent1!=null)
-            {
-                if (m_Line1==null)
-                    m_Line1 = MapModel.AddLine(m_From1, m_To, ent1, this); // m_To hasn't moved yet!
-                else if (m_Line1.EntityType.Id != ent1.Id)
-                    throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
-                    //m_Line1.EntityType = ent1;
-            }
+            //// If we have defined entity types for lines, and we did not
+            //// have a line before, add a new line now.
 
-            if (ent2!=null)
-            {
-                if (m_Line2==null)
-                    m_Line2 = MapModel.AddLine(m_From2, m_To, ent2, this); // m_To hasn't moved yet!
-                else if (m_Line2.EntityType.Id != ent2.Id)
-                    throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
-                    //m_Line2.EntityType = ent2;
-            }
+            //if (ent1!=null)
+            //{
+            //    if (m_Line1==null)
+            //        m_Line1 = MapModel.AddLine(m_From1, m_To, ent1, this); // m_To hasn't moved yet!
+            //    else if (m_Line1.EntityType.Id != ent1.Id)
+            //        throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
+            //        //m_Line1.EntityType = ent1;
+            //}
 
-            return true;
+            //if (ent2!=null)
+            //{
+            //    if (m_Line2==null)
+            //        m_Line2 = MapModel.AddLine(m_From2, m_To, ent2, this); // m_To hasn't moved yet!
+            //    else if (m_Line2.EntityType.Id != ent2.Id)
+            //        throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
+            //        //m_Line2.EntityType = ent2;
+            //}
+
+            //return true;
         }
 
         /// <summary>

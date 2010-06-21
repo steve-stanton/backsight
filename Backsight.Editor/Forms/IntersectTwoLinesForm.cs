@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using Backsight.Editor.Operations;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -138,8 +139,17 @@ namespace Backsight.Editor.Forms
                 IdHandle pointId = intersectInfo.PointId;
                 PointFeature closeTo = intersectInfo.ClosestPoint;
 
-                op = new IntersectTwoLinesOperation(Session.WorkingSession);
-                op.Execute(line1, line2, closeTo, wantSplit1, wantSplit2, pointId);
+                if (closeTo == null)
+                {
+                    IPosition xsect;
+                    if (!line1.Intersect(line2, null, out xsect, out closeTo))
+                        throw new Exception("Cannot calculate intersection point");
+
+                    Debug.Assert(closeTo != null);
+                }
+
+                op = new IntersectTwoLinesOperation(Session.WorkingSession, 0, line1, line2, closeTo);
+                op.Execute(wantSplit1, wantSplit2, pointId);
                 return op.IntersectionPoint;
             }
 

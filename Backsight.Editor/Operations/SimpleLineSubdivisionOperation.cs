@@ -36,12 +36,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line the point sits on. This line gets de-activated.
         /// </summary>
-        LineFeature m_Line;
+        readonly LineFeature m_Line;
 
         /// <summary>
         /// The distance to the point. A negated distance refers to the distance from the end of the line.
         /// </summary>
-        Distance m_Distance;
+        readonly Distance m_Distance;
         
         // Creations ...
 
@@ -65,31 +65,20 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal SimpleLineSubdivisionOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="splitLine">The line to split.</param>
+        /// <param name="dist">The distance to the split point (specify a negated distance
+        /// if it's from the end of the line).</param>
+        internal SimpleLineSubdivisionOperation(Session session, uint sequence, LineFeature splitLine, Distance dist)
+            : base(session, sequence)
         {
-            m_Line = null;
-            m_Distance = null;
-            m_NewLine1 = null;
-            m_NewPoint = null;
-            m_NewLine2 = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal SimpleLineSubdivisionOperation(Session s)
-            : this(s, 0)
-        {
+            m_Line = splitLine;
+            m_Distance = dist;
         }
 
         #endregion
@@ -150,37 +139,14 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="splitLine">The line to split.</param>
-        /// <param name="dist">The distance to the split point (specify a negated distance
-        /// if it's from the end of the line).</param>
-        internal void SetInput(LineFeature splitLine, Distance dist)
-        {
-            m_Line = splitLine;
-            m_Distance = dist;
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="splitLine">The line to split.</param>
-        /// <param name="dist">The distance to the split point.</param>
-        /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
-        internal void Execute(LineFeature splitLine, Distance dist, bool isFromEnd)
+        internal void Execute()
         {
             // Calculate the position of the point.
-            IPosition splitpos = PointOnLineUI.Calculate(splitLine, dist, isFromEnd);
+            IPosition splitpos = Calculate();
             if (splitpos==null)
                 throw new Exception("Cannot calculate split position");
-
-            // Remember the line that got split.
-            m_Line = splitLine;
-
-            // Save the observed distance (negated if it's from the end of the line).
-            m_Distance = new Distance(dist);
-            if (isFromEnd)
-                m_Distance.SetNegative();
 
             // Add the split location (with no ID and default entity type).
             CadastralMapModel map = MapModel;
@@ -224,16 +190,18 @@ namespace Backsight.Editor.Operations
         /// <returns>True if changes made ok (always true).</returns>
         internal bool Correct(Distance dist, bool isFromEnd)
         {
-            // Change the distance.
-            m_Distance = new Distance(dist);
+            throw new NotImplementedException();
 
-            // And make sure the sign is correct.
-            if (isFromEnd)
-                m_Distance.SetNegative();
-            else
-                m_Distance.SetPositive();
+            //// Change the distance.
+            //m_Distance = new Distance(dist);
 
-            return true;
+            //// And make sure the sign is correct.
+            //if (isFromEnd)
+            //    m_Distance.SetNegative();
+            //else
+            //    m_Distance.SetPositive();
+
+            //return true;
         }
 
         /// <summary>
@@ -307,7 +275,6 @@ namespace Backsight.Editor.Operations
 
             // Get rid of observed distance.
             m_Distance.OnRollback(this);
-            m_Distance = null;
 
             // Mark created features for undo
             Rollback(m_NewLine1);

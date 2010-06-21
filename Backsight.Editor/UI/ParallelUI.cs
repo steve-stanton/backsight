@@ -543,17 +543,27 @@ namespace Backsight.Editor.UI
             }
             else
             {
-                // Create the persistent edit (adds to current session)
-                ParallelLineOperation op = new ParallelLineOperation(Session.WorkingSession);
-                bool ok = false;
-                
-                if (m_Offset!=null)
-                    ok = op.Execute(m_Line, m_Offset, m_TermLine1, m_TermLine2, m_IsReversed);
-                else if (m_OffsetPoint!=null)
-                    ok = op.Execute(m_Line, new OffsetPoint(m_OffsetPoint), m_TermLine1, m_TermLine2, m_IsReversed);
+                Observation offset = m_Offset;
+                if (offset == null && m_OffsetPoint != null)
+                    offset = new OffsetPoint(m_OffsetPoint);
+                Debug.Assert(offset!= null);
 
-                if (!ok)
+                // Execute the edit
+                ParallelLineOperation op = null;
+
+                try
+                {
+                    op = new ParallelLineOperation(Session.WorkingSession, 0, m_Line, offset,
+                        m_TermLine1, m_TermLine2, m_IsReversed);
+                    op.Execute();
+                }
+
+                catch (Exception ex)
+                {
                     Session.WorkingSession.Remove(op);
+                    MessageBox.Show(ex.Message);
+                    return false;
+                }
             }
 
             // Destroy the dialog(s).

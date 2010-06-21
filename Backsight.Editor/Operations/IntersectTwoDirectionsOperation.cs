@@ -32,12 +32,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The first observed direction
         /// </summary>
-        Direction m_Direction1;
+        readonly Direction m_Direction1;
 
         /// <summary>
         /// The second observed direction
         /// </summary>
-        Direction m_Direction2;
+        readonly Direction m_Direction2;
 
         // Creations ...
 
@@ -63,34 +63,19 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class.
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal IntersectTwoDirectionsOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="dir1">The first observed direction</param>
+        /// <param name="dir2">The second observed direction</param>
+        internal IntersectTwoDirectionsOperation(Session session, uint sequence, Direction dir1, Direction dir2)
+            : base(session, sequence)
         {
-            m_Direction1 = null;
-            m_Direction2 = null;
-            m_To = null;
-            m_Line1 = null;
-            m_Line2 = null;
-
-            /*
-             */
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectTwoDirectionsOperation(Session s)
-            : this(s, 0)
-        {
+            m_Direction1 = dir1;
+            m_Direction2 = dir2;
         }
 
         #endregion
@@ -261,27 +246,21 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation. 
         /// </summary>
-        /// <param name="dir1">First direction observation.</param>
-        /// <param name="dir2">Second direction observation.</param>
         /// <param name="pointId">The ID and entity type for the intersect point
         /// If null, the default entity type for point features will be used.</param>
         /// <param name="lineEnt1">The entity type for a line connecting the 1st direction to the
         /// intersection (null for no line)</param>
         /// <param name="lineEnt2">The entity type for a line connecting the 2nd direction to the
         /// intersection (null for no line)</param>
-        internal void Execute(Direction dir1, Direction dir2, IdHandle pointId, IEntity lineEnt1, IEntity lineEnt2)
+        internal void Execute(IdHandle pointId, IEntity lineEnt1, IEntity lineEnt2)
         {
             // Calculate the position of the point of intersection.
-            IPosition xsect = dir1.Intersect(dir2);
+            IPosition xsect = m_Direction1.Intersect(m_Direction2);
             if (xsect==null)
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_To = AddIntersection(xsect, pointId);
-
-            // Remember input
-            m_Direction1 = dir1;
-            m_Direction2 = dir2;
 
             // If we have a defined entity types for lines, add them too.
             CadastralMapModel map = MapModel;
@@ -342,65 +321,67 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation updated ok.</returns>
         internal bool Correct(Direction dir1, Direction dir2, IEntity lineEnt1, IEntity lineEnt2)
         {
-            if ((lineEnt1==null && m_Line1!=null) || (lineEnt2==null && m_Line2!=null))
-                throw new Exception("You cannot delete lines via update. Use Line Delete.");
+            throw new NotImplementedException();
 
-            // Calculate the position of the point of intersection.
-            IPosition xsect = dir1.Intersect(dir2);
-            if (xsect==null)
-                return false;
+            //if ((lineEnt1==null && m_Line1!=null) || (lineEnt2==null && m_Line2!=null))
+            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
 
-            // Cut the references made by the direction objects. If nothing
-            // has changed, the references will be re-inserted when the
-            // direction is re-saved below.
-            m_Direction1.CutRef(this);
-            m_Direction2.CutRef(this);
+            //// Calculate the position of the point of intersection.
+            //IPosition xsect = dir1.Intersect(dir2);
+            //if (xsect==null)
+            //    return false;
 
-            // Get rid of the previously defined observations, and replace
-            // with the new ones (we can't necessarily change the old ones
-            // because we may have changed the type of observation).
+            //// Cut the references made by the direction objects. If nothing
+            //// has changed, the references will be re-inserted when the
+            //// direction is re-saved below.
+            //m_Direction1.CutRef(this);
+            //m_Direction2.CutRef(this);
 
-            m_Direction1.OnRollback(this);
-            m_Direction2.OnRollback(this);
+            //// Get rid of the previously defined observations, and replace
+            //// with the new ones (we can't necessarily change the old ones
+            //// because we may have changed the type of observation).
 
-            m_Direction1 = dir1;
-            m_Direction1.AddReferences(this);
+            //m_Direction1.OnRollback(this);
+            //m_Direction2.OnRollback(this);
 
-            m_Direction2 = dir2;
-            m_Direction2.AddReferences(this);
+            //m_Direction1 = dir1;
+            //m_Direction1.AddReferences(this);
 
-            // If we have defined entity types for lines, and we did not
-            // have a line before, add a new line now.
+            //m_Direction2 = dir2;
+            //m_Direction2.AddReferences(this);
 
-            if (lineEnt1!=null)
-            {
-                if (m_Line1==null)
-                {
-                    CadastralMapModel map = MapModel;
-                    IPosition start = m_Direction1.StartPosition;
-                    PointFeature ps = map.EnsurePointExists(start, this);
-                    m_Line1 = map.AddLine(ps, m_To, lineEnt1, this);
-                }
-                else if (m_Line1.EntityType.Id != lineEnt1.Id)
-                    throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
-                    //m_Line1.EntityType = lineEnt1;
-            }
+            //// If we have defined entity types for lines, and we did not
+            //// have a line before, add a new line now.
 
-            if (lineEnt2!=null)
-            {
-                if (m_Line2==null)
-                {
-                    CadastralMapModel map = MapModel;
-                    IPosition start = m_Direction2.StartPosition;
-                    PointFeature ps = map.EnsurePointExists(start, this);
-                    m_Line2 = map.AddLine(ps, m_To, lineEnt2, this);
-                }
-                else if (m_Line2.EntityType.Id != lineEnt2.Id)
-                    throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
-                    //m_Line2.EntityType = lineEnt2;
-            }
+            //if (lineEnt1!=null)
+            //{
+            //    if (m_Line1==null)
+            //    {
+            //        CadastralMapModel map = MapModel;
+            //        IPosition start = m_Direction1.StartPosition;
+            //        PointFeature ps = map.EnsurePointExists(start, this);
+            //        m_Line1 = map.AddLine(ps, m_To, lineEnt1, this);
+            //    }
+            //    else if (m_Line1.EntityType.Id != lineEnt1.Id)
+            //        throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
+            //        //m_Line1.EntityType = lineEnt1;
+            //}
 
-            return true;
+            //if (lineEnt2!=null)
+            //{
+            //    if (m_Line2==null)
+            //    {
+            //        CadastralMapModel map = MapModel;
+            //        IPosition start = m_Direction2.StartPosition;
+            //        PointFeature ps = map.EnsurePointExists(start, this);
+            //        m_Line2 = map.AddLine(ps, m_To, lineEnt2, this);
+            //    }
+            //    else if (m_Line2.EntityType.Id != lineEnt2.Id)
+            //        throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
+            //        //m_Line2.EntityType = lineEnt2;
+            //}
+
+            //return true;
         }
 
         /// <summary>
@@ -412,16 +393,5 @@ namespace Backsight.Editor.Operations
             PointGeometry pg = PointGeometry.Create(p);
             m_To.PointGeometry = pg;
         }
-
-        /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="dir">Direction observation.</param>
-        internal void SetInput(Direction dir1, Direction dir2)
-        {
-            m_Direction1 = dir1;
-            m_Direction2 = dir2;
-        }
-
     }
 }

@@ -31,18 +31,18 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The 1st line to intersect.
         /// </summary>
-        LineFeature m_Line1;
+        readonly LineFeature m_Line1;
 
         /// <summary>
         /// The 2nd line to intersect.
         /// </summary>
-        LineFeature m_Line2;
+        readonly LineFeature m_Line2;
 
         /// <summary>
         /// The point closest to the intersection (usually defaulted to one of
         /// the end points for the 2 lines).
         /// </summary>
-        PointFeature m_CloseTo;
+        readonly PointFeature m_CloseTo;
 
         // Creations ...
 
@@ -90,34 +90,25 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoLinesOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal IntersectTwoLinesOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
+        /// <param name="session">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal IntersectTwoLinesOperation(Session s, uint sequence)
-            : base(s, sequence)
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point the intersection has to be close to. Used if
+        /// there is more than one intersection to choose from. If null is specified, a
+        /// default point will be selected.</param>
+        internal IntersectTwoLinesOperation(Session session, uint sequence, LineFeature line1, LineFeature line2,
+                                                PointFeature closeTo)
+            : base(session, sequence)
         {
-            m_Line1 = null;
-            m_Line2 = null;
-            m_CloseTo = null;
-            m_Intersection = null;
-            m_Line1a = null;
-            m_Line1b = null;
-            m_Line2a = null;
-            m_Line2b = null;
-            m_IsSplit1 = false;
-            m_IsSplit2 = false;
+            if (line1==null || line2==null || closeTo==null)
+                throw new ArgumentNullException();
+
+            m_Line1 = line1;
+            m_Line2 = line2;
+            m_CloseTo = closeTo;
         }
 
         #endregion
@@ -356,36 +347,20 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="line1">The 1st line to intersect.</param>
-        /// <param name="line2">The 2nd line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
         /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
         /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
         /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
-        internal void Execute(LineFeature line1, LineFeature line2, PointFeature closeTo,
-                                bool wantsplit1, bool wantsplit2, IdHandle pointId)
+        internal void Execute(bool wantsplit1, bool wantsplit2, IdHandle pointId)
         {
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
-            if (!line1.Intersect(line2, closeTo, out xsect, out closest))
+            if (!m_Line1.Intersect(m_Line2, m_CloseTo, out xsect, out closest))
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_Intersection = AddIntersection(xsect, pointId);
-
-            // Remember input
-            m_Line1 = line1;
-            m_Line2 = line2;
-
-            // If a close-to point was not specified, use the one we picked.
-            if (closeTo == null)
-                m_CloseTo = closest;
-            else
-                m_CloseTo = closeTo;
-
+            
             // Are we splitting the input lines? If so, do it.
             m_IsSplit1 = wantsplit1;
             if (m_IsSplit1)
@@ -400,52 +375,21 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the input parameters for this edit.
-        /// </summary>
-        /// <param name="line1">The 1st line to intersect.</param>
-        /// <param name="line2">The 2nd line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
-        internal void SetInput(LineFeature line1, LineFeature line2, PointFeature closeTo)
-        {
-            m_Line1 = line1;
-            m_Line2 = line2;
-            m_CloseTo = closeTo;
-        }
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="line1">The 1st line to intersect.</param>
-        /// <param name="line2">The 2nd line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
         /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
         /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
         /// <param name="pointType">The entity type to assign to the intersection point.</param>
-        internal void Execute(LineFeature line1, LineFeature line2, PointFeature closeTo,
-                                bool wantsplit1, bool wantsplit2, IEntity pointType)
+        internal void Execute(bool wantsplit1, bool wantsplit2, IEntity pointType)
         {
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
-            if (!line1.Intersect(line2, closeTo, out xsect, out closest))
+            if (!m_Line1.Intersect(m_Line2, m_CloseTo, out xsect, out closest))
                 throw new Exception("Cannot calculate intersection point");
 
             // Add the intersection point
             m_Intersection = AddIntersection(xsect, pointType);
-
-            // Remember input
-            m_Line1 = line1;
-            m_Line2 = line2;
-
-            // If a close-to point was not specified, use the one we picked.
-            if (closeTo == null)
-                m_CloseTo = closest;
-            else
-                m_CloseTo = closeTo;
 
             // Are we splitting the input lines? If so, do it.
             m_IsSplit1 = wantsplit1;
@@ -474,41 +418,43 @@ namespace Backsight.Editor.Operations
         internal bool Correct(LineFeature line1, LineFeature line2, PointFeature closeTo,
                                 bool wantsplit1, bool wantsplit2)
         {
-            // Disallow attempts to change the split status
+            throw new NotImplementedException();
 
-            if (wantsplit1 != m_IsSplit1 || wantsplit2 != m_IsSplit2)
-                throw new Exception("You cannot make line splits via update.");
+            //// Disallow attempts to change the split status
 
-            // If the lines have changed, cut references to this
-            // operation from the old lines, and change it so the
-            // operation is referenced from the new lines.
+            //if (wantsplit1 != m_IsSplit1 || wantsplit2 != m_IsSplit2)
+            //    throw new Exception("You cannot make line splits via update.");
 
-            if (!Object.ReferenceEquals(m_Line1, line1))
-            {
-                m_Line1.CutOp(this);
-                m_Line1 = line1;
-                m_Line1.AddOp(this);
-            }
+            //// If the lines have changed, cut references to this
+            //// operation from the old lines, and change it so the
+            //// operation is referenced from the new lines.
 
-            if (!Object.ReferenceEquals(m_Line2, line2))
-            {
-                m_Line2.CutOp(this);
-                m_Line2 = line2;
-                m_Line2.AddOp(this);
-            }
+            //if (!Object.ReferenceEquals(m_Line1, line1))
+            //{
+            //    m_Line1.CutOp(this);
+            //    m_Line1 = line1;
+            //    m_Line1.AddOp(this);
+            //}
 
-            if (!Object.ReferenceEquals(m_CloseTo, closeTo))
-            {
-                if (m_CloseTo != null)
-                    m_CloseTo.CutOp(this);
+            //if (!Object.ReferenceEquals(m_Line2, line2))
+            //{
+            //    m_Line2.CutOp(this);
+            //    m_Line2 = line2;
+            //    m_Line2.AddOp(this);
+            //}
 
-                m_CloseTo = closeTo;
+            //if (!Object.ReferenceEquals(m_CloseTo, closeTo))
+            //{
+            //    if (m_CloseTo != null)
+            //        m_CloseTo.CutOp(this);
 
-                if (m_CloseTo != null)
-                    m_CloseTo.AddOp(this);
-            }
+            //    m_CloseTo = closeTo;
 
-            return true;
+            //    if (m_CloseTo != null)
+            //        m_CloseTo.AddOp(this);
+            //}
+
+            //return true;
         }
 
         /// <summary>

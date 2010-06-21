@@ -20,6 +20,7 @@ using System.Drawing;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Forms
 {
@@ -149,8 +150,17 @@ namespace Backsight.Editor.Forms
                 IdHandle pointId = intersectInfo.PointId;
                 PointFeature closeTo = intersectInfo.ClosestPoint;
 
-                op = new IntersectDirectionAndLineOperation(Session.WorkingSession);
-                op.Execute(dir, line, closeTo, wantSplit, pointId, dirEnt);
+                if (closeTo == null)
+                {
+                    IPosition xsect;
+                    if (!dir.Intersect(line, closeTo, out xsect, out closeTo))
+                        throw new Exception("Cannot calculate intersection point");
+
+                    Debug.Assert(closeTo != null);
+                }
+
+                op = new IntersectDirectionAndLineOperation(Session.WorkingSession, 0, dir, line, closeTo);
+                op.Execute(wantSplit, pointId, dirEnt);
                 return op.IntersectionPoint;
             }
 
