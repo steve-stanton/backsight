@@ -13,7 +13,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+
 using Backsight.Environment;
+
 
 namespace Backsight.Editor
 {
@@ -51,5 +54,69 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        public override SpatialType SpatialType
+        {
+            get
+            {
+                switch (m_GeometricType)
+                {
+                    case FeatureGeometry.DirectPoint:
+                    case FeatureGeometry.SharedPoint:
+                        return SpatialType.Point;
+
+                    case FeatureGeometry.Segment:
+                    case FeatureGeometry.Arc:
+                    case FeatureGeometry.MultiSegment:
+                    case FeatureGeometry.Section:
+                        return SpatialType.Line;
+
+                    case FeatureGeometry.KeyText:
+                    case FeatureGeometry.RowText:
+                    case FeatureGeometry.MiscText:
+                        return SpatialType.Text;
+                }
+
+                throw new ApplicationException("Unexpected geometric type: "+m_GeometricType);
+            }
+        }
+
+        /// <summary>
+        /// Draws this object on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        public override void Render(ISpatialDisplay display, IDrawStyle style)
+        {
+        }
+
+        /// <summary>
+        /// The covering rectangle that encloses this feature.
+        /// </summary>
+        /// <value>Null (always)</value>
+        public override IWindow Extent
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        /// The shortest distance between this object and the specified position.
+        /// </summary>
+        /// <param name="point">The position of interest</param>
+        /// <returns>
+        /// The shortest distance between the specified position and this object (always null).
+        /// </returns>
+        public override ILength Distance(IPosition point)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.Stub; }
+        }
     }
 }

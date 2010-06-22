@@ -901,5 +901,10 @@ namespace Backsight.Editor
         {
             return false;
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal abstract FeatureGeometry Representation { get; }
     }
 }

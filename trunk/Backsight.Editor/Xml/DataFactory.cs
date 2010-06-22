@@ -122,6 +122,7 @@ namespace Backsight.Editor.Xml
             AddMapping("RowTextFeature", "RowTextData");
             AddMapping("SectionLineFeature", "SectionData");
             AddMapping("SharedPointFeature", "SharedPointData");
+            AddMapping("FeatureStub", "FeatureStubData");
         }
 
         #endregion

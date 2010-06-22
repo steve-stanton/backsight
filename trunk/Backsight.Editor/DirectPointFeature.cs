@@ -53,5 +53,13 @@ namespace Backsight.Editor
             : base(iid, fid, ent, creator, g)
         {
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.DirectPoint; }
+        }
     }
 }

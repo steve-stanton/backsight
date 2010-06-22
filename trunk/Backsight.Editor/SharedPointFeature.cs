@@ -56,5 +56,13 @@ namespace Backsight.Editor
                 return (n == null ? null : n.FirstPoint);
             }
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.SharedPoint; }
+        }
     }
 }

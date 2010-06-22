@@ -61,5 +61,13 @@ namespace Backsight.Editor
                 return (geom == null ? null : geom.BaseLine);
             }
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.Section; }
+        }
     }
 }

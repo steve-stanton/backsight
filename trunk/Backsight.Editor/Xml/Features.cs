@@ -258,6 +258,35 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    partial class FeatureStubData
+    {
+        public FeatureStubData()
+        {
+        }
+
+        internal FeatureStubData(FeatureGeometry g)
+        {
+            this.Geometry = (uint)g;
+        }
+
+        internal FeatureStubData(Feature f)
+            : this(f, true)
+        {
+        }
+
+        internal FeatureStubData(Feature f, bool allFields)
+            : base(f, allFields)
+        {
+            this.Geometry = (uint)f.Representation;
+        }
+
+        internal FeatureStubData(Feature f, int defaultEntityId)
+            : base(f, defaultEntityId)
+        {
+            this.Geometry = (uint)f.Representation;
+        }
+    }
+
     /// <summary>
     /// A serialized line feature with geometry defined by a circular arc.
     /// </summary>
