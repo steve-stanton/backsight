@@ -22,6 +22,12 @@ namespace Backsight.Editor
     enum FeatureGeometry
     {
         /// <summary>
+        /// A feature stub, having no geometry
+        /// (corresponding to the <see cref="FeatureStub"/> class)
+        /// </summary>
+        Stub = 0,
+
+        /// <summary>
         /// A point with an explicit position
         /// (corresponding to the <see cref="DirectPointFeature"/> class)
         /// </summary>
@@ -50,6 +56,12 @@ namespace Backsight.Editor
         /// (corresponding to the <see cref="MultiSegmentLineFeature"/> class).
         /// </summary>
         MultiSegment = 22,
+
+        /// <summary>
+        /// A line that coincides with a section of another line
+        /// (corresponding to the <see cref="SectionLineFeature"/> class).
+        /// </summary>
+        Section = 23,
 
         /// <summary>
         /// A text label that portrays the user-perceived ID for a feature

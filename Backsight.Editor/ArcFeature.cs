@@ -191,5 +191,13 @@ namespace Backsight.Editor
             else
                 base.Render(display, style);
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.Arc; }
+        }
     }
 }

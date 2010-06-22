@@ -49,5 +49,13 @@ namespace Backsight.Editor
             : base(iid, fid, ent, creator, geom, isTopological, polPosition)
         {
         }
+
+        /// <summary>
+        /// A value indicating the type of geometry used to represent this feature.
+        /// </summary>
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.RowText; }
+        }
     }
 }
