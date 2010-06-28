@@ -46,7 +46,7 @@ namespace Backsight.Editor.Xml
             {
                 this.Entity = f.EntityType.Id;
 
-                FeatureId fid = f.Id;
+                FeatureId fid = f.FeatureId;
                 if (fid != null)
                 {
                     if (fid is NativeId)
@@ -73,7 +73,7 @@ namespace Backsight.Editor.Xml
             if (f.EntityType.Id != defaultEntityId)
                 this.Entity = f.EntityType.Id;
 
-            FeatureId fid = f.Id;
+            FeatureId fid = f.FeatureId;
             if (fid != null)
             {
                 if (fid is NativeId)
@@ -101,20 +101,18 @@ namespace Backsight.Editor.Xml
 
         /// <summary>
         /// Creates an instance of <see cref="DirectPointFeature"/> using the information stored
-        /// in this data instance.
+        /// in this data instance, with no geometry.
         /// </summary>
         /// <param name="creator">The operation creating the feature (not null). Expected to
         /// refer to an editing session that is consistent with the session ID that is part
         /// of the feature's internal ID.</param>
-        /// <param name="g">The geometry for the point (could be null, although this is only really
-        /// expected during deserialization)</param>
-        /// <returns></returns>
-        internal DirectPointFeature CreateDirectPointFeature(Operation creator, PointGeometry g)
+        /// <returns>The created point</returns>
+        internal virtual DirectPointFeature CreateDirectPointFeature(Operation creator)
         {
             InternalIdValue iid = new InternalIdValue(this.Id);
             FeatureId fid = GetFeatureId(creator.MapModel);
             IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new DirectPointFeature(iid, fid, e, creator, g);
+            return new DirectPointFeature(iid, fid, e, creator, null);
         }
 
         /// <summary>
@@ -461,10 +459,11 @@ namespace Backsight.Editor.Xml
         /// </summary>
         /// <param name="op">The editing operation the feature is part of</param>
         /// <returns>The created feature</returns>
-        internal DirectPointFeature CreateDirectPointFeature(Operation op)
+        internal override DirectPointFeature CreateDirectPointFeature(Operation op)
         {
-            PointGeometry g = new PointGeometry(this.X, this.Y);
-            return base.CreateDirectPointFeature(op, g);
+            DirectPointFeature result = base.CreateDirectPointFeature(op);
+            result.PointGeometry = new PointGeometry(this.X, this.Y);
+            return result;
         }
     }
 

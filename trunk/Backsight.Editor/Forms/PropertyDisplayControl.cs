@@ -116,9 +116,9 @@ namespace Backsight.Editor.Forms
             if (f == null && so is Polygon)
                 f = (so as Polygon).Label;
 
-            if (f != null && f.Id != null)
+            if (f != null && f.FeatureId != null)
             {
-                FeatureId fid = f.Id;
+                FeatureId fid = f.FeatureId;
                 IPossibleList<Row> rows = fid.Rows;
                 if (rows != null)
                 {

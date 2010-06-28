@@ -1155,7 +1155,7 @@ void CeLeg::MakeText ( const CeVertex& bs
 
                 // If the point at the end of the span was created by the operation, and
                 // an ID has not already been assigned, assign the next available ID
-                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.Id==null)
+                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.FeatureId==null)
                     endPoint.SetNextId();                
 
                 // Add non-topological line to the map.
@@ -1309,7 +1309,7 @@ void CeLeg::MakeText ( const CeVertex& bs
 
                 // If the point at the end of the span was created by the operation, and
                 // an ID has not already been assigned, assign the next available ID
-                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.Id==null)
+                if (Object.ReferenceEquals(endPoint.Creator, op) && endPoint.FeatureId==null)
                     endPoint.SetNextId();
 
                 // Add non-topological line to the map.

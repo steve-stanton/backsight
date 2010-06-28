@@ -37,7 +37,7 @@ namespace Backsight.Editor
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
     [DefaultProperty("EntityType")]
-    abstract class Feature : ISpatialObject, IPossibleList<Feature>
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature
     {
         #region Class data
 
@@ -52,10 +52,10 @@ namespace Backsight.Editor
         /// (during initial creation of features, the <see cref="Operation.Complete"/>
         /// method is responsible for defining the sequence number).
         /// </summary>
-        private uint m_CreatorSequence;
+        private uint m_SessionSequence;
 
         /// <summary>
-        /// What sort of thing is it?
+        /// The type of real-world object that the feature corresponds to.
         /// </summary>
         private IEntity m_What;
 
@@ -85,7 +85,6 @@ namespace Backsight.Editor
         /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
         protected Feature(IEntity e, Operation creator)
-            //: base(creator.MapModel)
         {
             if (e==null)
                 throw new ArgumentNullException("Entity type must be defined");
@@ -95,7 +94,7 @@ namespace Backsight.Editor
 
             m_What = e;
             m_Creator = creator;
-            m_CreatorSequence = 0;
+            m_SessionSequence = 0;
         }
 
         /// <summary>
@@ -119,7 +118,7 @@ namespace Backsight.Editor
             Debug.Assert(iid.SessionId == creator.Session.Id);
 
             m_Creator = creator;
-            m_CreatorSequence = iid.ItemSequence;
+            m_SessionSequence = iid.ItemSequence;
             m_What = ent;
             m_References = null;
             m_Flag = 0;
@@ -135,6 +134,32 @@ namespace Backsight.Editor
             creator.MapModel.AddFeature(this);
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Feature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="f">Basic information for the feature</param>
+        protected Feature(IFeature f)
+        {
+            m_Creator = f.Creator;
+            m_SessionSequence = f.SessionSequence;
+            m_What = f.EntityType;
+            m_References = null;
+            m_Flag = 0;
+
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            if (f.FeatureId != null)
+            {
+                f.FeatureId.Add(this);
+                Debug.Assert(m_Id == f.FeatureId);
+            }
+
+            // Remember this feature as part of the model
+            m_Creator.MapModel.AddFeature(this);
+        }
+
+
         #endregion
 
         /// <summary>
@@ -143,10 +168,10 @@ namespace Backsight.Editor
         /// (during initial creation of features, the <see cref="Operation.Complete"/>
         /// method is responsible for defining the sequence number).
         /// </summary>
-        internal uint CreatorSequence
+        public uint SessionSequence
         {
-            get { return m_CreatorSequence; }
-            set { m_CreatorSequence = value; }
+            get { return m_SessionSequence; }
+            internal set { m_SessionSequence = value; }
         }
 
         abstract public SpatialType SpatialType { get; }
@@ -168,7 +193,7 @@ namespace Backsight.Editor
             get
             {
                 uint sessionId = m_Creator.Session.Id;
-                return InternalIdValue.Format(sessionId, m_CreatorSequence);
+                return InternalIdValue.Format(sessionId, m_SessionSequence);
             }
         }
 
@@ -177,7 +202,7 @@ namespace Backsight.Editor
             get
             {
                 uint sessionId = m_Creator.Session.Id;
-                return new InternalIdValue(sessionId, m_CreatorSequence);
+                return new InternalIdValue(sessionId, m_SessionSequence);
             }
         }
 
@@ -187,7 +212,7 @@ namespace Backsight.Editor
         /// that may be held in a database.
         /// </summary>
         [Description("Unique ID")]
-        public FeatureId Id
+        public FeatureId FeatureId
         {
             get { return m_Id; }
         }

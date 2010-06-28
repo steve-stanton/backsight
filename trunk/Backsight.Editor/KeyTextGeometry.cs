@@ -69,7 +69,7 @@ namespace Backsight.Editor
         {
             get
             {
-                FeatureId id = (m_Feature==null ? null : m_Feature.Id);
+                FeatureId id = (m_Feature==null ? null : m_Feature.FeatureId);
                 return (id==null ? "?" : id.FormattedKey);
             }
         }

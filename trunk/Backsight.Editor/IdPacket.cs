@@ -472,7 +472,7 @@ namespace Backsight.Editor
                 throw new Exception("IdPacket.CreateId - New ID is not in range!");
 
             // Confirm that the feature does not already have an ID.
-            if (feature.Id!=null)
+            if (feature.FeatureId!=null)
                 throw new Exception("IdPacket.CreateId - Feature already has an ID.");
 
             // Confirm that the packet does not already refer to an active ID.

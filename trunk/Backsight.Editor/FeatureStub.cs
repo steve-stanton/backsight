@@ -21,16 +21,31 @@ using Backsight.Environment;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// A placeholder for a spatial feature, used during deserialization from the database.
+    /// Basic information for a spatial feature, used during deserialization from the database.
     /// </summary>
-    class FeatureStub : Feature
+    class FeatureStub : IFeature
     {
         #region Class data
 
         /// <summary>
-        /// The type of geometry that is used for the feature (when converted from a stub).
+        /// The editing operation that created the feature (not null).
         /// </summary>
-        readonly FeatureGeometry m_GeometricType;
+        readonly Operation m_Creator;
+
+        /// <summary>
+        /// The 1-based creation sequence of the feature within the session that created it.
+        /// </summary>
+        readonly uint m_SessionSequence;
+
+        /// <summary>
+        /// The type of real-world object that the feature corresponds to.
+        /// </summary>
+        readonly IEntity m_What;
+
+        /// <summary>
+        /// The ID of the feature (may be shared by multiple features).
+        /// </summary>
+        readonly FeatureId m_Id;
 
         #endregion
 
@@ -39,84 +54,60 @@ namespace Backsight.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureStub"/> class
         /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature.</param>
+        /// <param name="creator">The editing operation that created the feature.</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of the feature within
+        /// the session that created it.</param>
         /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
-        internal FeatureStub(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator, FeatureGeometry geometricType)
-            : base(iid, fid, ent, creator)
+        internal FeatureStub(Operation creator, uint sessionSequence, IEntity ent, FeatureId fid)
         {
-            m_GeometricType = geometricType;
+            if (creator == null || ent == null)
+                throw new ArgumentNullException();
+
+            m_Creator = creator;
+            m_SessionSequence = sessionSequence;
+            m_What = ent;
+            m_Id = fid;
         }
 
         #endregion
 
-        public override SpatialType SpatialType
+        #region IFeature Members
+
+        /// <summary>
+        /// The editing operation that created the feature (not null).
+        /// </summary>
+        public Operation Creator
         {
-            get
-            {
-                switch (m_GeometricType)
-                {
-                    case FeatureGeometry.DirectPoint:
-                    case FeatureGeometry.SharedPoint:
-                        return SpatialType.Point;
-
-                    case FeatureGeometry.Segment:
-                    case FeatureGeometry.Arc:
-                    case FeatureGeometry.MultiSegment:
-                    case FeatureGeometry.Section:
-                        return SpatialType.Line;
-
-                    case FeatureGeometry.KeyText:
-                    case FeatureGeometry.RowText:
-                    case FeatureGeometry.MiscText:
-                        return SpatialType.Text;
-                }
-
-                throw new ApplicationException("Unexpected geometric type: "+m_GeometricType);
-            }
+            get { return m_Creator; }
         }
 
         /// <summary>
-        /// Draws this object on the specified display
+        /// The 1-based creation sequence of the feature within the session that created it.
         /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="style">The drawing style</param>
-        public override void Render(ISpatialDisplay display, IDrawStyle style)
+        public uint SessionSequence
         {
+            get { return m_SessionSequence; }
         }
 
         /// <summary>
-        /// The covering rectangle that encloses this feature.
+        /// The type of real-world object that the feature corresponds to (not null).
         /// </summary>
-        /// <value>Null (always)</value>
-        public override IWindow Extent
+        public IEntity EntityType
         {
-            get { return null; }
+            get { return m_What; }
         }
 
         /// <summary>
-        /// The shortest distance between this object and the specified position.
+        /// The ID of the feature (may be shared by multiple features).
         /// </summary>
-        /// <param name="point">The position of interest</param>
-        /// <returns>
-        /// The shortest distance between the specified position and this object (always null).
-        /// </returns>
-        public override ILength Distance(IPosition point)
+        public FeatureId FeatureId
         {
-            return null;
+            get { return m_Id; }
         }
 
-        /// <summary>
-        /// A value indicating the type of geometry used to represent this feature.
-        /// </summary>
-        internal override FeatureGeometry Representation
-        {
-            get { return FeatureGeometry.Stub; }
-        }
+        #endregion
     }
 }
