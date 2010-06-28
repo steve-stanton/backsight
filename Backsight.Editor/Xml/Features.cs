@@ -109,10 +109,8 @@ namespace Backsight.Editor.Xml
         /// <returns>The created point</returns>
         internal virtual DirectPointFeature CreateDirectPointFeature(Operation creator)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new DirectPointFeature(iid, fid, e, creator, null);
+            IFeature f = GetFeatureStub(creator);
+            return new DirectPointFeature(f, null);
         }
 
         /// <summary>
@@ -127,90 +125,64 @@ namespace Backsight.Editor.Xml
         /// <returns></returns>
         internal SharedPointFeature CreateSharedPointFeature(Operation creator, PointFeature firstPoint)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new SharedPointFeature(iid, fid, e, creator, firstPoint);
+            IFeature f = GetFeatureStub(creator);
+            return new SharedPointFeature(f, firstPoint);
         }
 
         internal ArcFeature CreateArcFeature(Operation creator, PointFeature start, PointFeature end,
                                                 ArcGeometry g, bool isTopological)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return CreateArcFeature(e, creator, start, end, g, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new ArcFeature(f, start, end, g, isTopological);
         }
 
         internal ArcFeature CreateArcFeature(Operation creator, PointFeature start, PointFeature end,
                                                 ArcGeometry g)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return CreateArcFeature(e, creator, start, end, g, e.IsPolygonBoundaryValid);
-        }
-
-        ArcFeature CreateArcFeature(IEntity e, Operation creator, PointFeature start, PointFeature end,
-                                                ArcGeometry g, bool isTopological)
-        {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            return new ArcFeature(iid, fid, e, creator, start, end, g, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new ArcFeature(f, start, end, g, f.EntityType.IsPolygonBoundaryValid);
         }
 
         internal MultiSegmentLineFeature CreateMultiSegmentLineFeature(Operation creator,
             PointFeature start, PointFeature end, MultiSegmentGeometry g, bool isTopological)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new MultiSegmentLineFeature(iid, fid, e, creator, start, end, g, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new MultiSegmentLineFeature(f, start, end, g, isTopological);
         }
 
         internal SegmentLineFeature CreateSegmentLineFeature(Operation creator,
             PointFeature start, PointFeature end, bool isTopological)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return CreateSegmentLineFeature(e, creator, start, end, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new SegmentLineFeature(f, start, end, isTopological);
         }
 
         internal SegmentLineFeature CreateSegmentLineFeature(Operation creator,
             PointFeature start, PointFeature end)
         {
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return CreateSegmentLineFeature(e, creator, start, end, e.IsPolygonBoundaryValid);
-        }
-
-        SegmentLineFeature CreateSegmentLineFeature(IEntity e, Operation creator,
-            PointFeature start, PointFeature end, bool isTopological)
-        {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            return new SegmentLineFeature(iid, fid, e, creator, start, end, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new SegmentLineFeature(f, start, end, f.EntityType.IsPolygonBoundaryValid);
         }
 
         internal SectionLineFeature CreateSectionLineFeature(Operation creator,
             LineFeature baseLine, PointFeature start, PointFeature end, bool isTopological)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new SectionLineFeature(iid, fid, e, creator, baseLine, start, end, isTopological);
+            IFeature f = GetFeatureStub(creator);
+            return new SectionLineFeature(f, baseLine, start, end, isTopological);
         }
 
         internal MiscTextFeature CreateMiscTextFeature(Operation creator, MiscTextGeometry geom,
             bool isTopological, PointGeometry polPosition)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new MiscTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
+            IFeature f = GetFeatureStub(creator);
+            return new MiscTextFeature(f, geom, isTopological, polPosition);
         }
 
         internal KeyTextFeature CreateKeyTextFeature(Operation creator, KeyTextGeometry geom,
             bool isTopological, PointGeometry polPosition)
         {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            KeyTextFeature result = new KeyTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
+            IFeature f = GetFeatureStub(creator);
+            KeyTextFeature result = new KeyTextFeature(f, geom, isTopological, polPosition);
             geom.Label = result;
             return result;
         }
@@ -218,11 +190,17 @@ namespace Backsight.Editor.Xml
         internal RowTextFeature CreateRowTextFeature(Operation creator, RowTextContent geom,
             bool isTopological, PointGeometry polPosition)
         {
+            IFeature f = GetFeatureStub(creator);
+            RowTextFeature result = new RowTextFeature(f, geom, isTopological, polPosition);
+            return result;
+        }
+
+        IFeature GetFeatureStub(Operation creator)
+        {
             InternalIdValue iid = new InternalIdValue(this.Id);
             FeatureId fid = GetFeatureId(creator.MapModel);
             IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            RowTextFeature result = new RowTextFeature(iid, fid, e, creator, geom, isTopological, polPosition);
-            return result;
+            return new FeatureStub(creator, iid.ItemSequence, e, fid);
         }
 
         /// <summary>

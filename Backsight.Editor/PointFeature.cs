@@ -82,19 +82,11 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="PointFeature"/> class (with geometry that
         /// isn't shared with any other point), and records it as part of the map model.
         /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
-        /// this will be modified by cross-referencing it to the newly created feature.</param>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
+        /// <param name="f">Basic information about the feature.</param>
         /// <param name="g">The geometry for the point (could be null, although this is only really
         /// expected during deserialization)</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
-        /// <paramref name="creator"/> is null.</exception>
-        protected PointFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator, PointGeometry g)
-            : base(iid, fid, ent, creator)
+        protected PointFeature(IFeature f, PointGeometry g)
+            : base(f)
         {
             if (g == null)
                 m_Geom = null;
@@ -106,18 +98,12 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="PointFeature"/> class, and records it
         /// as part of the map model.
         /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
-        /// this will be modified by cross-referencing it to the newly created feature.</param>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
+        /// <param name="f">Basic information about the feature (not null)</param>
         /// <param name="firstPoint">The point feature that the new point coincides with (not null)</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
-        /// <paramref name="creator"/> or <paramref name="firstPoint"/> is null.</exception>
-        protected PointFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator, PointFeature firstPoint)
-            : base(iid, fid, ent, creator)
+        /// <exception cref="ArgumentNullException">If either <paramref name="f"/> or
+        /// <paramref name="firstPoint"/> is null.</exception>
+        protected PointFeature(IFeature f, PointFeature firstPoint)
+            : base(f)
         {
             if (firstPoint == null)
                 throw new ArgumentNullException("Cannot create shared point feature");

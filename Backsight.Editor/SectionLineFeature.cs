@@ -32,21 +32,15 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="SectionLineFeature"/> class, and records it
         /// as part of the map model.
         /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
-        /// this will be modified by cross-referencing it to the newly created feature.</param>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
+        /// <param name="f">Basic information about the feature (not null).</param>
         /// <param name="baseLine">The line that this section is part of</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
-        internal SectionLineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
+        internal SectionLineFeature(IFeature f,
             LineFeature baseLine, PointFeature start, PointFeature end, bool isTopological)
-            : base(iid, fid, ent, creator, start, end, new SectionGeometry(baseLine, start, end), isTopological)
+            : base(f, start, end, new SectionGeometry(baseLine, start, end), isTopological)
         {
         }
 
