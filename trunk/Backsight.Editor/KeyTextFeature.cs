@@ -31,22 +31,14 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="KeyTextFeature"/> class, and records it
         /// as part of the map model.
         /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
-        /// this will be modified by cross-referencing it to the newly created feature.</param>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
+        /// <param name="f">Basic information about the feature (not null).</param>
         /// <param name="geom">The metrics for the text (including the text itself).</param>
         /// <param name="isTopological">Is the new feature expected to act as a polygon label?</param>
         /// <param name="polPosition">The position of the polygon reference position (specify null
         /// if the feature is not a polygon label)</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
-        /// <paramref name="creator"/> is null.</exception>
-        internal KeyTextFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
-            KeyTextGeometry geom, bool isTopological, PointGeometry polPosition)
-            : base(iid, fid, ent, creator, geom, isTopological, polPosition)
+        /// <exception cref="ArgumentNullException">If <paramref name="f"/> is null.</exception>
+        internal KeyTextFeature(IFeature f, KeyTextGeometry geom, bool isTopological, PointGeometry polPosition)
+            : base(f, geom, isTopological, polPosition)
         {
         }
 

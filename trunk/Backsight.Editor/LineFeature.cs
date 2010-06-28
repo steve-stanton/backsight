@@ -84,31 +84,6 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
-        /// as part of the map model. This uses the supplied entity type to determine whether
-        /// the line should be treated as a polygon boundary or not.
-        /// </summary>
-        /// <param name="iid">The internal ID for the feature.</param>
-        /// <param name="fid">The (optional) user-perceived ID for the feature. If not null,
-        /// this will be modified by cross-referencing it to the newly created feature.</param>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
-        /// <param name="start">The point at the start of the line (not null)</param>
-        /// <param name="end">The point at the end of the line (not null)</param>
-        /// <param name="g">The geometry for the line (could be null, although this is only really
-        /// expected during deserialization)</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
-        /// <paramref name="creator"/> or <paramref name="start"/> or <paramref name="end"/> is null.
-        /// </exception>
-        protected LineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
-                                PointFeature start, PointFeature end, LineGeometry g)
-            : this(iid, fid, ent, creator, start, end, g, ent.IsPolygonBoundaryValid)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
         /// as part of the map model.
         /// </summary>
         /// <param name="iid">The internal ID for the feature.</param>
@@ -126,11 +101,10 @@ namespace Backsight.Editor
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> or <paramref name="start"/> or <paramref name="end"/> is null.
         /// </exception>
-        protected LineFeature(InternalIdValue iid, FeatureId fid, IEntity ent, Operation creator,
-                                PointFeature start, PointFeature end, LineGeometry g, bool isTopological)
-            : base(iid, fid, ent, creator)
+        protected LineFeature(IFeature f, PointFeature start, PointFeature end, LineGeometry g, bool isTopological)
+            : base(f)
         {
-            if (ent==null || creator==null || start==null || end==null)
+            if (start == null || end == null)
                 throw new ArgumentNullException();
 
             m_From = start;
