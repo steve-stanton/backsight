@@ -44,7 +44,7 @@ namespace Backsight.Editor
             List<FeatureId> fids = new List<FeatureId>(features.Length);
             foreach (Feature f in features)
             {
-                FeatureId fid = f.Id;
+                FeatureId fid = f.FeatureId;
                 if (fid!=null)
                     fids.Add(fid);
             }

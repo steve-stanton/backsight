@@ -2079,7 +2079,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 foreach (TextFeature tf in labels)
                 {
-                    FeatureId fid = tf.Id;
+                    FeatureId fid = tf.FeatureId;
                     if (fid!=null && fid.RowCount>0)
                     {
                         r = fid.Rows[0];

@@ -412,7 +412,7 @@ namespace Backsight.Editor.Operations
             // If the points was freshly created, assign an ID and add to the list of extra points
             if (Object.ReferenceEquals(result.Creator, this))
             {
-                if (result.Id==null)
+                if (result.FeatureId==null)
                     result.SetNextId();
 
                 extraPoints.Add(result);

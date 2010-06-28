@@ -412,7 +412,7 @@ namespace Backsight.Editor
         internal IdPacket AddUsedId(Feature f, IdPacket hint)
         {
             // We only care about features with native IDs
-            NativeId nid = (f.Id as NativeId);
+            NativeId nid = (f.FeatureId as NativeId);
             if (nid == null)
                 return hint;
 

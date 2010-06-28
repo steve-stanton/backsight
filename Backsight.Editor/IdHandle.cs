@@ -117,7 +117,7 @@ namespace Backsight.Editor
             if (m_Feature!=null)
             {
                 // Get the current ID (if any).
-                m_FeatureId = m_Feature.Id;
+                m_FeatureId = m_Feature.FeatureId;
 
                 // Note the feature's entity type.
                 m_Entity = m_Feature.EntityType;
@@ -543,7 +543,7 @@ namespace Backsight.Editor
             }
 
             // Confirm that the feature's ID has not changed somehow.
-            if (!Object.ReferenceEquals(m_FeatureId, m_Feature.Id))
+            if (!Object.ReferenceEquals(m_FeatureId, m_Feature.FeatureId))
             {
                 MessageBox.Show("IdHandle.DeleteId - Inconsistent ID");
                 return false;
@@ -606,7 +606,7 @@ namespace Backsight.Editor
 	        }
 
 	        // Confirm that the feature's ID has not changed somehow.
-	        if (!Object.ReferenceEquals(m_FeatureId, m_Feature.Id))
+	        if (!Object.ReferenceEquals(m_FeatureId, m_Feature.FeatureId))
             {
 		        MessageBox.Show("IdHandle.RestoreId - Inconsistent ID");
 		        return false;

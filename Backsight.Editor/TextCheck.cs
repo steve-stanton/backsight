@@ -49,7 +49,7 @@ namespace Backsight.Editor
             }
 
             // Does the label have at least one row of attribute data?
-            FeatureId fid = label.Id;
+            FeatureId fid = label.FeatureId;
             if (fid==null || fid.RowCount==0)
                 types |= CheckType.NoAttributes;
 

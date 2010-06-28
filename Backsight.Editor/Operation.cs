@@ -387,7 +387,7 @@ namespace Backsight.Editor
             for (uint i = 0; i < feats.Length; i++)
             {
                 numItem++;
-                feats[i].CreatorSequence = numItem;
+                feats[i].SessionSequence = numItem;
 
                 // Remember the feature as part of the map model
                 MapModel.AddFeature(feats[i]);

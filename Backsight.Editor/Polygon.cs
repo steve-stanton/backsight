@@ -558,7 +558,7 @@ namespace Backsight.Editor
                 return null;
 
             // Return the ID of the label.
-            return label.Id;
+            return label.FeatureId;
 
         }
 

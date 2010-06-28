@@ -285,13 +285,13 @@ protected:
             parent.Deactivate();
 
             // Apply the correct creation sequence to the sections
-            Debug.Assert(lineBefore.CreatorSequence==0);
-            Debug.Assert(lineAfter.CreatorSequence==0);
+            Debug.Assert(lineBefore.SessionSequence==0);
+            Debug.Assert(lineAfter.SessionSequence==0);
             uint sessionId, creationSequence;
             InternalIdValue.Parse(idBefore, out sessionId, out creationSequence);
-            lineBefore.CreatorSequence = creationSequence;
+            lineBefore.SessionSequence = creationSequence;
             InternalIdValue.Parse(idAfter, out sessionId, out creationSequence);
-            lineAfter.CreatorSequence = creationSequence;
+            lineAfter.SessionSequence = creationSequence;
 
             return true;
         }

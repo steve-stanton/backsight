@@ -16,8 +16,7 @@
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Identifies a type of geometry for spatial features (for use as part of the
-    /// <see cref="FeatureStub"/> class).
+    /// Identifies a type of geometry for spatial features.
     /// </summary>
     enum FeatureGeometry
     {

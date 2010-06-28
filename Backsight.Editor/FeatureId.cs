@@ -64,12 +64,12 @@ namespace Backsight.Editor
         /// <param name="f">The feature that has this ID</param>
         internal void Add(Feature f)
         {
-            if (f.Id != null)
+            if (f.FeatureId != null)
             {
-                if (f.Id == this)
+                if (f.FeatureId == this)
                     return;
 
-                f.Id.Cut(f);
+                f.FeatureId.Cut(f);
             }
 
             AddReference(f);
@@ -82,7 +82,7 @@ namespace Backsight.Editor
         /// <param name="f">The feature that should be assigned a null ID</param>
         internal void Cut(Feature f)
         {
-            Debug.Assert(f.Id == this);
+            Debug.Assert(f.FeatureId == this);
             CutReference(f);
             f.SetId(null);
         }

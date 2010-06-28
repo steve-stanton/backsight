@@ -499,7 +499,7 @@ namespace Backsight.Editor
         {
             foreach (Feature f in fa)
             {
-                FeatureId fid = f.Id;
+                FeatureId fid = f.FeatureId;
 
                 if (fid != null)
                 {
