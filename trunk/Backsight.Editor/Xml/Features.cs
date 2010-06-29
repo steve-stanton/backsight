@@ -14,8 +14,9 @@
 // </remarks>
 
 using System;
-using Backsight.Environment;
 using System.Diagnostics;
+
+using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
@@ -195,7 +196,7 @@ namespace Backsight.Editor.Xml
             return result;
         }
 
-        IFeature GetFeatureStub(Operation creator)
+        internal IFeature GetFeatureStub(Operation creator)
         {
             InternalIdValue iid = new InternalIdValue(this.Id);
             FeatureId fid = GetFeatureId(creator.MapModel);
@@ -261,6 +262,34 @@ namespace Backsight.Editor.Xml
         {
             this.Geometry = (uint)f.Representation;
         }
+
+        /*
+        internal override Feature LoadFeature(Operation op)
+        {
+            FeatureGeometry rep = (FeatureGeometry)this.Geometry;
+            IFeature f = GetFeatureStub(op);
+
+            switch (rep)
+            {
+                case FeatureGeometry.Arc:
+                    return new ArcFeature(f, null, null, false);
+
+                case FeatureGeometry.DirectPoint:
+                    return new DirectPointFeature(f, null);
+
+            //SharedPoint:
+            //Segment:
+            //MultiSegment:
+            //Section:
+            //KeyText:
+            //RowText:
+            //MiscText:
+
+                default:
+                    throw new NotImplementedException("Unexpected geometry: "+rep);
+            }
+        }
+         */
     }
 
     /// <summary>
@@ -639,6 +668,9 @@ namespace Backsight.Editor.Xml
         /// <returns>The created arc</returns>
         internal ArcFeature CreateArcFeature(Operation op, bool isClockwise, PointFeature center)
         {
+            if (center == null)
+                throw new ArgumentNullException("Undefined center point");
+
             // The arc is the first arc attached to the circle. However, we may be
             // unable to calculate the radius (whereas the geometry will be available
             // if the data comes from an import, it will be undefined if the geometry
@@ -646,6 +678,9 @@ namespace Backsight.Editor.Xml
 
             PointFeature from = op.MapModel.Find<PointFeature>(this.From);
             PointFeature to = op.MapModel.Find<PointFeature>(this.To);
+
+            Debug.Assert(from != null);
+            Debug.Assert(to != null);
 
             double radius = 0.0;
             if (center.PointGeometry != null && from.PointGeometry != null)

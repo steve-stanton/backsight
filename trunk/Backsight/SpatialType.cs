@@ -47,7 +47,6 @@ namespace Backsight
         /// <summary>
         /// Any sort of spatial feature (excludes polygons).
         /// </summary>
-        /// <see>IFeature</see>
         Feature = (Point | Line | Text),
 
         /// <summary>

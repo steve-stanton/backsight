@@ -95,7 +95,7 @@ namespace Backsight.Index
         /// Delegate that's called whenever the index finds an object with an extent that
         /// overlaps the query window.
         /// </summary>
-        /// <param name="item">The item to process (expected to be some sort of <c>IFeature</c>)</param>
+        /// <param name="item">The item to process (expected to be some sort of <c>Feature</c>)</param>
         /// <returns>True if the query should continue. False if the item is exactly coincident with
         /// the query position.</returns>
         bool OnQueryHit(ISpatialObject item)

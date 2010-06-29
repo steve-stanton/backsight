@@ -114,6 +114,8 @@ namespace Backsight.Editor
             m_References = null;
             m_Flag = 0;
 
+            m_Id = f.FeatureId;
+            /*
             // If a user-defined ID is present, ensure it knows about this feature, and vice versa
             if (f.FeatureId != null)
             {
@@ -122,7 +124,8 @@ namespace Backsight.Editor
             }
 
             // Remember this feature as part of the model
-            m_Creator.MapModel.AddFeature(this);
+            m_Creator.MapModel.AddFeature(this); // done now in DataFactory.ToOperation
+             */
         }
 
 
