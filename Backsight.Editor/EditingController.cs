@@ -517,6 +517,11 @@ namespace Backsight.Editor
                 Settings.Default.Save();
             }
 
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
+
             finally
             {
                 // Need to first initialize overview extent before defining center and scale
