@@ -249,18 +249,6 @@ namespace Backsight.Editor.Xml
             OperationData ot = et.Operation[0];
             Operation result = ot.LoadOperation(s);
 
-            // Add created features to the map model. For features that have a user-perceived
-            // ID, ensure the ID object refers back to the feature.
-            CadastralMapModel mapModel = s.MapModel;
-            Feature[] features = result.Features;
-            foreach (Feature f in features)
-            {
-                mapModel.AddFeature(f);
-                FeatureId fid = f.FeatureId;
-                if (fid != null)
-                    fid.AddReference(f);
-            }
-
             // Note that calculated geometry is NOT defined at this stage. That happens
             // when the model is asked to index the data.
 
