@@ -900,5 +900,18 @@ namespace Backsight.Editor
         /// A value indicating the type of geometry used to represent this feature.
         /// </summary>
         internal abstract FeatureGeometry Representation { get; }
+
+        /// <summary>
+        /// Adds this feature to the map model, and adds a cross-reference from
+        /// any user-perceived ID.
+        /// </summary>
+        internal void AddToModel()
+        {
+            CadastralMapModel mapModel = m_Creator.MapModel;
+            mapModel.AddFeature(this);
+
+            if (m_Id != null)
+                m_Id.AddReference(this);
+        }
     }
 }

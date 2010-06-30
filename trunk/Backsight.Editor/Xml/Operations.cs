@@ -252,6 +252,7 @@ namespace Backsight.Editor.Xml
                 foreach (FeatureData fd in lines)
                 {
                     Feature f = fd.LoadFeature(op);
+                    f.AddToModel();
                     result.Add(f);
                 }
             }
@@ -290,6 +291,7 @@ namespace Backsight.Editor.Xml
             {
                 FeatureData f = this.Feature[i];
                 data[i] = f.LoadFeature(op);
+                data[i].AddToModel();
             }
 
             op.SetFeatures(data);
@@ -906,8 +908,9 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewKeyTextOperation op = new NewKeyTextOperation(s, sequence);
-            KeyTextFeature f = (KeyTextFeature)this.Text.LoadFeature(op);
+            KeyTextFeature f = this.Text.CreateKeyTextFeature(op);
             op.SetText(f);
+            f.AddToModel();
             return op;
         }
     }
@@ -960,7 +963,9 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewPointOperation op = new NewPointOperation(s, sequence);
-            op.SetNewPoint((PointFeature)this.Point.LoadFeature(op));
+            DirectPointFeature f = this.Point.CreateDirectPointFeature(op);
+            op.SetNewPoint(f);
+            f.AddToModel();
             return op;
         }
     }
@@ -1013,7 +1018,9 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewSegmentOperation op = new NewSegmentOperation(s, sequence);
-            op.SetNewLine((LineFeature)this.Line.LoadFeature(op));
+            SegmentLineFeature f = this.Line.CreateSegmentLineFeature(op);
+            op.SetNewLine(f);
+            f.AddToModel();
             return op;
         }
     }
