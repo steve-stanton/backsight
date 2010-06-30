@@ -60,13 +60,15 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>LineFeature</c>
         /// </summary>
-        /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
         /// this constructor should always remain private.</note>
-        protected LineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end, LineGeometry g)
-            : base(e, creator)
+        protected LineFeature(Operation creator, uint sessionSequence, IEntity e, PointFeature start, PointFeature end, LineGeometry g)
+            : base(creator, sessionSequence, e, null)
         {
             if (g==null)
                 throw new ArgumentNullException();
@@ -602,9 +604,9 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <param name="section">The geometry for the new line.</param>
         /// <param name="op">The operation that should be noted as the creator of the new line.</param>
         /// <returns>The new line</returns>
-        internal LineFeature MakeSubSection(SectionGeometry section, Operation op) //const CeSubTheme* const pSubTheme
+        internal LineFeature MakeSubSection(SectionGeometry section, Operation op)
         {
-            LineFeature result = new SectionLineFeature(op, section);
+            LineFeature result = new SectionLineFeature(op, 0, section);
 
             //PointFeature start = (PointFeature)section.Start;
             //PointFeature end = (PointFeature)section.End;

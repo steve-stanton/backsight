@@ -25,12 +25,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>DirectPointFeature</c>
         /// </summary>
-        /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry for the point (may be null, although this is only really
         /// expected during deserialization)</param>
-        internal DirectPointFeature(IEntity ent, Operation creator, PointGeometry g)
-            : base(ent, creator, g)
+        internal DirectPointFeature(Operation creator, uint sessionSequence, IEntity ent, PointGeometry g)
+            : base(creator, sessionSequence, ent, g)
         {
         }
 

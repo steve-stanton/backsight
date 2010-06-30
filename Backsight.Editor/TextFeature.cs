@@ -75,12 +75,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new text feature
         /// </summary>
-        /// <param name="ent">The entity type for the string.</param>
         /// <param name="creator">The operation creating the text</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="ent">The entity type for the string.</param>
         /// <param name="text">The text geometry (including the text string itself)</param>
         /// </param>
-        protected TextFeature(IEntity ent, Operation creator, TextGeometry text)
-            : base(ent, creator)
+        protected TextFeature(Operation creator, uint sessionSequence, IEntity ent, TextGeometry text)
+            : base(creator, sessionSequence, ent, null)
         {
             m_Geom = text;
             m_Container = null;

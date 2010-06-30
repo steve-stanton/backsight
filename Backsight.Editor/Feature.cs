@@ -80,21 +80,40 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new feature
+        /// Initializes a new instance of the <see cref="Feature"/> class, and records it
+        /// as part of the map model.
         /// </summary>
-        /// <param name="ent">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation that created the feature (not null)</param>
-        protected Feature(IEntity e, Operation creator)
+        /// <param name="creator">The editing operation that created the feature (never null).</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="entityType">The type of real-world object that the feature corresponds to.</param>
+        /// <param name="featureId">The user-perceived ID (if any) for the feature. This is the ID that
+        /// is used to associate the feature with any miscellaneous attributes
+        /// that may be held in a database.</param>
+        protected Feature(Operation creator, uint sessionSequence, IEntity entityType, FeatureId featureId)
         {
-            if (e==null)
-                throw new ArgumentNullException("Entity type must be defined");
-
-            if (creator==null) 
+            if (creator == null)
                 throw new ArgumentNullException("Creating operation must be defined");
 
-            m_What = e;
+            if (entityType == null)
+                throw new ArgumentNullException("Entity type must be defined");
+
+            if (sessionSequence == 0)
+                throw new ArgumentException("Session sequence must be defined");
+
             m_Creator = creator;
-            m_SessionSequence = 0;
+            m_SessionSequence = sessionSequence;
+            m_What = entityType;
+            m_References = null;
+            m_Flag = 0;
+
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            m_Id = featureId;
+            if (m_Id != null)
+                m_Id.AddReference(this);
+
+            // Remember this feature as part of the model
+            m_Creator.MapModel.AddFeature(this);
         }
 
         /// <summary>
@@ -102,32 +121,10 @@ namespace Backsight.Editor
         /// as part of the map model.
         /// </summary>
         /// <param name="f">Basic information for the feature (not null)</param>
-        /// <exception cref="ArgumentNullException">If <paramref name="f"/> is null.</exception>
         protected Feature(IFeature f)
+            : this(f.Creator, f.SessionSequence, f.EntityType, f.FeatureId)
         {
-            if (f == null)
-                throw new ArgumentNullException();
-
-            m_Creator = f.Creator;
-            m_SessionSequence = f.SessionSequence;
-            m_What = f.EntityType;
-            m_References = null;
-            m_Flag = 0;
-
-            m_Id = f.FeatureId;
-            /*
-            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
-            if (f.FeatureId != null)
-            {
-                f.FeatureId.Add(this);
-                Debug.Assert(m_Id == f.FeatureId);
-            }
-
-            // Remember this feature as part of the model
-            m_Creator.MapModel.AddFeature(this); // done now in DataFactory.ToOperation
-             */
         }
-
 
         #endregion
 
