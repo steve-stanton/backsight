@@ -221,7 +221,7 @@ namespace Backsight.Editor
             // Determine which way the arc is directed
             bool iscw = LineStringGeometry.IsClockwise(pts, center);
 
-            ArcFeature arc = new ArcFeature(what, creator, c, ps, pe, iscw);
+            ArcFeature arc = new ArcFeature(creator, 0, what, c, ps, pe, iscw);
 
             if (line.IsTopologicalArc)
                 arc.SetTopology(true);
@@ -326,9 +326,9 @@ namespace Backsight.Editor
             LineFeature result;
 
             if (pts.Length==2)
-                result = new SegmentLineFeature(what, creator, ps, pe);
+                result = new SegmentLineFeature(creator, 0, what, ps, pe);
             else
-                result = new MultiSegmentLineFeature(what, creator, ps, pe, pts);
+                result = new MultiSegmentLineFeature(creator, 0, what, ps, pe, pts);
 
             if (line.IsTopologicalArc)
                 result.SetTopology(true);
@@ -412,7 +412,8 @@ namespace Backsight.Editor
             if (result==null)
             {
                 IEntity e = creator.MapModel.DefaultPointType;
-                result = new DirectPointFeature(e, creator, p);
+                uint ss = Session.ReserveNextItem();
+                result = new DirectPointFeature(creator, ss, e, p);
                 m_Index.Add(result);
                 m_Result.Add(result);
             }
@@ -522,7 +523,7 @@ namespace Backsight.Editor
                 // Create key text
                 string keystr = name.Text;
                 KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
-                result = new KeyTextFeature(entity, creator, kt);
+                result = new KeyTextFeature(creator, 0, entity, kt);
                 kt.Label = result;
                 result.SetTopology(true);
 
@@ -540,7 +541,7 @@ namespace Backsight.Editor
             {
                 // Create a miscellaneous text label.
                 MiscTextGeometry mt = new MiscTextGeometry(text, topleft, font, height, width, rotation);
-                result = new MiscTextFeature(entity, creator, mt);
+                result = new MiscTextFeature(creator, 0, entity, mt);
                 result.SetTopology(false);
             }
 
@@ -559,7 +560,8 @@ namespace Backsight.Editor
             if (g.Easting.Microns==0 && g.Northing.Microns==0)
                 return null;
 
-            PointFeature p = new DirectPointFeature(what, creator, g);
+            uint ss = Session.ReserveNextItem();
+            PointFeature p = new DirectPointFeature(creator, ss, what, g);
             /*
 
 	static LOGICAL warned=FALSE;	// debug

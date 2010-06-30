@@ -25,12 +25,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a <c>LineFeature</c> consisting of a simple line segment.
         /// </summary>
-        /// <param name="e">The entity type for the feature.</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="e">The entity type for the feature.</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
-        internal SegmentLineFeature(IEntity e, Operation creator, PointFeature start, PointFeature end)
-            : base(e, creator, start, end, new SegmentGeometry(start, end))
+        internal SegmentLineFeature(Operation creator, uint sessionSequence, IEntity e, PointFeature start, PointFeature end)
+            : base(creator, sessionSequence, e, start, end, new SegmentGeometry(start, end))
         {
         }
 

@@ -48,34 +48,19 @@ namespace Backsight.Editor
         /// Creates a new <c>PointFeature</c> with geometry that isn't shared
         /// with any other point.
         /// </summary>
-        /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry for the point (may be null, although this is only really
         /// expected during deserialization)</param>
-        protected PointFeature(IEntity e, Operation creator, PointGeometry g)
-            : base(e, creator)
+        protected PointFeature(Operation creator, uint sessionSequence, IEntity e, PointGeometry g)
+            : base(creator, sessionSequence, e, null)
         {
             if (g == null)
                 m_Geom = null;
             else
                 m_Geom = new Node(this, g);
-        }
-
-        /// <summary>
-        /// Creates a new <c>PointFeature</c> that is coincident with an existing
-        /// point. The new point will share the geometry of the existing point.
-        /// </summary>
-        /// <param name="f">The point feature that the new point coincides with (not null)</param>
-        /// <param name="e">The entity type for the feature (not null)</param>
-        /// <param name="creator">The operation that created the feature (not null)</param>
-        protected PointFeature(PointFeature f, IEntity e, Operation creator)
-            : base(e, creator)
-        {
-            if (f == null)
-                throw new ArgumentNullException("Cannot create shared point feature");
-
-            m_Geom = f.m_Geom;
-            m_Geom.AttachPoint(this);
         }
 
         /// <summary>

@@ -22,8 +22,8 @@ namespace Backsight.Editor
     /// </summary>
     class KeyTextFeature : TextFeature
     {
-        internal KeyTextFeature(IEntity ent, Operation creator, KeyTextGeometry text)
-            : base(ent, creator, text)
+        internal KeyTextFeature(Operation creator, uint sessionSequence, IEntity ent, KeyTextGeometry text)
+            : base(creator, sessionSequence, ent, text)
         {
         }
 

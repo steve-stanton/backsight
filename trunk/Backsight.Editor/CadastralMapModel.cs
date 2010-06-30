@@ -393,7 +393,8 @@ namespace Backsight.Editor
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
             PointGeometry g = PointGeometry.Create(p);
-            PointFeature f = new DirectPointFeature(e, creator, g);
+            uint ss = Session.ReserveNextItem();
+            PointFeature f = new DirectPointFeature(creator, ss, e, g);
             //m_Window.Union(p);
             //m_Index.Add(f);
             return f;
@@ -432,7 +433,7 @@ namespace Backsight.Editor
         /// <returns>The created line feature.</returns>
         internal SegmentLineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
-            SegmentLineFeature f = new SegmentLineFeature(e, creator, from, to);
+            SegmentLineFeature f = new SegmentLineFeature(creator, 0, e, from, to);
             //m_Window.Union(f.Extent);
             //m_Index.Add(f);
 
@@ -928,7 +929,7 @@ namespace Backsight.Editor
         internal LineFeature AddCircularArc(Circle circle, PointFeature start, PointFeature end,
             bool clockwise, IEntity lineEnt, Operation creator)
         {
-            ArcFeature result = new ArcFeature(lineEnt, creator, circle, start, end, clockwise);
+            ArcFeature result = new ArcFeature(creator, 0, lineEnt, circle, start, end, clockwise);
             //m_Window.Union(result.Extent);
             //m_Index.Add(result);
 
@@ -1068,7 +1069,7 @@ namespace Backsight.Editor
                 throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
 
             // Do standard stuff for adding a label.
-            return new MiscTextFeature(newEnt, creator, text);
+            return new MiscTextFeature(creator, 0, newEnt, text);
         }
 
         /// <summary>
@@ -1093,7 +1094,7 @@ namespace Backsight.Editor
             IEntity ent = polygonId.Entity;
             PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
-            TextFeature label = new KeyTextFeature(ent, creator, text);
+            TextFeature label = new KeyTextFeature(creator, 0, ent, text);
 
             // Define the label's ID
       		polygonId.CreateId(label);
@@ -1120,7 +1121,7 @@ namespace Backsight.Editor
             KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
 
             // Do standard stuff for adding a label
-            TextFeature result = new KeyTextFeature(ent, creator, text);
+            TextFeature result = new KeyTextFeature(creator, 0, ent, text);
             text.Label = result;
             return result;
         }
@@ -1145,7 +1146,7 @@ namespace Backsight.Editor
         {
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
-            TextFeature label = new RowTextFeature(ent, creator, null);
+            TextFeature label = new RowTextFeature(creator, 0, ent, null);
 
             // Define the label's ID and attach the row to it
             Row r = new Row(id, atemplate.Schema, row);
@@ -1180,7 +1181,7 @@ namespace Backsight.Editor
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
-            TextFeature label = new RowTextFeature(ent, creator, null);
+            TextFeature label = new RowTextFeature(creator, 0, ent, null);
 
             // Define the label's ID and attach the row to it
             FeatureId id = polygonId.CreateId(label);
