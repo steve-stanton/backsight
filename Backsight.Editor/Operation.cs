@@ -382,19 +382,19 @@ namespace Backsight.Editor
                 MapModel.AddFeatureIds(feats);
             }
 
-            // Assign 1-based creation sequence to each created feature
-            uint numItem = m_Session.NumItem;
-            for (uint i = 0; i < feats.Length; i++)
-            {
-                numItem++;
-                feats[i].SessionSequence = numItem;
+            //// Assign 1-based creation sequence to each created feature
+            //uint numItem = m_Session.NumItem;
+            //for (uint i = 0; i < feats.Length; i++)
+            //{
+            //    numItem++;
+            //    feats[i].SessionSequence = numItem;
 
-                // Remember the feature as part of the map model
-                MapModel.AddFeature(feats[i]);
-            }
+            //    // Remember the feature as part of the map model
+            //    MapModel.AddFeature(feats[i]);
+            //}
 
-            // Ensure the item count for the session has been updated
-            m_Session.NumItem = numItem;
+            //// Ensure the item count for the session has been updated
+            //m_Session.NumItem = numItem;
 
             // Point referenced features to this editing operation
             AddReferences();
@@ -540,27 +540,6 @@ namespace Backsight.Editor
                     continue;
 
                 f.Render(display, style);
-            }
-        }
-
-        /// <summary>
-        /// Ensures that all features created by this edit have been recorded as part of the map model.
-        /// </summary>
-        /// <remarks>
-        /// This is a bit of a hack. It covers the fact that only one of the Feature constructors
-        /// will add to the model (the other constructor cannot add to the model, because the creation
-        /// sequence number may not be available at that stage). Edits that use the "bad" constructor,
-        /// and that do not call the <see cref="Complete"/> method as part of their deserialization
-        /// logic, will need to call this method to ensure the model is complete.
-        /// </remarks>
-        internal void EnsureFeaturesAreIndexed()
-        {
-            CadastralMapModel mapModel = this.MapModel;
-
-            foreach (Feature f in this.Features)
-            {
-                if (mapModel.Find<Feature>(f.InternalId)==null)
-                    mapModel.AddFeature(f);
             }
         }
 

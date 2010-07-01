@@ -221,7 +221,8 @@ namespace Backsight.Editor
             // Determine which way the arc is directed
             bool iscw = LineStringGeometry.IsClockwise(pts, center);
 
-            ArcFeature arc = new ArcFeature(creator, 0, what, c, ps, pe, iscw);
+            uint ss = Session.ReserveNextItem();
+            ArcFeature arc = new ArcFeature(creator, ss, what, c, ps, pe, iscw);
 
             if (line.IsTopologicalArc)
                 arc.SetTopology(true);
@@ -324,11 +325,12 @@ namespace Backsight.Editor
                 pts = CheckMultiSegmentEnds(pts);
 
             LineFeature result;
+            uint ss = Session.ReserveNextItem();
 
             if (pts.Length==2)
-                result = new SegmentLineFeature(creator, 0, what, ps, pe);
+                result = new SegmentLineFeature(creator, ss, what, ps, pe);
             else
-                result = new MultiSegmentLineFeature(creator, 0, what, ps, pe, pts);
+                result = new MultiSegmentLineFeature(creator, ss, what, ps, pe, pts);
 
             if (line.IsTopologicalArc)
                 result.SetTopology(true);
@@ -523,7 +525,8 @@ namespace Backsight.Editor
                 // Create key text
                 string keystr = name.Text;
                 KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
-                result = new KeyTextFeature(creator, 0, entity, kt);
+                uint ss = Session.ReserveNextItem();
+                result = new KeyTextFeature(creator, ss, entity, kt);
                 kt.Label = result;
                 result.SetTopology(true);
 
@@ -541,7 +544,8 @@ namespace Backsight.Editor
             {
                 // Create a miscellaneous text label.
                 MiscTextGeometry mt = new MiscTextGeometry(text, topleft, font, height, width, rotation);
-                result = new MiscTextFeature(creator, 0, entity, mt);
+                uint ss = Session.ReserveNextItem();
+                result = new MiscTextFeature(creator, ss, entity, mt);
                 result.SetTopology(false);
             }
 

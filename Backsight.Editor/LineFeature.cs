@@ -601,12 +601,14 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <summary>
         /// Make a new line that corresponds to a sub-section of this line.
         /// </summary>
+        /// <param name="creator">The operation that should be noted as the creator of the new line.</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
         /// <param name="section">The geometry for the new line.</param>
-        /// <param name="op">The operation that should be noted as the creator of the new line.</param>
         /// <returns>The new line</returns>
-        internal LineFeature MakeSubSection(SectionGeometry section, Operation op)
+        internal LineFeature MakeSubSection(Operation creator, uint sessionSequence, SectionGeometry section)
         {
-            LineFeature result = new SectionLineFeature(op, 0, section);
+            LineFeature result = new SectionLineFeature(creator, sessionSequence, section);
 
             //PointFeature start = (PointFeature)section.Start;
             //PointFeature end = (PointFeature)section.End;

@@ -42,9 +42,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The editing operation that originally created this feature.
+        /// The editing operation that created this feature.
         /// </summary>
-        private Operation m_Creator;
+        readonly Operation m_Creator;
 
         /// <summary>
         /// The 1-based creation sequence of this feature within the session that
@@ -52,28 +52,29 @@ namespace Backsight.Editor
         /// (during initial creation of features, the <see cref="Operation.Complete"/>
         /// method is responsible for defining the sequence number).
         /// </summary>
-        private uint m_SessionSequence;
+        readonly uint m_SessionSequence;
 
         /// <summary>
         /// The type of real-world object that the feature corresponds to.
         /// </summary>
-        private IEntity m_What;
+        readonly IEntity m_What;
 
         /// <summary>
         /// Objects that reference this feature (either directly, or
         /// indirectly through some sort of <c>Observation</c> object).
+        /// Null if there aren't any references.
         /// </summary>
-        private List<IFeatureDependent> m_References;
+        List<IFeatureDependent> m_References;
 
         /// <summary>
         /// The ID of this feature (may be shared by multiple features).
         /// </summary>
-        private FeatureId m_Id;
+        FeatureId m_Id;
 
         /// <summary>
         /// Flag bits
         /// </summary>
-        private FeatureFlag m_Flag;
+        FeatureFlag m_Flag;
 
         #endregion
 
@@ -137,7 +138,7 @@ namespace Backsight.Editor
         public uint SessionSequence
         {
             get { return m_SessionSequence; }
-            internal set { m_SessionSequence = value; }
+            //internal set { m_SessionSequence = value; }
         }
 
         abstract public SpatialType SpatialType { get; }
@@ -342,19 +343,19 @@ namespace Backsight.Editor
         public Operation Creator
         {
             get { return m_Creator; }
-            set { m_Creator = value; }
+            //set { m_Creator = value; }
         }
 
         public IEntity EntityType
         {
             get { return m_What; }
-            set
-            {
-                if (value==null)
-                    throw new ArgumentNullException();
+            //set
+            //{
+            //    if (value==null)
+            //        throw new ArgumentNullException();
 
-                m_What = value; //MapModel.GetRegisteredEntityType(value);
-            }
+            //    m_What = value; //MapModel.GetRegisteredEntityType(value);
+            //}
         }
 
         /// <summary>
@@ -897,18 +898,5 @@ namespace Backsight.Editor
         /// A value indicating the type of geometry used to represent this feature.
         /// </summary>
         internal abstract FeatureGeometry Representation { get; }
-
-        /// <summary>
-        /// Adds this feature to the map model, and adds a cross-reference from
-        /// any user-perceived ID.
-        /// </summary>
-        internal void AddToModel()
-        {
-            CadastralMapModel mapModel = m_Creator.MapModel;
-            mapModel.AddFeature(this);
-
-            if (m_Id != null)
-                m_Id.AddReference(this);
-        }
     }
 }
