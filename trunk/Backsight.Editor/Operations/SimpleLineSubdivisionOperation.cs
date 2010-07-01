@@ -156,8 +156,8 @@ namespace Backsight.Editor.Operations
             m_NewPoint.SetNextId();
 
             // Create two line sections (one of them will be associated with the distance)
-            m_NewLine1 = MakeSection(m_Line.StartPoint, m_NewPoint);
-            m_NewLine2 = MakeSection(m_NewPoint, m_Line.EndPoint);
+            m_NewLine1 = MakeSection(Session.ReserveNextItem(), m_Line.StartPoint, m_NewPoint);
+            m_NewLine2 = MakeSection(Session.ReserveNextItem(), m_NewPoint, m_Line.EndPoint);
 
             // De-activate the parent line
             m_Line.IsInactive = true;
@@ -169,13 +169,15 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a section for this subdivision op.
         /// </summary>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        internal LineFeature MakeSection(PointFeature start, PointFeature end)
+        internal LineFeature MakeSection(uint sessionSequence, PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(m_Line, start, end);
-            LineFeature newLine = m_Line.MakeSubSection(section, this);
+            LineFeature newLine = m_Line.MakeSubSection(this, sessionSequence, section);
             //MapModel.EditingIndex.Add(newLine);
             return newLine;
         }

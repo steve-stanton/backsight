@@ -365,16 +365,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The number of items (objects) created by the session. This gets
-        /// called by <see cref="Operation.Complete"/>.
-        /// </summary>
-        internal uint NumItem
-        {
-            get { return m_Data.NumItem; }
-            set { m_Data.NumItem = value; }
-        }
-
-        /// <summary>
         /// Have edits performed as part of this session been "saved" (as far as
         /// the user is concerned). Each time a user performs an edit, the database
         /// will always get updated -- this is done mainly to ensure that work will

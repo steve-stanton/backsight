@@ -229,8 +229,8 @@ protected:
                 return false;
 
             // Create line sections and de-activate the parent line
-            new1 = MakeSection(line, line.StartPoint, xsect);
-            new2 = MakeSection(line, xsect, line.EndPoint);
+            new1 = MakeSection(Session.ReserveNextItem(), line, line.StartPoint, xsect);
+            new2 = MakeSection(Session.ReserveNextItem(), line, xsect, line.EndPoint);
             line.IsInactive = true;
 
             return true;
@@ -239,14 +239,16 @@ protected:
         /// <summary>
         /// Creates a line section
         /// </summary>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
         /// <param name="parent">The line that's being subdivided</param>
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        LineFeature MakeSection(LineFeature parent, PointFeature start, PointFeature end)
+        LineFeature MakeSection(uint sessionSequence, LineFeature parent, PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(parent, start, end);
-            return parent.MakeSubSection(section, this);
+            return parent.MakeSubSection(this, sessionSequence, section);
         }
 
         /// <summary>
@@ -280,18 +282,13 @@ protected:
             // you cannot use the SplitLine method at this stage, because that requires defined
             // geometry.
 
-            lineBefore = MakeSection(parent, parent.StartPoint, x);
-            lineAfter = MakeSection(parent, x, parent.EndPoint);
-            parent.Deactivate();
-
-            // Apply the correct creation sequence to the sections
-            Debug.Assert(lineBefore.SessionSequence==0);
-            Debug.Assert(lineAfter.SessionSequence==0);
             uint sessionId, creationSequence;
             InternalIdValue.Parse(idBefore, out sessionId, out creationSequence);
-            lineBefore.SessionSequence = creationSequence;
+            lineBefore = MakeSection(creationSequence, parent, parent.StartPoint, x);
+
             InternalIdValue.Parse(idAfter, out sessionId, out creationSequence);
-            lineAfter.SessionSequence = creationSequence;
+            lineAfter = MakeSection(creationSequence, parent, x, parent.EndPoint);
+            parent.Deactivate();
 
             return true;
         }

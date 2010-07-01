@@ -394,7 +394,8 @@ namespace Backsight.Editor.Operations
         LineFeature MakeSection(PointFeature start, double edist)
         {
             SectionGeometry section = AddSection(start, edist);
-            LineFeature newLine = m_Line.MakeSubSection(section, this);
+            uint ss = Session.ReserveNextItem();
+            LineFeature newLine = m_Line.MakeSubSection(this, ss, section);
             return newLine;
         }
 

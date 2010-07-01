@@ -292,49 +292,48 @@ namespace Backsight.Editor.UI
         /// <returns>TRUE if an update was made.</returns>
         internal override bool UpdateLabel(TextFeature label)
         {
-            // The label MUST be miscellaneous text.
-            MiscTextGeometry text = (label.TextGeometry as MiscTextGeometry);
-            if (text==null)
-                throw new Exception("Can only update miscellaneous text.");
+            throw new NotImplementedException("NewTextUI.UpdateLabel");
 
-            // Display dialog to get info.
-            NewTextForm dial = new NewTextForm(label);
-            if (dial.ShowDialog() != DialogResult.OK)
-            {
-                dial.Dispose();
-                return false;
-            }
+            //// The label MUST be miscellaneous text.
+            //MiscTextGeometry text = (label.TextGeometry as MiscTextGeometry);
+            //if (text==null)
+            //    throw new Exception("Can only update miscellaneous text.");
 
-            // Confirm that the entity type has been specified.
-            IEntity ent = dial.EntityType;
-            if (ent==null)
-            {
-                MessageBox.Show("Text type must be specified.");
-                return false;
-            }
+            //// Display dialog to get info.
+            //NewTextForm dial = new NewTextForm(label);
+            //if (dial.ShowDialog() != DialogResult.OK)
+            //{
+            //    dial.Dispose();
+            //    return false;
+            //}
 
-            // Confirm that the new text is defined.
-            m_NewText = dial.EnteredText.Trim();
-            if (m_NewText.Length==0)
-            {
-                MessageBox.Show("You cannot delete text this way.");
-                return false;
-            }
+            //// Confirm that the entity type has been specified.
+            //IEntity ent = dial.EntityType;
+            //if (ent==null)
+            //{
+            //    MessageBox.Show("Text type must be specified.");
+            //    return false;
+            //}
 
-            // Erase the current text.
-            //pText->Erase();
+            //// Confirm that the new text is defined.
+            //m_NewText = dial.EnteredText.Trim();
+            //if (m_NewText.Length==0)
+            //{
+            //    MessageBox.Show("You cannot delete text this way.");
+            //    return false;
+            //}
 
-            // Set the new text (this removes the old text from the
-            // spatial index, changes the text, and re-indexes).
-            text.SetText(label, m_NewText);
+            //// Set the new text (this removes the old text from the
+            //// spatial index, changes the text, and re-indexes).
+            //text.SetText(label, m_NewText);
 
-            // Change the text's entity type.
-            if (ent.Id != label.EntityType.Id)
-                label.EntityType = ent;
+            //// Change the text's entity type.
+            //if (ent.Id != label.EntityType.Id)
+            //    label.EntityType = ent;
 
-            // Redraw the text.
-            label.Draw(ActiveDisplay, Color.Black);
-            return true;
+            //// Redraw the text.
+            //label.Draw(ActiveDisplay, Color.Black);
+            //return true;
         }
     }
 }
