@@ -176,13 +176,18 @@ namespace Backsight.Editor.UI
                 return false;
             }
 
+            // Obtain the position ratio
+            uint pr = AttachPointOperation.GetPositionRatio(m_Line, pos);
+
             // Attach a new point to the line
             AttachPointOperation op = null;
 
             try
             {
-                op = new AttachPointOperation(Session.WorkingSession);
-                op.Execute(m_Line, pos, m_PointType);
+                op = new AttachPointOperation(Session.WorkingSession, 0, m_Line, pr);
+                op.NewPoint = new DirectPointFeature(op, Session.ReserveNextItem(), m_PointType, null);
+                op.NewPoint.SetNextId();
+                op.Execute();
 
                 // Ensure the draw includes the extra point (perhaps a bit of overkill to
                 // draw just one point).

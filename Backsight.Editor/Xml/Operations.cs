@@ -85,9 +85,8 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            AttachPointOperation op = new AttachPointOperation(s, sequence);
-            op.Line = s.MapModel.Find<LineFeature>(this.Line);
-            op.PositionRatio = this.PositionRatio;
+            LineFeature line = s.MapModel.Find<LineFeature>(this.Line);
+            AttachPointOperation op = new AttachPointOperation(s, sequence, line, this.PositionRatio);
             op.NewPoint = this.Point.CreateDirectPointFeature(op);
             return op;
         }
@@ -594,6 +593,9 @@ namespace Backsight.Editor.Xml
             LineFeature extendLine = loader.Find<LineFeature>(this.Line);
             Distance length =(Distance)this.Distance.LoadObservation(loader);
             LineExtensionOperation op = new LineExtensionOperation(s, sequence, extendLine, this.ExtendFromEnd, length);
+
+            //IFeature newPoint = this.NewPoint.GetFeatureStub(op);
+            //IFeature newLine = this.NewLine.GetFeatureStub(op);
 
             op.NewPoint = this.NewPoint.CreateDirectPointFeature(op);
 
