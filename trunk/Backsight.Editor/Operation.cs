@@ -38,14 +38,14 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The session in which this operation was originally defined.
+        /// The session in which this operation was originally defined (not null)
         /// </summary>
-        Session m_Session;
+        readonly Session m_Session;
 
         /// <summary>
         /// The item sequence number of this operation (starts at 1 for each session).
         /// </summary>
-        uint m_Sequence;
+        readonly uint m_Sequence;
 
         /// <summary>
         /// Flag bits
@@ -188,7 +188,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The session in which this operation was originally defined.
+        /// The session in which this operation was originally defined (never null).
         /// </summary>        
         internal Session Session
         {
@@ -210,7 +210,7 @@ namespace Backsight.Editor
         /// </summary>
         internal CadastralMapModel MapModel
         {
-            get { return (m_Session==null ? null : m_Session.MapModel); }
+            get { return m_Session.MapModel; }
         }
 
         //public void OnMove(Feature f)

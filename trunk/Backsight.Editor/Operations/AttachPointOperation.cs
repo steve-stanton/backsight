@@ -37,19 +37,49 @@ namespace Backsight.Editor.Operations
         /// </summary>
         const uint MAX_POSITION_RATIO = 1000000000;
 
+        #region Static
+
+        /// <summary>
+        /// Obtains the position ratio for a position that is coincident with a line.
+        /// </summary>
+        /// <param name="line">The line the position is coincident with</param>
+        /// <param name="posn">The position on the line</param>
+        /// <returns>The position ratio of the position, expressed in the numeric range
+        /// expected by this editing operation.</returns>
+        /// <exception cref="ArgumentException">If the position does not appear to coincide
+        /// with the supplied line.</exception>
+        static internal uint GetPositionRatio(LineFeature line, IPosition posn)
+        {
+            // Get the distance to the supplied position (confirming that it does fall on the line)
+            LineGeometry g = line.LineGeometry;
+            double lineLen = g.Length.Meters;
+            double posnLen = g.GetLength(posn).Meters;
+            if (posnLen < 0.0)
+                throw new ArgumentException("Position does not appear to coincide with line.");
+
+            // Express the position as a position ratio in the range [0,1 billion]
+            double prat = posnLen/lineLen;
+            uint result = (uint)(prat * (double)MAX_POSITION_RATIO);
+            Debug.Assert(result <= MAX_POSITION_RATIO);
+            return result;
+        }
+
+        #endregion
+
+
         #region Class data
 
         /// <summary>
         /// The line the point should appear on 
         /// </summary>
-        LineFeature m_Line;
+        readonly LineFeature m_Line;
 
         /// <summary>
         /// The position ratio of the attached point. A point coincident with the start
         /// of the line is a value of 0. A point at the end of the line is a value of
         /// 1 billion  (1,000,000,000).
         /// </summary>
-        uint m_PositionRatio;
+        readonly uint m_PositionRatio;
 
         /// <summary>
         /// The point that was created 
@@ -61,40 +91,28 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="AttachPointOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal AttachPointOperation(Session s, uint sequence)
+        /// <param name="line">The line the point should appear on.</param>
+        /// <param name="positionRatio">The position ratio of the attached point. A point coincident with the start
+        /// of the line is a value of 0. A point at the end of the line is a value of
+        /// 1 billion  (1,000,000,000).</param>
+        internal AttachPointOperation(Session s, uint sequence, LineFeature line, uint positionRatio)
             : base(s, sequence)
         {
-            SetInitialValues();
-        }
+            if (line == null)
+                throw new ArgumentNullException();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AttachPointOperation"/> class.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal AttachPointOperation(Session s)
-            : this(s, 0)
-        {
+            m_Line = line;
+            m_PositionRatio = positionRatio;
+            m_Point = null;
         }
 
         #endregion
-
-        /// <summary>
-        /// Initializes class data with default values
-        /// </summary>
-        void SetInitialValues()
-        {
-            m_Line = null;
-            m_PositionRatio = 0;
-            m_Point = null;
-        }
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -197,64 +215,13 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="line">The line to attach the point to</param>
-        /// <param name="posn">The position on the line at which to attach the point</param>
-        /// <param name="type">The entity type for the point.</param>
-        internal void Execute(LineFeature line, IPosition posn, IEntity type)
+        internal void Execute()
         {
-            // Get the distance to the supplied position (confirming that it does fall on the line)
-            LineGeometry g = line.LineGeometry;
-            double lineLen = g.Length.Meters;
-            double posnLen = g.GetLength(posn).Meters;
-            if (posnLen < 0.0)
-                throw new Exception("Position does not appear to coincide with line.");
+            // This is a bit weak -- it assumes the new point has already been created, but
+            // without any geometry.
 
-            // Remember the line the point is getting attached to
-            m_Line = line;
-
-            // Express the position as a position ratio in the range [0,1 billion]
-            double prat = posnLen/lineLen;
-            m_PositionRatio = (uint)(prat * (double)MAX_POSITION_RATIO);
-            Debug.Assert(m_PositionRatio>=0);
-            Debug.Assert(m_PositionRatio<=MAX_POSITION_RATIO);
-
-            // Add the point to the map.
-            m_Point = MapModel.AddPoint(posn, type, this);
-
-            // If necessary, assign the new point the next available ID.
-            m_Point.SetNextId();
-
-            // Peform standard completion steps
+            RunEdit();
             Complete();
-        }
-
-        /// <summary>
-        /// The line the point should appear on 
-        /// </summary>
-        internal LineFeature Line
-        {
-            get { return m_Line; }
-            set { m_Line = value; }
-        }
-
-        /// <summary>
-        /// The point that was created (defined on a call to <see cref="Execute"/>)
-        /// </summary>
-        internal PointFeature NewPoint
-        {
-            get { return m_Point; }
-            set { m_Point = value; }
-        }
-
-        /// <summary>
-        /// The position ratio of the attached point. A point coincident with the start
-        /// of the line is a value of 0. A point at the end of the line is a value of
-        /// 1 billion  (1,000,000,000).
-        /// </summary>
-        internal uint PositionRatio
-        {
-            get { return m_PositionRatio; }
-            set { m_PositionRatio = value; }
         }
 
         /// <summary>
@@ -265,6 +232,33 @@ namespace Backsight.Editor.Operations
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
             m_Point.PointGeometry = pg;
+        }
+
+        /// <summary>
+        /// The line the point should appear on 
+        /// </summary>
+        internal LineFeature Line
+        {
+            get { return m_Line; }
+        }
+
+        /// <summary>
+        /// The position ratio of the attached point. A point coincident with the start
+        /// of the line is a value of 0. A point at the end of the line is a value of
+        /// 1 billion  (1,000,000,000).
+        /// </summary>
+        internal uint PositionRatio
+        {
+            get { return m_PositionRatio; }
+        }
+
+        /// <summary>
+        /// The point that was created (defined on a call to <see cref="Execute"/>)
+        /// </summary>
+        internal PointFeature NewPoint
+        {
+            get { return m_Point; }
+            set { m_Point = value; }
         }
 
         /// <summary>
