@@ -1434,5 +1434,9 @@ namespace Backsight.Editor
         //        op.RunEdit();
         //    }
         //}
+
+        //internal void Complete(Operation op)
+        //{
+        //}
     }
 }

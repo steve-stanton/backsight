@@ -14,9 +14,10 @@
 // </remarks>
 
 using System;
-using Backsight.Editor.Operations;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
 using Backsight.Environment;
 
@@ -87,6 +88,12 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             LineFeature line = s.MapModel.Find<LineFeature>(this.Line);
             AttachPointOperation op = new AttachPointOperation(s, sequence, line, this.PositionRatio);
+
+            // todo: make use of the factory...
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureDescription("Point", this.Point.GetFeatureStub(op));
+            //op.Execute(ff);
+
             op.NewPoint = this.Point.CreateDirectPointFeature(op);
             return op;
         }
