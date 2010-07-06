@@ -215,10 +215,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        internal void Execute()
+        /// <param name="ff">Factory for creating new features</param>
+        internal void Execute(FeatureFactory ff)
         {
-            // This is a bit weak -- it assumes the new point has already been created, but
-            // without any geometry.
+            // Create the resultant point (without any defined position)
+            m_Point = ff.CreateDirectPointFeature("Point");
 
             RunEdit();
             Complete();

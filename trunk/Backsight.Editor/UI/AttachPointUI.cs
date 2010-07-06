@@ -185,9 +185,9 @@ namespace Backsight.Editor.UI
             try
             {
                 op = new AttachPointOperation(Session.WorkingSession, 0, m_Line, pr);
-                op.NewPoint = new DirectPointFeature(op, Session.ReserveNextItem(), m_PointType, null);
-                op.NewPoint.SetNextId();
-                op.Execute();
+                FeatureFactory ff = new FeatureFactory(op);
+                ff.PointType = m_PointType;
+                op.Execute(ff);
 
                 // Ensure the draw includes the extra point (perhaps a bit of overkill to
                 // draw just one point).
