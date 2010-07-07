@@ -288,6 +288,15 @@ namespace Backsight.Editor.Operations
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
         internal void Execute(IdHandle pointId, IEntity ent1, IEntity ent2)
         {
+            //TODO
+            //FeatureFactory ff = new FeatureFactory(this);
+
+            //if (ent1 != null)
+            //{
+            //    IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent1, null);
+            //    ff.AddFeatureDescription(
+            //}
+
             // Calculate the position of the point of intersection.
             IPosition xsect = Calculate(m_Direction, m_Distance, m_From, m_Default);
             if (xsect==null)
@@ -515,6 +524,17 @@ namespace Backsight.Editor.Operations
             //}
 
             //return true;
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_To = ff.CreateDirectPointFeature("To");
+            m_DirLine = ff.CreateSegmentLineFeature("DirLine", m_Direction.From, m_To);
+            m_DistLine = ff.CreateSegmentLineFeature("DistLine", m_From, m_To);
         }
 
         /// <summary>

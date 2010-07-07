@@ -90,10 +90,9 @@ namespace Backsight.Editor.Xml
             AttachPointOperation op = new AttachPointOperation(s, sequence, line, this.PositionRatio);
 
             DeserializationFactory dff = new DeserializationFactory(op);
-            dff.AddFeatureDescription("Point", this.Point.GetFeatureStub(op));
+            dff.AddFeatureData("Point", (FeatureStubData)this.Point);
             op.CreateFeatures(dff);
 
-            //op.NewPoint = this.Point.CreateDirectPointFeature(op);
             return op;
         }
     }
@@ -339,16 +338,22 @@ namespace Backsight.Editor.Xml
             IntersectDirectionAndDistanceOperation op = new IntersectDirectionAndDistanceOperation(s, sequence,
                                                                 dir, dist, from, this.Default);
 
-            op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            dff.AddFeatureStub("DirLine", this.DirLine);
+            dff.AddFeatureStub("DistLine", this.DirLine);
 
-            if (this.DirLine == null)
-                op.CreatedDirectionLine = null;
-            else
-                op.CreatedDirectionLine = this.DirLine.CreateSegmentLineFeature(op, dir.From, op.IntersectionPoint);
+            //op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
 
-            if (this.DistLine != null)
-                op.CreatedDistanceLine = this.DistLine.CreateSegmentLineFeature(op, op.DistanceFromPoint, op.IntersectionPoint);
+            //if (this.DirLine == null)
+            //    op.CreatedDirectionLine = null;
+            //else
+            //    op.CreatedDirectionLine = this.DirLine.CreateSegmentLineFeature(op, dir.From, op.IntersectionPoint);
 
+            //if (this.DistLine != null)
+            //    op.CreatedDistanceLine = this.DistLine.CreateSegmentLineFeature(op, op.DistanceFromPoint, op.IntersectionPoint);
+
+            op.CreateFeatures(dff);
             return op;
         }
     }

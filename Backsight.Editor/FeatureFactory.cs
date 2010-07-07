@@ -190,6 +190,11 @@ namespace Backsight.Editor
             return result;
         }
 
+        internal virtual SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
+        {
+            throw new NotImplementedException("FeatureFactory.CreateSegmentLineFeature");
+        }
+
         /// <summary>
         /// The features created by this factory (never null, but may be an empty array).
         /// </summary>
