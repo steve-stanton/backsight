@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Backsight.Editor
+namespace Backsight.Editor.Xml
 {
     /// <summary>
     /// A <see cref="FeatureFactory"/> for use during deserialization from
@@ -50,6 +50,22 @@ namespace Backsight.Editor
 
         #endregion
 
+        //internal void AddFeatureData<T>(string itemName, T data) where T : FeatureData
+        //{
+        //    data.LoadFeature
+        //}
+
+        internal void AddFeatureStub(string itemName, FeatureData data)
+        {
+            if (data != null)
+                AddFeatureData(itemName, (FeatureStubData)data);
+        }
+
+        internal void AddFeatureData(string itemName, FeatureStubData stub)
+        {
+            AddFeatureDescription(itemName, stub.GetFeatureStub(base.Creator));
+        }
+
         /// <summary>
         /// Records information for a feature that needs to be produced by this factory.
         /// </summary>
@@ -75,6 +91,15 @@ namespace Backsight.Editor
         {
             IFeature f = m_Features[itemName];
             return new DirectPointFeature(f, null);
+        }
+
+        internal override SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
+        {
+            IFeature f;
+            if (m_Features.TryGetValue(itemName, out f))
+                return new SegmentLineFeature(f, from, to, f.EntityType.IsPolygonBoundaryValid);
+            else
+                return null;
         }
     }
 }
