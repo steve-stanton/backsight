@@ -213,16 +213,12 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Executes this operation.
+        /// Creates any new spatial features (without any geometry)
         /// </summary>
-        /// <param name="ff">Factory for creating new features</param>
-        internal void Execute(FeatureFactory ff)
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
         {
-            // Create the resultant point (without any defined position)
             m_Point = ff.CreateDirectPointFeature("Point");
-
-            RunEdit();
-            Complete();
         }
 
         /// <summary>
