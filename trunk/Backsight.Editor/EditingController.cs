@@ -1426,17 +1426,5 @@ namespace Backsight.Editor
                 return (so as TextFeature);
             }
         }
-
-        //internal void RunEdit(Operation op)
-        //{
-        //    try
-        //    {
-        //        op.RunEdit();
-        //    }
-        //}
-
-        //internal void Complete(Operation op)
-        //{
-        //}
     }
 }

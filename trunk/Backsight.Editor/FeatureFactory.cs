@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Environment;
 
@@ -31,6 +32,11 @@ namespace Backsight.Editor
         /// The editing operation that needs to create features (not null).
         /// </summary>
         readonly Operation m_Operation;
+
+        /// <summary>
+        /// The features created by this factory.
+        /// </summary>
+        readonly List<Feature> m_Features;
 
         /// <summary>
         /// The entity type for new point features
@@ -67,6 +73,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Operation = op;
+            m_Features = new List<Feature>();
         }
 
         #endregion
@@ -165,7 +172,30 @@ namespace Backsight.Editor
             uint ss = Session.ReserveNextItem();
             DirectPointFeature result = new DirectPointFeature(m_Operation, ss, PointType, null);
             result.SetNextId();
+            m_Features.Add(result);
             return result;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="DirectPointFeature"/>, with the currently
+        /// active entity type (and a user-perceived ID if it applies), and adds to the model.
+        /// </summary>
+        /// <returns>The new feature</returns>
+        internal virtual DirectPointFeature CreateDirectPointFeature()
+        {
+            uint ss = Session.ReserveNextItem();
+            DirectPointFeature result = new DirectPointFeature(m_Operation, ss, PointType, null);
+            result.SetNextId();
+            m_Features.Add(result);
+            return result;
+        }
+
+        /// <summary>
+        /// The features created by this factory (never null, but may be an empty array).
+        /// </summary>
+        internal Feature[] CreatedFeatures
+        {
+            get { return m_Features.ToArray(); }
         }
     }
 }

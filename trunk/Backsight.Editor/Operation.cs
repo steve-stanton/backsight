@@ -637,5 +637,81 @@ namespace Backsight.Editor
         //{
         //    get { return m_Previous; }
         //}
+
+        /// <summary>
+        /// Executes a brand new editing operation that is part of the working session
+        /// (as opposed to a historical session that is being deserialized from the database).
+        /// </summary>
+        /// <param name="op">The edit to execute</param>
+        /// <param name="ff">The factory for creating new spatial features (specify null if
+        /// the edit is not expected to create anything).</param>
+        internal void Execute(FeatureFactory ff)
+        {
+            Debug.Assert(m_Session == Session.WorkingSession);
+
+            try
+            {
+                ProcessEdit(ff);
+            }
+
+            catch (Exception ex)
+            {
+
+                m_Session.Remove(this);
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ff"></param>
+        void ProcessEdit(FeatureFactory ff)
+        {
+            CadastralMapModel mapModel = this.MapModel;
+
+            // Create the spatial features
+            CreateFeatures(ff);
+
+            // Calculate any geometry for spatial features
+            RunEdit();
+
+            // Index features that were created (and ensure the map extent has been
+            // expanded to include the new features)
+            Feature[] feats = ff.CreatedFeatures;
+
+            if (feats.Length > 0)
+            {
+                // Attempt to associate new features with database attributes
+                AttributeData.Load(feats);
+                mapModel.AddToIndex(feats);
+
+                // Ensure user-perceived ID objects have been indexed too
+                mapModel.AddFeatureIds(feats);
+            }
+
+            // Point referenced features to this editing operation
+            AddReferences();
+
+            // Mark any new topological lines as "moved" so that they will be
+            // intersected with the map
+            PrepareForIntersect(feats);
+
+            // Ensure the map structure has been updated to account for the new data.
+            mapModel.CleanEdit();
+
+            // Save the edit to the database
+            SaveOperation();
+        }
+
+        //internal abstract void CreateFeatures(FeatureFactory ff);
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal virtual void CreateFeatures(FeatureFactory ff)
+        {
+            // Do nothing
+        }
     }
 }
