@@ -69,14 +69,5 @@ namespace Backsight.Editor.Xml
             else
                 return new DirectPointFeature(f, null);
         }
-
-        internal override SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
-        {
-            IFeature f = FindFeatureDescription(itemName);
-            if (f == null)
-                return null;
-            else
-                return new SegmentLineFeature(f, from, to);
-        }
     }
 }
