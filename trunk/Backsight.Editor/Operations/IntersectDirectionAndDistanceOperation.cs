@@ -296,6 +296,14 @@ namespace Backsight.Editor.Operations
 
             if (ent1 != null)
             {
+                // Lines are not allowed if the direction line is associated with an offset
+                // distance (since we would then need to add a point at the start of the
+                // direction line). This should have been trapped by the UI. Note that an
+                // offset specified using an OffsetPoint is valid.
+
+                if (m_Direction.Offset is OffsetDistance)
+                    throw new ApplicationException("Cannot add direction line because a distance offset is involved");
+
                 IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent1, null);
                 ff.AddFeatureDescription("DirLine", f);
             }
@@ -560,7 +568,11 @@ namespace Backsight.Editor.Operations
             m_To.PointGeometry = pg;
 
             if (m_DirLine!=null)
-                m_DirLine.LineGeometry = new SegmentGeometry(m_Direction.From, m_To);
+            {
+                OffsetPoint op = m_Direction.Offset as OffsetPoint;
+                PointFeature from = (op == null ? m_Direction.From : op.Point);
+                m_DirLine.LineGeometry = new SegmentGeometry(from, m_To);
+            }
 
             if (m_DistLine!=null)
                 m_DistLine.LineGeometry = new SegmentGeometry(m_From, m_To);

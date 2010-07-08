@@ -330,7 +330,13 @@ namespace Backsight.Editor.Forms
 
         internal IEntity LineType
         {
-            get { return m_LineType; }
+            get
+            {
+                if (lineTypeGroupBox.Enabled)
+                    return m_LineType;
+                else
+                    return null;
+            }
         }
 
         internal void InitializeControl(IntersectForm parent, int dirNum)
@@ -365,7 +371,7 @@ namespace Backsight.Editor.Forms
             if (m_DefaultOffset!=null)
             {
                 lineTypeComboBox.SelectEntity(null);
-                lineTypeComboBox.Enabled = false;
+                lineTypeGroupBox.Enabled = false;
                 m_LineType = null;
             }
 
@@ -378,7 +384,7 @@ namespace Backsight.Editor.Forms
                 if (parent.GetUpdateOp()==null)
                 {
                     lineTypeComboBox.SelectEntity(null);
-                    //lineTypeComboBox.Enabled = false;
+                    //lineTypeGroupBox.Enabled = false;
                     m_LineType = null;
                 }
             }
@@ -671,7 +677,7 @@ namespace Backsight.Editor.Forms
                 // Go back to default settings.
                 TurnRadioOff(leftRadioButton);
                 TurnRadioOff(rightRadioButton);
-                lineTypeComboBox.Enabled = true;
+                lineTypeGroupBox.Enabled = true;
             }
             else
             {
@@ -682,13 +688,13 @@ namespace Backsight.Editor.Forms
                 {
                     TurnRadioOff(leftRadioButton);
                     TurnRadioOff(rightRadioButton);
-                    lineTypeComboBox.Enabled = true;
+                    lineTypeGroupBox.Enabled = true;
                     setDefaultOffsetButton.Enabled = false;
                 }
                 else // Offset specified by entered distance.
                 {
                     leftRadioButton.Enabled = rightRadioButton.Enabled = true;
-                    lineTypeComboBox.Enabled = false;
+                    lineTypeGroupBox.Enabled = false;
                     m_LineType = null;
 
                     // Parse the distance.

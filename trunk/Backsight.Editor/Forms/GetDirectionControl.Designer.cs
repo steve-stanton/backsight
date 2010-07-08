@@ -28,7 +28,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lineTypeGroupBox = new System.Windows.Forms.GroupBox();
             this.lineTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -48,23 +48,23 @@ namespace Backsight.Editor.Forms
             this.rightRadioButton = new System.Windows.Forms.RadioButton();
             this.leftRadioButton = new System.Windows.Forms.RadioButton();
             this.offsetTextBox = new System.Windows.Forms.TextBox();
-            this.groupBox2.SuspendLayout();
+            this.lineTypeGroupBox.SuspendLayout();
             this.directionGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox2
+            // lineTypeGroupBox
             // 
-            this.groupBox2.Controls.Add(this.lineTypeComboBox);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(513, 15);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(223, 160);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Line type";
+            this.lineTypeGroupBox.Controls.Add(this.lineTypeComboBox);
+            this.lineTypeGroupBox.Controls.Add(this.label3);
+            this.lineTypeGroupBox.Controls.Add(this.label4);
+            this.lineTypeGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lineTypeGroupBox.Location = new System.Drawing.Point(513, 15);
+            this.lineTypeGroupBox.Name = "lineTypeGroupBox";
+            this.lineTypeGroupBox.Size = new System.Drawing.Size(223, 160);
+            this.lineTypeGroupBox.TabIndex = 3;
+            this.lineTypeGroupBox.TabStop = false;
+            this.lineTypeGroupBox.Text = "Line type";
             // 
             // lineTypeComboBox
             // 
@@ -72,6 +72,7 @@ namespace Backsight.Editor.Forms
             this.lineTypeComboBox.FormattingEnabled = true;
             this.lineTypeComboBox.Location = new System.Drawing.Point(15, 29);
             this.lineTypeComboBox.Name = "lineTypeComboBox";
+            this.lineTypeComboBox.ShowBlankEntityType = true;
             this.lineTypeComboBox.Size = new System.Drawing.Size(194, 24);
             this.lineTypeComboBox.TabIndex = 4;
             this.lineTypeComboBox.SelectedValueChanged += new System.EventHandler(this.lineTypeComboBox_SelectedValueChanged);
@@ -154,9 +155,9 @@ namespace Backsight.Editor.Forms
             this.directionTextBox.Name = "directionTextBox";
             this.directionTextBox.Size = new System.Drawing.Size(74, 22);
             this.directionTextBox.TabIndex = 2;
-            this.directionTextBox.Enter += new System.EventHandler(this.directionTextBox_Enter);
-            this.directionTextBox.Leave += new System.EventHandler(this.directionTextBox_Leave);
             this.directionTextBox.TextChanged += new System.EventHandler(this.directionTextBox_TextChanged);
+            this.directionTextBox.Leave += new System.EventHandler(this.directionTextBox_Leave);
+            this.directionTextBox.Enter += new System.EventHandler(this.directionTextBox_Enter);
             // 
             // label6
             // 
@@ -182,9 +183,9 @@ namespace Backsight.Editor.Forms
             this.backsightTextBox.Name = "backsightTextBox";
             this.backsightTextBox.Size = new System.Drawing.Size(74, 22);
             this.backsightTextBox.TabIndex = 1;
-            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
-            this.backsightTextBox.Leave += new System.EventHandler(this.backsightTextBox_Leave);
             this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
+            this.backsightTextBox.Leave += new System.EventHandler(this.backsightTextBox_Leave);
+            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
             // 
             // fromPointTextBox
             // 
@@ -192,9 +193,9 @@ namespace Backsight.Editor.Forms
             this.fromPointTextBox.Name = "fromPointTextBox";
             this.fromPointTextBox.Size = new System.Drawing.Size(74, 22);
             this.fromPointTextBox.TabIndex = 0;
-            this.fromPointTextBox.Enter += new System.EventHandler(this.fromPointTextBox_Enter);
-            this.fromPointTextBox.Leave += new System.EventHandler(this.fromPointTextBox_Leave);
             this.fromPointTextBox.TextChanged += new System.EventHandler(this.fromPointTextBox_TextChanged);
+            this.fromPointTextBox.Leave += new System.EventHandler(this.fromPointTextBox_Leave);
+            this.fromPointTextBox.Enter += new System.EventHandler(this.fromPointTextBox_Enter);
             // 
             // label2
             // 
@@ -267,21 +268,21 @@ namespace Backsight.Editor.Forms
             this.offsetTextBox.Name = "offsetTextBox";
             this.offsetTextBox.Size = new System.Drawing.Size(110, 22);
             this.offsetTextBox.TabIndex = 3;
-            this.offsetTextBox.Enter += new System.EventHandler(this.offsetTextBox_Enter);
-            this.offsetTextBox.Leave += new System.EventHandler(this.offsetTextBox_Leave);
             this.offsetTextBox.TextChanged += new System.EventHandler(this.offsetTextBox_TextChanged);
+            this.offsetTextBox.Leave += new System.EventHandler(this.offsetTextBox_Leave);
+            this.offsetTextBox.Enter += new System.EventHandler(this.offsetTextBox_Enter);
             // 
             // GetDirectionControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.lineTypeGroupBox);
             this.Controls.Add(this.directionGroupBox);
             this.Name = "GetDirectionControl";
             this.Size = new System.Drawing.Size(752, 191);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.lineTypeGroupBox.ResumeLayout(false);
+            this.lineTypeGroupBox.PerformLayout();
             this.directionGroupBox.ResumeLayout(false);
             this.directionGroupBox.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -292,7 +293,7 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox lineTypeGroupBox;
         private EntityTypeComboBox lineTypeComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

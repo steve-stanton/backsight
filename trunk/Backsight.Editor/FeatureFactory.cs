@@ -186,7 +186,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Attempts to obtain information for a feature that was previously noted via a
-        /// call to <see cref="AddFeatureDescription"/>.
+        /// call to <see cref="AddFeatureDescription"/>. This is an indexed lookup.
         /// </summary>
         /// <param name="itemName">The name associated with the feature (unique to the editing
         /// operation that this factory is for).</param>
@@ -239,21 +239,35 @@ namespace Backsight.Editor
             return result;
         }
 
-        internal virtual SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
+        /// <summary>
+        /// Creates a new <see cref="SegmentLineFeature"/> using information previously
+        /// recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created feature (null if a feature description was not previously added)</returns>
+        internal SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
         {
-            SegmentLineFeature result = null;
             IFeature f = FindFeatureDescription(itemName);
-
             if (f == null)
-            {
-                uint ss = Session.ReserveNextItem();
-                result = new SegmentLineFeature(m_Operation, ss, LineType, from, to);
-            }
-            else
-            {
-                result = new SegmentLineFeature(f, from, to);
-            }
+                return null;
 
+            SegmentLineFeature result = new SegmentLineFeature(f, from, to);
+            m_CreatedFeatures.Add(result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SegmentLineFeature"/> with the default line entity type.
+        /// </summary>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created feature (never null)</returns>
+        internal SegmentLineFeature CreateSegmentLineFeature(PointFeature from, PointFeature to)
+        {
+            uint ss = Session.ReserveNextItem();
+            SegmentLineFeature result = new SegmentLineFeature(m_Operation, ss, LineType, from, to);
             m_CreatedFeatures.Add(result);
             return result;
         }
