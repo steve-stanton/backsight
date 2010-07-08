@@ -35,18 +35,23 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The direction observation.
         /// </summary>
-        Direction m_Direction;
+        readonly Direction m_Direction;
 
         /// <summary>
         /// The line the direction needs to intersect.
         /// </summary>
-        LineFeature m_Line;
+        readonly LineFeature m_Line;
+
+        /// <summary>
+        /// True if the line needs to be split at the intersection.
+        /// </summary>
+        readonly bool m_IsSplit;
 
         /// <summary>
         /// The point closest to the intersection (usually defaulted to one of the end
         /// points for the lines, or the origin of the direction).
         /// </summary>
-        PointFeature m_CloseTo;
+        readonly PointFeature m_CloseTo;
 
         // Creations ...
 
@@ -73,11 +78,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         LineFeature m_LineB;
 
-        /// <summary>
-        /// True if the line needs to be split at the intersection.
-        /// </summary>
-        bool m_IsSplit;
-
         #endregion
 
         #region Constructors
@@ -91,11 +91,12 @@ namespace Backsight.Editor.Operations
         /// deserialization from the database.</param>
         /// <param name="dir">Direction observation.</param>
         /// <param name="line">The line to intersect.</param>
+        /// <param name="wantsplit">True if line should be split at the intersection.</param>
         /// <param name="closeTo">The point the intersection has to be close to. Used if
         /// there is more than one intersection to choose from. If null is specified, a
         /// default point will be selected.</param>
         internal IntersectDirectionAndLineOperation(Session session, uint sequence, Direction dir,
-                                                    LineFeature line, PointFeature closeTo)
+                                                    LineFeature line, bool wantsplit, PointFeature closeTo)
             : base(session, sequence)
         {
             if (m_Direction==null || m_Line==null || m_CloseTo==null)
@@ -103,6 +104,7 @@ namespace Backsight.Editor.Operations
 
             m_Direction = dir;
             m_Line = line;
+            m_IsSplit = wantsplit;
             m_CloseTo = closeTo;
         }
 
@@ -140,7 +142,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit
         {
             get { return m_IsSplit; }
-            set { m_IsSplit = value; }
+            //set { m_IsSplit = value; }
         }
 
         /// <summary>
@@ -350,12 +352,43 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="wantsplit">True if line should be split at the intersection.</param>
         /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
         /// <param name="dirEnt">The entity type for any line that should be added along the direction
         /// line. Specify null if you don't want a line.</param>
-        internal void Execute(bool wantsplit, IdHandle pointId, IEntity dirEnt)
+        internal void Execute(IdHandle pointId, IEntity dirEnt)
         {
+            FeatureFactory ff = new FeatureFactory(this);
+
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
+
+            if (m_IsSplit)
+            {
+                // See FeatureFactory.MakeSection - the only thing that really matters is the
+                // session sequence number that will get picked up by the FeatureStub constructor.
+                ff.AddFeatureDescription("SplitBefore", new FeatureStub(this, m_Line.EntityType, null));
+                ff.AddFeatureDescription("SplitAfter", new FeatureStub(this, m_Line.EntityType, null));                
+            }
+
+            if (dirEnt != null)
+            {
+                // Lines are not allowed if the direction line is associated with an offset
+                // distance (since we would then need to add a point at the start of the
+                // direction line). This should have been trapped by the UI. Note that an
+                // offset specified using an OffsetPoint is valid.
+
+                if (m_Direction.Offset is OffsetDistance)
+                    throw new ApplicationException("Cannot add direction line because a distance offset is involved");
+
+                IFeature f = new FeatureStub(this, dirEnt, null);
+                ff.AddFeatureDescription("DirLine", f);
+            }
+
+            base.Execute(ff);
+
+            //////////
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
@@ -377,6 +410,39 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_Intersection = ff.CreateDirectPointFeature("To");
+
+            if (m_IsSplit)
+            {
+                SectionLineFeature lineBefore, lineAfter;
+                ff.MakeSections(m_Line, "SplitBefore", m_Intersection, "SplitAfter",
+                                    out lineBefore, out lineAfter);
+                m_LineA = lineBefore;
+                m_LineB = lineAfter;
+            }
+
+            OffsetPoint op = m_Direction.Offset as OffsetPoint;
+            PointFeature from = (op == null ? m_Direction.From : op.Point);
+            m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_Intersection);
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void RunEdit()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_Intersection.PointGeometry = pg;
         }
 
         ///// <summary>
@@ -426,6 +492,8 @@ namespace Backsight.Editor.Operations
         internal bool Correct(Direction dir, LineFeature line, PointFeature closeTo,
                                 bool wantsplit, IEntity dirEnt)
         {
+            throw new NotImplementedException();
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
@@ -503,6 +571,7 @@ namespace Backsight.Editor.Operations
                 throw new Exception("You cannot delete lines via update. Use Line Delete.");
 
             return true;
+             */
         }
 
         internal LineFeature LineBeforeSplit
@@ -515,16 +584,6 @@ namespace Backsight.Editor.Operations
         {
             get { return m_LineB; }
             set { m_LineB = value; }
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void RunEdit()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_Intersection.PointGeometry = pg;
         }
     }
 }

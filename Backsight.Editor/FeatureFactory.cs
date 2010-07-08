@@ -272,6 +272,61 @@ namespace Backsight.Editor
             return result;
         }
 
+        internal bool MakeSections(LineFeature baseLine, string itemBefore, PointFeature x, string itemAfter,
+                                        out SectionLineFeature lineBefore, out SectionLineFeature lineAfter)
+        {
+            lineBefore = lineAfter = null;
+
+            if (itemBefore == null || itemAfter == null)
+                return false;
+
+            // Split the line (the sections should get an undefined creation sequence). Note that
+            // you cannot use the SplitLine method at this stage, because that requires defined
+            // geometry.
+
+            lineBefore = MakeSection(itemBefore, baseLine, baseLine.StartPoint, x);
+            lineAfter = MakeSection(itemAfter, baseLine, x, baseLine.EndPoint);
+
+            DeactivateLine(baseLine);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SectionLineFeature"/> using the session sequence number
+        /// that was previously recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// <para/>
+        /// Only the session sequence number will be used when creating the section (any
+        /// entity type and feature ID that may have been presented through <see cref="AddFeatureDescription"/>
+        /// will be ignored - the values from the parent line will be applied instead).
+        /// </summary>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="baseLine">The line that's being subdivided</param>
+        /// <param name="from">The point at the start of the section (not null).</param>
+        /// <param name="to">The point at the end of the section (not null).</param>
+        /// <returns>The created feature (null if a feature description was not previously added)</returns>
+        SectionLineFeature MakeSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
+        {
+            IFeature f = FindFeatureDescription(itemName);
+            if (f == null)
+                return null;
+
+            SectionGeometry section = new SectionGeometry(baseLine, from, to);
+            return baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
+        }
+
+        /// <summary>
+        /// Deactivates a line as part of regular editing work.
+        /// </summary>
+        /// <param name="line">The line that needs to be deactivated</param>
+        /// <remarks>
+        /// The <see cref=""/> class provides an override (the logic is different when
+        /// a line needs to be deactivated during deserialization from the database).
+        /// </remarks>
+        internal virtual void DeactivateLine(LineFeature line)
+        {
+            line.IsInactive = true;
+        }
+
         /// <summary>
         /// The features created by this factory (never null, but may be an empty array).
         /// </summary>
