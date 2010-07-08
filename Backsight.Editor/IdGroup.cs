@@ -463,29 +463,25 @@ namespace Backsight.Editor
         /// Creates a new feature ID. This function is called by IdHandle.CreateId. The supplied
         /// ID and range should have been defined via a prior call to ReserveId.
         /// </summary>
-        /// <param name="id">The ID key to use. Must be listed in this group as a reserved ID
-        /// (if not, an error message will be issued).</param>
+        /// <param name="id">The ID key to use. Must be listed in this group as a reserved ID.</param>
         /// <param name="packet">The ID packet that the ID belongs to.</param>
-        /// <param name="feature">The feature which the new ID is to be assigned to.</param>
-        /// <returns>The created feature ID (null on error).</returns>
-        internal FeatureId CreateId(uint id, IdPacket packet, Feature feature)
+        /// <returns>The created feature ID.</returns>
+        internal FeatureId CreateId(uint id, IdPacket packet)
         {
 	        // Confirm that the specified ID was previously reserved (if not,
 	        // see if it has already been created).
         	int index = FindReservedId(id);
-	        if (index < 0)
+            if (index < 0)
             {
                 string msg = String.Format("ID {0} d was not properly reserved.", id);
-                MessageBox.Show(msg);
-                return null;
+                throw new ApplicationException(msg);
             }
 
         	// Get the range to create the ID.
-            FeatureId fid = packet.CreateId(id, feature);
+            FeatureId fid = packet.CreateId(id);
 
-	        // If we successfully created the ID, clear the reserve status.
-	        if (fid!=null)
-                m_ReservedIds.RemoveAt(index);
+            // Clear the reserve status
+            m_ReservedIds.RemoveAt(index);
 
 	        return fid;
         }

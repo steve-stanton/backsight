@@ -34,9 +34,16 @@ namespace Backsight.Editor
         readonly Operation m_Operation;
 
         /// <summary>
-        /// The features created by this factory.
+        /// Information about features that will be created, keyed by a name (that
+        /// corresponds to the element name when represented in XML).
         /// </summary>
-        readonly List<Feature> m_Features;
+        readonly Dictionary<string, IFeature> m_FeatureInfo;
+
+        /// <summary>
+        /// The features created by this factory. This may include features in addition
+        /// to those in <see cref="m_FeatureInfo"/>.
+        /// </summary>
+        readonly List<Feature> m_CreatedFeatures;
 
         /// <summary>
         /// The entity type for new point features
@@ -73,7 +80,8 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Operation = op;
-            m_Features = new List<Feature>();
+            m_FeatureInfo = new Dictionary<string, IFeature>();
+            m_CreatedFeatures = new List<Feature>();
         }
 
         #endregion
@@ -163,16 +171,57 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Records information for a feature that needs to be produced by this factory.
+        /// </summary>
+        /// <param name="itemName">A name associated with the feature (unique to the editing
+        /// operation that this factory is for).</param>
+        /// <param name="f">Basic information for the feature.</param>
+        internal void AddFeatureDescription(string itemName, IFeature f)
+        {
+            if (f.Creator != m_Operation)
+                throw new ArgumentException();
+
+            m_FeatureInfo.Add(itemName, f);
+        }
+
+        /// <summary>
+        /// Attempts to obtain information for a feature that was previously noted via a
+        /// call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
+        /// <param name="itemName">The name associated with the feature (unique to the editing
+        /// operation that this factory is for).</param>
+        /// <returns>The corresponding description (null if not found)</returns>
+        protected IFeature FindFeatureDescription(string itemName)
+        {
+            IFeature result;
+            if (m_FeatureInfo.TryGetValue(itemName, out result))
+                return result;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Creates a new instance of <see cref="DirectPointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
         /// <returns>The new feature</returns>
         internal virtual DirectPointFeature CreateDirectPointFeature(string itemName)
         {
-            uint ss = Session.ReserveNextItem();
-            DirectPointFeature result = new DirectPointFeature(m_Operation, ss, PointType, null);
-            result.SetNextId();
-            m_Features.Add(result);
+            DirectPointFeature result = null;
+            IFeature f = FindFeatureDescription(itemName);
+
+            if (f == null)
+            {
+                uint ss = Session.ReserveNextItem();
+                result = new DirectPointFeature(m_Operation, ss, PointType, null);
+                result.SetNextId();
+            }
+            else
+            {
+                result = new DirectPointFeature(f, null);
+            }
+
+            m_CreatedFeatures.Add(result);
             return result;
         }
 
@@ -186,13 +235,27 @@ namespace Backsight.Editor
             uint ss = Session.ReserveNextItem();
             DirectPointFeature result = new DirectPointFeature(m_Operation, ss, PointType, null);
             result.SetNextId();
-            m_Features.Add(result);
+            m_CreatedFeatures.Add(result);
             return result;
         }
 
         internal virtual SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
         {
-            throw new NotImplementedException("FeatureFactory.CreateSegmentLineFeature");
+            SegmentLineFeature result = null;
+            IFeature f = FindFeatureDescription(itemName);
+
+            if (f == null)
+            {
+                uint ss = Session.ReserveNextItem();
+                result = new SegmentLineFeature(m_Operation, ss, LineType, from, to);
+            }
+            else
+            {
+                result = new SegmentLineFeature(f, from, to);
+            }
+
+            m_CreatedFeatures.Add(result);
+            return result;
         }
 
         /// <summary>
@@ -200,7 +263,7 @@ namespace Backsight.Editor
         /// </summary>
         internal Feature[] CreatedFeatures
         {
-            get { return m_Features.ToArray(); }
+            get { return m_CreatedFeatures.ToArray(); }
         }
     }
 }

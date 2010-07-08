@@ -162,7 +162,7 @@ namespace Backsight.Editor.Xml
             PointFeature start, PointFeature end)
         {
             IFeature f = GetFeatureStub(creator);
-            return new SegmentLineFeature(f, start, end, f.EntityType.IsPolygonBoundaryValid);
+            return new SegmentLineFeature(f, start, end);
         }
 
         internal SectionLineFeature CreateSectionLineFeature(Operation creator,

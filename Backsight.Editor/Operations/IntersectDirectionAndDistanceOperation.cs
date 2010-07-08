@@ -288,15 +288,27 @@ namespace Backsight.Editor.Operations
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
         internal void Execute(IdHandle pointId, IEntity ent1, IEntity ent2)
         {
-            //TODO
-            //FeatureFactory ff = new FeatureFactory(this);
+            FeatureFactory ff = new FeatureFactory(this);
 
-            //if (ent1 != null)
-            //{
-            //    IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent1, null);
-            //    ff.AddFeatureDescription(
-            //}
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, Session.ReserveNextItem(), pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
 
+            if (ent1 != null)
+            {
+                IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent1, null);
+                ff.AddFeatureDescription("DirLine", f);
+            }
+
+            if (ent2 != null)
+            {
+                IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent2, null);
+                ff.AddFeatureDescription("DistLine", f);
+            }
+
+            base.Execute(ff);
+
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect = Calculate(m_Direction, m_Distance, m_From, m_Default);
             if (xsect==null)
@@ -320,6 +332,7 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
         }
 
         /// <summary>
