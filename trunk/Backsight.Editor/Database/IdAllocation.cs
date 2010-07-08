@@ -16,9 +16,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 
 using Backsight.Data;
-using System.Text;
 
 namespace Backsight.Editor.Database
 {

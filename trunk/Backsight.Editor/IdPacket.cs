@@ -1,22 +1,22 @@
-/// <remarks>
-/// Copyright 2008 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Editor.Database;
-using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -42,8 +42,7 @@ namespace Backsight.Editor
         /// References to allocated IDs. The  first element corresponds to m_LowestId,
         /// while the last corresponds to m_HighestId. When created, all ID references
         /// will be null. They get defined only when a user makes use of ID. When that
-        /// happens, the reference is defined at the appropriate place in the array, and
-        /// m_NumUsed is incremented.
+        /// happens, the reference is defined at the appropriate place in the array.
         /// </summary>
         NativeId[] m_Ids;
 
@@ -463,17 +462,12 @@ namespace Backsight.Editor
         /// Creates a new feature ID.
         /// </summary>
         /// <param name="id">The ID to create.</param>
-        /// <param name="feature">The feature to assign the ID to.</param>
-        /// <returns>The created feature ID (null on error).</returns>
-        internal FeatureId CreateId(uint id, Feature feature)
+        /// <returns>The created feature ID.</returns>
+        internal FeatureId CreateId(uint id)
         {
             // Confirm that the specified ID falls within this range.
             if (id<(uint)Min || id>(uint)Max)
                 throw new Exception("IdPacket.CreateId - New ID is not in range!");
-
-            // Confirm that the feature does not already have an ID.
-            if (feature.FeatureId!=null)
-                throw new Exception("IdPacket.CreateId - Feature already has an ID.");
 
             // Confirm that the packet does not already refer to an active ID.
             int index = (int)id - Min;
@@ -510,21 +504,9 @@ namespace Backsight.Editor
                     keystr = m_Group.FormatId(id);
                 }
 
-                // Create the new ID (and point it to the feature).
+                // Create the new ID
                 fid = new NativeId(m_Group, id);
-                fid.Add(feature);
-
-                // Remember the new ID and increment the usage count.
                 m_Ids[index] = fid;
-                //m_Allocation.IncrementNumUsed();
-            }
-            else
-            {
-                // Refer the old ID to the feature.
-                fid.AddReference(feature);
-
-                // Point the feature back to the ID
-                feature.SetId(fid);
             }
 
             return fid;

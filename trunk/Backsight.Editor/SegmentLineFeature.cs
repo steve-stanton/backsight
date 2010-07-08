@@ -44,6 +44,20 @@ namespace Backsight.Editor
         /// <param name="start">The point at the start of the line (not null).</param>
         /// <param name="end">The point at the end of the line (not null).</param>
         /// <exception cref="ArgumentNullException">If any parameter is null.</exception>
+        internal SegmentLineFeature(IFeature f, PointFeature start, PointFeature end)
+            : this(f, start, end, f.EntityType.IsPolygonBoundaryValid)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentLineFeature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="f">Basic information about the feature (not null).</param>
+        /// <param name="start">The point at the start of the line (not null).</param>
+        /// <param name="end">The point at the end of the line (not null).</param>
+        /// <param name="isTopological">Should the line be tagged as a polygon boundary?</param>
+        /// <exception cref="ArgumentNullException">If any parameter is null.</exception>
         internal SegmentLineFeature(IFeature f, PointFeature start, PointFeature end, bool isTopological)
             : base(f, start, end, new SegmentGeometry(start, end), isTopological)
         {

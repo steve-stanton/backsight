@@ -341,17 +341,7 @@ namespace Backsight.Editor.Xml
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("DirLine", this.DirLine);
-            dff.AddFeatureStub("DistLine", this.DirLine);
-
-            //op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
-
-            //if (this.DirLine == null)
-            //    op.CreatedDirectionLine = null;
-            //else
-            //    op.CreatedDirectionLine = this.DirLine.CreateSegmentLineFeature(op, dir.From, op.IntersectionPoint);
-
-            //if (this.DistLine != null)
-            //    op.CreatedDistanceLine = this.DistLine.CreateSegmentLineFeature(op, op.DistanceFromPoint, op.IntersectionPoint);
+            dff.AddFeatureStub("DistLine", this.DistLine);
 
             op.CreateFeatures(dff);
             return op;

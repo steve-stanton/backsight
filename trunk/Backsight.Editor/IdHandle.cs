@@ -1,17 +1,17 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -269,39 +269,40 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Creates a feature ID from this ID handle. In order for this to work, a
-        /// prior call to <c>IdHandle.ReserveId</c> is needed. This function should
-        /// be called ONLY by <c>Operation.CreateId</c>.
+        /// prior call to <c>IdHandle.ReserveId</c> is needed.
         /// </summary>
-        /// <param name="feature">The persistent feature that should get the created
-        /// feature ID.</param>
+        /// <param name="feature">The feature that should get the created feature ID (currently
+        /// without any defined ID)</param>
         /// <returns>The created feature ID (if any).</returns>
         internal FeatureId CreateId(Feature feature)
         {
-            // Ensure the feature is persistent.
-            /*
-	        if (feature.IsTransient)
-            {
-		        MessageBox.Show("IdHandle.CreateId - Attempt to assign ID to transient feature.");
-		        return null;
-	        }
-             */
+            // Confirm that the feature does not already have an ID.
+            if (feature.FeatureId!=null)
+                throw new ApplicationException("IdHandle.CreateId - Feature already has an ID.");
 
+            // Claim the reserved ID and cross reference to the feature
+            FeatureId fid = CreateId();
+            fid.Add(feature);
+            return fid;
+        }
+
+        /// <summary>
+        /// Creates a feature ID from this ID handle. In order for this to work, a
+        /// prior call to <c>IdHandle.ReserveId</c> is needed.
+        /// </summary>
+        /// <returns>The created feature ID (if any).</returns>
+        internal FeatureId CreateId()
+        {
             // You can't create a new feature ID if it already existed.
             if (m_FeatureId!=null)
-            {
-                MessageBox.Show("IdHandle.CreateId - ID previously defined");
-                return m_FeatureId;
-            }
+                throw new ApplicationException("IdHandle.CreateId - ID previously defined");
 
             // The packet has to be known.
             if (m_Group==null || m_Packet==null)
-            {
-                MessageBox.Show("IdHandle.CreateId - No ID group or range");
-                return null;
-            }
+                throw new ApplicationException("IdHandle.CreateId - No ID group or range");
 
-            // Get the ID group to do it.
-            return m_Group.CreateId(m_Id, m_Packet, feature);
+            // Get the group to pick up the reserved ID
+            return m_Group.CreateId(m_Id, m_Packet);
         }
 
         /// <summary>
@@ -473,16 +474,16 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates an ID out of some miscellaneous string. This function should be called
         /// only when importing data from an externally defined file format.
-        ///
+        /// <para/>
         /// This is needed because there is no guarantee that a foreign key is numeric. It
         /// might even be completely alphabetic, so it would be impossible to relate it
         /// to any ID range.
-        ///
+        /// <para/>
         /// In order to use this function, you must initially construct the ID handle with
         /// a reference to the feature that the ID will be for. If you don't, you'll get an
         /// error message. Given that you have done things correctly, the feature will be
         /// modified in 2 ways:
-        ///
+        /// <para/>
         /// 1. It will be marked as having a foreign ID.
         /// 2. It will be modified to point to the ID.
         /// </summary>

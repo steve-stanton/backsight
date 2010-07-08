@@ -487,7 +487,14 @@ namespace Backsight.Editor
             {
                 LineFeature line = (f as LineFeature);
                 if (line!=null && line.IsTopological)
+                {
                     line.IsMoved = true;
+
+                    // Ensure any polygons in the vicinity have been marked for a rebuild - this
+                    // covers new lines that are incident on existing points (where no lines will
+                    // get divided).
+                    line.MarkPolygons();
+                }
             }
         }
 
@@ -656,7 +663,6 @@ namespace Backsight.Editor
 
             catch (Exception ex)
             {
-
                 m_Session.Remove(this);
                 throw ex;
             }
