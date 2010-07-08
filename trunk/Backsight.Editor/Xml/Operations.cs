@@ -383,10 +383,35 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             Direction dir = (Direction)this.Direction.LoadObservation(loader);
             LineFeature line = loader.Find<LineFeature>(this.Line);
+            bool wantSplit = (this.SplitBefore != null && this.SplitAfter != null);
             PointFeature closeTo = loader.Find<PointFeature>(this.CloseTo);
             IntersectDirectionAndLineOperation op = new IntersectDirectionAndLineOperation(s, sequence,
-                                                            dir, line, closeTo);
+                                                            dir, line, wantSplit, closeTo);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            dff.AddFeatureStub("DirLine", this.DirLine);
+
+            if (this.SplitBefore != null)
+            {
+                uint sessionId, ss;
+                InternalIdValue.Parse(this.SplitBefore, out sessionId, out ss);
+                Debug.Assert(sessionId == s.Id);
+                dff.AddFeatureDescription("SplitBefore", new FeatureStub(op, ss, line.EntityType, null));
+            }
+
+            if (this.SplitAfter != null)
+            {
+                uint sessionId, ss;
+                InternalIdValue.Parse(this.SplitAfter, out sessionId, out ss);
+                Debug.Assert(sessionId == s.Id);
+                dff.AddFeatureDescription("SplitAfter", new FeatureStub(op, ss, line.EntityType, null));
+            }
+
+            op.CreateFeatures(dff);
+
+            //////
+            /*
             op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
 
             if (this.DirLine == null)
@@ -399,7 +424,7 @@ namespace Backsight.Editor.Xml
                                             out lineA, out lineB);
             op.LineBeforeSplit = lineA;
             op.LineAfterSplit = lineB;
-
+            */
             return op;
         }
     }

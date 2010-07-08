@@ -128,7 +128,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDirectionLine // was GetpDirArc
         {
             get { return m_DirLine; }
-            set { m_DirLine = value; }
         }
 
         /// <summary>
@@ -137,7 +136,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDistanceLine // was GetpDistArc
         {
             get { return m_DistLine; }
-            set { m_DistLine = value; }
         }
 
         /// <summary>
@@ -146,7 +144,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_To; }
-            set { m_To = value; }
+            set { m_To = value; } // obsolete?
         }
 
         /// <summary>
@@ -291,7 +289,7 @@ namespace Backsight.Editor.Operations
             FeatureFactory ff = new FeatureFactory(this);
 
             FeatureId fid = pointId.CreateId();
-            IFeature x = new FeatureStub(this, Session.ReserveNextItem(), pointId.Entity, fid);
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
             ff.AddFeatureDescription("To", x);
 
             if (ent1 != null)
@@ -304,13 +302,13 @@ namespace Backsight.Editor.Operations
                 if (m_Direction.Offset is OffsetDistance)
                     throw new ApplicationException("Cannot add direction line because a distance offset is involved");
 
-                IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent1, null);
+                IFeature f = new FeatureStub(this, ent1, null);
                 ff.AddFeatureDescription("DirLine", f);
             }
 
             if (ent2 != null)
             {
-                IFeature f = new FeatureStub(this, Session.ReserveNextItem(), ent2, null);
+                IFeature f = new FeatureStub(this, ent2, null);
                 ff.AddFeatureDescription("DistLine", f);
             }
 
@@ -554,7 +552,9 @@ namespace Backsight.Editor.Operations
         internal override void CreateFeatures(FeatureFactory ff)
         {
             m_To = ff.CreateDirectPointFeature("To");
-            m_DirLine = ff.CreateSegmentLineFeature("DirLine", m_Direction.From, m_To);
+            OffsetPoint op = m_Direction.Offset as OffsetPoint;
+            PointFeature from = (op == null ? m_Direction.From : op.Point);
+            m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_To);
             m_DistLine = ff.CreateSegmentLineFeature("DistLine", m_From, m_To);
         }
 
@@ -567,15 +567,10 @@ namespace Backsight.Editor.Operations
             PointGeometry pg = PointGeometry.Create(to);
             m_To.PointGeometry = pg;
 
-            if (m_DirLine!=null)
-            {
-                OffsetPoint op = m_Direction.Offset as OffsetPoint;
-                PointFeature from = (op == null ? m_Direction.From : op.Point);
-                m_DirLine.LineGeometry = new SegmentGeometry(from, m_To);
-            }
-
-            if (m_DistLine!=null)
-                m_DistLine.LineGeometry = new SegmentGeometry(m_From, m_To);
+            // There's no need to calculate new geometry for the line segments
+            // created by the edit, since their geometry is dependent on the
+            // position of the end points - we calculated one end above, the
+            // other end should have been calculated by a previous edit.
         }
     }
 }

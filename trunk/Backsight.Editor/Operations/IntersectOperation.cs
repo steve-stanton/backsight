@@ -245,7 +245,7 @@ protected:
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        LineFeature MakeSection(uint sessionSequence, LineFeature parent, PointFeature start, PointFeature end)
+        protected LineFeature MakeSection(uint sessionSequence, LineFeature parent, PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(parent, start, end);
             return parent.MakeSubSection(this, sessionSequence, section);

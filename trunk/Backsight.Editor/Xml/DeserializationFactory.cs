@@ -69,5 +69,14 @@ namespace Backsight.Editor.Xml
             else
                 return new DirectPointFeature(f, null);
         }
+
+        /// <summary>
+        /// Deactivates a line as part of regular editing work.
+        /// </summary>
+        /// <param name="line">The line that needs to be deactivated</param>
+        internal override void DeactivateLine(LineFeature line)
+        {
+            line.Deactivate();
+        }
     }
 }

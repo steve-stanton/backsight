@@ -52,6 +52,20 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureStub"/> class with the
+        /// next available item sequence number.
+        /// </summary>
+        /// <param name="creator">The editing operation that created the feature.</param>
+        /// <param name="ent">The entity type for the feature (not null)</param>
+        /// <param name="fid">The (optional) user-perceived ID for the feature.</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        internal FeatureStub(Operation creator, IEntity ent, FeatureId fid)
+            : this(creator, Session.ReserveNextItem(), ent, fid)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FeatureStub"/> class
         /// </summary>
         /// <param name="creator">The editing operation that created the feature.</param>

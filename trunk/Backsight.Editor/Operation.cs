@@ -663,6 +663,8 @@ namespace Backsight.Editor
 
             catch (Exception ex)
             {
+                // The edit was added to the session by the Operation constructor, so
+                // ensure it gets removed in a situation where the edit actually failed.
                 m_Session.Remove(this);
                 throw ex;
             }
