@@ -308,17 +308,32 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation. 
         /// </summary>
-        /// <param name="dist1">1st distance observation.</param>
-        /// <param name="from1">The point the 1st distance was observed from.</param>
-        /// <param name="dist2">2nd distance observation.</param>
-        /// <param name="from2">The point the 2nd distance was observed from.</param>
-        /// <param name="isdefault">True if the default intersection is required (the one that has the
-        /// lowest bearing with respect to the 2 from points). False for the other one (if any).</param>
         /// <param name="pointId">The ID and entity type for the intersect point</param>
         /// <param name="ent1">The entity type for 1st line (null for no line)</param>
         /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
         internal void Execute(IdHandle pointId, IEntity ent1, IEntity ent2)
         {
+            FeatureFactory ff = new FeatureFactory(this);
+
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
+
+            if (ent1 != null)
+            {
+                IFeature f = new FeatureStub(this, ent1, null);
+                ff.AddFeatureDescription("Line1", f);
+            }
+
+            if (ent2 != null)
+            {
+                IFeature f = new FeatureStub(this, ent2, null);
+                ff.AddFeatureDescription("Line2", f);
+            }
+
+            base.Execute(ff);
+
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect = Calculate(m_Distance1, m_From1, m_Distance2, m_From2, m_Default);
             if (xsect==null)
@@ -338,6 +353,28 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_To = ff.CreateDirectPointFeature("To");
+            m_Line1 = ff.CreateSegmentLineFeature("Line1", m_From1, m_To);
+            m_Line2 = ff.CreateSegmentLineFeature("Line2", m_From2, m_To);
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void RunEdit()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_To.PointGeometry = pg;
         }
 
         /// <summary>
@@ -566,16 +603,6 @@ namespace Backsight.Editor.Operations
             //}
 
             //return true;
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void RunEdit()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_To.PointGeometry = pg;
         }
     }
 }

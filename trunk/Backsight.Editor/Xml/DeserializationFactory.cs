@@ -14,14 +14,13 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 
 namespace Backsight.Editor.Xml
 {
     /// <summary>
     /// A <see cref="FeatureFactory"/> for use during deserialization from
     /// the database. Having created the factory, deserialization code must
-    /// initialize feature information via calls to <see cref="AddFeatureDescription"/>.
+    /// initialize feature information via calls to <see cref="AddFeatureData"/>.
     /// </summary>
     class DeserializationFactory : FeatureFactory
     {
@@ -71,7 +70,7 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Deactivates a line as part of regular editing work.
+        /// Deactivates a line as part of deserialization from the database.
         /// </summary>
         /// <param name="line">The line that needs to be deactivated</param>
         internal override void DeactivateLine(LineFeature line)

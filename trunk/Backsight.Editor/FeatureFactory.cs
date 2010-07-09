@@ -97,7 +97,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The editing operation that needs to create features (not null).
         /// </summary>
-        protected Operation Creator
+        internal Operation Creator
         {
             get { return m_Operation; }
         }

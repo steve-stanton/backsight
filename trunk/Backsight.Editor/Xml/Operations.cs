@@ -62,6 +62,25 @@ namespace Backsight.Editor.Xml
         /// <param name="s">The session the editing operation should be appended to</param>
         /// <returns>The editing operation that was loaded</returns>
         abstract internal Operation LoadOperation(Session s);
+
+        /// <summary>
+        /// Records information for a line split
+        /// </summary>
+        /// <param name="dff">The factory used to generate new features</param>
+        /// <param name="parentLine">The line that may be getting split</param>
+        /// <param name="itemName">The name of the item that should be attached to the line split into</param>
+        /// <param name="dataId">The internal ID of the resultant section (null if there is no split)</param>
+        /// <returns>True if a line split was recorded, false if the <paramref name="dataId"/> is null.</returns>
+        internal bool AddLineSplit(DeserializationFactory dff, LineFeature parentLine, string itemName, string dataId)
+        {
+            if (dataId == null)
+                return false;
+
+            uint sessionId, ss;
+            InternalIdValue.Parse(dataId, out sessionId, out ss);
+            dff.AddFeatureDescription(itemName, new FeatureStub(dff.Creator, ss, parentLine.EntityType, null));
+            return true;
+        }
     }
 
     public partial class AttachPointData
@@ -391,22 +410,8 @@ namespace Backsight.Editor.Xml
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("DirLine", this.DirLine);
-
-            if (this.SplitBefore != null)
-            {
-                uint sessionId, ss;
-                InternalIdValue.Parse(this.SplitBefore, out sessionId, out ss);
-                Debug.Assert(sessionId == s.Id);
-                dff.AddFeatureDescription("SplitBefore", new FeatureStub(op, ss, line.EntityType, null));
-            }
-
-            if (this.SplitAfter != null)
-            {
-                uint sessionId, ss;
-                InternalIdValue.Parse(this.SplitAfter, out sessionId, out ss);
-                Debug.Assert(sessionId == s.Id);
-                dff.AddFeatureDescription("SplitAfter", new FeatureStub(op, ss, line.EntityType, null));
-            }
+            AddLineSplit(dff, line, "SplitBefore", this.SplitBefore);
+            AddLineSplit(dff, line, "SplitAfter", this.SplitAfter);
 
             op.CreateFeatures(dff);
 
@@ -462,6 +467,14 @@ namespace Backsight.Editor.Xml
             Direction dir2 = (Direction)this.Direction2.LoadObservation(loader);
             IntersectTwoDirectionsOperation op = new IntersectTwoDirectionsOperation(s, sequence, dir1, dir2);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            dff.AddFeatureStub("Line1", this.Line1);
+            dff.AddFeatureStub("Line2", this.Line2);
+
+            op.CreateFeatures(dff);
+
+            /*
             op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
 
             if (this.Line1 == null)
@@ -473,6 +486,7 @@ namespace Backsight.Editor.Xml
                 op.CreatedLine2 = null;
             else
                 op.CreatedLine2 = this.Line2.CreateSegmentLineFeature(op, dir2.From, op.IntersectionPoint);
+             */
 
             return op;
         }
@@ -517,6 +531,13 @@ namespace Backsight.Editor.Xml
             IntersectTwoDistancesOperation op = new IntersectTwoDistancesOperation(s, sequence, dist1, from1,
                                                         dist2, from2, this.Default);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            dff.AddFeatureStub("Line1", this.Line1);
+            dff.AddFeatureStub("Line2", this.Line2);
+
+            op.CreateFeatures(dff);
+/*
             op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
 
             if (this.Line1 == null)
@@ -528,7 +549,7 @@ namespace Backsight.Editor.Xml
                 op.CreatedLine2 = null;
             else
                 op.CreatedLine2 = this.Line2.CreateSegmentLineFeature(op, from2, op.IntersectionPoint);
-
+            */
             return op;
         }
     }
@@ -570,10 +591,22 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             CadastralMapModel mapModel = s.MapModel;
             LineFeature line1 = mapModel.Find<LineFeature>(this.Line1);
+            bool wantSplit1 = (this.SplitBefore1 != null && this.SplitAfter1 != null);
             LineFeature line2 = mapModel.Find<LineFeature>(this.Line2);
+            bool wantSplit2 = (this.SplitBefore2 != null && this.SplitAfter2 != null);
             PointFeature closeTo = mapModel.Find<PointFeature>(this.CloseTo);
-            IntersectTwoLinesOperation op = new IntersectTwoLinesOperation(s, sequence, line1, line2, closeTo);
+            IntersectTwoLinesOperation op = new IntersectTwoLinesOperation(s, sequence, line1, wantSplit1,
+                                                                            line2, wantSplit2, closeTo);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            AddLineSplit(dff, line1, "SplitBefore1", this.SplitBefore1);
+            AddLineSplit(dff, line1, "SplitAfter1", this.SplitAfter1);
+            AddLineSplit(dff, line2, "SplitBefore2", this.SplitBefore2);
+            AddLineSplit(dff, line2, "SplitAfter2", this.SplitAfter2);
+
+            op.CreateFeatures(dff);
+/*
             op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
 
             LineFeature lineA, lineB;
@@ -584,7 +617,7 @@ namespace Backsight.Editor.Xml
             op.IsSplit2 = op.MakeSections(line2, this.SplitBefore2, op.IntersectionPoint, this.SplitAfter2, out lineA, out lineB);
             op.Line2BeforeSplit = lineA;
             op.Line2AfterSplit = lineB;
-
+            */
             return op;
         }
     }
