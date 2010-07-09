@@ -111,7 +111,6 @@ namespace Backsight.Editor.Xml
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureData("Point", (FeatureStubData)this.Point);
             op.CreateFeatures(dff);
-
             return op;
         }
     }
@@ -361,7 +360,6 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("DirLine", this.DirLine);
             dff.AddFeatureStub("DistLine", this.DistLine);
-
             op.CreateFeatures(dff);
             return op;
         }
@@ -412,24 +410,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("DirLine", this.DirLine);
             AddLineSplit(dff, line, "SplitBefore", this.SplitBefore);
             AddLineSplit(dff, line, "SplitAfter", this.SplitAfter);
-
             op.CreateFeatures(dff);
-
-            //////
-            /*
-            op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
-
-            if (this.DirLine == null)
-                op.CreatedDirectionLine = null;
-            else
-                op.CreatedDirectionLine = this.DirLine.CreateSegmentLineFeature(op, dir.From, op.IntersectionPoint);
-
-            LineFeature lineA, lineB;
-            op.IsSplit = op.MakeSections(line, this.SplitBefore, op.IntersectionPoint, this.SplitAfter,
-                                            out lineA, out lineB);
-            op.LineBeforeSplit = lineA;
-            op.LineAfterSplit = lineB;
-            */
             return op;
         }
     }
@@ -471,23 +452,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("Line1", this.Line1);
             dff.AddFeatureStub("Line2", this.Line2);
-
             op.CreateFeatures(dff);
-
-            /*
-            op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
-
-            if (this.Line1 == null)
-                op.CreatedLine1 = null;
-            else
-                op.CreatedLine1 = this.Line1.CreateSegmentLineFeature(op, dir1.From, op.IntersectionPoint);
-
-            if (this.Line2 == null)
-                op.CreatedLine2 = null;
-            else
-                op.CreatedLine2 = this.Line2.CreateSegmentLineFeature(op, dir2.From, op.IntersectionPoint);
-             */
-
             return op;
         }
     }
@@ -535,21 +500,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("Line1", this.Line1);
             dff.AddFeatureStub("Line2", this.Line2);
-
             op.CreateFeatures(dff);
-/*
-            op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
-
-            if (this.Line1 == null)
-                op.CreatedLine1 = null;
-            else
-                op.CreatedLine1 = this.Line1.CreateSegmentLineFeature(op, from1, op.IntersectionPoint);
-
-            if (this.Line2 == null)
-                op.CreatedLine2 = null;
-            else
-                op.CreatedLine2 = this.Line2.CreateSegmentLineFeature(op, from2, op.IntersectionPoint);
-            */
             return op;
         }
     }
@@ -604,20 +555,7 @@ namespace Backsight.Editor.Xml
             AddLineSplit(dff, line1, "SplitAfter1", this.SplitAfter1);
             AddLineSplit(dff, line2, "SplitBefore2", this.SplitBefore2);
             AddLineSplit(dff, line2, "SplitAfter2", this.SplitAfter2);
-
             op.CreateFeatures(dff);
-/*
-            op.IntersectionPoint = this.To.CreateDirectPointFeature(op);
-
-            LineFeature lineA, lineB;
-            op.IsSplit1 = op.MakeSections(line1, this.SplitBefore1, op.IntersectionPoint, this.SplitAfter1, out lineA, out lineB);
-            op.Line1BeforeSplit = lineA;
-            op.Line1AfterSplit = lineB;
-
-            op.IsSplit2 = op.MakeSections(line2, this.SplitBefore2, op.IntersectionPoint, this.SplitAfter2, out lineA, out lineB);
-            op.Line2BeforeSplit = lineA;
-            op.Line2AfterSplit = lineB;
-            */
             return op;
         }
     }
@@ -651,31 +589,13 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             LineFeature extendLine = loader.Find<LineFeature>(this.Line);
             Distance length =(Distance)this.Distance.LoadObservation(loader);
-            LineExtensionOperation op = new LineExtensionOperation(s, sequence, extendLine, this.ExtendFromEnd, length);
+            LineExtensionOperation op = new LineExtensionOperation(s, sequence, extendLine,
+                                                                    this.ExtendFromEnd, length);
 
-            //IFeature newPoint = this.NewPoint.GetFeatureStub(op);
-            //IFeature newLine = this.NewLine.GetFeatureStub(op);
-
-            op.NewPoint = this.NewPoint.CreateDirectPointFeature(op);
-
-            if (this.NewLine != null)
-            {
-                PointFeature p = (this.ExtendFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
-
-                if (extendLine is ArcFeature)
-                {
-                    ArcFeature arc = (extendLine as ArcFeature);
-                    bool isClockwise = arc.IsClockwise;
-                    if (!this.ExtendFromEnd)
-                        isClockwise = !isClockwise;
-
-                    ArcGeometry geom = new ArcGeometry(arc.Circle, p, op.NewPoint, isClockwise);
-                    op.NewLine = this.NewLine.CreateArcFeature(op, p, op.NewPoint, geom);
-                }
-                else
-                    op.NewLine = this.NewLine.CreateSegmentLineFeature(op, p, op.NewPoint);
-            }
-
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("NewPoint", this.NewPoint);
+            dff.AddFeatureStub("NewLine", this.NewLine);
+            op.CreateFeatures(dff);
             return op;
         }
     }

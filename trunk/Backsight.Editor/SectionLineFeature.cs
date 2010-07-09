@@ -63,5 +63,16 @@ namespace Backsight.Editor
         {
             get { return FeatureGeometry.Section; }
         }
+
+        /// <summary>
+        /// Attempts to locate the circular arc (if any) that this line is based on.
+        /// </summary>
+        /// <returns>The result of calling <see cref="BaseLine.GetArcBase"/> (if the
+        /// base line is defined). False if the baseline is undefined.</returns>
+        internal override ArcFeature GetArcBase()
+        {
+            LineFeature baseLine = this.BaseLine;
+            return (baseLine == null ? null : baseLine.GetArcBase());
+        }
     }
 }

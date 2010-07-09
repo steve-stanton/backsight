@@ -354,6 +354,29 @@ namespace Backsight.Editor.Operations
         /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
         internal void Execute(IdHandle pointId)
         {
+            FeatureFactory ff = new FeatureFactory(this);
+
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
+
+            if (m_IsSplit1)
+            {
+                // See FeatureFactory.MakeSection - the only thing that really matters is the
+                // session sequence number that will get picked up by the FeatureStub constructor.
+                ff.AddFeatureDescription("SplitBefore1", new FeatureStub(this, m_Line1.EntityType, null));
+                ff.AddFeatureDescription("SplitAfter1", new FeatureStub(this, m_Line1.EntityType, null));
+            }
+
+            if (m_IsSplit2)
+            {
+                ff.AddFeatureDescription("SplitBefore2", new FeatureStub(this, m_Line2.EntityType, null));
+                ff.AddFeatureDescription("SplitAfter2", new FeatureStub(this, m_Line2.EntityType, null));
+            }
+
+            base.Execute(ff);
+
+            //////////
             /*
             // Calculate the position of the point of intersection.
             IPosition xsect;
@@ -364,36 +387,6 @@ namespace Backsight.Editor.Operations
             // Add the intersection point
             m_Intersection = AddIntersection(xsect, pointId);
             
-            // Are we splitting the input lines? If so, do it.
-            m_IsSplit1 = wantsplit1;
-            if (m_IsSplit1)
-                SplitLine(m_Intersection, m_Line1, out m_Line1a, out m_Line1b);
-
-            m_IsSplit2 = wantsplit2;
-            if (m_IsSplit2)
-                SplitLine(m_Intersection, m_Line2, out m_Line2a, out m_Line2b);
-
-            // Peform standard completion steps
-            Complete();
-             */
-        }
-
-        /// <summary>
-        /// Executes this operation.
-        /// </summary>
-        /// <param name="pointType">The entity type to assign to the intersection point.</param>
-        internal void Execute(IEntity pointType)
-        {
-            /*
-            // Calculate the position of the point of intersection.
-            IPosition xsect;
-            PointFeature closest;
-            if (!m_Line1.Intersect(m_Line2, m_CloseTo, out xsect, out closest))
-                throw new Exception("Cannot calculate intersection point");
-
-            // Add the intersection point
-            m_Intersection = AddIntersection(xsect, pointType);
-
             // Are we splitting the input lines? If so, do it.
             m_IsSplit1 = wantsplit1;
             if (m_IsSplit1)

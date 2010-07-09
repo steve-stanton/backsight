@@ -70,15 +70,16 @@ namespace Backsight.Editor
         /// <param name="container">The line that refers to this geometry.</param>
         public override void AddReferences()
         {
-            // The circle may not be known during deserialization. This is taken
-            // care of by the appropriate LineFeature constructor
-            Circle c = this.Circle;
+            // The circle may not be known at this stage (this method is called
+            // by the LineFeature constructor, and the geometry may be undefined
+            // at that stage -- come to think of it, I believe more recent logic
+            // means that the geometry will NEVER be known when a LineFeature is
+            // created. The circle->arc cross reference needs to be made when the
+            // arc geometry is defined.
 
-            // I think the above is no longer the case
-            //if (c!=null)
-            //    c.AddArc(this);
-            Debug.Assert(c != null);
-            c.AddArc(this);
+            Circle c = this.Circle;
+            if (c!=null)
+                c.AddArc(this);
 
             base.AddReferences();
         }
@@ -89,6 +90,17 @@ namespace Backsight.Editor
         internal ArcGeometry Geometry
         {
             get { return (ArcGeometry)LineGeometry; }
+
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException();
+
+                base.LineGeometry = value;
+
+                // Ensure the circle is associated with this arc
+                this.Circle.AddArc(this);
+            }
         }
 
         /// <summary>
@@ -192,6 +204,15 @@ namespace Backsight.Editor
         internal override FeatureGeometry Representation
         {
             get { return FeatureGeometry.Arc; }
+        }
+
+        /// <summary>
+        /// Attempts to locate the circular arc (if any) that this line is based on.
+        /// </summary>
+        /// <returns><c>this</c> (always).</returns>
+        internal override ArcFeature GetArcBase()
+        {
+            return this;
         }
     }
 }

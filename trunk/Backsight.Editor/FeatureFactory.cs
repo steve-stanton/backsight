@@ -201,6 +201,18 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Checks whether feature info has been defined for a specific item.
+        /// </summary>
+        /// <param name="itemName">The name associated with a feature (unique to the editing
+        /// operation that this factory is for).</param>
+        /// <returns>True if information has been supplied via a prior call to
+        /// <see cref="AddFeatureDescription"/>.</returns>
+        internal bool HasFeatureDescription(string itemName)
+        {
+            return m_FeatureInfo.ContainsKey(itemName);
+        }
+
+        /// <summary>
         /// Creates a new instance of <see cref="DirectPointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
@@ -254,6 +266,25 @@ namespace Backsight.Editor
                 return null;
 
             SegmentLineFeature result = new SegmentLineFeature(f, from, to);
+            m_CreatedFeatures.Add(result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ArcFeature"/> using information previously
+        /// recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created feature (null if a feature description was not previously added)</returns>
+        internal ArcFeature CreateArcFeature(string itemName, PointFeature from, PointFeature to)
+        {
+            IFeature f = FindFeatureDescription(itemName);
+            if (f == null)
+                return null;
+
+            ArcFeature result = new ArcFeature(f, from, to, null, f.EntityType.IsPolygonBoundaryValid);
             m_CreatedFeatures.Add(result);
             return result;
         }
