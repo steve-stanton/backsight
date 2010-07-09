@@ -148,6 +148,21 @@ namespace Backsight.Editor.Operations
         /// <param name="lineEnt">The entity type for the extension line (null for no line).</param>
         internal void Execute(IdHandle pointId, IEntity lineEnt)
         {
+            FeatureFactory ff = new FeatureFactory(this);
+
+            FeatureId fid = pointId.CreateId();
+            IFeature xp = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("NewPoint", xp);
+
+            if (lineEnt != null)
+            {
+                IFeature f = new FeatureStub(this, lineEnt, null);
+                ff.AddFeatureDescription("NewLine", f);
+            }
+
+            base.Execute(ff);
+
+            /*
             IPosition start;    // Start of the extension
             IPosition end;      // End of the extension
 
@@ -196,6 +211,85 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_NewPoint = ff.CreateDirectPointFeature("NewPoint");
+
+            if (ff.HasFeatureDescription("NewLine"))
+            {
+                PointFeature from = (m_IsExtendFromEnd ? m_ExtendLine.EndPoint : m_ExtendLine.StartPoint);
+                ArcFeature arc = m_ExtendLine.GetArcBase();
+
+                if (arc == null)
+                    m_NewLine = ff.CreateSegmentLineFeature("NewLine", from, m_NewPoint);
+                else
+                    m_NewLine = ff.CreateArcFeature("NewLine", from, m_NewPoint);
+            }
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void RunEdit()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_NewPoint.PointGeometry = pg;
+
+            // If the extension line was a circular arc, we also need to define it's geometry.
+            // This COULD have been defined at an earlier stage (e.g. as part of CreateFeature),
+            // but it's more consistent to do it as part of this method.
+
+            if (m_NewLine is ArcFeature)
+            {
+                ArcFeature arc = m_ExtendLine.GetArcBase();
+                Circle circle = arc.Circle;
+                Debug.Assert(circle != null);
+
+                bool iscw = arc.IsClockwise;
+                if (!m_IsExtendFromEnd)
+                    iscw = !iscw;
+
+                ArcGeometry geom = new ArcGeometry(circle, m_NewLine.StartPoint, m_NewLine.EndPoint, iscw);
+                (m_NewLine as ArcFeature).Geometry = geom;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the position of the extension point.
+        /// </summary>
+        /// <returns>The calculated position</returns>
+        IPosition Calculate()
+        {
+            // Figure out the new position for the extension point, depending
+            // on whether the line we extended is a circular arc or a straight.
+
+            IPosition start;		// Start of the extension
+            IPosition end;			// End of the extension
+            bool ok;				// Did calculation work ok?
+
+            if (m_ExtendLine is ArcFeature)
+            {
+                IPosition center;	// The center of the circle
+                bool iscw;			// Is the curve clockwise?
+
+                ok = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length,
+                            out start, out end, out center, out iscw);
+            }
+            else
+            {
+                ok = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length,
+                            out start, out end);
+            }
+
+            return (ok ? end : null);
         }
 
         /// <summary>
@@ -380,46 +474,6 @@ namespace Backsight.Editor.Operations
                 return true;
 
             return false;
-        }
-
-        /// <summary>
-        /// Calculates the position of the extension point.
-        /// </summary>
-        /// <returns>The calculated position</returns>
-        IPosition Calculate()
-        {
-            // Figure out the new position for the extension point, depending
-            // on whether the line we extended is a circular arc or a straight.
-
-            IPosition start;		// Start of the extension
-            IPosition end;			// End of the extension
-            bool ok;				// Did calculation work ok?
-
-            if (m_ExtendLine is ArcFeature)
-            {
-                IPosition center;	// The center of the circle
-                bool iscw;			// Is the curve clockwise?
-
-                ok = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length,
-                            out start, out end, out center, out iscw);
-            }
-            else
-            {
-                ok = LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length,
-                            out start, out end);
-            }
-
-            return (ok ? end : null);
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void RunEdit()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_NewPoint.PointGeometry = pg;
         }
     }
 }

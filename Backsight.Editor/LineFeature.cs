@@ -1240,5 +1240,15 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             // Get the op to find the line (if any) on which it was based.
             return Creator.GetPredecessor(this);
         }
+
+        /// <summary>
+        /// Attempts to locate the circular arc (if any) that this line is based on.
+        /// </summary>
+        /// <returns>Null (always). The <see cref="ArcFeature"/> and <see cref="SectionLineFeature"/>
+        /// classes provide overrides.</returns>
+        internal virtual ArcFeature GetArcBase()
+        {
+            return null;
+        }
     }
 }
