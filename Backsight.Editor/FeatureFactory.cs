@@ -299,7 +299,8 @@ namespace Backsight.Editor
         /// entity type and feature ID that may have been presented through <see cref="AddFeatureDescription"/>
         /// will be ignored - the values from the parent line will be applied instead).
         /// </summary>
-        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="itemName">The name for the item involved (must refer to information
+        /// previously attached via a call to <see cref="AddFeatureDescription"/>)</param>
         /// <param name="baseLine">The line that's being subdivided</param>
         /// <param name="from">The point at the start of the section (not null).</param>
         /// <param name="to">The point at the end of the section (not null).</param>
@@ -308,10 +309,12 @@ namespace Backsight.Editor
         {
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
-                return null;
+                throw new InvalidOperationException();
 
             SectionGeometry section = new SectionGeometry(baseLine, from, to);
-            return baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
+            SectionLineFeature result = baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
+            m_CreatedFeatures.Add(result);
+            return result;
         }
 
         /// <summary>

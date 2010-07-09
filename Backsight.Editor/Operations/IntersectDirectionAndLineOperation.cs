@@ -99,7 +99,7 @@ namespace Backsight.Editor.Operations
                                                     LineFeature line, bool wantsplit, PointFeature closeTo)
             : base(session, sequence)
         {
-            if (m_Direction==null || m_Line==null || m_CloseTo==null)
+            if (dir==null || line==null || closeTo==null)
                 throw new ArgumentNullException();
 
             m_Direction = dir;
@@ -125,7 +125,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedDirectionLine // was GetpDirArc
         {
             get { return m_DirLine; }
-            set { m_DirLine = value; }
         }
 
         /// <summary>
@@ -142,7 +141,6 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit
         {
             get { return m_IsSplit; }
-            //set { m_IsSplit = value; }
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_Intersection; }
-            set { m_Intersection = value; }
+            set { m_Intersection = value; } // obsolete?
         }
 
         /// <summary>
@@ -222,7 +220,6 @@ namespace Backsight.Editor.Operations
         {
             m_Line.AddOp(this);
             m_CloseTo.AddOp(this);
-
             m_Direction.AddReferences(this);
         }
 
@@ -577,13 +574,11 @@ namespace Backsight.Editor.Operations
         internal LineFeature LineBeforeSplit
         {
             get { return m_LineA; }
-            set { m_LineA = value; }
         }
 
         internal LineFeature LineAfterSplit
         {
             get { return m_LineB; }
-            set { m_LineB = value; }
         }
     }
 }
