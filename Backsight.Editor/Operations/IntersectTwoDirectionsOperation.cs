@@ -86,7 +86,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint // was GetpIntersect
         {
             get { return m_To; }
-            set { m_To = value; }
+            set { m_To = value; } // obsolete?
         }
 
         /// <summary>
@@ -95,7 +95,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine1 // was GetpArc1
         {
             get { return m_Line1; }
-            set { m_Line1 = value; }
         }
 
         /// <summary>
@@ -104,7 +103,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature CreatedLine2 // was GetpArc2
         {
             get { return m_Line2; }
-            set { m_Line2 = value; }
         }
 
         /// <summary>
@@ -254,6 +252,38 @@ namespace Backsight.Editor.Operations
         /// intersection (null for no line)</param>
         internal void Execute(IdHandle pointId, IEntity lineEnt1, IEntity lineEnt2)
         {
+            FeatureFactory ff = new FeatureFactory(this);
+
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
+
+            if (lineEnt1 != null)
+            {
+                // Lines are not allowed if the direction line is associated with an offset
+                // distance (since we would then need to add a point at the start of the
+                // direction line). This should have been trapped by the UI. Note that an
+                // offset specified using an OffsetPoint is valid.
+
+                if (m_Direction1.Offset is OffsetDistance)
+                    throw new ApplicationException("Cannot add direction line because a distance offset is involved");
+
+                IFeature f = new FeatureStub(this, lineEnt1, null);
+                ff.AddFeatureDescription("Line1", f);
+            }
+
+            if (lineEnt2 != null)
+            {
+                if (m_Direction2.Offset is OffsetDistance)
+                    throw new ApplicationException("Cannot add direction line because a distance offset is involved");
+
+                IFeature f = new FeatureStub(this, lineEnt2, null);
+                ff.AddFeatureDescription("Line2", f);
+            }
+
+            base.Execute(ff);
+
+/*
             // Calculate the position of the point of intersection.
             IPosition xsect = m_Direction1.Intersect(m_Direction2);
             if (xsect==null)
@@ -281,6 +311,34 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+ */
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_To = ff.CreateDirectPointFeature("To");
+
+            OffsetPoint op1 = m_Direction1.Offset as OffsetPoint;
+            PointFeature from1 = (op1 == null ? m_Direction1.From : op1.Point);
+            m_Line1 = ff.CreateSegmentLineFeature("Line1", from1, m_To);
+
+            OffsetPoint op2 = m_Direction2.Offset as OffsetPoint;
+            PointFeature from2 = (op2 == null ? m_Direction2.From : op2.Point);
+            m_Line2 = ff.CreateSegmentLineFeature("Line2", from2, m_To);
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void RunEdit()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_To.PointGeometry = pg;
         }
 
         /// <summary>
@@ -382,16 +440,6 @@ namespace Backsight.Editor.Operations
             //}
 
             //return true;
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void RunEdit()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_To.PointGeometry = pg;
         }
     }
 }

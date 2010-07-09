@@ -968,6 +968,14 @@ namespace Backsight.Editor
                         m_Command.OnSelectLine(selLine);
                     }
                 }
+
+                // 20100709 -- Not sure about this. If the user wants to point at the
+                // same point twice in succession, the fact that the point is still
+                // selected means the 2nd pointing won't get passed down (we tested
+                // for a change above).
+
+                if (m_Command != null)
+                    ClearSelection();
             }
 
             m_HasSelectionChanged = true;

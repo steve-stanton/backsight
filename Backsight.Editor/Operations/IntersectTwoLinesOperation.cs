@@ -34,9 +34,19 @@ namespace Backsight.Editor.Operations
         readonly LineFeature m_Line1;
 
         /// <summary>
+        /// True if the 1st line needs to be split at the intersection.
+        /// </summary>
+        readonly bool m_IsSplit1;
+
+        /// <summary>
         /// The 2nd line to intersect.
         /// </summary>
         readonly LineFeature m_Line2;
+
+        /// <summary>
+        /// True if the 2nd line needs to be split at the intersection.
+        /// </summary>
+        readonly bool m_IsSplit2;
 
         /// <summary>
         /// The point closest to the intersection (usually defaulted to one of
@@ -64,11 +74,6 @@ namespace Backsight.Editor.Operations
         LineFeature m_Line1b;
 
         /// <summary>
-        /// True if the 1st line needs to be split at the intersection.
-        /// </summary>
-        bool m_IsSplit1;
-
-        /// <summary>
         /// The portion of m_Line2 prior to the intersection (null if m_IsSplit2==false).
         /// </summary>
         LineFeature m_Line2a;
@@ -77,11 +82,6 @@ namespace Backsight.Editor.Operations
         /// The portion of m_Line2 after the intersection (null if m_IsSplit2==false).
         /// </summary>
         LineFeature m_Line2b;
-
-        /// <summary>
-        /// True if the 2nd line needs to be split at the intersection.
-        /// </summary>
-        bool m_IsSplit2;
 
         #endregion
 
@@ -95,19 +95,23 @@ namespace Backsight.Editor.Operations
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
         /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
         /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
         /// <param name="closeTo">The point the intersection has to be close to. Used if
         /// there is more than one intersection to choose from. If null is specified, a
         /// default point will be selected.</param>
-        internal IntersectTwoLinesOperation(Session session, uint sequence, LineFeature line1, LineFeature line2,
-                                                PointFeature closeTo)
+        internal IntersectTwoLinesOperation(Session session, uint sequence, LineFeature line1, bool wantSplit1,
+                                            LineFeature line2, bool wantSplit2, PointFeature closeTo)
             : base(session, sequence)
         {
             if (line1==null || line2==null || closeTo==null)
                 throw new ArgumentNullException();
 
             m_Line1 = line1;
+            m_IsSplit1 = wantSplit1;
             m_Line2 = line2;
+            m_IsSplit2 = wantSplit2;
             m_CloseTo = closeTo;
         }
 
@@ -127,7 +131,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit1
         {
             get { return m_IsSplit1; }
-            set { m_IsSplit1 = value; }
+            //set { m_IsSplit1 = value; }
         }
 
         /// <summary>
@@ -144,7 +148,7 @@ namespace Backsight.Editor.Operations
         internal bool IsSplit2
         {
             get { return m_IsSplit2; }
-            set { m_IsSplit2 = value; }
+            //set { m_IsSplit2 = value; }
         }
 
         /// <summary>
@@ -153,7 +157,7 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_Intersection; }
-            set { m_Intersection = value; }
+            set { m_Intersection = value; } // obsolete?
         }
 
         /// <summary>
@@ -347,11 +351,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
-        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
         /// <param name="pointId">The key and entity type to assign to the intersection point.</param>
-        internal void Execute(bool wantsplit1, bool wantsplit2, IdHandle pointId)
+        internal void Execute(IdHandle pointId)
         {
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
@@ -372,16 +375,16 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
         }
 
         /// <summary>
         /// Executes this operation.
         /// </summary>
-        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
-        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
         /// <param name="pointType">The entity type to assign to the intersection point.</param>
-        internal void Execute(bool wantsplit1, bool wantsplit2, IEntity pointType)
+        internal void Execute(IEntity pointType)
         {
+            /*
             // Calculate the position of the point of intersection.
             IPosition xsect;
             PointFeature closest;
@@ -402,6 +405,44 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Creates any new spatial features (without any geometry)
+        /// </summary>
+        /// <param name="ff">The factory class for generating spatial features</param>
+        internal override void CreateFeatures(FeatureFactory ff)
+        {
+            m_Intersection = ff.CreateDirectPointFeature("To");
+
+            if (m_IsSplit1)
+            {
+                SectionLineFeature lineBefore1, lineAfter1;
+                ff.MakeSections(m_Line1, "SplitBefore1", m_Intersection, "SplitAfter1",
+                                    out lineBefore1, out lineAfter1);
+                m_Line1a = lineBefore1;
+                m_Line1b = lineAfter1;
+            }
+
+            if (m_IsSplit2)
+            {
+                SectionLineFeature lineBefore2, lineAfter2;
+                ff.MakeSections(m_Line2, "SplitBefore2", m_Intersection, "SplitAfter2",
+                                    out lineBefore2, out lineAfter2);
+                m_Line2a = lineBefore2;
+                m_Line2b = lineAfter2;
+            }
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void RunEdit()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_Intersection.PointGeometry = pg;
         }
 
         /// <summary>
@@ -457,38 +498,28 @@ namespace Backsight.Editor.Operations
             //return true;
         }
 
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void RunEdit()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_Intersection.PointGeometry = pg;
-        }
-
         internal LineFeature Line1BeforeSplit
         {
             get { return m_Line1a; }
-            set { m_Line1a = value; }
+            //set { m_Line1a = value; }
         }
 
         internal LineFeature Line1AfterSplit
         {
             get { return m_Line1b; }
-            set { m_Line1b = value; }
+            //set { m_Line1b = value; }
         }
 
         internal LineFeature Line2BeforeSplit
         {
             get { return m_Line2a; }
-            set { m_Line2a = value; }
+            //set { m_Line2a = value; }
         }
 
         internal LineFeature Line2AfterSplit
         {
             get { return m_Line2b; }
-            set { m_Line2b = value; }
+            //set { m_Line2b = value; }
         }
     }
 }
