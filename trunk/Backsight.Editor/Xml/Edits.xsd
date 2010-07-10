@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.2.746 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditData" />
   <xs:complexType name="AngleData">
@@ -887,13 +887,6 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:attribute name="Line" type="IdData" use="required" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="SharedPointData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="FeatureData">
-        <xs:attribute name="FirstPoint" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

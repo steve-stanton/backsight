@@ -101,33 +101,17 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="DirectPointFeature"/> using the information stored
+        /// Creates an instance of <see cref="PointFeature"/> using the information stored
         /// in this data instance, with no geometry.
         /// </summary>
         /// <param name="creator">The operation creating the feature (not null). Expected to
         /// refer to an editing session that is consistent with the session ID that is part
         /// of the feature's internal ID.</param>
         /// <returns>The created point</returns>
-        internal virtual DirectPointFeature CreateDirectPointFeature(Operation creator)
+        internal virtual PointFeature CreatePointFeature(Operation creator)
         {
             IFeature f = GetFeatureStub(creator);
-            return new DirectPointFeature(f, null);
-        }
-
-        /// <summary>
-        /// Creates an instance of <see cref="SharedPointFeature"/> using the information stored
-        /// in this data instance.
-        /// </summary>
-        /// <param name="creator">The operation creating the feature (not null). Expected to
-        /// refer to an editing session that is consistent with the session ID that is part
-        /// of the feature's internal ID.</param>
-        /// <param name="g">The geometry for the point (could be null, although this is only really
-        /// expected during deserialization)</param>
-        /// <returns></returns>
-        internal SharedPointFeature CreateSharedPointFeature(Operation creator, PointFeature firstPoint)
-        {
-            IFeature f = GetFeatureStub(creator);
-            return new SharedPointFeature(f, firstPoint);
+            return new PointFeature(f, null);
         }
 
         internal ArcFeature CreateArcFeature(Operation creator, PointFeature start, PointFeature end,
@@ -262,34 +246,6 @@ namespace Backsight.Editor.Xml
         {
             this.Geometry = (uint)f.Representation;
         }
-
-        /*
-        internal override Feature LoadFeature(Operation op)
-        {
-            FeatureGeometry rep = (FeatureGeometry)this.Geometry;
-            IFeature f = GetFeatureStub(op);
-
-            switch (rep)
-            {
-                case FeatureGeometry.Arc:
-                    return new ArcFeature(f, null, null, false);
-
-                case FeatureGeometry.DirectPoint:
-                    return new DirectPointFeature(f, null);
-
-            //SharedPoint:
-            //Segment:
-            //MultiSegment:
-            //Section:
-            //KeyText:
-            //RowText:
-            //MiscText:
-
-                default:
-                    throw new NotImplementedException("Unexpected geometry: "+rep);
-            }
-        }
-         */
     }
 
     /// <summary>
@@ -458,7 +414,7 @@ namespace Backsight.Editor.Xml
         /// <returns>The spatial feature that was loaded</returns>
         internal override Feature LoadFeature(Operation op)
         {
-            return CreateDirectPointFeature(op);
+            return CreatePointFeature(op);
         }
 
         /// <summary>
@@ -466,9 +422,9 @@ namespace Backsight.Editor.Xml
         /// </summary>
         /// <param name="op">The editing operation the feature is part of</param>
         /// <returns>The created feature</returns>
-        internal override DirectPointFeature CreateDirectPointFeature(Operation op)
+        internal override PointFeature CreatePointFeature(Operation op)
         {
-            DirectPointFeature result = base.CreateDirectPointFeature(op);
+            PointFeature result = base.CreatePointFeature(op);
             result.PointGeometry = new PointGeometry(this.X, this.Y);
             return result;
         }
@@ -528,44 +484,6 @@ namespace Backsight.Editor.Xml
         internal override Feature LoadFeature(Operation op)
         {
             return CreateSegmentLineFeature(op);
-        }
-    }
-
-    /// <summary>
-    /// Serialized version of a point feature that shares geometry with
-    /// another point feature.
-    /// </summary>
-    public partial class SharedPointData
-    {
-        public SharedPointData()
-        {
-        }
-
-        internal SharedPointData(SharedPointFeature f)
-            : base(f)
-        {
-            this.FirstPoint = f.FirstPoint.DataId;
-        }
-
-        /// <summary>
-        /// Loads this feature as part of an editing operation
-        /// </summary>
-        /// <param name="op">The editing operation creating the feature</param>
-        /// <returns>The spatial feature that was loaded</returns>
-        internal override Feature LoadFeature(Operation op)
-        {
-            return CreateSharedPointFeature(op);
-        }
-
-        /// <summary>
-        /// Defines a new spatial feature based on this data instance.
-        /// </summary>
-        /// <param name="op">The editing operation the feature is part of</param>
-        /// <returns>The created feature</returns>
-        internal SharedPointFeature CreateSharedPointFeature(Operation op)
-        {
-            PointFeature firstPoint = op.MapModel.Find<PointFeature>(this.FirstPoint);
-            return base.CreateSharedPointFeature(op, firstPoint);
         }
     }
 

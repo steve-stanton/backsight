@@ -361,7 +361,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void CreateFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreateDirectPointFeature("To");
+            m_To = ff.CreatePointFeature("To");
             m_Line1 = ff.CreateSegmentLineFeature("Line1", m_From1, m_To);
             m_Line2 = ff.CreateSegmentLineFeature("Line2", m_From2, m_To);
         }

@@ -27,16 +27,10 @@ namespace Backsight.Editor
         Stub = 0,
 
         /// <summary>
-        /// A point with an explicit position
-        /// (corresponding to the <see cref="DirectPointFeature"/> class)
+        /// A point feature
+        /// (corresponding to the <see cref="PointFeature"/> class)
         /// </summary>
-        DirectPoint = 10,
-
-        /// <summary>
-        /// A point that shares the same position as another point
-        /// (corresponding to the <see cref="SharedPointFeature"/> class)
-        /// </summary>
-        SharedPoint = 11,
+        Point = 10,
 
         /// <summary>
         /// A simple line segment, consisting of two positions

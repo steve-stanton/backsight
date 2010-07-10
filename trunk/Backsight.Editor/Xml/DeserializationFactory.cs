@@ -54,19 +54,19 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="DirectPointFeature"/>, using the feature
+        /// Creates a new instance of <see cref="PointFeature"/>, using the feature
         /// stub with the specified name.
         /// </summary>
         /// <param name="itemName">The name associated with the feature (unique to the editing
         /// operation that this factory is for).</param>
         /// <returns>The new feature (without any defined geometry).</returns>
-        internal override DirectPointFeature CreateDirectPointFeature(string itemName)
+        internal override PointFeature CreatePointFeature(string itemName)
         {
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
                 return null;
             else
-                return new DirectPointFeature(f, null);
+                return new PointFeature(f, null);
         }
 
         /// <summary>

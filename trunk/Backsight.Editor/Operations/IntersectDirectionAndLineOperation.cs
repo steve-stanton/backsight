@@ -415,7 +415,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void CreateFeatures(FeatureFactory ff)
         {
-            m_Intersection = ff.CreateDirectPointFeature("To");
+            m_Intersection = ff.CreatePointFeature("To");
 
             if (m_IsSplit)
             {

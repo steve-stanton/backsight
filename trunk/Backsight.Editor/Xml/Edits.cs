@@ -143,7 +143,6 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RowTextData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MiscTextData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(KeyTextData))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SharedPointData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PointData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(LineData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SegmentData))]
@@ -466,28 +465,6 @@ namespace Backsight.Editor.Xml {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class KeyTextData : TextData {
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class SharedPointData : FeatureData {
-        
-        private string firstPointField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string FirstPoint {
-            get {
-                return this.firstPointField;
-            }
-            set {
-                this.firstPointField = value;
-            }
-        }
     }
     
     /// <remarks/>

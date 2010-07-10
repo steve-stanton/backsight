@@ -39,7 +39,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="ImportOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -49,16 +49,6 @@ namespace Backsight.Editor.Operations
             : base(s, sequence)
         {
             m_Data = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Import"/> class
-        /// that refers to nothing.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal ImportOperation(Session s)
-            : this(s, 0)
-        {
         }
 
         #endregion
@@ -153,8 +143,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override void CalculateGeometry()
         {
-            // Could calculate the radius of circles created by the import. However, this
-            // is already done by the LineFeature constructor that accepts an ArcType.
+            // Nothing to do -- geometry of import features is always explicit
         }
 
         /// <summary>

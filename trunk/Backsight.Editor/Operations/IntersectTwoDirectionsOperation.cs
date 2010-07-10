@@ -319,7 +319,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void CreateFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreateDirectPointFeature("To");
+            m_To = ff.CreatePointFeature("To");
 
             OffsetPoint op1 = m_Direction1.Offset as OffsetPoint;
             PointFeature from1 = (op1 == null ? m_Direction1.From : op1.Point);

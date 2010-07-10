@@ -139,7 +139,7 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                i = new ImportOperation(Session.WorkingSession);
+                i = new ImportOperation(Session.WorkingSession, 0);
                 NtxImport ni = new NtxImport(ntxFile, this);
                 i.Execute(ni);
                 Trace.Write("Map model updates completed");
@@ -148,8 +148,7 @@ namespace Backsight.Editor.Forms
             catch (Exception ex)
             {
                 Session.WorkingSession.Remove(i);
-                MessageBox.Show(ex.Message);
-                MessageBox.Show(ex.StackTrace);
+                MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
             // Re-assigning the current model has the desired effect of causing
