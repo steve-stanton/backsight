@@ -213,24 +213,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="DirectPointFeature"/>, with the currently
+        /// Creates a new instance of <see cref="PointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
         /// <returns>The new feature</returns>
-        internal virtual DirectPointFeature CreateDirectPointFeature(string itemName)
+        internal virtual PointFeature CreatePointFeature(string itemName)
         {
-            DirectPointFeature result = null;
+            PointFeature result = null;
             IFeature f = FindFeatureDescription(itemName);
 
             if (f == null)
             {
                 uint ss = Session.ReserveNextItem();
-                result = new DirectPointFeature(m_Operation, ss, PointType, null);
+                result = new PointFeature(m_Operation, ss, PointType, null);
                 result.SetNextId();
             }
             else
             {
-                result = new DirectPointFeature(f, null);
+                result = new PointFeature(f, null);
             }
 
             m_CreatedFeatures.Add(result);
@@ -238,14 +238,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="DirectPointFeature"/>, with the currently
+        /// Creates a new instance of <see cref="PointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
         /// <returns>The new feature</returns>
-        internal virtual DirectPointFeature CreateDirectPointFeature()
+        internal virtual PointFeature CreatePointFeature()
         {
             uint ss = Session.ReserveNextItem();
-            DirectPointFeature result = new DirectPointFeature(m_Operation, ss, PointType, null);
+            PointFeature result = new PointFeature(m_Operation, ss, PointType, null);
             result.SetNextId();
             m_CreatedFeatures.Add(result);
             return result;

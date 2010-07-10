@@ -118,10 +118,9 @@ namespace Backsight.Editor.Xml
             AddMapping("SegmentLineFeature", "SegmentData");
             AddMapping("MiscTextFeature", "MiscTextData");
             AddMapping("MultiSegmentLineFeature", "MultiSegmentData");
-            AddMapping("DirectPointFeature", "PointData");
+            AddMapping("PointFeature", "PointData");
             AddMapping("RowTextFeature", "RowTextData");
             AddMapping("SectionLineFeature", "SectionData");
-            AddMapping("SharedPointFeature", "SharedPointData");
             //AddMapping("FeatureStub", "FeatureStubData");
         }
 

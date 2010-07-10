@@ -16,10 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
-using Backsight.Geometry;
-using Backsight.Environment;
 using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Operations
@@ -116,6 +113,12 @@ namespace Backsight.Editor.Operations
             if (distances.Length < 2)
                 throw new ArgumentException();
 
+            FeatureFactory ff = new FeatureFactory(this);
+
+            base.Execute(ff);
+
+            ///////////////
+
             m_Sections = new List<MeasuredLineFeature>(distances.Length);
             foreach (Distance d in distances)
                 m_Sections.Add(new MeasuredLineFeature(null, d));
@@ -139,6 +142,46 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            // Get adjusted lengths for each section
+            Distance[] distances = new Distance[m_Sections.Count];
+            for (int i = 0; i < distances.Length; i++)
+                distances[i] = m_Sections[i].ObservedLength;
+            double[] adjray = GetAdjustedLengths(m_Line, distances);
+
+            double edist = 0.0;		// Distance to end of section.
+            PointFeature start = m_Line.StartPoint;
+            LineGeometry lineGeom = m_Line.LineGeometry;
+
+            for (int i=0; i<adjray.Length; i++)
+            {
+                // Calculate the position at the end of the span
+                edist += adjray[i];
+                IPosition to;
+                if (!lineGeom.GetPosition(new Length(edist), out to))
+                    throw new Exception("Cannot adjust line section");
+
+                // Get the point feature at the end of the span
+                MeasuredLineFeature mf = m_Sections[i];
+                PointFeature end = mf.Line.EndPoint;
+
+                // Assign the calculated position so long as we're not at
+                // the end of the line
+                if (end != m_Line.EndPoint)
+                    end.PointGeometry = PointGeometry.Create(to);
+
+                // The end of the current span is the start of the next one
+                start = end;
+            }
+
+            // De-activate the parent line
+            m_Line.Deactivate();
         }
 
         /// <summary>
@@ -386,17 +429,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Creates a section for this arc subdivision op.
+        /// Creates a section for this subdivision op.
         /// </summary>
         /// <param name="start">The point at the start of the section</param>
         /// <param name="edist">The distance to the end of the section.</param>
         /// <returns>The created section</returns>
-        LineFeature MakeSection(PointFeature start, double edist)
+        SectionLineFeature MakeSection(PointFeature start, double edist)
         {
             SectionGeometry section = AddSection(start, edist);
             uint ss = Session.ReserveNextItem();
-            LineFeature newLine = m_Line.MakeSubSection(this, ss, section);
-            return newLine;
+            return m_Line.MakeSubSection(this, ss, section);
         }
 
         /// <summary>
@@ -457,46 +499,6 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Sections.ToArray(); }
             set { m_Sections = new List<MeasuredLineFeature>(value); }
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Get adjusted lengths for each section
-            Distance[] distances = new Distance[m_Sections.Count];
-            for (int i = 0; i < distances.Length; i++)
-                distances[i] = m_Sections[i].ObservedLength;
-            double[] adjray = GetAdjustedLengths(m_Line, distances);
-
-            double edist = 0.0;		// Distance to end of section.
-            PointFeature start = m_Line.StartPoint;
-            LineGeometry lineGeom = m_Line.LineGeometry;
-
-            for (int i=0; i<adjray.Length; i++)
-            {
-                // Calculate the position at the end of the span
-                edist += adjray[i];
-                IPosition to;
-                if (!lineGeom.GetPosition(new Length(edist), out to))
-                    throw new Exception("Cannot adjust line section");
-
-                // Get the point feature at the end of the span
-                MeasuredLineFeature mf = m_Sections[i];
-                PointFeature end = mf.Line.EndPoint;
-
-                // Assign the calculated position so long as we're not at
-                // the end of the line
-                if (end != m_Line.EndPoint)
-                    end.PointGeometry = PointGeometry.Create(to);
-
-                // The end of the current span is the start of the next one
-                start = end;
-            }
-
-            // De-activate the parent line
-            m_Line.Deactivate();
         }
 
         /// <summary>

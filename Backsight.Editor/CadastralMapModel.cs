@@ -394,7 +394,7 @@ namespace Backsight.Editor
         {
             PointGeometry g = PointGeometry.Create(p);
             uint ss = Session.ReserveNextItem();
-            PointFeature f = new DirectPointFeature(creator, ss, e, g);
+            PointFeature f = new PointFeature(creator, ss, e, g);
             //m_Window.Union(p);
             //m_Index.Add(f);
             return f;

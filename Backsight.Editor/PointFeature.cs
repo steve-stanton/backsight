@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
     /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
-    abstract class PointFeature : Feature, IPoint, ITerminal
+    class PointFeature : Feature, IPoint, ITerminal
     {
         #region Class data
 
@@ -54,7 +54,7 @@ namespace Backsight.Editor
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry for the point (may be null, although this is only really
         /// expected during deserialization)</param>
-        protected PointFeature(Operation creator, uint sessionSequence, IEntity e, PointGeometry g)
+        internal PointFeature(Operation creator, uint sessionSequence, IEntity e, PointGeometry g)
             : base(creator, sessionSequence, e, null)
         {
             if (g == null)
@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// <param name="f">Basic information about the feature.</param>
         /// <param name="g">The geometry for the point (could be null, although this is only really
         /// expected during deserialization)</param>
-        protected PointFeature(IFeature f, PointGeometry g)
+        internal PointFeature(IFeature f, PointGeometry g)
             : base(f)
         {
             if (g == null)
@@ -79,23 +79,23 @@ namespace Backsight.Editor
                 m_Geom = new Node(this, g);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointFeature"/> class, and records it
-        /// as part of the map model.
-        /// </summary>
-        /// <param name="f">Basic information about the feature (not null)</param>
-        /// <param name="firstPoint">The point feature that the new point coincides with (not null)</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="f"/> or
-        /// <paramref name="firstPoint"/> is null.</exception>
-        protected PointFeature(IFeature f, PointFeature firstPoint)
-            : base(f)
-        {
-            if (firstPoint == null)
-                throw new ArgumentNullException("Cannot create shared point feature");
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="PointFeature"/> class, and records it
+        ///// as part of the map model.
+        ///// </summary>
+        ///// <param name="f">Basic information about the feature (not null)</param>
+        ///// <param name="firstPoint">The point feature that the new point coincides with (not null)</param>
+        ///// <exception cref="ArgumentNullException">If either <paramref name="f"/> or
+        ///// <paramref name="firstPoint"/> is null.</exception>
+        //internal PointFeature(IFeature f, PointFeature firstPoint)
+        //    : base(f)
+        //{
+        //    if (firstPoint == null)
+        //        throw new ArgumentNullException("Cannot create shared point feature");
 
-            m_Geom = firstPoint.m_Geom;
-            m_Geom.AttachPoint(this);
-        }
+        //    m_Geom = firstPoint.m_Geom;
+        //    m_Geom.AttachPoint(this);
+        //}
 
         #endregion
 
@@ -400,6 +400,11 @@ namespace Backsight.Editor
 
                 base.Touch(afterOp);
             }
+        }
+
+        internal override FeatureGeometry Representation
+        {
+            get { return FeatureGeometry.Point; }
         }
     }
 }

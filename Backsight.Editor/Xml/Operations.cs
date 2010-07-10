@@ -187,7 +187,7 @@ namespace Backsight.Editor.Xml
 
             foreach (PointData p in this.Point)
             {
-                DirectPointFeature pf = p.CreateDirectPointFeature(op);
+                PointFeature pf = p.CreatePointFeature(op);
                 op.AddControlPoint(pf);
             }
 
@@ -273,7 +273,7 @@ namespace Backsight.Editor.Xml
             {
                 FeatureData[] points = this.Points.Point;
                 foreach (FeatureData fd in points)
-                    result.Add(fd.CreateDirectPointFeature(op));
+                    result.Add(fd.CreatePointFeature(op));
             }
 
             if (this.Lines != null)
@@ -662,7 +662,7 @@ namespace Backsight.Editor.Xml
                 if (i == (dists.Length - 1))
                     end = line.EndPoint;
                 else
-                    end = points[i].CreateDirectPointFeature(op);
+                    end = points[i].CreatePointFeature(op);
 
                 // Get the internal ID to assign to the line
                 uint sessionId, lineSequence;
@@ -850,9 +850,9 @@ namespace Backsight.Editor.Xml
             PointFeature p = loader.Find<PointFeature>(this.ClosingPoint);
             if (p == null)
             {
-                FeatureData ft = new FeatureStubData(FeatureGeometry.DirectPoint);
+                FeatureData ft = new FeatureStubData(FeatureGeometry.Point);
                 ft.Id = this.ClosingPoint;
-                p = ft.CreateDirectPointFeature(op);
+                p = ft.CreatePointFeature(op);
             }
 
             // Form the construction line (this will also cross-reference the circle to
@@ -943,7 +943,7 @@ namespace Backsight.Editor.Xml
         {
             uint sequence = GetEditSequence(s);
             NewPointOperation op = new NewPointOperation(s, sequence);
-            DirectPointFeature f = this.Point.CreateDirectPointFeature(op);
+            PointFeature f = this.Point.CreatePointFeature(op);
             op.SetNewPoint(f);
             return op;
         }
@@ -1049,11 +1049,11 @@ namespace Backsight.Editor.Xml
 
             PointFeature from = loader.Find<PointFeature>(this.From.Id);
             if (from == null)
-                from = this.From.CreateDirectPointFeature(op);
+                from = this.From.CreatePointFeature(op);
 
             PointFeature to = loader.Find<PointFeature>(this.To.Id);
             if (to == null)
-                to = this.To.CreateDirectPointFeature(op);
+                to = this.To.CreatePointFeature(op);
 
             if (refLine is ArcFeature)
             {
@@ -1218,7 +1218,7 @@ namespace Backsight.Editor.Xml
             Observation length = this.Length.LoadObservation(loader);
             RadialOperation op = new RadialOperation(s, sequence, dir, length);
 
-            op.Point = this.To.CreateDirectPointFeature(op);
+            op.Point = this.To.CreatePointFeature(op);
 
             if (this.Line != null)
                 op.Line = this.Line.CreateSegmentLineFeature(op, dir.From, op.Point);
@@ -1282,7 +1282,7 @@ namespace Backsight.Editor.Xml
             Distance distance = (Distance)this.Distance.LoadObservation(mapModel);
             SimpleLineSubdivisionOperation op = new SimpleLineSubdivisionOperation(s, sequence, line, distance);
 
-            op.NewPoint = this.NewPoint.CreateDirectPointFeature(op);
+            op.NewPoint = this.NewPoint.CreatePointFeature(op);
 
             // Create the sections
 

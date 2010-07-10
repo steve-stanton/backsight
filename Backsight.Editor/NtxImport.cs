@@ -415,7 +415,7 @@ namespace Backsight.Editor
             {
                 IEntity e = creator.MapModel.DefaultPointType;
                 uint ss = Session.ReserveNextItem();
-                result = new DirectPointFeature(creator, ss, e, p);
+                result = new PointFeature(creator, ss, e, p);
                 m_Index.Add(result);
                 m_Result.Add(result);
             }
@@ -565,7 +565,7 @@ namespace Backsight.Editor
                 return null;
 
             uint ss = Session.ReserveNextItem();
-            PointFeature p = new DirectPointFeature(creator, ss, what, g);
+            PointFeature p = new PointFeature(creator, ss, what, g);
             /*
 
 	static LOGICAL warned=FALSE;	// debug
