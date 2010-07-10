@@ -107,7 +107,7 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
         }
 

@@ -1,21 +1,19 @@
-/// <remarks>
-/// Copyright 2007 - Steve Stanton. This file is part of Backsight
-///
-/// Backsight is free software; you can redistribute it and/or modify it under the terms
-/// of the GNU Lesser General Public License as published by the Free Software Foundation;
-/// either version 3 of the License, or (at your option) any later version.
-///
-/// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-/// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-/// See the GNU Lesser General Public License for more details.
-///
-/// You should have received a copy of the GNU Lesser General Public License
-/// along with this program. If not, see <http://www.gnu.org/licenses/>.
-/// </remarks>
+// <remarks>
+// Copyright 2007 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
 
 using System;
-
-using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -160,37 +158,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Saves this control point in the map.
-        /// </summary>
-        /// <param name="ent">The entity type for the control (not null)</param>
-        /// <param name="op">The editing operation creating the point (not null)</param>
-        /// <returns>The point representing the control (null if the position
-        /// of this control point is undefined). May be a previously existing point feature if
-        /// a point with the same ID already exists at the position of this control point.</returns>
-        internal PointFeature Save(IEntity ent, Operation op)
-        {
-            // Return if the control point is undefined
-            if (!this.IsDefined)
-                return null;
-
-            // Check whether a point already exists at the location of this point. If it does,
-            // and it has a foreign ID that matches the ID of this control point, just return it.
-            CadastralMapModel map = CadastralMapModel.Current;
-            ISpatialIndex index = map.EditingIndex;
-            PointFeature p = (index.QueryClosest(this, Length.Zero, SpatialType.Point) as PointFeature);
-            if (p!=null && p.IsForeignId && p.FormattedKey==m_ControlId.ToString())
-                return p;
-
-            // Add a new point to the map & define it's ID
-            p = CadastralMapModel.Current.AddPoint(this, ent, op);
-            IdHandle idh = new IdHandle(p);
-            string keystr = m_ControlId.ToString();
-    		idh.CreateForeignId(keystr);
-
-            return p;
-        }
-
-        /// <summary>
         /// Draws this control point on the specified display.
         /// </summary>
         /// <param name="display">The display to draw to</param>
@@ -200,6 +167,5 @@ namespace Backsight.Editor
             if (IsDefined)
                 style.RenderTriangle(display, this);
         }
-
     }
 }

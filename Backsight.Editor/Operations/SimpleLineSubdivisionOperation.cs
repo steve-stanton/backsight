@@ -373,7 +373,7 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

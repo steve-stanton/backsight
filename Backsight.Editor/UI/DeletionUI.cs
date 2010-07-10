@@ -64,7 +64,7 @@ namespace Backsight.Editor.UI
             try
             {
                 SetCommandCursor();
-                dop = new DeletionOperation(Session.WorkingSession);
+                dop = new DeletionOperation(Session.WorkingSession, 0);
                 foreach (ISpatialObject so in c.SpatialSelection.Items)
                 {
                     if (so is Feature)
@@ -78,8 +78,8 @@ namespace Backsight.Editor.UI
 
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
-                Session.WorkingSession.Remove(dop);
+                MessageBox.Show(e.StackTrace, e.Message);
+                //Session.WorkingSession.Remove(dop);
                 c.AbortCommand(this);
                 return false;
             }

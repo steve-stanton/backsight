@@ -746,7 +746,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <summary>
         /// Marks adjacent polygons (if any) for deletion, and nulls out <see cref="m_Topology"/>
         /// </summary>
-        void RemoveTopology()
+        internal void RemoveTopology()
         {
             if (m_Topology!=null)
             {

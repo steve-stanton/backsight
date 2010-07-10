@@ -19,7 +19,6 @@ using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
-using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
@@ -109,7 +108,7 @@ namespace Backsight.Editor.Xml
             AttachPointOperation op = new AttachPointOperation(s, sequence, line, this.PositionRatio);
 
             DeserializationFactory dff = new DeserializationFactory(op);
-            dff.AddFeatureData("Point", (FeatureStubData)this.Point);
+            dff.AddFeatureStub("Point", this.Point);
             op.CreateFeatures(dff);
             return op;
         }
@@ -146,6 +145,15 @@ namespace Backsight.Editor.Xml
                 Feature f = mapModel.Find<Feature>(id);
                 Debug.Assert(f != null);
                 op.AddDeletion(f);
+
+                // Mark the feature as inactive, and remove anything to do with topology.
+                // Doing this now (as opposed to DeletionOperation.CalculateGeometry) means that the
+                // feature will never make it into the spatial index, and will be invisible
+                // as far as line intersection tests are concerned.
+
+                f.IsInactive = true;
+                if (f is LineFeature)
+                    (f as LineFeature).RemoveTopology();
             }
 
             return op;
@@ -834,7 +842,7 @@ namespace Backsight.Editor.Xml
             // position at this stage.
 
             // ...so for now, just work with a circle that has no radius. This may get changed
-            // when RunEdit is ultimately called.
+            // when CalculateGeometry is ultimately called.
 
             Circle c = new Circle(op.Center, 0.0);
 
@@ -1055,7 +1063,7 @@ namespace Backsight.Editor.Xml
                     iscw = !iscw;
 
                 // Create a circle with an undefined radius - a radius will get
-                // assigned by ParallelLineOperation.RunEdit.
+                // assigned by ParallelLineOperation.CalculateGeometry.
 
                 // Don't add using AddCircle, as that will end up trying to locate
                 // a circle with matching radius (and all circles at this stage will have

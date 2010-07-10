@@ -46,16 +46,6 @@ namespace Backsight.Editor.Operations
         /// that refers to nothing.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal DeletionOperation(Session s)
-            : base(s)
-        {
-            m_Deletions = null;
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
@@ -178,8 +168,7 @@ namespace Backsight.Editor.Operations
         /// Executes this operation. Before calling this function, you must make at
         /// least one call to <see cref="AddDeletion"/>.
         /// </summary>
-        /// <returns>True if operation succeeded.</returns>
-        internal bool Execute()
+        internal void Execute()
         {
             // Confirm that at least one call to AddDeletion has been made.
             if (m_Deletions==null)
@@ -213,22 +202,26 @@ namespace Backsight.Editor.Operations
             if (all.Count > m_Deletions.Count)
                 m_Deletions = all;
 
-            // Mark the features as deleted
-            foreach (Feature f in m_Deletions)
-                f.IsInactive = true;
+            FeatureFactory ff = new FeatureFactory(this);
+            base.Execute(ff);
 
-            Complete();
-            return true;
+            //// Mark the features as deleted
+            //foreach (Feature f in m_Deletions)
+            //    f.IsInactive = true;
+
+            //Complete();
         }
 
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
-            // Mark the features as deleted
+            // When this method is called as part of deserialization from the database, the
+            // features will be inactive already (see logic in DeletionData.LoadOperation).
+
             foreach (Feature f in m_Deletions)
-                f.Deactivate();
+                f.IsInactive = true; //f.Deactivate();
         }
 
         /// <summary>

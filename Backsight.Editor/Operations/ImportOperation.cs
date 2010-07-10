@@ -151,7 +151,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             // Could calculate the radius of circles created by the import. However, this
             // is already done by the LineFeature constructor that accepts an ArcType.

@@ -518,11 +518,10 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// Edits that involve the creation of new spatial features should calculate and
-        /// assign the geometry for the features.
+        /// Calculates the geometry for any spatial features that were created by
+        /// this editing operation.
         /// </summary>
-        abstract internal void RunEdit();
+        abstract internal void CalculateGeometry();
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
@@ -682,7 +681,7 @@ namespace Backsight.Editor
             CreateFeatures(ff);
 
             // Calculate any geometry for spatial features
-            RunEdit();
+            CalculateGeometry();
 
             // Index features that were created (and ensure the map extent has been
             // expanded to include the new features)

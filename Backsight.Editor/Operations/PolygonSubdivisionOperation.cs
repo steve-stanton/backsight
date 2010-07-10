@@ -183,7 +183,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             if (m_Label != null)
                 m_Label.Deactivate();
