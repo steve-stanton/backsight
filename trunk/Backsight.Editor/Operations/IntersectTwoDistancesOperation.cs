@@ -161,7 +161,6 @@ namespace Backsight.Editor.Operations
         internal override PointFeature IntersectionPoint
         {
             get { return m_To; }
-            set { m_To = value; }
         }
 
         /// <summary>
@@ -370,7 +369,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);

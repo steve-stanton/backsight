@@ -43,15 +43,6 @@ namespace Backsight.Editor.Operations
         /// that refers to nothing.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
-        internal GetControlOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
@@ -165,38 +156,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Imports a control point. Once all control points have been imported, a call
-        /// to <see cref="Execute"/> should be made.
+        /// Executes this operation. 
         /// </summary>
-        /// <param name="control">The control point to import.</param>
-        /// <param name="ent">The entity type for the point.</param>
-        /// <returns>True if a point was imported</returns>
-        /// <remarks>May want to revisit this, since it's possible the CEdit implementation
-        /// ignored control points if a point at the same position already existed. This
-        /// implementation always adds.</remarks>
-        internal bool Import(ControlPoint control, IEntity ent)
+        /// <param name="cps">The points to save</param>
+        /// <param name="ent">The entity type to assign to control points</param>
+        internal void Execute(ControlPoint[] cps, IEntity ent)
         {
-            // Save the control point in the map.
-            PointFeature point = control.Save(ent, this);
-            if (point==null)
-                return false;
+            CadastralMapModel mapModel = CadastralMapModel.Current;
 
-            // If the point did not previously exist, remember the point.
-	        if (point.Creator==this)
-                m_Features.Add(point);
+            foreach (ControlPoint cp in cps)
+            {
+                // Add a new point to the map & define it's ID
+                PointFeature p = mapModel.AddPoint(cp, ent, this);
+                IdHandle idh = new IdHandle(p);
+                string keystr = cp.ControlId.ToString();
+                idh.CreateForeignId(keystr);
 
-	        return true;
-        }
+                m_Features.Add(p);
+            }
 
-        /// <summary>
-        /// "Execute" this operation. It actually just does normal cleanup steps performed by
-        /// all operations. Prior to call, all the data must have already been added via calls
-        /// to <see cref="Import"/>
-        /// </summary>
-        /// <remarks>This should probably accept an array of control points to process (do away
-        /// with separate <c>Import</c> method)</remarks>
-        internal void Execute()
-        {
             Complete();
         }
 
@@ -211,7 +189,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             // Nothing to do
         }
@@ -220,6 +198,7 @@ namespace Backsight.Editor.Operations
         /// Records an additional control point as part of this edit.
         /// </summary>
         /// <param name="p">The point created by this edit.</param>
+        /// <remarks>Used during deserialization from the database</remarks>
         internal void AddControlPoint(PointFeature p)
         {
             m_Features.Add(p);

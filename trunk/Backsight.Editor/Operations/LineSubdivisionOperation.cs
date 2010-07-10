@@ -462,7 +462,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             // Get adjusted lengths for each section
             Distance[] distances = new Distance[m_Sections.Count];

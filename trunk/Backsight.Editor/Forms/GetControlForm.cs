@@ -357,7 +357,8 @@ namespace Backsight.Editor.Forms
         private void addToMapButton_Click(object sender, EventArgs e)
         {
             // Return if there is nothing to add.
-            if (m_Ranges.Count==0)
+            ControlPoint[] cps = GetSavePoints();
+            if (cps.Length == 0)
             {
                 MessageBox.Show("There is nothing to add.");
                 return;
@@ -384,7 +385,7 @@ namespace Backsight.Editor.Forms
                 GlobalUserSetting.WriteInt("ControlEntityTypeId", ent.Id);
 
                 // Save the control.
-                Save(ent);
+                Save(cps, ent);
 
                 // Issue a warning message if points are not currently displayed
                 if (!m_Cmd.ArePointsDrawn())
@@ -404,40 +405,58 @@ namespace Backsight.Editor.Forms
         /// Saves loaded control points in the map. This creates the editing operation
         /// and executes it.
         /// </summary>
+        /// <param name="cps">The points to save</param>
         /// <param name="ent">The entity type to assign to control points</param>
-        /// <returns>The number of points added to the map</returns>
-        int Save(IEntity ent)
+        void Save(ControlPoint[] cps, IEntity ent)
         {
-            GetControlOperation save = null;
+            GetControlOperation op = null;
 
             try
             {
                 m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.WaitCursor;
-
-                // Create import operation.
-                CadastralMapModel map = CadastralMapModel.Current;
-                save = new GetControlOperation(Session.WorkingSession);
-
-                // Tell each range to add itself to the map.
-                foreach (ControlRange r in m_Ranges)
-                    r.Save(save, ent);
-
-                // Execute the op
-                save.Execute();
-                return save.Count;
+                op = new GetControlOperation(Session.WorkingSession, 0);
+                op.Execute(cps, ent);
             }
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(save);
-                MessageBox.Show(ex.Message);
-                return -1;
+                Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
             finally
             {
                 m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.Default;
             }
+        }
+
+        /// <summary>
+        /// Obtains the control points that need to be imported
+        /// </summary>
+        /// <returns>The points to save</returns>
+        ControlPoint[] GetSavePoints()
+        {
+            List<ControlPoint> result = new List<ControlPoint>();
+            ISpatialIndex index = CadastralMapModel.Current.EditingIndex;
+
+            foreach (ControlRange r in m_Ranges)
+            {
+                ControlPoint[] cps = r.GetDefinedPoints();
+
+                foreach (ControlPoint p in cps)
+                {
+                    if (p.IsDefined)
+                    {
+                        // Ignore the point if it already exists as part of the map (same position, same foreign ID).
+                        PointFeature xp = (index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+                        bool isExisting = (xp!=null && xp.IsForeignId && xp.FormattedKey==p.ControlId.ToString());
+                        if (!isExisting)
+                            result.Add(p);
+                    }
+                }
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>

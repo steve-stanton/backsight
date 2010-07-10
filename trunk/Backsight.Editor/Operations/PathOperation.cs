@@ -1042,7 +1042,7 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             // Get the rotation & scale factor to apply.
             PathInfo pd = ParsePath();

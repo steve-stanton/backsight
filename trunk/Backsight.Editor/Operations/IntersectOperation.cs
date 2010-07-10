@@ -38,9 +38,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization. The point created by this edit
-        /// is defined without any geometry. A subsequent call to <see cref="CalculateGeometry"/>
-        /// is needed to define the geometry.
+        /// Initializes a new instance of the <see cref="IntersectOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -51,17 +49,12 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        protected IntersectOperation(Session s)
-            : base(s)
-        {
-        }
-
         #endregion
 
         /// <summary>
         /// The point feature at the intersection created by this edit.
         /// </summary>
-        abstract internal PointFeature IntersectionPoint { get; set; } // was GetpIntersect
+        abstract internal PointFeature IntersectionPoint { get; } // was GetpIntersect
 
         /// <summary>
         /// Was the intersection created at it's default position?

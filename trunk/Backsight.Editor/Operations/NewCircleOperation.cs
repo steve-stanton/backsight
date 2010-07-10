@@ -314,7 +314,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void RunEdit()
+        internal override void CalculateGeometry()
         {
             // Get the radius, in meters on the ground.
             double rad = m_Radius.GetDistance(m_Center).Meters;
