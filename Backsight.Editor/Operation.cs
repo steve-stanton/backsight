@@ -19,10 +19,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Data;
-using System.Xml;
-using System.Text;
 
-using Backsight.Editor.Database;
 using Backsight.Data;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Xml;
@@ -678,7 +675,7 @@ namespace Backsight.Editor
             CadastralMapModel mapModel = this.MapModel;
 
             // Create the spatial features
-            CreateFeatures(ff);
+            ProcessFeatures(ff);
 
             // Calculate any geometry for spatial features
             CalculateGeometry();
@@ -711,12 +708,14 @@ namespace Backsight.Editor
             SaveOperation();
         }
 
-        //internal abstract void CreateFeatures(FeatureFactory ff);
+        //internal abstract void ProcessFeatures(FeatureFactory ff);
         /// <summary>
-        /// Creates any new spatial features (without any geometry)
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CreateGeometry"/> is needed to to that.
         /// </summary>
-        /// <param name="ff">The factory class for generating spatial features</param>
-        internal virtual void CreateFeatures(FeatureFactory ff)
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal virtual void ProcessFeatures(FeatureFactory ff)
         {
             // Do nothing
         }

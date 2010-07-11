@@ -109,7 +109,7 @@ namespace Backsight.Editor.Xml
 
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureStub("Point", this.Point);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -368,7 +368,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("DirLine", this.DirLine);
             dff.AddFeatureStub("DistLine", this.DistLine);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -418,7 +418,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("DirLine", this.DirLine);
             AddLineSplit(dff, line, "SplitBefore", this.SplitBefore);
             AddLineSplit(dff, line, "SplitAfter", this.SplitAfter);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -460,7 +460,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("Line1", this.Line1);
             dff.AddFeatureStub("Line2", this.Line2);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -508,7 +508,7 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("To", this.To);
             dff.AddFeatureStub("Line1", this.Line1);
             dff.AddFeatureStub("Line2", this.Line2);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -563,7 +563,7 @@ namespace Backsight.Editor.Xml
             AddLineSplit(dff, line1, "SplitAfter1", this.SplitAfter1);
             AddLineSplit(dff, line2, "SplitBefore2", this.SplitBefore2);
             AddLineSplit(dff, line2, "SplitAfter2", this.SplitAfter2);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -603,7 +603,7 @@ namespace Backsight.Editor.Xml
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureStub("NewPoint", this.NewPoint);
             dff.AddFeatureStub("NewLine", this.NewLine);
-            op.CreateFeatures(dff);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
