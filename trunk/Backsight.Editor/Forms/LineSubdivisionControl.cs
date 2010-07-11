@@ -17,11 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Text;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
-using System.Text;
 
 
 namespace Backsight.Editor.Forms
@@ -116,13 +116,13 @@ namespace Backsight.Editor.Forms
             distancesTextBox.ScrollToCaret();
         }
 
-        internal bool Save()
+        internal void Save()
         {
             // Return if we do not have at least 2 distances
             if (m_Distances.Count<2)
             {
                 MessageBox.Show("At least two distances must be specified.");
-                return false;
+                return;
             }
 
             // Subdivide the line...
@@ -136,16 +136,13 @@ namespace Backsight.Editor.Forms
                 op = new LineSubdivisionOperation(session, 0, m_Line, entryString, defaultEntryUnit,
                                                     !m_FromStart);
                 op.Execute();
-                return true;
             }
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(op);
-                MessageBox.Show(ex.Message);
+                //Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
             }
-
-            return false;
         }
 
 

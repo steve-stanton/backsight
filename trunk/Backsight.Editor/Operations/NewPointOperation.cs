@@ -45,16 +45,6 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewPointOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal NewPointOperation(Session s)
-            : base(s)
-        {
-            m_NewPoint = null;
-        }
-
         #endregion
 
         public PointFeature Point
@@ -82,21 +72,16 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="vtx">The position of the new point.</param>
         /// <param name="pointId">The ID (and entity type) to assign to the new point</param>
-        /// <returns>True if operation executed ok.</returns>
-        public bool Execute(IPosition vtx, IdHandle pointId)
+        internal void Execute(IPosition vtx, IdHandle pointId)
         {
-            // Add a point on the current editing layer.
-            CadastralMapModel map = CadastralMapModel.Current;
-            PointFeature newPoint = map.AddPoint(vtx, pointId.Entity, this);
+            // Add a point on the model
+            m_NewPoint = MapModel.AddPoint(vtx, pointId.Entity, this);
 
             // Give the new point the specified ID.
-            pointId.CreateId(newPoint);
-
-            m_NewPoint = newPoint;
+            pointId.CreateId(m_NewPoint);
 
             // Peform standard completion steps
             Complete();
-            return true;
         }
 
         internal override EditingActionId EditId

@@ -408,6 +408,17 @@ namespace Backsight.Editor
         /// <param name="creator">The operation that should be recorded as the creator
         /// of any newly created point</param>
         /// <returns>The point feature at the specified position (may be a new point)</returns>
+        /// <remarks>
+        /// I think it may be a bad idea to use this method. In the past, edits have used it
+        /// to refer to a point that happened to exist at a given position. However, if positional
+        /// data changes over time, it's possible that a point coincident at T1 will not be coincident
+        /// at T2. If the deserialization logic follows the logic that was used when the edit was
+        /// originally performed (which it should), things could go haywire if a previously existing
+        /// point was re-used, but has now moved. The guiding rule is that an edit should
+        /// <b>always create the same number of features</b> whenever it is executed (either the
+        /// initial run, or on deserialation from the database).
+        /// </remarks>
+        [Obsolete("Problems with changes over time (see remarks)")]
         internal PointFeature EnsurePointExists(IPosition p, Operation creator)
         {
             if (p is PointFeature)
@@ -848,7 +859,6 @@ namespace Backsight.Editor
         /// <param name="c">The point at the center.</param>
         /// <param name="radius">The radius (on the ground), in meters</param>
         /// <returns></returns>
-        [Obsolete("Calling this during deserialization (before geomtry is defined) is bad")]
         internal Circle AddCircle(PointFeature c, double radius)
         {
             // Try to match the center point with an existing circle with
@@ -863,55 +873,6 @@ namespace Backsight.Editor
             // Refer the center point to the circle.
             circle.AddReferences();
             return circle;
-        }
-
-
-        /// <summary>
-        /// Adds a circular arc that corresponds to a complete circle.
-        /// </summary>
-        /// <param name="center">The point at the center of the circle.</param>
-        /// <param name="radius">The radius of the circle (on the ground), in meters</param>
-        /// <param name="start">The point (if any) that should be regarded as the
-        /// "start" of the circle. If null, an arbitrary start point at the top of
-        /// the circle will be used.</param>
-        /// <param name="creator">The operation creating the arc</param>
-        /// <returns>The newly created line</returns>
-        internal ArcFeature AddCompleteCircularArc(PointFeature center, double radius, PointFeature start,
-                                                    Operation creator)
-        {
-            // Do we already have a suitable circle object? If not, create one.
-            Circle circle = AddCircle(center, radius);
-
-            // Create an arc that runs all the way round the circle.
-            // If an explicit start point has been supplied, that location
-            // will be treated as the BC (and EC) of the new curve. Otherwise
-            // we'll define an arbitrary location at the top of the circle.
-
-            // The arc is regarded as a construction line (with blank entity type)
-            IEntity e = EnvironmentContainer.FindBlankEntity();
-
-            PointFeature bc = start;
-            if (bc==null)
-            {
-                IPosition p = new Position(center.X, center.Y+radius);
-                bc = AddPoint(p, e, creator);
-            }
-
-            // Create a clockwise arc.
-            LineFeature curve = AddCircularArc(circle, bc, bc, true, e, creator);
-
-            // The line is NEVER topological.
-            //pArc->SetTopology(FALSE);
-
-            // Get the window of the circle, and ensure the map's window
-	        // is big enough to enclose it. The only other place this is
-	        // done is in CeMap::AddLocation. However, since a circle may
-	        // extend beyond any defined location, we need to do it here
-	        // too.
-            //CeWindow win(*pCurve);
-            //m_Window.Expand(win);
-
-            return (ArcFeature)curve;
         }
 
         /// <summary>

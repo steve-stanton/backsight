@@ -290,12 +290,19 @@ namespace Backsight.Editor.UI
         /// <param name="end"></param>
         internal override void AddNewLine(PointFeature end)
         {
-            // Create the persistent edit (adds to current session)
-            NewArcOperation op = new NewArcOperation(Session.WorkingSession);
-            bool ok = op.Execute(StartPoint, end, m_NewArcCircle, m_IsShortArc);
+            NewArcOperation op = null;
 
-            if (!ok)
+            try
+            {
+                op = new NewArcOperation(Session.WorkingSession, 0);
+                op.Execute(StartPoint, end, m_NewArcCircle, m_IsShortArc);
+            }
+
+            catch (Exception ex)
+            {
                 Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
         }
 
         /// <summary>

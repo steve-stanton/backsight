@@ -20,13 +20,8 @@ namespace Backsight.Editor.Operations
 {
     class NewMiscTextOperation : NewTextOperation
     {
-        internal NewMiscTextOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="NewMiscTextOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -50,8 +45,7 @@ namespace Backsight.Editor.Operations
         internal void Execute(string trim, IEntity ent, IPosition position, double ght, double gwd, double rot)
         {
             // Add the label.
-            CadastralMapModel cmm = MapModel;
-            TextFeature text = cmm.AddMiscText(this, trim, ent, position, ght, gwd, rot);
+            TextFeature text = MapModel.AddMiscText(this, trim, ent, position, ght, gwd, rot);
             SetText(text);
 
             // The trim is always non-topological.

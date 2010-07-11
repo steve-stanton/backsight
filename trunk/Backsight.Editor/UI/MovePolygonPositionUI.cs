@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Windows.Forms;
 
 using Backsight.Editor.Forms;
 using Backsight.Forms;
@@ -131,10 +132,23 @@ namespace Backsight.Editor.UI
         /// <returns>True, indicating that the text was moved.</returns>
         internal override bool LButtonDown(IPosition p)
         {
-            MovePolygonPositionOperation op = new MovePolygonPositionOperation(Session.WorkingSession);
-            op.Execute(m_Text, PointGeometry.Create(p));
-            FinishCommand();
-            return true;
+            MovePolygonPositionOperation op = null;
+
+            try
+            {
+                op = new MovePolygonPositionOperation(Session.WorkingSession, 0, m_Text);
+                op.Execute(PointGeometry.Create(p));
+                FinishCommand();
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                Session.CurrentSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -271,7 +271,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new NewMiscTextOperation(Session.WorkingSession);
+                op = new NewMiscTextOperation(Session.WorkingSession, 0);
                 op.Execute(m_NewText, Entity, posn, Height, Width, Rotation);
                 return op.Text;
             }
@@ -279,7 +279,7 @@ namespace Backsight.Editor.UI
             catch (Exception ex)
             {
                 Session.WorkingSession.Remove(op);
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
             return null;

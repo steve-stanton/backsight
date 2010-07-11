@@ -332,37 +332,31 @@ namespace Backsight.Editor.Forms
         /// <returns></returns>
         internal PointFeature Save()
         {
-            // Create an undefined operation.
-            NewPointOperation save = new NewPointOperation(Session.WorkingSession);
-
-            // Execute the operation.
-
-	        bool ok;
+            // Handle 3D points some other day
             if (Math.Abs(m_Elevation) > Double.Epsilon)
+                throw new NotImplementedException("NewPointForm.Save - 3D points not currently supported");
+
+            NewPointOperation op = null;
+
+            try
             {
-                throw new NotImplementedException("NewPointForm.Save");
-                /*
-		        Ce3DVertex vtx(m_Easting,m_Northing,m_Elevation);
-		        ok = pSave->Execute(&vtx,m_PointId);
-                 */
-            }
-            else
-            {
+                op = new NewPointOperation(Session.WorkingSession, 0);
+
                 IEntity ent = entityTypeComboBox.SelectedEntityType;
                 m_PointId.Entity = ent;
                 DisplayId did = (DisplayId)idComboBox.SelectedItem;
                 if (did != null)
                     m_PointId.ReserveId(ent, did.RawId);
-                ok = save.Execute(m_Position, m_PointId);
+
+                op.Execute(m_Position, m_PointId);
+                return op.Point;
             }
 
-            // Tell the controller the save has finished.
-            //m_Cmd.Controller.CurrentEdit = null;
-	        //pMap->SaveOp(pSave,ok);
-
-            // Return the new point if everything ok
-	        if (ok)
-                return save.Point;
+            catch (Exception ex)
+            {
+                Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
 
             return null;
         }

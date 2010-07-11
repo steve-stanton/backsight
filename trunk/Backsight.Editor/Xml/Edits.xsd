@@ -124,6 +124,24 @@
       <xs:element name="Operation" type="OperationData" />
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="FactoryData">
+    <xs:annotation>
+      <xs:documentation>A list of the features created by an edit.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Data" type="FeatureStubData" />
+    </xs:sequence>
+    <xs:attribute name="DefaultLineEntity" type="xs:int" use="optional">
+      <xs:annotation>
+        <xs:documentation>The default entity type for new lines.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="DefaultPointEntity" type="xs:int">
+      <xs:annotation>
+        <xs:documentation>The default entity type for new points.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
   <xs:complexType name="FeatureData" abstract="true">
     <xs:attribute name="Id" type="IdData" use="required" />
     <xs:attribute default="0" name="Entity" type="xs:int" use="optional">
@@ -478,7 +496,7 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Result" type="FeatureTableData">
+          <xs:element minOccurs="1" maxOccurs="1" name="Result" type="FactoryData">
             <xs:annotation>
               <xs:documentation>The lines sections that were produced (together with the points between each section), arranged in the same order as the values in the data entry string.</xs:documentation>
             </xs:annotation>
@@ -491,7 +509,7 @@ Dealing with these two components as a single formatted string may well be "bad"
         </xs:attribute>
         <xs:attribute name="EntryString" type="xs:string" use="required">
           <xs:annotation>
-            <xs:documentation>The entered distances, from the start of the subdivided line</xs:documentation>
+            <xs:documentation>The data entry string, as specified by the user (may be reckoned from either the start or the end of the line).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="DefaultEntryUnit" use="required">
@@ -692,12 +710,12 @@ The first and last positions are assumed to match the positions of the point fea
           </xs:element>
           <xs:element minOccurs="1" maxOccurs="1" name="From" type="FeatureData">
             <xs:annotation>
-              <xs:documentation>The point at the start of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
+              <xs:documentation>The point at the start of the parallel line (if it corresponds to an offset point used to define the parallel line, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
           <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
             <xs:annotation>
-              <xs:documentation>The point at the end of the parallel line (if it previously existed, only it's Id attribute will be defined)</xs:documentation>
+              <xs:documentation>The point at the end of the parallel line (if it corresponds to an offset point used to define the parallel line, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
           <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="FeatureData">
@@ -713,12 +731,12 @@ The first and last positions are assumed to match the positions of the point fea
         </xs:attribute>
         <xs:attribute name="Term1" type="IdData" use="optional">
           <xs:annotation>
-            <xs:documentation>The 1st terminal arc (if any).</xs:documentation>
+            <xs:documentation>The line where the start of the parallel should terminate (undefined if the parallel will not terminate on any line).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="Term2" type="IdData" use="optional">
           <xs:annotation>
-            <xs:documentation>The 2nd terminal line (if any). May be the same as Term1 (e.g. could be a multi-segment that bends round).</xs:documentation>
+            <xs:documentation>The line where the end of the parallel should terminate (undefined if the parallel will not terminate on any line). May be the same as Term1 (e.g. could be a multi-segment that bends round).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute default="false" name="ReverseArc" type="xs:boolean" use="optional">

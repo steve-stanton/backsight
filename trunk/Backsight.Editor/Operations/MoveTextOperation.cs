@@ -31,7 +31,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The feature that was moved.
         /// </summary>
-        TextFeature m_Text;
+        readonly TextFeature m_Text;
 
         /// <summary>
         /// Where the text used to be.
@@ -53,28 +53,20 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="MoveTextOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal MoveTextOperation(Session s, uint sequence)
+        /// <param name="text">The text to be moved</param>
+        internal MoveTextOperation(Session s, uint sequence, TextFeature text)
             : base(s, sequence)
         {
-            m_Text = null;
+            m_Text = text;
             m_OldPosition = null;
             m_OldPolPosition = null;
             m_NewPosition = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MoveTextOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal MoveTextOperation(Session s)
-            : this(s, 0)
-        {
         }
 
         #endregion
@@ -85,7 +77,6 @@ namespace Backsight.Editor.Operations
         internal TextFeature MovedText // was GetpLabel
         {
             get { return m_Text; }
-            set { m_Text = value; }
         }
 
         /// <summary>
@@ -216,8 +207,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override void CalculateGeometry()
         {
-            // Ensure the text has been moved to the revised position.
-            // Should be no need to re-calculate enclosing polygon while deserializing
+            // Ensure the text has been moved to the revised position. This method
+            // is used only while deserializing from the database, so there should
+            // be no need to re-calculate enclosing polygon 
             m_Text.Move(m_NewPosition);
         }
 
@@ -235,13 +227,9 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes the move operation.
         /// </summary>
-        /// <param name="text">The text to be moved</param>
         /// <param name="to">The position to move to</param>
-        internal void Execute(TextFeature text, PointGeometry to)
+        internal void Execute(PointGeometry to)
         {
-	        // Remember the text being moved.
-	        m_Text = text;
-
         	// Remember the old and new positions.
             m_OldPosition = PointGeometry.Create(m_Text.Position);
 

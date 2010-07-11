@@ -621,7 +621,7 @@ namespace Backsight.Editor.Xml
             this.EntryString = op.EntryString;
             this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
             this.EntryFromEnd = op.EntryFromEnd;
-            this.Result = new FeatureTableData(op);
+            this.Result = new FactoryData(op);
         }
 
         /// <summary>
@@ -643,6 +643,10 @@ namespace Backsight.Editor.Xml
             LineSubdivisionOperation op = new LineSubdivisionOperation(s, sequence,
                 line, this.EntryString, defaultEntryUnit, this.EntryFromEnd);
 
+            DeserializationFactory dff = this.Result.CreateFactory(op);
+            op.ProcessFeatures(dff);
+
+            /*
             Distance[] dists = LineSubdivisionOperation.GetDistances(this.EntryString,
                                     defaultEntryUnit, this.EntryFromEnd);
 
@@ -676,6 +680,7 @@ namespace Backsight.Editor.Xml
             }
 
             op.Sections = sections;
+             */
             return op;
         }
     }
@@ -712,11 +717,10 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            TextFeature label = s.MapModel.Find<TextFeature>(this.Label);
             uint sequence = GetEditSequence(s);
-            MovePolygonPositionOperation op = new MovePolygonPositionOperation(s, sequence);
+            MovePolygonPositionOperation op = new MovePolygonPositionOperation(s, sequence, label);
 
-            CadastralMapModel mapModel = s.MapModel;
-            op.Label = s.MapModel.Find<TextFeature>(this.Label);
             op.NewPosition = new PointGeometry(this.NewX, this.NewY);
 
             if (this.OldXSpecified && this.OldYSpecified)
@@ -760,10 +764,9 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            MoveTextOperation op = new MoveTextOperation(s, sequence);
+            TextFeature text = s.MapModel.Find<TextFeature>(this.Text);
+            MoveTextOperation op = new MoveTextOperation(s, sequence, text);
 
-            CadastralMapModel mapModel = s.MapModel;
-            op.MovedText = mapModel.Find<TextFeature>(this.Text);
             op.OldPosition = new PointGeometry(this.OldX, this.OldY);
             op.NewPosition = new PointGeometry(this.NewX, this.NewY);
 
@@ -830,12 +833,28 @@ namespace Backsight.Editor.Xml
         internal override Operation LoadOperation(Session s)
         {
             uint sequence = GetEditSequence(s);
-            NewCircleOperation op = new NewCircleOperation(s, sequence);
-
             ILoader loader = s.MapModel;
-            op.Center = loader.Find<PointFeature>(this.Center);
-            op.Radius = this.Radius.LoadObservation(loader);
+            PointFeature center = loader.Find<PointFeature>(this.Center);
+            Observation radius = this.Radius.LoadObservation(loader);
+            NewCircleOperation op = new NewCircleOperation(s, sequence, center, radius);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+
+            // Remember closing point if it was created by the op.
+            InternalIdValue cpid = new InternalIdValue(this.ClosingPoint);
+            if (cpid.SessionId == s.Id && cpid.ItemSequence > sequence)
+            {
+                FeatureStubData cp = new FeatureStubData(FeatureGeometry.Point);
+                cp.Id = this.ClosingPoint;
+                dff.AddFeatureData("ClosingPoint", cp);
+            }
+
+            FeatureStubData arc = new FeatureStubData(FeatureGeometry.Arc);
+            arc.Id = this.Arc;
+            dff.AddFeatureData("Arc", arc);
+
+            op.ProcessFeatures(dff);
+            /*
             // In order to create the construction line, we need to have the Circle object,
             // but to be able to find the circle, the radius has to be known... and if the
             // radius is specified via an offset point, the point probably has no defined
@@ -863,7 +882,7 @@ namespace Backsight.Editor.Xml
             ArcFeature arc = at.CreateArcFeature(op, p, p, g);
 
             op.SetNewLine(arc);
-
+            */
             return op;
         }
     }
@@ -1044,6 +1063,17 @@ namespace Backsight.Editor.Xml
             LineFeature term1 = (this.Term1==null ? null : loader.Find<LineFeature>(this.Term1));
             LineFeature term2 = (this.Term2==null ? null : loader.Find<LineFeature>(this.Term2));
             ParallelLineOperation op = new ParallelLineOperation(s, sequence, refLine, offset, term1, term2, this.ReverseArc);
+
+            /*
+            DeserializationFactory dff = new DeserializationFactory(op);
+
+            PointFeature p = op.OffsetPoint;
+
+
+            op.ProcessFeatures(dff);
+            */
+
+            //////////////////
 
             // Ensure the line end points have been created
 

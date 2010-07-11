@@ -104,21 +104,28 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void Execute()
         {
-            Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
+            //Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
 
-            // Must have at least two distances
-            if (distances == null)
-                throw new ArgumentNullException();
+            //// Must have at least two distances
+            //if (distances == null)
+            //    throw new ArgumentNullException();
 
-            if (distances.Length < 2)
-                throw new ArgumentException();
+            //if (distances.Length < 2)
+            //    throw new ArgumentException();
 
             FeatureFactory ff = new FeatureFactory(this);
+
+            // There's no need to actually define anything in the factory as far as points are
+            // concerned - the ProcessFeatures method will end up using the default entity type
+            // for points, and assign new feature IDs if necessary.
+
+            // Same deal for lines. In that caee, ProcessFeatures creates sections that are
+            // like the subdivided line.
 
             base.Execute(ff);
 
             ///////////////
-
+            /*
             m_Sections = new List<MeasuredLineFeature>(distances.Length);
             foreach (Distance d in distances)
                 m_Sections.Add(new MeasuredLineFeature(null, d));
@@ -142,6 +149,49 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CreateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
+
+            // Must have at least two distances
+            if (distances == null)
+                throw new ArgumentNullException();
+
+            if (distances.Length < 2)
+                throw new ArgumentException();
+
+            m_Sections = new List<MeasuredLineFeature>(distances.Length);
+            PointFeature start = m_Line.StartPoint;
+            InternalIdValue item = new InternalIdValue(this.DataId);
+
+            for (int i=0; i<distances.Length; i++)
+            {
+                PointFeature end;
+                if (i == distances.Length-1)
+                    end = m_Line.EndPoint;
+                else
+                {
+                    item.ItemSequence++;
+                    end = ff.CreatePointFeature(item.ToString());
+                }
+
+                item.ItemSequence++;
+                SectionLineFeature line = ff.CreateSection(item.ToString(), m_Line, start, end);
+                m_Sections.Add(new MeasuredLineFeature(line, distances[i]));
+                start = end;
+            }
+
+            // Retire the original line
+            ff.DeactivateLine(m_Line);
         }
 
         /// <summary>
@@ -179,9 +229,6 @@ namespace Backsight.Editor.Operations
                 // The end of the current span is the start of the next one
                 start = end;
             }
-
-            // De-activate the parent line
-            m_Line.Deactivate();
         }
 
         /// <summary>
@@ -312,13 +359,13 @@ namespace Backsight.Editor.Operations
 
                 foreach (MeasuredLineFeature mf in m_Sections)
                 {
-                    result.Add(mf.Line);
-
-                    // If the point feature at the end of the section was created
-                    // by this op, append that too.
+                    // Append point feature at the end of the section (so long as it's not
+                    // the end of the subdivided line).
                     PointFeature pf = mf.Line.EndPoint;
                     if (pf.Creator == this)
                         result.Add(pf);
+
+                    result.Add(mf.Line);
                 }
 
                 return result.ToArray();
@@ -498,7 +545,7 @@ namespace Backsight.Editor.Operations
         internal MeasuredLineFeature[] Sections
         {
             get { return m_Sections.ToArray(); }
-            set { m_Sections = new List<MeasuredLineFeature>(value); }
+            //set { m_Sections = new List<MeasuredLineFeature>(value); }
         }
 
         /// <summary>
