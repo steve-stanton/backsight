@@ -22,12 +22,8 @@ namespace Backsight.Editor.Operations
     /// </summary>
     class NewArcOperation : NewLineOperation
     {
-        internal NewArcOperation(Session s)
-            : this(s, 0)
-        {
-        }
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="NewArcOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -46,8 +42,7 @@ namespace Backsight.Editor.Operations
         /// <param name="circle">The circle that the new arc should sit on.</param>
         /// <param name="isShortArc">True if the new arc refers to the short arc. False
         /// if it's a long arc (i.e. greater than half the circumference of the circle).</param>
-        /// <returns>True if new arc added ok.</returns>
-        internal bool Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
+        internal void Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
         {
             // Disallow an attempt to add a null line.
             if (start.Geometry.IsCoincident(end.Geometry))
@@ -76,7 +71,6 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
-            return true;
         }
     }
 }

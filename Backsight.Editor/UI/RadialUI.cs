@@ -231,8 +231,7 @@ namespace Backsight.Editor.UI
 		        IEntity lineEnt = null;
 		        if (m_Dialog.WantLine)
                 {
-                    EditingController ec = EditingController.Current;
-                    lineEnt = ec.ActiveLayer.DefaultLineType;
+                    lineEnt = CadastralMapModel.Current.DefaultLineType;
                     if (lineEnt==null)
                         throw new InvalidOperationException("No default entity type for lines");
                 }

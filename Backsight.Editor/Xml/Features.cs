@@ -20,6 +20,35 @@ using Backsight.Environment;
 
 namespace Backsight.Editor.Xml
 {
+
+    public partial class FactoryData
+    {
+        public FactoryData()
+        {
+        }
+
+        internal FactoryData(Operation op)
+        {
+            // Ignore default entity types for the time being (just a nicety for slimming down the xml)...
+
+            Feature[] feats = op.Features;
+            this.Data = new FeatureStubData[feats.Length];
+
+            for (int i=0; i<feats.Length; i++)
+                this.Data[i] = new FeatureStubData(feats[i]);
+        }
+
+        internal DeserializationFactory CreateFactory(Operation op)
+        {
+            DeserializationFactory result = new DeserializationFactory(op);
+
+            foreach (FeatureStubData stub in this.Data)
+                result.AddFeatureData(stub.Id, stub);
+
+            return result;
+        }
+    }
+
     /// <summary>
     /// Base class for any sort of serialized spatial feature.
     /// </summary>

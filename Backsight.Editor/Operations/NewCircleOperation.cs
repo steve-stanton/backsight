@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 
 namespace Backsight.Editor.Operations
@@ -31,40 +32,34 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Point at the center of the circle.
         /// </summary>
-        PointFeature m_Center;
+        readonly PointFeature m_Center;
 
         /// <summary>
         /// The radius of the circle (either a <see cref="Distance"/> object,
         /// or an <see cref="OffsetPoint"/> that sits on the circumference of
         /// the circle.
         /// </summary>
-        Observation m_Radius;
+        readonly Observation m_Radius;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal NewCircleOperation(Session s, uint sequence)
+        /// <param name="center">The point at the center of the circle.</param>
+        /// <param name="radius">The radius of the circle (either a <see cref="Distance"/> object,
+        /// or an <see cref="OffsetPoint"/> that sits on the circumference of the circle.</param>
+        internal NewCircleOperation(Session s, uint sequence, PointFeature center, Observation radius)
             : base(s, sequence)
         {
-            m_Center = null;
-            m_Radius = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal NewCircleOperation(Session s)
-            : this(s, 0)
-        {
+            m_Center = center;
+            m_Radius = radius;
         }
 
         #endregion
@@ -75,7 +70,6 @@ namespace Backsight.Editor.Operations
         internal PointFeature Center
         {
             get { return m_Center; }
-            set { m_Center = value; }
         }
 
         /// <summary>
@@ -86,7 +80,6 @@ namespace Backsight.Editor.Operations
         internal Observation Radius
         {
             get { return m_Radius; }
-            set { m_Radius = value; }
         }
 
         /// <summary>
@@ -113,7 +106,6 @@ namespace Backsight.Editor.Operations
         {
             // Delete observed radius.
             m_Radius.OnRollback(this);
-            m_Radius = null;
 
             // Cut direct refs made by this operation.
             if (m_Center != null)
@@ -208,36 +200,86 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this new circle operation.
         /// </summary>
-        /// <param name="center">The point at the center of the circle.</param>
-        /// <param name="radius">The radius of the circle (either a <see cref="Distance"/> object,
-        /// or an <see cref="OffsetPoint"/> that sits on the circumference of the circle.</param>
-        internal void Execute(PointFeature center, Observation radius)
+        internal void Execute()
         {
-            // Remember the center point.
-            m_Center = center;
+            FeatureFactory ff = new FeatureFactory(this);
 
+            // The circle (and any closing point) will have the blank entity type (with ID=0).
+            // If you don't do this, the factory will create stuff with default entity types,
+            // and possibly a user-perceived ID.
+            IEntity blank = EnvironmentContainer.FindBlankEntity();
+            ff.PointType = blank;
+            ff.LineType = blank;
+
+            base.Execute(ff);
+            /*
             // Get the radius, in meters on the ground.
-            double rad = radius.GetDistance(center).Meters;
+            double rad = m_Radius.GetDistance(m_Center).Meters;
             if (rad < Constants.TINY)
                 throw new Exception("NewCircleOperation.Execute - Radius is too close to zero.");
 
             // If the radius was specified as an offset point, make the circle
             // start at that point.
-            OffsetPoint offset = (radius as OffsetPoint);
+            OffsetPoint offset = (m_Radius as OffsetPoint);
             PointFeature start = (offset == null ? null : offset.Point);
 
             // Add a circle to the map.
             CadastralMapModel map = MapModel;
-            ArcFeature arc = map.AddCompleteCircularArc(center, rad, start, this);
+            ArcFeature arc = map.AddCompleteCircularArc(m_Center, rad, start, this);
 
             // Record the new arc in the base class.
             SetNewLine(arc);
 
-            // Save the observed radius
-            m_Radius = radius;
-
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            // If the closing point does not already exist, create one at some unspecified position
+            OffsetPoint offset = (m_Radius as OffsetPoint);
+            PointFeature p = (offset == null ? null : offset.Point);
+            if (p == null)
+                p = ff.CreatePointFeature("ClosingPoint");
+
+            // Form the construction line (there is no associated circle at this stage)
+            ArcFeature arc = ff.CreateArcFeature("Arc", p, p);
+
+            base.SetNewLine(arc);
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            // Get the radius, in meters on the ground.
+            double rad = m_Radius.GetDistance(m_Center).Meters;
+            if (rad < Constants.TINY)
+                throw new Exception("NewCircleOperation.CalculateGeometry - Radius is too close to zero.");
+
+            // If the closing point was created by this edit, define it's position
+            ArcFeature arc = (ArcFeature)this.Line;
+            PointFeature p = arc.StartPoint;
+            if (p.Creator == this)
+            {
+                PointGeometry pg = new PointGeometry(m_Center.X, m_Center.Y+rad);
+                p.PointGeometry = pg;
+            }
+
+            // Try to find an existing circle. If we don't find one, create one (attaching it to
+            // the center point);
+            Circle circle = MapModel.AddCircle(m_Center, rad);
+
+            // Define the geometry for the feature (and attach the arc to the circle)
+            arc.Geometry = new ArcGeometry(circle, arc.StartPoint, arc.StartPoint, true);
         }
 
         /// <summary>
@@ -265,6 +307,9 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation updated ok.</returns>
         internal bool Correct(PointFeature center, Observation radius)
         {
+            throw new NotImplementedException();
+
+            /*
             // If the center point has changed, cut the reference to this
             // operation from the old point, and change it so the
             // operation is referenced from the new center.
@@ -290,6 +335,7 @@ namespace Backsight.Editor.Operations
             m_Radius.AddReferences(this);
 
             return true;
+             */
         }
 
         /// <summary>
@@ -308,46 +354,6 @@ namespace Backsight.Editor.Operations
                     return new Feature[] { this.Line, p };
                 else                
                     return new Feature[] { this.Line };
-            }
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Get the radius, in meters on the ground.
-            double rad = m_Radius.GetDistance(m_Center).Meters;
-            if (rad < Constants.TINY)
-                throw new Exception("NewCircleOperation.CalculateGeometry - Radius is too close to zero.");
-
-            // Try to find an existing circle. If we don't find one, adjust the circle
-            // placeholder that was created by the constructor. Otherwise re-attach the
-            // arc to the circle we found.
-
-            Circle circle = m_Center.GetCircle(rad);
-            ArcFeature arc = (ArcFeature)this.Line;
-
-            if (circle==null)
-            {
-                circle = arc.Circle;
-                circle.Radius = rad;
-
-                // Cross-reference the center point to the circle
-                m_Center.AddReference(circle);
-            }
-            else
-            {
-                arc.LineGeometry = new ArcGeometry(circle, arc.StartPoint, arc.StartPoint, true);
-                circle.AddArc(arc);
-            }
-
-            // If the closing point was created by this edit, calculate it's position
-            PointFeature p = arc.StartPoint;
-            if (p.Creator == this)
-            {
-                PointGeometry pg = new PointGeometry(m_Center.X, m_Center.Y+rad);
-                p.PointGeometry = pg;
             }
         }
     }

@@ -31,7 +31,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The polygon label that was modified
         /// </summary>
-        TextFeature m_Label;
+        readonly TextFeature m_Label;
 
         /// <summary>
         /// The original position of the reference point (null if the old position coincided
@@ -49,27 +49,19 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal MovePolygonPositionOperation(Session s, uint sequence)
+        /// <param name="label">The polygon label to modify</param>
+        internal MovePolygonPositionOperation(Session s, uint sequence, TextFeature label)
             : base(s, sequence)
         {
-            m_Label = null;
+            m_Label = label;
             m_OldPosition = null;
             m_NewPosition = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal MovePolygonPositionOperation(Session s)
-            : this(s, 0)
-        {
         }
 
         #endregion
@@ -164,21 +156,16 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override void CalculateGeometry()
         {
-            // Move the label's reference position -- the name of this method
-            // really needs to be changed.
+            // Move the label's reference position
             m_Label.SetPolPosition(m_NewPosition);
         }
 
         /// <summary>
         /// Executes the move operation.
         /// </summary>
-        /// <param name="label">The polygon label to modify</param>
         /// <param name="to">The revised position of the reference point.</param>
-        internal void Execute(TextFeature label, PointGeometry to)
+        internal void Execute(PointGeometry to)
         {
-            // Remember the label being moved.
-            m_Label = label;
-
             // Remember the old and new positions.
             IPointGeometry txtPos = m_Label.Position;
             IPointGeometry polPos = m_Label.GetPolPosition();
@@ -207,10 +194,12 @@ namespace Backsight.Editor.Operations
             return null;
         }
 
+        /// <summary>
+        /// The polygon label that was modified
+        /// </summary>
         internal TextFeature Label
         {
             get { return m_Label; }
-            set { m_Label = value; }
         }
 
         /// <summary>

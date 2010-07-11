@@ -63,10 +63,29 @@ namespace Backsight.Editor.Xml
         internal override PointFeature CreatePointFeature(string itemName)
         {
             IFeature f = FindFeatureDescription(itemName);
+
             if (f == null)
                 return null;
             else
                 return new PointFeature(f, null);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ArcFeature"/> using information previously
+        /// recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The new feature (null if a feature description was not previously added)</returns>
+        internal override ArcFeature CreateArcFeature(string itemName, PointFeature from, PointFeature to)
+        {
+            IFeature f = FindFeatureDescription(itemName);
+
+            if (f == null)
+                return null;
+            else
+                return new ArcFeature(f, from, to, null, f.EntityType.IsPolygonBoundaryValid);
         }
 
         /// <summary>
@@ -75,7 +94,13 @@ namespace Backsight.Editor.Xml
         /// <param name="line">The line that needs to be deactivated</param>
         internal override void DeactivateLine(LineFeature line)
         {
-            line.Deactivate();
+            // When a line is deactivated during the course of regular editing work,
+            // any topological constructs will be removed when the model is cleaned
+            // at the end of the edit. During deserialization, the model doesn't get
+            // cleaned, so remove any topological stuff now.
+
+            base.DeactivateLine(line);
+            line.RemoveTopology();
         }
     }
 }

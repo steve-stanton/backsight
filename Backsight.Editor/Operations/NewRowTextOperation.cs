@@ -23,13 +23,8 @@ namespace Backsight.Editor.Operations
 {
     class NewRowTextOperation : NewTextOperation
     {
-        internal NewRowTextOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="NewRowTextOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -60,8 +55,7 @@ namespace Backsight.Editor.Operations
                 throw new ArgumentNullException();
 
             // Add the label.
-            CadastralMapModel map = MapModel;
-            TextFeature text = map.AddRowLabel(this, polygonId, vtx, row, atemplate, height, width, rotation);
+            TextFeature text = MapModel.AddRowLabel(this, polygonId, vtx, row, atemplate, height, width, rotation);
             SetText(text);
 
             // Associate the polygon with the label, and vice versa.

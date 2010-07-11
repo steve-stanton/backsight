@@ -111,6 +111,19 @@ namespace Backsight.Editor.Operations
             set { m_ParLine = value; }
         }
         internal Observation Offset { get { return m_Offset; } }
+
+        /// <summary>
+        /// The point (if any) that was used to define the offset to the parallel line.
+        /// </summary>
+        internal PointFeature OffsetPoint
+        {
+            get
+            {
+                OffsetPoint op = (m_Offset as OffsetPoint);
+                return (op==null ? null : op.Point);
+            }
+        }
+
         internal bool IsArcReversed { get { return (m_Flags==1); } }
         internal LineFeature Terminal1 { get { return m_Term1; } }
         internal LineFeature Terminal2 { get { return m_Term2; } }
@@ -360,7 +373,7 @@ namespace Backsight.Editor.Operations
             // Add the parallel line to the map (if it's a circular arc,
             // we may need to reverse the direction).
 
-            IEntity ent = EditingController.Current.ActiveLayer.DefaultLineType;
+            IEntity ent = MapModel.DefaultLineType;
 
             if (m_RefLine is ArcFeature)
             {
@@ -455,11 +468,11 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds a termination point (or re-use any point that's already there).
+        /// Adds a termination point (or re-use a point if it happens to be the offset point).
         /// </summary>
         /// <param name="loc">The location for the termination point.</param>
-        /// <returns>The point feature at the termination point (may be a previously
-        /// existing point).</returns>
+        /// <returns>The point feature at the termination point (may be the position that was
+        /// used to define the offset to the parallel line).</returns>
         PointFeature AddPoint(IPosition loc)
         {
             CadastralMapModel map = CadastralMapModel.Current;
@@ -473,9 +486,16 @@ namespace Backsight.Editor.Operations
 	        // that defines the offset to the parallel (which the
 	        // UI lets the user do).
 
-            PointFeature p = map.EnsurePointExists(loc, this);
-            if (p.Creator == this)
-                p.SetNextId();
+            PointFeature p = this.OffsetPoint;
+            if (p != null)
+            {
+                IPointGeometry pg = PointGeometry.Create(loc);
+                if (p.IsCoincident(pg))
+                    return p;
+            }
+
+            p = map.AddPoint(p, map.DefaultPointType, this);
+            p.SetNextId();
 
             return p;
         }

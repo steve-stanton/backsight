@@ -22,13 +22,8 @@ namespace Backsight.Editor.Operations
     /// </summary>
     class NewSegmentOperation : NewLineOperation
     {
-        internal NewSegmentOperation(Session s)
-            : base(s)
-        {
-        }
-
         /// <summary>
-        /// Constructor for use during deserialization
+        /// Initializes a new instance of the <see cref="NewSegmentOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -44,21 +39,19 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="start">The point at the start of the new line.</param>
         /// <param name="end">The point at the end of the new line.</param>
-        /// <returns>True if new line added ok.</returns>
-        internal bool Execute(PointFeature start, PointFeature end)
+        internal void Execute(PointFeature start, PointFeature end)
         {
             // Disallow an attempt to add a null line.
             if (start.Geometry.IsCoincident(end.Geometry))
                 throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
 
             // Add the new line with default entity type.
-            CadastralMapModel map = CadastralMapModel.Current;
-            LineFeature newLine = map.AddLine(start, end, map.DefaultLineType, this);
+            CadastralMapModel mapModel = this.MapModel;
+            LineFeature newLine = mapModel.AddLine(start, end, mapModel.DefaultLineType, this);
             base.SetNewLine(newLine);
 
             // Peform standard completion steps
             Complete();
-            return true;
         }
     }
 }

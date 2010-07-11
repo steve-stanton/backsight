@@ -225,14 +225,12 @@ namespace Backsight.Editor
                 return true;
             }
 
-            string errmsg;
-
             if (id!=0)
-                errmsg = String.Format("Failed to reserve ID {0} for '{1}'", id, ent.Name);
-            else
-                errmsg = String.Format("No IDs for '{0}'", ent.Name);
+            {
+                string errmsg = String.Format("Failed to reserve ID {0} for '{1}'", id, ent.Name);
+                MessageBox.Show(errmsg);
+            }
 
-            MessageBox.Show(errmsg);
             return false;
         }
 

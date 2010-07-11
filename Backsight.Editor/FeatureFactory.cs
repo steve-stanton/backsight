@@ -40,12 +40,6 @@ namespace Backsight.Editor
         readonly Dictionary<string, IFeature> m_FeatureInfo;
 
         /// <summary>
-        /// The features created by this factory. This may include features in addition
-        /// to those in <see cref="m_FeatureInfo"/>.
-        /// </summary>
-        readonly List<Feature> m_CreatedFeatures;
-
-        /// <summary>
         /// The entity type for new point features
         /// </summary>
         IEntity m_PointType;
@@ -81,7 +75,6 @@ namespace Backsight.Editor
 
             m_Operation = op;
             m_FeatureInfo = new Dictionary<string, IFeature>();
-            m_CreatedFeatures = new List<Feature>();
         }
 
         #endregion
@@ -216,7 +209,7 @@ namespace Backsight.Editor
         /// Creates a new instance of <see cref="PointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
-        /// <returns>The new feature</returns>
+        /// <returns>The new feature (never null)</returns>
         internal virtual PointFeature CreatePointFeature(string itemName)
         {
             PointFeature result = null;
@@ -233,7 +226,6 @@ namespace Backsight.Editor
                 result = new PointFeature(f, null);
             }
 
-            m_CreatedFeatures.Add(result);
             return result;
         }
 
@@ -247,7 +239,6 @@ namespace Backsight.Editor
             uint ss = Session.ReserveNextItem();
             PointFeature result = new PointFeature(m_Operation, ss, PointType, null);
             result.SetNextId();
-            m_CreatedFeatures.Add(result);
             return result;
         }
 
@@ -265,9 +256,7 @@ namespace Backsight.Editor
             if (f == null)
                 return null;
 
-            SegmentLineFeature result = new SegmentLineFeature(f, from, to);
-            m_CreatedFeatures.Add(result);
-            return result;
+            return new SegmentLineFeature(f, from, to);
         }
 
         /// <summary>
@@ -277,15 +266,23 @@ namespace Backsight.Editor
         /// <param name="itemName">The name for the item involved</param>
         /// <param name="from">The point at the start of the line (not null).</param>
         /// <param name="to">The point at the end of the line (not null).</param>
-        /// <returns>The created feature (null if a feature description was not previously added)</returns>
-        internal ArcFeature CreateArcFeature(string itemName, PointFeature from, PointFeature to)
+        /// <returns>The created feature (never null)</returns>
+        internal virtual ArcFeature CreateArcFeature(string itemName, PointFeature from, PointFeature to)
         {
+            ArcFeature result = null;
             IFeature f = FindFeatureDescription(itemName);
-            if (f == null)
-                return null;
 
-            ArcFeature result = new ArcFeature(f, from, to, null, f.EntityType.IsPolygonBoundaryValid);
-            m_CreatedFeatures.Add(result);
+            if (f == null)
+            {
+                uint ss = Session.ReserveNextItem();
+                result = new ArcFeature(m_Operation, ss, LineType, null, from, to, true);
+                result.SetNextId();
+            }
+            else
+            {
+                result = new ArcFeature(f, from, to, null, f.EntityType.IsPolygonBoundaryValid);
+            }
+
             return result;
         }
 
@@ -298,9 +295,27 @@ namespace Backsight.Editor
         internal SegmentLineFeature CreateSegmentLineFeature(PointFeature from, PointFeature to)
         {
             uint ss = Session.ReserveNextItem();
-            SegmentLineFeature result = new SegmentLineFeature(m_Operation, ss, LineType, from, to);
-            m_CreatedFeatures.Add(result);
-            return result;
+            return new SegmentLineFeature(m_Operation, ss, LineType, from, to);
+        }
+
+        /// <summary>
+        /// Creates a new line section
+        /// </summary>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="baseLine">The line that this section is part of</param>
+        /// <param name="from">The point at the start of the section</param>
+        /// <param name="to">The point at the end of the section</param>
+        /// <returns>The created section (never null)</returns>
+        internal SectionLineFeature CreateSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
+        {
+            IFeature f = FindFeatureDescription(itemName);
+            if (f == null)
+            {
+                uint ss = Session.ReserveNextItem();
+                f = new FeatureStub(m_Operation, ss, baseLine.EntityType, baseLine.FeatureId);
+            }
+
+            return new SectionLineFeature(f, baseLine, from, to, baseLine.IsTopological);
         }
 
         internal bool MakeSections(LineFeature baseLine, string itemBefore, PointFeature x, string itemAfter,
@@ -343,9 +358,7 @@ namespace Backsight.Editor
                 throw new InvalidOperationException();
 
             SectionGeometry section = new SectionGeometry(baseLine, from, to);
-            SectionLineFeature result = baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
-            m_CreatedFeatures.Add(result);
-            return result;
+            return baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
         }
 
         /// <summary>
@@ -366,7 +379,7 @@ namespace Backsight.Editor
         /// </summary>
         internal Feature[] CreatedFeatures
         {
-            get { return m_CreatedFeatures.ToArray(); }
+            get { return m_Operation.Features; }
         }
     }
 }

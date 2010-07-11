@@ -240,12 +240,19 @@ namespace Backsight.Editor.UI
         /// <param name="end"></param>
         internal virtual void AddNewLine(PointFeature end)
         {
-            // Create the persistent edit (adds to current session)
-            NewSegmentOperation op = new NewSegmentOperation(Session.WorkingSession);
-            bool ok = op.Execute(m_Start, end);
+            NewSegmentOperation op = null;
 
-            if (!ok)
+            try
+            {
+                op = new NewSegmentOperation(Session.WorkingSession, 0);
+                op.Execute(m_Start, end);
+            }
+
+            catch (Exception ex)
+            {
                 Session.WorkingSession.Remove(op);
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
         }
 
         internal override void DialAbort(Control wnd)
