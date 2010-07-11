@@ -548,7 +548,7 @@ namespace Backsight.Editor.Operations
         /// Creates any new spatial features (without any geometry)
         /// </summary>
         /// <param name="ff">The factory class for generating spatial features</param>
-        internal override void CreateFeatures(FeatureFactory ff)
+        internal override void ProcessFeatures(FeatureFactory ff)
         {
             m_To = ff.CreatePointFeature("To");
             OffsetPoint op = m_Direction.Offset as OffsetPoint;
