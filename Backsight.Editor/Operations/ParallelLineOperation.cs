@@ -353,18 +353,39 @@ namespace Backsight.Editor.Operations
         /// <param name="term1">A line that the parallel should start on.</param>
         /// <param name="term2">A line that the parallel should end on.</param>
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
-        /// <returns>True if operation executed ok.</returns>
-        internal bool Execute()
+        internal void Execute()
         {
             // Calculate the mathematical position of the parallel points.
             IPosition spar, epar;
             if (!Calculate(m_RefLine, m_Offset, m_Term1, m_Term2, out spar, out epar))
-                return false;
+                throw new ApplicationException("Cannot calculate position of parallel line");
 
             // Don't attempt to add a parallel that starts and stops at the same place.
             if (spar.IsAt(epar, Double.Epsilon))
-                throw new Exception("Parallel line has the same start and end points.");
+                throw new ApplicationException("Parallel line has the same start and end points.");
 
+            FeatureFactory ff = new FeatureFactory(this);
+
+            // If a point will be needed at the start of the parallel line, remember that
+            // fact so that ProcessFeatures will know what to do.
+
+            IEntity pointType = MapModel.DefaultPointType;
+
+            if (!IsPositionAtOffsetPoint(spar))
+            {
+                IFeature f = CreateFeatureDescription(pointType);
+                ff.AddFeatureDescription("From", f);
+            }
+
+            if (!IsPositionAtOffsetPoint(epar))
+            {
+                IFeature f = CreateFeatureDescription(pointType);
+                ff.AddFeatureDescription("To", f);
+            }
+
+            base.Execute(ff);
+
+            /*
             // Add points at the ends of the parallel.
             CadastralMapModel map = CadastralMapModel.Current;
             PointFeature ps = AddPoint(spar);
@@ -400,7 +421,104 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
-            return true;
+             */
+        }
+
+        /// <summary>
+        /// Creates basic information for a new feature that will be created by this edit.
+        /// </summary>
+        /// <param name="e">The entity type for the feature</param>
+        /// <returns>Information for the new feature</returns>
+        IFeature CreateFeatureDescription(IEntity e)
+        {
+            FeatureId fid = null;
+            IdHandle h = new IdHandle();
+            if (h.ReserveId(e, 0))
+                fid = h.CreateId();
+
+            return new FeatureStub(this, e, fid);
+        }
+
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            // If this method is being called during deserialization from the database, you
+            // can't easily determine whether the parallel ends at an offset point (since we
+            // haven't yet calculated where the parallel line is located). In that case, we
+            // can utilize the IDs of the "From" and "To" items that should be there on
+            // deserialization.
+
+            // The problem is that during the initial execution, we don't have a way to
+            // pass through the positions that were determined in the Execute method. To
+            // cover that, the Execute method is expected to add an item description if
+            // a new feature needs to be created.
+
+            PointFeature from, to;
+
+            if (ff.HasFeatureDescription("From"))
+                from = ff.CreatePointFeature("From");
+            else
+                from = this.OffsetPoint;
+
+            if (ff.HasFeatureDescription("To"))
+                to = ff.CreatePointFeature("To");
+            else
+                to = this.OffsetPoint;
+
+            Debug.Assert(from != null);
+            Debug.Assert(to != null);
+
+            // Create a circular arc (without any circle) if the reference line is a circular
+            // arc, or a section that's based on a circular arc.
+
+            if (m_RefLine.GetArcBase() == null)
+                m_ParLine = ff.CreateSegmentLineFeature("NewLine", from, to);
+            else
+                m_ParLine = ff.CreateArcFeature("NewLine", from, to);
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            // Calculate the end positions
+            IPosition spos, epos;
+            if (!Calculate(out spos, out epos))
+                throw new Exception("Failed to calculate parallel line positions");
+
+            // Apply the calculated positions so long as the end points of the parallel line
+            // were created by this edit
+            if (m_ParLine.StartPoint.Creator == this)
+                m_ParLine.StartPoint.PointGeometry = PointGeometry.Create(spos);
+
+            if (m_ParLine.EndPoint.Creator == this)
+                m_ParLine.EndPoint.PointGeometry = PointGeometry.Create(epos);
+
+            // If the parallel is an arc, define the geometry
+            if (m_ParLine is ArcFeature)
+            {
+                // Get the center of the reference line
+                ArcFeature refArc = m_RefLine.GetArcBase();
+                PointFeature center = refArc.Circle.CenterPoint;
+
+                // Obtain a circle for the parallel
+                double radius = Geom.Distance(center, m_ParLine.StartPoint);
+                Circle circle = MapModel.AddCircle(center, radius);
+
+                // Define arc direction
+                bool iscw = refArc.IsClockwise;
+                if (IsArcReversed)
+                    iscw = !iscw;
+
+                ArcGeometry geom = new ArcGeometry(circle, m_ParLine.StartPoint, m_ParLine.EndPoint, iscw);
+                (m_ParLine as ArcFeature).Geometry = geom;
+            }
         }
 
         /// <summary>
@@ -465,6 +583,23 @@ namespace Backsight.Editor.Operations
             //    m_Flags = 0;
 
             //return true;
+        }
+
+        /// <summary>
+        /// Does a position coincide with a point feature that was used to define the
+        /// offset to the parallel line?
+        /// </summary>
+        /// <param name="loc">The test position</param>
+        /// <returns>True if the offset was defined using a point feature (as opposed to an
+        /// explicit distance), and the supplied position is exactly coincident.</returns>
+        bool IsPositionAtOffsetPoint(IPosition loc)
+        {
+            PointFeature p = this.OffsetPoint;
+            if (p == null)
+                return false;
+
+            IPointGeometry pg = PointGeometry.Create(loc);
+            return p.IsCoincident(pg);
         }
 
         /// <summary>
@@ -591,34 +726,6 @@ namespace Backsight.Editor.Operations
 	    	epar = pos;
 	        return true;
 	    }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Calculate the end positions
-            IPosition spos, epos;
-            if (!Calculate(out spos, out epos))
-                throw new Exception("Failed to calculate parallel line positions");
-
-            // Apply the calculated positions so long as the end points of the parallel line
-            // were created by this edit
-            if (m_ParLine.StartPoint.Creator == this)
-                m_ParLine.StartPoint.PointGeometry = PointGeometry.Create(spos);
-
-            if (m_ParLine.EndPoint.Creator == this)
-                m_ParLine.EndPoint.PointGeometry = PointGeometry.Create(epos);
-
-            // If the parallel is an arc, and the circle the arc lies on was created by
-            // this edit, ensure the radius has been defined
-            Circle c = m_ParLine.Circle;
-            if (c != null && c.Creator == this && c.Radius < MathConstants.TINY)
-            {
-                c.Radius = Geom.Distance(c.CenterPoint, m_ParLine.StartPoint);
-                Debug.Assert(c.Radius > MathConstants.TINY);
-            }
-        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

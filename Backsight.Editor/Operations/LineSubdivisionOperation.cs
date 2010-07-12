@@ -155,7 +155,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs data processing that involves creating or retiring spatial features.
         /// Newly created features will not have any definition for their geometry - a
-        /// subsequent call to <see cref="CreateGeometry"/> is needed to to that.
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
         /// </summary>
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)

@@ -321,13 +321,19 @@ namespace Backsight.Editor.Operations
         {
             m_To = ff.CreatePointFeature("To");
 
-            OffsetPoint op1 = m_Direction1.Offset as OffsetPoint;
-            PointFeature from1 = (op1 == null ? m_Direction1.From : op1.Point);
-            m_Line1 = ff.CreateSegmentLineFeature("Line1", from1, m_To);
+            if (ff.HasFeatureDescription("Line1"))
+            {
+                OffsetPoint op1 = m_Direction1.Offset as OffsetPoint;
+                PointFeature from1 = (op1 == null ? m_Direction1.From : op1.Point);
+                m_Line1 = ff.CreateSegmentLineFeature("Line1", from1, m_To);
+            }
 
-            OffsetPoint op2 = m_Direction2.Offset as OffsetPoint;
-            PointFeature from2 = (op2 == null ? m_Direction2.From : op2.Point);
-            m_Line2 = ff.CreateSegmentLineFeature("Line2", from2, m_To);
+            if (ff.HasFeatureDescription("Line2"))
+            {
+                OffsetPoint op2 = m_Direction2.Offset as OffsetPoint;
+                PointFeature from2 = (op2 == null ? m_Direction2.From : op2.Point);
+                m_Line2 = ff.CreateSegmentLineFeature("Line2", from2, m_To);
+            }
         }
 
         /// <summary>
