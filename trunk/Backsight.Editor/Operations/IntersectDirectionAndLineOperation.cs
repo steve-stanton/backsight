@@ -428,7 +428,9 @@ namespace Backsight.Editor.Operations
 
             OffsetPoint op = m_Direction.Offset as OffsetPoint;
             PointFeature from = (op == null ? m_Direction.From : op.Point);
-            m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_Intersection);
+
+            if (ff.HasFeatureDescription("DirLine"))
+                m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_Intersection);
         }
 
         /// <summary>

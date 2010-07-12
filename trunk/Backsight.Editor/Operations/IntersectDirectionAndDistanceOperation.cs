@@ -553,8 +553,12 @@ namespace Backsight.Editor.Operations
             m_To = ff.CreatePointFeature("To");
             OffsetPoint op = m_Direction.Offset as OffsetPoint;
             PointFeature from = (op == null ? m_Direction.From : op.Point);
-            m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_To);
-            m_DistLine = ff.CreateSegmentLineFeature("DistLine", m_From, m_To);
+
+            if (ff.HasFeatureDescription("DirLine"))
+                m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_To);
+
+            if (ff.HasFeatureDescription("DistLine"))
+                m_DistLine = ff.CreateSegmentLineFeature("DistLine", m_From, m_To);
         }
 
         /// <summary>

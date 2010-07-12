@@ -1064,17 +1064,22 @@ namespace Backsight.Editor.Xml
             LineFeature term2 = (this.Term2==null ? null : loader.Find<LineFeature>(this.Term2));
             ParallelLineOperation op = new ParallelLineOperation(s, sequence, refLine, offset, term1, term2, this.ReverseArc);
 
-            /*
             DeserializationFactory dff = new DeserializationFactory(op);
 
+            // Define terminal points only if they need to be created
             PointFeature p = op.OffsetPoint;
+            if (p==null || p.DataId!=this.From.Id)
+                dff.AddFeatureStub("From", this.From);
 
+            if (p==null || p.DataId!=this.To.Id)
+                dff.AddFeatureStub("To", this.To);
+
+            dff.AddFeatureStub("NewLine", this.NewLine);
 
             op.ProcessFeatures(dff);
-            */
 
             //////////////////
-
+            /*
             // Ensure the line end points have been created
 
             PointFeature from = loader.Find<PointFeature>(this.From.Id);
@@ -1109,7 +1114,7 @@ namespace Backsight.Editor.Xml
             {
                 op.ParallelLine = this.NewLine.CreateSegmentLineFeature(op, from, to);
             }
-
+            */
             return op;
         }
     }
