@@ -202,94 +202,6 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class FeatureTableData
-    {
-        public FeatureTableData()
-        {
-        }
-
-        internal FeatureTableData(Operation op)
-        {
-            Feature[] feats = op.Features;
-
-            List<PointFeature> points = GetFeaturesByType<PointFeature>(feats);
-
-            if (points != null)
-            {
-                int defaultEntityId = points[0].EntityType.Id;
-
-                this.Points = new PointArray();
-                this.Points.DefaultEntity = defaultEntityId;
-                this.Points.Point = new FeatureData[points.Count];
-
-                for (int i=0; i<points.Count; i++)
-                    this.Points.Point[i] = new FeatureStubData(points[i], defaultEntityId);
-            }
-
-            List<LineFeature> lines = GetFeaturesByType<LineFeature>(feats);
-
-            if (lines != null)
-            {
-                int defaultEntityId = lines[0].EntityType.Id;
-
-                this.Lines = new LineArray();
-                this.Lines.DefaultEntity = defaultEntityId;
-                this.Lines.Line = new FeatureData[lines.Count];
-
-                for (int i = 0; i < lines.Count; i++)
-                    this.Lines.Line[i] = new FeatureStubData(lines[i], defaultEntityId);
-            }
-        }
-
-        List<T> GetFeaturesByType<T>(Feature[] features) where T : Feature
-        {
-            List<T> result = null;
-
-            foreach (Feature f in features)
-            {
-                if (f is T)
-                {
-                    if (result == null)
-                        result = new List<T>();
-
-                    result.Add((T)f);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates features (without any geometry), corresponding to each item described
-        /// by this instance.
-        /// </summary>
-        /// <param name="op">The editing operation the features should be associated with</param>
-        /// <returns>The created features (any point features come first, then lines)</returns>
-        Feature[] CreateFeatures(Operation op)
-        {
-            List<Feature> result = new List<Feature>(100);
-
-            if (this.Points != null)
-            {
-                FeatureData[] points = this.Points.Point;
-                foreach (FeatureData fd in points)
-                    result.Add(fd.CreatePointFeature(op));
-            }
-
-            if (this.Lines != null)
-            {
-                FeatureData[] lines = this.Lines.Line;
-                foreach (FeatureData fd in lines)
-                {
-                    Feature f = fd.LoadFeature(op);
-                    result.Add(f);
-                }
-            }
-
-            return result.ToArray();
-        }
-    }
-
     public partial class ImportData
     {
         public ImportData()
@@ -645,42 +557,6 @@ namespace Backsight.Editor.Xml
 
             DeserializationFactory dff = this.Result.CreateFactory(op);
             op.ProcessFeatures(dff);
-
-            /*
-            Distance[] dists = LineSubdivisionOperation.GetDistances(this.EntryString,
-                                    defaultEntryUnit, this.EntryFromEnd);
-
-            FeatureData[] lines = this.Result.Lines.Line;
-            FeatureData[] points = this.Result.Points.Point;
-
-            Debug.Assert(dists.Length == lines.Length);
-            Debug.Assert(dists.Length == 1 + points.Length);
-
-            MeasuredLineFeature[] sections = new MeasuredLineFeature[dists.Length];
-            PointFeature start = line.StartPoint;
-            PointFeature end;
-
-            // Define sections without any underlying geometry
-            for (int i = 0; i < dists.Length; i++)
-            {
-                if (i == (dists.Length - 1))
-                    end = line.EndPoint;
-                else
-                    end = points[i].CreatePointFeature(op);
-
-                // Get the internal ID to assign to the line
-                uint sessionId, lineSequence;
-                InternalIdValue.Parse(lines[i].Id, out sessionId, out lineSequence);
-                SectionGeometry sectionGeom = new SectionGeometry(line, start, end);
-                LineFeature sectionFeature = line.MakeSubSection(op, lineSequence, sectionGeom);
-                MeasuredLineFeature mf = new MeasuredLineFeature(sectionFeature, dists[i]);
-                sections[i] = mf;
-
-                start = end;
-            }
-
-            op.Sections = sections;
-             */
             return op;
         }
     }
@@ -852,37 +728,7 @@ namespace Backsight.Editor.Xml
             FeatureStubData arc = new FeatureStubData(FeatureGeometry.Arc);
             arc.Id = this.Arc;
             dff.AddFeatureData("Arc", arc);
-
             op.ProcessFeatures(dff);
-            /*
-            // In order to create the construction line, we need to have the Circle object,
-            // but to be able to find the circle, the radius has to be known... and if the
-            // radius is specified via an offset point, the point probably has no defined
-            // position at this stage.
-
-            // ...so for now, just work with a circle that has no radius. This may get changed
-            // when CalculateGeometry is ultimately called.
-
-            Circle c = new Circle(op.Center, 0.0);
-
-            // If the closing point does not already exist, create one at some unspecified position
-            PointFeature p = loader.Find<PointFeature>(this.ClosingPoint);
-            if (p == null)
-            {
-                FeatureData ft = new FeatureStubData(FeatureGeometry.Point);
-                ft.Id = this.ClosingPoint;
-                p = ft.CreatePointFeature(op);
-            }
-
-            // Form the construction line (this will also cross-reference the circle to
-            // the new arc)
-            FeatureData at = new FeatureStubData(FeatureGeometry.Arc);
-            at.Id = this.Arc;
-            ArcGeometry g = new ArcGeometry(c, p, p, true);
-            ArcFeature arc = at.CreateArcFeature(op, p, p, g);
-
-            op.SetNewLine(arc);
-            */
             return op;
         }
     }
@@ -1077,44 +923,6 @@ namespace Backsight.Editor.Xml
             dff.AddFeatureStub("NewLine", this.NewLine);
 
             op.ProcessFeatures(dff);
-
-            //////////////////
-            /*
-            // Ensure the line end points have been created
-
-            PointFeature from = loader.Find<PointFeature>(this.From.Id);
-            if (from == null)
-                from = this.From.CreatePointFeature(op);
-
-            PointFeature to = loader.Find<PointFeature>(this.To.Id);
-            if (to == null)
-                to = this.To.CreatePointFeature(op);
-
-            if (refLine is ArcFeature)
-            {
-                ArcFeature arc = (ArcFeature)refLine;
-                bool iscw = arc.IsClockwise;
-                if (this.ReverseArc)
-                    iscw = !iscw;
-
-                // Create a circle with an undefined radius - a radius will get
-                // assigned by ParallelLineOperation.CalculateGeometry.
-
-                // Don't add using AddCircle, as that will end up trying to locate
-                // a circle with matching radius (and all circles at this stage will have
-                // a zero radius).
-                //Circle c = s.MapModel.AddCircle(arc.Circle.CenterPoint, 0.0);
-                Circle c = new Circle(arc.Circle.CenterPoint, 0.0);
-                c.AddReferences();
-
-                ArcGeometry geom = new ArcGeometry(c, from, to, iscw);
-                op.ParallelLine = this.NewLine.CreateArcFeature(op, from, to, geom);
-            }
-            else
-            {
-                op.ParallelLine = this.NewLine.CreateSegmentLineFeature(op, from, to);
-            }
-            */
             return op;
         }
     }
@@ -1132,7 +940,7 @@ namespace Backsight.Editor.Xml
             this.To = op.EndPoint.DataId;
             this.EntryString = op.EntryString;
             this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
-            this.Result = new FeatureTableData(op);
+            this.Result = new FactoryData(op);
         }
 
         /// <summary>
@@ -1150,6 +958,9 @@ namespace Backsight.Editor.Xml
 
             uint sequence = GetEditSequence(s);
             PathOperation op = new PathOperation(s, sequence, from, to, this.EntryString, defaultEntryUnit);
+
+            DeserializationFactory dff = this.Result.CreateFactory(op);
+            op.ProcessFeatures(dff);
 
             // Create the legs
             /*

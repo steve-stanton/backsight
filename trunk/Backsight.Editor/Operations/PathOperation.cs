@@ -98,40 +98,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Creates the features that represent this connection path
-        /// </summary>
-        /// <returns>The points that were created</returns>
-        List<PointFeature> CreateFeatures()
-        {
-            PathInfo pd = ParsePath();
-
-            // Get the legs (without any attached features)
-            m_Legs = new List<Leg>(pd.GetLegs());
-
-            // Get the rotation & scale factor to apply.
-            double rotation = pd.RotationInRadians;
-            double sfac = pd.ScaleFactor;
-
-            // Go through each leg, adding features as required. This logic
-            // is basically the same as the Draw() logic ...
-
-            // Initialize position to the start of the path.
-            IPosition gotend = m_From;
-
-            // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
-
-            // Create a list for holding newly created points
-            List<PointFeature> createdPoints = new List<PointFeature>(100);
-
-            // Go through each leg, asking them to make features.
-            foreach (Leg leg in m_Legs)
-                leg.Save(this, createdPoints, ref gotend, ref bearing, sfac);
-
-            return createdPoints;
-        }
-
-        /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>
         public override string Name
@@ -368,7 +334,7 @@ namespace Backsight.Editor.Operations
         */
 
         /// <summary>
-        /// Executes this operation. This attaches persistent features to the path.
+        /// Executes this operation.
         /// </summary>
         internal void Execute()
         {
@@ -376,10 +342,68 @@ namespace Backsight.Editor.Operations
             if (m_From==null || m_To==null)
                 throw new Exception("PathOperation.Execute -- terminal(s) not defined.");
 
-            CreateFeatures();
+            FeatureFactory ff = new FeatureFactory(this);
+            base.Execute(ff);
+        }
 
-            // Peform standard completion steps
-            Complete();
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            // Parse the data entry string
+            PathItem[] items = PathParser.GetPathItems(m_EntryString, m_DefaultEntryUnit);
+            /*
+            // Get the rotation & scale factor to apply.
+            PathInfo pd = ParsePath();
+            double rotation = pd.RotationInRadians;
+            double sfac = pd.ScaleFactor;
+
+            // Get the legs (without any attached features)
+            m_Legs = new List<Leg>(pd.GetLegs());
+
+            // Go through each leg, adding features as required. This logic
+            // is basically the same as the Draw() logic ...
+
+            // Initialize position to the start of the path.
+            IPosition gotend = m_From;
+
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
+
+            // Create a list for holding newly created points
+            List<PointFeature> createdPoints = new List<PointFeature>(100);
+
+            // Go through each leg, asking them to make features.
+            foreach (Leg leg in m_Legs)
+                leg.Save(ff, createdPoints, ref gotend, ref bearing, sfac);
+             */
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            // Get the rotation & scale factor to apply.
+            PathInfo pd = ParsePath();
+            double rotation = pd.RotationInRadians;
+            double sfac = pd.ScaleFactor;
+
+            // Go through each leg, creating the geometry for each span...
+
+            // Initialize position to the start of the path.
+            IPosition gotend = m_From;
+
+            // Initial bearing is whatever the desired rotation is.
+            double bearing = rotation;
+
+            // Go through each leg, asking them to make features.
+            foreach (Leg leg in m_Legs)
+                leg.CreateGeometry(ref gotend, ref bearing, sfac);
         }
 
         /// <summary>
@@ -1037,29 +1061,6 @@ void CePath::CreateAngleText ( CPtrList& text
             end = vlist[index + 1];
 
             return true;
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Get the rotation & scale factor to apply.
-            PathInfo pd = ParsePath();
-            double rotation = pd.RotationInRadians;
-            double sfac = pd.ScaleFactor;
-
-            // Go through each leg, creating the geometry for each span...
-
-            // Initialize position to the start of the path.
-            IPosition gotend = m_From;
-
-            // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
-
-            // Go through each leg, asking them to make features.
-            foreach (Leg leg in m_Legs)
-                leg.CreateGeometry(ref gotend, ref bearing, sfac);
         }
     }
 }

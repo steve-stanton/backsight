@@ -27,6 +27,26 @@ namespace Backsight.Editor
     /// </summary>
     class PathItem
     {
+        #region Static
+
+        /// <summary>
+        /// Obtains the highest leg number in the supplied item array.
+        /// </summary>
+        /// <param name="items">Array of path items.</param>
+        /// <returns>The maximum value for the leg number in the supplied items.</returns>
+        internal static int GetMaxLegNumber(PathItem[] items)
+        {
+            // Each path item contains a leg number, arranged sequentially.
+            int nleg=0;
+
+            foreach (PathItem item in items)
+                nleg = Math.Max(nleg, item.LegNumber);
+
+            return nleg;
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
