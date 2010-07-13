@@ -15,12 +15,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Diagnostics;
-using System.Text;
 
-using Backsight.Geometry;
-using Backsight.Environment;
 using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Operations
@@ -56,7 +52,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The legs that make up the path
         /// </summary>
-        List<Leg> m_Legs; // readonly
+        readonly List<Leg> m_Legs;
 
         #endregion
 
@@ -80,22 +76,12 @@ namespace Backsight.Editor.Operations
             m_To = to;
             m_EntryString = entryString;
             m_DefaultEntryUnit = defaultEntryUnit;
+
+            Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
+            m_Legs = new List<Leg>(legs);
         }
 
         #endregion
-
-        /// <summary>
-        /// Parses the data entry string for this this connection path (with no attached features)
-        /// </summary>
-        /// <returns>The parsed path (includes a collection of legs that have no attached
-        /// features)</returns>
-        PathInfo ParsePath()
-        {
-            PathItem[] items = PathParser.GetPathItems(m_EntryString, m_DefaultEntryUnit);
-            PathInfo pd = new PathInfo(m_From, m_To);
-            pd.Create(items);
-            return pd;
-        }
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -354,33 +340,16 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            // Parse the data entry string
-            PathItem[] items = PathParser.GetPathItems(m_EntryString, m_DefaultEntryUnit);
-            /*
-            // Get the rotation & scale factor to apply.
-            PathInfo pd = ParsePath();
-            double rotation = pd.RotationInRadians;
-            double sfac = pd.ScaleFactor;
+            uint maxSequence = this.EditSequence;
+            PointFeature startPoint = m_From;
 
-            // Get the legs (without any attached features)
-            m_Legs = new List<Leg>(pd.GetLegs());
-
-            // Go through each leg, adding features as required. This logic
-            // is basically the same as the Draw() logic ...
-
-            // Initialize position to the start of the path.
-            IPosition gotend = m_From;
-
-            // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
-
-            // Create a list for holding newly created points
-            List<PointFeature> createdPoints = new List<PointFeature>(100);
-
-            // Go through each leg, asking them to make features.
-            foreach (Leg leg in m_Legs)
-                leg.Save(ff, createdPoints, ref gotend, ref bearing, sfac);
-             */
+            for (int i=0; i<m_Legs.Count; i++)
+            {
+                Leg leg = m_Legs[i];
+                PointFeature lastPoint = (i < (m_Legs.Count-1) ? null : m_To);
+                maxSequence = leg.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
+                startPoint = leg.GetEndPoint(this);
+            }
         }
 
         /// <summary>
@@ -389,7 +358,7 @@ namespace Backsight.Editor.Operations
         internal override void CalculateGeometry()
         {
             // Get the rotation & scale factor to apply.
-            PathInfo pd = ParsePath();
+            PathInfo pd = new PathInfo(this);
             double rotation = pd.RotationInRadians;
             double sfac = pd.ScaleFactor;
 

@@ -374,6 +374,8 @@ namespace Backsight.Editor
         internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
                                     ref IPosition terminal, ref double bearing, double sfac)
         {
+            PathOperation op = (PathOperation)ff.Creator;
+
             // Create an undefined circular span
             CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
 
@@ -430,6 +432,24 @@ namespace Backsight.Editor
             // Update BC info to refer to the EC.
             terminal = span.EC;
             bearing = span.ExitBearing;
+        }
+
+        /// <summary>
+        /// Creates spatial features (points and lines) for this leg. The created
+        /// features don't have any geometry.
+        /// </summary>
+        /// <param name="ff">The factory for creating new spatial features</param>
+        /// <param name="maxSequence">The highest sequence number assigned to features
+        /// preceding this leg</param>
+        /// <param name="startPoint">The point (if any) at the start of this leg. May be
+        /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
+        /// <param name="lastPoint">The point that should be used for the very end
+        /// of the leg (specify null if a point should be created at the end of the leg).</param>
+        /// <returns>The sequence number assigned to the last feature that was created</returns>
+        internal override uint CreateFeatures(FeatureFactory ff, uint maxSequence,
+                                                PointFeature startPoint, PointFeature lastPoint)
+        {
+            return maxSequence;
         }
 
         /// <summary>

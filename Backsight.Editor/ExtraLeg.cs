@@ -162,6 +162,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Creates spatial features (points and lines) for this leg. The created
+        /// features don't have any geometry.
+        /// </summary>
+        /// <param name="ff">The factory for creating new spatial features</param>
+        /// <param name="maxSequence">The highest sequence number assigned to features
+        /// preceding this leg</param>
+        /// <param name="startPoint">The point (if any) at the start of this leg. May be
+        /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
+        /// <param name="lastPoint">The point that should be used for the very end
+        /// of the leg (specify null if a point should be created at the end of the leg).</param>
+        /// <returns>The sequence number assigned to the last feature that was created</returns>
+        internal override uint CreateFeatures(FeatureFactory ff, uint maxSequence,
+                                                PointFeature startPoint, PointFeature lastPoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Rollforward this leg.
         /// </summary>
         /// <param name="uc">The context in which editing revisions are being made (not null).

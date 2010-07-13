@@ -615,9 +615,8 @@ namespace Backsight.Editor.Forms
             try
             {
                 // Create new path data
-                PathInfo pd = new PathInfo(m_From, m_To);
-                pd.Create(m_Items);
-                m_PathData = pd;
+                Leg[] legs = PathParser.CreateLegs(m_Items);
+                m_PathData = new PathInfo(m_From, m_To, legs);
 
                 // Adjust the path
 
