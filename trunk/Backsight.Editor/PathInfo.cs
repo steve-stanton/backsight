@@ -14,11 +14,9 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 using Backsight.Editor.Operations;
-using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -46,7 +44,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The legs that make up the path
         /// </summary>
-        readonly List<Leg> m_Legs;
+        readonly Leg[] m_Legs;
 
         /// <summary>
         /// Has the <see cref="Adjust"/> method been successfully called. If true, the values
@@ -73,11 +71,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="from">The point where the path starts.</param>
         /// <param name="to">The point where the path ends.</param>
-        internal PathInfo(PointFeature from, PointFeature to)
+        internal PathInfo(PointFeature from, PointFeature to, Leg[] legs)
         {
             m_From = from;
             m_To = to;
-            m_Legs = new List<Leg>();
+            m_Legs = legs;
 
             m_IsAdjusted = false;
             m_Rotation = 0.0;
@@ -95,9 +93,7 @@ namespace Backsight.Editor
         {
             m_From = pop.StartPoint;
             m_To = pop.EndPoint;
-
-            Leg[] legs = pop.GetLegs();
-            m_Legs = new List<Leg>(legs);
+            m_Legs = pop.GetLegs();
 
             m_IsAdjusted = false;
             m_Rotation = 0.0;
@@ -120,14 +116,6 @@ namespace Backsight.Editor
         internal PointFeature ToPoint
         {
             get { return m_To; }
-        }
-
-        /// <summary>
-        /// The legs that make up the path
-        /// </summary>
-        internal Leg[] GetLegs()
-        {
-            return m_Legs.ToArray();
         }
 
         /// <summary>
@@ -189,242 +177,6 @@ namespace Backsight.Editor
 
             Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
             return m_IsAdjusted;
-        }
-
-        /// <summary>
-        /// Creates path data using a collection of path items.
-        /// </summary>
-        /// <param name="items">The items that define the path.</param>
-        internal void Create(PathItem[] items)
-        {
-            // Count the number of legs.
-            int numLeg = PathItem.GetMaxLegNumber(items);
-            if (numLeg==0)
-                throw new Exception("PathInfo.Create -- No connection legs");
-
-            m_Legs.Capacity = numLeg;
-
-            // Create each leg.
-
-            int legnum=0;       // Current leg number
-            int nexti=0;        // Index of the start of the next leg
-
-            for (int si=0; si<items.Length; si=nexti)
-            {
-                // Skip if no leg number (could be new units spec).
-                if (items[si].LegNumber==0)
-                {
-                    nexti = si+1;
-                    continue;
-                }
-
-                // Confirm the leg count is valid.
-                if (legnum+1>numLeg)
-                    throw new Exception("PathInfo.Create -- Bad number of path legs.");
-
-                // Create the leg.
-                Leg newLeg;
-                if (items[si].ItemType == PathItemType.BC)
-                    newLeg = CreateCircularLeg(items, si, out nexti);
-                else
-                    newLeg = CreateStraightLeg(items, si, out nexti);
-
-                // Exit if we failed to create the leg.
-                if (newLeg==null)
-                    throw new Exception("PathInfo.Create -- Unable to create leg");
-
-                m_Legs.Add(newLeg);
-            }
-
-            // Confirm we created the number of legs we expected.
-            if (numLeg!=m_Legs.Count)
-                throw new Exception("PathInfo.Create -- Unexpected number of legs");
-        }
-
-        /// <summary>
-        /// Creates a circular leg.
-        /// </summary>
-        /// <param name="items">Array of path items.</param>
-        /// <param name="si">Index to the item where the leg data starts.</param>
-        /// <param name="nexti">Index of the item where the next leg starts.</param>
-        /// <returns>The new leg.</returns>
-        CircularLeg CreateCircularLeg(PathItem[] items, int si, out int nexti)
-        {
-            // Confirm that the first item refers to the BC.
-            if (items[si].ItemType != PathItemType.BC)
-                throw new Exception("PathOperation.CreateCircularLeg - Not starting at BC");
-
-            // The BC has to be followed by at least 3 items: angle, radius
-            // and EC (add an extra 1 to account for 0-based indexing).
-            if (items.Length < si+4)
-                throw new Exception("PathOperation.CreateCircularLeg - Insufficient curve data");
-
-            double bangle = 0.0;		// Angle at BC
-            double cangle = 0.0;		// Central angle
-            double eangle = 0.0;		// Angle at EC
-            bool twoangles = false;	    // True if bangle & eangle are both defined.
-            bool clockwise = true;		// True if curve is clockwise
-            int irad = 0;				// Index of the radius item
-            bool cul = false;			// True if cul-de-sac case
-
-            // Point to item following the BC.
-            nexti = si+1;
-            PathItemType type = items[nexti].ItemType;
-
-            // If the angle following the BC is a central angle
-            if (type==PathItemType.CentralAngle)
-            {
-                // We have a cul-de-sac
-                cul = true;
-
-                // Get the central angle.
-                cangle = items[nexti].Value;
-                nexti++;
-            }
-            else if (type==PathItemType.BcAngle)
-            {
-                // Get the entry angle.
-                bangle = items[nexti].Value;
-                nexti++;
-
-                // Does an exit angle follow?
-                if (items[nexti].ItemType == PathItemType.EcAngle)
-                {
-                    eangle = items[nexti].Value;
-                    twoangles = true;
-                    nexti++;
-                }
-            }
-            else
-            {
-                // The field after the BC HAS to be an angle.
-                throw new Exception("Angle does not follow BC");
-            }
-
-            // Must be followed by radius.
-            if (items[nexti].ItemType != PathItemType.Radius)
-                throw new Exception("Radius does not follow angle");
-
-            // Get the radius
-            Distance radius = items[nexti].GetDistance();
-            irad = nexti;
-            nexti++;
-
-            // The item after the radius indicates whether the curve is counterclockwise.
-            if (items[nexti].ItemType == PathItemType.CounterClockwise)
-            {
-                nexti++;
-                clockwise = false;
-            }
-
-            // Get the leg ID.
-            int legnum = items[si].LegNumber;
-
-            // How many distances have we got?
-            int ndist = 0;
-            for (; nexti<items.Length && items[nexti].LegNumber==legnum; nexti++)
-            {
-                if (items[nexti].IsDistance)
-                    ndist++;
-            }
-
-            // Create the leg.
-            CircularLeg leg = new CircularLeg(radius, clockwise, ndist);
-
-            // Set the entry angle or the central angle, depending on what we have.
-            if (cul)
-                leg.SetCentralAngle(cangle);
-            else
-                leg.SetEntryAngle(bangle);
-
-            // Assign second angle if we have one.
-            if (twoangles)
-                leg.SetExitAngle(eangle);
-
-            // Assign each distance, starting one after the radius.
-            ndist = 0;
-            for (int i = irad + 1; i < nexti; i++)
-            {
-                Distance dist = items[i].GetDistance();
-                if (dist != null)
-                {
-                    // See if there is a qualifier after the distance
-                    LegItemFlag qual = LegItemFlag.Null;
-                    if (i + 1 < nexti)
-                    {
-                        PathItemType nexttype = items[i + 1].ItemType;
-                        if (nexttype == PathItemType.MissConnect)
-                            qual = LegItemFlag.MissConnect;
-                        if (nexttype == PathItemType.OmitPoint)
-                            qual = LegItemFlag.OmitPoint;
-                    }
-
-                    leg.SetDistance(dist, ndist, qual);
-                    ndist++;
-                }
-            }
-
-            // Return the new leg.
-            return leg;
-        }
-
-        /// <summary>
-        /// Creates a straight leg.
-        /// </summary>
-        /// <param name="items">Array of path items.</param>
-        /// <param name="si">Index to the item where the leg data starts.</param>
-        /// <param name="nexti">Index of the item where the next leg starts.</param>
-        /// <returns>The new leg.</returns>
-        StraightLeg CreateStraightLeg(PathItem[] items, int si, out int nexti)
-        {
-            // Get the leg ID.
-            int legnum = items[si].LegNumber;
-
-            // How many distances have we got?
-            int ndist = 0;
-            for (nexti=si; nexti<items.Length && items[nexti].LegNumber==legnum; nexti++)
-            {
-                if (items[nexti].IsDistance)
-                    ndist++;
-            }
-
-            // Create the leg.
-            StraightLeg leg = new StraightLeg(ndist);
-
-            // Assign each distance.
-            ndist = 0;
-            for (int i=si; i<nexti; i++)
-            {
-                Distance d = items[i].GetDistance();
-                if (d!=null)
-                {
-                    // See if there is a qualifier after the distance
-                    LegItemFlag qual = LegItemFlag.Null;
-                    if ((i+1) < nexti)
-                    {
-                        PathItemType nexttype = items[i+1].ItemType;
-
-                        if (nexttype==PathItemType.MissConnect)
-                            qual = LegItemFlag.MissConnect;
-
-                        if (nexttype==PathItemType.OmitPoint)
-                            qual = LegItemFlag.OmitPoint;
-                    }
-
-                    leg.SetDistance(d, ndist, qual);
-                    ndist++;
-                }
-
-            }
-
-            // If the first item is an angle, remember it as part of the leg.
-            if (items[si].ItemType == PathItemType.Angle)
-                leg.StartAngle = items[si].Value;
-            else if (items[si].ItemType == PathItemType.Deflection)
-                leg.SetDeflection(items[si].Value);
-
-            // Return a reference to the new leg
-            return leg;
         }
 
         /// <summary>

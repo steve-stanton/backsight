@@ -166,6 +166,21 @@ namespace Backsight.Editor
                                         ref double bearing, double sfac);
 
         /// <summary>
+        /// Creates spatial features (points and lines) for this leg. The created
+        /// features don't have any geometry.
+        /// </summary>
+        /// <param name="ff">The factory for creating new spatial features</param>
+        /// <param name="maxSequence">The highest sequence number assigned to features
+        /// preceding this leg</param>
+        /// <param name="startPoint">The point (if any) at the start of this leg. May be
+        /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
+        /// <param name="lastPoint">The point that should be used for the very end
+        /// of the leg (specify null if a point should be created at the end of the leg).</param>
+        /// <returns>The sequence number assigned to the last feature that was created</returns>
+        abstract internal uint CreateFeatures(FeatureFactory ff, uint maxSequence,
+                                                PointFeature startPoint, PointFeature lastPoint);
+
+        /// <summary>
         /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
         /// <param name="terminal">The position for the start of the leg. Updated to be
@@ -567,7 +582,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation that is expected to have created the end point.</param>
         /// <returns>The point object at the end (could conceivably be null).</returns>
-        PointFeature GetEndPoint(Operation op)
+        internal PointFeature GetEndPoint(Operation op)
         {
             // If the very last feature for this leg is a point, that's the thing we want.
             Feature feat = m_Spans[NumSpan - 1].CreatedFeature;
