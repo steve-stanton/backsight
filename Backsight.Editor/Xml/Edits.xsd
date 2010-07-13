@@ -171,12 +171,6 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="FeatureTableData">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="1" name="Points" type="PointArray" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Lines" type="LineArray" />
-    </xs:sequence>
-  </xs:complexType>
   <xs:complexType name="GetControlData">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
@@ -775,7 +769,7 @@ The first and last positions are assumed to match the positions of the point fea
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="Result" type="FeatureTableData" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Result" type="FactoryData" />
         </xs:sequence>
         <xs:attribute name="From" type="IdData" use="required">
           <xs:annotation>

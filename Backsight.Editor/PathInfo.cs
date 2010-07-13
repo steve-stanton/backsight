@@ -24,8 +24,8 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="26-MAR-2008"/>
     /// <summary>
-    /// Information about a connection path. This is a transient class that
-    /// acts as a helper for the <see cref="PathForm"/> dialog. It's sort of a
+    /// Information about a connection path. This acts as a helper for the <see cref="PathForm"/> dialog.
+    /// It's sort of a
     /// half-way between the fairly unstructured world of the dialog class, and the
     /// regimented world of the operation class.
     /// </summary>
@@ -198,7 +198,7 @@ namespace Backsight.Editor
         internal void Create(PathItem[] items)
         {
             // Count the number of legs.
-            int numLeg = CountLegs(items);
+            int numLeg = PathItem.GetMaxLegNumber(items);
             if (numLeg==0)
                 throw new Exception("PathInfo.Create -- No connection legs");
 
@@ -239,22 +239,6 @@ namespace Backsight.Editor
             // Confirm we created the number of legs we expected.
             if (numLeg!=m_Legs.Count)
                 throw new Exception("PathInfo.Create -- Unexpected number of legs");
-        }
-
-        /// <summary>
-        /// Counts the number of legs for this path.
-        /// </summary>
-        /// <param name="items">Array of path items.</param>
-        /// <returns>The number of legs.</returns>
-        int CountLegs(PathItem[] items)
-        {
-            // Each path item contains a leg number, arranged sequentially.
-            int nleg=0;
-
-            foreach (PathItem item in items)
-                nleg = Math.Max(nleg, item.LegNumber);
-
-            return nleg;
         }
 
         /// <summary>

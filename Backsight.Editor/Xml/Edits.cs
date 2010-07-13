@@ -109,31 +109,92 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class LineArray {
+    public partial class FactoryData {
         
-        private FeatureData[] lineField;
+        private FeatureStubData[] dataField;
         
-        private int defaultEntityField;
+        private int defaultLineEntityField;
+        
+        private bool defaultLineEntityFieldSpecified;
+        
+        private int defaultPointEntityField;
+        
+        private bool defaultPointEntityFieldSpecified;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Line")]
-        public FeatureData[] Line {
+        [System.Xml.Serialization.XmlElementAttribute("Data")]
+        public FeatureStubData[] Data {
             get {
-                return this.lineField;
+                return this.dataField;
             }
             set {
-                this.lineField = value;
+                this.dataField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int DefaultEntity {
+        public int DefaultLineEntity {
             get {
-                return this.defaultEntityField;
+                return this.defaultLineEntityField;
             }
             set {
-                this.defaultEntityField = value;
+                this.defaultLineEntityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DefaultLineEntitySpecified {
+            get {
+                return this.defaultLineEntityFieldSpecified;
+            }
+            set {
+                this.defaultLineEntityFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DefaultPointEntity {
+            get {
+                return this.defaultPointEntityField;
+            }
+            set {
+                this.defaultPointEntityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DefaultPointEntitySpecified {
+            get {
+                return this.defaultPointEntityFieldSpecified;
+            }
+            set {
+                this.defaultPointEntityFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public partial class FeatureStubData : FeatureData {
+        
+        private uint geometryField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public uint Geometry {
+            get {
+                return this.geometryField;
+            }
+            set {
+                this.geometryField = value;
             }
         }
     }
@@ -768,170 +829,6 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class FeatureStubData : FeatureData {
-        
-        private uint geometryField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public uint Geometry {
-            get {
-                return this.geometryField;
-            }
-            set {
-                this.geometryField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class PointArray {
-        
-        private FeatureData[] pointField;
-        
-        private int defaultEntityField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Point")]
-        public FeatureData[] Point {
-            get {
-                return this.pointField;
-            }
-            set {
-                this.pointField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int DefaultEntity {
-            get {
-                return this.defaultEntityField;
-            }
-            set {
-                this.defaultEntityField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class FeatureTableData {
-        
-        private PointArray pointsField;
-        
-        private LineArray linesField;
-        
-        /// <remarks/>
-        public PointArray Points {
-            get {
-                return this.pointsField;
-            }
-            set {
-                this.pointsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public LineArray Lines {
-            get {
-                return this.linesField;
-            }
-            set {
-                this.linesField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class FactoryData {
-        
-        private FeatureStubData[] dataField;
-        
-        private int defaultLineEntityField;
-        
-        private bool defaultLineEntityFieldSpecified;
-        
-        private int defaultPointEntityField;
-        
-        private bool defaultPointEntityFieldSpecified;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Data")]
-        public FeatureStubData[] Data {
-            get {
-                return this.dataField;
-            }
-            set {
-                this.dataField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int DefaultLineEntity {
-            get {
-                return this.defaultLineEntityField;
-            }
-            set {
-                this.defaultLineEntityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DefaultLineEntitySpecified {
-            get {
-                return this.defaultLineEntityFieldSpecified;
-            }
-            set {
-                this.defaultLineEntityFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int DefaultPointEntity {
-            get {
-                return this.defaultPointEntityField;
-            }
-            set {
-                this.defaultPointEntityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DefaultPointEntitySpecified {
-            get {
-                return this.defaultPointEntityFieldSpecified;
-            }
-            set {
-                this.defaultPointEntityFieldSpecified = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DistanceData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(OffsetPointData))]
@@ -1555,7 +1452,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class PathData : OperationData {
         
-        private FeatureTableData resultField;
+        private FactoryData resultField;
         
         private string fromField;
         
@@ -1566,7 +1463,7 @@ namespace Backsight.Editor.Xml {
         private int defaultEntryUnitField;
         
         /// <remarks/>
-        public FeatureTableData Result {
+        public FactoryData Result {
             get {
                 return this.resultField;
             }

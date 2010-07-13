@@ -199,14 +199,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves features for this leg.
         /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
+        /// <param name="ff">The factory for creating new spatial features</param>
         /// <param name="createdPoints">Newly created point features</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(PathOperation op, List<PointFeature> createdPoints,
+        internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
                                     ref IPosition terminal, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
@@ -229,7 +229,7 @@ namespace Backsight.Editor
                 span.Get(i);
 
                 // Save the span
-                Feature feat = SaveSpan(span, op, createdPoints, null, null, null, null);
+                Feature feat = SaveSpan(span, ff, createdPoints, null, null, null, null);
                 SetFeature(i, feat);
             }
 
@@ -303,6 +303,8 @@ namespace Backsight.Editor
         internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
             ref IPosition terminal, ref double bearing, double sfac)
         {
+            throw new NotImplementedException();
+            /*
             // Add on any initial angle (it may be a deflection).
             if (Math.Abs(m_StartAngle) > MathConstants.TINY)
             {
@@ -356,13 +358,14 @@ namespace Backsight.Editor
             // Return the end position of the last span.
             terminal = span.End;
             return true;
+             */
         }
 
         /// <summary>
         /// Saves a span in the map.
         /// </summary>
         /// <param name="span">The span to save</param>
-        /// <param name="op">The editing operation this span is part of</param>
+        /// <param name="ff">The factory for creating new spatial features</param>
         /// <param name="createdPoints">Newly created point features</param>
         /// <param name="insert">Reference to a new point that was inserted just before
         /// this span. Defined only during rollforward.</param>
@@ -377,7 +380,7 @@ namespace Backsight.Editor
         /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
         /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
         /// meaning that there is no line & no terminal point.</returns>
-        internal Feature SaveSpan(StraightSpan span, PathOperation op,
+        internal Feature SaveSpan(StraightSpan span, FeatureFactory ff,
                                   List<PointFeature> createdPoints, PointFeature insert, Feature old,
                                   PointFeature veryEnd, UpdateContext uc)
         {
@@ -442,19 +445,44 @@ namespace Backsight.Editor
             {
                 // If we have an end point, add it.
                 if (span.HasEndPoint)
-                    feat = op.EnsurePointExists(eloc, createdPoints);
+                    feat = EnsurePointExists(ff, eloc, createdPoints, veryEnd);
 
                 // Add a line if we have one.
                 if (span.HasLine)
                 {
                     Debug.Assert(span.HasEndPoint);
-                    PointFeature ps = op.EnsurePointExists(sloc, createdPoints);
+                    PointFeature ps = EnsurePointExists(ff, sloc, createdPoints, veryEnd);
                     PointFeature pe = (PointFeature)feat;
                     feat = map.AddLine(ps, pe, map.DefaultLineType, op);
+                    //feat = ff.CreateSegmentLineFeature(
                 }
             }
 
             return feat;
+        }
+
+        PointFeature EnsurePointExists(FeatureFactory ff, IPointGeometry pg, List<PointFeature> createdPoints, PointFeature veryEnd)
+        {
+            // If the position coincides with the very last point in a connection path,
+            // just return that point.
+            if (pg.IsCoincident(veryEnd))
+                return veryEnd;
+
+            // If the position coincides with any of the points that have already been
+            // created,... what to do? If the point is re-used, but the end points of
+            // the connection path are later moved, intermediate points may no longer
+            // coincide. However, if we add a point always, any topology may well get
+            // screwed up (there will be confusion about which point to reference the
+            // incident lines). In aiming for a solution, bear in mind that the position
+            // of the points may well be unknown - with the exception of the very last
+            // point in a connection path, a new feature WILL be required for all intermediate
+            // points. The method that ultimately calculates the geometry needs to relate
+            // coincident points to a single underlying geometry. In a situation where
+            // things subsequently move, the shared geometry can be changed without altering
+            // the spatial features involved.
+
+            //ff.CreatePointFeature();
+            return null;
         }
 
         /// <summary>
