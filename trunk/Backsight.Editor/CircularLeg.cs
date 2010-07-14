@@ -14,15 +14,12 @@
 // </remarks>
 
 using System;
-using System.Text;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
-using Backsight.Geometry;
 using Backsight.Editor.Observations;
-using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -435,25 +432,50 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates spatial features (points and lines) for this leg. The created
-        /// features don't have any geometry.
+        /// Creates a line feature that corresponds to one of the spans on this leg.
+        /// Before calling this override, the circle object associated with this leg must
+        /// be defined, via a call to <see cref="CreateCircle"/>.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="maxSequence">The highest sequence number assigned to features
-        /// preceding this leg</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg. May be
-        /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
-        /// <param name="lastPoint">The point that should be used for the very end
-        /// of the leg (specify null if a point should be created at the end of the leg).</param>
-        /// <returns>The sequence number assigned to the last feature that was created</returns>
-        internal override uint CreateFeatures(FeatureFactory ff, uint maxSequence,
-                                                PointFeature startPoint, PointFeature lastPoint)
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created line (never null)</returns>
+        /// <exception cref="InvalidOperationException">If the underlying circle for this leg has not
+        /// been created via a prior call to <see cref="CreateCircle"/>.</exception>
+        internal override LineFeature CreateLine(FeatureFactory ff, string itemName, PointFeature from, PointFeature to)
         {
-            return maxSequence;
+            if (m_Circle == null)
+                throw new InvalidOperationException("Circle for circular arc has not been defined");
+
+            ArcFeature result = ff.CreateArcFeature(itemName, from, to);
+
+            // We have to create a geometry object at this stage, so that the circle can be
+            // cross-referenced to created arcs. However, it's not fully defined because the
+            // circle radius will likely be zero at this stage.
+            result.Geometry = new ArcGeometry(m_Circle, from, to, IsClockwise);
+
+            return result;
         }
 
         /// <summary>
-        /// Defines the geometry for this leg (for use during deserialization).
+        /// Creates any circle that's required for arcs that sit on this leg. This method must
+        /// be called before making any calls to <see cref="CreateLine"/>.
+        /// </summary>
+        /// <param name="ff">The factory for creating new spatial features</param>
+        /// <param name="itemName">The name for the item that represents the point at the center of the circle</param>
+        /// <returns>The created circle (with an undefined radius)</returns>
+        internal Circle CreateCircle(FeatureFactory ff, string itemName)
+        {
+            // Create a center point, and cross-reference to a new circle (with undefined radius)
+            PointFeature center = ff.CreatePointFeature(itemName);
+            m_Circle = new Circle(center, 0.0);
+            m_Circle.AddReferences();
+            return m_Circle;
+        }
+
+        /// <summary>
+        /// Defines the geometry for this leg.
         /// </summary>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
@@ -1472,6 +1494,22 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             // Ensure the radius is correct.
             if (m_Circle!=null)
                 m_Circle.Radius = span.ScaledRadius;
+        }
+
+        /// <summary>
+        /// Loads a list of the features that were created by this leg.
+        /// </summary>
+        /// <param name="op">The operation that this leg relates to.</param>
+        /// <param name="flist">The list to store the results. This list will be
+        /// appended to, so you may want to clear the list prior to call.</param>
+        /// <remarks>The <see cref="CircularLeg"/> provides an override that
+        /// is responsible for appending the center point.</remarks>
+        internal override void GetFeatures(Operation op, List<Feature> flist)
+        {
+            if (m_Circle != null)
+                flist.Add(m_Circle.CenterPoint);
+
+            base.GetFeatures(op, flist);
         }
     }
 }
