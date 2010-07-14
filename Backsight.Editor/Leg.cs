@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
 
 using Backsight.Editor.Operations;
@@ -177,11 +176,82 @@ namespace Backsight.Editor
         /// <param name="lastPoint">The point that should be used for the very end
         /// of the leg (specify null if a point should be created at the end of the leg).</param>
         /// <returns>The sequence number assigned to the last feature that was created</returns>
-        abstract internal uint CreateFeatures(FeatureFactory ff, uint maxSequence,
-                                                PointFeature startPoint, PointFeature lastPoint);
+        internal uint CreateFeatures(FeatureFactory ff, uint maxSequence,
+                                       PointFeature startPoint, PointFeature lastPoint)
+        {
+            PointFeature from = startPoint;
+            PointFeature to = null;
+            InternalIdValue itemId = new InternalIdValue(ff.Creator.Session.Id, maxSequence);
+
+            // If we're dealing with a circular arc, create the underlying circle (and a
+            // center point). The radius of the circle is undefined at this stage, but the
+            // circle must be present so that created arcs can be cross-referenced to it.
+
+            // Note that it is conceivable that the center point will end up coinciding with
+            // another point in the map (it could even coincide with another circular leg in
+            // the same connection path).
+
+            CircularLeg cLeg = (this as CircularLeg);
+            if (cLeg != null)
+            {
+                itemId.ItemSequence++;
+                cLeg.CreateCircle(ff, itemId.ToString());
+            }
+
+            int nSpan = m_Spans.Length;
+            for (int i = 0; i < nSpan; i++, from = to)
+            {
+                SpanInfo span = GetSpanData(i);
+
+                // If we have an end point, add it (so long as this span is not
+                // at the very end of the connection path).
+
+                to = null;
+                if (span.HasEndPoint)
+                {
+                    if (i == (nSpan-1))
+                        to = lastPoint;
+
+                    if (to == null)
+                    {
+                        itemId.ItemSequence++;
+                        to = ff.CreatePointFeature(itemId.ToString());
+                    }
+
+                    Debug.Assert(to != null);
+                }
+
+                // A line can only exist if both end points are defined (the "omit point"
+                // directive may well be used to finish a leg without a point, so the first
+                // span in the next leg can't have a line).
+
+                if (span.HasLine && from != null)
+                {
+                    itemId.ItemSequence++;
+                    LineFeature line = CreateLine(ff, itemId.ToString(), from, to);
+                    span.CreatedFeature = line;
+                }
+                else
+                {
+                    span.CreatedFeature = to;
+                }
+            }
+
+            return itemId.ItemSequence;
+        }
 
         /// <summary>
-        /// Defines the geometry for this leg (for use during deserialization).
+        /// Creates a line feature that corresponds to one of the spans on this leg.
+        /// </summary>
+        /// <param name="ff">The factory for creating new spatial features</param>
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created line (never null)</returns>
+        abstract internal LineFeature CreateLine(FeatureFactory ff, string itemName, PointFeature from, PointFeature to);
+
+        /// <summary>
+        /// Defines the geometry for this leg.
         /// </summary>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
@@ -457,12 +527,14 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// Loads a list of the features that were created by this operation.
+        /// Loads a list of the features that were created by this leg.
         /// </summary>
         /// <param name="op">The operation that this leg relates to.</param>
         /// <param name="flist">The list to store the results. This list will be
         /// appended to, so you may want to clear the list prior to call.</param>
-        internal void GetFeatures(Operation op, List<Feature> flist)
+        /// <remarks>The <see cref="CircularLeg"/> provides an override that
+        /// is responsible for appending the center point.</remarks>
+        internal virtual void GetFeatures(Operation op, List<Feature> flist)
         {
             foreach (SpanInfo sd in m_Spans)
             {
@@ -470,29 +542,17 @@ namespace Backsight.Editor
 
                 if (f != null)
                 {
-                    // Append to the return list.
-                    flist.Add(f);
-
-                    // If the feature is a line, also process any point
-                    // feature at the end. If it's a circular arc, add
-                    // the circle centre point if it isn't already in
-                    // the list.
+                    // If the feature is a line, include the end point
                     LineFeature line = (f as LineFeature);
                     if (line!=null)
                     {
-        				// Include inactive points.
                         PointFeature point = line.EndPoint;
                         if (Object.ReferenceEquals(point.Creator, op))
                             flist.Add(point);
-
-                        if (line is ArcFeature)
-                        {
-                            ArcFeature arc = (line as ArcFeature);
-                            point = arc.Circle.CenterPoint;
-                            if (Object.ReferenceEquals(point.Creator, op) && !flist.Contains(point))
-                                flist.Add(point);
-                        }
                     }
+
+                    // Append the feature (point or line) associated with the span
+                    flist.Add(f);
                 }
             }
         }

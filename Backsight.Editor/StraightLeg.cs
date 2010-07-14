@@ -238,68 +238,20 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates spatial features (points and lines) for this leg. The created
-        /// features don't have any geometry.
+        /// Creates a line feature that corresponds to one of the spans on this leg.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="maxSequence">The highest sequence number assigned to features
-        /// preceding this leg</param>
-        /// <param name="startPoint">The point (if any) at the start of this leg. May be
-        /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
-        /// <param name="lastPoint">The point that should be used for the very end
-        /// of the leg (specify null if a point should be created at the end of the leg).</param>
-        /// <returns>The sequence number assigned to the last feature that was created</returns>
-        internal override uint CreateFeatures(FeatureFactory ff, uint maxSequence,
-                                                PointFeature startPoint, PointFeature lastPoint)
+        /// <param name="itemName">The name for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created line (never null)</returns>
+        internal override LineFeature CreateLine(FeatureFactory ff, string itemName, PointFeature from, PointFeature to)
         {
-            PointFeature from = startPoint;
-            PointFeature to = null;
-            InternalIdValue itemId = new InternalIdValue(ff.Creator.Session.Id, maxSequence);
-
-            int nSpan = base.NumSpan;
-            for (int i = 0; i < nSpan; i++, from = to)
-            {
-                SpanInfo span = GetSpanData(i);
-
-                // If we have an end point, add it (so long as this span is not
-                // at the very end of the connection path).
-
-                to = null;
-                if (span.HasEndPoint)
-                {
-                    if (i == (nSpan-1))
-                        to = lastPoint;
-
-                    if (to == null)
-                    {
-                        itemId.ItemSequence++;
-                        to = ff.CreatePointFeature(itemId.ToString());
-                    }
-
-                    Debug.Assert(to != null);
-                }
-
-                // A line can only exist if both end points are defined (the "omit point"
-                // directive may well be used to finish a leg without a point, so the first
-                // span in the next leg can't have a line).
-
-                if (span.HasLine && from != null)
-                {
-                    itemId.ItemSequence++;
-                    SegmentLineFeature line = ff.CreateSegmentLineFeature(itemId.ToString(), from, to);
-                    span.CreatedFeature = line;
-                }
-                else
-                {
-                    span.CreatedFeature = to;
-                }
-            }
-
-            return itemId.ItemSequence;
+            return ff.CreateSegmentLineFeature(itemName, from, to);
         }
 
         /// <summary>
-        /// Defines the geometry for this leg (for use during deserialization).
+        /// Defines the geometry for this leg.
         /// </summary>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
