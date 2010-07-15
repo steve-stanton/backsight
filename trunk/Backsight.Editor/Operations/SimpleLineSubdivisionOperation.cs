@@ -135,7 +135,60 @@ namespace Backsight.Editor.Operations
         {
             Distance d = new Distance(m_Distance);
             bool isFromEnd = d.SetPositive();
-            return SimpleLineSubdivisionUI.Calculate(m_Line, d, isFromEnd);
+            return Calculate(m_Line, d, isFromEnd);
+        }
+
+        /// <summary>
+        /// Calculates the positions of the split point.
+        /// </summary>
+        /// <param name="line">The line being subdivided.</param>
+        /// <param name="dist">The distance to the split point.</param>
+        /// <param name="isFromEnd">Is the distance from the end of the line?</param>
+        /// <returns>The calculated position (null if the distance is longer than the line being subdivided,
+        /// or supplied information is incomplete)</returns>
+        internal static IPosition Calculate(LineFeature line, Distance dist, bool isFromEnd)
+        {
+            // Can't calculate if there is insufficient data.
+            if (line == null || dist == null)
+                return null;
+
+            // The length must be defined.
+            if (!dist.IsDefined)
+                return null;
+
+            // Return if the observed distance is longer than the total
+            // length of the line.
+            double maxlen = line.Length.Meters;
+            double obsvlen = dist.Meters;
+            if (obsvlen > maxlen)
+                return null;
+
+            // Get the approximate position of the split point.
+            IPosition start, approx;
+            LineGeometry g = line.LineGeometry;
+            if (isFromEnd)
+            {
+                start = line.EndPoint;
+                g.GetPosition(new Length(maxlen - obsvlen), out approx);
+            }
+            else
+            {
+                start = line.StartPoint;
+                g.GetPosition(new Length(obsvlen), out approx);
+            }
+
+            // Get the distance to the approximate position on the mapping plane.
+            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            double planlen = dist.GetPlanarMetric(start, approx, sys);
+
+            // Figure out the true position on the line.
+            IPosition splitpos;
+            if (isFromEnd)
+                g.GetPosition(new Length(maxlen - planlen), out splitpos);
+            else
+                g.GetPosition(new Length(planlen), out splitpos);
+
+            return splitpos;
         }
 
         /// <summary>
@@ -148,6 +201,9 @@ namespace Backsight.Editor.Operations
             if (splitpos==null)
                 throw new Exception("Cannot calculate split position");
 
+            FeatureFactory ff = new FeatureFactory(this);
+            base.Execute(ff);
+            /*
             // Add the split location (with no ID and default entity type).
             CadastralMapModel map = MapModel;
             m_NewPoint = map.AddPoint(splitpos, map.DefaultPointType, this);
@@ -164,6 +220,36 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
+             */
+        }
+
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            m_NewPoint = ff.CreatePointFeature("NewPoint");
+            SectionLineFeature line1, line2;
+            ff.MakeSections(m_Line, "NewLine1", m_NewPoint, "NewLine2", out line1, out line2);
+            m_NewLine1 = line1;
+            m_NewLine2 = line2;
+            //ff.Deactivate(m_Line);
+        }
+
+        /// <summary>
+        /// Calculates the geometry for any spatial features that were created by
+        /// this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            IPosition p = Calculate();
+            PointGeometry pg = PointGeometry.Create(p);
+            m_NewPoint.PointGeometry = pg;
         }
 
         /// <summary>
@@ -305,7 +391,7 @@ namespace Backsight.Editor.Operations
             // Re-calculate the position of the split point.
             Distance dist = new Distance(m_Distance);
             bool isFromEnd = dist.SetPositive();
-            IPosition splitpos = SimpleLineSubdivisionUI.Calculate(m_Line, dist, isFromEnd);
+            IPosition splitpos = Calculate(m_Line, dist, isFromEnd);
             if (splitpos==null)
                 throw new RollforwardException(this, "Cannot re-calculate position of point on line.");
 
@@ -369,18 +455,6 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
 
 	return TRUE;
          */
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_NewPoint.PointGeometry = pg;
-
-            m_Line.Deactivate();
-        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of

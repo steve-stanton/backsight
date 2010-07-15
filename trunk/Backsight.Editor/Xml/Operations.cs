@@ -1059,11 +1059,10 @@ namespace Backsight.Editor.Xml
             Observation length = this.Length.LoadObservation(loader);
             RadialOperation op = new RadialOperation(s, sequence, dir, length);
 
-            op.Point = this.To.CreatePointFeature(op);
-
-            if (this.Line != null)
-                op.Line = this.Line.CreateSegmentLineFeature(op, dir.From, op.Point);
-
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("To", this.To);
+            dff.AddFeatureStub("Line", this.Line);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -1087,10 +1086,11 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
-            CadastralMapModel mapModel = s.MapModel;
-            LineFeature line = mapModel.Find<LineFeature>(this.Line);
             uint sequence = GetEditSequence(s);
-            return new SetTopologyOperation(s, line, sequence);
+            LineFeature line = s.MapModel.Find<LineFeature>(this.Line);
+            SetTopologyOperation op = new SetTopologyOperation(s, sequence, line);
+            op.ProcessFeatures(new DeserializationFactory(op));
+            return op;
         }
     }
 
@@ -1123,6 +1123,13 @@ namespace Backsight.Editor.Xml
             Distance distance = (Distance)this.Distance.LoadObservation(mapModel);
             SimpleLineSubdivisionOperation op = new SimpleLineSubdivisionOperation(s, sequence, line, distance);
 
+            DeserializationFactory dff = new DeserializationFactory(op);
+            dff.AddFeatureStub("NewPoint", this.NewPoint);
+            op.ProcessFeatures(dff);
+            AddLineSplit(dff, line, "NewLine1", this.NewLine1);
+            AddLineSplit(dff, line, "NewLine2", this.NewLine2);
+            op.ProcessFeatures(dff);
+            /*
             op.NewPoint = this.NewPoint.CreatePointFeature(op);
 
             // Create the sections
@@ -1134,7 +1141,7 @@ namespace Backsight.Editor.Xml
 
             InternalIdValue.Parse(this.NewLine2, out sessionId, out lineSequence);
             op.NewLine2 = op.MakeSection(lineSequence, op.NewPoint, line.EndPoint);
-
+            */
             return op;
         }
     }

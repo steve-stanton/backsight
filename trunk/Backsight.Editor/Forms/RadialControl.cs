@@ -1140,7 +1140,7 @@ namespace Backsight.Editor.Forms
                 dir.Offset = m_Offset;
 
             // Try to calulate the position of the sideshot.
-            IPosition to = RadialUI.Calculate(dir, this.Length);
+            IPosition to = RadialOperation.Calculate(dir, this.Length);
 
             // Return if we calculated a position that is identical to the old one.
             //if (to!=null && to.IsAt(m_To, Double.Epsilon))

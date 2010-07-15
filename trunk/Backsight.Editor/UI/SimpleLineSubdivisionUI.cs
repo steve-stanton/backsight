@@ -237,58 +237,5 @@ namespace Backsight.Editor.UI
             // Get the base class to finish up.
             return FinishCommand();
         }
-
-        /// <summary>
-        /// Calculates the positions of the split point.
-        /// </summary>
-        /// <param name="line">The line being subdivided.</param>
-        /// <param name="dist">The distance to the split point.</param>
-        /// <param name="isFromEnd">Is the distance from the end of the line?</param>
-        /// <returns>The calculated position (null if the distance is longer than the line being subdivided,
-        /// or supplied information is incomplete)</returns>
-        internal static IPosition Calculate(LineFeature line, Distance dist, bool isFromEnd)
-        {
-        	// Can't calculate if there is insufficient data.
-            if (line==null || dist==null)
-                return null;
-
-            // The length must be defined.
-            if (!dist.IsDefined)
-                return null;
-
-            // Return if the observed distance is longer than the total
-	        // length of the line.
-            double maxlen = line.Length.Meters;
-            double obsvlen = dist.Meters;
-            if (obsvlen > maxlen)
-                return null;
-
-            // Get the approximate position of the split point.
-            IPosition start, approx;
-            LineGeometry g = line.LineGeometry;
-            if (isFromEnd)
-            {
-                start = line.EndPoint;
-                g.GetPosition(new Length(maxlen-obsvlen), out approx);
-            }
-            else
-            {
-                start = line.StartPoint;
-                g.GetPosition(new Length(obsvlen), out approx);
-            }
-
-            // Get the distance to the approximate position on the mapping plane.
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
-            double planlen = dist.GetPlanarMetric(start, approx, sys);
-
-            // Figure out the true position on the line.
-            IPosition splitpos;
-            if (isFromEnd)
-                g.GetPosition(new Length(maxlen-planlen), out splitpos);
-            else
-                g.GetPosition(new Length(planlen), out splitpos);
-
-            return splitpos;
-        }
     }
 }

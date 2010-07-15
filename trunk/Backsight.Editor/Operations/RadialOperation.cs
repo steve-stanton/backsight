@@ -143,77 +143,97 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="pointId"></param>
         /// <param name="lineType"></param>
-        /// <returns>True if operation executed ok.</returns>
-        internal bool Execute(IdHandle pointId, IEntity lineType)
+        internal void Execute(IdHandle pointId, IEntity lineType)
         {
             // Calculate the position of the sideshot point.
-            IPosition to = RadialUI.Calculate(m_Direction, m_Length);
+            IPosition to = Calculate(m_Direction, m_Length);
             if (to==null)
                 throw new Exception("Cannot calculate position of sideshot point.");
 
-            // Add the sideshot point to the map.
-            CadastralMapModel map = CadastralMapModel.Current;
-            m_To = map.AddPoint(to, pointId.Entity, this);
+            FeatureFactory ff = new FeatureFactory(this);
 
-            // Associate the new point with the specified ID (if any).
-            pointId.CreateId(m_To);
+            FeatureId fid = pointId.CreateId();
+            IFeature x = new FeatureStub(this, pointId.Entity, fid);
+            ff.AddFeatureDescription("To", x);
 
-            // If a line entity has been supplied, add a line too.
-            if (lineType==null)
-                m_Line = null;
-            else
-                m_Line = map.AddLine(m_Direction.From, m_To, lineType, this);
+            if (lineType != null)
+            {
+                IFeature f = new FeatureStub(this, lineType, null);
+                ff.AddFeatureDescription("Line", f);
+            }
 
-            // Peform standard completion steps
-            Complete();
-            return true;
+            base.Execute(ff);
         }
 
-        /*
-//	@mfunc	Execute this operation WITHOUT attaching an IdHandle.
-//	@rdesc	TRUE if operation executed ok.
-LOGICAL CeRadial::Execute	( const CeDirection& dir
-							, const CeObservation& length
-							, const CeEntity* const pPointType
-							, const CeEntity* const pLineType ) {
+        /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal override void ProcessFeatures(FeatureFactory ff)
+        {
+            m_To = ff.CreatePointFeature("To");
 
-	// Calculate the position of the sideshot point.
-	CeVertex to;
-	if ( !CuiRadial::Calculate(&dir,&length,to) ) {
-		ShowMessage("Cannot calculate position of sideshot point.");
-		return FALSE;
-	}
+            if (ff.HasFeatureDescription("Line"))
+                m_Line = ff.CreateSegmentLineFeature("Line", m_Direction.From, m_To);
+        }
 
-	// Save the observations.
-	m_pDirection = (CeDirection*)dir.Save();
-	m_pLength = length.Save();
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        internal override void CalculateGeometry()
+        {
+            IPosition p = Calculate(m_Direction, m_Length);
+            PointGeometry pg = PointGeometry.Create(p);
+            m_To.PointGeometry = pg;
+        }
 
-	// Add the sideshot point to the map.
-	CeMap* pMap = CeMap::GetpMap();
-	LOGICAL isold;
-	m_pTo = pMap->AddPoint(to,pPointType,isold);
-	if ( !m_pTo ) return FALSE;
+        /// <summary>
+        /// Calculates the position of the sideshot point.
+        /// </summary>
+        /// <param name="dir">The direction observation (if any).</param>
+        /// <param name="len">The length observation (if any). Could be a <c>Distance</c> or an
+        /// <c>OffsetPoint</c>.</param>
+        /// <returns>The position of the sideshot point (null if there is insufficient data
+        /// to calculate a position)</returns>
+        internal static IPosition Calculate(Direction dir, Observation len)
+        {
+            // Return if there is insufficient data.
+            if (dir == null || len == null)
+                return null;
 
-	// If a line entity has been supplied, add a line too.
-	if ( pLineType ) {
-		const CePoint* const pFrom = dir.GetpFrom();
-		CeVertex from(*pFrom);
-		m_pArc = pMap->AddArc(from,to,pLineType);
-	}
-	else
-		m_pArc = 0;
+            // Get the position of the point the sideshot should radiate from.
+            PointFeature from = dir.From;
 
-	// Add any direct feature references made by this operation.
-	AddReferences();
+            // Get the position of the start of the direction line (which may be offset).
+            IPosition start = dir.StartPosition;
 
-	// Clean up the map.
-	Intersect();
-	pMap->CleanEdit();
+            // Get the bearing of the direction.
+            double bearing = dir.Bearing.Radians;
 
-	return TRUE;
+            // Get the length of the sideshot arm.
+            double length = len.GetDistance(from).Meters;
 
-} // end of Execute
-*/
+            // Calculate the resultant position. Note that the length is the length along the
+            // bearing -- if an offset was specified, the actual length of the line from-to =
+            // sqrt(offset*offset + length*length)
+            IPosition to = Geom.Polar(start, bearing, length);
+
+            // Return if the length is an offset point. In that case, the length we have obtained
+            // is already a length on the mapping plane, so no further reduction should be done
+            // (although it's debateable).
+            if (len is OffsetPoint)
+                return to;
+
+            // Using the position we've just got, reduce the length we used to a length on the
+            // mapping plane (it's actually a length on the ground).
+            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            double sfac = sys.GetLineScaleFactor(start, to);
+            return Geom.Polar(start, bearing, length * sfac);
+        }
 
         /// <summary>
         /// Corrects this operation. This just changes the info defining the op, and
@@ -396,7 +416,7 @@ void CeRadial::CreateAngleText ( CPtrList& text
                 return base.OnRollforward();
 
         	// Re-calculate the position of the sideshot point.
-            IPosition to = RadialUI.Calculate(m_Direction, m_Length);
+            IPosition to = Calculate(m_Direction, m_Length);
             if (to==null)
                 throw new RollforwardException(this, "Cannot re-calculate position of sideshot point.");
 
@@ -405,25 +425,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             // Rollforward the base class.
             return base.OnRollforward();
-        }
-
-        /// <summary>
-        /// Calculates the position of the sideshot point.
-        /// </summary>
-        /// <returns>The calculated position</returns>
-        IPosition Calculate()
-        {
-            return RadialUI.Calculate(m_Direction, m_Length);
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            IPosition p = Calculate();
-            PointGeometry pg = PointGeometry.Create(p);
-            m_To.PointGeometry = pg;
         }
 
         /// <summary>

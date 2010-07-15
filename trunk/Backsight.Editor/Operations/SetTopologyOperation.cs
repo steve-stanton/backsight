@@ -37,28 +37,20 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
-        internal SetTopologyOperation(Session s, LineFeature line, uint sequence)
+        /// <param name="line">The line that needs to be changed.</param>
+        internal SetTopologyOperation(Session s, uint sequence, LineFeature line)
             : base(s, sequence)
         {
             if (line == null)
                 throw new ArgumentNullException();
 
             m_Line = line;
-        }
-
-        /// <summary>
-        /// Creates a new <c>SetTopologyOperation</c> that refers to the specified line.
-        /// </summary>
-        /// <param name="line">The line to change</param>
-        internal SetTopologyOperation(Session s, LineFeature line)
-            : this(s, line, 0)
-        {
         }
 
         #endregion
@@ -140,14 +132,18 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void Execute()
         {
-            m_Line.SwitchTopology();
-            Complete();
+            base.Execute(new FeatureFactory(this));
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal override void ProcessFeatures(FeatureFactory ff)
         {
             m_Line.SwitchTopology();
         }

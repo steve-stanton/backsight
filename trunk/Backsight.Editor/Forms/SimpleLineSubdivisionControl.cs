@@ -201,7 +201,7 @@ namespace Backsight.Editor.Forms
             m_Line.Render(display, style);
 
             // Calculate the position of the split point.
-            IPosition splitpos = SimpleLineSubdivisionUI.Calculate(m_Line, m_Length, m_IsFromEnd);
+            IPosition splitpos = SimpleLineSubdivisionOperation.Calculate(m_Line, m_Length, m_IsFromEnd);
             if (splitpos!=null)
             {
                 style = EditingController.Current.Style(Color.Magenta);
