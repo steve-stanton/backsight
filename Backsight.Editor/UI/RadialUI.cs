@@ -243,62 +243,23 @@ namespace Backsight.Editor.UI
 		        	return false;
 		        }
 
-		        // Create empty persistent object (adds to current session)
-                RadialOperation pop = new RadialOperation(Session.WorkingSession, 0, dir, len);
+                RadialOperation pop = null;
 
-		        // Execute the operation.
-		        bool ok = pop.Execute(idh, lineEnt);
+                try
+                {
+                    pop = new RadialOperation(Session.WorkingSession, 0, dir, len);
+                    pop.Execute(idh, lineEnt);
+                }
 
-                if (!ok)
+                catch (Exception ex)
+                {
                     Session.WorkingSession.Remove(pop);
+                    MessageBox.Show(ex.StackTrace, ex.Message);
+                }
         	}
 
 	        // Get the base class to finish up.
 	        return FinishCommand();
-        }
-
-        /// <summary>
-        /// Calculates the position of the sideshot point.
-        /// </summary>
-        /// <param name="dir">The direction observation (if any).</param>
-        /// <param name="len">The length observation (if any). Could be a <c>Distance</c> or an
-        /// <c>OffsetPoint</c>.</param>
-        /// <returns>The position of the sideshot point (null if there is insufficient data
-        /// to calculate a position)</returns>
-        internal static IPosition Calculate(Direction dir, Observation len)
-        {
-            // Return if there is insufficient data.
-            if (dir==null || len==null)
-                return null;
-
-            // Get the position of the point the sideshot should radiate from.
-            PointFeature from = dir.From;
-
-            // Get the position of the start of the direction line (which may be offset).
-            IPosition start = dir.StartPosition;
-
-            // Get the bearing of the direction.
-            double bearing = dir.Bearing.Radians;
-
-            // Get the length of the sideshot arm.
-            double length = len.GetDistance(from).Meters;
-
-            // Calculate the resultant position. Note that the length is the length along the
-            // bearing -- if an offset was specified, the actual length of the line from-to =
-            // sqrt(offset*offset + length*length)
-            IPosition to = Geom.Polar(start, bearing, length);
-
-            // Return if the length is an offset point. In that case, the length we have obtained
-            // is already a length on the mapping plane, so no further reduction should be done
-            // (although it's debateable).
-            if (len is OffsetPoint)
-                return to;
-
-            // Using the position we've just got, reduce the length we used to a length on the
-            // mapping plane (it's actually a length on the ground).
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
-            double sfac = sys.GetLineScaleFactor(start, to);
-            return Geom.Polar(start, bearing, length*sfac);
         }
 
         /// <summary>

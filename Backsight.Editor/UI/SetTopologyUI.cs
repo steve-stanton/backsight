@@ -68,7 +68,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new SetTopologyOperation(Session.WorkingSession, m_Line);
+                op = new SetTopologyOperation(Session.WorkingSession, 0, m_Line);
                 op.Execute();
                 c.ClearSelection();
                 c.FinishCommand(this);
@@ -77,9 +77,9 @@ namespace Backsight.Editor.UI
 
             catch (Exception e)
             {
-                Session.WorkingSession.Remove(op);
+                //Session.WorkingSession.Remove(op);
                 c.AbortCommand(this);
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.StackTrace, e.Message);
             }
 
             return false;
