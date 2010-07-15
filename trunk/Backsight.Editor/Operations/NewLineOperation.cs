@@ -224,14 +224,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Nothing to do
-        }
-
-        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>

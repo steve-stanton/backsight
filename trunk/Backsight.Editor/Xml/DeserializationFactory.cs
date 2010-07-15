@@ -107,18 +107,21 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Deactivates a line as part of deserialization from the database.
+        /// Deactivates a feature as part of deserialization from the database.
         /// </summary>
-        /// <param name="line">The line that needs to be deactivated</param>
-        internal override void DeactivateLine(LineFeature line)
+        /// <param name="f">The feature that needs to be deactivated</param>
+        internal override void Deactivate(Feature f)
         {
             // When a line is deactivated during the course of regular editing work,
             // any topological constructs will be removed when the model is cleaned
             // at the end of the edit. During deserialization, the model doesn't get
             // cleaned, so remove any topological stuff now.
 
-            base.DeactivateLine(line);
-            line.RemoveTopology();
+            LineFeature line = (f as LineFeature);
+            if (line != null)
+                line.RemoveTopology();
+
+            base.Deactivate(f);
         }
     }
 }

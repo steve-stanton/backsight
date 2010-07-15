@@ -145,17 +145,12 @@ namespace Backsight.Editor.Xml
                 Feature f = mapModel.Find<Feature>(id);
                 Debug.Assert(f != null);
                 op.AddDeletion(f);
-
-                // Mark the feature as inactive, and remove anything to do with topology.
-                // Doing this now (as opposed to DeletionOperation.CalculateGeometry) means that the
-                // feature will never make it into the spatial index, and will be invisible
-                // as far as line intersection tests are concerned.
-
-                f.IsInactive = true;
-                if (f is LineFeature)
-                    (f as LineFeature).RemoveTopology();
             }
 
+            // Deactivate features (means they will never make it into the spatial index, and
+            // any lines will be invisible as far as intersection tests are concerned).
+            DeserializationFactory dff = new DeserializationFactory(op);
+            op.ProcessFeatures(dff);
             return op;
         }
     }
@@ -1015,15 +1010,15 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             PolygonSubdivisionOperation op = new PolygonSubdivisionOperation(s, sequence);
 
-            // Pick up any label to deactivate (this won't actually happen until
-            // CalculateGeometry is called)
-
-            CadastralMapModel mapModel = s.MapModel;
+            // Pick up any label that needs to be deactivated
             if (this.DeactivatedLabel != null)
-                op.DeactivatedLabel = mapModel.Find<TextFeature>(this.DeactivatedLabel);
+            {
+                TextFeature label = s.MapModel.Find<TextFeature>(this.DeactivatedLabel);
+                label.IsInactive = true;
+                op.DeactivatedLabel = label;
+            }
 
-            // Pick up the line segments that were created
-
+            // Create the line segments
             SegmentLineFeature[] newLines = new SegmentLineFeature[this.Line.Length];
 
             for (int i = 0; i < this.Line.Length; i++)

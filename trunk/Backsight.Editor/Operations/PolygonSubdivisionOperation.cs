@@ -153,11 +153,17 @@ namespace Backsight.Editor.Operations
             if (numLine==0)
                 throw new Exception("PolygonSubdivisionOperation.Execute - Nothing to add");
 
-            // De-activate any label associated with the polygon we're subdividing.
+            // If the polygon contains just one label, de-activate it. This covers a "well-behaved" situation,
+            // where the label inside the polygon is likely to be redundant after the subdivision (it also
+            // conforms to logic used in the past). In a situation where the polygon contains multiple labels,
+            // it's less clear whether the labels become redundant or not, so we keep them all.
             Polygon pol = sub.Polygon;
-            m_Label = pol.Label;
-            if (m_Label!=null)
-                m_Label.IsInactive = true;
+            if (pol.LabelCount == 1)
+            {
+                m_Label = pol.Label;
+                if (m_Label!=null)
+                    m_Label.IsInactive = true;
+            }
 
             // Mark the polygon for deletion
             pol.IsDeleted = true;
@@ -178,15 +184,6 @@ namespace Backsight.Editor.Operations
 
             // Peform standard completion steps
             Complete();
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            if (m_Label != null)
-                m_Label.Deactivate();
         }
 
         /// <summary>

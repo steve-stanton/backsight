@@ -515,10 +515,28 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// </summary>
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal virtual void ProcessFeatures(FeatureFactory ff)
+        {
+            // Do nothing
+        }
+
+        /// <summary>
         /// Calculates the geometry for any spatial features that were created by
         /// this editing operation.
         /// </summary>
-        abstract internal void CalculateGeometry();
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal virtual void CalculateGeometry()
+        {
+            // Do nothing
+        }
 
         /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
@@ -706,18 +724,6 @@ namespace Backsight.Editor
 
             // Save the edit to the database
             SaveOperation();
-        }
-
-        //internal abstract void ProcessFeatures(FeatureFactory ff);
-        /// <summary>
-        /// Performs data processing that involves creating or retiring spatial features.
-        /// Newly created features will not have any definition for their geometry - a
-        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
-        /// </summary>
-        /// <param name="ff">The factory class for generating any spatial features</param>
-        internal virtual void ProcessFeatures(FeatureFactory ff)
-        {
-            // Do nothing
         }
     }
 }

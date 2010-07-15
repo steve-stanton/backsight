@@ -107,10 +107,6 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        internal override void CalculateGeometry()
-        {
-        }
-
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;

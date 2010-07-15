@@ -15,17 +15,11 @@
 
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Diagnostics;
-using System.Xml;
 
-using Backsight.Editor.Operations;
 using Backsight.Forms;
-using Backsight.Editor.Properties;
 using Backsight.Environment;
-using Backsight.Editor.Database;
 using Backsight.Editor.UI;
 
 
@@ -903,7 +897,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // Keys.Enter (as I originally did in the constructor) leads to a runtime error that
             // talks about a bad enum value.
 
-            if ((e.KeyData & Keys.Enter) != 0)
+            if (e.KeyValue == (int)Keys.Enter)
             {
                 if (e.Alt && IsEditRecallEnabled())
                 {

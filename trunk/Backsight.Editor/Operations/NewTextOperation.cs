@@ -344,13 +344,5 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
 
 } // end of Execute
          */
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Nothing to do
-        }
     }
 }
