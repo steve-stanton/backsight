@@ -318,7 +318,7 @@ namespace Backsight.Editor
             lineBefore = MakeSection(itemBefore, baseLine, baseLine.StartPoint, x);
             lineAfter = MakeSection(itemAfter, baseLine, x, baseLine.EndPoint);
 
-            DeactivateLine(baseLine);
+            Deactivate(baseLine);
             return true;
         }
 
@@ -347,16 +347,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Deactivates a line as part of regular editing work.
+        /// Deactivates a feature as part of regular editing work.
         /// </summary>
-        /// <param name="line">The line that needs to be deactivated</param>
+        /// <param name="f">The feature that needs to be deactivated</param>
         /// <remarks>
-        /// The <see cref=""/> class provides an override (the logic is different when
+        /// The <see cref="DeserializationFactory"/> class provides an override (the logic is different when
         /// a line needs to be deactivated during deserialization from the database).
         /// </remarks>
-        internal virtual void DeactivateLine(LineFeature line)
+        internal virtual void Deactivate(Feature f)
         {
-            line.IsInactive = true;
+            f.IsInactive = true;
         }
 
         /// <summary>

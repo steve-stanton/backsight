@@ -187,14 +187,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
-        {
-            // Nothing to do
-        }
-
-        /// <summary>
         /// Records an additional control point as part of this edit.
         /// </summary>
         /// <param name="p">The point created by this edit.</param>

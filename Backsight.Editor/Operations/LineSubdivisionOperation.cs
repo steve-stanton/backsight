@@ -191,7 +191,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Retire the original line
-            ff.DeactivateLine(m_Line);
+            ff.Deactivate(m_Line);
         }
 
         /// <summary>
@@ -473,70 +473,6 @@ namespace Backsight.Editor.Operations
 
             // Rollforward the base class.
             return base.OnRollforward();
-        }
-
-        /// <summary>
-        /// Creates a section for this subdivision op.
-        /// </summary>
-        /// <param name="start">The point at the start of the section</param>
-        /// <param name="edist">The distance to the end of the section.</param>
-        /// <returns>The created section</returns>
-        SectionLineFeature MakeSection(PointFeature start, double edist)
-        {
-            SectionGeometry section = AddSection(start, edist);
-            uint ss = Session.ReserveNextItem();
-            return m_Line.MakeSubSection(this, ss, section);
-        }
-
-        /// <summary>
-        /// Adds a line section to the map. This adds the geometry for the section,
-        /// together with terminal points, but NOT the line feature.
-        /// 
-        /// The caller is responsible for associating the operation with the section,
-        /// and the parent line with the operation.
-        /// </summary>
-        /// <param name="start">The point at the start of the section</param>
-        /// <param name="edist">Distance from the start of the parent line to the end
-        /// of the section.</param>
-        /// <returns>The new section.</returns>
-        SectionGeometry AddSection(PointFeature start, double edist)
-        {
-            PointFeature ept = AddSectionEndPoint(start, edist);
-            SectionGeometry section = new SectionGeometry(m_Line, start, ept);
-            return section;
-        }
-
-        /// <summary>
-        /// Creates the point feature at the end of a subdivision section.
-        /// </summary>
-        /// <param name="start">The point at the start of the section</param>
-        /// <param name="edist">Distance from the start of the parent line to the end
-        /// of the section.</param>
-        /// <returns>The point at the end of the section (may be a previously
-        /// existing point)</returns>
-        PointFeature AddSectionEndPoint(PointFeature start, double edist)
-        {
-            CadastralMapModel map = CadastralMapModel.Current;
-
-            // Get the position for the end point.
-            LineGeometry parent = m_Line.LineGeometry;
-            IPosition end;
-            parent.GetPosition(new Length(edist), out end);
-
-            // Add points at these positions (with no ID & default entity). If they
-            // did not previously exist, reference them to THIS operation.
-
-            PointFeature ept = (end as PointFeature);
-            if (ept == null)
-                ept = (map.Index.QueryClosest(end, Length.Zero, SpatialType.Point) as PointFeature);
-
-            if (ept == null)
-            {
-                ept = map.AddPoint(end, map.DefaultPointType, this);
-                ept.SetNextId();
-            }
-
-            return ept;
         }
 
         /// <summary>

@@ -213,15 +213,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        internal override void ProcessFeatures(FeatureFactory ff)
         {
-            // When this method is called as part of deserialization from the database, the
-            // features will be inactive already (see logic in DeletionData.LoadOperation).
-
             foreach (Feature f in m_Deletions)
-                f.IsInactive = true; //f.Deactivate();
+                ff.Deactivate(f);
         }
 
         /// <summary>
