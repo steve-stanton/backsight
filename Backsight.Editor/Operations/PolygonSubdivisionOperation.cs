@@ -43,7 +43,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class.
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -51,15 +51,6 @@ namespace Backsight.Editor.Operations
         /// deserialization from the database.</param>
         internal PolygonSubdivisionOperation(Session s, uint sequence)
             : base(s, sequence)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal PolygonSubdivisionOperation(Session s)
-            : this(s, 0)
         {
         }
 

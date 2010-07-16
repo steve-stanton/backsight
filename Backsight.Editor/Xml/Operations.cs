@@ -1125,7 +1125,6 @@ namespace Backsight.Editor.Xml
 
             DeserializationFactory dff = new DeserializationFactory(op);
             dff.AddFeatureStub("NewPoint", this.NewPoint);
-            op.ProcessFeatures(dff);
             AddLineSplit(dff, line, "NewLine1", this.NewLine1);
             AddLineSplit(dff, line, "NewLine2", this.NewLine2);
             op.ProcessFeatures(dff);
@@ -1238,6 +1237,7 @@ namespace Backsight.Editor.Xml
 
             op.TrimmedLines = lines;
             op.TrimPoints = points;
+            op.ProcessFeatures(null);
             return op;
         }
     }

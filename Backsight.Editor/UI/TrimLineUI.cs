@@ -82,7 +82,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new TrimLineOperation(Session.WorkingSession);
+                op = new TrimLineOperation(Session.WorkingSession, 0);
                 op.Execute(lines);
 
                 c.ClearSelection();
@@ -92,7 +92,7 @@ namespace Backsight.Editor.UI
 
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.StackTrace, e.Message);
                 Session.WorkingSession.Remove(op);
                 c.AbortCommand(this);
                 return false;

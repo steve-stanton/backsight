@@ -47,23 +47,6 @@ namespace Backsight.Editor.Operations
         {
         }
 
-        /// <summary>
-        /// Constructor for use during deserialization.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="t">The serialized version of this instance</param>
-        /*
-        internal UpdateOperation(Session s, UpdateData t)
-            : base(s, t)
-        {
-            m_Edit = s.MapModel.FindOperation(t.RevisedEdit);
-            m_Update = t;
-
-            if (m_Edit == null)
-                throw new ArgumentException("Cannot locate original edit "+t.RevisedEdit);
-        }
-        */
-
         #endregion
 
         /// <summary>

@@ -52,8 +52,7 @@ namespace Backsight.Editor
         /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
         /// session that created it.</param>
         /// <param name="e">The entity type for the feature (not null)</param>
-        /// <param name="g">The geometry for the point (may be null, although this is only really
-        /// expected during deserialization)</param>
+        /// <param name="g">The geometry for the point (may be null)</param>
         internal PointFeature(Operation creator, uint sessionSequence, IEntity e, PointGeometry g)
             : base(creator, sessionSequence, e, null)
         {
@@ -68,8 +67,7 @@ namespace Backsight.Editor
         /// isn't shared with any other point), and records it as part of the map model.
         /// </summary>
         /// <param name="f">Basic information about the feature.</param>
-        /// <param name="g">The geometry for the point (could be null, although this is only really
-        /// expected during deserialization)</param>
+        /// <param name="g">The geometry for the point (may be null)</param>
         internal PointFeature(IFeature f, PointGeometry g)
             : base(f)
         {

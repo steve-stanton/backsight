@@ -87,7 +87,7 @@ namespace Backsight.Editor.UI
                     return true;
                 }
 
-                op = new PolygonSubdivisionOperation(Session.WorkingSession);
+                op = new PolygonSubdivisionOperation(Session.WorkingSession, 0);
                 op.Execute(sub);
                 FinishCommand();
             }

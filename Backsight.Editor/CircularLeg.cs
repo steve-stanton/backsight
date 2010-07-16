@@ -65,40 +65,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the leg</param>
-        /// <param name="t">The serialized version of this feature</param>
-        /*
-        internal CircularLeg(Operation op, CircularLegData t)
-            : base(op, t)
-        {
-            m_Angle1 = 0.0;
-            m_Angle2 = 0.0;
-
-            if (!String.IsNullOrEmpty(t.Angle1))
-                m_Angle1 = RadianValue.Parse(t.Angle1);
-
-            if (!String.IsNullOrEmpty(t.Angle2))
-            {
-                m_Angle2 = RadianValue.Parse(t.Angle2);
-                this.IsTwoAngles = true;
-            }
-
-            this.IsCulDeSac = t.CulDeSac;
-            this.IsClockwise = t.Clockwise;
-            m_Radius = (Distance)t.Radius.LoadObservation(op);
-
-            // Create a circle with no radius (the actual radius may not exactly match
-            // the observed radius, but we won't know the adjusted value until geometry
-            // gets defined)
-            PointFeature center = new PointFeature(op, t.Center);
-            m_Circle = new Circle(center, 0.0);
-            m_Circle.AddReferences();
-        }
-        */
-
-        /// <summary>
         /// Creates a new <c>CircularLeg</c> with no spans.
         /// </summary>
         /// <param name="radius">The radius of the circular leg.</param>

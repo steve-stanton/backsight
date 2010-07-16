@@ -14,10 +14,8 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
-using Backsight.Editor.UI;
 
 
 namespace Backsight.Editor.Operations
@@ -202,6 +200,12 @@ namespace Backsight.Editor.Operations
                 throw new Exception("Cannot calculate split position");
 
             FeatureFactory ff = new FeatureFactory(this);
+
+            // See FeatureFactory.MakeSection - the only thing that really matters is the
+            // session sequence number that will get picked up by the FeatureStub constructor.
+            ff.AddFeatureDescription("NewLine1", new FeatureStub(this, m_Line.EntityType, null));
+            ff.AddFeatureDescription("NewLine2", new FeatureStub(this, m_Line.EntityType, null));
+
             base.Execute(ff);
             /*
             // Add the split location (with no ID and default entity type).
@@ -238,7 +242,6 @@ namespace Backsight.Editor.Operations
             ff.MakeSections(m_Line, "NewLine1", m_NewPoint, "NewLine2", out line1, out line2);
             m_NewLine1 = line1;
             m_NewLine2 = line2;
-            //ff.Deactivate(m_Line);
         }
 
         /// <summary>
