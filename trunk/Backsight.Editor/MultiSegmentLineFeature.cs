@@ -63,13 +63,5 @@ namespace Backsight.Editor
             : base(f, start, end, g, isTopological)
         {
         }
-
-        /// <summary>
-        /// A value indicating the type of geometry used to represent this feature.
-        /// </summary>
-        internal override FeatureGeometry Representation
-        {
-            get { return FeatureGeometry.MultiSegment; }
-        }
     }
 }

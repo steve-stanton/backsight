@@ -199,14 +199,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// A value indicating the type of geometry used to represent this feature.
-        /// </summary>
-        internal override FeatureGeometry Representation
-        {
-            get { return FeatureGeometry.Arc; }
-        }
-
-        /// <summary>
         /// Attempts to locate the circular arc (if any) that this line is based on.
         /// </summary>
         /// <returns><c>this</c> (always).</returns>

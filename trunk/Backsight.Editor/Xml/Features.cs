@@ -43,7 +43,7 @@ namespace Backsight.Editor.Xml
             DeserializationFactory result = new DeserializationFactory(op);
 
             foreach (FeatureStubData stub in this.Data)
-                result.AddFeatureData(stub.Id, stub);
+                result.AddFeatureStub(stub.Id, stub);
 
             return result;
         }
@@ -54,21 +54,21 @@ namespace Backsight.Editor.Xml
     /// </summary>
     /// <remarks>The remainder of this class is auto-generated, and may be found
     /// in the <c>Edits.cs</c> file.</remarks>
-    partial class FeatureData
+    partial class FeatureStubData
     {
-        internal FeatureData(Feature f)
+        internal FeatureStubData(Feature f)
             : this(f, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// Initializes a new instance of the <see cref="FeatureStubData"/> class.
         /// </summary>
         /// <param name="f">The feature that is being serialized</param>
         /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
         /// if the feature actually represents something that previously existed at the calculated
         /// position.</param>
-        internal FeatureData(Feature f, bool allFields)
+        internal FeatureStubData(Feature f, bool allFields)
         {
             this.Id = f.DataId;
 
@@ -91,12 +91,12 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// Initializes a new instance of the <see cref="FeatureStubData"/> class.
         /// </summary>
         /// <param name="f">The feature that is being serialized</param>
         /// <param name="defaultEntityId">The ID of the default entity type. If the feature's
         /// entity type matches, it will not be recorded as part of this instance.</param>
-        internal FeatureData(Feature f, int defaultEntityId)
+        internal FeatureStubData(Feature f, int defaultEntityId)
         {
             this.Id = f.DataId;
 
@@ -116,6 +116,85 @@ namespace Backsight.Editor.Xml
             }
         }
 
+        internal IFeature GetFeatureStub(Operation creator)
+        {
+            InternalIdValue iid = new InternalIdValue(this.Id);
+            FeatureId fid = GetFeatureId(creator.MapModel);
+            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
+            return new FeatureStub(creator, iid.ItemSequence, e, fid);
+        }
+
+        /// <summary>
+        /// Deserializes the user-perceived ID of a feature
+        /// </summary>
+        /// <param name="mapModel">The model containing this feature</param>
+        /// <param name="t">The serialized version of this feature</param>
+        /// <returns>The corresponding ID (null if this feature does not have
+        /// a user-perceived ID).</returns>
+        FeatureId GetFeatureId(CadastralMapModel mapModel)
+        {
+            uint nativeKey = this.Key;
+            if (nativeKey > 0)
+            {
+                NativeId nid = mapModel.FindNativeId(nativeKey);
+                if (nid == null)
+                    return mapModel.AddNativeId(nativeKey);
+                else
+                    return nid;
+            }
+
+            string key = this.ForeignKey;
+            if (key != null)
+            {
+                ForeignId fid = mapModel.FindForeignId(key);
+                if (fid == null)
+                    return mapModel.AddForeignId(key);
+            }
+
+            return null;
+        }
+    }
+
+
+    /// <summary>
+    /// Base class for any sort of serialized spatial feature.
+    /// </summary>
+    /// <remarks>The remainder of this class is auto-generated, and may be found
+    /// in the <c>Edits.cs</c> file.</remarks>
+    partial class FeatureData
+    {
+        public FeatureData()
+        {
+        }
+
+        internal FeatureData(Feature f)
+            : base(f, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// </summary>
+        /// <param name="f">The feature that is being serialized</param>
+        /// <param name="allFields">Should all attributes be serialized? Specify <c>false</c> only
+        /// if the feature actually represents something that previously existed at the calculated
+        /// position.</param>
+        internal FeatureData(Feature f, bool allFields)
+            : base(f, allFields)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureData"/> class.
+        /// </summary>
+        /// <param name="f">The feature that is being serialized</param>
+        /// <param name="defaultEntityId">The ID of the default entity type. If the feature's
+        /// entity type matches, it will not be recorded as part of this instance.</param>
+        internal FeatureData(Feature f, int defaultEntityId)
+            : base(f, defaultEntityId)
+        {
+        }
+
         /// <summary>
         /// Loads this feature as part of an editing operation. Derived types
         /// must implement this method, otherwise you will get an exception on
@@ -123,11 +202,7 @@ namespace Backsight.Editor.Xml
         /// </summary>
         /// <param name="op">The editing operation creating the feature</param>
         /// <returns>The spatial feature that was loaded</returns>
-        //internal abstract Feature LoadFeature(Operation op);
-        internal virtual Feature LoadFeature(Operation op)
-        {
-            throw new NotImplementedException("LoadFeature not implemented by: " + GetType().Name);
-        }
+        internal abstract Feature LoadFeature(Operation op);
 
         /// <summary>
         /// Creates an instance of <see cref="PointFeature"/> using the information stored
@@ -207,73 +282,6 @@ namespace Backsight.Editor.Xml
             IFeature f = GetFeatureStub(creator);
             RowTextFeature result = new RowTextFeature(f, geom, isTopological, polPosition);
             return result;
-        }
-
-        internal IFeature GetFeatureStub(Operation creator)
-        {
-            InternalIdValue iid = new InternalIdValue(this.Id);
-            FeatureId fid = GetFeatureId(creator.MapModel);
-            IEntity e = EnvironmentContainer.FindEntityById(this.Entity);
-            return new FeatureStub(creator, iid.ItemSequence, e, fid);
-        }
-
-        /// <summary>
-        /// Deserializes the user-perceived ID of a feature
-        /// </summary>
-        /// <param name="mapModel">The model containing this feature</param>
-        /// <param name="t">The serialized version of this feature</param>
-        /// <returns>The corresponding ID (null if this feature does not have
-        /// a user-perceived ID).</returns>
-        FeatureId GetFeatureId(CadastralMapModel mapModel)
-        {
-            uint nativeKey = this.Key;
-            if (nativeKey > 0)
-            {
-                NativeId nid = mapModel.FindNativeId(nativeKey);
-                if (nid == null)
-                    return mapModel.AddNativeId(nativeKey);
-                else
-                    return nid;
-            }
-
-            string key = this.ForeignKey;
-            if (key != null)
-            {
-                ForeignId fid = mapModel.FindForeignId(key);
-                if (fid == null)
-                    return mapModel.AddForeignId(key);
-            }
-
-            return null;
-        }
-    }
-
-    partial class FeatureStubData
-    {
-        public FeatureStubData()
-        {
-        }
-
-        internal FeatureStubData(FeatureGeometry g)
-        {
-            this.Geometry = (uint)g;
-        }
-
-        internal FeatureStubData(Feature f)
-            : this(f, true)
-        {
-        }
-
-        internal FeatureStubData(Feature f, bool allFields)
-            : base(f, allFields)
-        {
-            this.Geometry = (uint)f.Representation;
-        }
-
-        internal FeatureStubData(Feature f, int defaultEntityId)
-            : base(f, defaultEntityId)
-        {
-            this.Geometry = (uint)f.Representation;
         }
     }
 
