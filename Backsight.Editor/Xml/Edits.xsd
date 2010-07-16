@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--Created with Liquid XML Studio - FREE Community Edition 7.0.2.746 (http://www.liquid-technologies.com)-->
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditData" />
   <xs:complexType name="AngleData">
@@ -51,7 +51,7 @@
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence minOccurs="1" maxOccurs="1">
-          <xs:element name="Point" type="FeatureData" />
+          <xs:element name="Point" type="FeatureStubData" />
         </xs:sequence>
         <xs:attribute name="Line" type="IdData" use="required" />
         <xs:attribute name="PositionRatio" type="xs:unsignedInt" use="required" />
@@ -143,6 +143,14 @@
     </xs:attribute>
   </xs:complexType>
   <xs:complexType name="FeatureData" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="FeatureStubData" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FeatureStubData">
+    <xs:annotation>
+      <xs:documentation>Basic information for a spatial feature. Edits that use stubs will re-calculate geometry after they have been deserialized. Edits that deal with explicit geometry should instead make use of an element based on FeatureData.</xs:documentation>
+    </xs:annotation>
     <xs:attribute name="Id" type="IdData" use="required" />
     <xs:attribute default="0" name="Entity" type="xs:int" use="optional">
       <xs:annotation>
@@ -159,17 +167,6 @@
         <xs:documentation>An  ID value that originates from some foreign source (defined by edits that import data).</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-  </xs:complexType>
-  <xs:complexType name="FeatureStubData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="FeatureData">
-        <xs:attribute name="Geometry" type="xs:unsignedInt" use="required">
-          <xs:annotation>
-            <xs:documentation>The type of geometry that is used for the feature (corresponds to the FeatureGeometry enum).</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="GetControlData">
     <xs:complexContent mixed="false">
@@ -213,17 +210,17 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DistLine" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the the point at which the distance was observed, to the intersection point.</xs:documentation>
             </xs:annotation>
@@ -251,12 +248,12 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed direction</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="DirLine" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -291,17 +288,17 @@ Dealing with these two components as a single formatted string may well be "bad"
         <xs:sequence>
           <xs:element minOccurs="1" maxOccurs="1" name="Direction1" type="DirectionData" />
           <xs:element minOccurs="1" maxOccurs="1" name="Direction2" type="DirectionData" />
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the first direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The second line created (if any), running from the point at which the second direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -324,17 +321,17 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The second observed distance (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line1" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line2" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The first line created (if any), running from the point at which the direction was observed, to the intersection point. Should always be null if the direction has an offset.</xs:documentation>
             </xs:annotation>
@@ -362,7 +359,7 @@ Dealing with these two components as a single formatted string may well be "bad"
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The created intersection point</xs:documentation>
             </xs:annotation>
@@ -415,23 +412,6 @@ Dealing with these two components as a single formatted string may well be "bad"
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="LineArray">
-    <xs:annotation>
-      <xs:documentation>An array of line features</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="Line" type="FeatureData">
-        <xs:annotation>
-          <xs:documentation>The line features in the array</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-    </xs:sequence>
-    <xs:attribute name="DefaultEntity" type="xs:int" use="required">
-      <xs:annotation>
-        <xs:documentation>The ID of the default entity type for lines in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-  </xs:complexType>
   <xs:complexType name="LineExtensionData">
     <xs:annotation>
       <xs:documentation>Operation to extend a line.</xs:documentation>
@@ -444,12 +424,12 @@ Dealing with these two components as a single formatted string may well be "bad"
               <xs:documentation>The observed length of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The point at the end of the extension.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="NewLine" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The actual extension line (if any).</xs:documentation>
             </xs:annotation>
@@ -702,17 +682,17 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The offset to the parallel (either a DistanceType, or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="From" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="From" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The point at the start of the parallel line (if it corresponds to an offset point used to define the parallel line, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The point at the end of the parallel line (if it corresponds to an offset point used to define the parallel line, only it's Id attribute will be defined)</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewLine" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The parallel that got created.</xs:documentation>
             </xs:annotation>
@@ -796,23 +776,6 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="PointArray">
-    <xs:annotation>
-      <xs:documentation>An array of point features</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="Point" type="FeatureData">
-        <xs:annotation>
-          <xs:documentation>The point features in the array</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-    </xs:sequence>
-    <xs:attribute name="DefaultEntity" type="xs:int" use="required">
-      <xs:annotation>
-        <xs:documentation>The ID of the default entity type for points in the array. If not specified, the entity type must be defined as part of every array element.</xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-  </xs:complexType>
   <xs:complexType name="PointGeometryData">
     <xs:annotation>
       <xs:documentation>Is this used? Also see PointData</xs:documentation>
@@ -858,12 +821,12 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The length of the sideshot arm (either a DistanceType or an OffsetPointType).</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="To" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The point at the end of the sideshot arm.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="FeatureData">
+          <xs:element minOccurs="0" maxOccurs="1" name="Line" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The line (if any) that was added to correspond to the sideshot arm.</xs:documentation>
             </xs:annotation>
@@ -911,7 +874,7 @@ The first and last positions are assumed to match the positions of the point fea
               <xs:documentation>The distance to the point. A negated distance refers to the distance from the end of the line.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureData">
+          <xs:element minOccurs="1" maxOccurs="1" name="NewPoint" type="FeatureStubData">
             <xs:annotation>
               <xs:documentation>The added point (between the 2 new lines)</xs:documentation>
             </xs:annotation>

@@ -399,10 +399,5 @@ namespace Backsight.Editor
                 base.Touch(afterOp);
             }
         }
-
-        internal override FeatureGeometry Representation
-        {
-            get { return FeatureGeometry.Point; }
-        }
     }
 }

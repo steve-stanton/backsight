@@ -715,14 +715,14 @@ namespace Backsight.Editor.Xml
             InternalIdValue cpid = new InternalIdValue(this.ClosingPoint);
             if (cpid.SessionId == s.Id && cpid.ItemSequence > sequence)
             {
-                FeatureStubData cp = new FeatureStubData(FeatureGeometry.Point);
+                FeatureStubData cp = new FeatureStubData();
                 cp.Id = this.ClosingPoint;
-                dff.AddFeatureData("ClosingPoint", cp);
+                dff.AddFeatureStub("ClosingPoint", cp);
             }
 
-            FeatureStubData arc = new FeatureStubData(FeatureGeometry.Arc);
+            FeatureStubData arc = new FeatureStubData();
             arc.Id = this.Arc;
-            dff.AddFeatureData("Arc", arc);
+            dff.AddFeatureStub("Arc", arc);
             op.ProcessFeatures(dff);
             return op;
         }

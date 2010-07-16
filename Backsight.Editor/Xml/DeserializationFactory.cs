@@ -42,15 +42,10 @@ namespace Backsight.Editor.Xml
 
         #endregion
 
-        internal void AddFeatureStub(string itemName, FeatureData data)
+        internal void AddFeatureStub(string itemName, FeatureStubData data)
         {
             if (data != null)
-                AddFeatureData(itemName, (FeatureStubData)data);
-        }
-
-        internal void AddFeatureData(string itemName, FeatureStubData stub)
-        {
-            AddFeatureDescription(itemName, stub.GetFeatureStub(base.Creator));
+                AddFeatureDescription(itemName, data.GetFeatureStub(base.Creator));
         }
 
         /// <summary>

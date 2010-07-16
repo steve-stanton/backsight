@@ -379,7 +379,6 @@
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GeometricModel.cs" />
-    <Compile Include="FeatureGeometry.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="IFeature.cs" />
     <Compile Include="ILoader.cs" />

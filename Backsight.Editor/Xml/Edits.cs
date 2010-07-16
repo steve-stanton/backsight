@@ -178,28 +178,7 @@ namespace Backsight.Editor.Xml {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class FeatureStubData : FeatureData {
-        
-        private uint geometryField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public uint Geometry {
-            get {
-                return this.geometryField;
-            }
-            set {
-                this.geometryField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(FeatureData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TextData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RowTextData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MiscTextData))]
@@ -210,13 +189,12 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectionData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MultiSegmentData))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ArcData))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(FeatureStubData))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public abstract partial class FeatureData {
+    public partial class FeatureStubData {
         
         private string idField;
         
@@ -228,7 +206,7 @@ namespace Backsight.Editor.Xml {
         
         private string foreignKeyField;
         
-        public FeatureData() {
+        public FeatureStubData() {
             this.entityField = 0;
         }
         
@@ -287,6 +265,25 @@ namespace Backsight.Editor.Xml {
                 this.foreignKeyField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TextData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(RowTextData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(MiscTextData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(KeyTextData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(PointData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(LineData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SegmentData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectionData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(MultiSegmentData))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ArcData))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
+    public abstract partial class FeatureData : FeatureStubData {
     }
     
     /// <remarks/>
@@ -1268,7 +1265,7 @@ namespace Backsight.Editor.Xml {
         
         private DistanceData distanceField;
         
-        private FeatureData newPointField;
+        private FeatureStubData newPointField;
         
         private string lineField;
         
@@ -1287,7 +1284,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData NewPoint {
+        public FeatureStubData NewPoint {
             get {
                 return this.newPointField;
             }
@@ -1364,9 +1361,9 @@ namespace Backsight.Editor.Xml {
         
         private ObservationData lengthField;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData lineField;
+        private FeatureStubData lineField;
         
         /// <remarks/>
         public DirectionData Direction {
@@ -1389,7 +1386,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -1399,7 +1396,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData Line {
+        public FeatureStubData Line {
             get {
                 return this.lineField;
             }
@@ -1527,11 +1524,11 @@ namespace Backsight.Editor.Xml {
         
         private ObservationData offsetField;
         
-        private FeatureData fromField;
+        private FeatureStubData fromField;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData newLineField;
+        private FeatureStubData newLineField;
         
         private string refLineField;
         
@@ -1556,7 +1553,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData From {
+        public FeatureStubData From {
             get {
                 return this.fromField;
             }
@@ -1566,7 +1563,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -1576,7 +1573,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData NewLine {
+        public FeatureStubData NewLine {
             get {
                 return this.newLineField;
             }
@@ -2126,9 +2123,9 @@ namespace Backsight.Editor.Xml {
         
         private DistanceData distanceField;
         
-        private FeatureData newPointField;
+        private FeatureStubData newPointField;
         
-        private FeatureData newLineField;
+        private FeatureStubData newLineField;
         
         private string lineField;
         
@@ -2149,7 +2146,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData NewPoint {
+        public FeatureStubData NewPoint {
             get {
                 return this.newPointField;
             }
@@ -2159,7 +2156,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData NewLine {
+        public FeatureStubData NewLine {
             get {
                 return this.newLineField;
             }
@@ -2200,7 +2197,7 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class IntersectTwoLinesData : OperationData {
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
         private string line1Field;
         
@@ -2217,7 +2214,7 @@ namespace Backsight.Editor.Xml {
         private string splitAfter2Field;
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -2316,11 +2313,11 @@ namespace Backsight.Editor.Xml {
         
         private ObservationData distance2Field;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData line1Field;
+        private FeatureStubData line1Field;
         
-        private FeatureData line2Field;
+        private FeatureStubData line2Field;
         
         private string from1Field;
         
@@ -2353,7 +2350,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -2363,7 +2360,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData Line1 {
+        public FeatureStubData Line1 {
             get {
                 return this.line1Field;
             }
@@ -2373,7 +2370,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData Line2 {
+        public FeatureStubData Line2 {
             get {
                 return this.line2Field;
             }
@@ -2429,11 +2426,11 @@ namespace Backsight.Editor.Xml {
         
         private DirectionData direction2Field;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData line1Field;
+        private FeatureStubData line1Field;
         
-        private FeatureData line2Field;
+        private FeatureStubData line2Field;
         
         /// <remarks/>
         public DirectionData Direction1 {
@@ -2456,7 +2453,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -2466,7 +2463,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData Line1 {
+        public FeatureStubData Line1 {
             get {
                 return this.line1Field;
             }
@@ -2476,7 +2473,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData Line2 {
+        public FeatureStubData Line2 {
             get {
                 return this.line2Field;
             }
@@ -2496,9 +2493,9 @@ namespace Backsight.Editor.Xml {
         
         private DirectionData directionField;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData dirLineField;
+        private FeatureStubData dirLineField;
         
         private string closeToField;
         
@@ -2519,7 +2516,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -2529,7 +2526,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData DirLine {
+        public FeatureStubData DirLine {
             get {
                 return this.dirLineField;
             }
@@ -2595,11 +2592,11 @@ namespace Backsight.Editor.Xml {
         
         private ObservationData distanceField;
         
-        private FeatureData toField;
+        private FeatureStubData toField;
         
-        private FeatureData dirLineField;
+        private FeatureStubData dirLineField;
         
-        private FeatureData distLineField;
+        private FeatureStubData distLineField;
         
         private string fromField;
         
@@ -2630,7 +2627,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData To {
+        public FeatureStubData To {
             get {
                 return this.toField;
             }
@@ -2640,7 +2637,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData DirLine {
+        public FeatureStubData DirLine {
             get {
                 return this.dirLineField;
             }
@@ -2650,7 +2647,7 @@ namespace Backsight.Editor.Xml {
         }
         
         /// <remarks/>
-        public FeatureData DistLine {
+        public FeatureStubData DistLine {
             get {
                 return this.distLineField;
             }
@@ -2757,14 +2754,14 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class AttachPointData : OperationData {
         
-        private FeatureData pointField;
+        private FeatureStubData pointField;
         
         private string lineField;
         
         private uint positionRatioField;
         
         /// <remarks/>
-        public FeatureData Point {
+        public FeatureStubData Point {
             get {
                 return this.pointField;
             }
