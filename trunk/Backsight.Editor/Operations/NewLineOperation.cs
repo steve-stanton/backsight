@@ -51,15 +51,6 @@ namespace Backsight.Editor.Operations
             m_NewLine = null;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewLineOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        protected NewLineOperation(Session s)
-            : this(s, 0)
-        {
-        }
-
         #endregion
 
         /// <summary>

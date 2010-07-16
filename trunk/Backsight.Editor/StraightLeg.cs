@@ -48,24 +48,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization
-        /// </summary>
-        /// <param name="op">The editing operation creating the leg</param>
-        /// <param name="t">The serialized version of this leg</param>
-        /*
-        internal StraightLeg(Operation op, StraightLegData t)
-            : base(op, t)
-        {
-            if (String.IsNullOrEmpty(t.StartAngle))
-                m_StartAngle = 0.0;
-            else
-                m_StartAngle = RadianValue.Parse(t.StartAngle);
-
-            m_IsDeflection = t.Deflection;
-        }
-        */
-
-        /// <summary>
         /// Creates a new <c>StraightLeg</c>
         /// </summary>
         /// <param name="nspan">The number of spans for the leg.</param>

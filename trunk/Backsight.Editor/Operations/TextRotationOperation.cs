@@ -43,7 +43,7 @@ namespace Backsight.Editor.Operations
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
+        /// Initializes a new instance of the <see cref="TextRotationOperation"/> class
         /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
@@ -53,15 +53,6 @@ namespace Backsight.Editor.Operations
             : base(s, sequence)
         {
             m_Rotation = m_PrevRotation = 0.0;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TextRotationOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal TextRotationOperation(Session s)
-            : this(s, 0)
-        {
         }
 
         #endregion
@@ -158,8 +149,13 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Performs the data processing associated with this editing operation.
+        /// Calculates the geometry for any spatial features that were created by
+        /// this editing operation.
         /// </summary>
+        /// <remarks>This is currently used only during deserialization from the database.
+        /// By changing the default rotation here (rather than in <c>ProcessFeatures</c>),
+        /// it gets assigned at the proper slot in the editing sequence.
+        /// </remarks>
         internal override void CalculateGeometry()
         {
             // Remember the current default

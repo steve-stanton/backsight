@@ -101,7 +101,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new TextRotationOperation(Session.WorkingSession);
+                op = new TextRotationOperation(Session.WorkingSession, 0);
                 op.Execute(point1, point2);
                 FinishCommand();
             }
@@ -109,7 +109,7 @@ namespace Backsight.Editor.UI
             catch (Exception ex)
             {
                 Session.WorkingSession.Remove(op);
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace, ex.Message);
                 AbortCommand();
             }
         }

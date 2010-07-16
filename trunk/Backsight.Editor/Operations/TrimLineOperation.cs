@@ -13,9 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using Backsight.Editor.Observations;
 
@@ -90,22 +88,31 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The lines that were selected for trimming.
         /// </summary>
-        List<LineFeature> m_Lines;
+        LineFeature[] m_Lines;
 
         /// <summary>
         /// Any dangling end points.
         /// </summary>
         /// <remarks>In the original implementation, these were de-activated. The current
-        /// implementation just marks these points as trimmed.</remarks>
-        List<PointFeature> m_Points;
+        /// implementation just marks these points as trimmed.
+        /// <para/>
+        /// It may well be "incorrect" to record the points that were dangling, as
+        /// this actually signifies the lines that were dangling at the time when the
+        /// edit was originally performed. A more correct implementation would derive
+        /// the trim points each time the edit is reloaded from the database. The only
+        /// reason for not doing so is because special processing would be needed upon
+        /// deserialization (topology is not available initially, so the processing would
+        /// need to be deferred).
+        /// </remarks>
+        PointFeature[] m_Points;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for use during deserialization.
-       /// </summary>
+        /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
+        /// </summary>
         /// <param name="s">The session the new instance should be added to</param>
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
@@ -115,15 +122,6 @@ namespace Backsight.Editor.Operations
         {
             m_Lines = null;
             m_Points = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        internal TrimLineOperation(Session s)
-            : this(s, 0)
-        {
         }
 
         #endregion
@@ -177,7 +175,7 @@ namespace Backsight.Editor.Operations
                     line.IsTrimmed = false;
             }
 
-            // Restore point features that were de-activated
+            // Revert the trim status of the point(s) involved.
             if (m_Points!=null)
             {
                 foreach (PointFeature p in m_Points)
@@ -250,44 +248,42 @@ namespace Backsight.Editor.Operations
         /// to the static <see cref="PreCheck"/> method).</param>
         internal void Execute(LineFeature[] lines)
         {
-            m_Lines = new List<LineFeature>(lines);
+            m_Lines = lines;
+
+            // Record the dangling end points.
+            List<PointFeature> points = new List<PointFeature>(lines.Length);
 
             foreach (LineFeature line in m_Lines)
             {
-                // Mark it as trimmed.
-                line.IsTrimmed = true;
-
                 if (line.IsStartDangle())
-                    AddTrimPoint(line.StartPoint);
+                {
+                    PointFeature start = line.StartPoint;
+                    if (!points.Contains(start))
+                        points.Add(start);
+                }
 
                 if (line.IsEndDangle())
-                    AddTrimPoint(line.EndPoint);
+                {
+                    PointFeature end = line.EndPoint;
+                    if (!points.Contains(end))
+                        points.Add(end);
+                }
             }
 
-            // Peform standard completion steps
-            Complete();
+            m_Points = points.ToArray();
+
+            base.Execute(new FeatureFactory(this));
         }
 
         /// <summary>
-        /// Remembers a point at the end of a trimmed section
+        /// Performs data processing that involves creating or retiring spatial features.
+        /// Newly created features will not have any definition for their geometry - a
+        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
         /// </summary>
-        /// <param name="point"></param>
-        void AddTrimPoint(PointFeature point)
-        {
-            if (m_Points==null)
-                m_Points = new List<PointFeature>();
-
-            if (!m_Points.Contains(point))
-            {
-                m_Points.Add(point);
-                point.IsTrimmed = true;
-            }
-        }
-
-        /// <summary>
-        /// Performs the data processing associated with this editing operation.
-        /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ff">The factory class for generating any spatial features</param>
+        /// <remarks>This implementation does nothing. Derived classes that need to are
+        /// expected to provide a suitable override.</remarks>
+        internal override void ProcessFeatures(FeatureFactory ff)
         {
             // Modify the referenced features...
 
@@ -303,8 +299,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal LineFeature[] TrimmedLines
         {
-            get { return m_Lines.ToArray(); }
-            set { m_Lines = new List<LineFeature>(value); }
+            get { return m_Lines; }
+            set { m_Lines = value; }
         }
 
         /// <summary>
@@ -312,8 +308,8 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal PointFeature[] TrimPoints
         {
-            get { return m_Points.ToArray(); }
-            set { m_Points = new List<PointFeature>(value); }
+            get { return m_Points; }
+            set { m_Points = value; }
         }
     }
 }

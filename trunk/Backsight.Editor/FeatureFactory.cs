@@ -303,13 +303,27 @@ namespace Backsight.Editor
             return new SectionLineFeature(f, baseLine, from, to, baseLine.IsTopological);
         }
 
-        internal bool MakeSections(LineFeature baseLine, string itemBefore, PointFeature x, string itemAfter,
+        /// <summary>
+        /// Splits a line into two sections, using the session sequence number
+        /// that was previously recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// The original line will then be deactivated.
+        /// <para/>
+        /// Only the session sequence number will be used when creating the section (any
+        /// entity type and feature ID that may have been presented through <see cref="AddFeatureDescription"/>
+        /// will be ignored - the values from the parent line will be applied instead).
+        /// </summary>
+        /// <param name="baseLine">The line to split.</param>
+        /// <param name="itemBefore">The name of the item for the section preceding the split.</param>
+        /// <param name="x">The point that is common to the two sections</param>
+        /// <param name="itemAfter">The name of the item for the section after the splot.</param>
+        /// <param name="lineBefore">The created section prior to the split point (corresponding to <paramref name="itemBefore"/>)</param>
+        /// <param name="lineAfter">The created section after the split point (corresponding to <paramref name="itemAfter"/>)</param>
+        /// <exception cref="InvalidOperationException">If information for either item has not been
+        /// attached to this factory.</exception>
+        internal void MakeSections(LineFeature baseLine, string itemBefore, PointFeature x, string itemAfter,
                                         out SectionLineFeature lineBefore, out SectionLineFeature lineAfter)
         {
             lineBefore = lineAfter = null;
-
-            if (itemBefore == null || itemAfter == null)
-                return false;
 
             // Split the line (the sections should get an undefined creation sequence). Note that
             // you cannot use the SplitLine method at this stage, because that requires defined
@@ -319,7 +333,6 @@ namespace Backsight.Editor
             lineAfter = MakeSection(itemAfter, baseLine, x, baseLine.EndPoint);
 
             Deactivate(baseLine);
-            return true;
         }
 
         /// <summary>
@@ -336,6 +349,8 @@ namespace Backsight.Editor
         /// <param name="from">The point at the start of the section (not null).</param>
         /// <param name="to">The point at the end of the section (not null).</param>
         /// <returns>The created feature (null if a feature description was not previously added)</returns>
+        /// <exception cref="InvalidOperationException">If information for the item has not been
+        /// attached to this factory.</exception>
         SectionLineFeature MakeSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
         {
             IFeature f = FindFeatureDescription(itemName);
