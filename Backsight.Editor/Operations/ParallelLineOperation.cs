@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Environment;
-using Backsight.Geometry;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
 
@@ -384,44 +383,6 @@ namespace Backsight.Editor.Operations
             }
 
             base.Execute(ff);
-
-            /*
-            // Add points at the ends of the parallel.
-            CadastralMapModel map = CadastralMapModel.Current;
-            PointFeature ps = AddPoint(spar);
-            PointFeature pe = AddPoint(epar);
-
-            // Add the parallel line to the map (if it's a circular arc,
-            // we may need to reverse the direction).
-
-            IEntity ent = MapModel.DefaultLineType;
-
-            if (m_RefLine is ArcFeature)
-            {
-                ArcFeature arc = (m_RefLine as ArcFeature);
-                Circle circle = arc.Circle;
-                PointFeature center = circle.CenterPoint;
-                bool iscw = arc.IsClockwise;
-
-                // Need to add a circle first.
-                double parRadius = Geom.Distance(center, spar);
-                Circle parCircle = map.AddCircle(center, parRadius);
-
-                // Use the reverse arc direction if specified.
-                if (IsArcReversed)
-                    iscw = !iscw;
-
-                // Add the circular arc
-                m_ParLine = map.AddCircularArc(parCircle, ps, pe, iscw, ent, this);
-            }
-            else
-            {
-                m_ParLine = map.AddLine(ps, pe, ent, this);
-            }
-
-            // Peform standard completion steps
-            Complete();
-             */
         }
 
         /// <summary>
