@@ -88,6 +88,7 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
             Zero();
+            m_Cmd = updcmd;
         }
 
         #endregion
