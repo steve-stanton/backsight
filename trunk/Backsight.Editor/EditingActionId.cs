@@ -60,7 +60,7 @@ namespace Backsight.Editor
         Radial              =34,
         SetTheme            =35,
         SetTopology         =36,
-        PointOnLine         =37,
+        SimpleLineSubdivision=37,
         Parallel            =38,
         Trim                =39,
         AttachPoint         =40,

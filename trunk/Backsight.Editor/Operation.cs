@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// <summary>
         /// A previous edit that this one is based on (null if this edit has never been revised).
         /// </summary>
-        //Operation m_Previous;
+        Operation m_Previous;
 
         /// <summary>
         /// The next revision of this edit (null if this edit has never been revised).
@@ -62,16 +62,6 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
-
-        /// <summary>
-        /// Creates a new editing operation as part of the supplied session. This constructor
-        /// is only called during regular editing work.
-        /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        protected Operation(Session s)
-            : this(s, 0)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Operation"/> class.
@@ -86,12 +76,25 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Session = s;
-            m_Session.Add(this);
+
+            // The edit is now added to the session at the very end of SaveOperation
+            // m_Session.Add(this);
 
             if (sequence == 0)
                 m_Sequence = Session.ReserveNextItem();
             else
                 m_Sequence = sequence;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Operation"/> class that is exactly
+        /// like an earlier version of the edit.
+        /// </summary>
+        /// <param name="previous">The previous incarnation of the edit</param>
+        protected Operation(Operation previous)
+            : this(previous.Session, previous.EditSequence)
+        {
+            m_Previous = previous;
         }
 
         #endregion
@@ -459,6 +462,9 @@ namespace Backsight.Editor
                 // Update the end-time associated with the session
                 Session.WorkingSession.UpdateEndTime();
             });
+
+            // Remember the edit as part of the session
+            Session.WorkingSession.Add(this);
         }
 
         /// <summary>

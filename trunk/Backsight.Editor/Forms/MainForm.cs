@@ -345,7 +345,7 @@ namespace Backsight.Editor.Forms
                 IsLineSubdivideLineEnabled,
                 LineSubdivideLine);
             AddEdit(
-                EditingActionId.PointOnLine,
+                EditingActionId.SimpleLineSubdivision,
                 new ToolStripItem[] { mnuLineSubdivideLineOneDistance, ctxLineSubdivideOneDistance },
                 IsLineSubdivideLineOneDistanceEnabled,
                 LineSubdivideLineOneDistance);
