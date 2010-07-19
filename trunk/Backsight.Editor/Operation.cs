@@ -78,7 +78,7 @@ namespace Backsight.Editor
             m_Session = s;
 
             // The edit is now added to the session at the very end of SaveOperation
-            // m_Session.Add(this);
+            //m_Session.Add(this);
 
             if (sequence == 0)
                 m_Sequence = Session.ReserveNextItem();
@@ -675,7 +675,9 @@ namespace Backsight.Editor
         internal void Execute(FeatureFactory ff)
         {
             Debug.Assert(m_Session == Session.WorkingSession);
+            ProcessEdit(ff);
 
+            /*
             try
             {
                 ProcessEdit(ff);
@@ -688,6 +690,7 @@ namespace Backsight.Editor
                 m_Session.Remove(this);
                 throw ex;
             }
+             */
         }
 
         /// <summary>

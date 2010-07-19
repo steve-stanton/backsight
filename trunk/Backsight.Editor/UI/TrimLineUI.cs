@@ -93,7 +93,7 @@ namespace Backsight.Editor.UI
             catch (Exception e)
             {
                 MessageBox.Show(e.StackTrace, e.Message);
-                Session.WorkingSession.Remove(op);
+                //Session.WorkingSession.Remove(op);
                 c.AbortCommand(this);
                 return false;
             }

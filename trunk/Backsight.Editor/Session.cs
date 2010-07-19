@@ -225,16 +225,16 @@ namespace Backsight.Editor
             m_Operations.Add(o);
         }
 
-        /// <summary>
-        /// Removes an editing operation from this session. This should be called
-        /// if a new edit has failed to execute as expected.
-        /// </summary>
-        /// <param name="o">The edit that has failed</param>
-        /// <returns>True if operation removed</returns>
-        internal bool Remove(Operation o)
-        {
-            return m_Operations.Remove(o);
-        }
+        ///// <summary>
+        ///// Removes an editing operation from this session. This should be called
+        ///// if a new edit has failed to execute as expected.
+        ///// </summary>
+        ///// <param name="o">The edit that has failed</param>
+        ///// <returns>True if operation removed</returns>
+        //internal bool Remove(Operation o)
+        //{
+        //    return m_Operations.Remove(o);
+        //}
 
         /// <summary>
         /// Cuts an operation from this session.
