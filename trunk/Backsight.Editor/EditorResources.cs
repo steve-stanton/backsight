@@ -13,9 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-using System.Drawing;
 using System.IO;
 
 using Backsight.Editor.Properties;

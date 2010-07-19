@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Data;
 using System.Data.SqlClient;
@@ -25,10 +24,7 @@ using System.IO;
 
 using Backsight.Data;
 using Backsight.Editor.Database;
-using Backsight.Editor.Operations;
-using Backsight.Editor.Properties;
 using Backsight.Environment;
-using Backsight.Geometry;
 using Backsight.Index;
 
 namespace Backsight.Editor

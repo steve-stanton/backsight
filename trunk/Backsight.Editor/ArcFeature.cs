@@ -14,7 +14,6 @@
 // </remarks>
 
 using System;
-using System.Diagnostics;
 
 using Backsight.Environment;
 using Backsight.Geometry;

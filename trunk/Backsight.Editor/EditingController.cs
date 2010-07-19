@@ -19,17 +19,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Data;
 
-using Backsight.Editor.Operations;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Forms;
 using Backsight.Environment;
-using Backsight.SqlServer;
-using Backsight.Geometry;
 using Backsight.Editor.Database;
 using Backsight.Data;
 using Backsight.Editor.UI;

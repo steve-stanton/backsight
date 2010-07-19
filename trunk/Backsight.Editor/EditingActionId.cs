@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="02-FEB-2007" />
