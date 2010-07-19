@@ -108,7 +108,7 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
             finally
@@ -147,7 +147,7 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(i);
+                //Session.WorkingSession.Remove(i);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

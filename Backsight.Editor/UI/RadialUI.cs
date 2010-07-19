@@ -253,7 +253,7 @@ namespace Backsight.Editor.UI
 
                 catch (Exception ex)
                 {
-                    Session.WorkingSession.Remove(pop);
+                    //Session.WorkingSession.Remove(pop);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                 }
         	}

@@ -638,7 +638,7 @@ namespace Backsight.Editor.UI
 
             catch (Exception ex)
             {
-                Session.WorkingSession.Remove(txop);
+                //Session.WorkingSession.Remove(txop);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

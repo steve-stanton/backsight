@@ -121,7 +121,6 @@ namespace Backsight.Editor.Xml
             AddMapping("PointFeature", "PointData");
             AddMapping("RowTextFeature", "RowTextData");
             AddMapping("SectionLineFeature", "SectionData");
-            //AddMapping("FeatureStub", "FeatureStubData");
         }
 
         #endregion
@@ -253,6 +252,9 @@ namespace Backsight.Editor.Xml
 
             // Associate referenced features with the edit
             result.AddReferences();
+
+            // Remember the edit as part of the session
+            s.Add(result);
 
             return result;
         }

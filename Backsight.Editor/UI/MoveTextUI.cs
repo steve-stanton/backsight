@@ -148,7 +148,7 @@ namespace Backsight.Editor.UI
 
             catch (Exception ex)
             {
-                Session.CurrentSession.Remove(op);
+                //Session.CurrentSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
