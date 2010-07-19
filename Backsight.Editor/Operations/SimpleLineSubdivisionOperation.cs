@@ -79,6 +79,20 @@ namespace Backsight.Editor.Operations
             m_Distance = dist;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
+        /// that represents an update to an earlier version of the edit.
+        /// </summary>
+        /// <param name="pop">The previous version of this edit</param>
+        /// <param name="dist">The revised distance to the split point (specify a negated distance
+        /// if it's from the end of the line).</param>
+        internal SimpleLineSubdivisionOperation(SimpleLineSubdivisionOperation pop, Distance dist)
+            : base(pop)
+        {
+            m_Line = pop.Line;
+            m_Distance = dist;
+        }
+
         #endregion
 
         /// <summary>
@@ -207,24 +221,6 @@ namespace Backsight.Editor.Operations
             ff.AddFeatureDescription("NewLine2", new FeatureStub(this, m_Line.EntityType, null));
 
             base.Execute(ff);
-            /*
-            // Add the split location (with no ID and default entity type).
-            CadastralMapModel map = MapModel;
-            m_NewPoint = map.AddPoint(splitpos, map.DefaultPointType, this);
-
-            // Assign the new point the next available ID.
-            m_NewPoint.SetNextId();
-
-            // Create two line sections (one of them will be associated with the distance)
-            m_NewLine1 = MakeSection(Session.ReserveNextItem(), m_Line.StartPoint, m_NewPoint);
-            m_NewLine2 = MakeSection(Session.ReserveNextItem(), m_NewPoint, m_Line.EndPoint);
-
-            // De-activate the parent line
-            m_Line.IsInactive = true;
-
-            // Peform standard completion steps
-            Complete();
-             */
         }
 
         /// <summary>
@@ -343,7 +339,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override EditingActionId EditId
         {
-            get { return EditingActionId.PointOnLine; }
+            get { return EditingActionId.SimpleLineSubdivision; }
         }
 
         /// <summary>

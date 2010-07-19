@@ -186,6 +186,16 @@ namespace Backsight.Editor.UI
                 return false;
             }
 
+            // De-select the line that's being split
+            Controller.ClearSelection();
+
+            // Get info from the dialog.
+            m_Length = m_Dialog.Length;
+
+            Distance d = new Distance(m_Length);
+            if (m_Dialog.IsFromEnd)
+                d.SetNegative();
+
             // If we are doing an update, alter the original operation.
             UpdateUI up = this.Update;
 
@@ -201,18 +211,12 @@ namespace Backsight.Editor.UI
 
                 // Make the update.
                 pop.Correct(m_Dialog.Length, m_Dialog.IsFromEnd);
+
+                SimpleLineSubdivisionOperation rev = new SimpleLineSubdivisionOperation(pop, d);
+                up.AddRevision(rev);
             }
             else
             {
-                // De-select the line that's being split
-                Controller.ClearSelection();
-
-                // Get info from the dialog.
-                m_Length = m_Dialog.Length;
-
-                Distance d = new Distance(m_Length);
-                if (m_Dialog.IsFromEnd)
-                    d.SetNegative();
 
                 // Execute the edit
                 SimpleLineSubdivisionOperation op = null;
@@ -225,8 +229,8 @@ namespace Backsight.Editor.UI
 
                 catch (Exception ex)
                 {
-                    Session.WorkingSession.Remove(op);
-                    MessageBox.Show(ex.Message);
+                    //Session.WorkingSession.Remove(op);
+                    MessageBox.Show(ex.StackTrace, ex.Message);
                     return false;
                 }
             }

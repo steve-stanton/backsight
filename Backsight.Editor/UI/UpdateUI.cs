@@ -468,15 +468,15 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                     break;
                 }
 
-                case EditingActionId.PointOnLine:
-                {
-                    m_Cmd = new SimpleLineSubdivisionUI(cc, pop.EditId, this);
-                    break;
-                }
-
                 case EditingActionId.Radial:
                 {
                     m_Cmd = new RadialUI(cc, pop.EditId, this);
+                    break;
+                }
+
+                case EditingActionId.SimpleLineSubdivision:
+                {
+                    m_Cmd = new SimpleLineSubdivisionUI(cc, pop.EditId, this);
                     break;
                 }
             }
