@@ -123,33 +123,6 @@ namespace Backsight.Editor.Operations
             // like the subdivided line.
 
             base.Execute(ff);
-
-            ///////////////
-            /*
-            m_Sections = new List<MeasuredLineFeature>(distances.Length);
-            foreach (Distance d in distances)
-                m_Sections.Add(new MeasuredLineFeature(null, d));
-
-            // Adjust the observed distances
-            double[] adjray = GetAdjustedLengths(m_Line, distances);
-
-            // Create line sections
-            double edist = 0.0;		// Distance to end of section.
-            PointFeature start = m_Line.StartPoint;
-
-            for (int i = 0; i < adjray.Length; i++)
-            {
-                edist += adjray[i];
-                m_Sections[i].Line = MakeSection(start, edist);
-                start = m_Sections[i].Line.EndPoint;
-            }
-
-            // De-activate the parent line
-            m_Line.IsInactive = true;
-
-            // Peform standard completion steps
-            Complete();
-             */
         }
 
         /// <summary>
