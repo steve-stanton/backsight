@@ -56,6 +56,11 @@ namespace Backsight.Editor.UI
         readonly UpdateContext m_Context;
 
         /// <summary>
+        /// Modified edits
+        /// </summary>
+        readonly Stack<Operation> m_Edits;
+
+        /// <summary>
         /// Edits that are dependent on the edit that is currently being revised
         /// </summary>
         Operation[] m_DepOps;
@@ -87,6 +92,7 @@ namespace Backsight.Editor.UI
             m_DepOps = null;
             m_Problem = null;
             m_Context = new UpdateContext();
+            m_Edits = new Stack<Operation>();
         }
 
         #endregion
@@ -513,10 +519,17 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// <returns>True if the command is one that was created by this update object.</returns>
         internal bool FinishCommand(CommandUI cmd)
         {
-	        // Return if we somehow don't have an operation.
+	        // Return if we somehow don't have an operation (this refers to the original editing operation)
 	        Operation pop = GetOp();
 	        if (pop==null)
                 return false;
+
+            // Grab the modified version of the edit
+            Operation rev = LastRevisedEdit;
+            if (rev == null)
+                return false;
+
+            Debug.Assert(rev.DataId == pop.DataId);
 
             // Confirm that update parameters have been defined (this is supposed to be done by
             // the UI's implementation of the DialFinish command).
@@ -953,5 +966,29 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         //    get { return m_UpdateParameters; }
         //    set { m_UpdateParameters = value; }
         //}
+
+        /// <summary>
+        /// Remembers the modified version of an edit
+        /// </summary>
+        /// <param name="edit">The modified edit (refers back to another edit)</param>
+        internal void AddRevisedEdit(Operation edit)
+        {
+            m_Edits.Push(edit);
+        }
+
+        /// <summary>
+        /// The last edit recorded via a call to <see cref="AddRevisedEdit"/> (null if no
+        /// edits have been made).
+        /// </summary>
+        internal Operation LastRevisedEdit
+        {
+            get
+            {
+                if (m_Edits.Count == 0)
+                    return null;
+
+                return m_Edits.Peek();
+            }
+        }
     }
 }
