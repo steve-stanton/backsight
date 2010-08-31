@@ -80,16 +80,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
-        /// that represents an update to an earlier version of the edit.
+        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class,
+        /// for use when the edit is being updated.
         /// </summary>
-        /// <param name="pop">The previous version of this edit</param>
+        /// <param name="edit">The original edit.</param>
         /// <param name="dist">The revised distance to the split point (specify a negated distance
         /// if it's from the end of the line).</param>
-        internal SimpleLineSubdivisionOperation(SimpleLineSubdivisionOperation pop, Distance dist)
-            : base(pop)
+        internal SimpleLineSubdivisionOperation(SimpleLineSubdivisionOperation edit, Distance dist)
+            : base(edit)
         {
-            m_Line = pop.Line;
+            m_Line = edit.m_Line;
             m_Distance = dist;
         }
 
@@ -267,6 +267,7 @@ namespace Backsight.Editor.Operations
             return newLine;
         }
 
+        /*
         /// <summary>
         /// Corrects this operation. This just changes the info defining the op, but does not
         /// attempt to re-execute it. This is used (I think) if a problem needs to be corrected
@@ -277,19 +278,18 @@ namespace Backsight.Editor.Operations
         /// <returns>True if changes made ok (always true).</returns>
         internal bool Correct(Distance dist, bool isFromEnd)
         {
-            throw new NotImplementedException();
+            // Change the distance.
+            m_Distance = new Distance(dist);
 
-            //// Change the distance.
-            //m_Distance = new Distance(dist);
+            // And make sure the sign is correct.
+            if (isFromEnd)
+                m_Distance.SetNegative();
+            else
+                m_Distance.SetPositive();
 
-            //// And make sure the sign is correct.
-            //if (isFromEnd)
-            //    m_Distance.SetNegative();
-            //else
-            //    m_Distance.SetPositive();
-
-            //return true;
+            return true;
         }
+        */
 
         /// <summary>
         /// A user-perceived title for this operation.

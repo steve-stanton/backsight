@@ -210,10 +210,10 @@ namespace Backsight.Editor.UI
                 }
 
                 // Make the update.
-                pop.Correct(m_Dialog.Length, m_Dialog.IsFromEnd);
+                //pop.Correct(m_Dialog.Length, m_Dialog.IsFromEnd);
 
-                //SimpleLineSubdivisionOperation rev = new SimpleLineSubdivisionOperation(pop, d);
-                //up.AddRevision(rev);
+                SimpleLineSubdivisionOperation rev = new SimpleLineSubdivisionOperation(pop, d);
+                up.AddRevisedEdit(rev);
             }
             else
             {
