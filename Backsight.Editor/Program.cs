@@ -29,9 +29,29 @@ namespace Backsight.Editor
         [STAThread]
         static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(args));
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new MainForm(args));
+
+            DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
+            Backsight.Editor.Observations.Distance d = new Backsight.Editor.Observations.Distance("123", du);
+            string s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToXml<Backsight.Editor.Observations.Distance>(d);
+            //MessageBox.Show(s);
+
+            Backsight.Editor.Observations.OffsetDistance od = new Backsight.Editor.Observations.OffsetDistance(d, true);
+            s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToXml<Backsight.Editor.Observations.OffsetDistance>(od);
+            MessageBox.Show(s);
+
+            try
+            {
+                od = (Backsight.Editor.Observations.OffsetDistance)Backsight.Editor.Xml.DataFactory.Instance.XmlToObservation(s);
+                MessageBox.Show(od.GetType().Name);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 }
