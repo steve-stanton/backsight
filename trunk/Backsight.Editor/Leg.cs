@@ -89,6 +89,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
+        [Obsolete]
         abstract internal void Save(FeatureFactory ff, List<PointFeature> createdPoints, ref IPosition terminal,
                                         ref double bearing, double sfac);
 

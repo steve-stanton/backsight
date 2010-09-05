@@ -20,6 +20,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Backsight.Editor.Xml
 {
@@ -205,6 +206,50 @@ namespace Backsight.Editor.Xml
             }
 
             return sb.ToString();
+        }
+
+        // test
+        // What you end up with is something like <DistanceData Value="123" Unit="2" /> (the
+        // element name matches the name of the Data class).
+        internal string ObservationToXml<T>(T o) where T : Observation
+        {
+            ObservationData od = ToData<ObservationData>(o);
+
+            // Omit the xml declaration
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.OmitXmlDeclaration = true;
+
+            // Avoid namespace junk too - see tip 4 in:
+            // http://www.codeproject.com/Articles/58287/XML-Serialization-Tips-Tricks.aspx
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
+
+            StringBuilder sb = new StringBuilder(1000);
+
+            using (XmlWriter writer = XmlWriter.Create(sb, xws))
+            {
+                XmlSerializer xs = new XmlSerializer(od.GetType());
+                xs.Serialize(writer, od, ns);
+            }
+
+            // When dealing with something like an OffsetDistance, the inner element ends up
+            // with an annoyingly verbose xmlns="Backsight" - of no value, so just trash it.
+            string s = sb.ToString();
+            return s.Replace("xmlns=\"Backsight\"", "");
+        }
+
+        //internal ObservationData XmlToObservation(IXmlLoader loader, string s)
+        internal Observation XmlToObservation(string s)
+        {
+            using (StringReader sr = new StringReader(s))
+            {
+                using (XmlReader xr = XmlReader.Create(sr))
+                {
+                    XmlSerializer xs = new XmlSerializer(typeof(ObservationData));
+                    ObservationData od = (ObservationData)xs.Deserialize(xr);
+                    return od.LoadObservation(null);
+                }
+            }
         }
 
         internal T ToData<T>(Observation o) where T : ObservationData
