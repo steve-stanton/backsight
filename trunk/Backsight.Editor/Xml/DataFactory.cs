@@ -214,6 +214,27 @@ namespace Backsight.Editor.Xml
         internal string ObservationToXml<T>(T o) where T : Observation
         {
             ObservationData od = ToData<ObservationData>(o);
+            //return Newtonsoft.Json.JsonConvert.SerializeObject(od);
+            BacksightTypeResolver str = new BacksightTypeResolver();
+            //System.Web.Script.Serialization.SimpleTypeResolver str = new System.Web.Script.Serialization.SimpleTypeResolver();
+            return new System.Web.Script.Serialization.JavaScriptSerializer(str).Serialize(od);
+
+            /*
+            // see the other derived classes (closely related to xml!)
+            System.Runtime.Serialization.NetDataContractSerializer s = new System.Runtime.Serialization.NetDataContractSerializer();
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\a.txt"))
+            //using (MemoryStream ms = new MemoryStream())
+            {
+                s.Serialize(sw, od);
+                //s.Serialize(ms, od);
+                //return sw.ToString();
+                //byte[] data = ms.GetBuffer();
+                //return new StringBuilder().Append(data).ToString();
+            }
+
+            return File.ReadAllText(@"C:\Temp\a.txt");
+             */
+            /*
 
             // Omit the xml declaration
             XmlWriterSettings xws = new XmlWriterSettings();
@@ -236,6 +257,15 @@ namespace Backsight.Editor.Xml
             // with an annoyingly verbose xmlns="Backsight" - of no value, so just trash it.
             string s = sb.ToString();
             return s.Replace("xmlns=\"Backsight\"", "");
+             */
+        }
+
+        internal Backsight.Editor.Observations.OffsetDistance JsonToOffsetDistance(string s)
+        {
+            OffsetDistanceData od = Newtonsoft.Json.JsonConvert.DeserializeObject<OffsetDistanceData>(s);
+            System.Windows.Forms.MessageBox.Show(od.GetType().Name);
+            //return od.LoadObservation();
+            return null;
         }
 
         //internal ObservationData XmlToObservation(IXmlLoader loader, string s)
