@@ -195,7 +195,7 @@ namespace Backsight.Editor.Xml
         internal override Observation LoadObservation(ILoader loader)
         {
             DistanceUnitType dut = (DistanceUnitType)this.Unit;
-            DistanceUnit enteredUnit = EditingController.Current.GetUnits(dut);
+            DistanceUnit enteredUnit = EditingController.GetUnits(dut);
             return new Distance(this.Value, enteredUnit, this.Fixed);
         }
     }

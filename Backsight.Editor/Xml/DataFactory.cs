@@ -57,7 +57,7 @@ namespace Backsight.Editor.Xml
         /// abstract classes and interfaces.</returns>
         /// <exception cref="InvalidOperationException">If more than one type has
         /// the same short name.</exception>
-        static Dictionary<string, Type> GetTypeIndex()
+        internal static Dictionary<string, Type> GetTypeIndex()
         {
             Assembly a = Assembly.GetExecutingAssembly();
             Type[] types = a.GetTypes();
@@ -208,34 +208,19 @@ namespace Backsight.Editor.Xml
             return sb.ToString();
         }
 
-        // test
-        // What you end up with is something like <DistanceData Value="123" Unit="2" /> (the
-        // element name matches the name of the Data class).
-        internal string ObservationToXml<T>(T o) where T : Observation
+        /// <summary>
+        /// Converts an observation into a persistent string (not necessarily XML).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        internal string ObservationToString<T>(T o) where T : Observation
         {
             ObservationData od = ToData<ObservationData>(o);
-            //return Newtonsoft.Json.JsonConvert.SerializeObject(od);
             BacksightTypeResolver str = new BacksightTypeResolver();
-            //System.Web.Script.Serialization.SimpleTypeResolver str = new System.Web.Script.Serialization.SimpleTypeResolver();
             return new System.Web.Script.Serialization.JavaScriptSerializer(str).Serialize(od);
 
             /*
-            // see the other derived classes (closely related to xml!)
-            System.Runtime.Serialization.NetDataContractSerializer s = new System.Runtime.Serialization.NetDataContractSerializer();
-            using (StreamWriter sw = File.CreateText(@"C:\Temp\a.txt"))
-            //using (MemoryStream ms = new MemoryStream())
-            {
-                s.Serialize(sw, od);
-                //s.Serialize(ms, od);
-                //return sw.ToString();
-                //byte[] data = ms.GetBuffer();
-                //return new StringBuilder().Append(data).ToString();
-            }
-
-            return File.ReadAllText(@"C:\Temp\a.txt");
-             */
-            /*
-
             // Omit the xml declaration
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.OmitXmlDeclaration = true;
@@ -260,26 +245,12 @@ namespace Backsight.Editor.Xml
              */
         }
 
-        internal Backsight.Editor.Observations.OffsetDistance JsonToOffsetDistance(string s)
+        internal Observation StringToObservation(string s)
         {
-            OffsetDistanceData od = Newtonsoft.Json.JsonConvert.DeserializeObject<OffsetDistanceData>(s);
-            System.Windows.Forms.MessageBox.Show(od.GetType().Name);
-            //return od.LoadObservation();
-            return null;
-        }
-
-        //internal ObservationData XmlToObservation(IXmlLoader loader, string s)
-        internal Observation XmlToObservation(string s)
-        {
-            using (StringReader sr = new StringReader(s))
-            {
-                using (XmlReader xr = XmlReader.Create(sr))
-                {
-                    XmlSerializer xs = new XmlSerializer(typeof(ObservationData));
-                    ObservationData od = (ObservationData)xs.Deserialize(xr);
-                    return od.LoadObservation(null);
-                }
-            }
+            BacksightTypeResolver tr = new BacksightTypeResolver();
+            ObservationData data = new System.Web.Script.Serialization.JavaScriptSerializer(tr).Deserialize<ObservationData>(s);
+            ILoader loader = new TestLoader();
+            return data.LoadObservation(loader);
         }
 
         internal T ToData<T>(Observation o) where T : ObservationData

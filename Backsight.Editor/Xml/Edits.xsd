@@ -664,11 +664,6 @@ The first and last positions are assumed to match the positions of the point fea
   </xs:complexType>
   <xs:complexType name="OperationData" abstract="true">
     <xs:attribute name="Id" type="IdData" use="required" />
-    <xs:attribute name="PreviousId" type="IdData" use="optional">
-      <xs:annotation>
-        <xs:documentation>The ID of a previous edit that this edit is based on.</xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
   </xs:complexType>
   <xs:complexType name="ParallelLineData">
     <xs:annotation>
@@ -948,8 +943,23 @@ The first and last positions are assumed to match the positions of the point fea
   <xs:complexType name="UpdateData" abstract="true">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="unbounded" name="Item" type="UpdateItemData" />
+        </xs:sequence>
         <xs:attribute name="RevisedEdit" type="IdData" use="required" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UpdateItemData">
+    <xs:attribute name="Name" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>A name for the updated item (means something in the context of the revised edit)</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Value" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Revised value for the item (may be a serialized version of something).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
 </xs:schema>

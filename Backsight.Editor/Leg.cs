@@ -505,7 +505,7 @@ namespace Backsight.Editor
 
                     // If this is a cul-de-sac that had no observed spans, get the
                     // circular leg to define the distance (in meters on the ground).
-                    DistanceUnit mUnit = EditingController.Current.GetUnits(DistanceUnitType.Meters);
+                    DistanceUnit mUnit = EditingController.GetUnits(DistanceUnitType.Meters);
                     distances.Add(new Distance(this.Length.Meters, mUnit));
                 }
                 else

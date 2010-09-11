@@ -49,16 +49,6 @@ namespace Backsight.Editor
         /// </summary>
         OperationFlag m_Flag;
 
-        /// <summary>
-        /// A previous edit that this one is based on (null if this edit has never been revised).
-        /// </summary>
-        Operation m_Previous;
-
-        /// <summary>
-        /// The next revision of this edit (null if this edit has never been revised).
-        /// </summary>
-        //Operation m_Next;
-
         #endregion
 
         #region Constructors
@@ -84,17 +74,6 @@ namespace Backsight.Editor
                 m_Sequence = Session.ReserveNextItem();
             else
                 m_Sequence = sequence;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Operation"/> class that is exactly
-        /// like an earlier version of the edit.
-        /// </summary>
-        /// <param name="previous">The previous incarnation of the edit</param>
-        protected Operation(Operation previous)
-            : this(previous.Session, previous.EditSequence)
-        {
-            m_Previous = previous;
         }
 
         #endregion

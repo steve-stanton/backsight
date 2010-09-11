@@ -33,29 +33,25 @@ namespace Backsight.Editor
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new MainForm(args));
 
-
             DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
             Backsight.Editor.Observations.Distance d = new Backsight.Editor.Observations.Distance("123", du);
             //string s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToXml<Backsight.Editor.Observations.Distance>(d);
             //MessageBox.Show(s);
 
             Backsight.Editor.Observations.OffsetDistance od = new Backsight.Editor.Observations.OffsetDistance(d, true);
-            string s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToXml<Backsight.Editor.Observations.OffsetDistance>(od);
+            string s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToString<Backsight.Editor.Observations.OffsetDistance>(od);
             MessageBox.Show(s);
 
-            //Backsight.Editor.Xml.DataFactory.Instance.JsonToOffsetDistance(s);
-            /*
             try
             {
-                od = (Backsight.Editor.Observations.OffsetDistance)Backsight.Editor.Xml.DataFactory.Instance.XmlToObservation(s);
-                MessageBox.Show(od.GetType().Name);
+                Observation res = Backsight.Editor.Xml.DataFactory.Instance.StringToObservation(s);
+                MessageBox.Show(res.GetType().Name);
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-             */
         }
     }
 }

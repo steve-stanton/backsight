@@ -116,8 +116,7 @@ namespace Backsight.Editor.Forms
 
         void SetUnit (DistanceUnitType type)
         {
-            EditingController ec = EditingController.Current;
-            m_Unit = ec.GetUnits(type);
+            m_Unit = EditingController.GetUnits(type);
         }
 
         /// <summary>
