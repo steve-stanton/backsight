@@ -79,20 +79,6 @@ namespace Backsight.Editor.Operations
             m_Distance = dist;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class,
-        /// for use when the edit is being updated.
-        /// </summary>
-        /// <param name="edit">The original edit.</param>
-        /// <param name="dist">The revised distance to the split point (specify a negated distance
-        /// if it's from the end of the line).</param>
-        internal SimpleLineSubdivisionOperation(SimpleLineSubdivisionOperation edit, Distance dist)
-            : base(edit)
-        {
-            m_Line = edit.m_Line;
-            m_Distance = dist;
-        }
-
         #endregion
 
         /// <summary>
@@ -265,6 +251,11 @@ namespace Backsight.Editor.Operations
             LineFeature newLine = m_Line.MakeSubSection(this, sessionSequence, section);
             //MapModel.EditingIndex.Add(newLine);
             return newLine;
+        }
+
+        internal UpdateItem[] GetUpdateItems(Distance dist, bool isFromEnd)
+        {
+            return null;
         }
 
         /*

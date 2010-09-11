@@ -544,7 +544,7 @@ namespace Backsight.Editor.Xml
                 throw new Exception("Cannot find line " + this.Line);
 
             DistanceUnitType unitType = (DistanceUnitType)this.DefaultEntryUnit;
-            DistanceUnit defaultEntryUnit = EditingController.Current.GetUnits(unitType);
+            DistanceUnit defaultEntryUnit = EditingController.GetUnits(unitType);
 
             uint sequence = GetEditSequence(s);
             LineSubdivisionOperation op = new LineSubdivisionOperation(s, sequence,
@@ -949,7 +949,7 @@ namespace Backsight.Editor.Xml
             PointFeature from = mapModel.Find<PointFeature>(this.From);
             PointFeature to = mapModel.Find<PointFeature>(this.To);
             DistanceUnitType unitType = (DistanceUnitType)this.DefaultEntryUnit;
-            DistanceUnit defaultEntryUnit = EditingController.Current.GetUnits(unitType);
+            DistanceUnit defaultEntryUnit = EditingController.GetUnits(unitType);
 
             uint sequence = GetEditSequence(s);
             PathOperation op = new PathOperation(s, sequence, from, to, this.EntryString, defaultEntryUnit);

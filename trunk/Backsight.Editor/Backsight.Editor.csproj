@@ -55,10 +55,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ThirdParty\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -658,6 +654,7 @@
     <Compile Include="Starter.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
+    <Compile Include="TestLoader.cs" />
     <Compile Include="TextCheck.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
@@ -1074,6 +1071,7 @@
     <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateContext.cs" />
+    <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateUndoMarker.cs" />
     <Compile Include="Wildcard.cs" />
     <Compile Include="Xml\Content.cs" />

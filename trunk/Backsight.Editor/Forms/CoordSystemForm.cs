@@ -62,7 +62,7 @@ namespace Backsight.Editor.Forms
             // Display mean elevation and geoid separation in the current data entry units.
             EditingController ec = EditingController.Current;
             DistanceUnit eUnit = ec.EntryUnit;
-            DistanceUnit meters = ec.GetUnits(DistanceUnitType.Meters);
+            DistanceUnit meters = EditingController.GetUnits(DistanceUnitType.Meters);
 
             // The mean elevation & geoid separation fields are always editable (even
             // if the map contains stuff). The values are used to calculate the ground

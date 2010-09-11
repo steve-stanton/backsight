@@ -144,8 +144,7 @@ namespace Backsight.Editor.Forms
 
         void ShowResults(DistanceUnitType type)
         {
-            EditingController ec = EditingController.Current;
-            DistanceUnit unit = ec.GetUnits(type);
+            DistanceUnit unit = EditingController.GetUnits(type);
             if (unit==null)
                 return;
 

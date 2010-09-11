@@ -153,19 +153,19 @@ namespace Backsight.Editor.Forms
 
         private void fRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Feet);
+            m_Unit = EditingController.GetUnits(DistanceUnitType.Feet);
             SetNewDefault();
         }
 
         private void mRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Meters);
+            m_Unit = EditingController.GetUnits(DistanceUnitType.Meters);
             SetNewDefault();
         }
 
         private void cRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            m_Unit = EditingController.Current.GetUnits(DistanceUnitType.Chains);
+            m_Unit = EditingController.GetUnits(DistanceUnitType.Chains);
             SetNewDefault();
         }
 

@@ -1188,7 +1188,7 @@ namespace Backsight.Editor
             }
         }
 
-        internal DistanceUnit GetUnits(DistanceUnitType unitType)
+        internal static DistanceUnit GetUnits(DistanceUnitType unitType)
         {
             switch (unitType)
             {
