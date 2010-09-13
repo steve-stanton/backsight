@@ -462,7 +462,7 @@ namespace Backsight.Editor.Xml
         internal override PointFeature CreatePointFeature(Operation op)
         {
             PointFeature result = base.CreatePointFeature(op);
-            result.PointGeometry = new PointGeometry(this.X, this.Y);
+            result.SetPointGeometry(new PointGeometry(this.X, this.Y));
             return result;
         }
     }

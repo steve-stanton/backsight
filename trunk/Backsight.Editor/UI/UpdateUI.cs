@@ -527,6 +527,8 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        // If so, grab the new position before destroying the
 	        // command (we need to do this because CeNewPoint::Rollforward
 	        // cannot calculate a new absolute position).
+            // 20100913 ...the above is too messy (the NewPointUI class will probably
+            // need to create an UpdateOperation where the updated position can be stored).
 
             NewPointUI newPoint = (cmd as NewPointUI);
             PointFeature point = null;
@@ -549,12 +551,6 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        // If so, re-display the info for the originally selected op.
 	        if ( wasProblem && m_Update!=null )
                 Run(m_Update);
-
-	        // If we're not responding to a rollforward problem, tell
-	        // the map that rollforward is about to begin.
-            CadastralMapModel map = CadastralMapModel.Current;
-	        if (!wasProblem)
-                map.StartRollforward();
 
 	        // If a new absolute position has been defined for a point,
 	        // just move it. Otherwise mark the modified operation as

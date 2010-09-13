@@ -198,7 +198,7 @@ namespace Backsight.Editor.Operations
                 // Assign the calculated position so long as we're not at
                 // the end of the line
                 if (end != m_Line.EndPoint)
-                    end.PointGeometry = PointGeometry.Create(to);
+                    end.SetPointGeometry(PointGeometry.Create(to));
 
                 // The end of the current span is the start of the next one
                 start = end;

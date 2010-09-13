@@ -59,7 +59,7 @@ namespace Backsight.Editor
             m_Points.Add(p);
 
             // Ensure the point is associated with this node
-            p.Node = this;
+            p.SetNode(this);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Backsight.Editor
 
             // Ensure every point is associated with this node
             foreach (PointFeature p in pts)
-                p.Node = this;
+                p.SetNode(this);
         }
 
         /// <summary>

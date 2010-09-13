@@ -271,7 +271,7 @@ namespace Backsight.Editor.Operations
             if (p.Creator == this)
             {
                 PointGeometry pg = new PointGeometry(m_Center.X, m_Center.Y+rad);
-                p.PointGeometry = pg;
+                p.SetPointGeometry(pg);
             }
 
             // Try to find an existing circle. If we don't find one, create one (attaching it to

@@ -457,10 +457,10 @@ namespace Backsight.Editor.Operations
             // Apply the calculated positions so long as the end points of the parallel line
             // were created by this edit
             if (m_ParLine.StartPoint.Creator == this)
-                m_ParLine.StartPoint.PointGeometry = PointGeometry.Create(spos);
+                m_ParLine.StartPoint.SetPointGeometry(PointGeometry.Create(spos));
 
             if (m_ParLine.EndPoint.Creator == this)
-                m_ParLine.EndPoint.PointGeometry = PointGeometry.Create(epos);
+                m_ParLine.EndPoint.SetPointGeometry(PointGeometry.Create(epos));
 
             // If the parallel is an arc, define the geometry
             if (m_ParLine is ArcFeature)

@@ -242,7 +242,7 @@ namespace Backsight.Editor.Operations
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
-            m_NewPoint.PointGeometry = pg;
+            m_NewPoint.SetPointGeometry(pg);
 
             // If the extension line was a circular arc, we also need to define it's geometry.
             // This COULD have been defined at an earlier stage (e.g. as part of CreateFeature),

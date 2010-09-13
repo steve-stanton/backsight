@@ -364,7 +364,7 @@ namespace Backsight.Editor
                     SetCircle(span, m_Circle);
 
                     // Define the position of the center point.
-                    center.PointGeometry = PointGeometry.Create(span.Center);
+                    center.SetPointGeometry(PointGeometry.Create(span.Center));
                 }
                 else
                 {
@@ -455,7 +455,7 @@ namespace Backsight.Editor
             // The circle should have been created already, but with an undefined radius
             Debug.Assert(m_Circle != null);
             m_Circle.Radius = span.ScaledRadius;
-            m_Circle.CenterPoint.PointGeometry = PointGeometry.Create(span.Center);
+            m_Circle.CenterPoint.SetPointGeometry(PointGeometry.Create(span.Center));
 
             // Create geometry for each span. Note that for cul-de-sacs, there may be
             // no observed spans.
@@ -478,7 +478,7 @@ namespace Backsight.Editor
                     endPoint = (feat as LineFeature).EndPoint;
 
                 if (endPoint != null && endPoint.PointGeometry == null)
-                    endPoint.PointGeometry = PointGeometry.Create(span.End);
+                    endPoint.SetPointGeometry(PointGeometry.Create(span.End));
             }
 
             // Update BC info to refer to the EC.

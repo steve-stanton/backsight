@@ -638,14 +638,6 @@ namespace Backsight.Editor
         */
 
         /// <summary>
-        /// A previous edit that this one is based on (null if this edit has never been revised).
-        /// </summary>
-        //internal Operation Previous
-        //{
-        //    get { return m_Previous; }
-        //}
-
-        /// <summary>
         /// Executes a brand new editing operation that is part of the working session
         /// (as opposed to a historical session that is being deserialized from the database).
         /// </summary>
@@ -655,30 +647,6 @@ namespace Backsight.Editor
         internal void Execute(FeatureFactory ff)
         {
             Debug.Assert(m_Session == Session.WorkingSession);
-            ProcessEdit(ff);
-
-            /*
-            try
-            {
-                ProcessEdit(ff);
-            }
-
-            catch (Exception ex)
-            {
-                // The edit was added to the session by the Operation constructor, so
-                // ensure it gets removed in a situation where the edit actually failed.
-                m_Session.Remove(this);
-                throw ex;
-            }
-             */
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ff"></param>
-        void ProcessEdit(FeatureFactory ff)
-        {
             CadastralMapModel mapModel = this.MapModel;
 
             // Create the spatial features

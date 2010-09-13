@@ -157,5 +157,17 @@ namespace Backsight.Editor.Operations
         {
             return null;
         }
+
+        /// <summary>
+        /// Attempts to locate a previous update that was performed on the
+        /// revised edit.
+        /// </summary>
+        /// <returns>A previous update that was performed for the edit
+        /// revised by this update (null if there was no previous update).</returns>
+        internal UpdateOperation GetPreviousUpdate()
+        {
+            //this.Session.FindOperation(
+
+        }
     }
 }
