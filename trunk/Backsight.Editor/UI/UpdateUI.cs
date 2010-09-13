@@ -22,6 +22,7 @@ using System.Drawing;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.UI
 {
@@ -39,13 +40,6 @@ namespace Backsight.Editor.UI
         CommandUI m_Cmd;
 
         /// <summary>
-        /// The parameters describing the changes that should be applied to the editing
-        /// operation that is currently being updated.
-        /// </summary>
-        /// <remarks>May be better as part of the UpdateContext</remarks>
-        //UpdateData m_UpdateParameters;
-
-        /// <summary>
         /// The feature currently selected for update.
         /// </summary>
         Feature m_Update;
@@ -58,7 +52,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// Modified edits
         /// </summary>
-        readonly Stack<Operation> m_Edits;
+        readonly Stack<UpdateOperation> m_Updates;
 
         /// <summary>
         /// Edits that are dependent on the edit that is currently being revised
@@ -92,7 +86,7 @@ namespace Backsight.Editor.UI
             m_DepOps = null;
             m_Problem = null;
             m_Context = new UpdateContext();
-            m_Edits = new Stack<Operation>();
+            m_Updates = new Stack<UpdateOperation>();
         }
 
         #endregion
@@ -525,16 +519,9 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 return false;
 
             // Grab the modified version of the edit
-            Operation rev = LastRevisedEdit;
+            UpdateOperation rev = LastUpdate;
             if (rev == null)
                 return false;
-
-            Debug.Assert(rev.DataId == pop.DataId);
-
-            // Confirm that update parameters have been defined (this is supposed to be done by
-            // the UI's implementation of the DialFinish command).
-            //if (m_UpdateParameters==null)
-            //    throw new InvalidOperationException("Update parameters are not available");
 
 	        // Were we just updating the absolute position of a point?
 	        // If so, grab the new position before destroying the
@@ -970,24 +957,24 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// <summary>
         /// Remembers the modified version of an edit
         /// </summary>
-        /// <param name="edit">The modified edit (refers back to another edit)</param>
-        internal void AddRevisedEdit(Operation edit)
+        /// <param name="edit">Information about the update</param>
+        internal void AddUpdate(UpdateOperation edit)
         {
-            m_Edits.Push(edit);
+            m_Updates.Push(edit);
         }
 
         /// <summary>
-        /// The last edit recorded via a call to <see cref="AddRevisedEdit"/> (null if no
+        /// The last edit recorded via a call to <see cref="AddUpdate"/> (null if no
         /// edits have been made).
         /// </summary>
-        internal Operation LastRevisedEdit
+        internal UpdateOperation LastUpdate
         {
             get
             {
-                if (m_Edits.Count == 0)
+                if (m_Updates.Count == 0)
                     return null;
 
-                return m_Edits.Peek();
+                return m_Updates.Peek();
             }
         }
     }
