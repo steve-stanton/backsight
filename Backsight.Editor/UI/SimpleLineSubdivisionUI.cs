@@ -209,12 +209,14 @@ namespace Backsight.Editor.UI
                     return false;
                 }
 
-                pop.GetUpdateItems(m_Dialog.Length, m_Dialog.IsFromEnd);
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+                UpdateItem[] changes = pop.GetUpdateItems(m_Dialog.Length, m_Dialog.IsFromEnd);
+                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, pop, changes);
+                up.AddUpdate(uop);
+
                 // Make the update.
                 //pop.Correct(m_Dialog.Length, m_Dialog.IsFromEnd);
-
-                //SimpleLineSubdivisionOperation rev = new SimpleLineSubdivisionOperation(pop, d);
-                //up.AddRevisedEdit(rev);
             }
             else
             {

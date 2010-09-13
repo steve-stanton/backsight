@@ -34,9 +34,14 @@ namespace Backsight.Editor.Operations
         readonly Operation m_Edit;
 
         /// <summary>
-        /// Information about the update (not null)
+        /// Information about the update (not null). 
         /// </summary>
         readonly UpdateItem[] m_Changes;
+
+        /// <summary>
+        /// Have the changes been exchanged with the original editing operation?
+        /// </summary>
+        bool m_ChangesExchanged;
 
         #endregion
 

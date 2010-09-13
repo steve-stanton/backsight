@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using System.Diagnostics;
 
 
 namespace Backsight.Editor.Operations
@@ -39,7 +40,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The distance to the point. A negated distance refers to the distance from the end of the line.
         /// </summary>
-        readonly Distance m_Distance;
+        Distance m_Distance;
         
         // Creations ...
 
@@ -254,9 +255,47 @@ namespace Backsight.Editor.Operations
             return newLine;
         }
 
+        /// <summary>
+        /// Obtains update items for a revised version of this edit.
+        /// </summary>
+        /// <param name="dist">The new observed distance.</param>
+        /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
         internal UpdateItem[] GetUpdateItems(Distance dist, bool isFromEnd)
         {
-            return null;
+            Distance d = new Distance(dist);
+
+            // And make sure the sign is correct.
+            if (isFromEnd)
+                d.SetNegative();
+            else
+                d.SetPositive();
+
+            return new UpdateItem[]
+            {
+                new UpdateItem("Distance", d)
+            };
+        }
+
+        /// <summary>
+        /// Modifies this edit by applying the values in the supplied update items.
+        /// </summary>
+        /// <param name="changes">The changes to apply (obtained via a prior call to
+        /// <see cref="GetUpdateItems"/>)</param>
+        /// <returns>The old values for each update item</returns>
+        internal UpdateItem[] ExchangeUpdateItems(UpdateItem[] changes)
+        {
+            Debug.Assert(changes.Length == 1);
+            Debug.Assert(changes[0].Name == "Distance");
+
+            // Note the original values
+            UpdateItem[] originalData = new UpdateItem[] { new UpdateItem("Distance", m_Distance) };
+
+            // Apply the revised values
+            m_Distance = (Distance)changes[0].Value;
+
+            return originalData;
         }
 
         /*
