@@ -240,13 +240,25 @@ namespace Backsight.Editor
         internal PointGeometry PointGeometry
         {
             get { return m_Geom; }
-            set
-            {
-                if (value==null)
-                    throw new ArgumentNullException();
+            //set
+            //{
+            //    if (value==null)
+            //        throw new ArgumentNullException();
 
-                m_Geom = new Node(this, value);
-            }
+            //    m_Geom = new Node(this, value);
+            //}
+        }
+
+        /// <summary>
+        /// Defines the position of this point as a new un-shared position.
+        /// </summary>
+        /// <param name="value">The position to assign</param>
+        internal void SetPointGeometry(PointGeometry value)
+        {
+            if (value == null)
+                throw new ArgumentNullException();
+
+            m_Geom = new Node(this, value);
         }
 
         /// <summary>
@@ -255,7 +267,16 @@ namespace Backsight.Editor
         internal Node Node
         {
             get { return m_Geom; }
-            set { m_Geom = value; }
+            //set { m_Geom = value; }
+        }
+
+        /// <summary>
+        /// Defines the position of this point to refer to an existing node.
+        /// </summary>
+        /// <param name="value">The position to assign</param>
+        internal void SetNode(Node value)
+        {
+            m_Geom = value;
         }
 
         public override void Render(ISpatialDisplay display, IDrawStyle style)

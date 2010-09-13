@@ -356,26 +356,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Remembers that rollforward is about to begin.
-        /// </summary>
-        /// <devnote>This should probably move to EditingController</devnote>
-        internal void StartRollforward()
-        {
-            // @devnote There was a potential memory leak here.
-            // If CeMap::Rollforward did not eventually complete for
-            // any reason, memory for CeLabelShift objects was not
-            // deleted. DO NOT do it here, because the memory may have
-            // been allocated in a prior session. I tried to fix this
-            // via CeMap::BeforeHook, but that causes a recursive fault.
-            // As it stands now, FinishRollforward is supposed to also
-            // remove (and delete) any leftover label-shifts. So the
-            // removal that happens here is only expected to cover
-            // those cases where old files have spurious pointers.
-
-            //m_LabelShifts.RemoveAll();
-        }
-
-        /// <summary>
         /// Creates a new point feature as part of this model.
         /// The caller is responsible for assigning any ID that the new point should have.
         /// </summary>

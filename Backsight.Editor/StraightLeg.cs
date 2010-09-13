@@ -273,7 +273,7 @@ namespace Backsight.Editor
                     endPoint = (feat as LineFeature).EndPoint;
 
                 if (endPoint != null && endPoint.PointGeometry == null)
-                    endPoint.PointGeometry = PointGeometry.Create(span.End);
+                    endPoint.SetPointGeometry(PointGeometry.Create(span.End));
             }
 
             // Return the end position of the last span.

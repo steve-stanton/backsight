@@ -568,7 +568,7 @@ namespace Backsight.Editor.Operations
         {
             IPosition to = Calculate(m_Direction, m_Distance, m_From, m_Default);
             PointGeometry pg = PointGeometry.Create(to);
-            m_To.PointGeometry = pg;
+            m_To.SetPointGeometry(pg);
 
             // There's no need to calculate new geometry for the line segments
             // created by the edit, since their geometry is dependent on the

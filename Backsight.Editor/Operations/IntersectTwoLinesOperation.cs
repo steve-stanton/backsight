@@ -434,7 +434,7 @@ namespace Backsight.Editor.Operations
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
-            m_Intersection.PointGeometry = pg;
+            m_Intersection.SetPointGeometry(pg);
         }
 
         /// <summary>

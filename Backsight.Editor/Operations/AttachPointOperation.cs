@@ -229,7 +229,7 @@ namespace Backsight.Editor.Operations
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
-            m_Point.PointGeometry = pg;
+            m_Point.SetPointGeometry(pg);
         }
 
         /// <summary>

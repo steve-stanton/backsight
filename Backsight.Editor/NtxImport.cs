@@ -258,7 +258,7 @@ namespace Backsight.Editor
                 {
                     m_Index.Remove(pt);
                     PointFeature[] pts = pt.Node.Points;
-                    pt.Node = new Node(pts, g);
+                    pt.SetNode(new Node(pts, g));
                     m_Index.Add(pt);
                 }
             }
