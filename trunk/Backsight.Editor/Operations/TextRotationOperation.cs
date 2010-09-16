@@ -116,15 +116,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// </summary>
-        public override void AddReferences()
-        {
-            // Do nothing
-        }
-
-        /// <summary>
         /// Executes this edit
         /// </summary>
         /// <param name="p1">The first point to be used in orienting the labels.</param>

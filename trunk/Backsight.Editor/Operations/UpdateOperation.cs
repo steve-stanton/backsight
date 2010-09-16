@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
 
@@ -134,15 +135,22 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
+        /// Obtains the features that are referenced by this operation (including features
         /// that are indirectly referenced by observation classes).
-        /// <para/>
-        /// This is called by the <see cref="Complete"/> method, to ensure
-        /// that the referenced features are cross-referenced to the editing operations
-        /// that depend on them.
         /// </summary>
-        public override void AddReferences()
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
         {
+            List<Feature> result = new List<Feature>();
+
+            foreach (object o in m_Changes)
+            {
+                IFeatureDependent fd = (o as IFeatureDependent);
+                if (fd != null)
+                    result.AddRange(fd.GetReferences());
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -156,18 +164,6 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
-        }
-
-        /// <summary>
-        /// Attempts to locate a previous update that was performed on the
-        /// revised edit.
-        /// </summary>
-        /// <returns>A previous update that was performed for the edit
-        /// revised by this update (null if there was no previous update).</returns>
-        internal UpdateOperation GetPreviousUpdate()
-        {
-            //this.Session.FindOperation(
-
         }
     }
 }

@@ -86,7 +86,7 @@ namespace Backsight.Editor
         /// While some of this could be addressed by lazy loading, or perhaps some more
         /// definitive layer-&gt;table associations, there is no proof that there is actually
         /// an issue that needs solving. Without that proof, it is considered inappropriate
-        /// to code more complicated solutions that are based on heresay.
+        /// to code anything more complicated.
         /// </remarks>
         internal static int Load(FeatureId[] fids)
         {

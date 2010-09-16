@@ -45,8 +45,14 @@ namespace Backsight.Editor
         bool OnPostMove(Feature f);
 
         /// <summary>
-        /// Adds references to the features that this dependent is dependent on.
+        /// Obtains the referenced features.
         /// </summary>
-        void AddReferences();
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        /// <remarks>
+        /// Re-consider the method name. Some edits refer to features, but those references
+        /// have no bearing on the creation of any new features (e.g. MovePolygonPositionOperation).
+        /// The relevance in terms of new features is what's really important.
+        /// </remarks>
+        Feature[] GetReferences();
     }
 }

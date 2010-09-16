@@ -381,10 +381,17 @@ void CeRadial::CreateAngleText ( CPtrList& text
 } // end of CreateAngleText
          */
 
-        public override void AddReferences()
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
         {
-            m_Direction.AddReferences(this);
-            m_Length.AddReferences(this);
+            List<Feature> result = new List<Feature>();
+            result.AddRange(m_Direction.GetReferences());
+            result.AddRange(m_Length.GetReferences());
+            return result.ToArray();
         }
 
         internal override bool Undo()

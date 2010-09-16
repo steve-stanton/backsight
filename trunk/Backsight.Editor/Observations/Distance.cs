@@ -349,11 +349,6 @@ namespace Backsight.Editor.Observations
             // Nothing to do
         }
 
-        internal override void AddReferences(Operation op)
-        {
-            // Nothing to do
-        }
-
         /// <summary>
         /// Relational equality test
         /// </summary>

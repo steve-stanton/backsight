@@ -351,12 +351,23 @@ namespace Backsight.Editor.Operations
             get { return EditingActionId.LineSubdivision; }
         }
 
-        public override void AddReferences()
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
         {
-            m_Line.AddOp(this);
+            List<Feature> result = new List<Feature>();
+            result.Add(m_Line);
 
             foreach (MeasuredLineFeature m in m_Sections)
-                m.ObservedLength.AddReferences(this);
+            {
+                Feature[] mf = m.ObservedLength.GetReferences();
+                result.AddRange(mf);
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>

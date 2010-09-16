@@ -98,11 +98,6 @@ namespace Backsight.Editor.Operations
             get { return "Add point"; }
         }
 
-        public override void AddReferences()
-        {
-            // No direct references
-        }
-
         internal override Distance GetDistance(LineFeature line)
         {
             return null; // nothing to do

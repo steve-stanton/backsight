@@ -109,18 +109,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation.
-        /// <para/>
-        /// In the case of deletions, the deleted features are <b>not</b> cross-referenced to
-        /// the deletion operation. Instead, a special flag bit gets set in each feature.
-        /// This is perhaps a bit inconsistent.
-        /// </summary>
-        public override void AddReferences()
-        {
-            // do nothing
-        }
-
-        /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
         /// <returns>True if operation was rolled back ok</returns>

@@ -1492,6 +1492,15 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="op">The operation in which the change will occur</param>
         /// <returns>The dependent edits (starting with the supplied editing operation)</returns>
+        /// <remarks>This logic may need to be re-visited. In the past, edits could be
+        /// "corrected" using references to features that were created after the original
+        /// edit (provided that there was no dependency). This was ok, because the geometry
+        /// for the features was persisted. In Backsight, the geometry needs to be recalculated
+        /// when edits are deserialized from the database. The problem is that older edits may
+        /// be dependent on something that happens later. As such, it MAY not be sufficient
+        /// to look only at the subsequent edits (since earlier edits may have been modified
+        /// (in-memory) via updates).
+        /// </remarks>
         internal Operation[] Touch(Operation op)
         {
             // If the edit didn't create any spatial data, it can't impact any

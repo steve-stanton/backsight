@@ -180,20 +180,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// <para/>
-        /// This is called by the <see cref="Complete"/> method, to ensure
-        /// that the referenced features are cross-referenced to the editing operations
-        /// that depend on them.
-        /// </summary>
-        public override void AddReferences()
-        {
-            // Do nothing -- although the edit refers to the text feature that's
-            // being moved, that reference doesn't have a bearing on any new feature
-        }
-
-        /// <summary>
         /// Checks whether this operation makes reference to a specific feature.
         /// </summary>
         /// <param name="feat">The feature to check for.</param>

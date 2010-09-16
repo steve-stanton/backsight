@@ -619,10 +619,17 @@ namespace Backsight.Editor.Observations
             return result;
         }
 
-        internal override void AddReferences(Operation op)
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal override Feature[] GetReferences()
         {
-            if (m_Offset!=null)
-                m_Offset.AddReferences(op);
+            if (m_Offset == null)
+                return new Feature[0];
+            else
+                return m_Offset.GetReferences();
         }
 
         /// <summary>

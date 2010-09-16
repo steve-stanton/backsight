@@ -201,20 +201,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// </summary>
-        /// <remarks>
-        /// This does not do anything. While the op does refer to the lines that it trimmed, this
-        /// ends up only setting the trim status in each line. We do NOT cross-reference the feature
-        /// to this op (for the same sort of reason as a <see cref="DeletionOperation"/>)
-        /// </remarks>
-        public override void AddReferences()
-        {
-            // Do nothing
-        }
-
-        /// <summary>
         /// Checks whether this operation makes reference to a specific feature.
         /// </summary>
         /// <param name="feat">The feature to check for.</param>

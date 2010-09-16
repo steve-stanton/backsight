@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using System.Collections.Generic;
 
 
 namespace Backsight.Editor
@@ -101,6 +102,22 @@ namespace Backsight.Editor
         /// operations that depend on them.
         /// </summary>
         /// <param name="op">The operation that makes use of this observation</param>
-        internal abstract void AddReferences(Operation op);
+        internal void AddReferences(Operation op)
+        {
+            Feature[] features = GetReferences();
+
+            foreach (Feature f in features)
+                f.AddOp(op);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal virtual Feature[] GetReferences()
+        {
+            return new Feature[0];
+        }
     }
 }

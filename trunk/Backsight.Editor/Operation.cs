@@ -455,7 +455,29 @@ namespace Backsight.Editor
         /// that the referenced features are cross-referenced to the editing operations
         /// that depend on them.
         /// </summary>
-        abstract public void AddReferences();
+        /// <remarks>
+        /// In the case of deletions, the deleted features are <b>not</b> cross-referenced to
+        /// the deletion operation. Instead, a special flag bit gets set in each feature.
+        /// This is perhaps a bit inconsistent.
+        /// </remarks>
+        //abstract public void AddReferences();
+        public void AddReferences()
+        {
+            Feature[] feats = GetReferences();
+
+            foreach (Feature f in feats)
+                f.AddReference(this);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public virtual Feature[] GetReferences()
+        {
+            return new Feature[0];
+        }
 
         /// <summary>
         /// Prepares the supplied features for intersect detection that should be

@@ -159,11 +159,6 @@ namespace Backsight.Editor.Observations
             set { throw new Exception("The method or operation is not implemented."); }
         }
 
-        internal override void AddReferences(Operation op)
-        {
-            // nothing to do
-        }
-
         internal override void CutRef(Operation op)
         {
             // nothing to do
