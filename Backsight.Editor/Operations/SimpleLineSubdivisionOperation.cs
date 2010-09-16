@@ -17,6 +17,7 @@ using System;
 
 using Backsight.Editor.Observations;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 
 namespace Backsight.Editor.Operations
@@ -374,13 +375,16 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
+        /// Obtains the features that are referenced by this operation (including features
         /// that are indirectly referenced by observation classes).
         /// </summary>
-        public override void AddReferences()
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
         {
-            m_Line.AddReference(this);
-            m_Distance.AddReferences(this);
+            List<Feature> result = new List<Feature>();
+            result.Add(m_Line);
+            result.AddRange(m_Distance.GetReferences());
+            return result.ToArray();
         }
 
         /// <summary>

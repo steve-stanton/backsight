@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 
 namespace Backsight.Editor.Observations
@@ -108,15 +109,22 @@ namespace Backsight.Editor.Observations
             set { m_Backsight = value; }
         }
 
-        internal override void AddReferences(Operation op)
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal override Feature[] GetReferences()
         {
-            base.AddReferences(op);
+            List<Feature> result = new List<Feature>(base.GetReferences());
 
-            if (m_From!=null)
-                m_From.AddOp(op);
+            if (m_From != null)
+                result.Add(m_From);
 
-            if (m_Backsight!=null)
-                m_Backsight.AddOp(op);
+            if (m_Backsight != null)
+                result.Add(m_Backsight);
+
+            return result.ToArray();
         }
 
         /// <summary>

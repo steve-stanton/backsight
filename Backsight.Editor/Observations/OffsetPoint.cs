@@ -83,10 +83,14 @@ namespace Backsight.Editor.Observations
             get { return (m_Point==null ? 0.0 : m_Point.Y); }
         }
 
-        internal override void AddReferences(Operation op)
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal override Feature[] GetReferences()
         {
-            //	Cross-reference the referenced point to the operation that is being saved.
-            m_Point.AddOp(op);
+            return new Feature[] { m_Point };
         }
 
         /// <summary>

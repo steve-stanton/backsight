@@ -524,10 +524,20 @@ namespace Backsight.Editor
         /// <summary>
         /// Adds references to the points at the ends of this line.
         /// </summary>
-        public virtual void AddReferences() // IFeatureDependent
+        internal virtual void AddReferences()
         {
             StartPoint.AddReference(this);
             EndPoint.AddReference(this);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public virtual Feature[] GetReferences()
+        {
+            return new Feature[] { StartPoint, EndPoint };
         }
 
         /// <summary>

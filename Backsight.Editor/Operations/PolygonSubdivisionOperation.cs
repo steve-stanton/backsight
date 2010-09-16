@@ -97,11 +97,6 @@ namespace Backsight.Editor.Operations
             get { return EditingActionId.PolygonSubdivision; }
         }
 
-        public override void AddReferences()
-        {
-            // Nothing to do
-        }
-
         internal override bool Undo()
         {
             base.OnRollback();

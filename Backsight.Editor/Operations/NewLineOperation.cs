@@ -104,11 +104,6 @@ namespace Backsight.Editor.Operations
             get { return EditingActionId.NewLine; }
         }
 
-        public override void AddReferences()
-        {
-            // nothing to do
-        }
-
         /// <summary>
         /// Rollback this operation.
         /// </summary>

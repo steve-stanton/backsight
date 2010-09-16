@@ -328,20 +328,25 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation.
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
         /// </summary>
-        public override void AddReferences()
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
         {
-	        if  (m_RefLine!=null)
-                m_RefLine.AddOp(this);
+            List<Feature> result = new List<Feature>();
 
-	        if (m_Term1!=null)
-                m_Term1.AddOp(this);
+            if (m_RefLine != null)
+                result.Add(m_RefLine);
 
-	        if (m_Term2!=null && m_Term2!=m_Term1)
-                m_Term2.AddOp(this);
+            if (m_Term1 != null)
+                result.Add(m_Term1);
 
-            m_Offset.AddReferences(this);
+            if (m_Term2 != null && m_Term2 != m_Term1)
+                result.Add(m_Term2);
+
+            result.AddRange(m_Offset.GetReferences());
+            return result.ToArray();
         }
 
         /// <summary>

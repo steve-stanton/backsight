@@ -114,15 +114,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Adds references to existing features referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// </summary>
-        public override void AddReferences()
-        {
-            // nothing to do
-        }
-
-        /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
         /// <returns>True if operation was rolled back ok</returns>

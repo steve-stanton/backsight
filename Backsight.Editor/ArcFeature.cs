@@ -18,6 +18,7 @@ using System;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -67,7 +68,7 @@ namespace Backsight.Editor
         /// that contains this geometry.
         /// </summary>
         /// <param name="container">The line that refers to this geometry.</param>
-        public override void AddReferences()
+        internal override void AddReferences()
         {
             // The circle may not be known at this stage (this method is called
             // by the LineFeature constructor, and the geometry may be undefined
@@ -81,6 +82,22 @@ namespace Backsight.Editor
                 c.AddArc(this);
 
             base.AddReferences();
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public override Feature[] GetReferences()
+        {
+            List<Feature> result = new List<Feature>(base.GetReferences());
+
+            Circle c = this.Circle;
+            if (c!=null)
+                result.AddRange(c.GetReferences()); // the center point
+
+            return result.ToArray();
         }
 
         /// <summary>

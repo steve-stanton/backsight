@@ -145,15 +145,26 @@ namespace Backsight.Editor
             return true;
         }
 
+        #endregion
+
+
         /// <summary>
         /// Adds references to the features that this dependent is dependent on.
         /// </summary>
-        public void AddReferences()
+        internal void AddReferences()
         {
             m_Center.AddReference(this);
         }
 
-        #endregion
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        public Feature[] GetReferences()
+        {
+            return new Feature[] { m_Center };
+        }
 
         #region ICircleGeometry Members
 
