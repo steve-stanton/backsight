@@ -518,7 +518,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        if (pop==null)
                 return false;
 
-            // Grab the modified version of the edit
+            // Grab the description of the changes
             UpdateOperation rev = LastUpdate;
             if (rev == null)
                 return false;

@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Web.Script.Serialization;
 
 namespace Backsight.Editor.Xml
 {
@@ -209,16 +210,29 @@ namespace Backsight.Editor.Xml
         }
 
         /// <summary>
-        /// Converts an observation into a persistent string (not necessarily XML).
+        /// Converts an observation into a JSON string.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="o"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of observation that's being converted.</typeparam>
+        /// <param name="o">The observation to convert</param>
+        /// <returns>A JSON-style version of the supplied observation</returns>
+        /// <remarks>
+        /// I originally intended to use an XML string, but it's annoyingly
+        /// verbose when dealing with simple observation objects, with seemingly useless
+        /// namespace references thrown around. The resultant string will also be included
+        /// as the value for an XML element, where all the &lt; and &gt; characters need
+        /// to be escaped - leading to an ugly mess.
+        /// <para/>
+        /// The current implementation uses JSON, only because the NET framework
+        /// provides some simple classes for working with it. I would have preferred using
+        /// YAML, since it looks prettier than JSON. However, YAML is not directly
+        /// supported by NET, and the open-source offerings I've seen are not documented
+        /// very well.
+        /// </remarks>
         internal string ObservationToString<T>(T o) where T : Observation
         {
             ObservationData od = ToData<ObservationData>(o);
             BacksightTypeResolver str = new BacksightTypeResolver();
-            return new System.Web.Script.Serialization.JavaScriptSerializer(str).Serialize(od);
+            return new JavaScriptSerializer(str).Serialize(od);
 
             /*
             // Omit the xml declaration
@@ -240,17 +254,26 @@ namespace Backsight.Editor.Xml
 
             // When dealing with something like an OffsetDistance, the inner element ends up
             // with an annoyingly verbose xmlns="Backsight" - of no value, so just trash it.
+            // sigh... doing that leads to error on an attempt to deserialize.
             string s = sb.ToString();
             return s.Replace("xmlns=\"Backsight\"", "");
              */
         }
 
+        /// <summary>
+        /// Converts a persistent string (previously produced using <see cref="ObservationToString"/>)
+        /// to an observation. Any references to spatial features that may be embedded in the
+        /// string will be converted using the current map model (as returned
+        /// by <see cref="CadastralMapModel.Current"/>).
+        /// </summary>
+        /// <param name="s">A JSON-style string represention for an observation.</param>
+        /// <returns>The observation that corresponds to the supplied string.</returns>
         internal Observation StringToObservation(string s)
         {
             BacksightTypeResolver tr = new BacksightTypeResolver();
-            ObservationData data = new System.Web.Script.Serialization.JavaScriptSerializer(tr).Deserialize<ObservationData>(s);
-            ILoader loader = new TestLoader();
-            return data.LoadObservation(loader);
+            ObservationData data = new JavaScriptSerializer(tr).Deserialize<ObservationData>(s);
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            return data.LoadObservation(mapModel);
         }
 
         internal T ToData<T>(Observation o) where T : ObservationData
