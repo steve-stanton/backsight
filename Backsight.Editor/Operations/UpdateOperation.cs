@@ -69,6 +69,9 @@ namespace Backsight.Editor.Operations
             if (changes.Length == 0)
                 throw new ArgumentException("Empty change list");
 
+            if (!(edit is IRevisable))
+                throw new ArgumentException("Edit is not tagged as revisable");
+
             m_Edit = edit;
             m_Changes = changes;
         }

@@ -19,6 +19,7 @@ using System.Text;
 
 using Backsight.Editor.UI;
 using Backsight.Editor.Operations;
+using Backsight.Editor.Properties;
 
 
 namespace Backsight.Editor.Forms
@@ -160,30 +161,28 @@ namespace Backsight.Editor.Forms
 
         internal void OnFinishUpdate(Operation problem) 
         {
-            throw new NotImplementedException("UpdateForm");
-            /*
-	        if (problem!=null)
+            if (problem == null)
             {
-		        Show(pProblem,0);
-		        this.Text = "Problem";
-		        GetDlgItem(IDC_UPDATE)->SetWindowText("Fi&x It");
-		        GetDlgItem(IDC_UPDATE)->SetFocus();
-		        SetIcon(IDI_STOP_LIGHT);
-		        GetDlgItem(IDOK)->EnableWindow(FALSE);
-		        GetDlgItem(IDCANCEL)->SetWindowText("Und&o");
-	        }
-	        else
-            {
-		        this.Text = "Update";
-		        GetDlgItem(IDC_UPDATE)->SetWindowText("&Update");
-		        SetIcon(IDI_GO_LIGHT);
-		        GetDlgItem(IDOK)->EnableWindow(TRUE);
-		        GetDlgItem(IDOK)->SetFocus();
-		        GetDlgItem(IDCANCEL)->SetWindowText("Cancel");
-	        }
+                this.Text = "Update";
+                updateButton.Text = "&Update";
+                //lightBox.Image = Resources.GreenTrafficLight;
+                finishButton.Enabled = true;
+                finishButton.Focus();
+                cancelButton.Text = "Cancel";
 
-	        ShowWindow(SW_RESTORE);
-             */
+            }
+            else
+            {
+                //Show(problem, null);
+                this.Text = "Problem";
+                updateButton.Text = "Fi&x It";
+                updateButton.Focus();
+                //lightBox.Image = Resources.RedTrafficLight;
+                finishButton.Enabled = false;
+                cancelButton.Text = "Und&o";
+            }
+
+            this.WindowState = FormWindowState.Normal;
         }
 
         /*
