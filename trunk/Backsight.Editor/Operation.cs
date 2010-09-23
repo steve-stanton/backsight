@@ -463,7 +463,7 @@ namespace Backsight.Editor
         //abstract public void AddReferences();
         public void AddReferences()
         {
-            Feature[] feats = GetReferences();
+            Feature[] feats = GetRequiredFeatures();
 
             foreach (Feature f in feats)
                 f.AddReference(this);
@@ -474,8 +474,7 @@ namespace Backsight.Editor
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        /// <remarks>GetRequiredFeatures may be a more expressive method name</remarks>
-        public virtual Feature[] GetReferences()
+        public virtual Feature[] GetRequiredFeatures()
         {
             return new Feature[0];
         }
@@ -496,7 +495,7 @@ namespace Backsight.Editor
         {
             List<Operation> result = new List<Operation>();
 
-            Feature[] fa = GetReferences();
+            Feature[] fa = GetRequiredFeatures();
             foreach (Feature f in fa)
             {
                 Operation op = f.Creator;

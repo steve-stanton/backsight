@@ -535,7 +535,7 @@ namespace Backsight.Editor
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        public virtual Feature[] GetReferences()
+        public virtual Feature[] GetRequiredFeatures()
         {
             return new Feature[] { StartPoint, EndPoint };
         }

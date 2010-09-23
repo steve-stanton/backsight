@@ -89,13 +89,13 @@ namespace Backsight.Editor
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        public override Feature[] GetReferences()
+        public override Feature[] GetRequiredFeatures()
         {
-            List<Feature> result = new List<Feature>(base.GetReferences());
+            List<Feature> result = new List<Feature>(base.GetRequiredFeatures());
 
             Circle c = this.Circle;
             if (c!=null)
-                result.AddRange(c.GetReferences()); // the center point
+                result.AddRange(c.GetRequiredFeatures()); // the center point
 
             return result.ToArray();
         }

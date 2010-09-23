@@ -143,13 +143,13 @@ namespace Backsight.Editor.Operations
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        public override Feature[] GetReferences()
+        public override Feature[] GetRequiredFeatures()
         {
             // Do nothing -- although the edit refers to the text feature that's
             // being moved, that reference doesn't have a bearing on any new feature.
             // Perhaps a more succinct method name would clarify things.
 
-            return base.GetReferences();
+            return base.GetRequiredFeatures();
         }
 
 

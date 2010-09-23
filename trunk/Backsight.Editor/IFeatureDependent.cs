@@ -53,6 +53,6 @@ namespace Backsight.Editor
         /// have no bearing on the creation of any new features (e.g. MovePolygonPositionOperation).
         /// The relevance in terms of new features is what's really important.
         /// </remarks>
-        Feature[] GetReferences();
+        Feature[] GetRequiredFeatures();
     }
 }
