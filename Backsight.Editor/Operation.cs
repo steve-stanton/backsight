@@ -743,5 +743,12 @@ namespace Backsight.Editor
             // Save the edit to the database
             SaveOperation();
         }
+
+        // This should NOT be defined here - to provide SOMETHING in those edits
+        // that implement IRevisable.
+        public UpdateItem[] ExchangeData(UpdateItem[] data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
