@@ -142,7 +142,7 @@ namespace Backsight.Editor.Operations
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        public override Feature[] GetReferences()
+        public override Feature[] GetRequiredFeatures()
         {
             List<Feature> result = new List<Feature>();
 
@@ -150,7 +150,7 @@ namespace Backsight.Editor.Operations
             {
                 IFeatureDependent fd = (o as IFeatureDependent);
                 if (fd != null)
-                    result.AddRange(fd.GetReferences());
+                    result.AddRange(fd.GetRequiredFeatures());
             }
 
             return result.ToArray();
