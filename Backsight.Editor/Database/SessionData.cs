@@ -120,9 +120,14 @@ namespace Backsight.Editor.Database
                 Trace.Write("Attaching attributes...");
                 AttributeData.Load(model.GetFeatureIds());
 
+                Trace.Write("Calculating geometry...");
+                Operation[] edits = model.GetCalculationSequence();
+                foreach (Operation op in edits)
+                    op.CalculateGeometry();
+
                 // Create spatial index
                 Trace.Write("Indexing...");
-                model.CreateIndex();
+                model.CreateIndex(edits);
             }
         }
 

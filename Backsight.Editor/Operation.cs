@@ -474,9 +474,37 @@ namespace Backsight.Editor
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        /// <remarks>GetRequiredFeatures may be a more expressive method name</remarks>
         public virtual Feature[] GetReferences()
         {
             return new Feature[0];
+        }
+
+        /// <summary>
+        /// Obtains the edits that must be completed before this edit.
+        /// </summary>
+        /// <returns>The edits that must be finished before this edit can be executed.</returns>
+        /// <remarks>
+        /// If no updates have ever been performed, the result will always refer to
+        /// earlier edits. If updates have been applied to this edit, the result
+        /// may also include future edits. This arises because an update can make
+        /// use of subsequently created features (provided there is no dependency).
+        /// <para/>
+        /// The <see cref="UpdateOperation"/> class provides an override.
+        /// </remarks>
+        internal virtual Operation[] GetRequiredEdits()
+        {
+            List<Operation> result = new List<Operation>();
+
+            Feature[] fa = GetReferences();
+            foreach (Feature f in fa)
+            {
+                Operation op = f.Creator;
+                if (!result.Contains(op))
+                    result.Add(op);
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -544,6 +572,18 @@ namespace Backsight.Editor
         internal virtual void CalculateGeometry()
         {
             // Do nothing
+        }
+
+        /// <summary>
+        /// Is the <see cref="OperationFlag.ToCalculate"/> flag bit set for this edit? 
+        /// This does not actually mean that <see cref="CalculateGeometry"/> needs to be
+        /// called - it is used to help determine the order in which edits should be calculated,
+        /// which may need to be reworked whenever updates are performed.
+        /// </summary>
+        internal bool ToCalculate
+        {
+            get { return IsFlagSet(OperationFlag.ToCalculate); }
+            set { SetFlag(OperationFlag.ToCalculate, value); }
         }
 
         /// <summary>

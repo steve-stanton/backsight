@@ -17,7 +17,6 @@ using System;
 
 namespace Backsight.Editor
 {
-	/// <written by="Steve Stanton" on="" />
     /// <summary>
     /// Flag bits for the <c>Operation</c> class
     /// </summary>
@@ -49,5 +48,12 @@ namespace Backsight.Editor
         /// now be irrelevant)
         /// </summary>
         Revealed=0x10,
+
+        /// <summary>
+        /// Operation still needs to be calculated. Used to determine the
+        /// order in which calls to <see cref="Operation.CalculateGeometry"/>
+        /// should be made.
+        /// </summary>
+        ToCalculate=0x20,
     }
 }

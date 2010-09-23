@@ -19,8 +19,8 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="12-JUN-07" />
     /// <summary>
-    /// Something that is dependent on instance(s) of <c>Feature</c>. Each
-    /// feature involved should be cross-referenced to the dependent feature.
+    /// Something that is dependent on the position of instance(s) of <c>Feature</c>.
+    /// Each feature involved should be cross-referenced to the dependent feature.
     /// </summary>
     interface IFeatureDependent
     {
@@ -45,7 +45,7 @@ namespace Backsight.Editor
         bool OnPostMove(Feature f);
 
         /// <summary>
-        /// Obtains the referenced features.
+        /// Obtains referenced features where position is required by this dependent.
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         /// <remarks>

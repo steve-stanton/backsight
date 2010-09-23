@@ -157,6 +157,15 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Obtains the edits that must be completed before this edit.
+        /// </summary>
+        /// <returns>An array holding the revised edit.</returns>
+        internal override Operation[] GetRequiredEdits()
+        {
+            return new Operation[] { m_Edit };
+        }
+
+        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>
