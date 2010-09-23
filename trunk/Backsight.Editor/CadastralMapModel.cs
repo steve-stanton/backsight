@@ -432,54 +432,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Includes features created by an editing operation as part of the editing
-        /// index. Also ensures the overal map extent has been expanded (if necessary)
-        /// to include the extent of the features.
-        /// </summary>
-        /// <param name="fa">The features to add to the index</param>
-        internal void AddToIndex(Feature[] fa)
-        {
-            EditingIndex index = this.EditingIndex;
-
-            foreach (Feature f in fa)
-            {
-                // Ignore if the feature has no extent (this should apply only during 
-                // deserialization of TextFeature instances that are associated with
-                // RowTextGeometry). It would be nice to do all indexing after all
-                // edits have been deserialized. However, I believe that some of the
-                // deserialization logic expects previous edits to be indexed.
-
-                // ...on second thoughts, this is just too messy. If deserialization
-                // logic does really require access to a spatial index, the relevant
-                // edits should be modified to avoid the dependency
-
-                //IWindow x = f.Extent;
-                //if (x != null)
-                //{
-                //    f.AddToIndex(index);
-                //    m_Window.Union(f.Extent);
-                //}
-                //else
-                //{
-                //    Debug.Assert(f is TextFeature);
-                //    TextFeature tf = (TextFeature)f;
-                //    Debug.Assert(tf.TextGeometry is RowTextGeometry);
-                //}
-
-                if (f.AddToIndex(index))
-                    m_Window.Union(f.Extent);
-            }
-
-            // The extent of circles don't get included in the map extent, because
-            // they're regarded only as construction lines (that should be invisible
-            // to the user).
-
-            List<Circle> createdCircles = GetCreatedCircles(fa);
-            foreach (Circle c in createdCircles)
-                c.AddToIndex(index);
-        }
-
-        /// <summary>
         /// Ensures that any IDs associated with an array of features have been indexed
         /// as part of this model.
         /// </summary>
@@ -1286,14 +1238,66 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates the spatial index
+        /// Creates a spatial index for the supplied edits.
         /// </summary>
-        internal void CreateIndex()
+        /// <param name="edits">The edits to include in the index</param>
+        internal void CreateIndex(Operation[] edits)
         {
             m_Index = new EditingIndex();
 
-            foreach (Session s in m_Sessions)
-                s.AddToIndex();
+            foreach (Operation op in edits)
+            {
+                Feature[] createdFeatures = op.Features;
+                AddToIndex(createdFeatures);
+            }
+        }
+
+        /// <summary>
+        /// Includes features created by an editing operation as part of the editing
+        /// index. Also ensures the overal map extent has been expanded (if necessary)
+        /// to include the extent of the features.
+        /// </summary>
+        /// <param name="fa">The features to add to the index</param>
+        internal void AddToIndex(Feature[] fa)
+        {
+            EditingIndex index = this.EditingIndex;
+
+            foreach (Feature f in fa)
+            {
+                // Ignore if the feature has no extent (this should apply only during 
+                // deserialization of TextFeature instances that are associated with
+                // RowTextGeometry). It would be nice to do all indexing after all
+                // edits have been deserialized. However, I believe that some of the
+                // deserialization logic expects previous edits to be indexed.
+
+                // ...on second thoughts, this is just too messy. If deserialization
+                // logic does really require access to a spatial index, the relevant
+                // edits should be modified to avoid the dependency
+
+                //IWindow x = f.Extent;
+                //if (x != null)
+                //{
+                //    f.AddToIndex(index);
+                //    m_Window.Union(f.Extent);
+                //}
+                //else
+                //{
+                //    Debug.Assert(f is TextFeature);
+                //    TextFeature tf = (TextFeature)f;
+                //    Debug.Assert(tf.TextGeometry is RowTextGeometry);
+                //}
+
+                if (f.AddToIndex(index))
+                    m_Window.Union(f.Extent);
+            }
+
+            // The extent of circles don't get included in the map extent, because
+            // they're regarded only as construction lines (that should be invisible
+            // to the user).
+
+            List<Circle> createdCircles = GetCreatedCircles(fa);
+            foreach (Circle c in createdCircles)
+                c.AddToIndex(index);
         }
 
         /// <summary>
@@ -1526,6 +1530,74 @@ namespace Backsight.Editor
                 m_Sessions[i].Touch(result, null);
 
             // Express the edits we found as an array
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Retrieves all edits in this model, in the order they were performed.
+        /// </summary>
+        /// <returns>The editing operations in all sessions, starting with
+        /// the earliest edit.</returns>
+        internal Operation[] GetAllEdits()
+        {
+            List<Operation> result = new List<Operation>();
+
+            foreach (Session s in m_Sessions)
+                result.AddRange(s.GetOperations(false));
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the order in which edits should be calculated.
+        /// </summary>
+        /// <returns>The edits in this model, arranged in the order they should
+        /// be calculated.</returns>
+        /// <exception cref="ApplicationException">If the sequence cannot be determined (some
+        /// sort of circular dependency exists)</exception>
+        /// <remarks>
+        /// If no updates have been applied, the result should be arranged
+        /// in the order the edits were performed. Updates can disrupt this ordering.
+        /// </remarks>
+        internal Operation[] GetCalculationSequence()
+        {
+            List<Operation> todo = new List<Operation>(GetAllEdits());
+            List<Operation> next = new List<Operation>();
+            List<Operation> result = new List<Operation>(todo.Count);
+
+            List<Operation> nxtList = next;
+
+            while (todo.Count > 0)
+            {
+                next.Clear();
+
+                foreach (Operation edit in todo)
+                {
+                    Operation[] requiredEdits = edit.GetRequiredEdits();
+
+                    if (Array.Exists<Operation>(requiredEdits,
+                            delegate(Operation t) { return t.ToCalculate; }))
+                    {
+                        next.Add(edit);
+                    }
+                    else
+                    {
+                        edit.ToCalculate = false;
+                        result.Add(edit);
+                    }
+                }
+
+                // We're in serious shit if the solution hasn't converged (this should
+                // have been checked when updates were applied).
+                if (next.Count == todo.Count)
+                    throw new ApplicationException("Unable to determine calculation sequence");
+
+                // Swap the lists
+                List<Operation> tmp = todo;
+                todo = next;
+                next = tmp;
+            }
+
             return result.ToArray();
         }
     }

@@ -165,19 +165,18 @@ namespace Backsight.Editor.Forms
             {
                 this.Text = "Update";
                 updateButton.Text = "&Update";
-                //lightBox.Image = Resources.GreenTrafficLight;
+                lightBox.Image = Resources.GreenTrafficLight.ToBitmap();
                 finishButton.Enabled = true;
                 finishButton.Focus();
                 cancelButton.Text = "Cancel";
-
             }
             else
             {
-                //Show(problem, null);
+                ShowInfo(problem, null);
                 this.Text = "Problem";
                 updateButton.Text = "Fi&x It";
                 updateButton.Focus();
-                //lightBox.Image = Resources.RedTrafficLight;
+                lightBox.Image = Resources.RedTrafficLight.ToBitmap();
                 finishButton.Enabled = false;
                 cancelButton.Text = "Und&o";
             }
@@ -185,19 +184,9 @@ namespace Backsight.Editor.Forms
             this.WindowState = FormWindowState.Normal;
         }
 
-        /*
-
-void CdUpdate::SetIcon ( const INT4 id ) {
-
-	CStatic* pWnd = (CStatic*)GetDlgItem(IDC_LIGHT);
-	HICON icon = AfxGetApp()->LoadIcon(id);
-	pWnd->SetIcon(icon);
-}
-         */
-
         internal void OnAbortUpdate()
         {
-            throw new NotImplementedException("UpdateForm");
+            this.WindowState = FormWindowState.Normal;
             //ShowWindow(SW_RESTORE);
         }
 
@@ -212,13 +201,6 @@ void CdUpdate::SetIcon ( const INT4 id ) {
             dependenciesButton.Enabled = isEnable;
             finishButton.Enabled = isEnable;
         }
-
-        /*
-void CdUpdate::OnClose() 
-{
-	m_Cmd.Cancel();
-}
-         */
 
         internal void SetUpdateCount(uint n)
         {

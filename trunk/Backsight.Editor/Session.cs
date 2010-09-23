@@ -255,35 +255,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Initializes this session upon loading of the model that contains it.
-        /// </summary>
-        /// <param name="container">The map model that contains this session</param>
-        internal void OnLoad(CadastralMapModel container)
-        {
-            /*
-            Debug.Assert(m_Model==container);
-
-            foreach (Operation op in m_Operations)
-                op.OnLoad(this);
-             */
-        }
-
-        /// <summary>
-        /// Spatially indexes the features created by this session (this excludes features that
-        /// may have been de-activated).
-        /// </summary>
-        /// <param name="index">The index to append to</param>
-        internal void AddToIndex()
-        {
-            foreach (Operation op in m_Operations)
-            {
-                op.CalculateGeometry();
-                Feature[] createdFeatures = op.Features;
-                this.MapModel.AddToIndex(createdFeatures);
-            }
-        }
-
-        /// <summary>
         /// The user logged on for the session. 
         /// </summary>
         internal User User
