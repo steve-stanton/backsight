@@ -30,19 +30,14 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
-        /// The edit being updated (not null)
+        /// The edit being updated (not null). Must implement <see cref="IRevisable"/>.
         /// </summary>
         readonly Operation m_Edit;
 
         /// <summary>
         /// Information about the update (not null). 
         /// </summary>
-        readonly UpdateItem[] m_Changes;
-
-        /// <summary>
-        /// Have the changes been exchanged with the original editing operation?
-        /// </summary>
-        bool m_ChangesExchanged;
+        UpdateItem[] m_Changes;
 
         #endregion
 
@@ -121,7 +116,12 @@ namespace Backsight.Editor.Operations
         /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
-            return false;
+            // Copy the original stuff back to the edit
+            ApplyChanges();
+
+            // TODO: Anything else to do?
+
+            return true;
         }
 
         /// <summary>
@@ -135,6 +135,18 @@ namespace Backsight.Editor.Operations
         internal override bool Rollforward(UpdateContext uc)
         {
             return true;
+        }
+
+        /// <summary>
+        /// Adds references to existing features referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// <para/>
+        /// This override does nothing. In the case of updates, the references should be
+        /// made from the edit that was revised. That should occur when update items are
+        /// applied to the original edit using <see cref="IRevisable.ExchangeData"/>.
+        /// </summary>
+        public override void AddReferences()
+        {
         }
 
         /// <summary>
@@ -176,6 +188,23 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// Exchanges changes with the revised edit.
+        /// </summary>
+        internal void ApplyChanges()
+        {
+            IRevisable r = (IRevisable)m_Edit;
+            m_Changes = r.ExchangeData(m_Changes);
+        }
+
+        /// <summary>
+        /// The edit being updated (not null). Must implement <see cref="IRevisable"/>.
+        /// </summary>
+        internal Operation RevisedEdit
+        {
+            get { return m_Edit; }
         }
     }
 }

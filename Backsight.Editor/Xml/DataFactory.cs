@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Web.Script.Serialization;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
@@ -321,6 +322,11 @@ namespace Backsight.Editor.Xml
 
             // Associate referenced features with the edit
             result.AddReferences();
+
+            // If we're dealing with an update, exchange update items
+            UpdateOperation upo = (result as UpdateOperation);
+            if (upo != null)
+                upo.ApplyChanges();
 
             // Remember the edit as part of the session
             s.Add(result);

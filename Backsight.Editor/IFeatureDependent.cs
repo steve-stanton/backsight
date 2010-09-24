@@ -54,5 +54,10 @@ namespace Backsight.Editor
         /// The relevance in terms of new features is what's really important.
         /// </remarks>
         Feature[] GetRequiredFeatures();
+
+        /// <summary>
+        /// The edit that created this dependent.
+        /// </summary>
+        Operation Creator { get; }
     }
 }

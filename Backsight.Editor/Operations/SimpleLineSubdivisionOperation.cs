@@ -257,7 +257,8 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Obtains update items for a revised version of this edit.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="dist">The new observed distance.</param>
         /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
@@ -280,48 +281,24 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Modifies this edit by applying the values in the supplied update items.
+        /// Modifies this edit by applying the values in the supplied update items
+        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
         /// </summary>
-        /// <param name="changes">The changes to apply (obtained via a prior call to
-        /// <see cref="GetUpdateItems"/>)</param>
-        /// <returns>The old values for each update item</returns>
-        internal UpdateItem[] ExchangeUpdateItems(UpdateItem[] changes)
+        /// <param name="data">The update items to apply to this edit.</param>
+        /// <returns>The original values for the update items.</returns>
+        public override UpdateItem[] ExchangeData(UpdateItem[] data)
         {
-            Debug.Assert(changes.Length == 1);
-            Debug.Assert(changes[0].Name == "Distance");
+            Debug.Assert(data.Length == 1);
+            Debug.Assert(data[0].Name == "Distance");
 
             // Note the original values
             UpdateItem[] originalData = new UpdateItem[] { new UpdateItem("Distance", m_Distance) };
 
             // Apply the revised values
-            m_Distance = (Distance)changes[0].Value;
+            m_Distance = (Distance)data[0].Value;
 
             return originalData;
         }
-
-        /*
-        /// <summary>
-        /// Corrects this operation. This just changes the info defining the op, but does not
-        /// attempt to re-execute it. This is used (I think) if a problem needs to be corrected
-        /// as part of rollforward processing.
-        /// </summary>
-        /// <param name="dist">The new observed distance.</param>
-        /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
-        /// <returns>True if changes made ok (always true).</returns>
-        internal bool Correct(Distance dist, bool isFromEnd)
-        {
-            // Change the distance.
-            m_Distance = new Distance(dist);
-
-            // And make sure the sign is correct.
-            if (isFromEnd)
-                m_Distance.SetNegative();
-            else
-                m_Distance.SetPositive();
-
-            return true;
-        }
-        */
 
         /// <summary>
         /// A user-perceived title for this operation.

@@ -1565,7 +1565,9 @@ namespace Backsight.Editor
             List<Operation> next = new List<Operation>();
             List<Operation> result = new List<Operation>(todo.Count);
 
-            List<Operation> nxtList = next;
+            // Start by marking ALL edits for re-calculation
+            foreach (Operation edit in todo)
+                edit.ToCalculate = true;
 
             while (todo.Count > 0)
             {
