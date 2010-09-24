@@ -214,9 +214,6 @@ namespace Backsight.Editor.UI
                 UpdateItem[] changes = pop.GetUpdateItems(m_Dialog.Length, m_Dialog.IsFromEnd);
                 UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, pop, changes);
                 up.AddUpdate(uop);
-
-                // Make the update.
-                //pop.Correct(m_Dialog.Length, m_Dialog.IsFromEnd);
             }
             else
             {

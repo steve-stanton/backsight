@@ -324,12 +324,6 @@
     <Compile Include="Forms\PickEditForm.Designer.cs">
       <DependentUpon>PickEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PickEditForUpdateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PickEditForUpdateForm.Designer.cs">
-      <DependentUpon>PickEditForUpdateForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\PickPredecessorForm.cs">
       <SubType>Form</SubType>
     </Compile>

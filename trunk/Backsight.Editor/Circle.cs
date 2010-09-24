@@ -273,7 +273,7 @@ namespace Backsight.Editor
         /// The operation that created this circle is the operation that created
         /// the first arc associated with the circle.
         /// </summary>
-        internal Operation Creator
+        public Operation Creator
         {
             // Perhaps this should scan the list, since the first element may not
             // necessarily be the earliest edit (alternatively, modify AddArc to

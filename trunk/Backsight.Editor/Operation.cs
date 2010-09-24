@@ -459,9 +459,10 @@ namespace Backsight.Editor
         /// In the case of deletions, the deleted features are <b>not</b> cross-referenced to
         /// the deletion operation. Instead, a special flag bit gets set in each feature.
         /// This is perhaps a bit inconsistent.
+        /// <para/>
+        /// The <see cref="UpdateOperation"/> class overrides.
         /// </remarks>
-        //abstract public void AddReferences();
-        public void AddReferences()
+        public virtual void AddReferences()
         {
             Feature[] feats = GetRequiredFeatures();
 
@@ -744,11 +745,18 @@ namespace Backsight.Editor
             SaveOperation();
         }
 
-        // This should NOT be defined here - to provide SOMETHING in those edits
-        // that implement IRevisable.
-        public UpdateItem[] ExchangeData(UpdateItem[] data)
+        public virtual UpdateItem[] ExchangeData(UpdateItem[] data)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// The edit that created this dependent.
+        /// </summary>
+        /// <value><c>this</c> edit</value>
+        public Operation Creator
+        {
+            get { return this; }
         }
     }
 }
