@@ -602,7 +602,12 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                             if (fds != null)
                             {
                                 foreach (IFeatureDependent fd in fds)
-                                    fd.Creator.ToCalculate = true;
+                                {
+                                    Operation fop = (fd as Operation);
+                                    if (fop != null)
+                                        fop.ToCalculate = true;
+                                    //fd.Creator.ToCalculate = true;
+                                }
                             }
                         }
 
@@ -616,7 +621,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 foreach (Operation op in edits)
                 {
                     if (op.ToCalculate)
-                        throw new ApplicationException("Calculation tag was not cleared");
+                        throw new ApplicationException("Calculation tag was not cleared for "+op.DataId);
                 }
 
                 // How many edits needs to be re-calculated (should be at least one)
