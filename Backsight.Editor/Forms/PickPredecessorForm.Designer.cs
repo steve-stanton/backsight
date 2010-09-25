@@ -103,6 +103,7 @@ namespace Backsight.Editor.Forms
             // 
             this.imageColumn.FillWeight = 50F;
             this.imageColumn.HeaderText = "";
+            this.imageColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.imageColumn.Name = "imageColumn";
             this.imageColumn.ReadOnly = true;
             this.imageColumn.Width = 32;
