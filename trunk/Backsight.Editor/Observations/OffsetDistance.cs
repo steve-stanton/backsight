@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 
 namespace Backsight.Editor.Observations
@@ -172,6 +173,15 @@ namespace Backsight.Editor.Observations
         internal override bool HasReference(Feature feature)
         {
             return m_Offset.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this observation.
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal override Feature[] GetReferences()
+        {
+            return m_Offset.GetReferences();
         }
 
         /// <summary>

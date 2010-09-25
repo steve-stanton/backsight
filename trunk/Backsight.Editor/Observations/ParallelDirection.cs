@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 
 namespace Backsight.Editor.Observations
@@ -155,6 +156,26 @@ namespace Backsight.Editor.Observations
 
             if (m_Par2!=null)
                 m_Par2.CutOp(op);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this observation.
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal override Feature[] GetReferences()
+        {
+            List<Feature> result = new List<Feature>(base.GetReferences());
+
+            if (m_From != null)
+                result.Add(m_From);
+
+            if (m_Par1 != null)
+                result.Add(m_Par1);
+
+            if (m_Par2 != null)
+                result.Add(m_Par2);
+
+            return result.ToArray();
         }
 
         /// <summary>
