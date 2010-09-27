@@ -437,8 +437,6 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that
         /// immediately precedes this leg. This will be updated if this leg also
         /// ends with a new insert (if not, it will be returned as a null value).</param>
@@ -449,7 +447,7 @@ namespace Backsight.Editor
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
         /// <returns></returns>
-        internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
+        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
             ref IPosition terminal, ref double bearing, double sfac)
         {
             throw new NotImplementedException();
@@ -1144,11 +1142,14 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         /// They are passed in because this leg may contain miss-connects (and maybe even missing
         /// end points). So it would be tricky trying trying to work it out now.
         /// </remarks>
-        internal override bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op,
+        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op,
                                                 ExtraLeg face, IPosition spos, IPosition epos)
         {
+            throw new NotImplementedException();
+            /*
             // Get the extra face to do it.
             return face.UpdateCurves(uc, insert, op, spos, epos, m_Circle, IsClockwise);
+             */
         }
 
         /// <summary>

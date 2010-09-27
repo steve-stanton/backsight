@@ -161,8 +161,6 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The point of the end of any new insert that immediately
         /// precedes this leg. This will be updated if this leg also ends with a new insert
         /// (if not, it will be returned as a null value).</param>
@@ -173,7 +171,7 @@ namespace Backsight.Editor
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
         /// <returns></returns>
-        internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
+        internal override bool Rollforward(ref PointFeature insert, PathOperation op,
                                             ref IPosition terminal, ref double bearing, double sfac)
         {
             return false;
@@ -182,8 +180,6 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward this leg (special version).
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The location of the end of any new insert that immediately
         /// precedes this leg. This will be updated if this leg also ends with a new insert
         /// (if not, it will be returned as a null value).</param>
@@ -191,10 +187,13 @@ namespace Backsight.Editor
         /// <param name="spos">The position for the start of the leg.</param>
         /// <param name="epos">The position for the end of the leg.</param>
         /// <returns></returns>
-        internal bool Rollforward(UpdateContext uc, ref IPointGeometry insert, PathOperation op,
+        internal bool Rollforward(ref IPointGeometry insert, PathOperation op,
                                     IPosition spos, IPosition epos)
         {
+            throw new NotImplementedException();
+            /*
             return m_Base.RollforwardFace(uc, ref insert, op, this, spos, epos);
+             */
         }
 
         /*
@@ -214,8 +213,6 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollforward the second face of this leg.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert">The location of the end of any new insert that immediately
         /// precedes this leg. This will be updated if this leg also ends with a new insert
         /// (if not, it will be returned as a null value).</param>
@@ -230,7 +227,7 @@ namespace Backsight.Editor
         /// (and maybe even missing end points). So it would be tricky trying trying to
         /// work it out now.
         /// </remarks>
-        internal override bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op,
+        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op,
                                                 ExtraLeg face, IPosition spos, IPosition epos)
         {
             // Do nothing. Extra legs can't have yet another 2nd face.

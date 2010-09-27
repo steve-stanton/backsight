@@ -179,11 +179,11 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         abstract internal void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac);
 
-        abstract internal bool Rollforward (UpdateContext uc, ref PointFeature insert, PathOperation op,
+        abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
 
         //abstract internal bool SaveFace (PathOperation op, ExtraLeg face);
-        abstract internal bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op, ExtraLeg face,
+        abstract internal bool RollforwardFace(ref IPointGeometry insert, PathOperation op, ExtraLeg face,
                                                     IPosition spos, IPosition epos);
 
         /// <summary>
@@ -1146,18 +1146,16 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// rolling forward an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of a pair
         /// of legs.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert"></param>
         /// <param name="op">The connection path that this leg belongs to.</param>
         /// <param name="spos">The position at the start of the leg.</param>
         /// <param name="epos">The position at the end of the leg.</param>
         /// <returns>True if updated ok.</returns>
-        internal bool UpdateSegments(UpdateContext uc, IPointGeometry insert, PathOperation op,
+        internal bool UpdateSegments(IPointGeometry insert, PathOperation op,
                                         IPosition spos, IPosition epos)
         {
-            //throw new NotImplementedException("Leg.UpdateSegments");
-
+            throw new NotImplementedException("Leg.UpdateSegments");
+            /*
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
                 return false;
@@ -1203,6 +1201,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             return true;
+             */
         }
 
         /// <summary>
@@ -1297,8 +1296,6 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// rolling forward an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of
         /// a pair of legs.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <param name="insert"></param>
         /// <param name="op">The connection path that this leg belongs to.</param>
         /// <param name="spos">The position at the start of the leg.</param>
@@ -1307,9 +1304,11 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// same one that the curves were previously related to).</param>
         /// <param name="iscw">Should the curves be directed clockwise?</param>
         /// <returns>True if updated ok.</returns>
-        internal bool UpdateCurves(UpdateContext uc, IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
+        internal bool UpdateCurves(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
                             Circle circle, bool iscw)
         {
+            throw new NotImplementedException();
+            /*
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
                 return false;
@@ -1359,6 +1358,7 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             return true;
+             */
         }
 
         /// <summary>

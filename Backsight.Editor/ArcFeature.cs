@@ -14,11 +14,11 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
-using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
