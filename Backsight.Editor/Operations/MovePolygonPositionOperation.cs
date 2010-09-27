@@ -156,7 +156,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Move the label's reference position
             m_Label.SetPolPosition(m_NewPosition);

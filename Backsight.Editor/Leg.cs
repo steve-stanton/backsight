@@ -79,19 +79,9 @@ namespace Backsight.Editor
 
         abstract internal void Draw (bool preview);
 
-        /// <summary>
-        /// Saves this leg by adding new point and line features to the map.
-        /// </summary>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg.
-        /// Updated for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        [Obsolete]
-        abstract internal void Save(FeatureFactory ff, List<PointFeature> createdPoints, ref IPosition terminal,
-                                        ref double bearing, double sfac);
+        //[Obsolete]
+        //abstract internal void Save(FeatureFactory ff, List<PointFeature> createdPoints, ref IPosition terminal,
+        //                                ref double bearing, double sfac);
 
         /// <summary>
         /// Creates spatial features (points and lines) for this leg. The created
@@ -182,15 +172,17 @@ namespace Backsight.Editor
         /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        abstract internal void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac);
+        abstract internal void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac);
 
         abstract internal bool Rollforward (UpdateContext uc, ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);
-        abstract internal bool SaveFace (PathOperation op, ExtraLeg face);
+
+        //abstract internal bool SaveFace (PathOperation op, ExtraLeg face);
         abstract internal bool RollforwardFace(UpdateContext uc, ref IPointGeometry insert, PathOperation op, ExtraLeg face,
                                                     IPosition spos, IPosition epos);
 
@@ -344,23 +336,6 @@ namespace Backsight.Editor
                 if (i == index)
                     edist = total;
             }
-        }
-
-        /// <summary>
-        /// Holds on to a reference to a feature that corresponds to a
-        /// specific span on this leg.
-        /// </summary>
-        /// <param name="index">Index of the span.</param>
-        /// <param name="feat">The associated feature.</param>
-        /// <returns></returns>
-        protected void SetFeature(int index, Feature feat)
-        {
-            // Confirm the index is valid. For cul-de-sacs with no observed
-            // spans, we only have one valid index.
-            if (index<0 || index>=NumSpan)
-                throw new IndexOutOfRangeException("Leg.SetFeature - Bad index");
-
-            m_Spans[index].CreatedFeature = feat;
         }
 
         /// <summary>
@@ -925,23 +900,6 @@ void CeLeg::MakeText ( const CeVertex& bs
                 return false;
             else
                 return sd.IsNewSpan;            
-        }
-
-        /// <summary>
-        /// Remembers the line created for a new span.
-        /// </summary>
-        /// <param name="index">The index of the span of interest.</param>
-        /// <param name="newspan">The line to refer to.</param>
-        protected void AddNewSpan(int index, LineFeature newspan)
-        {
-            SpanInfo sd = GetSpanData(index);
-            Debug.Assert(sd!=null);
-            Debug.Assert(sd.IsNewSpan);
-
-            // Point to the new line, and clear the flags that denote a new span.
-            SetFeature(index, newspan);
-            sd.IsNewSpan = false;
-            sd.IsMissConnect = false;
         }
 
         /// <summary>

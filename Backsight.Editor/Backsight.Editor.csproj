@@ -90,6 +90,7 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
+    <Compile Include="EditingContext.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />
@@ -379,7 +380,6 @@
     <Compile Include="Forms\UpdatePathForm.Designer.cs">
       <DependentUpon>UpdatePathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometricModel.cs" />
     <Compile Include="IdPacket.cs" />
     <Compile Include="IFeature.cs" />
     <Compile Include="ILoader.cs" />
@@ -646,6 +646,7 @@
     <Compile Include="Forms\StyleFile.cs" />
     <Compile Include="SpanInfo.cs" />
     <Compile Include="Starter.cs" />
+    <Compile Include="StartupEditingContext.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
     <Compile Include="TestLoader.cs" />
@@ -1065,6 +1066,7 @@
     <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateContext.cs" />
+    <Compile Include="UpdateEditingContext.cs" />
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateUndoMarker.cs" />
     <Compile Include="Wildcard.cs" />

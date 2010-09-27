@@ -360,7 +360,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Get the rotation & scale factor to apply.
             PathInfo pd = new PathInfo(this);
@@ -377,7 +378,7 @@ namespace Backsight.Editor.Operations
 
             // Go through each leg, asking them to make features.
             foreach (Leg leg in m_Legs)
-                leg.CreateGeometry(ref gotend, ref bearing, sfac);
+                leg.CreateGeometry(ctx, ref gotend, ref bearing, sfac);
         }
 
         /// <summary>

@@ -252,11 +252,17 @@ namespace Backsight.Editor
         /// <summary>
         /// Defines the position of this point as a new un-shared position.
         /// </summary>
-        /// <param name="value">The position to assign</param>
-        internal void SetPointGeometry(PointGeometry value)
+        /// <param name="ctx">The context in which the assignment is being made. May be null, but do
+        /// so with care - an editing context is vital when dealing with the propagation of updates.
+        /// </param>
+        /// <param name="value">The position to assign (not null).</param>
+        internal void ApplyPointGeometry(EditingContext ctx, PointGeometry value)
         {
             if (value == null)
                 throw new ArgumentNullException();
+
+            if (ctx != null)
+                ctx.RegisterChange(this);
 
             m_Geom = new Node(this, value);
         }

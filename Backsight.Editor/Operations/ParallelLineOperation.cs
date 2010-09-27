@@ -452,7 +452,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Calculate the end positions
             IPosition spos, epos;
@@ -462,10 +463,10 @@ namespace Backsight.Editor.Operations
             // Apply the calculated positions so long as the end points of the parallel line
             // were created by this edit
             if (m_ParLine.StartPoint.Creator == this)
-                m_ParLine.StartPoint.SetPointGeometry(PointGeometry.Create(spos));
+                m_ParLine.StartPoint.ApplyPointGeometry(ctx, PointGeometry.Create(spos));
 
             if (m_ParLine.EndPoint.Creator == this)
-                m_ParLine.EndPoint.SetPointGeometry(PointGeometry.Create(epos));
+                m_ParLine.EndPoint.ApplyPointGeometry(ctx, PointGeometry.Create(epos));
 
             // If the parallel is an arc, define the geometry
             if (m_ParLine is ArcFeature)

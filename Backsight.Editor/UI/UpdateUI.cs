@@ -624,6 +624,12 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                         throw new ApplicationException("Calculation tag was not cleared for "+op.DataId);
                 }
 
+                /*
+                foreach (Operation op in todo)
+                {
+                }
+                */
+
                 // How many edits needs to be re-calculated (should be at least one)
                 MessageBox.Show("Number of edits to re-calculate="+todo.Count);
 
