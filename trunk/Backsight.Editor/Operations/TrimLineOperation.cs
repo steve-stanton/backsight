@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
@@ -189,15 +190,14 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
         /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward(UpdateContext uc)
+        internal override bool Rollforward()
         {
+            throw new NotImplementedException();
             // Nothing to do
 
             // Rollforward the base class.
-            return base.OnRollforward();
+            //return base.OnRollforward();
         }
 
         /// <summary>

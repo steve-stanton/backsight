@@ -36,9 +36,6 @@ namespace Backsight.Editor.Xml
         internal OperationData(Operation op)
         {
             this.Id = op.DataId;
-
-            //if (op.Previous != null)
-            //    this.PreviousId = op.Previous.DataId;
         }
 
         /// <summary>

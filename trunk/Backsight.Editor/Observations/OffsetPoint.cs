@@ -84,8 +84,7 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Obtains the features that are referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
+        /// Obtains the features that are referenced by this observation.
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         internal override Feature[] GetReferences()

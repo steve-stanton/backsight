@@ -196,22 +196,20 @@ namespace Backsight.Editor
         /// <summary>
         /// Moves the location of this point, to reflect some sort of editing revision.
         /// </summary>
-        /// <param name="uc">The context in which the move is taking place (not null). If a
-        /// move actually takes place, it will be recorded as part of this context.</param>
         /// <param name="to">The new position for this point</param>
         /// <returns>True if a move was made. False if this point already has a position that
         /// is exactly the same as the supplied position.</returns>
-        internal bool MovePoint(UpdateContext uc, IPosition newLocation)
-        {
-            PointGeometry newPosition = PointGeometry.Create(newLocation);
-            if (newPosition.IsCoincident(m_Geom))
-                return false;
+        //internal bool MovePoint(IPosition newLocation)
+        //{
+        //    PointGeometry newPosition = PointGeometry.Create(newLocation);
+        //    if (newPosition.IsCoincident(m_Geom))
+        //        return false;
 
-            uc.AddMove(this);
-            MovePoint(newPosition);
+        //    uc.AddMove(this);
+        //    MovePoint(newPosition);
 
-            return true;
-        }
+        //    return true;
+        //}
 
         /// <summary>
         /// Undoes a positional change that arose during some sort of editing revision (see
