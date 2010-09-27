@@ -325,79 +325,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Saves features for this leg.
-        /// </summary>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg.
-        /// Updated for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
-                                    ref IPosition terminal, ref double bearing, double sfac)
-        {
-            PathOperation op = (PathOperation)ff.Creator;
-
-            // Create an undefined circular span
-            CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
-
-            // If this leg already has an associated circle, move it. Otherwise
-            // add a circle to the map that corresponds to this leg.
-            if (m_Circle == null)
-                m_Circle = AddCircle(op, createdPoints, span);
-            else
-            {
-                // Get the center point associated with the current op. If there
-                // is one (i.e. it's not a point that existed before the op), just
-                // move it. Otherwise add a new circle (along with a new center
-                // point).
-
-                // Inactive center points are ok (if you don't search for
-                // them, a new circle will be added).
-
-                PointFeature center = m_Circle.CenterPoint;
-
-                if (Object.ReferenceEquals(center.Creator, op))
-                {
-                    // Get the span to modify the radius of the circle.
-                    SetCircle(span, m_Circle);
-
-                    // Define the position of the center point.
-                    center.SetPointGeometry(PointGeometry.Create(span.Center));
-                }
-                else
-                {
-                    // The existing center point makes reference to the
-                    // circle, so clean that up.
-                    center.CutReference(m_Circle);
-
-                    // 19-OCT-99: The AddCircle call just returns
-                    // the circle that this leg already knows about, so
-                    // clear it first.
-                    m_Circle = null;
-
-                    // Add a new circle.
-                    m_Circle = AddCircle(op, createdPoints, span);
-                }
-            }
-
-            // Create (or update) features for each span. Note that for
-            // cul-de-sacs, there may be no observed spans.
-            int nspan = Math.Max(1, this.Count);
-            PointFeature noInsert = null;
-
-            for (int i = 0; i < nspan; i++)
-            {
-                Feature feat = SaveSpan(ref noInsert, op, createdPoints, span, i, null);
-            }
-
-            // Update BC info to refer to the EC.
-            terminal = span.EC;
-            bearing = span.ExitBearing;
-        }
-
-        /// <summary>
         /// Creates a line feature that corresponds to one of the spans on this leg.
         /// Before calling this override, the circle object associated with this leg must
         /// be defined, via a call to <see cref="CreateCircle"/>.
@@ -443,11 +370,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
+        internal override void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac)
         {
             // Create an undefined circular span
             CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
@@ -455,7 +383,7 @@ namespace Backsight.Editor
             // The circle should have been created already, but with an undefined radius
             Debug.Assert(m_Circle != null);
             m_Circle.Radius = span.ScaledRadius;
-            m_Circle.CenterPoint.SetPointGeometry(PointGeometry.Create(span.Center));
+            m_Circle.CenterPoint.ApplyPointGeometry(ctx, PointGeometry.Create(span.Center));
 
             // Create geometry for each span. Note that for cul-de-sacs, there may be
             // no observed spans.
@@ -478,7 +406,7 @@ namespace Backsight.Editor
                     endPoint = (feat as LineFeature).EndPoint;
 
                 if (endPoint != null && endPoint.PointGeometry == null)
-                    endPoint.SetPointGeometry(PointGeometry.Create(span.End));
+                    endPoint.ApplyPointGeometry(ctx, PointGeometry.Create(span.End));
             }
 
             // Update BC info to refer to the EC.
@@ -524,6 +452,8 @@ namespace Backsight.Editor
         internal override bool Rollforward(UpdateContext uc, ref PointFeature insert, PathOperation op,
             ref IPosition terminal, ref double bearing, double sfac)
         {
+            throw new NotImplementedException();
+            /*
             // SS:20080314 - This looks like Save...
 
             // Create an undefined circular span
@@ -597,236 +527,9 @@ namespace Backsight.Editor
             terminal = span.EC;
             bearing = span.ExitBearing;
             return true;
+             */
         }
 
-        /// <summary>
-        /// Saves a specific span of this leg.
-        /// </summary>
-        /// <param name="insert">The point of the end of any new insert that
-        /// immediately precedes this span. This will be updated if this span is
-        /// also a new insert (if not, it will be returned as a null value).</param>
-        /// <param name="op">The connection path that this leg is part of.</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="span">The span for the leg.</param>
-        /// <param name="index">The index of the span to save.</param>
-        /// <param name="uc">The context in which editing revisions are being made (defined only
-        /// when performing rollforward). Used to hold a record of any positional changes.</param>
-        /// <returns>The feature (if any) that represents the span. If the span has a line,
-        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
-        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
-        /// meaning that there is no line & no terminal point.</returns>
-        Feature SaveSpan(ref PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
-                            CircularSpan span, int index, UpdateContext uc)
-        {
-            // The very end of a connection path should never be moved.
-            PointFeature veryEnd = op.EndPoint;
-
-            if (IsNewSpan(index))
-            {
-                // Is this the very last span in the connection path?
-                int nspan = Math.Max(1, this.Count);
-                bool isLast = (index==(nspan-1) && op.IsLastLeg(this));
-
-                // Save the insert.
-                LineFeature newLine = SaveInsert(span, index, op, isLast);
-
-                // Record the new line as part of this leg
-                AddNewSpan(index, newLine);
-
-                // Remember the last insert position.
-                insert = newLine.EndPoint;
-
-                return newLine;
-            }
-            else
-            {
-                // Get the span to save
-                span.Get(index);
-
-                // See if the span previously had a saved feature.
-                Feature old = GetFeature(index);
-
-                // Save the span.
-                Feature feat = SaveSpan(insert, op, createdPoints, span, old, veryEnd, uc);
-
-                // If the saved span is different from what we had before,
-                // tell the base class about it.
-                if (!Object.ReferenceEquals(feat, old))
-                    SetFeature(index, feat);
-
-                // That wasn't an insert.
-                insert = null;
-
-                return feat;
-            }
-        }
-
-        /// <summary>
-        /// Saves a newly inserted span.
-        /// </summary>
-        /// <param name="span">The new span</param>
-        /// <param name="index">The index of the new span.</param>
-        /// <param name="creator">The operation that the new span should be referred to.</param>
-        /// <param name="isLast">Is the new span going to be the very last span in the last
-        /// leg of a connection path?</param>
-        /// <returns>The line that was created.</returns>
-        LineFeature SaveInsert(CircularSpan span, int index, PathOperation creator, bool isLast)
-        {
-            // SS:20080314 - Most of what follows is identical to the corresponding method
-            // in StraightSpan. The only difference is right at the end, where the line
-            // gets created...
-
-            // Get the end positions for the new span.
-            span.Get(index);
-
-            // Make sure the start and end points have been rounded to
-            // the internal resolution.
-            IPointGeometry sloc = PointGeometry.Create(span.Start);
-            IPointGeometry eloc = PointGeometry.Create(span.End);
-
-            // Get the location at the start of the span (in most cases,
-            // it should be there already -- the only exception is a
-            // case where the point was omitted).
-            CadastralMapModel map = CadastralMapModel.Current;
-            PointFeature pS = map.EnsurePointExists(sloc, creator);
-
-            // If the insert is going to be the very last span in the
-            // enclosing connection path, just pick up the terminal
-            // location of the path.
-            PointFeature pE = null;
-
-            if (isLast)
-            {
-                // Pick up the end of the path.
-                pE = creator.EndPoint;
-
-                // And ensure there has been no roundoff in the end position.
-                eloc = pE;
-            }
-            else
-            {
-                // Add a point at the end of the span. Do NOT attempt to re-use any existing
-                // point that happens to fall there. If you did, we could be re-using a location
-                // that comes later in the connection path (i.e. it may later be moved again!).
-                pE = map.AddPoint(eloc, map.DefaultPointType, creator);
-                span.HasEndPoint = true;
-
-                // Assign the next available ID to the point
-                pE.SetNextId();
-            }
-
-            // Add a line (this will cross-reference the points and the circle to the new line).
-            span.HasLine = true;
-            return map.AddCircularArc(m_Circle, pS, pE, IsClockwise, map.DefaultLineType, creator);
-        }
-
-        /// <summary>
-        /// Saves a span in the map.
-        /// </summary>
-        /// <param name="insert">Reference to a new point that was inserted just before
-        /// the span. Defined only during rollforward.</param>
-        /// <param name="op">The editing operation this leg is part of</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="span">The span for the leg.</param>
-        /// <param name="old">Pointer to the feature that was previously associated with
-        /// the span. This will be not null when the span is being saved as part of
-        /// rollforward processing (in that case, <paramref name="uc"/> must also be supplied).</param>
-        /// <param name="veryEnd">The location at the very end of the connection path
-        /// that this leg is part of.</param>
-        /// <param name="uc">The context in which editing revisions are being made (null if
-        /// not making revisions). Must be specified if <paramref name="old"/> is not null.</param>
-        /// <returns>The feature (if any) that represents the span. If the span has a line,
-        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
-        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
-        /// meaning that there is no line & no terminal point.</returns>
-        Feature SaveSpan(PointFeature insert, PathOperation op, List<PointFeature> createdPoints,
-                            CircularSpan span, Feature old, PointFeature veryEnd, UpdateContext uc)
-        {
-            // The circle on which the span is based should already be defined
-            // (see the call that CircularLeg.Save makes to AddCircle).
-            if (m_Circle==null)
-                throw new Exception("CircularLeg.SaveSpan -- Circle has not been defined");
-
-            // Get map info.
-            CadastralMapModel map = op.MapModel;
-
-            // Reference to the created feature (if any).
-            Feature feat = null;
-
-            // Make sure the start and end points have been rounded to
-            // the internal resolution.
-            IPointGeometry sloc = PointGeometry.Create(span.Start);
-            IPointGeometry eloc = PointGeometry.Create(span.End);
-
-            // If the span was previously associated with a feature, just
-            // move it. If the feature is a line, we want to move the
-            // location at the end (except in a case where a new line
-            // has just been inserted prior to it, in which case we
-            // need to change the start location so that it matches
-            // the end of the new guy).
-
-            if (old!=null)
-            {
-                Debug.Assert(uc!=null);
-
-                if (span.HasLine) // Feature should therefore be a line
-                {
-                    LineFeature line = (old as LineFeature);
-                    if (line==null)
-                        throw new Exception("CircularSpan.Save - Mismatched line");
-
-                    if (insert!=null)
-                    {
-                        throw new NotImplementedException("CircularLeg.SaveSpan - insert");
-
-                        //line.ChangeEnds(insert, line.EndPoint);
-                        //if (!line.EndPoint.IsCoincident(veryEnd))
-                        //    line.EndPoint.Move(eloc);
-                    }
-                    else
-                    {
-                        if (line.EndPoint.IsCoincident(veryEnd))
-                            line.StartPoint.MovePoint(uc, sloc);
-                        else
-                        {
-                            throw new NotImplementedException("CircularSpan.Save");
-                            //pArc->Move(sloc, eloc, m_pCircle, m_IsClockwise);
-                            //line.StartPoint.Move(sloc, m_Circle, m_IsClockwise);
-                            //line.EndPoint.Move(eloc, m_Circle, m_IsClockwise);
-                        }
-                    }
-                }
-                else if (span.HasEndPoint) // Feature should be a point
-                {
-                    PointFeature point = (old as PointFeature);
-                    if (point==null)
-                        throw new Exception("CircularSpan.Save - Mismatched point");
-
-                    if (!point.IsCoincident(veryEnd))
-                        point.MovePoint(uc, eloc);
-                }
-
-                feat = old; // SS:20080308 - Not sure if this is correct (it's not in the comparable block of StraightSpan.cs)
-            }
-            else
-            {
-                // If we have an end point, add it. If it creates something
-                // new, assign an ID to it.
-                if (span.HasEndPoint)
-                    feat = op.EnsurePointExists(eloc, createdPoints);
-
-                // Add a line if we have one.
-                if (span.HasLine)
-                {
-                    Debug.Assert(span.HasEndPoint);
-                    PointFeature ps = op.EnsurePointExists(sloc, createdPoints);
-                    PointFeature pe = (PointFeature)feat;
-                    feat = map.AddCircularArc(m_Circle, ps, pe, IsClockwise, map.DefaultLineType, op);
-                }
-            }
-
-            return feat;
-        }        
 /*
 //	@mfunc	Draw any angles for this leg.
 //
@@ -1405,6 +1108,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
         }
         */
 
+        /*
         /// <summary>
         /// Saves features for a second face that is based on this leg.
         /// </summary>
@@ -1420,6 +1124,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
 
             return face.MakeCurves(op, spos, epos, m_Circle, IsClockwise);
         }
+        */
 
         /// <summary>
         /// Rollforward the second face of this leg.

@@ -144,11 +144,12 @@ namespace Backsight.Editor.Operations
         /// Calculates the geometry for any spatial features that were created by
         /// this editing operation.
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
         /// <remarks>This is currently used only during deserialization from the database.
         /// By changing the default rotation here (rather than in <c>ProcessFeatures</c>),
         /// it gets assigned at the proper slot in the editing sequence.
         /// </remarks>
-        internal override void CalculateGeometry()
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Remember the current default
             m_PrevRotation = MapModel.DefaultTextRotation;

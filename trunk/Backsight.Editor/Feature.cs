@@ -174,6 +174,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Hash code (for use with Dictionary) is the session ID shifted over 16 bits,
+        /// OR'd with the 16 low-order bits of the item number. This will produce unique
+        /// values so long as the item number and session ID are both less than 65536.
+        /// </summary>
+        /// <returns>The value to use for indexing IDs</returns>
+        public override int GetHashCode()
+        {
+            return ((int)(m_Creator.Session.Id<<16) | (int)(m_SessionSequence&0x0000FFFF));
+        }
+
+        /// <summary>
         /// The user-perceived ID (if any) for the feature. This is the ID that
         /// is used to associate the feature with any miscellaneous attributes
         /// that may be held in a database.

@@ -123,7 +123,7 @@ namespace Backsight.Editor.Database
                 Trace.Write("Calculating geometry...");
                 Operation[] edits = model.GetCalculationSequence();
                 foreach (Operation op in edits)
-                    op.CalculateGeometry();
+                    op.CalculateGeometry(null);
 
                 // Create spatial index
                 Trace.Write("Indexing...");

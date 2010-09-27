@@ -178,46 +178,36 @@ namespace Backsight.Editor
             }
         }
 
-        /// <summary>
-        /// Saves features for this leg.
-        /// </summary>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg.
-        /// Updated for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
-                                    ref IPosition terminal, ref double bearing, double sfac)
-        {
-            // Add on any initial angle (it may be a deflection).
-            if (Math.Abs(m_StartAngle) > MathConstants.TINY)
-            {
-                if (m_IsDeflection)
-                    bearing += m_StartAngle;
-                else
-                    bearing += (m_StartAngle-Math.PI);
-            }
+        //internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
+        //                            ref IPosition terminal, ref double bearing, double sfac)
+        //{
+        //    // Add on any initial angle (it may be a deflection).
+        //    if (Math.Abs(m_StartAngle) > MathConstants.TINY)
+        //    {
+        //        if (m_IsDeflection)
+        //            bearing += m_StartAngle;
+        //        else
+        //            bearing += (m_StartAngle-Math.PI);
+        //    }
 
-            // Create a straight span
-            StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
+        //    // Create a straight span
+        //    StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
 
-            int nspan = this.Count;
-            for (int i = 0; i < nspan; i++)
-            {
-                // Get info for the current span (this defines the
-                // adjusted start and end positions, among other things).
-                span.Get(i);
+        //    int nspan = this.Count;
+        //    for (int i = 0; i < nspan; i++)
+        //    {
+        //        // Get info for the current span (this defines the
+        //        // adjusted start and end positions, among other things).
+        //        span.Get(i);
 
-                // Save the span
-                Feature feat = SaveSpan(span, ff, createdPoints, null, null, null, null);
-                SetFeature(i, feat);
-            }
+        //        // Save the span
+        //        Feature feat = SaveSpan(span, ff, createdPoints, null, null, null, null);
+        //        SetFeature(i, feat);
+        //    }
 
-            // Return the end position of the last span.
-            terminal = span.End;
-        }
+        //    // Return the end position of the last span.
+        //    terminal = span.End;
+        //}
 
         /// <summary>
         /// Creates a line feature that corresponds to one of the spans on this leg.
@@ -235,11 +225,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
+        internal override void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac)
         {
             // Much like the Save method...
 
@@ -273,7 +264,7 @@ namespace Backsight.Editor
                     endPoint = (feat as LineFeature).EndPoint;
 
                 if (endPoint != null && endPoint.PointGeometry == null)
-                    endPoint.SetPointGeometry(PointGeometry.Create(span.End));
+                    endPoint.ApplyPointGeometry(ctx, PointGeometry.Create(span.End));
             }
 
             // Return the end position of the last span.
@@ -354,107 +345,6 @@ namespace Backsight.Editor
             terminal = span.End;
             return true;
              */
-        }
-
-        /// <summary>
-        /// Saves a span in the map.
-        /// </summary>
-        /// <param name="span">The span to save</param>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="insert">Reference to a new point that was inserted just before
-        /// this span. Defined only during rollforward.</param>
-        /// <param name="old">Pointer to the feature that was previously associated with
-        /// this span. This will be not null when the span is being saved as part of
-        /// rollforward processing (in that case, <paramref name="uc"/> must also be supplied).</param>
-        /// <param name="veryEnd">The location at the very end of the connection path
-        /// that this span is part of.</param>
-        /// <param name="uc">The context in which editing revisions are being made (null if
-        /// not making revisions). Must be specified if <paramref name="old"/> is not null.</param>
-        /// <returns>The feature (if any) that represents the span. If the span has a line,
-        /// this will be a <see cref="LineFeature"/>. If the span has no line, it may be
-        /// a <see cref="PointFeature"/> at the END of the span. A null is also valid,
-        /// meaning that there is no line & no terminal point.</returns>
-        internal Feature SaveSpan(StraightSpan span, FeatureFactory ff,
-                                  List<PointFeature> createdPoints, PointFeature insert, Feature old,
-                                  PointFeature veryEnd, UpdateContext uc)
-        {
-            // Get map info.
-            CadastralMapModel map = CadastralMapModel.Current;
-
-            // Reference to the created feature (if any).
-            Feature feat = null;
-
-            // Make sure the start and end points have been rounded to
-            // the internal resolution.
-            IPointGeometry sloc = PointGeometry.Create(span.Start);
-            IPointGeometry eloc = PointGeometry.Create(span.End);
-
-            // If the span was previously associated with a feature, just
-            // move it. If the feature is a line, we want to move the
-            // location at the end (except in a case where a new line
-            // has just been inserted prior to it, in which case we
-            // need to change the start location so that it matches
-            // the end of the new guy).
-
-            if (old!=null)
-            {
-                Debug.Assert(uc!=null);
-
-                if (span.HasLine) // Feature should therefore be a line
-                {
-                    LineFeature line = (old as LineFeature);
-                    if (line==null)
-                        throw new Exception("StraightSpan.Save - Mismatched line");
-
-                    if (insert!=null)
-                    {
-                        throw new NotImplementedException("StraightLeg.SaveSpan - insert");
-
-                        //line.ChangeEnds(insert, line.EndPoint);
-                        //if (!line.EndPoint.IsCoincident(veryEnd))
-                        //    line.EndPoint.Move(eloc);
-                    }
-                    else
-                    {
-                        if (line.EndPoint.IsCoincident(veryEnd))
-                            line.StartPoint.MovePoint(uc, sloc);
-                        else
-                        {
-                            line.StartPoint.MovePoint(uc, sloc);
-                            line.EndPoint.MovePoint(uc, eloc);
-                        }
-                    }
-                }
-                else if (span.HasEndPoint) // Feature should be a point
-                {
-                    PointFeature point = (old as PointFeature);
-                    if (point==null)
-                        throw new Exception("StraightSpan.Save - Mismatched point");
-
-                    if (!point.IsCoincident(veryEnd))
-                        point.MovePoint(uc, eloc);
-                }
-            }
-            else
-            {
-                // If we have an end point, add it.
-                if (span.HasEndPoint)
-                    feat = EnsurePointExists(ff, eloc, createdPoints, veryEnd);
-
-                // Add a line if we have one.
-                if (span.HasLine)
-                {
-                    Debug.Assert(span.HasEndPoint);
-                    PointFeature ps = EnsurePointExists(ff, sloc, createdPoints, veryEnd);
-                    PointFeature pe = (PointFeature)feat;
-                    PathOperation op = (PathOperation)ff.Creator;
-                    feat = map.AddLine(ps, pe, map.DefaultLineType, op);
-                    //feat = ff.CreateSegmentLineFeature(
-                }
-            }
-
-            return feat;
         }
 
         PointFeature EnsurePointExists(FeatureFactory ff, IPointGeometry pg, List<PointFeature> createdPoints, PointFeature veryEnd)
@@ -769,6 +659,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         }
         */
 
+        /*
         /// <summary>
         /// Saves features for a second face that is based on this leg.
         /// </summary>
@@ -785,6 +676,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             // Get the extra leg to do the rest.
             return face.MakeSegments(op, spos, epos);
         }
+        */
 
         /// <summary>
         /// Rollforward the second face of this leg.

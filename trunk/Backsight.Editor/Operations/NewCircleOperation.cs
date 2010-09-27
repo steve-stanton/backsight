@@ -264,7 +264,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Get the radius, in meters on the ground.
             double rad = m_Radius.GetDistance(m_Center).Meters;
@@ -277,7 +278,7 @@ namespace Backsight.Editor.Operations
             if (p.Creator == this)
             {
                 PointGeometry pg = new PointGeometry(m_Center.X, m_Center.Y+rad);
-                p.SetPointGeometry(pg);
+                p.ApplyPointGeometry(ctx, pg);
             }
 
             // Try to find an existing circle. If we don't find one, create one (attaching it to

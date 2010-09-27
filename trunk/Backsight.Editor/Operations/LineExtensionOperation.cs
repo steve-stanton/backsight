@@ -238,11 +238,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
-            m_NewPoint.SetPointGeometry(pg);
+            m_NewPoint.ApplyPointGeometry(ctx, pg);
 
             // If the extension line was a circular arc, we also need to define it's geometry.
             // This COULD have been defined at an earlier stage (e.g. as part of CreateFeature),

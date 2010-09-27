@@ -228,11 +228,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             IPosition p = Calculate();
             PointGeometry pg = PointGeometry.Create(p);
-            m_Point.SetPointGeometry(pg);
+            m_Point.ApplyPointGeometry(ctx, pg);
         }
 
         /// <summary>

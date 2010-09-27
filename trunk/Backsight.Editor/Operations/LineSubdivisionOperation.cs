@@ -171,7 +171,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
-        internal override void CalculateGeometry()
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             // Get adjusted lengths for each section
             Distance[] distances = new Distance[m_Sections.Count];
@@ -198,7 +199,7 @@ namespace Backsight.Editor.Operations
                 // Assign the calculated position so long as we're not at
                 // the end of the line
                 if (end != m_Line.EndPoint)
-                    end.SetPointGeometry(PointGeometry.Create(to));
+                    end.ApplyPointGeometry(ctx, PointGeometry.Create(to));
 
                 // The end of the current span is the start of the next one
                 start = end;

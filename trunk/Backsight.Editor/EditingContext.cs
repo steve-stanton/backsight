@@ -1,5 +1,5 @@
-// <remarks>
-// Copyright 2009 - Steve Stanton. This file is part of Backsight
+﻿// <remarks>
+// Copyright 2010 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -13,36 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-
-
 namespace Backsight.Editor
 {
-    /// <written by="Steve Stanton" on="20-APR-2009" />
     /// <summary>
-    /// A snapshot of the geometry in a map model (including polygon topology).
+    /// Something that keeps track of changes arising from edits.
+    /// Base class for <see cref="StartupEditingContext"/> and <see cref="UpdateEditingContext"/>.
     /// </summary>
-    [Serializable]
-    class GeometricModel
+    abstract class EditingContext
     {
-        #region Class data
-
-        //Dictionary<InternalIdValue, Geo
-
-        readonly List<Polygon> m_Polygons;
-
-        #endregion
-
-        #region Constructors
-
-        internal GeometricModel(CadastralMapModel mapModel)
-        {
-            m_Polygons = new List<Polygon>();
-
-        }
-
-        #endregion
-
+        /// <summary>
+        /// Remembers a modification to the position of a point.
+        /// </summary>
+        /// <param name="point">The point that is about to be modified</param>
+        abstract internal void RegisterChange(PointFeature p);
     }
 }

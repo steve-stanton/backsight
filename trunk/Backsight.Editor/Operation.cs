@@ -567,9 +567,10 @@ namespace Backsight.Editor
         /// Calculates the geometry for any spatial features that were created by
         /// this editing operation.
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
         /// <remarks>This implementation does nothing. Derived classes that need to are
         /// expected to provide a suitable override.</remarks>
-        internal virtual void CalculateGeometry()
+        internal virtual void CalculateGeometry(EditingContext ctx)
         {
             // Do nothing
         }
@@ -715,7 +716,7 @@ namespace Backsight.Editor
             ProcessFeatures(ff);
 
             // Calculate any geometry for spatial features
-            CalculateGeometry();
+            CalculateGeometry(null);
 
             // Index features that were created (and ensure the map extent has been
             // expanded to include the new features)

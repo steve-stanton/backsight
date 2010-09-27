@@ -146,21 +146,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Saves features for this leg.
-        /// </summary>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg.
-        /// Updated for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
-                                    ref IPosition terminal, ref double bearing, double sfac)
-        {
-        }
-
-        /// <summary>
         /// Creates a line feature that corresponds to one of the spans on this leg.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
@@ -212,6 +197,7 @@ namespace Backsight.Editor
             return m_Base.RollforwardFace(uc, ref insert, op, this, spos, epos);
         }
 
+        /*
         /// <summary>
         /// Saves features for a second face that is based on this leg.
         /// </summary>
@@ -223,6 +209,7 @@ namespace Backsight.Editor
             // Do nothing. Extra legs can't have yet another 2nd face.
             return false;
         }
+        */
 
         /// <summary>
         /// Rollforward the second face of this leg.
@@ -257,18 +244,20 @@ namespace Backsight.Editor
         /// <returns>True if created ok.</returns>
         internal bool MakeFeatures(PathOperation op)
         {
+            throw new NotImplementedException("ExtraLeg.MakeFeatures");
             // Turn it over to the base leg.
-            return m_Base.SaveFace(op, this);
+            //return m_Base.SaveFace(op, this);
         }
 
         /// <summary>
         /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated</param>
         /// <param name="terminal">The position for the start of the leg. Updated to be
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void CreateGeometry(ref IPosition terminal, ref double bearing, double sfac)
+        internal override void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac)
         {
             throw new NotImplementedException("ExtraLeg.CreateGeometry");
         }
