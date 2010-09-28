@@ -124,13 +124,11 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// The offset point. The setter does <b>not</b> cut the reference from
-        /// any old point.
+        /// The offset point.
         /// </summary>
         internal override PointFeature Point
         {
 	        get { return m_Point; }
-            set { m_Point = value; }
         }
 
         /// <summary>

@@ -265,9 +265,8 @@ namespace Backsight.Editor.Xml
         /// <returns>The observation obtained from this data</returns>
         internal override Observation LoadObservation(ILoader loader)
         {
-            OffsetPoint result = new OffsetPoint();
-            result.Point = loader.Find<PointFeature>(this.Point);
-            return result;
+            PointFeature point = loader.Find<PointFeature>(this.Point);
+            return new OffsetPoint(point);
         }
     }
 

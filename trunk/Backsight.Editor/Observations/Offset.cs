@@ -39,7 +39,7 @@ namespace Backsight.Editor.Observations
         }
 
         abstract internal double GetMetric (Direction dir);
-        abstract internal PointFeature Point { get; set; }
+        abstract internal PointFeature Point { get; }
         abstract internal void CutRef(Operation op);
     }
 }

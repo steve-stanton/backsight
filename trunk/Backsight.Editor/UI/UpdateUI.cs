@@ -598,15 +598,20 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                         Feature[] creations = op.Features;
                         foreach (Feature f in creations)
                         {
+                            // Grab the things that the feature depends on
+                            // ...this isn't right - e.g. a parallel line may well depend on
+                            // an earlier line, but that doesn't mean the earlier line need to
+                            // be recalculated.
+
                             List<IFeatureDependent> fds = f.Dependents;
                             if (fds != null)
                             {
                                 foreach (IFeatureDependent fd in fds)
                                 {
-                                    Operation fop = (fd as Operation);
-                                    if (fop != null)
-                                        fop.ToCalculate = true;
-                                    //fd.Creator.ToCalculate = true;
+                                    //Operation fop = (fd as Operation);
+                                    //if (fop != null)
+                                    //    fop.ToCalculate = true;
+                                    fd.Creator.ToCalculate = true;
                                 }
                             }
                         }
