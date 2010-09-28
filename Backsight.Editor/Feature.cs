@@ -37,7 +37,7 @@ namespace Backsight.Editor
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
     [DefaultProperty("EntityType")]
-    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpandablePropertyItem
     {
         #region Class data
 
@@ -601,7 +601,7 @@ namespace Backsight.Editor
         /// indirectly through some sort of <c>Observation</c> object).
         /// May be null.
         /// </summary>
-        internal List<IFeatureDependent> Dependents
+        public List<IFeatureDependent> Dependents
         {
             get { return m_References; }
         }

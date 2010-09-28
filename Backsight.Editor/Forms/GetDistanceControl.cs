@@ -619,7 +619,7 @@ namespace Backsight.Editor.Forms
                 distanceTextBox.Text = m_DistancePoint.FormattedKey;
 
                 // Create the appropriate distance observation
-                m_OffsetPoint.Point = m_DistancePoint;
+                m_OffsetPoint = new OffsetPoint(m_DistancePoint);
                 m_ObservedDistance = m_OffsetPoint;
             }
         }

@@ -649,7 +649,6 @@
     <Compile Include="StartupEditingContext.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
-    <Compile Include="TestLoader.cs" />
     <Compile Include="TextCheck.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />

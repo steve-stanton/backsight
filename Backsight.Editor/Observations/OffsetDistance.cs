@@ -157,7 +157,6 @@ namespace Backsight.Editor.Observations
         internal override PointFeature Point
         {
             get { return null; }
-            set { throw new Exception("The method or operation is not implemented."); }
         }
 
         internal override void CutRef(Operation op)
