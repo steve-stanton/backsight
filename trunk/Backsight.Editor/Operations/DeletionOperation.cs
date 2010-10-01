@@ -234,5 +234,28 @@ namespace Backsight.Editor.Operations
         {
             return null;
         }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>
+        /// The referenced features (never null, but may be an empty array).
+        /// </returns>
+        public override Feature[] GetRequiredFeatures()
+        {
+            return m_Deletions.ToArray();
+        }
+
+        /// <summary>
+        /// Adds references to existing features referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// <para/>
+        /// This override does nothing. A deletions operates directly on the referenced features
+        /// (sets a special flag bit).
+        /// </summary>
+        public override void AddReferences()
+        {
+        }
     }
 }

@@ -298,5 +298,20 @@ namespace Backsight.Editor.Operations
             get { return m_Points; }
             set { m_Points = value; }
         }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>
+        /// The referenced features (never null, but may be an empty array).
+        /// </returns>
+        public override Feature[] GetRequiredFeatures()
+        {
+            List<Feature> result = new List<Feature>(m_Lines.Length + m_Points.Length);
+            result.AddRange(m_Lines);
+            result.AddRange(m_Points);
+            return result.ToArray();
+        }
     }
 }

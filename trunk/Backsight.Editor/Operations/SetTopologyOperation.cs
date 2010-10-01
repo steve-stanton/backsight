@@ -159,5 +159,17 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Line; }
         }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this operation (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>
+        /// The referenced features (never null, but may be an empty array).
+        /// </returns>
+        public override Feature[] GetRequiredFeatures()
+        {
+            return new Feature[] { m_Line };
+        }
     }
 }

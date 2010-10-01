@@ -458,7 +458,7 @@ namespace Backsight.Editor
         /// the deletion operation. Instead, a special flag bit gets set in each feature.
         /// This is perhaps a bit inconsistent.
         /// <para/>
-        /// The <see cref="UpdateOperation"/> class overrides.
+        /// The <see cref="DeletionOperation"/> and <see cref="UpdateOperation"/> classes provide overrides.
         /// </remarks>
         public virtual void AddReferences()
         {
@@ -473,10 +473,11 @@ namespace Backsight.Editor
         /// that are indirectly referenced by observation classes).
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
-        public virtual Feature[] GetRequiredFeatures()
-        {
-            return new Feature[0];
-        }
+        abstract public Feature[] GetRequiredFeatures();
+        //public virtual Feature[] GetRequiredFeatures()
+        //{
+        //    return new Feature[0];
+        //}
 
         /// <summary>
         /// Obtains the edits that must be completed before this edit.

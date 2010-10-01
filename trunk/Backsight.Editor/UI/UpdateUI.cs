@@ -587,8 +587,38 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 // The revised edit is the only edit that needs to be re-calculated initially.
                 uop.RevisedEdit.ToCalculate = true;
 
-                List<Operation> todo = new List<Operation>();
+                int startIndex = Array.IndexOf(edits, uop.RevisedEdit) + 1;
+                for (int i=startIndex; i<edits.Length; i++)
+                {
+                    // If any required edit is going to be recalculated, this edit will need to
+                    // be done too
+                    Operation currentEdit = edits[i];
+                    Operation[] req = currentEdit.GetRequiredEdits();
 
+                    // playing with lambda expressions.... is it the same?
+                    //if (Array.Exists<Operation>(req, (r) => r.ToCalculate ))
+                    //{
+                    //    currentEdit.ToCalculate = true;
+                    //}
+
+                    if (Array.Exists<Operation>(req, delegate(Operation t) { return t.ToCalculate; }))
+                    {
+                        currentEdit.ToCalculate = true;
+                    }
+                }
+
+                int nTodo = 0;
+
+                foreach (Operation op in edits)
+                {
+                    if (op.ToCalculate)
+                    {
+                        nTodo++;
+                        op.ToCalculate = false;
+                    }
+                }
+
+                /*
                 foreach (Operation op in edits)
                 {
                     if (op.ToCalculate)
@@ -628,15 +658,10 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                     if (op.ToCalculate)
                         throw new ApplicationException("Calculation tag was not cleared for "+op.DataId);
                 }
-
-                /*
-                foreach (Operation op in todo)
-                {
-                }
-                */
+            */
 
                 // How many edits needs to be re-calculated (should be at least one)
-                MessageBox.Show("Number of edits to re-calculate="+todo.Count);
+                MessageBox.Show("Number of edits to redo="+nTodo);
 
                 // Undo!
                 uop.ApplyChanges();
