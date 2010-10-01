@@ -146,13 +146,8 @@ namespace Backsight.Editor.Operations
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         public override Feature[] GetRequiredFeatures()
         {
-            // Do nothing -- although the edit refers to the text feature that's
-            // being moved, that reference doesn't have a bearing on any new feature.
-            // Perhaps a more succinct method name would clarify things.
-
-            return base.GetRequiredFeatures();
+            return new Feature[] { m_Label };
         }
-
 
         /// <summary>
         /// Performs the data processing associated with this editing operation.
