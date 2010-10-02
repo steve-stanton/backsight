@@ -28,6 +28,11 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// The edits that have been processed via a call to <see cref="Recalculate"/>.
+        /// </summary>
+        readonly List<Operation> m_RecalculatedEdits;
+
+        /// <summary>
         /// Changes made to the position of point features. The key is the ID of the feature.
         /// The value could conceivably be null.
         /// </summary>
@@ -47,6 +52,7 @@ namespace Backsight.Editor
         /// </summary>
         internal UpdateEditingContext()
         {
+            m_RecalculatedEdits = new List<Operation>();
             m_Changes = new Dictionary<PointFeature, PointGeometry>();
             m_IsReverting = false;
         }
@@ -67,6 +73,26 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Recalculates the geometry for an edit.
+        /// </summary>
+        /// <param name="op">The edit to recalculate</param>
+        internal void Recalculate(Operation op)
+        {
+            m_RecalculatedEdits.Add(op);
+
+            // Remove from spatial index
+            op.RemoveFromIndex();
+
+            // Re-calculate the geometry for created features
+            op.CalculateGeometry(this);
+            op.ToCalculate = false;
+
+            // Re-index
+            op.AddToIndex();
+            op.PrepareForIntersect();
+        }
+
+        /// <summary>
         /// Reverts all changes recorded as part of this editing context.
         /// </summary>
         internal void RevertChanges()
@@ -78,10 +104,14 @@ namespace Backsight.Editor
             {
                 m_IsReverting = true;
 
+                foreach (Operation op in m_RecalculatedEdits)
+                    op.RemoveFromIndex();
+
                 foreach (KeyValuePair<PointFeature, PointGeometry> kvp in m_Changes)
-                {
                     kvp.Key.ApplyPointGeometry(this, kvp.Value);
-                }
+
+                foreach (Operation op in m_RecalculatedEdits)
+                    op.AddToIndex();
             }
 
             finally

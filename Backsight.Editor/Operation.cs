@@ -406,7 +406,7 @@ namespace Backsight.Editor
         /// table and updates the timestamp in the <c>Sessions</c> table.
         /// </summary>
         /// <param name="op">The edit to save</param>
-        void SaveOperation()
+        internal void SaveOperation()
         {
             Trace.Write("Saving to database");
 
@@ -504,6 +504,17 @@ namespace Backsight.Editor
             }
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Prepares the features created by this edit for intersect detection
+        /// that should be performed by <see cref="CadastralMapModel.CleanEdit"/>.
+        /// This modifies line features by setting the <see cref="LineFeature.IsMoved"/>
+        /// property.
+        /// </summary>
+        internal void PrepareForIntersect()
+        {
+            PrepareForIntersect(this.Features);
         }
 
         /// <summary>
@@ -757,6 +768,30 @@ namespace Backsight.Editor
         public Operation Creator
         {
             get { return this; }
+        }
+
+        /// <summary>
+        /// Adds the features created by this edit to the model's spatial index.
+        /// </summary>
+        internal void AddToIndex()
+        {
+            EditingIndex index = this.MapModel.EditingIndex;
+            Feature[] fa = this.Features;
+
+            foreach (Feature f in fa)
+                index.Add(f);
+        }
+
+        /// <summary>
+        /// Removes the features created by this edit from the model's spatial index.
+        /// </summary>
+        internal void RemoveFromIndex()
+        {
+            EditingIndex index = this.MapModel.EditingIndex;
+            Feature[] fa = this.Features;
+
+            foreach (Feature f in fa)
+                index.Remove(f);
         }
     }
 }
