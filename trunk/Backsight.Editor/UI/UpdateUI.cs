@@ -576,13 +576,14 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 
         void ApplyUpdate(UpdateOperation uop)
         {
+            UpdateEditingContext uec = new UpdateEditingContext();
+
             try
             {
                 // Apply changes to the original edit, THEN obtain the calculation sequence (which
                 // may have changed as a result of the update).
                 uop.ApplyChanges();
                 Operation[] edits = uop.MapModel.GetCalculationSequence();
-                //IEditSpatialIndex spatialIndex = uop.MapModel.EditingIndex;
 
                 // The revised edit is the only edit that needs to be re-calculated initially.
                 uop.RevisedEdit.ToCalculate = true;
@@ -595,84 +596,26 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                     Operation currentEdit = edits[i];
                     Operation[] req = currentEdit.GetRequiredEdits();
 
-                    // playing with lambda expressions.... is it the same?
-                    //if (Array.Exists<Operation>(req, (r) => r.ToCalculate ))
-                    //{
-                    //    currentEdit.ToCalculate = true;
-                    //}
-
                     if (Array.Exists<Operation>(req, delegate(Operation t) { return t.ToCalculate; }))
-                    {
                         currentEdit.ToCalculate = true;
-                    }
                 }
 
-                int nTodo = 0;
-
+                // Recalculate geometry
                 foreach (Operation op in edits)
                 {
                     if (op.ToCalculate)
-                    {
-                        nTodo++;
-                        op.ToCalculate = false;
-                    }
+                        uec.Recalculate(op);
                 }
 
-                /*
-                foreach (Operation op in edits)
-                {
-                    if (op.ToCalculate)
-                    {
-                        todo.Add(op);
-
-                        Feature[] creations = op.Features;
-                        foreach (Feature f in creations)
-                        {
-                            // Grab the things that the feature depends on
-                            // ...this isn't right - e.g. a parallel line may well depend on
-                            // an earlier line, but that doesn't mean the earlier line need to
-                            // be recalculated.
-
-                            List<IFeatureDependent> fds = f.Dependents;
-                            if (fds != null)
-                            {
-                                foreach (IFeatureDependent fd in fds)
-                                {
-                                    //Operation fop = (fd as Operation);
-                                    //if (fop != null)
-                                    //    fop.ToCalculate = true;
-                                    fd.Creator.ToCalculate = true;
-                                }
-                            }
-                        }
-
-                        // Clear the tag AFTER the above (a feature created by the edit
-                        // may be dependent on another feature created by the same edit).
-                        op.ToCalculate = false;
-                    }
-                }
-
-                // All flags should have been cleared
-                foreach (Operation op in edits)
-                {
-                    if (op.ToCalculate)
-                        throw new ApplicationException("Calculation tag was not cleared for "+op.DataId);
-                }
-            */
-
-                // How many edits needs to be re-calculated (should be at least one)
-                MessageBox.Show("Number of edits to redo="+nTodo);
-
-                // Undo!
-                uop.ApplyChanges();
-
-                // To pass down editing context
-                //op.CalculateGeometry();
+                // Update topology and save to database
+                uop.MapModel.CleanEdit();
+                uop.SaveOperation();
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.StackTrace, ex.Message);
+                uec.RevertChanges();
                 uop.ApplyChanges();
             }
         }
