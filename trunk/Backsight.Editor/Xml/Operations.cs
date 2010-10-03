@@ -1239,10 +1239,43 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    public partial class UpdateItemData
+    {
+        public UpdateItemData()
+        {
+        }
+
+        internal UpdateItemData(UpdateItem item)
+        {
+            this.Name = item.Name;
+
+            object iv = item.Value;
+            Observation o = (iv as Observation);
+            if (o != null)
+                this.Value = DataFactory.Instance.ObservationToString(o);
+            else if (iv is Feature)
+                this.Value = (iv as Feature).DataId;
+            else
+                throw new NotImplementedException("Cannot serialize update item: " + item.Name);
+        }
+    }
+
     public partial class UpdateData
     {
         public UpdateData()
         {
+        }
+
+        internal UpdateData(UpdateOperation op)
+            : base(op)
+        {
+            this.RevisedEdit = op.RevisedEdit.DataId;
+
+            UpdateItem[] items = op.Changes;
+            this.Item = new UpdateItemData[items.Length];
+
+            for (int i = 0; i < items.Length; i++)
+                this.Item[i] = new UpdateItemData(items[i]);
         }
 
         /// <summary>

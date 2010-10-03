@@ -507,17 +507,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Prepares the features created by this edit for intersect detection
-        /// that should be performed by <see cref="CadastralMapModel.CleanEdit"/>.
-        /// This modifies line features by setting the <see cref="LineFeature.IsMoved"/>
-        /// property.
-        /// </summary>
-        internal void PrepareForIntersect()
-        {
-            PrepareForIntersect(this.Features);
-        }
-
-        /// <summary>
         /// Prepares the supplied features for intersect detection that should be
         /// performed by <see cref="CadastralMapModel.CleanEdit"/>. This modifies
         /// line features by setting the <see cref="LineFeature.IsMoved"/> property.

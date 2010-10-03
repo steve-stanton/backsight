@@ -940,7 +940,7 @@ The first and last positions are assumed to match the positions of the point fea
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="UpdateData" abstract="true">
+  <xs:complexType name="UpdateData">
     <xs:complexContent mixed="false">
       <xs:extension base="OperationData">
         <xs:sequence>

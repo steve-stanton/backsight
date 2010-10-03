@@ -89,7 +89,23 @@ namespace Backsight.Editor
 
             // Re-index
             op.AddToIndex();
-            op.PrepareForIntersect();
+
+            // Mark any lines as moved. In the case of lines that previously intersected
+            // anything, remove any topological construct, and replace afresh
+            Feature[] fa = op.Features;
+            foreach (Feature f in fa)
+            {
+                LineFeature line = (f as LineFeature);
+                if (line != null && line.IsTopological)
+                {
+                    line.SwitchTopology(); // turn off
+
+                    // Turn back on (but avoid possible problem with MarkPolygons)
+                    //line.SwitchTopology();
+                    line.SetTopology(true);
+                    line.IsMoved = true;
+                }
+            }
         }
 
         /// <summary>

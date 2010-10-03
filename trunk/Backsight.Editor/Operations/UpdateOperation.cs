@@ -205,5 +205,13 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Edit; }
         }
+
+        /// <summary>
+        /// Information about the update (not null). 
+        /// </summary>
+        internal UpdateItem[] Changes
+        {
+            get { return m_Changes; }
+        }
     }
 }

@@ -1165,7 +1165,7 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public abstract partial class UpdateData : OperationData {
+    public partial class UpdateData : OperationData {
         
         private UpdateItemData[] itemField;
         
