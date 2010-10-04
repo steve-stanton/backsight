@@ -1125,19 +1125,7 @@ namespace Backsight.Editor.Xml
             AddLineSplit(dff, line, "NewLine1", this.NewLine1);
             AddLineSplit(dff, line, "NewLine2", this.NewLine2);
             op.ProcessFeatures(dff);
-            /*
-            op.NewPoint = this.NewPoint.CreatePointFeature(op);
 
-            // Create the sections
-
-            uint sessionId, lineSequence;
-
-            InternalIdValue.Parse(this.NewLine1, out sessionId, out lineSequence);
-            op.NewLine1 = op.MakeSection(lineSequence, line.StartPoint, op.NewPoint);
-
-            InternalIdValue.Parse(this.NewLine2, out sessionId, out lineSequence);
-            op.NewLine2 = op.MakeSection(lineSequence, op.NewPoint, line.EndPoint);
-            */
             return op;
         }
     }
@@ -1249,14 +1237,23 @@ namespace Backsight.Editor.Xml
         {
             this.Name = item.Name;
 
+            // If non-observation items are necessary, it may be better to work with
+            // sub-classes (leave UpdateItem as an abstract base class).
+
             object iv = item.Value;
             Observation o = (iv as Observation);
             if (o != null)
                 this.Value = DataFactory.Instance.ObservationToString(o);
-            else if (iv is Feature)
-                this.Value = (iv as Feature).DataId;
+            //else if (iv is Feature)
+            //    this.Value = (iv as Feature).DataId;
             else
                 throw new NotImplementedException("Cannot serialize update item: " + item.Name);
+        }
+
+        internal UpdateItem LoadValue(ILoader loader)
+        {
+            object value = DataFactory.Instance.StringToObservation(this.Value);
+            return new UpdateItem(this.Name, value);
         }
     }
 
@@ -1285,9 +1282,19 @@ namespace Backsight.Editor.Xml
         /// <returns>The editing operation that was loaded</returns>
         internal override Operation LoadOperation(Session s)
         {
+            CadastralMapModel mapModel = s.MapModel;
             uint sequence = GetEditSequence(s);
-            //return new UpdateOperation(s, this);
-            throw new NotImplementedException("UpdateData.LoadOperation");
+            Operation rev = mapModel.FindOperation(this.RevisedEdit);
+
+            UpdateItem[] changes = new UpdateItem[this.Item.Length];
+            for (int i=0; i<changes.Length; i++)
+            {
+                UpdateItemData itemData = this.Item[i];
+                object value = itemData.LoadValue(mapModel);
+                changes[i] = new UpdateItem(itemData.Name, value);
+            }
+
+            return new UpdateOperation(s, sequence, rev, changes);
         }
     }
 }

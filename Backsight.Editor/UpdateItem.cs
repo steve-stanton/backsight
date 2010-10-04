@@ -27,7 +27,7 @@ namespace Backsight.Editor
         /// <summary>
         /// A name for the item (may be repeated across different types of editing operations).
         /// </summary>
-        readonly string m_Name;
+        string m_Name;
 
         /// <summary>
         /// The value associated with the item. This may either refer to the value prior
@@ -38,6 +38,15 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Default constructor (for serialization mechanism).
+        /// </summary>
+        public UpdateItem()
+        {
+            m_Name = String.Empty;
+            m_Value = null;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateItem&lt;T&gt;"/> class.
@@ -55,18 +64,20 @@ namespace Backsight.Editor
         /// <summary>
         /// A name for the item (may be repeated across different types of editing operations).
         /// </summary>
-        internal string Name
+        public string Name
         {
             get { return m_Name; }
+            set { m_Name = value; }
         }
 
         /// <summary>
         /// The value associated with the item. This may either refer to the value prior
         /// to a change, or the modified value that was applied.
         /// </summary>
-        internal object Value
+        public object Value
         {
             get { return m_Value; }
+            set { m_Value = value; }
         }
     }
 }
