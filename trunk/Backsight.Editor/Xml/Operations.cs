@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Yaml.Serialization;
+using System.Yaml;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
@@ -1235,6 +1237,8 @@ namespace Backsight.Editor.Xml
 
         internal UpdateItemData(UpdateItem item)
         {
+            throw new NotImplementedException("UpdateItemData");
+            /*
             this.Name = item.Name;
 
             // If non-observation items are necessary, it may be better to work with
@@ -1248,12 +1252,16 @@ namespace Backsight.Editor.Xml
             //    this.Value = (iv as Feature).DataId;
             else
                 throw new NotImplementedException("Cannot serialize update item: " + item.Name);
+             */
         }
 
         internal UpdateItem LoadValue(ILoader loader)
         {
+            /*
             object value = DataFactory.Instance.StringToObservation(this.Value);
             return new UpdateItem(this.Name, value);
+             */
+            throw new NotImplementedException("UpdateItemData.LoadValue");
         }
     }
 
@@ -1268,11 +1276,25 @@ namespace Backsight.Editor.Xml
         {
             this.RevisedEdit = op.RevisedEdit.DataId;
 
+            // Re-express update items using *Data objects
             UpdateItem[] items = op.Changes;
-            this.Item = new UpdateItemData[items.Length];
+            UpdateItem[] dataItems = new UpdateItem[items.Length];
 
             for (int i = 0; i < items.Length; i++)
-                this.Item[i] = new UpdateItemData(items[i]);
+            {
+                // Only handle observation classes for now
+                Observation obs = (items[i].Value as Observation);
+                if (obs == null)
+                    throw new NotSupportedException("Cannot serialize update item with type: "+items[i].Value.GetType().Name);
+
+                ObservationData od = DataFactory.Instance.ToData<ObservationData>(obs);
+                dataItems[i] = new UpdateItem(items[i].Name, od);
+            }
+
+            // The root node always identifies an array of UpdateItem
+            YamlConfig yc = new YamlConfig();
+            yc.OmitTagForRootNode = true;
+            this.Changes = new YamlSerializer(yc).Serialize(dataItems);
         }
 
         /// <summary>
@@ -1286,6 +1308,7 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             Operation rev = mapModel.FindOperation(this.RevisedEdit);
 
+            /*
             UpdateItem[] changes = new UpdateItem[this.Item.Length];
             for (int i=0; i<changes.Length; i++)
             {
@@ -1295,6 +1318,9 @@ namespace Backsight.Editor.Xml
             }
 
             return new UpdateOperation(s, sequence, rev, changes);
+             */
+
+            throw new NotImplementedException("UpdateDate.LoadOperation");
         }
     }
 }

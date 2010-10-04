@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Web.Script.Serialization;
 using Backsight.Editor.Operations;
+using System.Yaml.Serialization;
 
 namespace Backsight.Editor.Xml
 {
@@ -191,6 +192,9 @@ namespace Backsight.Editor.Xml
             OperationData sed = (o as OperationData);
             if (sed == null)
                 throw new InvalidOperationException("Data class does not extend OperationData");
+
+            // TEST
+            //new YamlSerializer().SerializeToFile(@"C:\Temp\LastEdit.yaml", sed);
 
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();

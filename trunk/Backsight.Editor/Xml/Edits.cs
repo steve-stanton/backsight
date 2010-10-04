@@ -96,41 +96,6 @@ namespace Backsight.Editor.Xml {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
-    public partial class UpdateItemData {
-        
-        private string nameField;
-        
-        private string valueField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
-            get {
-                return this.nameField;
-            }
-            set {
-                this.nameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Value {
-            get {
-                return this.valueField;
-            }
-            set {
-                this.valueField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class FactoryData {
         
         private FeatureStubData[] dataField;
@@ -1167,20 +1132,9 @@ namespace Backsight.Editor.Xml {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="Backsight")]
     public partial class UpdateData : OperationData {
         
-        private UpdateItemData[] itemField;
-        
         private string revisedEditField;
         
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Item")]
-        public UpdateItemData[] Item {
-            get {
-                return this.itemField;
-            }
-            set {
-                this.itemField = value;
-            }
-        }
+        private string changesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1190,6 +1144,17 @@ namespace Backsight.Editor.Xml {
             }
             set {
                 this.revisedEditField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Changes {
+            get {
+                return this.changesField;
+            }
+            set {
+                this.changesField = value;
             }
         }
     }
