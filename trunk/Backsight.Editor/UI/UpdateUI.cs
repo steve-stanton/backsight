@@ -274,6 +274,28 @@ void CuiUpdate::Finish ( void ) {
         }
 
         /// <summary>
+        /// Shuts down the update interface, accepting any updates that have been completed.
+        /// </summary>
+        internal void AcceptAllUpdates()
+        {
+            if (m_Cmd != null)
+            {
+                string msg = "You are in the middle of making an update." + System.Environment.NewLine;
+                msg += "You must finish that first.";
+                MessageBox.Show(msg);
+                return;
+            }
+
+            if (m_Problem != null)
+            {
+                MessageBox.Show("An unresolved problem needs to be rectified before you can accept changes.");
+                return;
+            }
+
+            FinishCommand();
+        }
+
+        /// <summary>
         /// Invokes the update dialog for the selected feature.
         /// </summary>
         internal void StartUpdate()

@@ -99,7 +99,7 @@ namespace Backsight.Editor.Forms
         private void finishButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
-            //m_Cmd.Finish();
+            m_Cmd.AcceptAllUpdates();
         }
 
         internal void Display(Feature feat)
