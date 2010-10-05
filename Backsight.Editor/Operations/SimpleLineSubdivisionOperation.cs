@@ -14,10 +14,10 @@
 // </remarks>
 
 using System;
-
-using Backsight.Editor.Observations;
 using System.Diagnostics;
 using System.Collections.Generic;
+
+using Backsight.Editor.Observations;
 
 
 namespace Backsight.Editor.Operations
@@ -386,33 +386,6 @@ namespace Backsight.Editor.Operations
             m_Line.Restore();
 
             return true;
-        }
-
-        /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the split point.
-            Distance dist = new Distance(m_Distance);
-            bool isFromEnd = dist.SetPositive();
-            IPosition splitpos = Calculate(m_Line, dist, isFromEnd);
-            if (splitpos==null)
-                throw new RollforwardException(this, "Cannot re-calculate position of point on line.");
-
-            // Move the split point.
-            m_NewPoint.MovePoint(uc, splitpos);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
         }
 
         /*

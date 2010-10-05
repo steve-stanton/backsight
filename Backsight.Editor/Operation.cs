@@ -270,7 +270,11 @@ namespace Backsight.Editor
         /// Rollforward this edit in response to some sort of update.
         /// </summary>
         /// <returns>True if operation has been re-executed successfully</returns>
-        abstract internal bool Rollforward();
+        [Obsolete]
+        internal virtual bool Rollforward()
+        {
+            return false;
+        }
 
         /// <summary>
         /// Is a flag bit set?

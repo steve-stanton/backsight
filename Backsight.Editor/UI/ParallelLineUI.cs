@@ -527,7 +527,7 @@ namespace Backsight.Editor.UI
             // stay highlighted for some reason).
             EditingController.Current.ClearSelection();
 
-            // If we are doing an update, alter the original operation.
+            // If we are doing an update, remember the changes
             if (up!=null)
             {
                 // Get the original operation.
@@ -535,11 +535,22 @@ namespace Backsight.Editor.UI
                 if (op==null)
                     throw new Exception("ParallelLineUI.DialFinish - Unexpected edit type.");
 
-                // Make the update.
-                if (m_Offset!=null)
-                    op.Correct(m_Line, m_Offset, m_TermLine1, m_TermLine2, m_IsReversed);
-                else if (m_OffsetPoint!=null)
-                    op.Correct(m_Line, new OffsetPoint(m_OffsetPoint), m_TermLine1, m_TermLine2, m_IsReversed);
+                // Note the offset (it SHOULD be defined)
+                Observation offset = null;
+
+                if (m_Offset != null)
+                    offset = m_Offset;
+                else if (m_OffsetPoint != null)
+                    offset = new OffsetPoint(m_OffsetPoint);
+
+                Debug.Assert(offset != null);
+
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+
+                UpdateItem[] changes = op.GetUpdateItems(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
+                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, op, changes);
+                up.AddUpdate(uop);
             }
             else
             {

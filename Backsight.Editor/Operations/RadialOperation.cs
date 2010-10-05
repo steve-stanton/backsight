@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using System.Diagnostics;
 
 namespace Backsight.Editor.Operations
 {
@@ -38,13 +39,13 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The direction (could contain an offset).
         /// </summary>
-        readonly Direction m_Direction;
+        Direction m_Direction;
 
         /// <summary>
         /// The length of the sideshot arm (either a <see cref="Distance"/> or
         /// an <see cref="OffsetPoint"/>).
         /// </summary>
-        readonly Observation m_Length;
+        Observation m_Length;
 
         // Creations ...
 
@@ -238,36 +239,51 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Corrects this operation. This just changes the info defining the op, and
-        /// marks the operation as changed.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
-        /// <param name="dir"></param>
-        /// <param name="length"></param>
-        /// <returns>True if changes are ok.</returns>
-        internal bool Correct(Direction dir, Observation length)
+        /// <param name="dir">The direction (could contain an offset).</param>
+        /// <param name="length">The length of the sideshot arm (either a <see cref="Distance"/>
+        /// or an <see cref="OffsetPoint"/>).</param>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItem[] GetUpdateItems(Direction dir, Observation length)
         {
-            throw new NotImplementedException();
+            return new UpdateItem[]
+            {
+                new UpdateItem("Direction", dir),
+                new UpdateItem("Length", length)
+            };
+        }
 
-            //// Confirm that the sideshot point can be re-calculated.
-            //IPosition to = RadialUI.Calculate(dir, length);
-            //if (to==null)
-            //    throw new ArgumentException("Cannot update position of sideshot point.");
+        /// <summary>
+        /// Modifies this edit by applying the values in the supplied update items
+        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
+        /// </summary>
+        /// <param name="data">The update items to apply to this edit.</param>
+        /// <returns>The original values for the update items.</returns>
+        public override UpdateItem[] ExchangeData(UpdateItem[] data)
+        {
+            Debug.Assert(data.Length == 2);
+            Debug.Assert(data[0].Name == "Direction");
+            Debug.Assert(data[1].Name == "Length");
 
-            //// Cut the references made by the direction object. If nothing
-            //// has changed, the references will be re-inserted when the
-            //// direction is re-saved below.
-            //if (m_Direction!=null)
-            //    m_Direction.OnRollback(this);
+            // Remember the original values
+            UpdateItem[] originalData = GetUpdateItems(m_Direction, m_Length);
 
-            //if (m_Length!=null)
-            //    m_Length.OnRollback(this);
+            // Cut any references made by the original observations
+            m_Direction.OnRollback(this);
+            m_Length.OnRollback(this);
 
-            //m_Direction = dir;
-            //m_Direction.AddReferences(this);
-            //m_Length = length;
-            //m_Length.AddReferences(this);
+            // Apply the new data
+            m_Direction = (Direction)data[0].Value;
+            m_Length = (Observation)data[1].Value;
 
-            //return true;
+            // Ensure features referenced by the observations are cross-referenced to this edit
+            m_Direction.AddReferences(this);
+            m_Length.AddReferences(this);
+
+            return originalData;
         }
 
         /// <summary>
@@ -410,31 +426,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
             Rollback(m_Line);
 
             return true;
-        }
-
-        /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-        	// Re-calculate the position of the sideshot point.
-            IPosition to = Calculate(m_Direction, m_Length);
-            if (to==null)
-                throw new RollforwardException(this, "Cannot re-calculate position of sideshot point.");
-
-        	// Move the sideshot point.
-            m_To.MovePoint(uc, to);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
         }
 
         /// <summary>

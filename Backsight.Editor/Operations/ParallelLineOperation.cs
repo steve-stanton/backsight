@@ -37,32 +37,32 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The reference line for the parallel.
         /// </summary>
-        readonly LineFeature m_RefLine; // m_pRefArc
+        LineFeature m_RefLine; // m_pRefArc
 
         /// <summary>
         /// The offset to the parallel (either a <c>Distance</c>, or an <c>OffsetPoint</c>).
         /// </summary>
-        readonly Observation m_Offset;        
+        Observation m_Offset;        
 
         // Optional input ...
 
         /// <summary>
         /// The 1st terminal arc (if any).
         /// </summary>
-        readonly LineFeature m_Term1;
+        LineFeature m_Term1;
 
         /// <summary>
         /// The 2nd terminal line (if any). May be the same as <c>m_Term1</c> (e.g. could be a
         /// multi-segment that bends round).
         /// </summary>
-        readonly LineFeature m_Term2;
+        LineFeature m_Term2;
         
         /// <summary>
         /// Flag bits. Currently a value of 0x1 is the only defined value, and means
         /// that the parallel for a circular arc should go in a direction that
         /// is opposite to that of the reference line.
         /// </summary>
-        readonly uint m_Flags;
+        uint m_Flags;
 
         // Created features ...
 
@@ -491,67 +491,98 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Corrects this operation.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="refline">The reference line.</param>
         /// <param name="offset">The observed offset (either a <c>Distance</c> or an <c>OffsetPoint</c>).</param>
         /// <param name="term1">A line that the parallel should start on.</param>
         /// <param name="term2">A line that the parallel should end on.</param>
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
-        /// <returns>True if operation updated ok.</returns>
-        internal bool Correct( LineFeature refline, Observation offset, LineFeature term1, LineFeature term2, bool isArcReversed)
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItem[] GetUpdateItems(LineFeature refline, Observation offset,
+            LineFeature term1, LineFeature term2, bool isArcReversed)
         {
-            throw new NotImplementedException();
+            return new UpdateItem[]
+            {
+                new UpdateItem("RefLine", refline),
+                new UpdateItem("Offset", offset),
+                new UpdateItem("Term1", term1),
+                new UpdateItem("Term2", term2),
+                new UpdateItem("ReverseArc", isArcReversed),
+            };
+        }
 
-            //// Alter the reference line if necessary.
-            //if (m_RefLine != refline )            
-            //{
-            //    m_RefLine.CutOp(this);
-            //    m_RefLine = refline;
-            //    m_RefLine.AddOp(this);
-            //}
+        /// <summary>
+        /// Modifies this edit by applying the values in the supplied update items
+        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
+        /// </summary>
+        /// <param name="data">The update items to apply to this edit.</param>
+        /// <returns>The original values for the update items.</returns>
+        public override UpdateItem[] ExchangeData(UpdateItem[] data)
+        {
+            Debug.Assert(data.Length == 5);
 
-            //// Cut any references made by the offset. If nothing
-            //// has changed, they will be re-inserted when the offset
-            //// is re-saved below.
-            //if (m_Offset!=null)
-            //    m_Offset.OnRollback(this);
+            // Remember the original values
+            UpdateItem[] originalData = GetUpdateItems(m_RefLine, m_Offset, m_Term1, m_Term2,
+                                                        this.IsArcReversed);
 
-            //// Get rid of the previously defined offset, and replace with
-            //// the new one (we can't necessarily change the old ones
-            //// because we may have changed the type of observation).
-            //m_Offset = offset;
-            //m_Offset.AddReferences(this);
+            LineFeature refline = (LineFeature)UpdateItem.FindValueByName("RefLine", data);
+            Observation offset = (Observation)UpdateItem.FindValueByName("Offset", data);
+            LineFeature term1 = (LineFeature)UpdateItem.FindValueByName("Term1", data);
+            LineFeature term2 = (LineFeature)UpdateItem.FindValueByName("Term2", data);
+            bool isArcReversed = (bool)UpdateItem.FindValueByName("ReverseArc", data);
 
-            //// If either terminal line is being changed
-            //if (m_Term1!=term1 || m_Term2!=term2)
-            //{
-            //    // Remember the new terminal lines (actually splitting them
-            //    // is the job of Rollforward).
+            // Alter the reference line if necessary.
+            if (m_RefLine != refline)
+            {
+                m_RefLine.CutOp(this);
+                m_RefLine = refline;
+                m_RefLine.AddOp(this);
+            }
 
-            //    if (m_Term1!=null)
-            //        m_Term1.CutOp(this);
+            // Cut any references made by the offset. If nothing
+            // has changed, they will be re-inserted when the offset
+            // is re-saved below.
+            if (m_Offset != null)
+                m_Offset.OnRollback(this);
 
-            //    if (m_Term2!=null)
-            //        m_Term2.CutOp(this);
+            // Get rid of the previously defined offset, and replace with
+            // the new one (we can't necessarily change the old ones
+            // because we may have changed the type of observation).
+            m_Offset = offset;
+            m_Offset.AddReferences(this);
 
-            //    m_Term1 = term1;
-            //    m_Term2 = term2;
+            // If either terminal line is being changed
+            if (m_Term1 != term1 || m_Term2 != term2)
+            {
+                // Remember the new terminal lines (actually splitting them
+                // is the job of Rollforward).
 
-            //    if (m_Term1!=null)
-            //        m_Term1.AddOp(this);
+                if (m_Term1 != null)
+                    m_Term1.CutOp(this);
 
-            //    if (m_Term2!=null)
-            //        m_Term2.AddOp(this);
-            //}
+                if (m_Term2 != null)
+                    m_Term2.CutOp(this);
 
-            //// Alter arc direction if necessary.
-            //if (isArcReversed)
-            //    m_Flags = 1;
-            //else
-            //    m_Flags = 0;
+                m_Term1 = term1;
+                m_Term2 = term2;
 
-            //return true;
+                if (m_Term1 != null)
+                    m_Term1.AddOp(this);
+
+                if (m_Term2 != null)
+                    m_Term2.AddOp(this);
+            }
+
+            // Alter arc direction if necessary.
+            if (isArcReversed)
+                m_Flags = 1;
+            else
+                m_Flags = 0;
+
+            return originalData;
         }
 
         /// <summary>

@@ -195,12 +195,12 @@ namespace Backsight.Editor.UI
 	        if (m_Dialog != wnd )
                 return m_Dialog.DialFinish(wnd);
 
-	        // If we are doing an update, alter the original operation.
-	        UpdateUI pup = this.Update;
+            // If we are doing an update, remember the changes
+	        UpdateUI up = this.Update;
 
-	        if (pup!=null)
+	        if (up!=null)
             {
-                RadialOperation pop = (pup.GetOp() as RadialOperation);
+                RadialOperation pop = (up.GetOp() as RadialOperation);
         		if (pop==null)
                 {
 			        MessageBox.Show("RadialUI.DialFinish - Unexpected edit type.");
@@ -218,8 +218,11 @@ namespace Backsight.Editor.UI
 			        return false;
 		        }
 
-		        // Make the update.
-		        pop.Correct(dir, len);
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+                UpdateItem[] changes = pop.GetUpdateItems(dir, len);
+                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, pop, changes);
+                up.AddUpdate(uop);
 	        }
 	        else
             {
