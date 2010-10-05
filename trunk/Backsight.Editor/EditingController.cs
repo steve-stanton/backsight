@@ -969,7 +969,14 @@ namespace Backsight.Editor
                 // for a change above).
 
                 if (m_Command != null)
-                    ClearSelection();
+                {
+                    // 20101005 -- Allow highlighting of polygons, since their selection
+                    // should not interfere with command dialogs (and in things like the
+                    // update UI, it can be useful to confirm that topology is ok).
+
+                    if (!(item is Polygon))
+                        ClearSelection();
+                }
             }
 
             m_HasSelectionChanged = true;
