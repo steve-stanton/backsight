@@ -95,7 +95,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Adds references to existing features referenced by this observation.
-        /// 
+        /// <para/>
         /// This should be called by implementations of <c>Operation.AddReferences</c>
         /// (for each instance of Observation that the operation involves). This ensures
         /// that the features utilized by observations are cross-referenced to the editing
