@@ -22,30 +22,6 @@ namespace Backsight.Editor
     /// </summary>
     class UpdateItem
     {
-        #region Static
-
-        /// <summary>
-        /// Convenience method to locate a specific item value in an array of items,
-        /// given the name of the item.
-        /// </summary>
-        /// <param name="name">The name of the item to look for (case-sensitive)</param>
-        /// <param name="items">The items to look at</param>
-        /// <returns>The corresponding item value (may be null)</returns>
-        internal static object FindValueByName(string name, UpdateItem[] items)
-        {
-            UpdateItem result = Array.Find<UpdateItem>(items, delegate(UpdateItem t)
-            {
-                return (t.Name == name);
-            });
-
-            if (result == null)
-                return null;
-            else
-                return result.Value; // may also be null
-        }
-
-        #endregion
-
         #region Class data
 
         /// <summary>

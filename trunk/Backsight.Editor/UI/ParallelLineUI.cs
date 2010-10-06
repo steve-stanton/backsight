@@ -548,8 +548,8 @@ namespace Backsight.Editor.UI
                 // Remember the changes as part of the UI object (the original edit remains
                 // unchanged for now)
 
-                UpdateItem[] changes = op.GetUpdateItems(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
-                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, op, changes);
+                UpdateData changes = op.GetUpdateData(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
+                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, changes);
                 up.AddUpdate(uop);
             }
             else

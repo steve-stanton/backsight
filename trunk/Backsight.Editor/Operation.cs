@@ -749,7 +749,7 @@ namespace Backsight.Editor
             SaveOperation();
         }
 
-        public virtual UpdateItem[] ExchangeData(UpdateItem[] data)
+        public virtual void ExchangeData(UpdateData data)
         {
             throw new NotImplementedException();
         }

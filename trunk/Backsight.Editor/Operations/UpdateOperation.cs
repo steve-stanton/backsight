@@ -37,7 +37,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null). 
         /// </summary>
-        UpdateItem[] m_Changes;
+        readonly UpdateData m_Changes;
 
         #endregion
 
@@ -55,19 +55,12 @@ namespace Backsight.Editor.Operations
         /// <paramref name="changes"/> is null.</exception>
         /// <exception cref="ArgumentException">If <paramref name="changes"/> is an
         /// empty array.</exception>
-        internal UpdateOperation(Session s, uint sequence, Operation edit, UpdateItem[] changes)
+        internal UpdateOperation(Session s, uint sequence, UpdateData changes)
             : base(s, sequence)
         {
-            if (edit == null || changes == null)
+            if (changes == null)
                 throw new ArgumentNullException();
 
-            if (changes.Length == 0)
-                throw new ArgumentException("Empty change list");
-
-            if (!(edit is IRevisable))
-                throw new ArgumentException("Edit is not tagged as revisable");
-
-            m_Edit = edit;
             m_Changes = changes;
         }
 
@@ -194,8 +187,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void ApplyChanges()
         {
-            IRevisable r = (IRevisable)m_Edit;
-            m_Changes = r.ExchangeData(m_Changes);
+            m_Changes.ExchangeData();
         }
 
         /// <summary>
@@ -203,7 +195,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal Operation RevisedEdit
         {
-            get { return m_Edit; }
+            get { return m_Changes.RevisedEdit; }
         }
 
         /// <summary>
