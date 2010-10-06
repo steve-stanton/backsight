@@ -23,18 +23,18 @@ namespace Backsight.Editor.Operations
     {
         /// <summary>
         /// Exchanges update items that were previously generated via an
-        /// implementation of a method called <c>GetUpdateItems</c>.
+        /// implementation of a method called <c>GetUpdateData</c>.
         /// <para/>
         /// Every edit that implements <see cref="IRevisable"/> is expected to provide
-        /// a method called <c>GetUpdateItems</c>. This isn't defined as part of
+        /// a method called <c>GetUpdateData</c>. This isn't defined as part of
         /// the interface because the parameters passed to the method will vary
         /// from one edit to the next.
         /// <para/>
         /// The expectation is that if you obtain update items from one edit,
         /// you will later exchange the data with the same edit.
         /// </summary>
-        /// <param name="data">The update items to apply to the edit.</param>
-        /// <returns>The original values for the update items.</returns>
-        UpdateItem[] ExchangeData(UpdateItem[] data);
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        void ExchangeData(UpdateData data);
     }
 }

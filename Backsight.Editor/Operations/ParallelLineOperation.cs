@@ -501,88 +501,40 @@ namespace Backsight.Editor.Operations
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItem[] GetUpdateItems(LineFeature refline, Observation offset,
+        internal UpdateData GetUpdateData(LineFeature refline, Observation offset,
             LineFeature term1, LineFeature term2, bool isArcReversed)
         {
-            return new UpdateItem[]
-            {
-                new UpdateItem("RefLine", refline),
-                new UpdateItem("Offset", offset),
-                new UpdateItem("Term1", term1),
-                new UpdateItem("Term2", term2),
-                new UpdateItem("ReverseArc", isArcReversed),
-            };
+            UpdateData result = new UpdateData(this);
+
+            result.AddFeature<LineFeature>("RefLine", refline);
+            result.AddObservation<Observation>("Offset", offset);
+            result.AddFeature<LineFeature>("Term1", term1);
+            result.AddFeature<LineFeature>("Term2", term2);
+            result.AddItem<bool>("ReverseArc", isArcReversed);
+
+            return result;
         }
 
         /// <summary>
         /// Modifies this edit by applying the values in the supplied update items
-        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
+        /// (as produced via a prior call to <see cref="GetUpdateData"/>).
         /// </summary>
         /// <param name="data">The update items to apply to this edit.</param>
         /// <returns>The original values for the update items.</returns>
-        public override UpdateItem[] ExchangeData(UpdateItem[] data)
+        public override void ExchangeData(UpdateData data)
         {
-            Debug.Assert(data.Length == 5);
-
-            // Remember the original values
-            UpdateItem[] originalData = GetUpdateItems(m_RefLine, m_Offset, m_Term1, m_Term2,
-                                                        this.IsArcReversed);
-
-            LineFeature refline = (LineFeature)UpdateItem.FindValueByName("RefLine", data);
-            Observation offset = (Observation)UpdateItem.FindValueByName("Offset", data);
-            LineFeature term1 = (LineFeature)UpdateItem.FindValueByName("Term1", data);
-            LineFeature term2 = (LineFeature)UpdateItem.FindValueByName("Term2", data);
-            bool isArcReversed = (bool)UpdateItem.FindValueByName("ReverseArc", data);
-
-            // Alter the reference line if necessary.
-            if (m_RefLine != refline)
-            {
-                m_RefLine.CutOp(this);
-                m_RefLine = refline;
-                m_RefLine.AddOp(this);
-            }
-
-            // Cut any references made by the offset. If nothing
-            // has changed, they will be re-inserted when the offset
-            // is re-saved below.
-            if (m_Offset != null)
-                m_Offset.OnRollback(this);
-
-            // Get rid of the previously defined offset, and replace with
-            // the new one (we can't necessarily change the old ones
-            // because we may have changed the type of observation).
-            m_Offset = offset;
-            m_Offset.AddReferences(this);
-
-            // If either terminal line is being changed
-            if (m_Term1 != term1 || m_Term2 != term2)
-            {
-                // Remember the new terminal lines (actually splitting them
-                // is the job of Rollforward).
-
-                if (m_Term1 != null)
-                    m_Term1.CutOp(this);
-
-                if (m_Term2 != null)
-                    m_Term2.CutOp(this);
-
-                m_Term1 = term1;
-                m_Term2 = term2;
-
-                if (m_Term1 != null)
-                    m_Term1.AddOp(this);
-
-                if (m_Term2 != null)
-                    m_Term2.AddOp(this);
-            }
+            m_RefLine = data.ExchangeFeature<LineFeature>("RefLine", m_RefLine);
+            m_Offset = data.ExchangeObservation<Observation>("Offset", m_Offset);
+            m_Term1 = data.ExchangeFeature<LineFeature>("Term1", m_Term1);
+            m_Term2 = data.ExchangeFeature<LineFeature>("Term1", m_Term2);
 
             // Alter arc direction if necessary.
+            bool isArcReversed = data.ExchangeValue<bool>("ReverseArc", this.IsArcReversed);
+
             if (isArcReversed)
                 m_Flags = 1;
             else
                 m_Flags = 0;
-
-            return originalData;
         }
 
         /// <summary>

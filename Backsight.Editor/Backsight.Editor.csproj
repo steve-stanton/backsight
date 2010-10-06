@@ -1069,6 +1069,7 @@
     <Compile Include="UI\UpdateUI.cs" />
     <Compile Include="UnsectionedLineGeometry.cs" />
     <Compile Include="UpdateContext.cs" />
+    <Compile Include="UpdateData.cs" />
     <Compile Include="UpdateEditingContext.cs" />
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateUndoMarker.cs" />

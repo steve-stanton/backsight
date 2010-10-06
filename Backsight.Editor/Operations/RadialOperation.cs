@@ -247,43 +247,24 @@ namespace Backsight.Editor.Operations
         /// or an <see cref="OffsetPoint"/>).</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItem[] GetUpdateItems(Direction dir, Observation length)
+        internal UpdateData GetUpdateData(Direction dir, Observation length)
         {
-            return new UpdateItem[]
-            {
-                new UpdateItem("Direction", dir),
-                new UpdateItem("Length", length)
-            };
+            UpdateData result = new UpdateData(this);
+            result.AddObservation<Direction>("Direction", dir);
+            result.AddObservation<Observation>("Length", length);
+            return result;
         }
 
         /// <summary>
-        /// Modifies this edit by applying the values in the supplied update items
-        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateData"/>.
         /// </summary>
-        /// <param name="data">The update items to apply to this edit.</param>
-        /// <returns>The original values for the update items.</returns>
-        public override UpdateItem[] ExchangeData(UpdateItem[] data)
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateData data)
         {
-            Debug.Assert(data.Length == 2);
-            Debug.Assert(data[0].Name == "Direction");
-            Debug.Assert(data[1].Name == "Length");
-
-            // Remember the original values
-            UpdateItem[] originalData = GetUpdateItems(m_Direction, m_Length);
-
-            // Cut any references made by the original observations
-            m_Direction.OnRollback(this);
-            m_Length.OnRollback(this);
-
-            // Apply the new data
-            m_Direction = (Direction)data[0].Value;
-            m_Length = (Observation)data[1].Value;
-
-            // Ensure features referenced by the observations are cross-referenced to this edit
-            m_Direction.AddReferences(this);
-            m_Length.AddReferences(this);
-
-            return originalData;
+            m_Direction = data.ExchangeObservation<Direction>("Direction", m_Direction);
+            m_Length = data.ExchangeObservation<Observation>("Length", m_Length);
         }
 
         /// <summary>
