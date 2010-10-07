@@ -13,10 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Editor.Observations;
-using System.Collections.Generic;
 
 
 namespace Backsight.Editor
@@ -29,14 +26,6 @@ namespace Backsight.Editor
     {
         abstract internal bool HasReference(Feature feature);
         abstract internal void OnRollback(Operation op);
-
-        protected Observation() : base()
-        {
-        }
-
-        protected Observation(Observation copy)
-        {
-        }
 
         /// <summary>
         /// Attempts to make a distance out of this observation and a from-point.
@@ -74,24 +63,6 @@ namespace Backsight.Editor
 
             return new Length(Geom.Distance(offset.Point, from));
         }
-
-        /// <summary>
-        /// Returns the edit that is currently being saved. All derived classes should
-        /// call this function when they are saving themselves, to confirm that the observation
-        /// is associated with an edit.
-        /// </summary>
-        /*
-        protected Operation SaveOp
-        {
-            get
-            {
-                Operation edit = EditingController.Current.CurrentEdit;
-                if (edit==null)
-                    throw new ArgumentNullException("Observation has no operation.");
-                return edit;
-            }
-        }
-         */
 
         /// <summary>
         /// Adds references to existing features referenced by this observation.

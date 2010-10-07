@@ -178,7 +178,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void ApplyChanges()
         {
-            m_Changes.ExchangeData();
+            m_Changes.ExchangeData((IRevisable)m_Edit);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal Operation RevisedEdit
         {
-            get { return m_Changes.RevisedEdit; }
+            get { return m_Edit; }
         }
 
         /// <summary>

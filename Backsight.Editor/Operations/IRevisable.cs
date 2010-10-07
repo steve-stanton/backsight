@@ -23,10 +23,10 @@ namespace Backsight.Editor.Operations
     {
         /// <summary>
         /// Exchanges update items that were previously generated via an
-        /// implementation of a method called <c>GetUpdateData</c>.
+        /// implementation of a method called <c>GetUpdateItems</c>.
         /// <para/>
         /// Every edit that implements <see cref="IRevisable"/> is expected to provide
-        /// a method called <c>GetUpdateData</c>. This isn't defined as part of
+        /// a method called <c>GetUpdateItems</c>. This isn't defined as part of
         /// the interface because the parameters passed to the method will vary
         /// from one edit to the next.
         /// <para/>

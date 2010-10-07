@@ -265,7 +265,7 @@ namespace Backsight.Editor.Operations
         /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItemCollection GetUpdateData(Distance dist, bool isFromEnd)
+        internal UpdateItemCollection GetUpdateItems(Distance dist, bool isFromEnd)
         {
             Distance d = new Distance(dist);
 
@@ -275,20 +275,20 @@ namespace Backsight.Editor.Operations
             else
                 d.SetPositive();
 
-            UpdateItemCollection result = new UpdateItemCollection(this);
-            result.AddObservation<Distance>("Distance", d);
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Distance>("Distance", m_Distance, d);
             return result;
         }
 
         /// <summary>
         /// Modifies this edit by applying the values in the supplied update items
-        /// (as produced via a prior call to <see cref="GetUpdateData"/>).
+        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
         /// </summary>
         /// <param name="data">The update items to apply to this edit.</param>
         /// <returns>The original values for the update items.</returns>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Distance = data.ExchangeObservation<Distance>("Distance", m_Distance);
+            m_Distance = data.ExchangeObservation<Distance>(this, "Distance", m_Distance);
         }
 
         /// <summary>

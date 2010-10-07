@@ -403,7 +403,6 @@
     <Compile Include="Observations\BearingDirection.cs" />
     <Compile Include="Observations\DeflectionDirection.cs" />
     <Compile Include="Observations\Direction.cs" />
-    <Compile Include="Observations\DirectionFlags.cs" />
     <Compile Include="Observations\Distance.cs" />
     <Compile Include="Observations\Offset.cs" />
     <Compile Include="Observations\OffsetDistance.cs" />

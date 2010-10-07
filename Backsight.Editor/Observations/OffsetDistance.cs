@@ -65,7 +65,7 @@ namespace Backsight.Editor.Observations
         /// Copy constructor
         /// </summary>
         /// <param name="copy">The offset to copy</param>
-        internal OffsetDistance(OffsetDistance copy) : base(copy)
+        internal OffsetDistance(OffsetDistance copy)
         {
             m_Offset = new Distance(copy.m_Offset);
             m_IsLeft = copy.m_IsLeft;

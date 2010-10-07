@@ -193,8 +193,13 @@ namespace Backsight.Editor.Xml
             if (sed == null)
                 throw new InvalidOperationException("Data class does not extend OperationData");
 
-            // TEST
-            //new YamlSerializer().SerializeToFile(@"C:\Temp\LastEdit.yaml", sed);
+            // TEST (doesn't work if it involves int64's > 2 billion
+            try
+            {
+                new YamlSerializer().SerializeToFile(@"C:\Temp\LastEdit.yaml", sed);
+            }
+
+            catch { }
 
             StringBuilder sb = new StringBuilder(1000);
             XmlWriterSettings xws = new XmlWriterSettings();
