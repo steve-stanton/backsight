@@ -1282,13 +1282,14 @@ namespace Backsight.Editor.Xml
 
             for (int i = 0; i < items.Length; i++)
             {
-                // Only handle observation classes for now
-                Observation obs = (items[i].Value as Observation);
-                if (obs == null)
-                    throw new NotSupportedException("Cannot serialize update item with type: "+items[i].Value.GetType().Name);
+                object o = items[i].Value;
 
-                ObservationData od = DataFactory.Instance.ToData<ObservationData>(obs);
-                dataItems[i] = new UpdateItem(items[i].Name, od);
+                if (o is Feature)
+                    o = (o as Feature).DataId;
+                else if (o is Observation)
+                    o = DataFactory.Instance.ToData<ObservationData>((Observation)o);
+
+                dataItems[i] = new UpdateItem(items[i].Name, o);
             }
 
             // The root node always identifies an array of UpdateItem
@@ -1308,19 +1309,36 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             Operation rev = mapModel.FindOperation(this.RevisedEdit);
 
-            /*
-            UpdateItem[] changes = new UpdateItem[this.Item.Length];
-            for (int i=0; i<changes.Length; i++)
+            YamlSerializer ys = new YamlSerializer();
+            UpdateItem[] dataItems = (UpdateItem[])ys.Deserialize(this.Changes);
+            UpdateItemCollection uc = new UpdateItemCollection();
+
+            foreach (UpdateItem item in dataItems)
             {
-                UpdateItemData itemData = this.Item[i];
-                object value = itemData.LoadValue(mapModel);
-                changes[i] = new UpdateItem(itemData.Name, value);
+                object o = item.Value;
+
+                if (o is ObservationData)
+                    item.Value = (o as ObservationData).LoadObservation(mapModel);
+                else
+                {
+                    // If it's a string, it could be the internal ID for a feature
+                    if (o is string)
+                    {
+                        try
+                        {
+                            InternalIdValue id = new InternalIdValue(o.ToString());
+                            Feature f = mapModel.Find<Feature>(id);
+                            item.Value = f;
+                        }
+
+                        catch {}
+                    }
+                }
+
+                uc.Add(item);
             }
 
-            return new UpdateOperation(s, sequence, rev, changes);
-             */
-
-            throw new NotImplementedException("UpdateDate.LoadOperation");
+            return new UpdateOperation(s, sequence, rev, uc);
         }
     }
 }

@@ -51,17 +51,23 @@ namespace Backsight.Editor.Operations
         /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
+        /// <param name="revisedEdit">The edit being updated (not null). Must implement
+        /// <see cref="IRevisable"/>.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="edit"/> or
         /// <paramref name="changes"/> is null.</exception>
-        /// <exception cref="ArgumentException">If <paramref name="changes"/> is an
-        /// empty array.</exception>
-        internal UpdateOperation(Session s, uint sequence, UpdateItemCollection changes)
+        /// <exception cref="ArgumentException">If <paramref name="revisedEdit"/> does not
+        /// implement <see cref="IRevisable"/>.</exception>
+        internal UpdateOperation(Session s, uint sequence, Operation revisedEdit, UpdateItemCollection changes)
             : base(s, sequence)
         {
-            if (changes == null)
+            if (revisedEdit == null || changes == null)
                 throw new ArgumentNullException();
 
+            if (!(revisedEdit is IRevisable))
+                throw new ArgumentException();
+
             m_Changes = changes;
+            m_Edit = revisedEdit;
         }
 
         #endregion
