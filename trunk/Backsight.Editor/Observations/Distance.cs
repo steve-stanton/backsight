@@ -97,7 +97,7 @@ namespace Backsight.Editor.Observations
         /// Copy constructor
         /// </summary>
         /// <param name="copy">The distance to copy.</param>
-        internal Distance(Distance copy) : base(copy)
+        internal Distance(Distance copy)
         {
             m_ObservedMetric = copy.m_ObservedMetric;
             m_EnteredUnit = copy.m_EnteredUnit;

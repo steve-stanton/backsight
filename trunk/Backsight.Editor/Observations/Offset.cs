@@ -23,21 +23,6 @@ namespace Backsight.Editor.Observations
     /// </summary>
     abstract class Offset : Observation
     {
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        protected Offset() : base()
-        {
-        }
-
-        /// <summary>
-        /// Copy constructor.
-        /// </summary>
-        /// <param name="copy">The offset to copy</param>
-        protected Offset(Offset copy) : base(copy)
-        {
-        }
-
         abstract internal double GetMetric (Direction dir);
         abstract internal PointFeature Point { get; }
         abstract internal void CutRef(Operation op);

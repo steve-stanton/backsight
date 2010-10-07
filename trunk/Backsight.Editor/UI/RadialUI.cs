@@ -220,7 +220,7 @@ namespace Backsight.Editor.UI
 
                 // Remember the changes as part of the UI object (the original edit remains
                 // unchanged for now)
-                UpdateItemCollection changes = pop.GetUpdateData(dir, len);
+                UpdateItemCollection changes = pop.GetUpdateItems(dir, len);
                 UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, changes);
                 up.AddUpdate(uop);
 	        }

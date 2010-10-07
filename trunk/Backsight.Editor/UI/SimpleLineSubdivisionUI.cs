@@ -211,7 +211,7 @@ namespace Backsight.Editor.UI
 
                 // Remember the changes as part of the UI object (the original edit remains
                 // unchanged for now)
-                UpdateItemCollection changes = pop.GetUpdateData(m_Dialog.Length, m_Dialog.IsFromEnd);
+                UpdateItemCollection changes = pop.GetUpdateItems(m_Dialog.Length, m_Dialog.IsFromEnd);
                 UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, changes);
                 up.AddUpdate(uop);
             }

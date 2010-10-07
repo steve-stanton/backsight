@@ -247,24 +247,24 @@ namespace Backsight.Editor.Operations
         /// or an <see cref="OffsetPoint"/>).</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItemCollection GetUpdateData(Direction dir, Observation length)
+        internal UpdateItemCollection GetUpdateItems(Direction dir, Observation length)
         {
-            UpdateItemCollection result = new UpdateItemCollection(this);
-            result.AddObservation<Direction>("Direction", dir);
-            result.AddObservation<Observation>("Length", length);
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Direction>("Direction", m_Direction, dir);
+            result.AddObservation<Observation>("Length", m_Length, length);
             return result;
         }
 
         /// <summary>
         /// Exchanges update items that were previously generated via
-        /// a call to <see cref="GetUpdateData"/>.
+        /// a call to <see cref="GetUpdateItems"/>.
         /// </summary>
         /// <param name="data">The update data to apply to the edit (modified to
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Direction = data.ExchangeObservation<Direction>("Direction", m_Direction);
-            m_Length = data.ExchangeObservation<Observation>("Length", m_Length);
+            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
+            m_Length = data.ExchangeObservation<Observation>(this, "Length", m_Length);
         }
 
         /// <summary>

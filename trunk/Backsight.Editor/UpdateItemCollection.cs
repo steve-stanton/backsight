@@ -28,11 +28,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The edit the changes relate to (not null).
-        /// </summary>
-        readonly IRevisable m_Edit;
-
-        /// <summary>
         /// The change items
         /// </summary>
         readonly Dictionary<string, UpdateItem> m_Changes;
@@ -45,28 +40,12 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="UpdateData"/> class
         /// that contains no changes.
         /// </summary>
-        /// <param name="edit">The edit the changes relate to (not null).</param>
-        internal UpdateItemCollection(IRevisable edit)
+        internal UpdateItemCollection()
         {
-            if (edit == null)
-                throw new ArgumentNullException();
-
-            if (!(edit is Operation))
-                throw new ArgumentException("IRevisable is not an edit");
-
-            m_Edit = edit;
             m_Changes = new Dictionary<string, UpdateItem>();
         }
 
         #endregion
-
-        /// <summary>
-        /// The edit the changes relate to (not null).
-        /// </summary>
-        internal Operation RevisedEdit
-        {
-            get { return (Operation)m_Edit; }
-        }
 
         /// <summary>
         /// Remembers an additional change as part of this collection.
@@ -82,10 +61,21 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The spatial feature class</typeparam>
         /// <param name="name">The name for the change item</param>
-        /// <param name="value">Tne value to record</param>
-        internal void AddFeature<T>(string name, T value) where T : Feature
+        /// <param name="oldValue">Tne current value (may be null)</param>
+        /// <param name="newValue">The modified value (may be null)</param>
+        /// <returns>True if item added. False if there's no change.</returns>
+        internal bool AddFeature<T>(string name, T oldValue, T newValue) where T : Feature
         {
-            Add(new UpdateItem(name, value));
+            if (oldValue != null || newValue != null)
+            {
+                if (oldValue == null || newValue == null || oldValue.DataId.Equals(newValue.DataId) == false)
+                {
+                    Add(new UpdateItem(name, newValue));
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -93,10 +83,25 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The observation class</typeparam>
         /// <param name="name">The name for the change item</param>
-        /// <param name="value">Tne value to record</param>
-        internal void AddObservation<T>(string name, T value) where T : Observation
+        /// <param name="oldValue">Tne current value (may be null)</param>
+        /// <param name="newValue">The modified value (may be null)</param>
+        /// <returns>True if item added. False if there's no change.</returns>
+        internal bool AddObservation<T>(string name, T oldValue, T newValue) where T : Observation
         {
-            Add(new UpdateItem(name, value));
+            if (oldValue != null || newValue != null)
+            {
+                // Don't have an Observation equality method, so just accept all observations for now
+                //if (oldValue == null || newValue == null || oldValue.Equals(newValue) == false)
+                //{
+                //    Add(new UpdateItem(name, newValue));
+                //    return true;
+                //}
+
+                Add(new UpdateItem(name, newValue));
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -104,22 +109,34 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The object type</typeparam>
         /// <param name="name">The name for the change item</param>
-        /// <param name="value">Tne value to record</param>
-        internal void AddItem<T>(string name, T value) where T : IComparable
+        /// <param name="oldValue">Tne current value (may be null)</param>
+        /// <param name="newValue">The modified value (may be null)</param>
+        /// <returns>True if item added. False if there's no change.</returns>
+        internal bool AddItem<T>(string name, T oldValue, T newValue) where T : IEquatable<T>
         {
-            Add(new UpdateItem(name, value));
+            if (oldValue != null || newValue != null)
+            {
+                if (oldValue == null || newValue == null || oldValue.Equals(newValue) == false)
+                {
+                    Add(new UpdateItem(name, newValue));
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Replaces the spatial feature referenced by a specific change item.
         /// </summary>
         /// <typeparam name="T">The spatial feature class</typeparam>
+        /// <param name="edit">The edit these updates relate to</param>
         /// <param name="name">The name of the change item</param>
         /// <param name="value">The value to save as part of this collection</param>
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeFeature<T>(string name, T value) where T : Feature
+        internal T ExchangeFeature<T>(Operation edit, string name, T value) where T : Feature
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
@@ -135,10 +152,10 @@ namespace Backsight.Editor
             // Cut reference that the old feature has to the edit, and ensure
             // the new feature is referenced to the edit.
             if (value != null)
-                value.CutOp(this.RevisedEdit);
+                value.CutOp(edit);
 
             if (result != null)
-                result.AddOp(this.RevisedEdit);
+                result.AddOp(edit);
 
             // Replace the value we had with the supplied value, and return
             // the value we had.
@@ -150,12 +167,13 @@ namespace Backsight.Editor
         /// Replaces the observation referenced by a specific change item.
         /// </summary>
         /// <typeparam name="T">The observation class</typeparam>
+        /// <param name="edit">The edit these updates relate to</param>
         /// <param name="name">The name of the change item</param>
         /// <param name="value">The value to save as part of this collection</param>
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeObservation<T>(string name, T value) where T : Observation
+        internal T ExchangeObservation<T>(Operation edit, string name, T value) where T : Observation
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
@@ -170,10 +188,10 @@ namespace Backsight.Editor
 
             // Cut any references made by the supplied observation.
             if (value != null)
-                value.OnRollback(this.RevisedEdit);
+                value.OnRollback(edit);
 
             if (result != null)
-                result.AddReferences(this.RevisedEdit);
+                result.AddReferences(edit);
 
             // Replace the value we had with the supplied value, and return
             // the value we had.
@@ -208,9 +226,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Exchanges the currently stored change values with the revised edit.
         /// </summary>
-        internal void ExchangeData()
+        /// <param name="edit">The edit the changes relate to (not null).</param>
+        internal void ExchangeData(IRevisable edit)
         {
-            m_Edit.ExchangeData(this);
+            edit.ExchangeData(this);
         }
 
         /// <summary>

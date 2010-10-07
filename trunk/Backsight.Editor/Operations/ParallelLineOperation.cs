@@ -501,32 +501,32 @@ namespace Backsight.Editor.Operations
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItemCollection GetUpdateData(LineFeature refline, Observation offset,
+        internal UpdateItemCollection GetUpdateItems(LineFeature refline, Observation offset,
             LineFeature term1, LineFeature term2, bool isArcReversed)
         {
-            UpdateItemCollection result = new UpdateItemCollection(this);
+            UpdateItemCollection result = new UpdateItemCollection();
 
-            result.AddFeature<LineFeature>("RefLine", refline);
-            result.AddObservation<Observation>("Offset", offset);
-            result.AddFeature<LineFeature>("Term1", term1);
-            result.AddFeature<LineFeature>("Term2", term2);
-            result.AddItem<bool>("ReverseArc", isArcReversed);
+            result.AddFeature<LineFeature>("RefLine", m_RefLine, refline);
+            result.AddObservation<Observation>("Offset", m_Offset, offset);
+            result.AddFeature<LineFeature>("Term1", m_Term1, term1);
+            result.AddFeature<LineFeature>("Term2", m_Term2, term2);
+            result.AddItem<bool>("ReverseArc", this.IsArcReversed, isArcReversed);
 
             return result;
         }
 
         /// <summary>
         /// Modifies this edit by applying the values in the supplied update items
-        /// (as produced via a prior call to <see cref="GetUpdateData"/>).
+        /// (as produced via a prior call to <see cref="GetUpdateItems"/>).
         /// </summary>
         /// <param name="data">The update items to apply to this edit.</param>
         /// <returns>The original values for the update items.</returns>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_RefLine = data.ExchangeFeature<LineFeature>("RefLine", m_RefLine);
-            m_Offset = data.ExchangeObservation<Observation>("Offset", m_Offset);
-            m_Term1 = data.ExchangeFeature<LineFeature>("Term1", m_Term1);
-            m_Term2 = data.ExchangeFeature<LineFeature>("Term1", m_Term2);
+            m_RefLine = data.ExchangeFeature<LineFeature>(this, "RefLine", m_RefLine);
+            m_Offset = data.ExchangeObservation<Observation>(this, "Offset", m_Offset);
+            m_Term1 = data.ExchangeFeature<LineFeature>(this, "Term1", m_Term1);
+            m_Term2 = data.ExchangeFeature<LineFeature>(this, "Term1", m_Term2);
 
             // Alter arc direction if necessary.
             bool isArcReversed = data.ExchangeValue<bool>("ReverseArc", this.IsArcReversed);

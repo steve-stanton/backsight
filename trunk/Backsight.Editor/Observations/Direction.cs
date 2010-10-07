@@ -34,11 +34,6 @@ namespace Backsight.Editor.Observations
         /// </summary>
         Offset m_Offset;
 
-        /// <summary>
-        /// Flag bits
-        /// </summary>
-        DirectionFlags m_Flag;
-
         #endregion
 
         #region Constructors
@@ -46,7 +41,6 @@ namespace Backsight.Editor.Observations
         internal Direction()
         {
             m_Offset = null;
-            m_Flag = (this is ParallelDirection ? DirectionFlags.Fixed : 0);
         }
 
         #endregion
@@ -90,16 +84,6 @@ namespace Backsight.Editor.Observations
 								 , const CePoint* const pTo ) const = 0;
          */
 
-        bool IsFixed
-        {
-            get { return (m_Flag & DirectionFlags.Fixed)!=0; }
-        }
-
-        void SetFixed()
-        {
-            m_Flag |= DirectionFlags.Fixed;
-        }
-
         internal Offset Offset
         {
             get { return m_Offset; }
@@ -130,7 +114,7 @@ namespace Backsight.Editor.Observations
         internal bool IsEquivalent(Direction other)
         {
             // Check the simple fields.
-            if (this.GetType() != other.GetType() || this.m_Flag != other.m_Flag)
+            if (this.GetType() != other.GetType())
                 return false;
 
             // If one direction has an offset & the other doesn't, the directions are different.

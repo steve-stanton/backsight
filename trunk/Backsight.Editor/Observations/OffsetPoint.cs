@@ -60,7 +60,7 @@ namespace Backsight.Editor.Observations
         /// Copy constructor.
         /// </summary>
         /// <param name="copy">The offset to copy</param>
-        internal OffsetPoint(OffsetPoint copy) : base(copy)
+        internal OffsetPoint(OffsetPoint copy)
         {
             m_Point = copy.m_Point;
         }
