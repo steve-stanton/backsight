@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
@@ -22,7 +23,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A collection of <see cref="UpdateItem"/>, indexed by the item name.
     /// </summary>
-    class UpdateData
+    class UpdateItemCollection
     {
         #region Class data
 
@@ -45,7 +46,7 @@ namespace Backsight.Editor
         /// that contains no changes.
         /// </summary>
         /// <param name="edit">The edit the changes relate to (not null).</param>
-        internal UpdateData(IRevisable edit)
+        internal UpdateItemCollection(IRevisable edit)
         {
             if (edit == null)
                 throw new ArgumentNullException();
@@ -210,6 +211,32 @@ namespace Backsight.Editor
         internal void ExchangeData()
         {
             m_Edit.ExchangeData(this);
+        }
+
+        /// <summary>
+        /// Obtains the features that are referenced by the items in this collection (including
+        /// features that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal Feature[] GetReferences()
+        {
+            List<Feature> result = new List<Feature>();
+
+            foreach (UpdateItem item in m_Changes.Values)
+                result.AddRange(item.GetReferences());
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Creates an array that contains the items in this collection.
+        /// </summary>
+        /// <returns>The items in this collection.</returns>
+        internal UpdateItem[] ToArray()
+        {
+            UpdateItem[] result = new UpdateItem[m_Changes.Count];
+            m_Changes.Values.CopyTo(result, 0);
+            return result;
         }
     }
 }

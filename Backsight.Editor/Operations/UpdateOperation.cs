@@ -37,7 +37,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null). 
         /// </summary>
-        readonly UpdateData m_Changes;
+        readonly UpdateItemCollection m_Changes;
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace Backsight.Editor.Operations
         /// <paramref name="changes"/> is null.</exception>
         /// <exception cref="ArgumentException">If <paramref name="changes"/> is an
         /// empty array.</exception>
-        internal UpdateOperation(Session s, uint sequence, UpdateData changes)
+        internal UpdateOperation(Session s, uint sequence, UpdateItemCollection changes)
             : base(s, sequence)
         {
             if (changes == null)
@@ -148,16 +148,7 @@ namespace Backsight.Editor.Operations
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         public override Feature[] GetRequiredFeatures()
         {
-            List<Feature> result = new List<Feature>();
-
-            foreach (object o in m_Changes)
-            {
-                IFeatureDependent fd = (o as IFeatureDependent);
-                if (fd != null)
-                    result.AddRange(fd.GetRequiredFeatures());
-            }
-
-            return result.ToArray();
+            return m_Changes.GetReferences();
         }
 
         /// <summary>
@@ -201,7 +192,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null). 
         /// </summary>
-        internal UpdateItem[] Changes
+        internal UpdateItemCollection Changes
         {
             get { return m_Changes; }
         }

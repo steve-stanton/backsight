@@ -79,5 +79,22 @@ namespace Backsight.Editor
             get { return m_Value; }
             set { m_Value = value; }
         }
+
+        /// <summary>
+        /// Obtains the features that are referenced by this item (including features
+        /// that are indirectly referenced by observation classes).
+        /// </summary>
+        /// <returns>The referenced features (never null, but may be an empty array).</returns>
+        internal Feature[] GetReferences()
+        {
+            if (m_Value is Feature)
+                return new Feature[] { (Feature)m_Value };
+
+            Observation o = (m_Value as Observation);
+            if (o == null)
+                return new Feature[0];
+            else
+                return o.GetReferences();
+        }
     }
 }

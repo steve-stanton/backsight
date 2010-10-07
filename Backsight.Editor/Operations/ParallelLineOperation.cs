@@ -501,10 +501,10 @@ namespace Backsight.Editor.Operations
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateData GetUpdateData(LineFeature refline, Observation offset,
+        internal UpdateItemCollection GetUpdateData(LineFeature refline, Observation offset,
             LineFeature term1, LineFeature term2, bool isArcReversed)
         {
-            UpdateData result = new UpdateData(this);
+            UpdateItemCollection result = new UpdateItemCollection(this);
 
             result.AddFeature<LineFeature>("RefLine", refline);
             result.AddObservation<Observation>("Offset", offset);
@@ -521,7 +521,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="data">The update items to apply to this edit.</param>
         /// <returns>The original values for the update items.</returns>
-        public override void ExchangeData(UpdateData data)
+        public override void ExchangeData(UpdateItemCollection data)
         {
             m_RefLine = data.ExchangeFeature<LineFeature>("RefLine", m_RefLine);
             m_Offset = data.ExchangeObservation<Observation>("Offset", m_Offset);

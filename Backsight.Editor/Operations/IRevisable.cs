@@ -35,6 +35,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="data">The update data to apply to the edit (modified to
         /// hold the values that were previously defined for the edit)</param>
-        void ExchangeData(UpdateData data);
+        void ExchangeData(UpdateItemCollection data);
     }
 }
