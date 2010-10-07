@@ -15,8 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Yaml.Serialization;
 
 using Backsight.Editor.Operations;
+using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
 {
@@ -51,7 +53,7 @@ namespace Backsight.Editor
         /// Remembers an additional change as part of this collection.
         /// </summary>
         /// <param name="item">The item to add (not null)</param>
-        void Add(UpdateItem item)
+        internal void Add(UpdateItem item)
         {
             m_Changes.Add(item.Name, item);
         }
@@ -90,18 +92,42 @@ namespace Backsight.Editor
         {
             if (oldValue != null || newValue != null)
             {
-                // Don't have an Observation equality method, so just accept all observations for now
-                //if (oldValue == null || newValue == null || oldValue.Equals(newValue) == false)
-                //{
-                //    Add(new UpdateItem(name, newValue));
-                //    return true;
-                //}
-
-                Add(new UpdateItem(name, newValue));
-                return true;
+                if (oldValue == null || newValue == null || IsEqual(oldValue, newValue) == false)
+                {
+                    Add(new UpdateItem(name, newValue));
+                    return true;
+                }
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks whether two observations are the same. By rights, this should be
+        /// included as part of <c>Observation</c> classes. It's here only because
+        /// the method for making the comparison is a bit dumb, and I don't want to
+        /// make use of it more generally.
+        /// </summary>
+        /// <param name="a">The first observation</param>
+        /// <param name="b">The observation to compare with</param>
+        /// <returns></returns>
+        bool IsEqual(Observation a, Observation b)
+        {
+            if (a == null || b == null)
+            {
+                return (a == null && b == null);
+            }
+            else
+            {
+                if (Object.ReferenceEquals(a, b))
+                    return true;
+
+                YamlSerializer ys = new YamlSerializer();
+                string sa = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(a));
+                string sb = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(b));
+                return sa.Equals(sb);
+
+            }
         }
 
         /// <summary>

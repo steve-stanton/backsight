@@ -47,7 +47,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// Information about any updates that have been made
         /// </summary>
-        readonly UpdateContext m_Context;
+        //readonly UpdateContext m_Context;
 
         /// <summary>
         /// Modified edits
@@ -85,7 +85,7 @@ namespace Backsight.Editor.UI
             m_Cmd = null;
             m_DepOps = null;
             m_Problem = null;
-            m_Context = new UpdateContext();
+            //m_Context = new UpdateContext();
             m_Updates = new Stack<UpdateOperation>();
         }
 
@@ -971,10 +971,11 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void Undo()
         {
-            m_Context.Undo();
+            throw new NotImplementedException("UpdateUI.Undo");
+            //m_Context.Undo();
 
-	        if (m_Info!=null)
-                m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
+            //if (m_Info!=null)
+            //    m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
         }
 
         /// <summary>
@@ -982,7 +983,8 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void UndoAll()
         {
-            m_Context.UndoAll();
+            throw new NotImplementedException("UpdateUI.UndoAll");
+            //m_Context.UndoAll();
 
             if (m_Info != null)
                 m_Info.SetUpdateCount(0);
@@ -993,10 +995,11 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// </summary>
         void SetUndoMarker()
         {
-            m_Context.SetUndoMarker();
+            //throw new NotImplementedException("UpdateUI.SetUndoMarker");
+            //m_Context.SetUndoMarker();
 
-            if (m_Info != null)
-                m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
+            //if (m_Info != null)
+            //    m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
         }
 
         internal CommandUI ActiveCommand
@@ -1011,6 +1014,9 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         internal void AddUpdate(UpdateOperation edit)
         {
             m_Updates.Push(edit);
+
+            if (m_Info != null)
+                m_Info.SetUpdateCount((uint)m_Updates.Count);
         }
 
         /// <summary>

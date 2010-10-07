@@ -549,7 +549,7 @@ namespace Backsight.Editor.UI
                 // unchanged for now)
 
                 UpdateItemCollection changes = op.GetUpdateItems(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
-                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, changes);
+                UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, op, changes);
                 up.AddUpdate(uop);
             }
             else
