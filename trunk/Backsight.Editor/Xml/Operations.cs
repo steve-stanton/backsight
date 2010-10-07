@@ -1277,7 +1277,7 @@ namespace Backsight.Editor.Xml
             this.RevisedEdit = op.RevisedEdit.DataId;
 
             // Re-express update items using *Data objects
-            UpdateItem[] items = op.Changes;
+            UpdateItem[] items = op.Changes.ToArray();
             UpdateItem[] dataItems = new UpdateItem[items.Length];
 
             for (int i = 0; i < items.Length; i++)

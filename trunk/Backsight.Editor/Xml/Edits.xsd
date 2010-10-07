@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--Created with Liquid XML Studio - FREE Community Edition 7.0.5.906 (http://www.liquid-technologies.com)-->
+<!--Created with Liquid XML Studio - FREE Community Edition 7.0.2.746 (http://www.liquid-technologies.com)-->
 <xs:schema xmlns="Backsight" elementFormDefault="qualified" targetNamespace="Backsight" id="Edits" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Edit" type="EditData" />
   <xs:complexType name="AngleData">
@@ -440,24 +440,6 @@ Dealing with these two components as a single formatted string may well be "bad"
             <xs:documentation>The line being extended.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute default="false" name="ExtendFromEnd" type="xs:boolean" use="optional">
-          <xs:annotation>
-            <xs:documentation>True if extending from the end of the line. False if extending from the start.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="LineExtensionUpdateData">
-    <xs:complexContent mixed="false">
-      <xs:extension base="UpdateData">
-        <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="1" name="Distance" type="DistanceData">
-            <xs:annotation>
-              <xs:documentation>The observed length of the extension.</xs:documentation>
-            </xs:annotation>
-          </xs:element>
-        </xs:sequence>
         <xs:attribute default="false" name="ExtendFromEnd" type="xs:boolean" use="optional">
           <xs:annotation>
             <xs:documentation>True if extending from the end of the line. False if extending from the start.</xs:documentation>
@@ -951,17 +933,5 @@ The first and last positions are assumed to match the positions of the point fea
         </xs:attribute>
       </xs:extension>
     </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="UpdateItemData">
-    <xs:attribute name="Name" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation>A name for the updated item (means something in the context of the revised edit)</xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
-    <xs:attribute name="Value" type="xs:string" use="required">
-      <xs:annotation>
-        <xs:documentation>Revised value for the item (may be a serialized version of something).</xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
   </xs:complexType>
 </xs:schema>

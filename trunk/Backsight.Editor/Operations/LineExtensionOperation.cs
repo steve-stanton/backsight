@@ -295,29 +295,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Applies an update to this edit (by modifying the parameters that describe
-        /// the edit). To re-execute the edit and propogate any positional changes, you
-        /// must make a subsequent call to <see cref="CadastralMapModel.Rollforward"/>.
-        /// </summary>
-        /// <param name="ut">Information about the update (expected to have a type that is
-        /// consistent with this editing operation)</param>
-        /// <returns>The parameters this editing operation originally had (before the
-        /// supplied information was applied). Holding on to this information makes it
-        /// possible to later revert things to the way they were originally.</returns>
-        //public override UpdateData ApplyUpdate(UpdateData ut)
-        //{
-        //    LineExtensionUpdateData current = new LineExtensionUpdateData();
-        //    current.ExtendFromEnd = m_IsExtendFromEnd;
-        //    current.Distance = new DistanceData(m_Length);
-
-        //    LineExtensionUpdateData u = (LineExtensionUpdateData)ut;
-        //    m_IsExtendFromEnd = u.ExtendFromEnd;
-        //    m_Length = (Distance)u.Distance.LoadObservation(this);
-
-        //    return current;
-        //}
-
-        /// <summary>
         /// Corrects this operation.
         /// </summary>
         /// <param name="isFromEnd">True if extending from the end of the line</param>

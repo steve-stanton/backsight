@@ -683,27 +683,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Applies an update to this edit (by modifying the parameters that describe
-        /// the edit). To re-execute the edit and propogate any positional changes, you
-        /// must make a subsequent call to <see cref="CadastralMapModel.Rollforward"/>.
-        /// </summary>
-        /// <param name="ut">Information about the update (expected to have a type that is
-        /// consistent with this editing operation)</param>
-        /// <returns>The parameters this editing operation originally had (before the
-        /// supplied information was applied). Holding on to this information makes it
-        /// possible to later revert things to the way they were originally.</returns>
-        /*
-        public virtual UpdateData ApplyUpdate(UpdateData ut)
-        {
-            // This method should be declared by the IRevisable interface once it
-            // has been implemented by derived classes. At that time, this implementation
-            // should be discarded.
-
-            return null;
-        }
-        */
-
-        /// <summary>
         /// Executes a brand new editing operation that is part of the working session
         /// (as opposed to a historical session that is being deserialized from the database).
         /// </summary>
@@ -749,7 +728,7 @@ namespace Backsight.Editor
             SaveOperation();
         }
 
-        public virtual void ExchangeData(UpdateData data)
+        public virtual void ExchangeData(UpdateItemCollection data)
         {
             throw new NotImplementedException();
         }
