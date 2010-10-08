@@ -47,6 +47,18 @@ namespace Backsight.Editor
             m_Changes = new Dictionary<string, UpdateItem>();
         }
 
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
+        /// <param name="copy">The collection to copy</param>
+        internal UpdateItemCollection(UpdateItemCollection copy)
+        {
+            m_Changes = new Dictionary<string, UpdateItem>(copy.m_Changes.Count);
+
+            foreach (UpdateItem item in copy.m_Changes.Values)
+                m_Changes.Add(item.Name, new UpdateItem(item.Name, item.Value));
+        }
+
         #endregion
 
         /// <summary>
@@ -282,6 +294,14 @@ namespace Backsight.Editor
             UpdateItem[] result = new UpdateItem[m_Changes.Count];
             m_Changes.Values.CopyTo(result, 0);
             return result;
+        }
+
+        /// <summary>
+        /// The number of items in this collection.
+        /// </summary>
+        internal int Count
+        {
+            get { return m_Changes.Count; }
         }
     }
 }

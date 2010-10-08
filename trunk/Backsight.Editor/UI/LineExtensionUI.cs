@@ -217,8 +217,11 @@ namespace Backsight.Editor.UI
                     return false;
                 }
 
-                // Make the update.
-                //pop.Correct(m_Dialog.IsExtendFromEnd, m_Dialog.Length);
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+                UpdateItemCollection changes = pop.GetUpdateItems(m_Dialog.IsExtendFromEnd, m_Dialog.Length);
+                if (!up.AddUpdate(pop, changes))
+                    return false;
             }
             else
             {

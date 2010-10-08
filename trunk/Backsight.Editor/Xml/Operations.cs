@@ -1293,9 +1293,10 @@ namespace Backsight.Editor.Xml
             }
 
             // The root node always identifies an array of UpdateItem
-            YamlConfig yc = new YamlConfig();
-            yc.OmitTagForRootNode = true;
-            this.Changes = new YamlSerializer(yc).Serialize(dataItems);
+            //YamlConfig yc = new YamlConfig();
+            //yc.OmitTagForRootNode = true;
+            //this.Changes = new YamlSerializer(yc).Serialize(dataItems);
+            this.Changes = new YamlSerializer().Serialize(dataItems);
         }
 
         /// <summary>
@@ -1310,7 +1311,9 @@ namespace Backsight.Editor.Xml
             Operation rev = mapModel.FindOperation(this.RevisedEdit);
 
             YamlSerializer ys = new YamlSerializer();
-            UpdateItem[] dataItems = (UpdateItem[])ys.Deserialize(this.Changes);
+            object[] oa = ys.Deserialize(this.Changes);
+            Debug.Assert(oa.Length == 1);
+            UpdateItem[] dataItems = (UpdateItem[])oa[0];
             UpdateItemCollection uc = new UpdateItemCollection();
 
             foreach (UpdateItem item in dataItems)
