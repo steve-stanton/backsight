@@ -37,7 +37,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Information about the update (not null). 
         /// </summary>
-        readonly UpdateItemCollection m_Changes;
+        UpdateItemCollection m_Changes;
 
         #endregion
 
@@ -201,6 +201,7 @@ namespace Backsight.Editor.Operations
         internal UpdateItemCollection Changes
         {
             get { return m_Changes; }
+            set { m_Changes = value; }
         }
     }
 }

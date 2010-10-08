@@ -41,12 +41,12 @@ namespace Backsight.Editor.Operations
         /// True if extending from the end of <c>m_ExtendLine</c>.
         /// False if extending from the start.
         /// </summary>
-        readonly bool m_IsExtendFromEnd;
+        bool m_IsExtendFromEnd;
 
         /// <summary>
         /// The observed length of the extension.
         /// </summary>
-        readonly Distance m_Length;
+        Distance m_Length;
 
         /// <summary>
         /// The actual extension line (if any).
@@ -295,47 +295,32 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Corrects this operation.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="isFromEnd">True if extending from the end of the line</param>
         /// <param name="length">The observed length of the extension</param>
-        /// <returns>True if operation updated ok.</returns>
-        /*
-        bool Correct(bool isFromEnd, Distance length)
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(bool isFromEnd, Distance length)
         {
-            // TODO: This is a bit awkward. Should have a Calculate method that accepts
-            // parameters. Should also avoid MessageBox.Show (throw an exception instead).
-
-	        // Remember the original values.
-	        bool oldend = m_IsExtendFromEnd;
-	        Distance oldlen = new Distance(m_Length);
-            bool isOk = false;
-
-            try
-            {
-                // Assign the new values.
-                m_IsExtendFromEnd = isFromEnd;
-                m_Length = length;
-
-                // Confirm that the extension point can be re-calculated
-                IPosition xpos = Calculate();
-                isOk = (xpos!=null);
-            }
-
-            finally
-            {
-                // If the new extension point could not be calculated, restore original values.
-                if (!isOk)
-                {
-                    MessageBox.Show("Cannot re-calculate line extension point.");
-                    m_IsExtendFromEnd = oldend;
-                    m_Length = oldlen;
-                }
-            }
-
-            return isOk;
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddItem<bool>("ExtendFromEnd", m_IsExtendFromEnd, isFromEnd);
+            result.AddObservation<Distance>("Distance", m_Length, length);
+            return result;
         }
-        */
+
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            m_IsExtendFromEnd = data.ExchangeValue<bool>("ExtendFromEnd", m_IsExtendFromEnd);
+            m_Length = data.ExchangeObservation<Distance>(this, "Distance", m_Length);
+        }
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -415,32 +400,6 @@ namespace Backsight.Editor.Operations
             Rollback(m_NewLine);
 
         	return true;
-        }
-
-        /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-        	// Re-calculate the position of the extension point.
-            IPosition xpos = Calculate();
-
-	        if (xpos==null)
-                throw new RollforwardException(this, "Cannot re-calculate line extension point.");
-
-	        // Move the extension point.
-            m_NewPoint.MovePoint(uc, xpos);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
         }
 
         /// <summary>

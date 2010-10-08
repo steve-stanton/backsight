@@ -602,6 +602,9 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 
             try
             {
+                // Remember the original values (we'll need to restore them before serializing)
+                UpdateItemCollection originalItems = new UpdateItemCollection(uop.Changes);
+
                 // Apply changes to the original edit, THEN obtain the calculation sequence (which
                 // may have changed as a result of the update).
                 uop.ApplyChanges();
@@ -631,7 +634,14 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 
                 // Update topology and save to database
                 uop.MapModel.CleanEdit();
+
+                // Temporarily restore the original change items so that we serialize
+                // the correct data (as things stand, the modified values have been applied
+                // to the edit)
+                UpdateItemCollection revisedItems = uop.Changes;
+                uop.Changes = originalItems;
                 uop.SaveOperation();
+                uop.Changes = revisedItems;
             }
 
             catch (Exception ex)
@@ -1008,15 +1018,27 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         }
 
         /// <summary>
-        /// Remembers the modified version of an edit
+        /// Remembers details for an updated edit.
         /// </summary>
-        /// <param name="edit">Information about the update</param>
-        internal void AddUpdate(UpdateOperation edit)
+        /// <param name="revisedEdit">The edit that is being revised</param>
+        /// <param name="changes">The changes to apply</param>
+        /// <returns>True if an update was recorded, false if the supplied change collection is empty (in that
+        /// case, the user receives a warning message).</returns>
+        internal bool AddUpdate(Operation revisedEdit, UpdateItemCollection changes)
         {
-            m_Updates.Push(edit);
+            if (changes.Count == 0)
+            {
+                MessageBox.Show("You do not appear to have made any changes.");
+                return false;
+            }
+
+            UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, revisedEdit, changes);
+            m_Updates.Push(uop);
 
             if (m_Info != null)
                 m_Info.SetUpdateCount((uint)m_Updates.Count);
+
+            return true;
         }
 
         /// <summary>
