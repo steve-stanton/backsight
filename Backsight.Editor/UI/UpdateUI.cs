@@ -38,6 +38,11 @@ namespace Backsight.Editor.UI
         /// The update that is currently being executed.
         /// </summary>
         CommandUI m_Cmd;
+        
+        /// <summary>
+        /// Is <see cref="m_Cmd"/> currently being finished?
+        /// </summary>
+        bool m_IsFinishing;
 
         /// <summary>
         /// The feature currently selected for update.
@@ -83,6 +88,7 @@ namespace Backsight.Editor.UI
             m_Update = null;
             m_Info = null;
             m_Cmd = null;
+            m_IsFinishing = false;
             m_DepOps = null;
             m_Problem = null;
             //m_Context = new UpdateContext();
@@ -846,7 +852,18 @@ void CuiUpdate::Draw ( const CeObjectList& flist
             if (m_Cmd == null)
                 return false;
             else
-                return m_Cmd.DialFinish(wnd);
+            {
+                try
+                {
+                    m_IsFinishing = true; // see comment in OnSelectPoint
+                    return m_Cmd.DialFinish(wnd);
+                }
+
+                finally
+                {
+                    m_IsFinishing = false;
+                }
+            }
         }
 
         /// <summary>
@@ -855,6 +872,15 @@ void CuiUpdate::Draw ( const CeObjectList& flist
         /// <param name="point">The point (if any) that has been selected.</param>
         internal override void OnSelectPoint(PointFeature point)
         {
+            // In some situations (e.g. Direction/Distance intersection), the
+            // act of finishing a command may mean that the editing controller
+            // will be asked to select something (e.g. the intersection point).
+            // In that case, we don't want to do anything when the select point
+            // message comes through.
+
+            if (m_IsFinishing)
+                return;
+
             if (m_Cmd != null)
             {
                 // Can't pick something created by a dependent op.

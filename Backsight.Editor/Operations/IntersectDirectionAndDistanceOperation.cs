@@ -33,23 +33,23 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The observed direction
         /// </summary>
-        readonly Direction m_Direction;
+        Direction m_Direction;
 
         /// <summary>
         /// The observed distance (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        readonly Observation m_Distance;
+        Observation m_Distance;
 
         /// <summary>
         /// The point the distance was measured from.
         /// </summary>
-        readonly PointFeature m_From;
+        PointFeature m_From;
 
         /// <summary>
         /// True if it was the default intersection (the one closest to the
         /// origin of the direction).
         /// </summary>
-        readonly bool m_Default;
+        bool m_Default;
 
         // Creations ...
 
@@ -464,7 +464,8 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Updates this operation. 
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="dist1">1st distance observation.</param>
         /// <param name="from1">The point the 1st distance was observed from.</param>
@@ -472,81 +473,31 @@ namespace Backsight.Editor.Operations
         /// <param name="from2">The point the 2nd distance was observed from.</param>
         /// <param name="isdefault">True if the default intersection is required (the one that has the
         /// lowest bearing with respect to the 2 from points). False for the other one (if any).</param>
-        /// <param name="ent1">The entity type for 1st line (null for no line)</param>
-        /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
-        /// <returns></returns>
-        internal bool Correct(Direction dir, Observation distance, PointFeature from, bool isdefault,
-                        IEntity ent1, IEntity ent2)
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Direction dir, Observation distance,
+                                                        PointFeature from, bool isdefault)
         {
-            throw new NotImplementedException();
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Direction>("Direction", m_Direction, dir);
+            result.AddObservation<Observation>("Distance", m_Distance, distance);
+            result.AddFeature<PointFeature>("From", m_From, from);
+            result.AddItem<bool>("Default", m_Default, isdefault);
+            return result;
+        }
 
-            //if ((ent1==null && m_DirLine!=null) || (ent2==null && m_DistLine!=null))
-            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
-
-            //// Calculate the position of the point of intersection.
-            //IPosition xsect = Calculate(dir, distance, from, isdefault);
-            //if (xsect==null)
-            //    return false;
-
-            //// If the point the distance was observed from has changed, cut
-            //// the reference the old point makes to this op, and change it
-            //// so the operation is referenced by the new point.
-
-            //if (!Object.ReferenceEquals(m_From, from))
-            //{
-            //    m_From.CutOp(this);
-            //    m_From = from;
-            //    m_From.AddOp(this);
-            //}
-
-            //// Cut the references made by the direction object. If nothing
-            //// has changed, the references will be re-inserted when the
-            //// direction is re-saved below.
-            //m_Direction.CutRef(this);
-
-            //// Get rid of the previously defined observations, and replace
-            //// with the new ones (we can't necessarily change the old ones
-            //// because we may have changed the type of observation).
-
-            //m_Direction.OnRollback(this);
-            //m_Distance.OnRollback(this);
-
-            //m_Direction = dir;
-            //m_Direction.AddReferences(this);
-
-            //m_Distance = distance;
-            //m_Distance.AddReferences(this);
-
-            //// Save option about whether we want default intersection or not.
-            //m_Default = isdefault;
-
-            //// If we have defined entity types for lines, and we did not
-            //// have a line before, add a new line now.
-
-            //if (ent1!=null)
-            //{
-            //    if (m_DirLine==null)
-            //    {
-            //        CadastralMapModel map = MapModel;
-            //        IPosition start = m_Direction.StartPosition;
-            //        PointFeature ps = map.EnsurePointExists(start, this);
-            //        m_DirLine = map.AddLine(ps, m_To, ent1, this);
-            //    }
-            //    else if (m_DirLine.EntityType.Id != ent1.Id)
-            //        throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
-            //        //m_DirLine.EntityType = ent1;
-            //}
-
-            //if (ent2!=null)
-            //{
-            //    if (m_DistLine==null)
-            //        MapModel.AddLine(m_From, m_To, ent2, this);
-            //    else
-            //        throw new NotImplementedException("IntersectDirectionAndDistancesOperation.Correct");
-            //        //m_DistLine.EntityType = ent2;
-            //}
-
-            //return true;
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
+            m_Distance = data.ExchangeObservation<Observation>(this, "Distance", m_Distance);
+            m_From = data.ExchangeFeature<PointFeature>(this, "From", m_From);
+            m_Default = data.ExchangeValue<bool>("Default", m_Default);
         }
 
         /// <summary>
