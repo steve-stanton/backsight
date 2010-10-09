@@ -108,28 +108,28 @@ namespace Backsight.Editor.UI
                 if (pup==null)
                     m_Dialog = new IntersectDirectionAndDistanceForm(this, "Intersect direction and distance");
                 else
-                    m_Dialog = new IntersectDirectionAndDistanceForm(this, "Update (intersect direction and distance)");
+                    m_Dialog = new IntersectDirectionAndDistanceForm(pup, "Update (intersect direction and distance)");
             }
             else if (edid == EditingActionId.LineIntersect)
             {
                 if (pup==null)
                     m_Dialog = new IntersectTwoLinesForm(this, "Intersect two lines");
                 else
-                    m_Dialog = new IntersectTwoLinesForm(this, "Update (intersect two lines)");
+                    m_Dialog = new IntersectTwoLinesForm(pup, "Update (intersect two lines)");
             }
             else if (edid == EditingActionId.DistIntersect)
             {
                 if (pup==null)
                     m_Dialog = new IntersectTwoDistancesForm(this, "Intersect two distances");
                 else
-                    m_Dialog = new IntersectTwoDistancesForm(this, "Update (intersect two distances)");
+                    m_Dialog = new IntersectTwoDistancesForm(pup, "Update (intersect two distances)");
             }
             else if (edid == EditingActionId.DirLineIntersect)
             {
                 if (pup==null)
                     m_Dialog = new IntersectDirectionAndLineForm(this, "Intersect direction and line");
                 else
-                    m_Dialog = new IntersectDirectionAndLineForm(this, "Update (intersect direction and line)");
+                    m_Dialog = new IntersectDirectionAndLineForm(pup, "Update (intersect direction and line)");
             }
             else
             {

@@ -463,13 +463,19 @@ namespace Backsight.Editor.Forms
                 // if the user wants to change it. If the from point is not
                 // already defined, the from point is always valid.
 
-                if (m_From!=null)
+                // When doing an update, it seems a bit strange to insist that the
+                // old point must first be erased, so let it pass in that case.
+
+                if (!IsUpdating)
                 {
-                    string msg = String.Empty;
-                    msg += ("You have already specified the from-point." + System.Environment.NewLine);
-                    msg += ("If you want to change it, erase it first.");
-                    MessageBox.Show(msg);
-                    return false;
+                    if (m_From != null)
+                    {
+                        string msg = String.Empty;
+                        msg += ("You have already specified the from-point." + System.Environment.NewLine);
+                        msg += ("If you want to change it, erase it first.");
+                        MessageBox.Show(msg);
+                        return false;
+                    }
                 }
 
                 return true;
@@ -1144,6 +1150,9 @@ namespace Backsight.Editor.Forms
             // Ensure everything is drawn ok.
             // this->OnDrawAll();
 
+            // Disallow change of line type (you cannot add or delete lines via update).
+            lineTypeGroupBox.Enabled = false;
+
             return true;
         }
 
@@ -1508,6 +1517,14 @@ namespace Backsight.Editor.Forms
             IntersectForm parent = (this.ParentForm as IntersectForm);
             Debug.Assert(parent!=null);
         	return parent.GetUpdateOp();
+        }
+
+        /// <summary>
+        /// Is the user currently performing an update?
+        /// </summary>
+        bool IsUpdating
+        {
+            get { return (GetUpdateOp() != null); }
         }
     }
 }

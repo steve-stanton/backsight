@@ -558,6 +558,9 @@ namespace Backsight.Editor.Forms
             {
                 MessageBox.Show("GetDistanceControl.ShowUpdate - Unexpected editing operation");
             }
+
+            // Disallow change of line type (you cannot add or delete lines via update).
+            lineTypeGroupBox.Enabled = false;
         }
 
         /// <summary>
