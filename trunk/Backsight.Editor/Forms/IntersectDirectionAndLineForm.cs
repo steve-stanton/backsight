@@ -16,11 +16,12 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
-using System.Diagnostics;
+using Backsight.Editor.UI;
 
 namespace Backsight.Editor.Forms
 {
@@ -121,14 +122,22 @@ namespace Backsight.Editor.Forms
                 return null;
             }
 
-            // Save the intersect point if we're not updating
-            IntersectOperation upd = GetUpdateOp();
-            if (upd==null)
+            // If we're not doing an update, just save the edit
+            UpdateUI up = (GetCommand() as UpdateUI);
+            if (up == null)
                 return SaveDirLine();
 
-            // Apply corrections and return the point previously created at the intersect
-            Correct(upd);
-            return upd.IntersectionPoint;
+            // Remember the changes as part of the UI object (the original edit remains
+            // unchanged for now)
+            IntersectDirectionAndLineOperation op = (IntersectDirectionAndLineOperation)up.GetOp();
+            UpdateItemCollection changes = op.GetUpdateItems(getDirection.Direction,
+                                                             getLine.Line,
+                                                             intersectInfo.ClosestPoint);
+            if (!up.AddUpdate(op, changes))
+                return null;
+
+            // Return the point previously created at the intersect
+            return op.IntersectionPoint;
         }
 
         /// <summary>
@@ -172,17 +181,6 @@ namespace Backsight.Editor.Forms
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Correct an edit using the info from this dialog.
-        /// </summary>
-        void Correct(IntersectOperation io)
-        {
-            IntersectDirectionAndLineOperation op = (IntersectDirectionAndLineOperation)io;
-            op.Correct(getDirection.Direction,
-                       getLine.Line,
-                       intersectInfo.ClosestPoint, getLine.WantSplit, getDirection.LineType);
         }
 
         private void finishPage_ShowFromNext(object sender, EventArgs e)

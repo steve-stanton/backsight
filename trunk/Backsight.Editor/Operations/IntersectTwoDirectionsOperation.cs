@@ -32,12 +32,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The first observed direction
         /// </summary>
-        readonly Direction m_Direction1;
+        Direction m_Direction1;
 
         /// <summary>
         /// The second observed direction
         /// </summary>
-        readonly Direction m_Direction2;
+        Direction m_Direction2;
 
         // Creations ...
 
@@ -219,32 +219,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the point of intersection.
-            IPosition xsect = m_Direction1.Intersect(m_Direction2);
-
-            if (xsect==null)
-                throw new RollforwardException(this, "Cannot re-calculate intersection point.");
-
-            // Update the intersection point to the new position.
-            m_To.MovePoint(uc, xsect);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Executes this operation. 
         /// </summary>
         /// <param name="pointId">The ID and entity type for the intersect point
@@ -380,76 +354,31 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Updates this direction-direction intersection operation.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
-        /// <param name="dir1">First direction.</param>
-        /// <param name="dir2">Second direction.</param>
-        /// <param name="lineEnt1">The entity type for a line connecting the 1st direction to the intersection</param>
-        /// <param name="lineEnt2">The entity type for a line connecting the 2nd direction to the intersection</param>
-        /// <returns>True if operation updated ok.</returns>
-        internal bool Correct(Direction dir1, Direction dir2, IEntity lineEnt1, IEntity lineEnt2)
+        /// <param name="dir1">1st direction observation.</param>
+        /// <param name="dir2">2nd direction observation.</param>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Direction dir1, Direction dir2)
         {
-            throw new NotImplementedException();
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Direction>("Direction1", m_Direction1, dir1);
+            result.AddObservation<Direction>("Direction2", m_Direction2, dir2);
+            return result;
+        }
 
-            //if ((lineEnt1==null && m_Line1!=null) || (lineEnt2==null && m_Line2!=null))
-            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
-
-            //// Calculate the position of the point of intersection.
-            //IPosition xsect = dir1.Intersect(dir2);
-            //if (xsect==null)
-            //    return false;
-
-            //// Cut the references made by the direction objects. If nothing
-            //// has changed, the references will be re-inserted when the
-            //// direction is re-saved below.
-            //m_Direction1.CutRef(this);
-            //m_Direction2.CutRef(this);
-
-            //// Get rid of the previously defined observations, and replace
-            //// with the new ones (we can't necessarily change the old ones
-            //// because we may have changed the type of observation).
-
-            //m_Direction1.OnRollback(this);
-            //m_Direction2.OnRollback(this);
-
-            //m_Direction1 = dir1;
-            //m_Direction1.AddReferences(this);
-
-            //m_Direction2 = dir2;
-            //m_Direction2.AddReferences(this);
-
-            //// If we have defined entity types for lines, and we did not
-            //// have a line before, add a new line now.
-
-            //if (lineEnt1!=null)
-            //{
-            //    if (m_Line1==null)
-            //    {
-            //        CadastralMapModel map = MapModel;
-            //        IPosition start = m_Direction1.StartPosition;
-            //        PointFeature ps = map.EnsurePointExists(start, this);
-            //        m_Line1 = map.AddLine(ps, m_To, lineEnt1, this);
-            //    }
-            //    else if (m_Line1.EntityType.Id != lineEnt1.Id)
-            //        throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
-            //        //m_Line1.EntityType = lineEnt1;
-            //}
-
-            //if (lineEnt2!=null)
-            //{
-            //    if (m_Line2==null)
-            //    {
-            //        CadastralMapModel map = MapModel;
-            //        IPosition start = m_Direction2.StartPosition;
-            //        PointFeature ps = map.EnsurePointExists(start, this);
-            //        m_Line2 = map.AddLine(ps, m_To, lineEnt2, this);
-            //    }
-            //    else if (m_Line2.EntityType.Id != lineEnt2.Id)
-            //        throw new NotImplementedException("IntersectTwoDirectionsOperation.Correct");
-            //        //m_Line2.EntityType = lineEnt2;
-            //}
-
-            //return true;
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            m_Direction1 = data.ExchangeObservation<Direction>(this, "Direction1", m_Direction1);
+            m_Direction2 = data.ExchangeObservation<Direction>(this, "Direction2", m_Direction2);
         }
     }
 }
