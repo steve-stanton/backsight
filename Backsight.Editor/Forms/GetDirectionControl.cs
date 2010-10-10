@@ -1138,9 +1138,8 @@ namespace Backsight.Editor.Forms
             }
             else if (op.EditId == EditingActionId.DirLineIntersect)
             {
-                throw new NotImplementedException("GetDirectionControl.Show");
-                //IntersectDirectionAndLineOperation oper = (IntersectDirectionAndLineOperation)op;
-                //Show(oper.Direction, oper.CreatedDirectionLine);
+                IntersectDirectionAndLineOperation oper = (IntersectDirectionAndLineOperation)op;
+                Show(oper.Direction, oper.CreatedDirectionLine);
             }
             else
             {

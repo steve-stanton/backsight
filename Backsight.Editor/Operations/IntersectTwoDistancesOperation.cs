@@ -33,28 +33,28 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// First observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        readonly Observation m_Distance1;
+        Observation m_Distance1;
 
         /// <summary>
         /// The point the 1st distance was measured from.
         /// </summary>
-        readonly PointFeature m_From1;
+        PointFeature m_From1;
 
         /// <summary>
         /// Second observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).
         /// </summary>
-        readonly Observation m_Distance2;
+        Observation m_Distance2;
 
         /// <summary>
         /// The point the 2nd distance was measured from.
         /// </summary>
-        readonly PointFeature m_From2;
+        PointFeature m_From2;
 
         /// <summary>
         /// True if it was the default intersection (the one with the lowest bearing
         /// with respect to <see cref="m_From1"/> and <see cref="m_From2"/>).
         /// </summary>
-        readonly bool m_Default;
+        bool m_Default;
 
         // Creations ...
 
@@ -284,32 +284,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the point of intersection.
-            IPosition xsect = Calculate(m_Distance1, m_From1, m_Distance2, m_From2, m_Default);
-
-            if (xsect==null)
-                throw new RollforwardException(this, "Cannot re-calculate intersection point.");
-
-            // Update the intersection point to the new position.
-            m_To.MovePoint(uc, xsect);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Executes this operation. 
         /// </summary>
         /// <param name="pointId">The ID and entity type for the intersect point</param>
@@ -522,7 +496,8 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Updates this operation. 
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="dist1">1st distance observation.</param>
         /// <param name="from1">The point the 1st distance was observed from.</param>
@@ -530,84 +505,33 @@ namespace Backsight.Editor.Operations
         /// <param name="from2">The point the 2nd distance was observed from.</param>
         /// <param name="isdefault">True if the default intersection is required (the one that has the
         /// lowest bearing with respect to the 2 from points). False for the other one (if any).</param>
-        /// <param name="ent1">The entity type for 1st line (null for no line)</param>
-        /// <param name="ent2">The entity type for 2nd line (null for no line)</param>
-        /// <returns></returns>
-        internal bool Correct(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2,
-                        bool isdefault, IEntity ent1, IEntity ent2)
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Observation dist1, PointFeature from1,
+            Observation dist2, PointFeature from2, bool isdefault)
         {
-            throw new NotImplementedException();
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Observation>("Distance1", m_Distance1, dist1);
+            result.AddFeature<PointFeature>("From1", m_From1, from1);
+            result.AddObservation<Observation>("Distance2", m_Distance2, dist2);
+            result.AddFeature<PointFeature>("From2", m_From2, from2);
+            result.AddItem<bool>("Default", m_Default, isdefault);
+            return result;
+        }
 
-            //if ((ent1==null && m_Line1!=null) || (ent2==null && m_Line2!=null))
-            //    throw new Exception("You cannot delete lines via update. Use Line Delete.");
-
-            //// Calculate the position of the point of intersection.
-            //IPosition xsect = Calculate(dist1, from1, dist2, from2, isdefault);
-            //if (xsect==null)
-            //    return false;
-
-            //// If the from points have changed, cut references to this
-            //// operation from the old points, and change it so the
-            //// operation is referenced from the new points.
-            //if (!Object.ReferenceEquals(m_From1, from1))
-            //{
-            //    m_From1.CutOp(this);
-            //    m_From1 = from1;
-            //    m_From1.AddOp(this);
-            //}
-
-            //if (!Object.ReferenceEquals(m_From2, from2))
-            //{
-            //    m_From2.CutOp(this);
-            //    m_From2 = from2;
-            //    m_From2.AddOp(this);
-            //}
-
-            //// If either old observation refers to an offset point, cut the
-            //// reference that the point has to this op. If nothing has
-            //// changed, the reference will be re-inserted when the
-            //// observation is re-saved below.
-            //CutOffsetRef(m_Distance1);
-            //CutOffsetRef(m_Distance2);
-
-            //// Get rid of the previously defined observations, and replace
-            //// with the new ones (we can't necessarily change the old ones
-            //// because we may have changed the type of observation).
-
-            //m_Distance1.OnRollback(this);
-            //m_Distance2.OnRollback(this);
-
-            //m_Distance1 = dist1;
-            //m_Distance1.AddReferences(this);
-
-            //m_Distance2 = dist2;
-            //m_Distance2.AddReferences(this);
-
-            //// Save option about whether we want default intersection or not.
-            //m_Default = isdefault;
-
-            //// If we have defined entity types for lines, and we did not
-            //// have a line before, add a new line now.
-
-            //if (ent1!=null)
-            //{
-            //    if (m_Line1==null)
-            //        m_Line1 = MapModel.AddLine(m_From1, m_To, ent1, this); // m_To hasn't moved yet!
-            //    else if (m_Line1.EntityType.Id != ent1.Id)
-            //        throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
-            //        //m_Line1.EntityType = ent1;
-            //}
-
-            //if (ent2!=null)
-            //{
-            //    if (m_Line2==null)
-            //        m_Line2 = MapModel.AddLine(m_From2, m_To, ent2, this); // m_To hasn't moved yet!
-            //    else if (m_Line2.EntityType.Id != ent2.Id)
-            //        throw new NotImplementedException("IntersectTwoDistancesOperation.Correct");
-            //        //m_Line2.EntityType = ent2;
-            //}
-
-            //return true;
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            m_Distance1 = data.ExchangeObservation<Observation>(this, "Distance1", m_Distance1);
+            m_From1 = data.ExchangeFeature<PointFeature>(this, "From1", m_From1);
+            m_Distance2 = data.ExchangeObservation<Observation>(this, "Distance2", m_Distance2);
+            m_From2 = data.ExchangeFeature<PointFeature>(this, "From2", m_From2);
+            m_Default = data.ExchangeValue<bool>("Default", m_Default);
         }
     }
 }

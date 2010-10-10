@@ -35,12 +35,12 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The direction observation.
         /// </summary>
-        readonly Direction m_Direction;
+        Direction m_Direction;
 
         /// <summary>
         /// The line the direction needs to intersect.
         /// </summary>
-        readonly LineFeature m_Line;
+        LineFeature m_Line;
 
         /// <summary>
         /// True if the line needs to be split at the intersection.
@@ -51,7 +51,7 @@ namespace Backsight.Editor.Operations
         /// The point closest to the intersection (usually defaulted to one of the end
         /// points for the lines, or the origin of the direction).
         /// </summary>
-        readonly PointFeature m_CloseTo;
+        PointFeature m_CloseTo;
 
         // Creations ...
 
@@ -263,50 +263,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the point of intersection.
-            IPosition xsect;
-            PointFeature closest;
-            if (!m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
-                throw new RollforwardException(this, "Cannot re-calculate intersection point.");
-
-            // Update the intersection point to the new position.
-            m_Intersection.MovePoint(uc, xsect);
-            */
-                /*
-                // Defective logic means the intersection point may not
-                // coincide with the location that's common to split sections
-                // TODO: Looks flakey. Is this worth doing?
-
-                bool moveSplit = IsSplitAtIntersection(m_LineA);
-
-                // Update the intersection point to the new position.
-                if (m_Intersection.Move(xsect) && moveSplit)
-                {
-                    // Perform post-processing of any split sections (this
-                    // covers a situation where the intersection coincided
-                    // with a location in a CeMultiSegment)
-                    SplitPostMove(m_LineA, m_LineB, m_Line);
-                }
-                */
-
-            /*
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Checks whether this operation makes reference to a specific feature.
         /// </summary>
         /// <param name="feat">The feature to check for.</param>
@@ -484,100 +440,37 @@ namespace Backsight.Editor.Operations
         //}
 
         /// <summary>
-        /// Updates this operation.
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
         /// </summary>
         /// <param name="dir">The direction to intersect.</param>
         /// <param name="line">The line to intersect.</param>
         /// <param name="closeTo">The point the intersection has to be close to. Used if
         /// there is more than one intersection to choose from. If null is specified, a
         /// default point will be selected.</param>
-        /// <param name="wantsplit">True if line should be split at the intersection.</param>
-        /// <param name="dirEnt">The entity type for any line that should be added along the direction
-        /// line. Specify null if you don't want a line.</param>
-        /// <returns>True if operation updated ok.</returns>
-        internal bool Correct(Direction dir, LineFeature line, PointFeature closeTo,
-                                bool wantsplit, IEntity dirEnt)
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Direction dir, LineFeature line,
+                                                        PointFeature closeTo)
         {
-            throw new NotImplementedException();
-            /*
-            // Calculate the position of the point of intersection.
-            IPosition xsect;
-            PointFeature closest;
-            if (!dir.Intersect(line, closeTo, out xsect, out closest))
-                return false;
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddObservation<Direction>("Direction", m_Direction, dir);
+            result.AddFeature<LineFeature>("Line", m_Line, line);
+            result.AddFeature<PointFeature>("CloseTo", m_CloseTo, closeTo);
+            return result;
+        }
 
-            // The following check was originally done only by the Correct
-            // function, but it's a bit late by then. Note that we will
-            // allow a change only if the user has also specified a new line
-            // to intersect with.
-
-            if (m_IsSplit && !wantsplit && Object.ReferenceEquals(m_Line, line))
-                throw new Exception("You cannot change line splits via update.");
-
-            // If the line has changed, cut reference to this
-            // operation from the old line, and change it so the
-            // operation is referenced from the new line.
-
-            if (!Object.ReferenceEquals(m_Line, line))
-            {
-                m_Line.CutOp(this);
-                m_Line = line;
-                m_Line.AddOp(this);
-            }
-
-            if (!Object.ReferenceEquals(m_CloseTo, closeTo))
-            {
-                if (m_CloseTo != null)
-                    m_CloseTo.CutOp(this);
-
-                m_CloseTo = closeTo;
-
-                if (m_CloseTo != null)
-                    m_CloseTo.AddOp(this);
-            }
-
-            // Cut the references made by the direction object. If nothing
-            // has changed, the references will be re-inserted when the
-            // direction is re-saved below.
-            m_Direction.CutRef(this);
-
-            // Get rid of the previously defined observation, and replace
-            // with the new one (we can't necessarily change the old one
-            // because we may have changed the type of observation).
-
-            m_Direction.OnRollback(this);
-            m_Direction = dir;
-            m_Direction.AddReferences(this);
-
-            // See if the split status has changed.
-            // The following is really junky and should be changed...
-
-            if (wantsplit != m_IsSplit)
-                throw new Exception("You cannot make line splits via update.");
-
-            // If we have defined entity types for lines, and we did not
-            // have a line before, add a new line now.
-
-            if (dirEnt != null)
-            {
-                if (m_DirLine == null)
-                {
-                    IPosition from = m_Direction.StartPosition;
-                    CadastralMapModel map = MapModel;
-                    PointFeature p = map.EnsurePointExists(from, this);
-                    m_DirLine = MapModel.AddLine(p, m_Intersection, dirEnt, this);
-                }
-                else
-                {
-                    if (m_DirLine.EntityType.Id != dirEnt.Id)
-                        throw new Exception("Cannot change entity type via update.");
-                }
-            }
-            else if (m_DirLine!=null)
-                throw new Exception("You cannot delete lines via update. Use Line Delete.");
-
-            return true;
-             */
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
+            m_Line = data.ExchangeFeature<LineFeature>(this, "Line", m_Line);
+            m_CloseTo = data.ExchangeFeature<PointFeature>(this, "CloseTo", m_CloseTo);
         }
 
         internal LineFeature LineBeforeSplit
