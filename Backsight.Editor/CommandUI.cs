@@ -368,7 +368,7 @@ namespace Backsight.Editor
         protected bool FinishCommand()
         {
 	        // If this command was invoked by an update command, get
-	        // the update to clean up. Otherwise tell the view.
+	        // the update to clean up. Otherwise tell the controller.
 
 	        if (m_UpdCmd!=null)
 		        m_UpdCmd.FinishCommand(this);

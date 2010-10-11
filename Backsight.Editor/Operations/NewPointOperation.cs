@@ -20,7 +20,7 @@ using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Operations
 {
-    class NewPointOperation : Operation, IRecallable
+    class NewPointOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -111,25 +111,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // nothing to do
-
-            // Rollforward the base class.
-	        return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>
@@ -150,6 +131,24 @@ namespace Backsight.Editor.Operations
         public override Feature[] GetRequiredFeatures()
         {
             return new Feature[0];
+        }
+
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            // Do nothing! 
+            //long x = data.ExchangeValue<long>("X", m_NewPoint.Easting.Microns);
+            //long y = data.ExchangeValue<long>("Y", m_NewPoint.Northing.Microns);
+            double x = data.ExchangeValue<double>("X", m_NewPoint.Easting.Meters);
+            double y = data.ExchangeValue<double>("Y", m_NewPoint.Northing.Meters);
+
+            // Need to call ApplyPointGeometry
+            //m_NewPoint.Geometry = new PointGeometry(x, y);
         }
     }
 }

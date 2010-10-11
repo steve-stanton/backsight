@@ -316,7 +316,7 @@ namespace Backsight.Editor.Forms
             get { return m_Position; }
         }
 
-        PointFeature UpdatePoint
+        internal PointFeature UpdatePoint
         {
             get
             {
@@ -384,6 +384,22 @@ namespace Backsight.Editor.Forms
             else
                 idComboBox.Items.Clear();
 
+        }
+
+        /// <summary>
+        /// Obtains update items for a revised version of the point.
+        /// (for later use with an implementation of <see cref="IRevisable.ExchangeData"/>).
+        /// </summary>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems()
+        {
+            PointFeature p = this.UpdatePoint;
+
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddItem<double>("X", p.Easting.Meters, m_Position.X);
+            result.AddItem<double>("Y", p.Northing.Meters, m_Position.Y);
+            return result;
         }
     }
 }

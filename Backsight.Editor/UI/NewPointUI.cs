@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.UI
 {
@@ -143,19 +144,29 @@ namespace Backsight.Editor.UI
             // Hide the dialog so it doesn't become part of any saved display
             m_Dialog.Visible = false;
 
-	        // If we are doing an update, the original position will
-	        // be updated by the base class.
+            // If we are doing an update, remember the changes
+            UpdateUI up = this.Update;
 
-	        if (this.Update==null)
+            if (up != null)
             {
-		        // Save the new point.
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+
+                Operation revisedEdit = up.GetOp();
+                UpdateItemCollection changes = m_Dialog.GetUpdateItems();
+                if (!up.AddUpdate(revisedEdit, changes))
+                    return false;
+            }
+            else
+            {
+                // Save the new point.
                 PointFeature p = m_Dialog.Save();
-		        if (p==null)
+                if (p == null)
                     return false;
 
                 // Ensure the point is on screen, and select it.
                 Controller.EnsureVisible(p, true);
-	        }
+            }
 
 	        // Get the base class to finish up.
 	        return FinishCommand();
