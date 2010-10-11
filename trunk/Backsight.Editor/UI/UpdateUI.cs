@@ -460,11 +460,24 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                     break;
                 }
 
+                // SS20101011 - In the past, you were allowed to change the lines that were intersected
+                // as part of Direction-Line and Line-Line intersects. This would not be a problem if
+                // the lines were left un-split. However, if you split the lines, it is possible that
+                // subsequent edits would refer to the resultant sections. So if you later refer to a
+                // different line, those edits would become invalid. That's why the ability to change
+                // Line-Line intersects has been removed. The Direction-Line option is still valid,
+                // because you are allowed to change the direction.
+
+                // In the future, it would be better to modify the Direction-Line and Line-Line edits
+                // to prohibit splits. That would probably be better handled by a new edit that would
+                // let users split a line at an intersection (although I haven't thought that through -
+                // it's possible that such an edit would also be subject to similar issues).
+
                 case EditingActionId.DirIntersect:
                 case EditingActionId.DirDistIntersect:
                 case EditingActionId.DirLineIntersect:
                 case EditingActionId.DistIntersect:
-                case EditingActionId.LineIntersect:
+                //case EditingActionId.LineIntersect:
                 {
                     m_Cmd = new IntersectUI(pop.EditId, this);
                     break;

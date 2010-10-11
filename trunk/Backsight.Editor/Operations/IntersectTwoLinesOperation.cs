@@ -281,32 +281,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the point of intersection.
-            IPosition xsect;
-            PointFeature closest;
-            if (!m_Line1.Intersect(m_Line2, m_CloseTo, out xsect, out closest))
-                throw new RollforwardException(this, "Cannot re-calculate intersection point.");
-
-            // Update the intersection point to the new position.
-            m_Intersection.MovePoint(uc, xsect);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Checks whether this operation makes reference to a specific feature.
         /// </summary>
         /// <param name="feat">The feature to check for.</param>
@@ -444,80 +418,35 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Updates this operation.
+        /// The portion of m_Line1 prior to the intersection (null if m_IsSplit1==false).
         /// </summary>
-        /// <param name="line1">The 1st line to intersect.</param>
-        /// <param name="line2">The 2nd line to intersect.</param>
-        /// <param name="closeTo">The point the intersection has to be close to. Used if
-        /// there is more than one intersection to choose from. If null is specified, a
-        /// default point will be selected.</param>
-        /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
-        /// <param name="wantsplit2">True if 2nd line should be split at the intersection.</param>
-        /// <returns>True if operation updated ok.</returns>
-        internal bool Correct(LineFeature line1, LineFeature line2, PointFeature closeTo,
-                                bool wantsplit1, bool wantsplit2)
-        {
-            throw new NotImplementedException();
-
-            //// Disallow attempts to change the split status
-
-            //if (wantsplit1 != m_IsSplit1 || wantsplit2 != m_IsSplit2)
-            //    throw new Exception("You cannot make line splits via update.");
-
-            //// If the lines have changed, cut references to this
-            //// operation from the old lines, and change it so the
-            //// operation is referenced from the new lines.
-
-            //if (!Object.ReferenceEquals(m_Line1, line1))
-            //{
-            //    m_Line1.CutOp(this);
-            //    m_Line1 = line1;
-            //    m_Line1.AddOp(this);
-            //}
-
-            //if (!Object.ReferenceEquals(m_Line2, line2))
-            //{
-            //    m_Line2.CutOp(this);
-            //    m_Line2 = line2;
-            //    m_Line2.AddOp(this);
-            //}
-
-            //if (!Object.ReferenceEquals(m_CloseTo, closeTo))
-            //{
-            //    if (m_CloseTo != null)
-            //        m_CloseTo.CutOp(this);
-
-            //    m_CloseTo = closeTo;
-
-            //    if (m_CloseTo != null)
-            //        m_CloseTo.AddOp(this);
-            //}
-
-            //return true;
-        }
-
         internal LineFeature Line1BeforeSplit
         {
             get { return m_Line1a; }
-            //set { m_Line1a = value; }
         }
 
+        /// <summary>
+        /// The portion of m_Line1 after the intersection (null if m_IsSplit1==false).
+        /// </summary>
         internal LineFeature Line1AfterSplit
         {
             get { return m_Line1b; }
-            //set { m_Line1b = value; }
         }
 
+        /// <summary>
+        /// The portion of m_Line2 prior to the intersection (null if m_IsSplit2==false).
+        /// </summary>
         internal LineFeature Line2BeforeSplit
         {
             get { return m_Line2a; }
-            //set { m_Line2a = value; }
         }
 
+        /// <summary>
+        /// The portion of m_Line2 after the intersection (null if m_IsSplit2==false).
+        /// </summary>
         internal LineFeature Line2AfterSplit
         {
             get { return m_Line2b; }
-            //set { m_Line2b = value; }
         }
     }
 }
