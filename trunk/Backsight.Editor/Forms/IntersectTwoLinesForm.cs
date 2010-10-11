@@ -115,9 +115,8 @@ namespace Backsight.Editor.Forms
             if (upd==null)
                 return SaveLineLine();
 
-            // Apply corrections and return the point previously created at the intersect
-            Correct(upd);
-            return upd.IntersectionPoint;
+            // Unlike other intersect edits, line-line intersects are not revisable
+            throw new NotSupportedException("Updates not supported for line-line intersections");
         }
 
         /// <summary>
@@ -160,16 +159,6 @@ namespace Backsight.Editor.Forms
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Correct an edit using the info from this dialog.
-        /// </summary>
-        void Correct(IntersectOperation io)
-        {
-            IntersectTwoLinesOperation op = (IntersectTwoLinesOperation)io;
-            op.Correct(getLine1.Line, getLine2.Line, intersectInfo.ClosestPoint,
-                            getLine1.WantSplit, getLine2.WantSplit);
         }
 
         private void finishPage_ShowFromNext(object sender, EventArgs e)

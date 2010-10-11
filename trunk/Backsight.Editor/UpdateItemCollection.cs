@@ -246,7 +246,7 @@ namespace Backsight.Editor
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeValue<T>(string name, T value) where T : IComparable
+        internal T ExchangeValue<T>(string name, T value) where T : IEquatable<T>
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
