@@ -55,6 +55,10 @@ namespace Backsight.Editor.Forms
             intersectInfo.InitializeControl(this);
             getLine.InitializeControl(this, 1);
             getDirection.InitializeControl(this, 1);
+
+            // If we're doing an update, remove the page for specifying the line.
+            if (GetCommand() is UpdateUI)
+                wizard.Pages.Remove(linePage);
         }
 
         internal override void OnDraw(PointFeature point)

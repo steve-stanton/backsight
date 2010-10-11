@@ -810,30 +810,6 @@ namespace Backsight.Editor
             IsAutoNumber = !IsAutoNumber;
         }
 
-        void RemoveSelection()
-        {
-        }
-
-        /// <summary>
-        /// Records the fact that update processing has been started.
-        /// </summary>
-        void OnStartUpdate()
-	    {
-            throw new NotImplementedException("EditingController.OnStartUpdate");
-            /*
-            if (m_Updates != null)
-                throw new InvalidOperationException();
-
-            m_Updates = new List<Operation>();
-             */
-        }
-
-        void OnFinishUpdate()
-	    {
-            throw new NotImplementedException("EditingController.OnFinishUpdate");
-            //m_AutoSaver.OnFinishUpdate();
-        }
-
         /// <summary>
         /// Ensures a point is visible on the active display (expands the draw window
         /// if necessary), and optionally selects it.

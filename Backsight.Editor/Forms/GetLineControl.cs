@@ -206,7 +206,8 @@ namespace Backsight.Editor.Forms
 
             // Create thick pen (we want a line that is 1mm wide, corresponding
             // to the pick aperture).
-            DrawStyle style = new DrawStyle(m_LineColor);
+            DrawStyle style = new HighlightStyle();
+            style.LineColor = m_LineColor;
             double scale = display.MapScale;
             float pxwid = display.LengthToDisplay(scale*0.001);
             style.Pen.Width = pxwid;

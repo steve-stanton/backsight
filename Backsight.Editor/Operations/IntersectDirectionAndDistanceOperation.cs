@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on a direction and a distance observation.
     /// </summary>
-    class IntersectDirectionAndDistanceOperation : IntersectOperation, IRecallable
+    class IntersectDirectionAndDistanceOperation : IntersectOperation, IRecallable, IRevisable
     {
         #region Class data
 
