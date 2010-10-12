@@ -16,6 +16,9 @@
 using System;
 using System.Collections.Generic;
 
+using Backsight.Editor.Operations;
+
+
 namespace Backsight.Editor
 {
     /// <summary>
@@ -26,6 +29,11 @@ namespace Backsight.Editor
     class UpdateEditingContext : EditingContext
     {
         #region Class data
+
+        /// <summary>
+        /// The operation holding the changes that are being propagated (not null).
+        /// </summary>
+        readonly UpdateOperation m_Update;
 
         /// <summary>
         /// The edits that have been processed via a call to <see cref="Recalculate"/>.
@@ -50,8 +58,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateEditingContext"/> class.
         /// </summary>
-        internal UpdateEditingContext()
+        /// <param name="uop">The operation holding the changes that are being propagated (not null).</param>
+        internal UpdateEditingContext(UpdateOperation uop)
         {
+            m_Update = uop;
             m_RecalculatedEdits = new List<Operation>();
             m_Changes = new Dictionary<PointFeature, PointGeometry>();
             m_IsReverting = false;
@@ -134,6 +144,14 @@ namespace Backsight.Editor
             {
                 m_IsReverting = false;
             }
+        }
+
+        /// <summary>
+        /// The operation holding the changes that are being propagated (not null).
+        /// </summary>
+        internal UpdateOperation UpdateSource
+        {
+            get { return m_Update; }
         }
     }
 }

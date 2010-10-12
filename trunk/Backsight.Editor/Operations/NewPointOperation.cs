@@ -134,21 +134,49 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Exchanges update items that were previously generated via
-        /// a call to <see cref="GetUpdateItems"/>.
+        /// Exchanges any previously generated update items (this is currently done
+        /// by <see cref="NewPointForm.GetUpdateItems"/>).
         /// </summary>
         /// <param name="data">The update data to apply to the edit (modified to
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            // Do nothing! 
-            //long x = data.ExchangeValue<long>("X", m_NewPoint.Easting.Microns);
-            //long y = data.ExchangeValue<long>("Y", m_NewPoint.Northing.Microns);
-            double x = data.ExchangeValue<double>("X", m_NewPoint.Easting.Meters);
-            double y = data.ExchangeValue<double>("Y", m_NewPoint.Northing.Meters);
+            // Do nothing! This method is here because it is specified by the IRevisable
+            // interface. But, while the NewPointOperation can be updated, it is unlike
+            // other edits because we are explicitly changing a position (rather than
+            // changing observations that are used to calculate a position).
 
-            // Need to call ApplyPointGeometry
-            //m_NewPoint.Geometry = new PointGeometry(x, y);
+            // Data exchange ordinarily happens before anything is moved, because
+            // it may alter the calculation sequence. While explicitly changing a
+            // position will not alter the sequence, it will move the point a little
+            // too soon (the UpdateEditingContext.Recalculate method is responsible
+            // for removing stuff from the spatial index, re-calculating geometry,
+            // and re-adding to the spatial index). Ok, we could try fixing up the
+            // index as part of this method. But if we do that, the old geometry
+            // would not get remembered as part of the UpdateEditingContext (which
+            // gets utilized in the event of a rollback).
+
+            // To get around all this, the data exchange will be deferred until
+            // CalculateGeometry is called (see implementation below).
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
+        {
+            // We only have to do stuff when processing an update (see comments in ExchangeData).
+
+            if (ctx is UpdateEditingContext)
+            {
+                UpdateEditingContext uec = (ctx as UpdateEditingContext);
+                UpdateItemCollection data = uec.UpdateSource.Changes;
+                double x = data.ExchangeValue<double>("X", m_NewPoint.Easting.Meters);
+                double y = data.ExchangeValue<double>("Y", m_NewPoint.Northing.Meters);
+                PointGeometry pg = new PointGeometry(x, y);
+                m_NewPoint.ApplyPointGeometry(ctx, pg);
+            }
         }
     }
 }
