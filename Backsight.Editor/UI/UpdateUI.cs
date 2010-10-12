@@ -564,23 +564,6 @@ void CuiUpdate::Draw ( const CeObjectList& flist
             if (rev == null)
                 return false;
 
-	        // Were we just updating the absolute position of a point?
-	        // If so, grab the new position before destroying the
-	        // command (we need to do this because CeNewPoint::Rollforward
-	        // cannot calculate a new absolute position).
-            // 20100913 ...the above is too messy (the NewPointUI class will probably
-            // need to create an UpdateOperation where the updated position can be stored).
-
-            NewPointUI newPoint = (cmd as NewPointUI);
-            PointFeature point = null;
-            IPosition newpos = null;
-	        if (newPoint!=null)
-            {
-                point = m_Update as PointFeature;
-                Debug.Assert(point!=null);
-                newpos = newPoint.Position;
-	        }
-
         	// Delete the command.
 	        if (!DeleteCommand(cmd))
                 return false;
@@ -592,15 +575,6 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 	        // If so, re-display the info for the originally selected op.
 	        if ( wasProblem && m_Update!=null )
                 Run(m_Update);
-
-	        // If a new absolute position has been defined for a point,
-	        // just move it. Otherwise mark the modified operation as
-	        // changed, so that rollforward will re-calculate stuff.
-
-            //if (newpos!=null)
-            //    point.MovePoint(m_Context, newpos);
-            //else
-            //    pop.IsChanged = true;
 
 	        // Propagate the change (breaking if an operation can no
 	        // longer be calculated, which assigns m_Problem)
@@ -617,7 +591,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
 
         void ApplyUpdate(UpdateOperation uop)
         {
-            UpdateEditingContext uec = new UpdateEditingContext();
+            UpdateEditingContext uec = new UpdateEditingContext(uop);
 
             try
             {

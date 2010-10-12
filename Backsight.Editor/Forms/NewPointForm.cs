@@ -387,11 +387,18 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Obtains update items for a revised version of the point.
-        /// (for later use with an implementation of <see cref="IRevisable.ExchangeData"/>).
+        /// Obtains update items for a revised version of the point. These items will typically
+        /// be picked up by an implementation of the <see cref="Operation.CalculateGeometry"/>
+        /// method.
         /// </summary>
-        /// <returns>The items representing the change (may be subsequently supplied to
-        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        /// <returns>The items representing the change.</returns>
+        /// <remarks>
+        /// This dialog is used when changing an explicit position (see
+        /// <see cref="NewPointOperation"/> and <see cref="GetControlOperation"/>).
+        /// When dealing with explicit positions, the usual data handling technique
+        /// (which involves a call to <see cref="IRevisable.ExchangeData"/>) is no
+        /// good.
+        /// </remarks>
         internal UpdateItemCollection GetUpdateItems()
         {
             PointFeature p = this.UpdatePoint;
