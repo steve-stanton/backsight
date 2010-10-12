@@ -641,27 +641,34 @@ namespace Backsight.Editor
         /// <returns>The shortest distance between the specified position and this object</returns>
         abstract public ILength Distance(IPosition point);
 
+        /*
         public void PreMove()
         {
-            if (OnPreMove(this))
-            {
-                foreach (IFeatureDependent fd in m_References)
-                    fd.OnPreMove(this);
-            }
-        }
+            OnPreMove(this);
 
-        public bool OnPreMove(Feature f)
+            foreach (IFeatureDependent fd in m_References)
+                fd.OnPreMove(this);
+        }
+        */
+
+        /// <summary>
+        /// Performs any processing that needs to be done just before the position of
+        /// a referenced feature is changed. Implements <see cref="IFeatureDependent"/>
+        /// by removing this feature from the spatial index.
+        /// </summary>
+        /// <param name="f">The feature that is about to be changed (a feature that
+        /// the <c>IFeatureDependent</c> is dependent on)</param>
+        public virtual void OnPreMove(Feature f)
         {
             // The spatial index may be null while data is being deserialized from the
             // database during application startup
-            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
-            if (index == null)
-                return false;
 
-            index.Remove(this);
-            return true;
+            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
+            if (index != null)
+                index.Remove(this);
         }
 
+        /*
         public void PostMove()
         {
             if (OnPostMove(this))
@@ -670,15 +677,13 @@ namespace Backsight.Editor
                     fd.OnPostMove(this);
             }
         }
+        */
 
-        public bool OnPostMove(Feature f)
+        public void OnPostMove(Feature f)
         {
             IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
-            if (index == null)
-                return false;
-
-            index.Add(this);
-            return true;
+            if (index != null)
+                index.Add(this);
         }
 
         public string TypeName
@@ -889,20 +894,6 @@ namespace Backsight.Editor
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Undoes a positional change that arose during some sort of editing revision (see
-        /// the <see cref="UpdateContext"/> class). This method will be called if the user
-        /// decides to discard the revision.
-        /// </summary>
-        /// <param name="oldPosition">The position this feature should be moved back to</param>
-        /// <returns>True if the feature was moved. False if this type of feature does not
-        /// support positional changes. This implementation always returns false. The
-        /// <see cref="PointFeature"/> class overrides.</returns>
-        internal virtual bool UndoMove(PointGeometry oldPosition)
-        {
-            return false;
         }
     }
 }

@@ -78,7 +78,23 @@ namespace Backsight.Editor
             if (!m_IsReverting)
             {
                 if (!m_Changes.ContainsKey(point))
+                {
                     m_Changes.Add(point, point.PointGeometry);
+
+                    // Remove the point from the spatial index.
+                    EditingIndex index = point.MapModel.EditingIndex;
+                    index.Remove(point);
+
+                    // Remove all dependent spatial objects from the index as well (usually
+                    // incident lines, but could also be circles)
+
+                    List<IFeatureDependent> deps = point.Dependents;
+                    if (deps != null)
+                    {
+                        foreach (IFeatureDependent fd in deps)
+                            fd.OnPreMove(point);
+                    }
+                }
             }
         }
 
@@ -90,8 +106,11 @@ namespace Backsight.Editor
         {
             m_RecalculatedEdits.Add(op);
 
-            // Remove from spatial index
-            op.RemoveFromIndex();
+            // Remove from spatial index -- too late for things like lines that
+            // are connected to moved points. To cover that, lines gets removed
+            // from the spatial index when terminal points are moved (currently
+            // done in RegisterChange).
+            //op.RemoveFromIndex();
 
             // Re-calculate the geometry for created features
             op.CalculateGeometry(this);
@@ -100,6 +119,9 @@ namespace Backsight.Editor
             // Re-index
             op.AddToIndex();
 
+            /*
+             * Do in RegisterChange
+             * 
             // Mark any lines as moved. In the case of lines that previously intersected
             // anything, remove any topological construct, and replace afresh
             Feature[] fa = op.Features;
@@ -116,6 +138,7 @@ namespace Backsight.Editor
                     line.IsMoved = true;
                 }
             }
+             */
         }
 
         /// <summary>

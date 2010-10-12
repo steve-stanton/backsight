@@ -321,7 +321,7 @@ namespace Backsight.Editor.Forms
             get
             {
                 UpdateUI up = (m_Cmd as UpdateUI);
-                return (up==null ? null : (PointFeature)up.SelectedObject);
+                return (up==null ? null : (up.GetUpdate() as PointFeature));
             }
         }
 

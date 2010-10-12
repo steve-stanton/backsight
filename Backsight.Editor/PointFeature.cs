@@ -170,6 +170,7 @@ namespace Backsight.Editor
             return result.ToArray();
         }
 
+        /*
         /// <summary>
         /// Unconditionally moves the location of this point (this will also drag along the
         /// position of any additional points that share the geometry). This point (and any
@@ -192,6 +193,7 @@ namespace Backsight.Editor
             // this feature back into the spatial index)
             PostMove();
         }
+        */
 
         /// <summary>
         /// Moves the location of this point, to reflect some sort of editing revision.
@@ -210,19 +212,6 @@ namespace Backsight.Editor
 
         //    return true;
         //}
-
-        /// <summary>
-        /// Undoes a positional change that arose during some sort of editing revision (see
-        /// the <see cref="UpdateContext"/> class). This method will be called if the user
-        /// decides to discard the revision.
-        /// </summary>
-        /// <param name="oldPosition">The position this feature should be moved back to</param>
-        /// <returns>True (always), indicating that this point was moved back to its old position.</returns>
-        internal override bool UndoMove(PointGeometry oldPosition)
-        {
-            MovePoint(oldPosition);
-            return true;
-        }
 
         /// <summary>
         /// The geometry defining the position of this feature.

@@ -111,18 +111,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that is about to be changed (a feature that
         /// the <c>IFeatureDependent</c> is dependent on)</param>
-        /// <returns>
-        /// True if the feature was removed from spatial index. False if the
-        /// spatial index does not exist.
-        /// </returns>
-        public bool OnPreMove(Feature f)
+        public void OnPreMove(Feature f)
         {
             IEditSpatialIndex index = f.MapModel.EditingIndex;
-            if (index == null)
-                return false;
-
-            index.Remove(this);
-            return true;
+            if (index != null)
+                index.Remove(this);
         }
 
         /// <summary>
@@ -131,18 +124,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that has just been changed (a feature that
         /// the <c>IFeatureDependent</c> is dependent on)</param>
-        /// <returns>
-        /// True if the feature was removed from spatial index. False if the
-        /// spatial index does not exist.
-        /// </returns>
-        public bool OnPostMove(Feature f)
+        public void OnPostMove(Feature f)
         {
             IEditSpatialIndex index = f.MapModel.EditingIndex;
-            if (index == null)
-                return false;
-
-            index.Add(this);
-            return true;
+            if (index != null)
+                index.Add(this);
         }
 
         #endregion
@@ -187,6 +173,7 @@ namespace Backsight.Editor
 
         #endregion
 
+        /*
         // Not sure about this. Should it be disallowed?
         internal void ChangeRadius(ArcFeature arc, double newRadius)
         {
@@ -197,6 +184,7 @@ namespace Backsight.Editor
                 OnPostMove(arc);
             }
         }
+        */
 
         /// <summary>
         /// Associates an arc with this circle.
@@ -339,6 +327,7 @@ namespace Backsight.Editor
             return result;
         }
 
+        /*
         /// <summary>
         /// Updates the definition of this circle.
         /// </summary>
@@ -378,6 +367,7 @@ namespace Backsight.Editor
             foreach (ArcFeature a in m_Arcs)
                 a.PostMove();
         }
+        */
 
         /// <summary>
         /// Checks whether this circle is referenced to arcs that terminaye at
