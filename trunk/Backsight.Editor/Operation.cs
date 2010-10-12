@@ -300,6 +300,7 @@ namespace Backsight.Editor
                 m_Flag &= (~flag);
         }
 
+        /*
         /// <summary>
         /// Has this operation been marked as changed. This indicates whether the
         /// operation needs to be re-executed as part of rollforward processing.
@@ -309,7 +310,9 @@ namespace Backsight.Editor
             get { return IsFlagSet(OperationFlag.Changed); }
             set { SetFlag(OperationFlag.Changed, value); }
         }
+        */
 
+        /*
         /// <summary>
         /// Clears the "changed" status for this operation. All derived classes should
         /// call this function at the end of their implementation of <c>Rollforward</c>.
@@ -320,18 +323,17 @@ namespace Backsight.Editor
             SetFlag(OperationFlag.Changed, false);
 	        return true;
         }
+        */
 
         #region IFeatureDependent Members
 
-        public bool OnPreMove(Feature f)
+        public void OnPreMove(Feature f)
         {
-            throw new NotImplementedException("Operation.OnPreMove");
         }
 
-        public bool OnPostMove(Feature f)
+        public void OnPostMove(Feature f)
         {
             SetFlag(OperationFlag.Changed, true);
-            return true;
         }
 
         #endregion

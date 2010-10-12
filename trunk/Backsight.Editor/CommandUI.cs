@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The object (if any) that was selected for update (usually an <c>IFeature</c>)
         /// </summary>
-        private ISpatialObject m_Update;
+        //private ISpatialObject m_Update;
 
         /// <summary>
         /// The update command that is currently running (null if not an update).
@@ -89,7 +89,7 @@ namespace Backsight.Editor
         {
             m_Container = cc;
             m_Draw = EditingController.Current.ActiveDisplay;
-            m_Update = update;
+            //m_Update = update;
             m_UpdCmd = null;
             m_Recall = recall;
 
@@ -119,7 +119,7 @@ namespace Backsight.Editor
             m_EditId = editId;
             m_UpdCmd = updcmd;
             m_Draw = updcmd.ActiveDisplay;
-            m_Update = updcmd.SelectedObject;
+            //m_Update = updcmd.SelectedObject;
             m_Recall = null;
             /*
             this.Update = update;
@@ -181,10 +181,11 @@ namespace Backsight.Editor
             get { return m_Container; }
         }
 
-        internal ISpatialObject SelectedObject
-        {
-            get { return m_Update; }
-        }
+        // Try UpdateUI.GetUpdate()
+        //internal ISpatialObject SelectedObject
+        //{
+        //    get { return m_Update; }
+        //}
 
         public UpdateUI Update
         {

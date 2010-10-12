@@ -1160,6 +1160,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             }
         }
 
+        /*
         /// <summary>
         /// Alters the end points for this line (probably moving the line in the process)
         /// </summary>
@@ -1204,6 +1205,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 PostMove();
             }
         }
+        */
 
         /*
 //	@mfunc	Change the location of one end of this line. This is
@@ -1259,6 +1261,32 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         internal virtual ArcFeature GetArcBase()
         {
             return null;
+        }
+
+        /// <summary>
+        /// Performs any processing that needs to be done just before the position of
+        /// a referenced feature is changed. Implements <see cref="IFeatureDependent"/>
+        /// by removing this feature from the spatial index.
+        /// </summary>
+        /// <param name="f">The feature that is about to be changed (a feature that
+        /// the <c>IFeatureDependent</c> is dependent on)</param>
+        public override void OnPreMove(Feature f)
+        {
+            // Remove line from spatial index
+            base.OnPreMove(f);
+
+            // If we have a line that's been cut up into a series of
+            // dividers, remove them all.
+
+            if (IsTopological)
+            {
+                SwitchTopology(); // turn off
+
+                // Turn back on (but avoid possible problem with MarkPolygons)
+                //line.SwitchTopology();
+                SetTopology(true);
+                IsMoved = true;
+            }
         }
     }
 }

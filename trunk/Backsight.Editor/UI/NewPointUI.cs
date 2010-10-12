@@ -123,7 +123,7 @@ namespace Backsight.Editor.UI
 
             	default:
                 {
-                        throw new Exception("NewPointUI.Run - Unexpected command id.");
+                    throw new Exception("NewPointUI.Run - Unexpected command id.");
                 }
             }
 

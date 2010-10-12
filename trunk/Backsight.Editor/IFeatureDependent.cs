@@ -30,9 +30,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that is about to be changed (a feature that
         /// the <c>IFeatureDependent</c> is dependent on)</param>
-        /// <returns>True if the feature was removed from spatial index. False if the
-        /// spatial index does not exist.</returns>
-        bool OnPreMove(Feature f);
+        void OnPreMove(Feature f);
 
         /// <summary>
         /// Performs any processing that needs to be done after the position of
@@ -40,9 +38,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">The feature that has just been changed (a feature that
         /// the <c>IFeatureDependent</c> is dependent on)</param>
-        /// <returns>True if the feature was removed from spatial index. False if the
-        /// spatial index does not exist.</returns>
-        bool OnPostMove(Feature f);
+        void OnPostMove(Feature f);
 
         /// <summary>
         /// Obtains referenced features where position is required by this dependent.
