@@ -191,7 +191,8 @@ namespace Backsight.Editor
         /// called when one of the lines causing an intersection is being removed (deactivated).
         /// </summary>
         /// <param name="x">An intersection that is being removed</param>
-        internal override void MergeSections(Intersection x)
+        /// <returns>The number of sections after the merge</returns>
+        internal override int MergeSections(Intersection x)
         {
             for (int i=0; i<(m_Sections.Count-1); i++)
             {
@@ -206,10 +207,10 @@ namespace Backsight.Editor
                         m_Sections.RemoveAt(i+1);
                         m_Sections[i] = new SectionDivider(Line, a.From, b.To);
                     }
-
-                    return;
                 }
             }
+
+            return m_Sections.Count;
         }
 
         /// <summary>

@@ -480,10 +480,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         abstract public Feature[] GetRequiredFeatures();
-        //public virtual Feature[] GetRequiredFeatures()
-        //{
-        //    return new Feature[0];
-        //}
 
         /// <summary>
         /// Obtains the edits that must be completed before this edit.

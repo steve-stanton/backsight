@@ -77,24 +77,6 @@ namespace Backsight.Editor
                 m_Geom = new Node(this, g);
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="PointFeature"/> class, and records it
-        ///// as part of the map model.
-        ///// </summary>
-        ///// <param name="f">Basic information about the feature (not null)</param>
-        ///// <param name="firstPoint">The point feature that the new point coincides with (not null)</param>
-        ///// <exception cref="ArgumentNullException">If either <paramref name="f"/> or
-        ///// <paramref name="firstPoint"/> is null.</exception>
-        //internal PointFeature(IFeature f, PointFeature firstPoint)
-        //    : base(f)
-        //{
-        //    if (firstPoint == null)
-        //        throw new ArgumentNullException("Cannot create shared point feature");
-
-        //    m_Geom = firstPoint.m_Geom;
-        //    m_Geom.AttachPoint(this);
-        //}
-
         #endregion
 
         public double X
@@ -227,13 +209,6 @@ namespace Backsight.Editor
         internal PointGeometry PointGeometry
         {
             get { return m_Geom; }
-            //set
-            //{
-            //    if (value==null)
-            //        throw new ArgumentNullException();
-
-            //    m_Geom = new Node(this, value);
-            //}
         }
 
         /// <summary>
@@ -412,6 +387,33 @@ namespace Backsight.Editor
 
                 base.Touch(afterOp);
             }
+        }
+
+        /// <summary>
+        /// Ensures this feature is clean after some sort of edit. If this point has been marked inactive,
+        /// any incident topological sections will be merged.
+        /// </summary>
+        internal override void Clean()
+        {
+            if (IsInactive)
+            {
+                // If any topological lines pass THROUGH this point, ensure they have
+                // been marked as moved (force recalculation of intersections).
+
+                IDivider[] dividers = this.IncidentDividers();
+
+                foreach (IDivider d in dividers)
+                {
+                    if (d is SectionDivider)
+                    {
+                        LineFeature line = d.Line;
+                        if (!line.IsInactive && line.StartPoint != this && line.EndPoint != this)
+                            line.ResetTopology();
+                    }
+                }
+            }
+
+            base.Clean();
         }
     }
 }
