@@ -88,11 +88,25 @@ namespace Backsight.Editor
                     // Remove all dependent spatial objects from the index as well (usually
                     // incident lines, but could also be circles)
 
-                    List<IFeatureDependent> deps = point.Dependents;
+                    // Convert the supplied List to an array, since we may cut refs in
+                    // the loop below.
+                    IFeatureDependent[] deps = point.Dependents.ToArray();
+
                     if (deps != null)
                     {
                         foreach (IFeatureDependent fd in deps)
+                        {
                             fd.OnPreMove(point);
+
+                            // If the dependent is a line, and the point we're moving isn't
+                            // one of the line's endpoints, remove the reference from the
+                            // point to the line. Covers intersection with line edit.
+                            /*
+                            LineFeature line = (fd as LineFeature);
+                            if (line != null && line.StartPoint != point && line.EndPoint != point)
+                                point.CutReference(fd);
+                             */
+                        }
                     }
                 }
             }

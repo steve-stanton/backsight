@@ -168,8 +168,16 @@ namespace Backsight.Editor
                 if (m_Lines.Count>0)
                 {
                     Topology t = m_Lines[0].Topology;
-                    if (t!=null)
-                        t.MergeSections(this);
+                    if (t != null)
+                    {
+                        // Merge the two sections - if we end up with just one
+                        // section covering the whole line, replace list topology
+                        // with fresh topology for the whole line.
+                        if (t.MergeSections(this) == 1)
+                        {
+                            m_Lines[0].SetTopology(true);
+                        }
+                    }
                 }
             }
         }

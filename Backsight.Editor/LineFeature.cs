@@ -1275,6 +1275,7 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
             // Remove line from spatial index
             base.OnPreMove(f);
 
+            /*
             // If we have a line that's been cut up into a series of
             // dividers, remove them all.
 
@@ -1285,6 +1286,23 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
                 // Turn back on (but avoid possible problem with MarkPolygons)
                 //line.SwitchTopology();
                 SetTopology(true);
+                IsMoved = true;
+            }
+            */
+
+            ResetTopology();
+
+            // If the feature that's being changed is a point that isn't
+            // one of this line's end points, remove the point->line reference
+
+        }
+
+        internal void ResetTopology()
+        {
+            if (m_Topology != null)
+            {
+                RemoveTopology();
+                m_Topology = Topology.CreateTopology(this);
                 IsMoved = true;
             }
         }

@@ -181,8 +181,14 @@ namespace Backsight.Editor.Operations
                         if (fd is LineFeature)
                         {
                             LineFeature line = (fd as LineFeature);
-                            if (!line.IsUndoing && !all.Contains(line))
-                                all.Add(line);
+                            
+                            // Ignore lines that pass THROUGH the point (we only want to remove
+                            // lines that terminate at the point)
+                            if (line.StartPoint == f || line.EndPoint == f)
+                            {
+                                if (!line.IsUndoing && !all.Contains(line))
+                                    all.Add(line);
+                            }
                         }
                     }
                 }

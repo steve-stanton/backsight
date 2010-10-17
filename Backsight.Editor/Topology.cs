@@ -36,6 +36,11 @@ namespace Backsight.Editor
         /// <returns>New topology for the line (with undefined topological relationships)</returns>
         internal static Topology CreateTopology(LineFeature line)
         {
+            if (line.DataId == "738:6967")
+            {
+                int junk = 0;
+            }
+
             // Return topology that's suitable for representing the complete line. This
             // may need to be converted into a SectionTopologyList once we get around to
             // calculating intersections.
@@ -531,9 +536,11 @@ namespace Backsight.Editor
         /// called when one of the lines causing an intersection is being removed (deactivated).
         /// </summary>
         /// <param name="x">An intersection that is being removed</param>
-        internal virtual void MergeSections(Intersection x)
+        /// <returns>The number of sections after the merge (always 0)</returns>
+        internal virtual int MergeSections(Intersection x)
         {
             // This implementation does nothing. The SectionTopologyList class should override.
+            return 0;
         }
     }
 }
