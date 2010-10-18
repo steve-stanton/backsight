@@ -64,6 +64,13 @@ namespace Backsight.Editor
         /// indirectly through some sort of <c>Observation</c> object).
         /// Null if there aren't any references.
         /// </summary>
+        /// <remarks>The way this is used needs to be re-visited. As it stands, it gets used for two
+        /// things: 1) For holding references from other features and edits, and 2) for holding
+        /// lines that are either terminate at a point, or which pass through the point. This
+        /// tends to confuse the handling of dependencies (particularly with regard to the handling
+        /// of updates). It would be better to hive off the point-line relationship to the PointFeature
+        /// class. The m_References list might then be built using the logic of Operation.GetRequiredEdits
+        /// (for each required edit, the calling edit is a dependency).</remarks>
         List<IFeatureDependent> m_References;
 
         /// <summary>

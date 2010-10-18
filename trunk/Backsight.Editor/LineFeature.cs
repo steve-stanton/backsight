@@ -1272,29 +1272,21 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// the <c>IFeatureDependent</c> is dependent on)</param>
         public override void OnPreMove(Feature f)
         {
-            // Remove line from spatial index
-            base.OnPreMove(f);
+            // Remove line from spatial index, so long as the feature being moved is
+            // an end point.
+            // TODO - consider circular arcs too
+            bool isEndPointMoving = (f == this.StartPoint || f == this.EndPoint);
+            if (isEndPointMoving)
+                base.OnPreMove(f);
 
-            /*
             // If we have a line that's been cut up into a series of
             // dividers, remove them all.
-
-            if (IsTopological)
-            {
-                SwitchTopology(); // turn off
-
-                // Turn back on (but avoid possible problem with MarkPolygons)
-                //line.SwitchTopology();
-                SetTopology(true);
-                IsMoved = true;
-            }
-            */
-
             ResetTopology();
 
             // If the feature that's being changed is a point that isn't
             // one of this line's end points, remove the point->line reference
-
+            if (!isEndPointMoving && (f is PointFeature))
+                (f as PointFeature).CutReference(this);
         }
 
         internal void ResetTopology()
