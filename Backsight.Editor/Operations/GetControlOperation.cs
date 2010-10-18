@@ -200,5 +200,40 @@ namespace Backsight.Editor.Operations
         {
             return new Feature[0];
         }
+
+        /// <summary>
+        /// Exchanges any previously generated update items (this is currently done
+        /// by <see cref="NewPointForm.GetUpdateItems"/>).
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            // Do nothing - see comments in NewPointOperation.ExchangeData
+        }
+
+        /// <summary>
+        /// Performs the data processing associated with this editing operation.
+        /// </summary>
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
+        {
+            // We only have to do stuff when processing an update (see comments in ExchangeData).
+
+            if (ctx is UpdateEditingContext)
+            {
+                UpdateEditingContext uec = (ctx as UpdateEditingContext);
+                UpdateItemCollection data = uec.UpdateSource.Changes;
+
+                // Locate the specific point that was modified
+                string id = data.GetValue<string>("Id");
+                PointFeature p = this.MapModel.Find<PointFeature>(id);
+
+                double x = data.ExchangeValue<double>("X", p.Easting.Meters);
+                double y = data.ExchangeValue<double>("Y", p.Northing.Meters);
+                PointGeometry pg = new PointGeometry(x, y);
+                p.ApplyPointGeometry(ctx, pg);
+            }
+        }
     }
 }

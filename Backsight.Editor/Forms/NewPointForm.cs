@@ -404,6 +404,13 @@ namespace Backsight.Editor.Forms
             PointFeature p = this.UpdatePoint;
 
             UpdateItemCollection result = new UpdateItemCollection();
+
+            // Unconditionally add an item that identifies the feature involved. This
+            // is kind of klunky, covering the fact that this dialog is also utilized
+            // when updating points created via the GetControlOperation class (the ID
+            // tells us which specific point is being updated).
+            result.Add(new UpdateItem("Id", p.DataId));
+
             result.AddItem<double>("X", p.Easting.Meters, m_Position.X);
             result.AddItem<double>("Y", p.Northing.Meters, m_Position.Y);
             return result;

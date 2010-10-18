@@ -262,6 +262,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Obtains the value of the item with a specific name.
+        /// </summary>
+        /// <typeparam name="T">The object class</typeparam>
+        /// <param name="name">The name of the item</param>
+        /// <returns>The value associated with the item (null if not found)</returns>
+        internal T GetValue<T>(string name)
+        {
+            UpdateItem item;
+            if (m_Changes.TryGetValue(name, out item))
+                return (T)item.Value;
+            else
+                return default(T);
+        }
+
+        /// <summary>
         /// Exchanges the currently stored change values with the revised edit.
         /// </summary>
         /// <param name="edit">The edit the changes relate to (not null).</param>
