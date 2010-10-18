@@ -95,18 +95,7 @@ namespace Backsight.Editor
                     if (deps != null)
                     {
                         foreach (IFeatureDependent fd in deps)
-                        {
                             fd.OnPreMove(point);
-
-                            // If the dependent is a line, and the point we're moving isn't
-                            // one of the line's endpoints, remove the reference from the
-                            // point to the line. Covers intersection with line edit.
-                            /*
-                            LineFeature line = (fd as LineFeature);
-                            if (line != null && line.StartPoint != point && line.EndPoint != point)
-                                point.CutReference(fd);
-                             */
-                        }
                     }
                 }
             }
