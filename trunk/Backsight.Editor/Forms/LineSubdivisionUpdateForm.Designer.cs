@@ -47,6 +47,8 @@
             this.listBox.Name = "listBox";
             this.listBox.Size = new System.Drawing.Size(138, 244);
             this.listBox.TabIndex = 0;
+            this.listBox.DoubleClick += new System.EventHandler(this.listBox_DoubleClick);
+            this.listBox.SelectedValueChanged += new System.EventHandler(this.listBox_SelectedValueChanged);
             // 
             // updateButton
             // 
@@ -58,10 +60,12 @@
             this.updateButton.TabStop = false;
             this.updateButton.Text = "&Update...";
             this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
             // flipDistButton
             // 
             this.flipDistButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.flipDistButton.Enabled = false;
             this.flipDistButton.Location = new System.Drawing.Point(167, 47);
             this.flipDistButton.Name = "flipDistButton";
             this.flipDistButton.Size = new System.Drawing.Size(111, 28);
@@ -69,10 +73,12 @@
             this.flipDistButton.TabStop = false;
             this.flipDistButton.Text = "Flip Ann&otations";
             this.flipDistButton.UseVisualStyleBackColor = true;
+            this.flipDistButton.Click += new System.EventHandler(this.flipDistButton_Click);
             // 
             // newFaceButton
             // 
             this.newFaceButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.newFaceButton.Enabled = false;
             this.newFaceButton.Location = new System.Drawing.Point(167, 81);
             this.newFaceButton.Name = "newFaceButton";
             this.newFaceButton.Size = new System.Drawing.Size(111, 28);
@@ -80,6 +86,7 @@
             this.newFaceButton.TabStop = false;
             this.newFaceButton.Text = "New Fac&e";
             this.newFaceButton.UseVisualStyleBackColor = true;
+            this.newFaceButton.Click += new System.EventHandler(this.newFaceButton_Click);
             // 
             // okButton
             // 
@@ -90,6 +97,7 @@
             this.okButton.TabIndex = 4;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // cancelButton
             // 
@@ -101,6 +109,7 @@
             this.cancelButton.TabStop = false;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // LineSubdivisionUpdateForm
             // 
@@ -118,6 +127,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "LineSubdivisionUpdateForm";
             this.Text = "Update Line Subdivision";
+            this.Shown += new System.EventHandler(this.LineSubdivisionUpdateForm_Shown);
             this.ResumeLayout(false);
 
         }
