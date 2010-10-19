@@ -19,6 +19,7 @@ using System.Windows.Forms;
 
 using Backsight.Forms;
 using Backsight.Editor.Forms;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.UI
 {
@@ -43,7 +44,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// The dialog when doing an update.
         /// </summary>
-        object m_UpDial; //CdUpdateSub
+        LineSubdivisionUpdateForm m_UpDial;
 
         #endregion
 
@@ -97,19 +98,17 @@ namespace Backsight.Editor.UI
         	UpdateUI pup = this.Update;
 
         	// Create modeless dialog.
-            /*
-	        if (pup!=null)
+            if (pup != null)
             {
-		        m_pUpDial = new CdUpdateSub(*pup);
-		        m_pUpDial->Create(CdUpdateSub::IDD);
+                m_UpDial = new LineSubdivisionUpdateForm(pup);
+                m_UpDial.Show();
 	        }
 	        else
             {
-             */
                 Debug.Assert(m_Parent!=null);
 		        m_Dialog = new LineSubdivisionControl(this, m_Parent, this.Recall);
                 this.Container.Display(m_Dialog);
-                //}
+            }
 
         	return true;
         }
@@ -138,14 +137,10 @@ namespace Backsight.Editor.UI
         /// </summary>
         internal void Draw()
         {
-            if (m_Dialog!=null)
+            if (m_Dialog != null)
                 m_Dialog.Draw();
-            /*
-            if (m_pDialog)
-                m_pDialog->Paint();
-            else if (m_pUpDial)
-                m_pUpDial->Paint();
-             */
+            else if (m_UpDial != null)
+                m_UpDial.Paint();
         }
 
         internal override void DialAbort(Control wnd)
@@ -179,18 +174,25 @@ namespace Backsight.Editor.UI
 
             if (up!=null)
             {
-                throw new NotImplementedException("LineSubdivisionUI.DialFinish");
-                /*
-		                // Get the original operation.
-		                CeArcSubdivision* pop = dynamic_cast<CeArcSubdivision*>(pup->GetOp());
-		                if ( !pop ) {
-			                ShowMessage("CuiArcSubdivision::DialFinish\nUnexpected edit type.");
-			                return FALSE;
-		                }
+                // Get the original operation.
+                LineSubdivisionOperation pop = (up.GetOp() as LineSubdivisionOperation);
+                if (pop == null)
+                {
+                    MessageBox.Show("LineSubdivisionUI.DialFinish - Unexpected edit type.");
+                    return false;
+                }
 
-		                // Make the update.
-                        // pop->Correct();
+
+                throw new NotImplementedException("LineSubdivisionUI.DialFinish");
+                // Remember the changes as part of the UI object (the original edit remains
+                // unchanged for now)
+                /*
+                UpdateItemCollection changes = pop.GetUpdateItems(...);
+                if (!up.AddUpdate(pop, changes))
+                    return false;
                  */
+
+                // pop->Correct();
             }
             else
             {
