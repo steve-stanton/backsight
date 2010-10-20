@@ -19,6 +19,7 @@ using System.Diagnostics;
 
 using Backsight.Editor.UI;
 using Backsight.Editor.Operations;
+using Backsight.Editor.Observations;
 
 
 namespace Backsight.Editor.Forms
@@ -45,17 +46,17 @@ namespace Backsight.Editor.Forms
         /// The line subdivision involved.
         /// </summary>
         LineSubdivisionOperation m_pop;
+
+        /// <summary>
+        /// The displayed distances
+        /// </summary>
+        MeasuredLineFeature[] m_Dists;
         /*
 	INT4			m_FaceIndex1;	// The index of the first face
 	INT4			m_FaceIndex2;	// The index of the 2nd face (-1
 									// if there is only one face)
 	INT4			m_CurIndex;		// The index of the face that
 									// is currently displayed
-
-	UINT4			m_NumDist;		// The number of distances on
-									// the current face
-	CeDistance*		m_Dists;		// Array of the distances for
-									// the current face
          */
 
         #endregion
@@ -73,10 +74,9 @@ namespace Backsight.Editor.Forms
             m_UpdCmd = up;
             m_SelectedLine = null;
             m_pop = null;
+            m_Dists = null;
 
             /*
-	m_NumDist = 0;
-	m_Dists = 0;
 	m_CurIndex = m_FaceIndex1 = m_FaceIndex2 = -1;
              */
         }
@@ -94,6 +94,16 @@ namespace Backsight.Editor.Forms
             m_SelectedLine = (feat as LineFeature);
             m_pop = (feat.Creator as LineSubdivisionOperation);
             Debug.Assert(m_pop != null);
+
+            // Work with a copy of the distances
+            MeasuredLineFeature[] sections = m_pop.Sections;
+            m_Dists = new MeasuredLineFeature[sections.Length];
+            for (int i=0; i<sections.Length; i++)
+            {
+                MeasuredLineFeature mf = sections[i];
+                m_Dists[i] = new MeasuredLineFeature(mf.Line, mf.ObservedLength);
+            }
+
             /*
 	// Get the number of editable faces on the current
 	// editing theme
@@ -139,43 +149,37 @@ namespace Backsight.Editor.Forms
         private void listBox_SelectedValueChanged(object sender, EventArgs e)
         {
             // Get the currently selected line (if any).
-            m_SelectedLine = GetSel();
+            m_SelectedLine = GetSelectedLine();
 
             // Ensure stuff gets repainted in idle time
             m_UpdCmd.ErasePainting();
         }
 
-        LineFeature GetSel()
+        LineFeature GetSelectedLine()
         {
-            return (listBox.SelectedValue as LineFeature);
+            MeasuredLineFeature mf = (listBox.SelectedValue as MeasuredLineFeature);
+            return (mf == null ? null : mf.Line);
         }
-
-        /*
-
-void CdUpdateSub::UnHighlightArc ( void ) const
-{
-	m_pSelArc->UnHighlight();
-
-	// Brute force method redraws everything
-	m_pop->Draw(TRUE);
-}
-        */
 
         private void updateButton_Click(object sender, EventArgs e)
         {
             // Get the selected distance.
-            m_SelectedLine = (listBox.SelectedItem as LineFeature);
-            if (m_SelectedLine == null)
+            MeasuredLineFeature mf = (listBox.SelectedItem as MeasuredLineFeature);
+            if (mf == null)
             {
                 MessageBox.Show("You must first select a distance from the list.");
                 return;
             }
 
-            using (DistForm dist = new DistForm())
+            m_SelectedLine = mf.Line;
+
+            using (DistForm dist = new DistForm(mf.ObservedLength, false))
             {
                 if (dist.ShowDialog() == DialogResult.OK)
                 {
-                    // Remember the change to the distance.
+                    // Change the displayed distance
+                    mf.ObservedLength = dist.Distance;
+                    RefreshList();
                 }
             }
 
@@ -231,21 +235,6 @@ void CdUpdateSub::Paint ( const LOGICAL isDraw ) const {
 //			pDraw->Draw(pos[i],COL_MAGENTA);
 //		}
 	}
-	else {
-
-		// Erase the points.
-//		for ( UINT4 i=0; i<(m_NumDist-1); i++ ) {
-//			pDraw->Erase(pos[i]);
-//		}
-
-		// Un-highlight the currently selected arc.
-		if ( m_pSelArc ) m_pSelArc->UnHighlight();
-
-		// Draw active stuff normally (and erase the rest)
-		m_pop->Draw(FALSE);
-	}
-
-//	delete [] pos;
 }
          */
 
@@ -257,7 +246,11 @@ void CdUpdateSub::Paint ( const LOGICAL isDraw ) const {
             // List the observed distances, relating each distance
             // to the corresponding line.
 
-            //m_pop.
+            listBox.Items.Clear();
+            listBox.Items.AddRange(m_Dists);
+
+            // Always leave the focus in the list of distances.
+            listBox.Focus();
         }
 
         /*
