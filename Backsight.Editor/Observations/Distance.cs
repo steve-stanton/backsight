@@ -368,5 +368,10 @@ namespace Backsight.Editor.Observations
         {
             get { return GetDistance(m_EnteredUnit); }
         }
+
+        public override string ToString()
+        {
+            return Format(true);
+        }
     }
 }

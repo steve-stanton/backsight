@@ -77,9 +77,10 @@ namespace Backsight.Editor
         /// <summary>
         /// The observed length of the line (on the ground).
         /// </summary>
-        internal Distance ObservedLength
+        public Distance ObservedLength
         {
             get { return m_ObservedLength; }
+            set { m_ObservedLength = value; }
         }
     }
 }
