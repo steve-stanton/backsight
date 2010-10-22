@@ -18,9 +18,13 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+
+using System.Data.SqlClient; // test
+
 using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Editor.UI;
+using System.Data;
 
 
 namespace Backsight.Editor.Forms
@@ -1978,16 +1982,39 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            //MessageBox.Show(Application.ExecutablePath);
-            try
+            // Experiment with recursive query
+/*
+            using (Backsight.Data.IConnection ic = Backsight.Data.ConnectionFactory.Create())
             {
-                CadastralMapModel.Current.WriteGeometry(@"C:\Temp\Test.ced");
-            }
+                SqlConnection c = ic.Value;
+ 
+                string sql = "create table TestChain (EditId int not null, PreviousEditId int not null)";
+                SqlCommand cmd = new SqlCommand(sql, c);
+                cmd.ExecuteNonQuery();
 
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+
+                SqlCommand del = new SqlCommand("DELETE FROM TestChain", c);
+                del.ExecuteNonQuery();
+
+                SqlCommand ins = new SqlCommand("insert into TestChain (EditId, PreviousEditId) values (@EditId, @PreviousEditId)", c);
+                SqlParameter p0 = new SqlParameter("@EditId", SqlDbType.Int);
+                SqlParameter p1 = new SqlParameter("@PreviousEditId", SqlDbType.Int);
+                p0.Value = 0;
+                p1.Value = 0;
+                ins.Parameters.Add(p0);
+                ins.Parameters.Add(p1);
+                ins.ExecuteNonQuery();
+
+                for (int i=1; i<50000; i++)
+                {
+                    p0.Value = i;
+                    p1.Value = i-1;
+                    ins.ExecuteNonQuery();
+                }
+
+                MessageBox.Show("inserted 50000 rows");
             }
+ */
         }
 
         #endregion
