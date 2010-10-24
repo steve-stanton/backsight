@@ -306,7 +306,7 @@ namespace Backsight.Editor
         /// <param name="index">The spatial index to add to</param>
         /// <returns>True if entry added to index. False if this ring is already marked
         /// as indexed.</returns>
-        internal bool AddToIndex(IEditSpatialIndex index)
+        internal bool AddToIndex(EditingIndex index)
         {
             if (IsIndexed)
                 return false;

@@ -95,5 +95,10 @@ namespace Backsight.Editor
         /// Line object marked as trimmed
         /// </summary>
         Trim=0x2000,
+
+        /// <summary>
+        /// Is the feature spatially indexed?
+        /// </summary>
+        Indexed=0x4000,
     };
 }

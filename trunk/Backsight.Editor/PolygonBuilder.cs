@@ -41,7 +41,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The spatial index to update during the build.
         /// </summary>
-        private readonly IEditSpatialIndex m_Index;
+        private readonly EditingIndex m_Index;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace Backsight.Editor
         {
             m_Model = model;
             m_NewPolygonExtent = new Window();
-            m_Index = (IEditSpatialIndex)model.Index;
+            m_Index = model.EditingIndex;
         }
 
         #endregion

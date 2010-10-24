@@ -582,5 +582,24 @@ namespace Backsight.Editor.Operations
 
             return result.ToArray();
         }
+
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="LineSubdivisionUpdateForm.GetUpdateItems"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
+        public override void ExchangeData(UpdateItemCollection data)
+        {
+            foreach (UpdateItem item in data.ToArray())
+            {
+                MeasuredLineFeature mf = m_Sections.Find(delegate(MeasuredLineFeature t)
+                {
+                    return (t.Line.DataId == item.Name);
+                });
+
+                mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
+            }
+        }
     }
 }

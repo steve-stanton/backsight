@@ -17,6 +17,7 @@ using System;
 
 using Backsight.Environment;
 using Backsight.Editor.Observations;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Operations
 {
@@ -203,7 +204,15 @@ namespace Backsight.Editor.Operations
         /// </returns>
         public override Feature[] GetRequiredFeatures()
         {
-            return new Feature[0];
+            List<Feature> result = new List<Feature>(m_Lines.Length * 2);
+
+            foreach (SegmentLineFeature line in m_Lines)
+            {
+                result.Add(line.StartPoint);
+                result.Add(line.EndPoint);
+            }
+
+            return result.ToArray();
         }
     }
 }

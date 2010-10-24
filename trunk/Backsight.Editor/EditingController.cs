@@ -1411,5 +1411,13 @@ namespace Backsight.Editor
                 return (so as TextFeature);
             }
         }
+
+        /// <summary>
+        /// Style information for annotating lines.
+        /// </summary>
+        internal LineAnnotationStyle LineAnnotationStyle
+        {
+            get { return JobFile.Data.LineAnnotation; }
+        }
     }
 }

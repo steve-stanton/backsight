@@ -16,10 +16,12 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
 
 using Backsight.Editor.UI;
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Forms;
 
 
 namespace Backsight.Editor.Forms
@@ -75,10 +77,6 @@ namespace Backsight.Editor.Forms
             m_SelectedLine = null;
             m_pop = null;
             m_Dists = null;
-
-            /*
-	m_CurIndex = m_FaceIndex1 = m_FaceIndex2 = -1;
-             */
         }
 
         #endregion
@@ -157,7 +155,7 @@ namespace Backsight.Editor.Forms
 
         LineFeature GetSelectedLine()
         {
-            MeasuredLineFeature mf = (listBox.SelectedValue as MeasuredLineFeature);
+            MeasuredLineFeature mf = (listBox.SelectedItem as MeasuredLineFeature);
             return (mf == null ? null : mf.Line);
         }
 
@@ -212,36 +210,43 @@ namespace Backsight.Editor.Forms
             m_UpdCmd.DialFinish(this);
         }
 
-        internal void Paint()
+        /// <summary>
+        /// Dialog-specific painting.
+        /// </summary>
+        internal void Draw()
         {
+            // Draw the features created by the op in magenta.
+            ISpatialDisplay display = m_UpdCmd.ActiveDisplay;
+            IDrawStyle style = m_UpdCmd.Controller.Style(Color.Magenta);
+            style.IsFixed = true;
+            m_pop.Render(display, style, true);
+
+            // Highlight the currently selected section (if any).
+            if (m_SelectedLine != null)
+                m_SelectedLine.Render(display, new HighlightStyle());
+
+            // Draw the points (except the last one, which should
+            // coincide with the end of the parent line).
+            // TODO: Ideally, the original points should be drawn in gray, the
+            // adjusted new points in magenta. This was commented out in CEdit,
+            // so I'm not going to reintroduce it just now.
+
+            /*
+	            // Get a list of positions on the arc we are subdividing.
+	            CeArc* pArc = m_pop->GetpParent();
+	            CeVertex* pos = new CeVertex[m_NumDist];
+	            pArc->GetPositions(m_NumDist,m_Dists,TRUE,pos);
+
+    		    for ( UINT4 i=0; i<(m_NumDist-1); i++ ) {
+    			    pDraw->Draw(pos[i],COL_MAGENTA);
+    		    }
+             */
         }
-        /*
-//	Do dialog-specific painting.
-
-void CdUpdateSub::Paint ( const LOGICAL isDraw ) const {
-
-
-	if ( isDraw ) {
-
-		// Draw the features created by the op in magenta.
-		m_pop->Draw(TRUE);
-
-		// Highlight the currently selected arc.
-		if ( m_pSelArc ) m_pSelArc->Highlight();
-
-		// Draw the points (except the last one, which should
-		// coincide with the end of the parent line).
-//		for ( UINT4 i=0; i<(m_NumDist-1); i++ ) {
-//			pDraw->Draw(pos[i],COL_MAGENTA);
-//		}
-	}
-}
-         */
 
         void RefreshList()
         {
-            // Highlight currently selected arc (if any).
-            Paint();
+            // Highlight currently selected line (if any).
+            Draw();
 
             // List the observed distances, relating each distance
             // to the corresponding line.
@@ -383,5 +388,31 @@ FLOAT8 CdUpdateSub::GetObservedLength ( void ) const
 	return length;
 }
          */
+
+        /// <summary>
+        /// Obtains update items for each revised section.
+        /// </summary>
+        /// <returns>The items representing the change.</returns>
+        internal UpdateItemCollection GetUpdateItems()
+        {
+            MeasuredLineFeature[] sections = m_pop.Sections;
+            Debug.Assert(sections.Length == m_Dists.Length);
+
+            UpdateItemCollection result = new UpdateItemCollection();
+
+            for (int i = 0; i < sections.Length; i++)
+            {
+                MeasuredLineFeature originalSection = sections[i];
+                MeasuredLineFeature revisedSection = m_Dists[i];
+                Debug.Assert(originalSection.Line == revisedSection.Line);
+
+                Distance originalLength = originalSection.ObservedLength;
+                Distance revisedLength = revisedSection.ObservedLength;
+                if (originalSection.Equals(revisedLength) == false)
+                    result.AddObservation<Distance>(originalSection.Line.DataId, originalLength, revisedLength);
+            }
+
+            return result;
+        }
     }
 }

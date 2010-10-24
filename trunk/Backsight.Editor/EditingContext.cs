@@ -17,7 +17,7 @@ namespace Backsight.Editor
 {
     /// <summary>
     /// Something that keeps track of changes arising from edits.
-    /// Base class for <see cref="StartupEditingContext"/> and <see cref="UpdateEditingContext"/>.
+    /// Base class for <see cref="UpdateEditingContext"/>.
     /// </summary>
     abstract class EditingContext
     {

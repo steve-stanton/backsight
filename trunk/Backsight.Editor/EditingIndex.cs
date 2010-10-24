@@ -72,6 +72,26 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Adds a feature to this index, and sets the <see cref="Feature.IsIndexed"/> property.
+        /// </summary>
+        /// <param name="f">The feature to add</param>
+        internal void AddFeature(Feature f)
+        {
+            base.Add(f);
+            f.IsIndexed = true;
+        }
+
+        /// <summary>
+        /// Removes a feature from this index, and clears the <see cref="Feature.IsIndexed"/> property.
+        /// </summary>
+        /// <param name="f">The feature to remove</param>
+        internal void RemoveFeature(Feature f)
+        {
+            base.Remove(f);
+            f.IsIndexed = false;
+        }
+
+        /// <summary>
         /// Attempts to locate the circle closest to a position of interest.
         /// </summary>
         /// <param name="p">The search position (on the circumference of the circle)</param>

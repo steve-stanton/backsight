@@ -660,7 +660,6 @@
     <Compile Include="Forms\StyleFile.cs" />
     <Compile Include="SpanInfo.cs" />
     <Compile Include="Starter.cs" />
-    <Compile Include="StartupEditingContext.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
     <Compile Include="TextCheck.cs" />

@@ -349,12 +349,12 @@ namespace Backsight.Editor
         /// <param name="index">The spatial index to add to</param>
         /// <returns>True if the feature was indexed. False if the feature is currently inactive (not
         /// added to the index)</returns>
-        internal virtual bool AddToIndex(IEditSpatialIndex index)
+        internal virtual bool AddToIndex(EditingIndex index)
         {
             if (IsInactive)
                 return false;
 
-            index.Add(this);
+            index.AddFeature(this);
             return true;
         }
 
@@ -558,9 +558,9 @@ namespace Backsight.Editor
             SetBuilt(false);
 
             // Remove from spatial index
-            IEditSpatialIndex index = m_Creator.MapModel.EditingIndex;
+            EditingIndex index = m_Creator.MapModel.EditingIndex;
             if (index != null)
-                index.Remove(this);
+                index.RemoveFeature(this);
 
             // In the case of lines, this will first call the override that gets
             // rid of any topological attachments
@@ -648,16 +648,6 @@ namespace Backsight.Editor
         /// <returns>The shortest distance between the specified position and this object</returns>
         abstract public ILength Distance(IPosition point);
 
-        /*
-        public void PreMove()
-        {
-            OnPreMove(this);
-
-            foreach (IFeatureDependent fd in m_References)
-                fd.OnPreMove(this);
-        }
-        */
-
         /// <summary>
         /// Performs any processing that needs to be done just before the position of
         /// a referenced feature is changed. Implements <see cref="IFeatureDependent"/>
@@ -670,27 +660,16 @@ namespace Backsight.Editor
             // The spatial index may be null while data is being deserialized from the
             // database during application startup
 
-            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
+            EditingIndex index = MapModel.EditingIndex;
             if (index != null)
-                index.Remove(this);
+                index.RemoveFeature(this);
         }
-
-        /*
-        public void PostMove()
-        {
-            if (OnPostMove(this))
-            {
-                foreach (IFeatureDependent fd in m_References)
-                    fd.OnPostMove(this);
-            }
-        }
-        */
 
         public void OnPostMove(Feature f)
         {
-            IEditSpatialIndex index = (IEditSpatialIndex)MapModel.Index;
+            EditingIndex index = MapModel.EditingIndex;
             if (index != null)
-                index.Add(this);
+                index.AddFeature(this);
         }
 
         public string TypeName
@@ -736,7 +715,7 @@ namespace Backsight.Editor
             }
 
             // Add back into the map index.
-            MapModel.EditingIndex.Add(this);
+            MapModel.EditingIndex.AddFeature(this);
 
             // Remember that the feature is now active
             IsInactive = false;
@@ -757,6 +736,13 @@ namespace Backsight.Editor
             // Return if this feature hasn't been marked for deletion
             if (!IsUndoing)
                 return;
+
+            // If this feature is active, but it doesn't appear to be indexed,
+            // do it now. This is a bit of a kludge, meant to cover the fact
+            // that lines are erroneously dropping out of the index after making
+            // updates.
+            //if (this.IsInactive == false && this.IsIndexed == false)
+            //    this.MapModel.EditingIndex.AddFeature(this);
 
             // Return if there is no feature ID.
             if (m_Id==null)
@@ -901,6 +887,15 @@ namespace Backsight.Editor
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Has this feature been spatially indexed?
+        /// </summary>
+        internal bool IsIndexed
+        {
+            get { return IsFlagSet(FeatureFlag.Indexed); }
+            set { SetFlag(FeatureFlag.Indexed, value); }
         }
     }
 }

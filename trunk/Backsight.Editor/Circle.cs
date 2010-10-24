@@ -113,7 +113,7 @@ namespace Backsight.Editor
         /// the <c>IFeatureDependent</c> is dependent on)</param>
         public void OnPreMove(Feature f)
         {
-            IEditSpatialIndex index = f.MapModel.EditingIndex;
+            EditingIndex index = f.MapModel.EditingIndex;
             if (index != null)
                 index.Remove(this);
         }
@@ -126,7 +126,7 @@ namespace Backsight.Editor
         /// the <c>IFeatureDependent</c> is dependent on)</param>
         public void OnPostMove(Feature f)
         {
-            IEditSpatialIndex index = f.MapModel.EditingIndex;
+            EditingIndex index = f.MapModel.EditingIndex;
             if (index != null)
                 index.Add(this);
         }

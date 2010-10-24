@@ -1982,8 +1982,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
+            /*
             // Experiment with recursive query
-/*
+
             using (Backsight.Data.IConnection ic = Backsight.Data.ConnectionFactory.Create())
             {
                 SqlConnection c = ic.Value;
@@ -2014,7 +2015,27 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
                 MessageBox.Show("inserted 50000 rows");
             }
- */
+             */
+
+            /*
+             * 
+             * You'll need PK on EditId as well
+             * 
+WITH result(EditId, PreviousEditId) AS
+(
+  SELECT EditId, PreviousEditId
+  FROM TestChain
+  WHERE (EditId = 49999)
+
+  UNION ALL
+
+  SELECT t.EditId, t.PreviousEditId
+  FROM TestChain AS t, result AS r WHERE t.EditId = r.PreviousEditId
+  and r.EditId != r.PreviousEditId
+)
+SELECT EditId FROM Result
+OPTION (MAXRECURSION 0)
+             */
         }
 
         #endregion

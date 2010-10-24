@@ -140,7 +140,7 @@ namespace Backsight.Editor.UI
             if (m_Dialog != null)
                 m_Dialog.Draw();
             else if (m_UpDial != null)
-                m_UpDial.Paint();
+                m_UpDial.Draw();
         }
 
         internal override void DialAbort(Control wnd)
@@ -160,6 +160,12 @@ namespace Backsight.Editor.UI
             {
                 m_Dialog.Dispose();
                 m_Dialog = null;
+            }
+
+            if (m_UpDial != null)
+            {
+                m_UpDial.Dispose();
+                m_UpDial = null;
             }
         }
 
@@ -182,17 +188,11 @@ namespace Backsight.Editor.UI
                     return false;
                 }
 
-
-                throw new NotImplementedException("LineSubdivisionUI.DialFinish");
                 // Remember the changes as part of the UI object (the original edit remains
                 // unchanged for now)
-                /*
-                UpdateItemCollection changes = pop.GetUpdateItems(...);
+                UpdateItemCollection changes = m_UpDial.GetUpdateItems();
                 if (!up.AddUpdate(pop, changes))
                     return false;
-                 */
-
-                // pop->Correct();
             }
             else
             {
