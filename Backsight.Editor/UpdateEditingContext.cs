@@ -25,7 +25,6 @@ namespace Backsight.Editor
     /// Changes arising while the a <see cref="CadastralMapModel"/> is being updated (handling
     /// revised information represented by the <see cref="UpdateOperation"/> class).
     /// </summary>
-    /// <seealso cref="StartupEditingContext"/>
     class UpdateEditingContext : EditingContext
     {
         #region Class data
@@ -83,7 +82,7 @@ namespace Backsight.Editor
 
                     // Remove the point from the spatial index.
                     EditingIndex index = point.MapModel.EditingIndex;
-                    index.Remove(point);
+                    index.RemoveFeature(point);
 
                     // Remove all dependent spatial objects from the index as well (usually
                     // incident lines, but could also be circles)

@@ -280,7 +280,7 @@ namespace Backsight.Editor
             {
                 // Remove the text from the spatial index (but see comment below)
                 foreach (TextFeature tf in text)
-                    index.Remove(tf);
+                    index.RemoveFeature(tf);
 
                 // Display the attribute entry dialog
                 AttributeDataForm dial = new AttributeDataForm(r.Table, r.Data);
@@ -302,7 +302,7 @@ namespace Backsight.Editor
                 // editing operation.
 
                 foreach (TextFeature tf in text)
-                    index.Add(tf);
+                    index.AddFeature(tf);
 
                 // Re-display the text if any changes have been saved
                 if (isChanged)

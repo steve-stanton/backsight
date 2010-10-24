@@ -749,7 +749,7 @@ namespace Backsight.Editor
             Feature[] fa = this.Features;
 
             foreach (Feature f in fa)
-                index.Add(f);
+                index.AddFeature(f);
         }
 
         /// <summary>
@@ -761,7 +761,7 @@ namespace Backsight.Editor
             Feature[] fa = this.Features;
 
             foreach (Feature f in fa)
-                index.Remove(f);
+                index.RemoveFeature(f);
         }
     }
 }

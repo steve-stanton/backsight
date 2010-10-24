@@ -338,7 +338,7 @@ void CdPrefLabel::OnFont()
 
         void ShowLineAnnotationPage()
         {
-            LineAnnotationStyle anno = EditingController.Current.JobFile.Data.LineAnnotation;
+            LineAnnotationStyle anno = EditingController.Current.LineAnnotationStyle;
             annoScaleTextBox.Text = String.Format("{0:F0}", anno.ShowScale);
             annoHeightTextBox.Text = String.Format("{0:F2}", anno.Height);
 
@@ -354,7 +354,7 @@ void CdPrefLabel::OnFont()
 
         bool SaveLineAnnotationPage(CadastralMapModel cmm)
         {
-            LineAnnotationStyle anno = EditingController.Current.JobFile.Data.LineAnnotation;
+            LineAnnotationStyle anno = EditingController.Current.LineAnnotationStyle;
 
             // Annotation scale threshold
 

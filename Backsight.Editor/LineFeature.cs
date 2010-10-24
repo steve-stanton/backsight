@@ -22,6 +22,7 @@ using System.Drawing.Drawing2D;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.Forms;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -153,6 +154,8 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
+            EditingController ec = EditingController.Current;
+
             if (style is HighlightStyle)
             {
                 // If we're highlighting a non-topological line, always draw it in turquoise,
@@ -171,7 +174,6 @@ namespace Backsight.Editor
 
                 // If we're highlighting, and points are displayed, render the end points too
                 // (if the line is not a polygon boundary, draw hatched ends).
-                EditingController ec = EditingController.Current;
                 if (showPoints && display.MapScale < ec.JobFile.Data.ShowPointScale)
                 {
                     if (IsTopological)
@@ -190,6 +192,37 @@ namespace Backsight.Editor
             {
                 RenderLine(display, style);
             }
+
+            // Return if we're not showing actual or observed lengths
+            LineAnnotationStyle annoStyle = ec.LineAnnotationStyle;
+            if (!(annoStyle.ShowAdjustedLengths || annoStyle.ShowObservedLengths))
+                return;
+
+        	// See if there is an observed distance.
+            Distance dist = GetObservedLength();
+
+            if (annoStyle.ShowAdjustedLengths)
+            {
+                // Pass in any observed distance, to govern the number of
+                // decimal places to show.
+                //m_pLine->DrawDistance(gdc, pDist, FALSE);
+            }
+            else if (annoStyle.ShowObservedLengths)
+            {
+                // Display observed distance only if the line has one.
+                //if (dist != null)
+                //    pArc->m_pLine->DrawDistance(gdc, pDist, TRUE);
+            }
+        }
+
+        /// <summary>
+        /// The distance observation (if any) that was specified as the observed
+        /// length of this line.
+        /// </summary>
+        /// <returns>The observed distance (if any).</returns>
+        Distance GetObservedLength()
+        {
+            return this.Creator.GetDistance(this);
         }
 
         /// <summary>
@@ -659,7 +692,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <param name="bwin">The window of any new polygons that got created. This
         /// window is not initialized here. It just gets expanded.</param>
         /// <param name="index">The spatial index to include any newly built polygons.</param>
-        internal void BuildPolygons(Window bwin, IEditSpatialIndex index)
+        internal void BuildPolygons(Window bwin, EditingIndex index)
         {
             if (m_Topology==null)
             {
@@ -697,7 +730,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <param name="index">The spatial index to add to</param>
         /// <returns>True if the feature was indexed. False if the feature is currently inactive (not
         /// added to the index)</returns>
-        internal override bool AddToIndex(IEditSpatialIndex index)
+        internal override bool AddToIndex(EditingIndex index)
         {
             // Index this line feature
             if (!base.AddToIndex(index))

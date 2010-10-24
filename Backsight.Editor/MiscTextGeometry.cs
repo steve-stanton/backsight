@@ -71,10 +71,10 @@ namespace Backsight.Editor
         internal void SetText(TextFeature label, string s)
         {
             CadastralMapModel map = label.MapModel;
-            IEditSpatialIndex index = (IEditSpatialIndex)map.Index;
-            index.Remove(label);
+            EditingIndex index = map.EditingIndex;
+            index.RemoveFeature(label);
             m_Text = s;
-            index.Add(label);
+            index.AddFeature(label);
         }
 
         /// <summary>

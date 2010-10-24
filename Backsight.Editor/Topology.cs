@@ -36,11 +36,6 @@ namespace Backsight.Editor
         /// <returns>New topology for the line (with undefined topological relationships)</returns>
         internal static Topology CreateTopology(LineFeature line)
         {
-            if (line.DataId == "738:6967")
-            {
-                int junk = 0;
-            }
-
             // Return topology that's suitable for representing the complete line. This
             // may need to be converted into a SectionTopologyList once we get around to
             // calculating intersections.
@@ -186,7 +181,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="d">The divider to process</param>
         /// <param name="index">The spatial index to add to</param>
-        internal static void AddToIndex(IDivider d, IEditSpatialIndex index)
+        internal static void AddToIndex(IDivider d, EditingIndex index)
         {
             if (d.Left!=null)
                 d.Left.AddToIndex(index);
@@ -194,9 +189,8 @@ namespace Backsight.Editor
             if (d.Right!=null)
                 d.Right.AddToIndex(index);
 
-            EditingIndex cx = (EditingIndex)index;
-            AddToIndex(d.From, cx);
-            AddToIndex(d.To, cx);
+            AddToIndex(d.From, index);
+            AddToIndex(d.To, index);
         }
 
         /// <summary>
@@ -343,7 +337,7 @@ namespace Backsight.Editor
         /// <param name="bwin">The window of any new polygons that got created. This
         /// window is not initialized here. It just gets expanded.</param>
         /// <param name="index">The spatial index to include any newly built polygons.</param>
-        internal void BuildPolygons(Window bwin, IEditSpatialIndex index)
+        internal void BuildPolygons(Window bwin, EditingIndex index)
         {
             foreach (IDivider d in this)
             {
@@ -358,7 +352,7 @@ namespace Backsight.Editor
             }
         }
 
-        Ring BuildSide(IDivider d, Window bwin, IEditSpatialIndex index, bool isLeft)
+        Ring BuildSide(IDivider d, Window bwin, EditingIndex index, bool isLeft)
         {
             List<Face> edge = GetPolygonFaces(d, isLeft);
             Ring result = Ring.Create(edge);

@@ -72,12 +72,15 @@ namespace Backsight.Editor
             model.Index.QueryWindow(null, SpatialType.Polygon, CleanupPolygon);
 
             // Remove stuff from spatial index if it's been deleted
-            IEditSpatialIndex index = (IEditSpatialIndex)model.Index;
+            EditingIndex index = model.EditingIndex;
             foreach (ISpatialObject o in m_Deletions)
             {
                 m_UpdateWindow.Union(o.Extent);
-                bool isRemoved = index.Remove(o);
-                Debug.Assert(isRemoved);
+
+                if (o is Feature)
+                    index.RemoveFeature((Feature)o);
+                else
+                    index.Remove(o);
             }
         }
 
