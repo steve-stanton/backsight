@@ -33,12 +33,19 @@ namespace Backsight
         IAngle Rotation { get; }
 
         /// <summary>
-        /// The position of the top-left corner of the string.
+        /// A reference position for the string (typically the top-left corner).
         /// </summary>
         IPointGeometry Position { get; }
 
         /// <summary>
-        /// A closed outline that surrounds the string.
+        /// Any special layout information for the string (used for specifying special
+        /// text alignment options). A null value means default formatting should be used.
+        /// </summary>
+        StringFormat Format { get; }
+
+        /// <summary>
+        /// A closed outline that surrounds the string (could be null if the implementing
+        /// class doesn't care).
         /// </summary>
         IPosition[] Outline { get; }
 

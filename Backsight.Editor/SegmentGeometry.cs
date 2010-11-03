@@ -128,10 +128,9 @@ namespace Backsight.Editor
                                                 Distance dist, bool drawObserved)
         {
             Annotation a = GetAnnotation(dist, drawObserved);
-            //if (a != null)
-            //    display.Render(a, style);
+            if (a != null)
+                style.Render(display, a);
             /*
-
 	if ( GetAnnotation(pDist,drawObserved,distr,posn,grheight,rotation) )
 		gdc.Draw(distr,posn,grheight,rotation,TA_CENTER|TA_BASELINE);
              */
@@ -152,7 +151,7 @@ namespace Backsight.Editor
             double xs = start.Easting.Meters;
             double ys = start.Northing.Meters;
             double xe = end.Easting.Meters;
-            double ye = end.Easting.Meters;
+            double ye = end.Northing.Meters;
             double dx = xe-xs;
 	        double dy = ye-ys;
             double len = Math.Sqrt(dx * dx + dy * dy);
@@ -167,7 +166,10 @@ namespace Backsight.Editor
 
             // We will offset by 20% of the height (give a bit of space
             // between the text and the line).
-            double offset = grheight * 0.2;
+            //double offset = grheight * 0.2;
+            // ...looks fine with no offset (there is a space, but it's for descenders
+            // that aren't there since we're dealing just with numbers).
+            //double offset = 0.0;
 
             // Figure out the position at the middle of the line.
             double tx = xs + dx * 0.5;
@@ -214,6 +216,10 @@ namespace Backsight.Editor
             // Get the rotation for the text, using it to figure out
             // an appropriate offset from the line.
 
+            /*
+             * Using NET, it looks pretty good just rotating an extra 180 degrees, so all
+             * this tweaking becomes redundant.
+             * 
             double adx = Math.Abs(dx);
             double ady = Math.Abs(dy);
             double rotation = 0.0;
@@ -254,6 +260,34 @@ namespace Backsight.Editor
                     tx += ((offset * ady) / len);
                 }
             }
+             */
+
+            // Obtain a rotation that is readable heads-up (reversed if the user has flipped).
+            // ...replaces the above
+
+            double adx = Math.Abs(dx);
+            double ady = Math.Abs(dy);
+            double rotation = 0.0;
+
+            if (ady < 0.001) // horizontal (to nearest mm)
+            {
+                rotation = 0.0;
+            }
+            else if (adx < 0.001) // vertical (to nearest mm)
+            {
+                rotation = MathConstants.PIDIV2;
+            }
+            else
+            {
+                rotation = Math.Atan(ady / adx); // result in range (0,PIDIV2)
+
+                // Stuff in the NE and SW quadrants needs to be tweaked.
+                if ((dx < 0.0 && dy < 0.0) || (dx > 0.0 && dy > 0.0))
+                    rotation = -rotation;
+            }
+
+            if (isFlipped)
+                rotation += MathConstants.PIDIV2;
 
             Position p = new Position(tx, ty);
             return new Annotation(distr, p, grheight, rotation);

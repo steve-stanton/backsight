@@ -48,12 +48,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Default constructor defines a style indicating that line annotation should
         /// not be displayed (if subsequently turned on, the display scale will default
-        /// to 1:2000, and the height of the text will default to 5 meters on the ground).
+        /// to 1:2000, and the height of the text will default to 2 meters on the ground).
         /// </summary>
         internal LineAnnotationStyle()
         {
             m_Scale = 2000.0;
-            m_Height = 5.0;
+            m_Height = 2.0;
             m_Options = 0;
         }
 

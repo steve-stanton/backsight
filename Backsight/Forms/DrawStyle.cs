@@ -287,32 +287,66 @@ namespace Backsight.Forms
             Font f = text.CreateFont(display);
             IPosition[] outline = text.Outline;
 
-            if (f==null)
+            if (outline == null)
             {
-                Render(display, outline);
-            }
-            else
-            {
-                string s = text.Text;
+                // This is a bit of a hack that covers the Backsight.Editor.Annotation class...
+                if (f == null)
+                    return;
 
                 // Note that the order you apply the transforms is significant...
 
-                PointF p = CreatePoint(display, outline[0]);
+                IPointGeometry pg = text.Position;
+                PointF p = CreatePoint(display, pg);
                 display.Graphics.TranslateTransform(p.X, p.Y);
 
                 double rotation = text.Rotation.Degrees;
                 display.Graphics.RotateTransform((float)rotation);
 
-                Size size = TextRenderer.MeasureText(s, f);
-                double groundWidth = BasicGeom.Distance(outline[0], outline[1]);
-                float xScale = display.LengthToDisplay(groundWidth) / (float)size.Width;
-                float yScale = f.Size / (float)size.Height;
-                display.Graphics.ScaleTransform(xScale, yScale);
+                StringFormat sf = text.Format;
+                if (sf == null)
+                    sf = StringFormat.GenericTypographic;
 
-                // I tried StringFormat.GenericDefault, but that seems to leave too much
-                // leading space.
-                display.Graphics.DrawString(s, f, Brush, 0, 0, StringFormat.GenericTypographic);
+                string s = text.Text;
+                display.Graphics.DrawString(s, f, Brush, 0, 0, sf);
                 display.Graphics.ResetTransform();
+
+                // TEST -- draw rotated 180 to see if that's all we need to do flip... looks good
+                /*
+                display.Graphics.TranslateTransform(p.X, p.Y);
+                display.Graphics.RotateTransform((float)rotation+180);
+                display.Graphics.DrawString(s, f, Brush, 0, 0, sf);
+                display.Graphics.ResetTransform();
+                 */
+            }
+            else
+            {
+                if (f == null)
+                {
+                    Render(display, outline);
+                }
+                else
+                {
+                    string s = text.Text;
+
+                    // Note that the order you apply the transforms is significant...
+
+                    PointF p = CreatePoint(display, outline[0]);
+                    display.Graphics.TranslateTransform(p.X, p.Y);
+
+                    double rotation = text.Rotation.Degrees;
+                    display.Graphics.RotateTransform((float)rotation);
+
+                    Size size = TextRenderer.MeasureText(s, f);
+                    double groundWidth = BasicGeom.Distance(outline[0], outline[1]);
+                    float xScale = display.LengthToDisplay(groundWidth) / (float)size.Width;
+                    float yScale = f.Size / (float)size.Height;
+                    display.Graphics.ScaleTransform(xScale, yScale);
+
+                    // I tried StringFormat.GenericDefault, but that seems to leave too much
+                    // leading space.
+                    display.Graphics.DrawString(s, f, Brush, 0, 0, StringFormat.GenericTypographic);
+                    display.Graphics.ResetTransform();
+                }
             }
         }
 

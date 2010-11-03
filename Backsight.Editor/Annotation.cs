@@ -14,15 +14,32 @@
 // </remarks>
 
 using System;
+using System.Drawing;
 
 namespace Backsight.Editor
 {
     /// <summary>
     /// Annotation (that appears alongside a line).
     /// </summary>
-    class Annotation
+    class Annotation : IString
     {
-        #region Data
+        #region Static
+
+        /// <summary>
+        /// The text alignment for all annotations
+        /// </summary>
+        static StringFormat s_AnnotationFormat;
+
+        static Annotation()
+        {
+            s_AnnotationFormat = new StringFormat();
+            s_AnnotationFormat.Alignment = StringAlignment.Center;
+            s_AnnotationFormat.LineAlignment = StringAlignment.Far; // bottom            
+        }
+
+        #endregion
+
+        #region Class data
 
         /// <summary>
         /// The annotation text.
@@ -32,7 +49,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The position for the text (center-baseline aligned).
         /// </summary>
-        readonly IPosition m_Position;
+        readonly IPointGeometry m_Position;
 
         /// <summary>
         /// The height of the text (in meters on the ground).
@@ -40,9 +57,9 @@ namespace Backsight.Editor
         readonly double m_Height;
 
         /// <summary>
-        /// The rotation (in radians clockwise from horizontal).
+        /// The rotation (clockwise from horizontal).
         /// </summary>
-        readonly double m_Rotation;
+        readonly IAngle m_Rotation;
 
         #endregion
 
@@ -58,9 +75,9 @@ namespace Backsight.Editor
         internal Annotation(string text, IPosition position, double height, double rotation)
         {
             m_Text = text;
-            m_Position = position;
+            m_Position = PointGeometry.Create(position);
             m_Height = height;
-            m_Rotation = rotation;
+            m_Rotation = new RadianValue(rotation);
         }
 
         #endregion
@@ -68,7 +85,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The annotation text.
         /// </summary>
-        internal string Text
+        public string Text
         {
             get { return m_Text; }
         }
@@ -76,7 +93,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The position for the text (center-baseline aligned).
         /// </summary>
-        internal IPosition Position
+        public IPointGeometry Position
         {
             get { return m_Position; }
         }
@@ -90,11 +107,43 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The rotation (in radians clockwise from horizontal).
+        /// The rotation (clockwise from horizontal).
         /// </summary>
-        internal double Rotation
+        public IAngle Rotation
         {
             get { return m_Rotation; }
+        }
+
+        /// <summary>
+        /// A closed outline that surrounds the string (could be null if the implementing
+        /// class doesn't care).
+        /// </summary>
+        /// <value>Null (always)</value>
+        public IPosition[] Outline
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        /// Creates the font used to present the string.
+        /// </summary>
+        /// <param name="display">The display on which the string will be displayed</param>
+        /// <returns>
+        /// The corresponding font (may be null if the font is too small to be drawn)
+        /// </returns>
+        public Font CreateFont(ISpatialDisplay display)
+        {
+            float heightInPixels = display.LengthToDisplay(m_Height);
+            return new Font("Arial", heightInPixels, FontStyle.Regular, GraphicsUnit.Pixel);
+        }
+
+        /// <summary>
+        /// Any special layout information for the string (used for specifying special
+        /// text alignment options).
+        /// </summary>
+        public StringFormat Format
+        {
+            get { return s_AnnotationFormat; }
         }
     }
 }
