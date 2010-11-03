@@ -367,5 +367,14 @@ namespace Backsight.Editor
         //    return TextRenderer.MeasureText(text, font, proposedSize,
         //        (TextFormatFlags.NoPadding | TextFormatFlags.NoClipping | TextFormatFlags.NoPrefix));
         //}
+
+        /// <summary>
+        /// Any special layout information for the string (used for specifying special
+        /// text alignment options).
+        /// </summary>
+        public StringFormat Format
+        {
+            get { return null; }
+        }
     }
 }
