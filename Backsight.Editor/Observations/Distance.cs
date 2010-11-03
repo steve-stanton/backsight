@@ -246,7 +246,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="appendAbbrev">True if units abbreviation should be appended.</param>
         /// <returns></returns>
-        string Format(bool appendAbbrev)
+        internal string Format(bool appendAbbrev)
         {
             return (m_EnteredUnit==null ?
                 String.Empty : m_EnteredUnit.Format(m_ObservedMetric, appendAbbrev));

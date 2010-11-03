@@ -77,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Annotation.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttributeData.cs" />
     <Compile Include="BacksightTypeResolver.cs" />

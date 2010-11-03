@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -113,6 +114,149 @@ namespace Backsight.Editor
         internal override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             LineSegmentGeometry.Render(this, display, style);
+        }
+
+        /// <summary>
+        /// Draws a distance alongside this line.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+                                                Distance dist, bool drawObserved)
+        {
+            Annotation a = GetAnnotation(dist, drawObserved);
+            //if (a != null)
+            //    display.Render(a, style);
+            /*
+
+	if ( GetAnnotation(pDist,drawObserved,distr,posn,grheight,rotation) )
+		gdc.Draw(distr,posn,grheight,rotation,TA_CENTER|TA_BASELINE);
+             */
+        }
+
+        /// <summary>
+        /// Obtains annotation for this line.
+        /// </summary>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        /// <returns>The annotation (null if it cannot be obtained)</returns>
+        Annotation GetAnnotation(Distance dist, bool drawObserved)
+        {
+            IPointGeometry start = this.Start;
+            IPointGeometry end = this.End;
+
+            double xs = start.Easting.Meters;
+            double ys = start.Northing.Meters;
+            double xe = end.Easting.Meters;
+            double ye = end.Easting.Meters;
+            double dx = xe-xs;
+	        double dy = ye-ys;
+            double len = Math.Sqrt(dx * dx + dy * dy);
+
+            // Get the string to output.
+            string distr = GetDistance(len, dist, drawObserved);
+            if (distr == null)
+                return null;
+
+            // Get the height of the text, in meters on the ground.
+            double grheight = EditingController.Current.LineAnnotationStyle.Height;
+
+            // We will offset by 20% of the height (give a bit of space
+            // between the text and the line).
+            double offset = grheight * 0.2;
+
+            // Figure out the position at the middle of the line.
+            double tx = xs + dx * 0.5;
+            double ty = ys + dy * 0.5;
+
+            // Check whether the annotation should appear on the non-default side.
+            //bool isFlipped = IsDistFlipped(); // TODO
+            bool isFlipped = false;
+
+            // If the annotation needs to appear on the opposite side
+            // of the line, the offset is a bit different. The logic
+            // assumes the text metrics for the Arial font, which look
+            // like this (for a nominal tmHeight==1000):
+            //
+            //	-----------------------*-----------------------------
+            //            extra space in rotated text=124
+            //  ----*------------------*-----------------*-----------
+            //      |                  |        tmInternalLeading=105
+            //      |                  |        ---------*-----------
+            //   tmHeight=1000    tmAscent=810           |
+            //      |                  |           main part of text
+            //      |                  |                 |
+            //  ----|------------------X-----------------*-----------
+            //      |             tmDescent=190
+            //  ----*------------------*-----------------------------
+            //                         |
+            //		offset to acual line = 0.2 * tmHeight = 200
+            //                         |
+            //  =======================*==============================
+            //
+            // Just reflecting the position around the mid-point of
+            // the line is not enough, since we're still going to
+            // be displaying the text with TA_BASELINE. So we need
+            // to also take into account the extra space at the
+            // top of rotated text, plus tmAscent. However, since
+            // numeric digits don't have accents, using the complete
+            // tmAscent will lead to too much space. Since the
+            // internal leading is white space (no accents), it needs
+            // to be deducted. So, for un-rotated text, the additional
+            // shift is tmAscent-tmInternalLeading = 0.705 of the
+            // height. For rotated text, we must additionally deduct
+            // the extra blank space at the top => 0.581 * ht.
+
+            // Get the rotation for the text, using it to figure out
+            // an appropriate offset from the line.
+
+            double adx = Math.Abs(dx);
+            double ady = Math.Abs(dy);
+            double rotation = 0.0;
+
+            if (ady < 0.001) // horizontal (to nearest mm)
+            {
+                if (isFlipped)
+                    ty -= (offset + 0.705 * grheight);
+                else
+                    ty += offset;
+            }
+            else if (adx < 0.001) // vertical (to nearest mm)
+            {
+                rotation = MathConstants.PIDIV2;
+
+                if (isFlipped)
+                    tx -= (offset + 0.705 * grheight);
+                else
+                    tx += offset;
+            }
+            else
+            {
+                rotation = Math.Atan(ady/adx); // result in range (0,PIDIV2)
+
+                if (isFlipped)
+                    offset = -(offset + 0.581 * grheight);
+
+                ty += ((offset * adx) / len);
+
+                // Stuff in the NE and SW quadrants needs to be tweaked.
+                if ((dx < 0.0 && dy < 0.0) || (dx > 0.0 && dy > 0.0))
+                {
+                    rotation = -rotation;
+                    tx -= ((offset * ady) / len);
+                }
+                else
+                {
+                    tx += ((offset * ady) / len);
+                }
+            }
+
+            Position p = new Position(tx, ty);
+            return new Annotation(distr, p, grheight, rotation);
         }
 
         /// <summary>
