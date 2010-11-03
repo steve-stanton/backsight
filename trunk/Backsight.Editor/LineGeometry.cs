@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -128,6 +129,20 @@ namespace Backsight.Editor
         /// <param name="style">The drawing style</param>
         abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
 
+        // TODO: make abstract
+        /// <summary>
+        /// Draws a distance alongside this line.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        internal virtual void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+                                                Distance dist, bool drawObserved)
+        {
+        }
+
         /// <summary>
         /// The geometry that acts as the base for this one.
         /// </summary>
@@ -216,5 +231,78 @@ namespace Backsight.Editor
         /// position should be used to obtain the angle.</param>
         /// <returns>The rotation (in radians, clockwise from horizontal)</returns>
         abstract internal double GetRotation(IPointGeometry p);
+
+        /// <summary>
+        /// Gets the distance string to annotate a line with.
+        /// </summary>
+        /// <param name="len">The adjusted length (in meters on the ground).</param>
+        /// <param name="dist">The observed length (if any).</param>
+        /// <param name="drawObserved">Draw the observed distance?</param>
+        /// <returns>The distance string (null if the distance is supposed to be the
+        /// observed distance, but there is no observed distance.</returns>
+        protected string GetDistance(double len, Distance dist, bool drawObserved)
+        {
+            // Return if we are drawing the observed distance, and we don't have one.
+            if (drawObserved && dist == null)
+                return null;
+
+            // Get the current display units.
+            EditingController ec = EditingController.Current;
+            DistanceUnit dunit = ec.DisplayUnit;
+            string distr = String.Empty;
+
+            // If we are drawing the observed distance
+            if (drawObserved)
+            {
+                // Display the units only if the distance does not
+                // correspond to the current data entry units.
+
+                if (dist.EntryUnit != dunit)
+                    distr = dist.Format(true); // with units abbreviation
+                else
+                    distr = dist.Format(false); // no units abbreviation
+            }
+            else
+            {
+                // Drawing adjusted distance.
+
+                // If the current display units are "as entered"
+
+                if (dunit.UnitType == DistanceUnitType.AsEntered)
+                {
+                    // What's the current data entry unit?
+                    DistanceUnit eunit = ec.EntryUnit;
+
+                    // Display the units only if the distance does not
+                    // correspond to the current data entry units.
+                    if (dist != null)
+                    {
+                        DistanceUnit entryUnit = dist.EntryUnit;
+                        if (entryUnit != eunit)
+                            distr = entryUnit.Format(len, true); // with abbrev
+                        else
+                            distr = entryUnit.Format(len, false); // no abbrev
+                    }
+                    else
+                    {
+                        // No observed length, so format the actual length using
+                        // the current data entry units (no abbreviation).
+                        distr = eunit.Format(len, false);
+                    }
+                }
+                else
+                {
+                    // Displaying in a specific display unit. Format the
+                    // result without any units abbreviation.
+                    distr = dunit.Format(len, false);
+                }
+            }
+
+            // Never show distances with a leading negative sign.
+            if (distr.StartsWith("-"))
+                distr = distr.Substring(1);
+
+            return distr;
+        }
     }
 }

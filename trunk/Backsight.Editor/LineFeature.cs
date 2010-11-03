@@ -205,11 +205,14 @@ namespace Backsight.Editor
             {
                 // Pass in any observed distance, to govern the number of
                 // decimal places to show.
+                m_Geom.RenderDistance(display, style, dist, false);
                 //m_pLine->DrawDistance(gdc, pDist, FALSE);
             }
             else if (annoStyle.ShowObservedLengths)
             {
                 // Display observed distance only if the line has one.
+                if (dist != null)
+                    m_Geom.RenderDistance(display, style, dist, true);
                 //if (dist != null)
                 //    pArc->m_pLine->DrawDistance(gdc, pDist, TRUE);
             }
