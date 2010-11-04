@@ -105,7 +105,7 @@ namespace Backsight.Editor.Forms
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(525, 14);
+            this.okButton.Location = new System.Drawing.Point(524, 14);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 1;
@@ -125,7 +125,7 @@ namespace Backsight.Editor.Forms
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(625, 336);
+            this.tabControl.Size = new System.Drawing.Size(624, 382);
             this.tabControl.TabIndex = 2;
             // 
             // PointsTabPage
@@ -138,7 +138,7 @@ namespace Backsight.Editor.Forms
             this.PointsTabPage.Location = new System.Drawing.Point(4, 25);
             this.PointsTabPage.Name = "PointsTabPage";
             this.PointsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.PointsTabPage.Size = new System.Drawing.Size(617, 307);
+            this.PointsTabPage.Size = new System.Drawing.Size(646, 363);
             this.PointsTabPage.TabIndex = 0;
             this.PointsTabPage.Text = "Points";
             this.PointsTabPage.UseVisualStyleBackColor = true;
@@ -200,16 +200,17 @@ namespace Backsight.Editor.Forms
             this.LabelsTabPage.Location = new System.Drawing.Point(4, 25);
             this.LabelsTabPage.Name = "LabelsTabPage";
             this.LabelsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.LabelsTabPage.Size = new System.Drawing.Size(617, 307);
+            this.LabelsTabPage.Size = new System.Drawing.Size(672, 358);
             this.LabelsTabPage.TabIndex = 1;
             this.LabelsTabPage.Text = "Labels";
             this.LabelsTabPage.UseVisualStyleBackColor = true;
             // 
             // textRotationAngleLabel
             // 
+            this.textRotationAngleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textRotationAngleLabel.AutoSize = true;
             this.textRotationAngleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textRotationAngleLabel.Location = new System.Drawing.Point(60, 349);
+            this.textRotationAngleLabel.Location = new System.Drawing.Point(48, 266);
             this.textRotationAngleLabel.Name = "textRotationAngleLabel";
             this.textRotationAngleLabel.Size = new System.Drawing.Size(156, 16);
             this.textRotationAngleLabel.TabIndex = 5;
@@ -289,7 +290,7 @@ namespace Backsight.Editor.Forms
             this.UnitsTabPage.Controls.Add(this.groupBox2);
             this.UnitsTabPage.Location = new System.Drawing.Point(4, 25);
             this.UnitsTabPage.Name = "UnitsTabPage";
-            this.UnitsTabPage.Size = new System.Drawing.Size(617, 307);
+            this.UnitsTabPage.Size = new System.Drawing.Size(672, 358);
             this.UnitsTabPage.TabIndex = 2;
             this.UnitsTabPage.Text = "Units";
             this.UnitsTabPage.UseVisualStyleBackColor = true;
@@ -408,7 +409,7 @@ namespace Backsight.Editor.Forms
             this.LineAnnotationTabPage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LineAnnotationTabPage.Location = new System.Drawing.Point(4, 25);
             this.LineAnnotationTabPage.Name = "LineAnnotationTabPage";
-            this.LineAnnotationTabPage.Size = new System.Drawing.Size(617, 307);
+            this.LineAnnotationTabPage.Size = new System.Drawing.Size(616, 353);
             this.LineAnnotationTabPage.TabIndex = 3;
             this.LineAnnotationTabPage.Text = "Line Annotation";
             this.LineAnnotationTabPage.UseVisualStyleBackColor = true;
@@ -417,7 +418,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(100, 358);
+            this.label10.Location = new System.Drawing.Point(65, 281);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(222, 16);
             this.label10.TabIndex = 5;
@@ -427,7 +428,7 @@ namespace Backsight.Editor.Forms
             // 
             this.annoHeightTextBox.AcceptsReturn = true;
             this.annoHeightTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.annoHeightTextBox.Location = new System.Drawing.Point(328, 355);
+            this.annoHeightTextBox.Location = new System.Drawing.Point(293, 278);
             this.annoHeightTextBox.Name = "annoHeightTextBox";
             this.annoHeightTextBox.Size = new System.Drawing.Size(69, 22);
             this.annoHeightTextBox.TabIndex = 4;
@@ -436,7 +437,7 @@ namespace Backsight.Editor.Forms
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(140, 311);
+            this.label9.Location = new System.Drawing.Point(105, 228);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(182, 16);
             this.label9.TabIndex = 3;
@@ -446,7 +447,7 @@ namespace Backsight.Editor.Forms
             // 
             this.annoScaleTextBox.AcceptsReturn = true;
             this.annoScaleTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.annoScaleTextBox.Location = new System.Drawing.Point(328, 308);
+            this.annoScaleTextBox.Location = new System.Drawing.Point(293, 228);
             this.annoScaleTextBox.Name = "annoScaleTextBox";
             this.annoScaleTextBox.Size = new System.Drawing.Size(69, 22);
             this.annoScaleTextBox.TabIndex = 2;
@@ -460,7 +461,7 @@ namespace Backsight.Editor.Forms
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(27, 20);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(528, 214);
+            this.groupBox4.Size = new System.Drawing.Size(495, 175);
             this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Show What";
@@ -516,7 +517,7 @@ namespace Backsight.Editor.Forms
             this.SymbologyTabPage.Controls.Add(this.label6);
             this.SymbologyTabPage.Location = new System.Drawing.Point(4, 25);
             this.SymbologyTabPage.Name = "SymbologyTabPage";
-            this.SymbologyTabPage.Size = new System.Drawing.Size(617, 307);
+            this.SymbologyTabPage.Size = new System.Drawing.Size(616, 353);
             this.SymbologyTabPage.TabIndex = 4;
             this.SymbologyTabPage.Text = "Symbology";
             this.SymbologyTabPage.UseVisualStyleBackColor = true;
@@ -577,14 +578,14 @@ namespace Backsight.Editor.Forms
             // 
             this.splitContainer.Panel2.Controls.Add(this.cancelButton);
             this.splitContainer.Panel2.Controls.Add(this.okButton);
-            this.splitContainer.Size = new System.Drawing.Size(625, 399);
-            this.splitContainer.SplitterDistance = 336;
+            this.splitContainer.Size = new System.Drawing.Size(624, 445);
+            this.splitContainer.SplitterDistance = 382;
             this.splitContainer.TabIndex = 3;
             // 
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(430, 14);
+            this.cancelButton.Location = new System.Drawing.Point(429, 14);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 2;
@@ -596,7 +597,7 @@ namespace Backsight.Editor.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(625, 399);
+            this.ClientSize = new System.Drawing.Size(624, 445);
             this.Controls.Add(this.splitContainer);
             this.Name = "PreferencesForm";
             this.Text = "Preferences";

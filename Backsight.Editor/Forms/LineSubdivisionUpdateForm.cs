@@ -135,6 +135,11 @@ namespace Backsight.Editor.Forms
 	GetFace(firstFaceIndex);
 
              */
+
+            // Disable the option to flip annotation if annotation is currently invisible
+            if (!EditingController.Current.AreLineAnnotationsDrawn)
+                flipDistButton.Enabled = false;
+
             // Reload the list and repaint
             RefreshList();
         }
@@ -285,6 +290,23 @@ void CdUpdateSub::Refresh ( void ) {
 
         private void flipDistButton_Click(object sender, EventArgs e)
         {
+            // Get the selected distance.
+            int index = listBox.SelectedIndex;
+            if (index < 0)
+            {
+                MessageBox.Show("You must first select a distance from the list.");
+                return;
+            }
+
+            MeasuredLineFeature mf = m_Dists[index];
+            LineFeature line = mf.Line;
+
+            // Flip the switch in the line feature so that it will redraw differently,
+            // TODO - but remember the change in case we need to cancel
+            line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
+
+            // Ensure stuff gets redrawn
+            m_UpdCmd.ErasePainting();
             /*
 	CeDraw* pDraw = GetpDraw();
 	CClientDC dc(pDraw);

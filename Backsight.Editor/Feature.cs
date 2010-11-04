@@ -904,7 +904,7 @@ namespace Backsight.Editor
         internal bool IsLineAnnotationFlipped
         {
             get { return IsFlagSet(FeatureFlag.FlipDist); }
-            private set { SetFlag(FeatureFlag.FlipDist, value); }
+            set { SetFlag(FeatureFlag.FlipDist, value); }
         }
     }
 }
