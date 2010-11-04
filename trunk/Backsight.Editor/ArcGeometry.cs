@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -222,6 +223,110 @@ namespace Backsight.Editor
             new LineStringGeometry(pts).Render(display, style);
              */
             CircularArcGeometry.Render(this, display, style);
+        }
+
+        /// <summary>
+        /// Draws a distance alongside this line.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+                                                Distance dist, bool drawObserved)
+        {
+            Annotation a = GetAnnotation(dist, drawObserved);
+            if (a != null)
+                style.Render(display, a);
+        }
+
+        /// <summary>
+        /// Obtains annotation for this line.
+        /// </summary>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        /// <returns>The annotation (null if it cannot be obtained)</returns>
+        Annotation GetAnnotation(Distance dist, bool drawObserved)
+        {
+            // @devnote This function may not be that hot for curves that
+            // are complete circles. At the moment though, I can't see why
+            // we'd be drawing a distance alongside a circle.
+
+            // Get the length of the arc
+            double len = this.Length.Meters;
+
+            // Get the string to output.
+            string distr = GetDistance(len, dist, drawObserved);
+            if (distr == null)
+                return null;
+
+            // Get the mid-point of this arc.
+            IPosition mid;
+            this.GetPosition(new Length(len * 0.5), out mid);
+
+            // Get the bearing from the center to the midpoint.
+            IPosition center = m_Circle.Center;
+            double bearing = BasicGeom.BearingInRadians(center, mid);
+
+            // Get the height of the text, in meters on the ground.
+            double grheight = EditingController.Current.LineAnnotationStyle.Height;
+
+            // We will offset by 20% of the height (give a bit of space
+            // between the text and the line).
+            //double offset = grheight * 0.2;
+            // ...looks fine with no offset (there is a space, but it's for descenders
+            // that aren't there since we're dealing just with numbers).
+            double offset = 0.0;
+
+            // Get the rotation of the text.
+            double rotation = bearing - MathConstants.PI;
+
+            // If the midpoint is above the circle centre, we get upside-down
+            // text so rotate it the other way. If we don't switch the
+            // rotation, we need to make an extra shift, because the text
+            // is aligned along its baseline.
+
+            // This depends on whether the annotation is on the default
+            // side or not.
+            //bool isFlipped = IsDistFlipped(); // TODO
+            bool isFlipped = false;
+
+            // Not sure about the following... (c.f. revised handling in SegmentGeometry)
+            /*
+            if (mid.Y > center.Y)
+            {
+                rotation += MathConstants.PI;
+                if (isFlipped)
+                    offset = -0.9 * grheight;
+            }
+            else
+            {
+                if (isFlipped)
+                    offset = -offset;
+                else
+                    offset = 0.9 * grheight;	// 1.0 * grheight is too much
+            }
+            */
+
+            // ...try this instead
+
+            if (mid.Y > center.Y)
+                rotation += MathConstants.PI;
+            else
+                offset = 1.3 * grheight; // push the text to the outer edge of the arc
+
+            if (isFlipped)
+            {
+                rotation += MathConstants.PIDIV2;
+
+                // and may need to adjust offset...
+            }
+
+            // Project to the offset point.
+            IPosition p = Geom.Polar(center, bearing, m_Circle.Radius + offset);
+            return new Annotation(distr, p, grheight, rotation);
         }
 
         /// <summary>

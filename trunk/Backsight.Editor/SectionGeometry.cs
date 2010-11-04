@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Geometry;
+using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -157,6 +158,21 @@ namespace Backsight.Editor
         {
             Make().Render(display, style);
         }
+
+        /// <summary>
+        /// Draws a distance alongside this line.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
+        /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
+        /// actual distance.</param>
+        internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+                                                Distance dist, bool drawObserved)
+        {
+            Make().RenderDistance(display, style, dist, drawObserved);
+        }
+
         /// <summary>
         /// Gets geometric info for this geometry. For use during the formation
         /// of <c>Polygon</c> objects.

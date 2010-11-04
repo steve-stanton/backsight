@@ -130,10 +130,6 @@ namespace Backsight.Editor
             Annotation a = GetAnnotation(dist, drawObserved);
             if (a != null)
                 style.Render(display, a);
-            /*
-	if ( GetAnnotation(pDist,drawObserved,distr,posn,grheight,rotation) )
-		gdc.Draw(distr,posn,grheight,rotation,TA_CENTER|TA_BASELINE);
-             */
         }
 
         /// <summary>
