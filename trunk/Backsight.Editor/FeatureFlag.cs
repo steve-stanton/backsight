@@ -100,5 +100,10 @@ namespace Backsight.Editor
         /// Is the feature spatially indexed?
         /// </summary>
         Indexed=0x4000,
+
+        /// <summary>
+        /// Is distance annotation drawn on non-standard side of line feature?
+        /// </summary>
+        FlipDist=0x8000,
     };
 }
