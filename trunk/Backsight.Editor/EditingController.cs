@@ -980,6 +980,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Are line annotations drawn in the display. If an editing command is currently running,
+        /// the display in question is the command display. Otherwise it's the currently
+        /// active display.
+        /// </summary>
+        internal bool AreLineAnnotationsDrawn
+        {
+            get
+            {
+                LineAnnotationStyle annoStyle = this.LineAnnotationStyle;
+                if (annoStyle.ShowAdjustedLengths || annoStyle.ShowObservedLengths)
+                    return IsVisible(annoStyle.ShowScale);
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// Checks whether something is visible on the active display.
         /// </summary>
         /// <param name="thresholdScale">The threshold scale for some sort of item</param>

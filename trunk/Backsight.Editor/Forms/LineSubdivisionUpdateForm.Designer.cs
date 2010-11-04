@@ -66,7 +66,6 @@
             // flipDistButton
             // 
             this.flipDistButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.flipDistButton.Enabled = false;
             this.flipDistButton.Location = new System.Drawing.Point(167, 47);
             this.flipDistButton.Name = "flipDistButton";
             this.flipDistButton.Size = new System.Drawing.Size(111, 28);
