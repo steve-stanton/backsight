@@ -122,12 +122,13 @@ namespace Backsight.Editor
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
         /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="isFlipped">Should the annotation be drawn on non-standard side?</param>
         /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
         /// actual distance.</param>
         internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
-                                                Distance dist, bool drawObserved)
+                                                Distance dist, bool isFlipped, bool drawObserved)
         {
-            Annotation a = GetAnnotation(dist, drawObserved);
+            Annotation a = GetAnnotation(dist, isFlipped, drawObserved);
             if (a != null)
                 style.Render(display, a);
         }
@@ -136,10 +137,11 @@ namespace Backsight.Editor
         /// Obtains annotation for this line.
         /// </summary>
         /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="isFlipped">Should the annotation be drawn on non-standard side?</param>
         /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
         /// actual distance.</param>
         /// <returns>The annotation (null if it cannot be obtained)</returns>
-        Annotation GetAnnotation(Distance dist, bool drawObserved)
+        Annotation GetAnnotation(Distance dist, bool isFlipped, bool drawObserved)
         {
             IPointGeometry start = this.Start;
             IPointGeometry end = this.End;
@@ -170,10 +172,6 @@ namespace Backsight.Editor
             // Figure out the position at the middle of the line.
             double tx = xs + dx * 0.5;
             double ty = ys + dy * 0.5;
-
-            // Check whether the annotation should appear on the non-default side.
-            //bool isFlipped = IsDistFlipped(); // TODO
-            bool isFlipped = false;
 
             // If the annotation needs to appear on the opposite side
             // of the line, the offset is a bit different. The logic

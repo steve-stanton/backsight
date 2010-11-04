@@ -897,5 +897,14 @@ namespace Backsight.Editor
             get { return IsFlagSet(FeatureFlag.Indexed); }
             set { SetFlag(FeatureFlag.Indexed, value); }
         }
+
+        /// <summary>
+        /// Is distance annotation drawn on non-standard side of line feature?
+        /// </summary>
+        internal bool IsLineAnnotationFlipped
+        {
+            get { return IsFlagSet(FeatureFlag.FlipDist); }
+            private set { SetFlag(FeatureFlag.FlipDist, value); }
+        }
     }
 }

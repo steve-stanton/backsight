@@ -165,12 +165,13 @@ namespace Backsight.Editor
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
         /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="isFlipped">Should the annotation be drawn on non-standard side?</param>
         /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
         /// actual distance.</param>
         internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
-                                                Distance dist, bool drawObserved)
+                                                Distance dist, bool isFlipped, bool drawObserved)
         {
-            Make().RenderDistance(display, style, dist, drawObserved);
+            Make().RenderDistance(display, style, dist, isFlipped, drawObserved);
         }
 
         /// <summary>

@@ -231,12 +231,13 @@ namespace Backsight.Editor
         /// <param name="display">The display to draw to</param>
         /// <param name="style">The drawing style</param>
         /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="isFlipped">Should the annotation be drawn on non-standard side?</param>
         /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
         /// actual distance.</param>
         internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
-                                                Distance dist, bool drawObserved)
+                                                Distance dist, bool isFlipped, bool drawObserved)
         {
-            Annotation a = GetAnnotation(dist, drawObserved);
+            Annotation a = GetAnnotation(dist, isFlipped, drawObserved);
             if (a != null)
                 style.Render(display, a);
         }
@@ -245,10 +246,11 @@ namespace Backsight.Editor
         /// Obtains annotation for this line.
         /// </summary>
         /// <param name="dist">The observed distance (if any).</param>
+        /// <param name="isFlipped">Should the annotation be drawn on non-standard side?</param>
         /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
         /// actual distance.</param>
         /// <returns>The annotation (null if it cannot be obtained)</returns>
-        Annotation GetAnnotation(Distance dist, bool drawObserved)
+        Annotation GetAnnotation(Distance dist, bool isFlipped, bool drawObserved)
         {
             // @devnote This function may not be that hot for curves that
             // are complete circles. At the moment though, I can't see why
@@ -290,8 +292,6 @@ namespace Backsight.Editor
 
             // This depends on whether the annotation is on the default
             // side or not.
-            //bool isFlipped = IsDistFlipped(); // TODO
-            bool isFlipped = false;
 
             // Not sure about the following... (c.f. revised handling in SegmentGeometry)
             /*

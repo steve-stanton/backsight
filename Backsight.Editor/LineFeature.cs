@@ -200,18 +200,19 @@ namespace Backsight.Editor
 
         	// See if there is an observed distance.
             Distance dist = GetObservedLength();
+            bool isFlipped = this.IsLineAnnotationFlipped;
 
             if (annoStyle.ShowAdjustedLengths)
             {
                 // Pass in any observed distance, to govern the number of
                 // decimal places to show.
-                m_Geom.RenderDistance(display, style, dist, false);
+                m_Geom.RenderDistance(display, style, dist, isFlipped, false);
             }
             else if (annoStyle.ShowObservedLengths)
             {
                 // Display observed distance only if the line has one.
                 if (dist != null)
-                    m_Geom.RenderDistance(display, style, dist, true);
+                    m_Geom.RenderDistance(display, style, dist, isFlipped, true);
             }
         }
 
