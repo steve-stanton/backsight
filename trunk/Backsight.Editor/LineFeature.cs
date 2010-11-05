@@ -194,14 +194,14 @@ namespace Backsight.Editor
             }
 
             // Return if we're not showing actual or observed lengths
-            LineAnnotationStyle annoStyle = ec.LineAnnotationStyle;
-            if (!(annoStyle.ShowAdjustedLengths || annoStyle.ShowObservedLengths))
+            if (!ec.AreLineAnnotationsDrawn)
                 return;
 
         	// See if there is an observed distance.
             Distance dist = GetObservedLength();
             bool isFlipped = this.IsLineAnnotationFlipped;
 
+            LineAnnotationStyle annoStyle = ec.LineAnnotationStyle;
             if (annoStyle.ShowAdjustedLengths)
             {
                 // Pass in any observed distance, to govern the number of

@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
@@ -319,14 +320,16 @@ namespace Backsight.Editor
 
             if (isFlipped)
             {
-                rotation += MathConstants.PIDIV2;
+                rotation += MathConstants.PI;
 
                 // and may need to adjust offset...
             }
 
             // Project to the offset point.
             IPosition p = Geom.Polar(center, bearing, m_Circle.Radius + offset);
-            return new Annotation(distr, p, grheight, rotation);
+            Annotation result = new Annotation(distr, p, grheight, rotation);
+            result.FontStyle = FontStyle.Italic;
+            return result;
         }
 
         /// <summary>

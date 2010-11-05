@@ -61,12 +61,18 @@ namespace Backsight.Editor
         /// </summary>
         readonly IAngle m_Rotation;
 
+        /// <summary>
+        /// Font modifiers to use on a call to <see cref="CreateFont"/>.
+        /// </summary>
+        FontStyle m_FontStyle;
+
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Annotation"/> class.
+        /// Initializes a new instance of the <see cref="Annotation"/> class with the
+        /// <see cref="FontStyle"/> property set to <see cref="System.Drawing.FontStyle.Regular"/>.
         /// </summary>
         /// <param name="text">The annotation text.</param>
         /// <param name="position">The position for the text (center-baseline aligned).</param>
@@ -78,6 +84,7 @@ namespace Backsight.Editor
             m_Position = PointGeometry.Create(position);
             m_Height = height;
             m_Rotation = new RadianValue(rotation);
+            m_FontStyle = FontStyle.Regular;
         }
 
         #endregion
@@ -91,7 +98,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The position for the text (center-baseline aligned).
+        /// A reference position for the annotation (center-baseline aligned).
         /// </summary>
         public IPointGeometry Position
         {
@@ -125,6 +132,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Font modifiers to use on a call to <see cref="CreateFont"/>.
+        /// </summary>
+        public FontStyle FontStyle
+        {
+            get { return m_FontStyle; }
+            set { m_FontStyle = value; }
+        }
+
+        /// <summary>
         /// Creates the font used to present the string.
         /// </summary>
         /// <param name="display">The display on which the string will be displayed</param>
@@ -134,7 +150,7 @@ namespace Backsight.Editor
         public Font CreateFont(ISpatialDisplay display)
         {
             float heightInPixels = display.LengthToDisplay(m_Height);
-            return new Font("Arial", heightInPixels, FontStyle.Regular, GraphicsUnit.Pixel);
+            return new Font("Arial", heightInPixels, m_FontStyle, GraphicsUnit.Pixel);
         }
 
         /// <summary>

@@ -38,9 +38,9 @@
             // 
             // listBox
             // 
-            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox.DisplayMember = "ObservedLength";
             this.listBox.FormattingEnabled = true;
             this.listBox.ItemHeight = 16;
@@ -128,6 +128,7 @@
             this.Name = "LineSubdivisionUpdateForm";
             this.Text = "Update Line Subdivision";
             this.Shown += new System.EventHandler(this.LineSubdivisionUpdateForm_Shown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LineSubdivisionUpdateForm_FormClosing);
             this.ResumeLayout(false);
 
         }
