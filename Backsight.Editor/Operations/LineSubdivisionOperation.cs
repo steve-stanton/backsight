@@ -593,12 +593,22 @@ namespace Backsight.Editor.Operations
         {
             foreach (UpdateItem item in data.ToArray())
             {
+                // Items that start with "A" relate to the flip status of the annotation
+                // (see LineSubdivisionUpdateForm.GetUpdateItems)
+                string dataId = item.Name;
+                bool isAnnoChange = dataId.StartsWith("A");
+                if (isAnnoChange)
+                    dataId = dataId.Substring(1);
+
                 MeasuredLineFeature mf = m_Sections.Find(delegate(MeasuredLineFeature t)
                 {
-                    return (t.Line.DataId == item.Name);
+                    return (t.Line.DataId == dataId);
                 });
 
-                mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
+                if (isAnnoChange)
+                    mf.Line.IsLineAnnotationFlipped = !mf.Line.IsLineAnnotationFlipped;
+                else
+                    mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
             }
         }
     }

@@ -164,6 +164,7 @@ namespace Backsight.Editor.UI
 
             if (m_UpDial != null)
             {
+                m_UpDial.Close();
                 m_UpDial.Dispose();
                 m_UpDial = null;
             }

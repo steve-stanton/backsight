@@ -53,6 +53,15 @@ namespace Backsight.Editor.Forms
         /// The displayed distances
         /// </summary>
         MeasuredLineFeature[] m_Dists;
+
+        /// <summary>
+        /// Indicators for sections where the line annotation has been flipped (possibly
+        /// back to the standard side). All elements in this array are initially <c>false</c>
+        /// (even if certain annotations were previously flipped). Has a 1:1 relationship
+        /// with <c>m_Dists</c>.
+        /// </summary>
+        bool[] m_Flips;
+
         /*
 	INT4			m_FaceIndex1;	// The index of the first face
 	INT4			m_FaceIndex2;	// The index of the 2nd face (-1
@@ -77,6 +86,9 @@ namespace Backsight.Editor.Forms
             m_SelectedLine = null;
             m_pop = null;
             m_Dists = null;
+            m_Flips = null;
+
+            this.DialogResult = DialogResult.Cancel;
         }
 
         #endregion
@@ -96,10 +108,12 @@ namespace Backsight.Editor.Forms
             // Work with a copy of the distances
             MeasuredLineFeature[] sections = m_pop.Sections;
             m_Dists = new MeasuredLineFeature[sections.Length];
+            m_Flips = new bool[sections.Length];
             for (int i=0; i<sections.Length; i++)
             {
                 MeasuredLineFeature mf = sections[i];
                 m_Dists[i] = new MeasuredLineFeature(mf.Line, mf.ObservedLength);
+                m_Flips[i] = false;
             }
 
             /*
@@ -207,11 +221,13 @@ namespace Backsight.Editor.Forms
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             m_UpdCmd.DialAbort(this);
         }
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.OK;
             m_UpdCmd.DialFinish(this);
         }
 
@@ -301,35 +317,14 @@ void CdUpdateSub::Refresh ( void ) {
             MeasuredLineFeature mf = m_Dists[index];
             LineFeature line = mf.Line;
 
-            // Flip the switch in the line feature so that it will redraw differently,
-            // TODO - but remember the change in case we need to cancel
+            // Flip the switch in the line feature so that it will redraw differently, and
+            // remember whether a change has occurred (it's possible the user has flipped back
+            // to the original side).
             line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
+            m_Flips[index] = !m_Flips[index];
 
             // Ensure stuff gets redrawn
             m_UpdCmd.ErasePainting();
-            /*
-	CeDraw* pDraw = GetpDraw();
-	CClientDC dc(pDraw);
-	pDraw->OnPrepareDC(&dc);
-
-	CListBox* pList = (CListBox*)GetDlgItem(IDC_LIST);
-	const INT4 nDist = pList->GetCount();
-
-	for ( int i=0; i<nDist; i++ )
-	{
-		CeArc* pArc = (CeArc*)pList->GetItemDataPtr(i);
-		CeLine* pLine = pArc->GetpLine();
-		pLine->SetDistFlipped(!pLine->IsDistFlipped());
-
-//		CeDistance* pDist = pArc->GetObservedLength();
-//		if ( pDist )
-//			pLine->DrawDistance(pDraw,&dc,0,pDist,TRUE);
-//		else
-//			AfxMessageBox("Observed distance not found");
-	}
-
-	GetpDraw()->InvalidateRect(0);
-             */
         }
 
         private void newFaceButton_Click(object sender, EventArgs e)
@@ -426,15 +421,34 @@ FLOAT8 CdUpdateSub::GetObservedLength ( void ) const
             {
                 MeasuredLineFeature originalSection = sections[i];
                 MeasuredLineFeature revisedSection = m_Dists[i];
-                Debug.Assert(originalSection.Line == revisedSection.Line);
+                LineFeature line = originalSection.Line;
+                Debug.Assert(line == revisedSection.Line);
 
                 Distance originalLength = originalSection.ObservedLength;
                 Distance revisedLength = revisedSection.ObservedLength;
                 if (originalSection.Equals(revisedLength) == false)
-                    result.AddObservation<Distance>(originalSection.Line.DataId, originalLength, revisedLength);
+                    result.AddObservation<Distance>(line.DataId, originalLength, revisedLength);
+
+                if (m_Flips[i])
+                    result.AddItem<bool>("A"+line.DataId, line.IsLineAnnotationFlipped, !line.IsLineAnnotationFlipped);
             }
 
             return result;
+        }
+
+        private void LineSubdivisionUpdateForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Ensure any flipped annotations have been temporarily flipped back. To set the
+            // status for good, the appropriate update items must be returned by GetUpdateItems.
+
+            for (int i=0; i<m_Flips.Length; i++)
+            {
+                if (m_Flips[i])
+                {
+                    LineFeature line = m_Dists[i].Line;
+                    line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
+                }
+            }
         }
     }
 }

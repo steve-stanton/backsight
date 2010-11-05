@@ -281,7 +281,7 @@ namespace Backsight.Editor
             }
 
             if (isFlipped)
-                rotation += MathConstants.PIDIV2;
+                rotation += MathConstants.PI;
 
             Position p = new Position(tx, ty);
             return new Annotation(distr, p, grheight, rotation);
