@@ -269,6 +269,12 @@
     <Compile Include="Forms\GetJobForm.Designer.cs">
       <DependentUpon>GetJobForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LegForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LegForm.Designer.cs">
+      <DependentUpon>LegForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\LineStyle.cs" />
     <Compile Include="Forms\LineSubdivisionUpdateForm.cs">
       <SubType>Form</SubType>
@@ -1170,6 +1176,9 @@
     <None Include="Resources\ZoomOut.ico" />
     <EmbeddedResource Include="Forms\DistForm.resx">
       <DependentUpon>DistForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LegForm.resx">
+      <DependentUpon>LegForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineSubdivisionUpdateForm.resx">
       <DependentUpon>LineSubdivisionUpdateForm.cs</DependentUpon>
