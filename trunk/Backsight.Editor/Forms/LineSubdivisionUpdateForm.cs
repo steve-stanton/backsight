@@ -329,46 +329,44 @@ void CdUpdateSub::Refresh ( void ) {
 
         private void newFaceButton_Click(object sender, EventArgs e)
         {
+            // If we previously highlighted something, draw it
+            // normally (since it cannot exist as part of any other
+            // face).
+            if (m_SelectedLine != null)
+            {
+                //UnHighlightArc();
+                m_SelectedLine = null;
+            }
+
+            // If a second face doesn't already exist, get the
+            // user to specify the distances.
+
+	        //if ( m_FaceIndex2 < 0 )
+	        //{
+
+            // Get the distance observations
+
+            using (LegForm dial = new LegForm(GetObservedLength()))
+            {
+                if (dial.ShowDialog() != DialogResult.OK)
+                    return;
+
+                // Must be at least two distances
+                Distance[] dists = dial.Distances;
+                if (dists == null || dists.Length < 2)
+                {
+                    MessageBox.Show("The new face must have at least two spans");
+                    return;
+                }
+
+                // Create the new face
+                //m_FaceIndex2 = m_pop->AddFace(nDist, pDist);
+                //if (m_FaceIndex2 < 0) return;
+
+                newFaceButton.Text = "&Other Face";
+            }
+
             /*
-	// If we previously highlighted something, draw it
-	// normally (since it cannot exist as part of any other
-	// face).
-
-	if ( m_pSelArc )
-	{
-		//m_pSelArc->UnHighlight();
-		UnHighlightArc();
-		m_pSelArc = 0;
-	}
-	
-	// If a second face doesn't already exist, get the
-	// user to specify the distances and define them as
-	// part of the 
-	if ( m_FaceIndex2 < 0 )
-	{
-		// Get the distance observations
-
-		CdLeg dial(GetObservedLength());
-		if ( dial.DoModal() != IDOK ) return;
-
-		// Must be at least two distances
-
-		UINT4 nDist = dial.GetNumDist();
-		if ( nDist < 2 )
-		{
-			AfxMessageBox("The new face must have at least two spans");
-			return;
-		}
-
-		// Create the new face
-
-		const CeDistance* pDist = dial.GetDists();
-		m_FaceIndex2 = m_pop->AddFace(nDist,pDist);
-		if ( m_FaceIndex2 < 0 ) return;
-
-		GetDlgItem(IDC_NEWFACE)->SetWindowText("&Other Face");
-	}
-
 	if ( m_CurIndex == m_FaceIndex1 )
 		GetFace(m_FaceIndex2);
 	else
@@ -390,21 +388,24 @@ void CdUpdateSub::GetFace ( const INT4 faceIndex )
 	m_Dists = new CeDistance[m_NumDist];
 	m_pop->GetSpans(m_CurIndex,m_Dists);
 }
-
-FLOAT8 CdUpdateSub::GetObservedLength ( void ) const
-{
-	if ( m_Dists == 0 ) return 0.0;
-
-	FLOAT8 length = 0;
-
-	for ( UINT4 i=0; i<m_NumDist; i++ )
-	{
-		length += m_Dists[i].GetMetric();
-	}
-
-	return length;
-}
          */
+
+        /// <summary>
+        /// Sums the observed lengths for the displayed sections.
+        /// </summary>
+        /// <returns>The total observed length, in meters.</returns>
+        double GetObservedLength()
+        {
+            if (m_Dists == null)
+                return 0.0;
+
+            double length = 0.0;
+
+            foreach (MeasuredLineFeature mf in m_Dists)
+                length += mf.ObservedLength.Meters;
+
+            return length;
+        }
 
         /// <summary>
         /// Obtains update items for each revised section.
