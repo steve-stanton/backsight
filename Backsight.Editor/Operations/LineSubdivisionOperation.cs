@@ -54,6 +54,16 @@ namespace Backsight.Editor.Operations
         /// </summary>
         List<MeasuredLineFeature> m_Sections;
 
+        /// <summary>
+        /// Definition of the original face for this subdivision.
+        /// </summary>
+        readonly LineSubdivisionFace m_PrimaryFace;
+
+        /// <summary>
+        /// A secondary face that was included via a subsequent update.
+        /// </summary>
+        LineSubdivisionFace m_AlternateFace;
+
         #endregion
 
         #region Constructors
@@ -76,10 +86,14 @@ namespace Backsight.Editor.Operations
             : base(session, sequence)
         {
             m_Line = line;
+
             m_EntryString = entryString;
             m_DefaultEntryUnit = defaultEntryUnit;
             m_IsEntryFromEnd = isEntryFromEnd;
             m_Sections = null;
+
+            m_PrimaryFace = new LineSubdivisionFace(entryString, defaultEntryUnit, isEntryFromEnd);
+            m_AlternateFace = null;
         }
 
         #endregion
@@ -500,7 +514,7 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The data entry string that defines the connection path.
+        /// The data entry string that defines the sections on this face.
         /// </summary>
         internal string EntryString
         {
