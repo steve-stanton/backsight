@@ -429,6 +429,7 @@
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
+    <Compile Include="Operations\LineSubdivisionFace.cs" />
     <Compile Include="Operations\MovePolygonPositionOperation.cs" />
     <Compile Include="Operations\NewArcOperation.cs" />
     <Compile Include="Operations\NewKeyTextOperation.cs" />
