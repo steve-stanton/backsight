@@ -172,7 +172,7 @@ namespace Backsight.Editor.Forms
             {
                 string entryString = GetEntryString();
                 DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
-                m_Distances = LineSubdivisionOperation.GetDistances(entryString, defaultEntryUnit,
+                m_Distances = LineSubdivisionFace.GetDistances(entryString, defaultEntryUnit,
                                                                             false);
 
                 // Return the total length (in meters)

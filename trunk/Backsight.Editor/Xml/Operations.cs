@@ -524,9 +524,10 @@ namespace Backsight.Editor.Xml
             : base(op)
         {
             this.Line = op.Parent.DataId;
-            this.EntryString = op.EntryString;
-            this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
-            this.EntryFromEnd = op.EntryFromEnd;
+            LineSubdivisionFace face = op.PrimaryFace;
+            this.EntryString = face.EntryString;
+            this.DefaultEntryUnit = (int)face.EntryUnit.UnitType;
+            this.EntryFromEnd = face.EntryFromEnd;
             this.Result = new FactoryData(op);
         }
 

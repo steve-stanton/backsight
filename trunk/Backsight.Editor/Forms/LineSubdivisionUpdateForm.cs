@@ -106,7 +106,7 @@ namespace Backsight.Editor.Forms
             Debug.Assert(m_pop != null);
 
             // Work with a copy of the distances
-            MeasuredLineFeature[] sections = m_pop.Sections;
+            MeasuredLineFeature[] sections = m_pop.PrimaryFace.Sections;
             m_Dists = new MeasuredLineFeature[sections.Length];
             m_Flips = new bool[sections.Length];
             for (int i=0; i<sections.Length; i++)
@@ -116,28 +116,14 @@ namespace Backsight.Editor.Forms
                 m_Flips[i] = false;
             }
 
+            // If we have two faces, the "New Face" button means
+            // you want to switch to the other face.
+            if (m_pop.AlternateFace != null)
+                newFaceButton.Text = "&Other Face";
+
+            // If we have a selected line section that is on the second face,
+            // make that the initial face.
             /*
-	// Get the number of editable faces on the current
-	// editing theme
-	const CeTheme& theme = GetActiveTheme();
-	m_FaceIndex1 = m_pop->GetFaceIndex(theme);
-
-	if ( m_FaceIndex1 < 0 )
-	{
-		ShowMessage("CdUpdateSub::OnInitDialog\nCannot locate primary face");
-		EndDialog(FALSE);
-		return TRUE;
-	}
-
-	m_FaceIndex2 = m_pop->GetFaceIndex(theme,m_FaceIndex1+1);
-
-	// If we have two faces, the "New Face" button means
-	// you want to switch to the other face.
-	if ( m_FaceIndex2 != -1 )
-		GetDlgItem(IDC_NEWFACE)->SetWindowText("&Other Face");
-
-	// If we have a selected arc that is on the second face,
-	// make that the initial face
 	INT4 firstFaceIndex = m_FaceIndex1;
 	if ( m_pSelArc && m_FaceIndex2 > 0 )
 	{
@@ -413,7 +399,7 @@ void CdUpdateSub::GetFace ( const INT4 faceIndex )
         /// <returns>The items representing the change.</returns>
         internal UpdateItemCollection GetUpdateItems()
         {
-            MeasuredLineFeature[] sections = m_pop.Sections;
+            MeasuredLineFeature[] sections = m_pop.PrimaryFace.Sections;
             Debug.Assert(sections.Length == m_Dists.Length);
 
             UpdateItemCollection result = new UpdateItemCollection();

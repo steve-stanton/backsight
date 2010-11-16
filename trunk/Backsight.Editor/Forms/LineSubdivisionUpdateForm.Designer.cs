@@ -38,9 +38,9 @@
             // 
             // listBox
             // 
-            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox.DisplayMember = "ObservedLength";
             this.listBox.FormattingEnabled = true;
             this.listBox.ItemHeight = 16;
@@ -78,7 +78,6 @@
             // newFaceButton
             // 
             this.newFaceButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.newFaceButton.Enabled = false;
             this.newFaceButton.Location = new System.Drawing.Point(167, 81);
             this.newFaceButton.Name = "newFaceButton";
             this.newFaceButton.Size = new System.Drawing.Size(111, 28);
@@ -127,6 +126,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "LineSubdivisionUpdateForm";
             this.Text = "Update Line Subdivision";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.LineSubdivisionUpdateForm_Shown);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LineSubdivisionUpdateForm_FormClosing);
             this.ResumeLayout(false);
