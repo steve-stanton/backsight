@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
 
             if (op!=null)
             {
-                MeasuredLineFeature[] sections = op.Sections;
+                MeasuredLineFeature[] sections = op.PrimaryFace.Sections;
                 m_Distances = new List<Distance>(sections.Length);
                 foreach (MeasuredLineFeature s in sections)
                     m_Distances.Add(new Distance(s.ObservedLength));
@@ -219,7 +219,7 @@ namespace Backsight.Editor.Forms
         {
             string entryString = GetEntryString();
             DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
-            return LineSubdivisionOperation.GetDistances(entryString, defaultEntryUnit, !m_FromStart);
+            return LineSubdivisionFace.GetDistances(entryString, defaultEntryUnit, !m_FromStart);
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace Backsight.Editor.Forms
                 return null;
 
             // Get adjusted lengths for each section (on the map projection, not the ground)
-            double[] lens = LineSubdivisionOperation.GetAdjustedLengths(m_Line, m_Distances.ToArray()); 
+            double[] lens = LineSubdivisionFace.GetAdjustedLengths(m_Line, m_Distances.ToArray()); 
 
             List<IPosition> pts = new List<IPosition>(lens.Length);
             double tot = (m_FromStart ? 0.0 : m_Line.Length.Meters);

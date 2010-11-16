@@ -35,32 +35,12 @@ namespace Backsight.Editor.Operations
         readonly LineFeature m_Line;
 
         /// <summary>
-        /// The data entry string that defines the subdivision sections.
-        /// </summary>
-        readonly string m_EntryString;
-
-        /// <summary>
-        /// The default distance units to use when decoding the data entry string.
-        /// </summary>
-        readonly DistanceUnit m_DefaultEntryUnit;
-
-        /// <summary>
-        /// Are the distances observed from the end of the line?
-        /// </summary>
-        readonly bool m_IsEntryFromEnd;
-
-        /// <summary>
-        /// The sections of the subdivided line.
-        /// </summary>
-        List<MeasuredLineFeature> m_Sections;
-
-        /// <summary>
         /// Definition of the original face for this subdivision.
         /// </summary>
         readonly LineSubdivisionFace m_PrimaryFace;
 
         /// <summary>
-        /// A secondary face that was included via a subsequent update.
+        /// A secondary face that was included via an update to the original edit.
         /// </summary>
         LineSubdivisionFace m_AlternateFace;
 
@@ -86,12 +66,6 @@ namespace Backsight.Editor.Operations
             : base(session, sequence)
         {
             m_Line = line;
-
-            m_EntryString = entryString;
-            m_DefaultEntryUnit = defaultEntryUnit;
-            m_IsEntryFromEnd = isEntryFromEnd;
-            m_Sections = null;
-
             m_PrimaryFace = new LineSubdivisionFace(entryString, defaultEntryUnit, isEntryFromEnd);
             m_AlternateFace = null;
         }
@@ -119,15 +93,6 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void Execute()
         {
-            //Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
-
-            //// Must have at least two distances
-            //if (distances == null)
-            //    throw new ArgumentNullException();
-
-            //if (distances.Length < 2)
-            //    throw new ArgumentException();
-
             FeatureFactory ff = new FeatureFactory(this);
 
             // There's no need to actually define anything in the factory as far as points are
@@ -148,35 +113,9 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            Distance[] distances = GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
-
-            // Must have at least two distances
-            if (distances == null)
-                throw new ArgumentNullException();
-
-            if (distances.Length < 2)
-                throw new ArgumentException();
-
-            m_Sections = new List<MeasuredLineFeature>(distances.Length);
-            PointFeature start = m_Line.StartPoint;
-            InternalIdValue item = new InternalIdValue(this.DataId);
-
-            for (int i=0; i<distances.Length; i++)
-            {
-                PointFeature end;
-                if (i == distances.Length-1)
-                    end = m_Line.EndPoint;
-                else
-                {
-                    item.ItemSequence++;
-                    end = ff.CreatePointFeature(item.ToString());
-                }
-
-                item.ItemSequence++;
-                SectionLineFeature line = ff.CreateSection(item.ToString(), m_Line, start, end);
-                m_Sections.Add(new MeasuredLineFeature(line, distances[i]));
-                start = end;
-            }
+            // Create the sections along the primary face (the alternate face is
+            // handled via an editing update).
+            m_PrimaryFace.CreateSections(m_Line, ff);
 
             // Retire the original line
             ff.Deactivate(m_Line);
@@ -188,131 +127,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            // Get adjusted lengths for each section
-            Distance[] distances = new Distance[m_Sections.Count];
-            for (int i = 0; i < distances.Length; i++)
-                distances[i] = m_Sections[i].ObservedLength;
-            double[] adjray = GetAdjustedLengths(m_Line, distances);
-
-            double edist = 0.0;		// Distance to end of section.
-            PointFeature start = m_Line.StartPoint;
-            LineGeometry lineGeom = m_Line.LineGeometry;
-
-            for (int i=0; i<adjray.Length; i++)
-            {
-                // Calculate the position at the end of the span
-                edist += adjray[i];
-                IPosition to;
-                if (!lineGeom.GetPosition(new Length(edist), out to))
-                    throw new Exception("Cannot adjust line section");
-
-                // Get the point feature at the end of the span
-                MeasuredLineFeature mf = m_Sections[i];
-                PointFeature end = mf.Line.EndPoint;
-
-                // Assign the calculated position so long as we're not at
-                // the end of the line
-                if (end != m_Line.EndPoint)
-                    end.ApplyPointGeometry(ctx, PointGeometry.Create(to));
-
-                // The end of the current span is the start of the next one
-                start = end;
-            }
-        }
-
-        /// <summary>
-        /// Adjusts a set of distances so that they fit the length of a line.
-        /// </summary>
-        /// <param name="line">The line defining the required total distance</param>
-        /// <param name="distances">The observed distances</param>
-        /// <returns>The adjusted lengths (in meters).</returns>
-        /// <exception cref="Exception">If any observed distance is less than or equal to zero</exception>
-        /// <exception cref="InvalidOperationException">If all distances are tagged as fixed</exception>
-        internal static double[] GetAdjustedLengths(LineFeature line, Distance[] distances)
-        {
-            ILength length = line.Length;
-
-            // Stash the observed distances into the results array. Denote
-            // any fixed distances by negating the observed distance.
-            double[] result = new double[distances.Length];
-            int nFix = 0;
-
-            for (int i = 0; i < result.Length; i++)
-            {
-                Distance d = distances[i];
-                double m = d.Meters;
-
-                // Confirm that the distance is valid.
-                if (m <= 0.0)
-                    throw new Exception("Observed distances must be greater than 0.");
-
-                // If distance is fixed, hold it as a negated value.
-                if (d.IsFixed)
-                {
-                    nFix++;
-                    m = -m;
-                }
-
-                result[i] = m;
-            }
-
-            // Confirm we have at least one un-fixed distance.
-            if (nFix == distances.Length)
-                throw new InvalidOperationException("All distances have been fixed. Cannot adjust.");
-
-            // Do the adjustment.
-            if (!Adjust(result, length.Meters))
-                throw new Exception("Unable to adjust observed lengths");
-
-            return result;
-        }
-
-        /// <summary>
-        /// Adjusts a set of distances so that they fit a specific length.
-        /// </summary>
-        /// <param name="da">Array of input distances (in the same units as <paramref name="length"/>).
-        /// Any fixed distances in the list must be denoted using a negated value.</param>
-        /// <param name="length">The distance to fit to</param>
-        /// <returns>True if distances adjusted ok. False if all distances were fixed.</returns>
-        static bool Adjust(double[] da, double length)
-        {
-            // Accumulate the total observed distance, and the total
-            // fixed distance.
-
-            double totobs = 0.0;
-            double totfix = 0.0;
-
-            foreach (double d in da)
-            {
-                if (d < 0.0)
-                {
-                    totfix -= d; // i.e. add
-                    totobs -= d;
-                }
-                else
-                    totobs += d;
-            }
-
-            double diff = length - totobs;	// How much are we out?
-            double play = totobs - totfix;	// How much do we have to play with?
-
-            // Confirm we have something to play with.
-            if (play < Double.Epsilon)
-                return false;
-
-            // Calculate the adjustment factor
-            double factor = (play + diff) / play;
-
-            // Generate adjusted distances.
-            for (int i = 0; i < da.Length; i++)
-            {
-                if (da[i] < 0.0)
-                    da[i] = -da[i];
-                else
-                    da[i] *= factor;
-            }
-
-            return true;
+            m_PrimaryFace.CalculateGeometry(m_Line, ctx);
         }
 
         /// <summary>
@@ -322,16 +137,18 @@ namespace Backsight.Editor.Operations
         /// <returns>The corresponding distance (null if not found)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            if (line==null || m_Sections==null)
+            if (line==null)
                 return null;
 
-            foreach (MeasuredLineFeature mf in m_Sections)
-            {
-                if (Object.ReferenceEquals(mf.Line, line))
-                    return mf.ObservedLength;
-            }
+            Distance d = null;
 
-            return null;
+            if (m_PrimaryFace != null)
+                d = m_PrimaryFace.GetDistance(line);
+
+            if (d == null && m_AlternateFace != null)
+                d = m_AlternateFace.GetDistance(line);
+
+            return d;
         }
 
         /// <summary>
@@ -341,26 +158,22 @@ namespace Backsight.Editor.Operations
         {
             get
             {
-                if (m_Sections==null)
-                    return new Feature[0];
+                List<Feature> result = new List<Feature>();
 
-                List<Feature> result = new List<Feature>(m_Sections.Count);
+                if (m_PrimaryFace != null)
+                    result.AddRange(m_PrimaryFace.GetNewFeatures(m_Line));
 
-                foreach (MeasuredLineFeature mf in m_Sections)
-                {
-                    // Append point feature at the end of the section (so long as it's not
-                    // the end of the subdivided line).
-                    PointFeature pf = mf.Line.EndPoint;
-                    if (pf.Creator == this)
-                        result.Add(pf);
-
-                    result.Add(mf.Line);
-                }
+                if (m_AlternateFace != null)
+                    result.AddRange(m_AlternateFace.GetNewFeatures(m_Line));
 
                 return result.ToArray();
             }
         }
 
+        /// <summary>
+        /// The unique identifier for this edit.
+        /// </summary>
+        /// <value>EditingActionId.LineSubdivision</value>
         internal override EditingActionId EditId
         {
             get { return EditingActionId.LineSubdivision; }
@@ -373,16 +186,10 @@ namespace Backsight.Editor.Operations
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         public override Feature[] GetRequiredFeatures()
         {
-            List<Feature> result = new List<Feature>();
-            result.Add(m_Line);
+            // Assumes the Distance class isn't a base for a derived class
+            // that might reference other stuff.
 
-            foreach (MeasuredLineFeature m in m_Sections)
-            {
-                Feature[] mf = m.ObservedLength.GetReferences();
-                result.AddRange(mf);
-            }
-
-            return result.ToArray();
+            return new Feature[] { m_Line };
         }
 
         /// <summary>
@@ -400,15 +207,12 @@ namespace Backsight.Editor.Operations
             // section, so long as it was created by this operation (should
             // do nothing for the 1st section).
 
-            foreach (MeasuredLineFeature m in m_Sections)
-            {
-                LineFeature line = m.Line;
-                line.Undo();
+            // Only the primary face is relevant, since the alternate face
+            // is created via an editing update.
 
-                PointFeature point = line.StartPoint;
-                if (Object.ReferenceEquals(point.Creator, this))
-                    point.Undo();
-            }
+            Feature[] fa = m_PrimaryFace.GetNewFeatures(m_Line);
+            foreach (Feature f in fa)
+                f.Undo();
 
             // Restore the original line
             m_Line.Restore();
@@ -416,185 +220,37 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Obtains the distance observations associated with this operation.
-        /// </summary>
-        /// <returns>The distances attached to each line section</returns>
-        List<Distance> GetDistances()
-        {
-            if (m_Sections==null)
-                return new List<Distance>();
-
-            List<Distance> result = new List<Distance>(m_Sections.Count);
-
-            foreach (MeasuredLineFeature mf in m_Sections)
-                result.Add(mf.ObservedLength);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // How many distances (it's at least 2).
-            int ndist = m_Sections.Count;
-
-            // Adjust the observed distances
-            List<Distance> distances = GetDistances();
-            double[] adjray = GetAdjustedLengths(m_Line, distances.ToArray());
-            Debug.Assert(adjray.Length == m_Sections.Count);
-
-            double edist = 0.0; // Distance to end of section.
-
-            // Adjust the position of the end of each section (except the last one).
-            for (int i = 0; i < (adjray.Length - 1); i++)
-            {
-                // Get the distance from the start of the parent line.
-                edist += adjray[i];
-
-                // Get a position on the parent that is that distance along the line.
-                // It shouldn't fail.
-                IPosition to;
-                if (!m_Line.LineGeometry.GetPosition(new Length(edist), out to))
-                    throw new RollforwardException(this, "Cannot adjust line section");
-
-                // Move the point at the end of the section
-                MeasuredLineFeature section = m_Sections[i];
-                section.Line.EndPoint.MovePoint(uc, to);
-            }
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
-        /// The line sections associated with this subdivision
-        /// </summary>
-        internal MeasuredLineFeature[] Sections
-        {
-            get { return m_Sections.ToArray(); }
-            //set { m_Sections = new List<MeasuredLineFeature>(value); }
-        }
-
-        /// <summary>
         /// Attempts to locate a superseded (inactive) line that was the parent of
         /// a specific line.
         /// </summary>
         /// <param name="line">The line of interest</param>
-        /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
+        /// <returns>The subdivided line (if any section corresponds to the supplied line).</returns>
         internal override LineFeature GetPredecessor(LineFeature line)
         {
-            foreach (MeasuredLineFeature mlf in m_Sections)
-            {
-                if (Object.ReferenceEquals(mlf.Line, line))
-                    return m_Line;
-            }
+            if (m_PrimaryFace != null && m_PrimaryFace.HasSection(line))
+                return m_Line;
+
+            if (m_AlternateFace != null && m_AlternateFace.HasSection(line))
+                return m_Line;
 
             return null;
-            /*
-	const INT4 nFace = GetNumFace();
-
-	for ( INT4 i=0; i<nFace; i++ )
-	{
-		const CeObjectList* const pS = GetSectionList(i);
-		if ( pS->IsReferredTo(&arc) ) return m_pArc;
-	}
-
-	return 0;
-             */
         }
 
         /// <summary>
-        /// The data entry string that defines the sections on this face.
+        /// Definition of the original face for this subdivision.
         /// </summary>
-        internal string EntryString
+        internal LineSubdivisionFace PrimaryFace
         {
-            get { return m_EntryString; }
+            get { return m_PrimaryFace; }
         }
 
         /// <summary>
-        /// Are the distances observed from the end of the line?
+        /// A secondary face that was included via an update to the original edit.
         /// </summary>
-        internal bool EntryFromEnd
+        internal LineSubdivisionFace AlternateFace
         {
-            get { return m_IsEntryFromEnd; }
-        }
-
-        /// <summary>
-        /// The default distance units to use when decoding the data entry string.
-        /// </summary>
-        internal DistanceUnit EntryUnit
-        {
-            get { return m_DefaultEntryUnit; }
-        }
-
-        /// <summary>
-        /// Converts a data entry string into the corresponding observations.
-        /// </summary>
-        /// <param name="entryString">The data entry string</param>
-        ///	<param name="defaultEntryUnit">The default units</param>
-        /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
-        /// <returns>The distances that correspond to the entry string, starting at the
-        /// beginning of the line</returns>
-        internal static Distance[] GetDistances(string entryString, DistanceUnit defaultEntryUnit,
-                                                    bool isEntryFromEnd)
-        {
-            string[] items = entryString.Split(' ');
-            List<Distance> result = new List<Distance>(items.Length);
-
-            foreach (string t in items)
-            {
-                // Hold seperate reference, since may attempt to change foreach iterator variable below
-                string s = t;
-
-                // Strip out any repeat count
-                int nRepeat = 1;
-                int repeat = s.IndexOf('*');
-                if (repeat>=0)
-                {
-                    string rest = s.Substring(repeat+1);
-
-                    if (rest.Length > 0)
-                    {
-                        nRepeat = int.Parse(rest);
-                        if (nRepeat<=0)
-                            throw new Exception("Repeat count cannot be less than or equal to zero");
-                    }
-
-                    s = s.Substring(0, repeat);
-                }
-
-                // Parse the distance
-                Distance d = new Distance(s, defaultEntryUnit);
-                if (!d.IsDefined)
-                    throw new Exception("Cannot parse distance: "+s);
-
-                // Append distances to results list
-                for (int i=0; i<nRepeat; i++)
-                    result.Add(d);
-            }
-
-            // Reverse the distances if necessary
-            if (isEntryFromEnd)
-            {
-                for (int i = 0, j = result.Count - 1; i < j; i++, j--)
-                {
-                    Distance tmp = result[i];
-                    result[i] = result[j];
-                    result[j] = tmp;
-                }
-            }
-
-            return result.ToArray();
+            get { return m_AlternateFace; }
+            set { m_AlternateFace = value; }
         }
 
         /// <summary>
@@ -614,16 +270,31 @@ namespace Backsight.Editor.Operations
                 if (isAnnoChange)
                     dataId = dataId.Substring(1);
 
-                MeasuredLineFeature mf = m_Sections.Find(delegate(MeasuredLineFeature t)
-                {
-                    return (t.Line.DataId == dataId);
-                });
+                MeasuredLineFeature mf = FindObservedLine(dataId);
 
                 if (isAnnoChange)
                     mf.Line.IsLineAnnotationFlipped = !mf.Line.IsLineAnnotationFlipped;
                 else
                     mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
             }
+        }
+
+        /// <summary>
+        /// Attempts to locate the line section with a specific ID.
+        /// </summary>
+        /// <param name="dataId">The ID to look for</param>
+        /// <returns>The observation for the corresponding section (null if not found)</returns>
+        MeasuredLineFeature FindObservedLine(string dataId)
+        {
+            MeasuredLineFeature result = null;
+
+            if (m_PrimaryFace != null)
+                result = m_PrimaryFace.FindObservedLine(dataId);
+
+            if (result == null && m_AlternateFace != null)
+                result = m_AlternateFace.FindObservedLine(dataId);
+
+            return result;
         }
     }
 }
