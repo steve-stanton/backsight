@@ -50,25 +50,19 @@ namespace Backsight.Editor.Forms
         LineSubdivisionOperation m_pop;
 
         /// <summary>
-        /// The displayed distances
+        /// The distances for the primary face
         /// </summary>
-        MeasuredLineFeature[] m_Dists;
+        AnnotatedDistance[] m_Face1;
 
         /// <summary>
-        /// Indicators for sections where the line annotation has been flipped (possibly
-        /// back to the standard side). All elements in this array are initially <c>false</c>
-        /// (even if certain annotations were previously flipped). Has a 1:1 relationship
-        /// with <c>m_Dists</c>.
+        /// The distances for the alternate face (if there is one)
         /// </summary>
-        bool[] m_Flips;
+        AnnotatedDistance[] m_Face2;
 
-        /*
-	INT4			m_FaceIndex1;	// The index of the first face
-	INT4			m_FaceIndex2;	// The index of the 2nd face (-1
-									// if there is only one face)
-	INT4			m_CurIndex;		// The index of the face that
-									// is currently displayed
-         */
+        /// <summary>
+        /// The currently listed face (m_Face1 or m_Face2). Should never be null.
+        /// </summary>
+        AnnotatedDistance[] m_CurrentFace;
 
         #endregion
 
@@ -85,13 +79,37 @@ namespace Backsight.Editor.Forms
             m_UpdCmd = up;
             m_SelectedLine = null;
             m_pop = null;
-            m_Dists = null;
-            m_Flips = null;
 
             this.DialogResult = DialogResult.Cancel;
         }
 
         #endregion
+
+        /// <summary>
+        /// Obtains the distances for one subdivision face (along with a note as
+        /// to whether the annotation has been flipped or not).
+        /// </summary>
+        /// <param name="face">The face of interest (may be null)</param>
+        /// <returns>The distances along the face (including information about
+        /// placement of annotation). Null if the supplied face is null.</returns>
+        AnnotatedDistance[] GetDistances(LineSubdivisionFace face)
+        {
+            if (face == null)
+                return null;
+
+            MeasuredLineFeature[] sections = face.Sections;
+            AnnotatedDistance[] result = new AnnotatedDistance[sections.Length];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                MeasuredLineFeature mf = sections[i];
+
+                // Don't hold the ACTUAL flip status, just record whether it has been changed
+                result[i] = new AnnotatedDistance(mf.ObservedLength, false);
+            }
+
+            return result;
+        }
 
         private void LineSubdivisionUpdateForm_Shown(object sender, EventArgs e)
         {
@@ -105,16 +123,9 @@ namespace Backsight.Editor.Forms
             m_pop = (feat.Creator as LineSubdivisionOperation);
             Debug.Assert(m_pop != null);
 
-            // Work with a copy of the distances
-            MeasuredLineFeature[] sections = m_pop.PrimaryFace.Sections;
-            m_Dists = new MeasuredLineFeature[sections.Length];
-            m_Flips = new bool[sections.Length];
-            for (int i=0; i<sections.Length; i++)
-            {
-                MeasuredLineFeature mf = sections[i];
-                m_Dists[i] = new MeasuredLineFeature(mf.Line, mf.ObservedLength);
-                m_Flips[i] = false;
-            }
+            // Grab something we throw away if the user decides to cancel
+            m_Face1 = GetDistances(m_pop.PrimaryFace);
+            m_Face2 = GetDistances(m_pop.AlternateFace);
 
             // If we have two faces, the "New Face" button means
             // you want to switch to the other face.
@@ -123,18 +134,12 @@ namespace Backsight.Editor.Forms
 
             // If we have a selected line section that is on the second face,
             // make that the initial face.
-            /*
-	INT4 firstFaceIndex = m_FaceIndex1;
-	if ( m_pSelArc && m_FaceIndex2 > 0 )
-	{
-		const CeObjectList* const pS = m_pop->GetSectionList(m_FaceIndex2);
-		if ( pS->IsReferredTo(m_pSelArc) ) firstFaceIndex = m_FaceIndex2;
-	}
-
-	// Get an array of the distances we'll be updating
-	GetFace(firstFaceIndex);
-
-             */
+            m_CurrentFace = m_Face1;
+            if (m_SelectedLine != null && m_Face2 != null)
+            {
+                if (m_pop.AlternateFace.HasSection(m_SelectedLine))
+                    m_CurrentFace = m_Face2;
+            }
 
             // Disable the option to flip annotation if annotation is currently invisible
             if (!EditingController.Current.AreLineAnnotationsDrawn)
@@ -164,45 +169,44 @@ namespace Backsight.Editor.Forms
             return (mf == null ? null : mf.Line);
         }
 
+        /// <summary>
+        /// Obtains the line section that corresponds to one of the currently
+        /// displayed distances.
+        /// </summary>
+        /// <param name="listIndex">The array index of the displayed line section</param>
+        /// <returns>The corresponding line</returns>
+        LineFeature GetLine(int listIndex)
+        {
+            if (m_CurrentFace == m_Face1)
+                return m_pop.PrimaryFace.Sections[listIndex].Line;
+
+            if (m_CurrentFace == m_Face2)
+                return m_pop.AlternateFace.Sections[listIndex].Line;
+
+            return null;
+        }
+
         private void updateButton_Click(object sender, EventArgs e)
         {
             // Get the selected distance.
-            MeasuredLineFeature mf = (listBox.SelectedItem as MeasuredLineFeature);
-            if (mf == null)
+            AnnotatedDistance ad = (listBox.SelectedItem as AnnotatedDistance);
+            if (ad == null)
             {
                 MessageBox.Show("You must first select a distance from the list.");
                 return;
             }
 
-            m_SelectedLine = mf.Line;
+            m_SelectedLine = GetLine(listBox.SelectedIndex);
 
-            using (DistForm dist = new DistForm(mf.ObservedLength, false))
+            using (DistForm dist = new DistForm(ad.Distance, false))
             {
                 if (dist.ShowDialog() == DialogResult.OK)
                 {
                     // Change the displayed distance
-                    mf.ObservedLength = dist.Distance;
+                    ad.Distance = dist.Distance;
                     RefreshList();
                 }
             }
-
-            /*
-	CdDist dist(&m_Dists[index],FALSE);
-
-	if ( dist.DoModal()==IDOK ) {
-
-		CeDistance* pDist = m_pop->GetpDistance(m_pSelArc);
-		*pDist = dist.GetDistance();
-
-		// As well as our private copy.
-		m_Dists[index] = dist.GetDistance();
-
-		// Pretty things up.
-		m_pop->GetpParent()->Erase();
-		//Paint();
-		RefreshList();
-	}
-             */
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -259,7 +263,7 @@ namespace Backsight.Editor.Forms
             // to the corresponding line.
 
             listBox.Items.Clear();
-            listBox.Items.AddRange(m_Dists);
+            listBox.Items.AddRange(m_CurrentFace);
 
             // Always leave the focus in the list of distances.
             listBox.Focus();
@@ -300,14 +304,14 @@ void CdUpdateSub::Refresh ( void ) {
                 return;
             }
 
-            MeasuredLineFeature mf = m_Dists[index];
-            LineFeature line = mf.Line;
+            AnnotatedDistance ad = m_CurrentFace[index];
+            ad.ToggleIsFlipped();
 
-            // Flip the switch in the line feature so that it will redraw differently, and
-            // remember whether a change has occurred (it's possible the user has flipped back
-            // to the original side).
+            // Change the line too, so that it will highlight with the annotation
+            // on the other side. Remember that this will need to be switched back
+            // when this dialog closes.
+            LineFeature line = GetLine(index);
             line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
-            m_Flips[index] = !m_Flips[index];
 
             // Ensure stuff gets redrawn
             m_UpdCmd.ErasePainting();
@@ -362,33 +366,19 @@ void CdUpdateSub::Refresh ( void ) {
              */
         }
 
-        /*
-void CdUpdateSub::GetFace ( const INT4 faceIndex )
-{
-	if ( m_CurIndex == faceIndex ) return;
-
-	delete [] m_Dists;
-
-	m_CurIndex = faceIndex;
-	m_NumDist = m_pop->GetCount(m_CurIndex);
-	m_Dists = new CeDistance[m_NumDist];
-	m_pop->GetSpans(m_CurIndex,m_Dists);
-}
-         */
-
         /// <summary>
         /// Sums the observed lengths for the displayed sections.
         /// </summary>
         /// <returns>The total observed length, in meters.</returns>
         double GetObservedLength()
         {
-            if (m_Dists == null)
+            if (m_CurrentFace == null)
                 return 0.0;
 
             double length = 0.0;
 
-            foreach (MeasuredLineFeature mf in m_Dists)
-                length += mf.ObservedLength.Meters;
+            foreach (AnnotatedDistance ad in m_CurrentFace)
+                length += ad.Distance.Meters;
 
             return length;
         }
@@ -399,25 +389,27 @@ void CdUpdateSub::GetFace ( const INT4 faceIndex )
         /// <returns>The items representing the change.</returns>
         internal UpdateItemCollection GetUpdateItems()
         {
+            // TODO: Get update items for possible alternate face...
+
             MeasuredLineFeature[] sections = m_pop.PrimaryFace.Sections;
-            Debug.Assert(sections.Length == m_Dists.Length);
+            Debug.Assert(sections.Length == m_Face1.Length);
 
             UpdateItemCollection result = new UpdateItemCollection();
 
             for (int i = 0; i < sections.Length; i++)
             {
                 MeasuredLineFeature originalSection = sections[i];
-                MeasuredLineFeature revisedSection = m_Dists[i];
                 LineFeature line = originalSection.Line;
-                Debug.Assert(line == revisedSection.Line);
-
                 Distance originalLength = originalSection.ObservedLength;
-                Distance revisedLength = revisedSection.ObservedLength;
+
+                AnnotatedDistance revisedSection = m_Face1[i];
+                Distance revisedLength = revisedSection.Distance;
+
                 if (originalSection.Equals(revisedLength) == false)
                     result.AddObservation<Distance>(line.DataId, originalLength, revisedLength);
 
-                if (m_Flips[i])
-                    result.AddItem<bool>("A"+line.DataId, line.IsLineAnnotationFlipped, !line.IsLineAnnotationFlipped);
+                if (revisedSection.IsFlipped)
+                    result.AddItem<bool>("A" + line.DataId, !line.IsLineAnnotationFlipped, line.IsLineAnnotationFlipped);
             }
 
             return result;
@@ -428,14 +420,28 @@ void CdUpdateSub::GetFace ( const INT4 faceIndex )
             // Ensure any flipped annotations have been temporarily flipped back. To set the
             // status for good, the appropriate update items must be returned by GetUpdateItems.
 
-            for (int i=0; i<m_Flips.Length; i++)
+            CloseFace(m_Face1, m_pop.PrimaryFace);
+            CloseFace(m_Face2, m_pop.AlternateFace);
+        }
+
+        void CloseFace(AnnotatedDistance[] ads, LineSubdivisionFace face)
+        {
+            if (face == null)
+                return;
+
+            MeasuredLineFeature[] sections = face.Sections;
+            Debug.Assert(sections.Length == ads.Length);
+
+            for (int i = 0; i < sections.Length; i++)
             {
-                if (m_Flips[i])
+                if (ads[i].IsFlipped)
                 {
-                    LineFeature line = m_Dists[i].Line;
+                    LineFeature line = sections[i].Line;
                     line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
                 }
             }
         }
+
+
     }
 }
