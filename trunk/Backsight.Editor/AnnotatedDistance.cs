@@ -21,14 +21,9 @@ namespace Backsight.Editor
     /// <summary>
     /// A distance that is portrayed as an annotation alongside a line.
     /// </summary>
-    class AnnotatedDistance
+    class AnnotatedDistance : Distance
     {
         #region Class data
-
-        /// <summary>
-        /// The distance observation (not null)
-        /// </summary>
-        Distance m_Distance;
 
         /// <summary>
         /// Should the annotation be flipped (displayed on the non-default side)?
@@ -47,32 +42,12 @@ namespace Backsight.Editor
         /// non-default side)?</param>
         /// <exception cref="ArgumentNullException">If the supplied distance is null.</exception>
         internal AnnotatedDistance(Distance distance, bool isFlipped)
+            : base(distance)
         {
-            if (distance == null)
-                throw new ArgumentNullException();
-
-            m_Distance = distance;
             m_IsFlipped = isFlipped;
         }
 
         #endregion
-
-        /// <summary>
-        /// The distance observation (not null)
-        /// </summary>
-        /// <exception cref="ArgumentNullException">On an attempt to set a null distance.</exception>
-        internal Distance Distance
-        {
-            get { return m_Distance; }
-
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException();
-
-                m_Distance = value;
-            }
-        }
 
         /// <summary>
         /// Should the annotation be flipped (displayed on the non-default side)?
