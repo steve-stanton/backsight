@@ -42,7 +42,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The line that is currently selected.
         /// </summary>
-        LineFeature m_SelectedLine; // was m_pSelArc
+        LineFeature m_SelectedLine;
 
         /// <summary>
         /// The line subdivision involved.
@@ -77,9 +77,6 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             m_UpdCmd = up;
-            m_SelectedLine = null;
-            m_pop = null;
-
             this.DialogResult = DialogResult.Cancel;
         }
 
@@ -165,8 +162,7 @@ namespace Backsight.Editor.Forms
 
         LineFeature GetSelectedLine()
         {
-            MeasuredLineFeature mf = (listBox.SelectedItem as MeasuredLineFeature);
-            return (mf == null ? null : mf.Line);
+            return GetLine(listBox.SelectedIndex);
         }
 
         /// <summary>
@@ -177,10 +173,14 @@ namespace Backsight.Editor.Forms
         /// <returns>The corresponding line</returns>
         LineFeature GetLine(int listIndex)
         {
+            if (listIndex < 0)
+                return null;
+
             if (m_CurrentFace == m_Face1)
                 return m_pop.PrimaryFace.Sections[listIndex].Line;
 
-            if (m_CurrentFace == m_Face2)
+            // May have just added new face
+            if (m_CurrentFace == m_Face2 && m_pop.AlternateFace != null)
                 return m_pop.AlternateFace.Sections[listIndex].Line;
 
             return null;
@@ -198,12 +198,13 @@ namespace Backsight.Editor.Forms
 
             m_SelectedLine = GetLine(listBox.SelectedIndex);
 
-            using (DistForm dist = new DistForm(ad.Distance, false))
+            using (DistForm dist = new DistForm(ad, false))
             {
                 if (dist.ShowDialog() == DialogResult.OK)
                 {
                     // Change the displayed distance
-                    ad.Distance = dist.Distance;
+
+                    m_CurrentFace[listBox.SelectedIndex] = new AnnotatedDistance(dist.Distance, ad.IsFlipped);
                     RefreshList();
                 }
             }
@@ -231,6 +232,23 @@ namespace Backsight.Editor.Forms
             IDrawStyle style = m_UpdCmd.Controller.Style(Color.Magenta);
             style.IsFixed = true;
             m_pop.Render(display, style, true);
+
+            // If we've specified the values for a new face (but it hasn't yet made
+            // it into the edit, draw the annotations and extra points).
+            if (m_Face2 != null && m_pop.AlternateFace == null)
+            {
+                LineFeature line = m_pop.Parent;
+                double[] lens = LineSubdivisionFace.GetAdjustedLengths(line, m_Face2);
+                double totlen = 0.0;
+
+                foreach (double len in lens)
+                {
+                    totlen += len;
+                    IPosition p;
+                    if (line.LineGeometry.GetPosition(new Length(totlen), out p))
+                        style.Render(display, p);
+                }
+            }
 
             // Highlight the currently selected section (if any).
             if (m_SelectedLine != null)
@@ -323,47 +341,55 @@ void CdUpdateSub::Refresh ( void ) {
             // normally (since it cannot exist as part of any other
             // face).
             if (m_SelectedLine != null)
-            {
-                //UnHighlightArc();
                 m_SelectedLine = null;
-            }
 
             // If a second face doesn't already exist, get the
             // user to specify the distances.
 
-	        //if ( m_FaceIndex2 < 0 )
-	        //{
-
-            // Get the distance observations
-
-            using (LegForm dial = new LegForm(GetObservedLength()))
+            if (m_Face2 == null)
             {
-                if (dial.ShowDialog() != DialogResult.OK)
-                    return;
-
-                // Must be at least two distances
-                Distance[] dists = dial.Distances;
-                if (dists == null || dists.Length < 2)
+                try
                 {
-                    MessageBox.Show("The new face must have at least two spans");
-                    return;
+                    this.WindowState = FormWindowState.Minimized;
+
+                    // Get the distance observations
+
+                    using (LegForm dial = new LegForm(GetObservedLength()))
+                    {
+                        if (dial.ShowDialog() != DialogResult.OK)
+                            return;
+
+                        // Must be at least two distances
+                        Distance[] dists = dial.Distances;
+                        if (dists == null || dists.Length < 2)
+                        {
+                            MessageBox.Show("The new face must have at least two spans");
+                            return;
+                        }
+
+                        // Remember the entered distances for the new face.
+                        m_Face2 = new AnnotatedDistance[dists.Length];
+                        for (int i = 0; i < dists.Length; i++)
+                            m_Face2[i] = new AnnotatedDistance(dists[i], true);
+
+                        newFaceButton.Text = "&Other Face";
+                    }
                 }
 
-                // Create the new face
-                //m_FaceIndex2 = m_pop->AddFace(nDist, pDist);
-                //if (m_FaceIndex2 < 0) return;
-
-                newFaceButton.Text = "&Other Face";
+                finally
+                {
+                    this.WindowState = FormWindowState.Normal;
+                }
             }
 
-            /*
-	if ( m_CurIndex == m_FaceIndex1 )
-		GetFace(m_FaceIndex2);
-	else
-		GetFace(m_FaceIndex1);
+            // Switch to the other face (possibly the one just added)
 
-	RefreshList();
-             */
+            if (m_CurrentFace == m_Face1)
+                m_CurrentFace = m_Face2;
+            else
+                m_CurrentFace = m_Face1;
+
+            RefreshList();
         }
 
         /// <summary>
@@ -378,7 +404,7 @@ void CdUpdateSub::Refresh ( void ) {
             double length = 0.0;
 
             foreach (AnnotatedDistance ad in m_CurrentFace)
-                length += ad.Distance.Meters;
+                length += ad.Meters;
 
             return length;
         }
@@ -389,12 +415,38 @@ void CdUpdateSub::Refresh ( void ) {
         /// <returns>The items representing the change.</returns>
         internal UpdateItemCollection GetUpdateItems()
         {
-            // TODO: Get update items for possible alternate face...
-
-            MeasuredLineFeature[] sections = m_pop.PrimaryFace.Sections;
-            Debug.Assert(sections.Length == m_Face1.Length);
-
             UpdateItemCollection result = new UpdateItemCollection();
+            AddUpdateItems(result, m_pop.PrimaryFace, m_Face1);
+
+            // If an alternate face previously exists, handle it like the primary face.
+            // Otherwise record the new face.
+
+            if (m_Face2 != null)
+            {
+                if (m_pop.AlternateFace == null)
+                {
+                    // Record new face
+                }
+                else
+                {
+                    AddUpdateItems(result, m_pop.AlternateFace, m_Face2);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Adds update items for a previously created face.
+        /// </summary>
+        /// <param name="uc">The item collection to append to</param>
+        /// <param name="face">The previously created face (not null)</param>
+        /// <param name="dists">The distances specified by the user (not null)</param>
+        void AddUpdateItems(UpdateItemCollection uc, LineSubdivisionFace face, AnnotatedDistance[] dists)
+        {
+            Debug.Assert(face != null);
+            MeasuredLineFeature[] sections = face.Sections;
+            Debug.Assert(sections.Length == dists.Length);
 
             for (int i = 0; i < sections.Length; i++)
             {
@@ -402,17 +454,14 @@ void CdUpdateSub::Refresh ( void ) {
                 LineFeature line = originalSection.Line;
                 Distance originalLength = originalSection.ObservedLength;
 
-                AnnotatedDistance revisedSection = m_Face1[i];
-                Distance revisedLength = revisedSection.Distance;
+                AnnotatedDistance revisedSection = dists[i];
 
-                if (originalSection.Equals(revisedLength) == false)
-                    result.AddObservation<Distance>(line.DataId, originalLength, revisedLength);
+                if (originalLength.Equals(revisedSection) == false)
+                    uc.AddObservation<Distance>(line.DataId, originalLength, revisedSection);
 
                 if (revisedSection.IsFlipped)
-                    result.AddItem<bool>("A" + line.DataId, !line.IsLineAnnotationFlipped, line.IsLineAnnotationFlipped);
+                    uc.AddItem<bool>("A" + line.DataId, !line.IsLineAnnotationFlipped, line.IsLineAnnotationFlipped);
             }
-
-            return result;
         }
 
         private void LineSubdivisionUpdateForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -441,7 +490,5 @@ void CdUpdateSub::Refresh ( void ) {
                 }
             }
         }
-
-
     }
 }

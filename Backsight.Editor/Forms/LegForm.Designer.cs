@@ -234,6 +234,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "LegForm";
             this.Text = "Specify distances for the new face ...";
+            this.TopMost = true;
             this.Shown += new System.EventHandler(this.LegForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

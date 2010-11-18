@@ -73,7 +73,15 @@ namespace Backsight.Editor.Forms
             // entry units).
 
             DistanceUnit dunit = EditingController.Current.EntryUnit;
-            ShowResults(dunit.UnitType);
+
+            if (dunit.UnitType == DistanceUnitType.Meters)
+                metersRadioButton.Checked = true;
+            else if (dunit.UnitType == DistanceUnitType.Feet)
+                feetRadioButton.Checked = true;
+            else if (dunit.UnitType == DistanceUnitType.Chains)
+                chainsRadioButton.Checked = true;
+            else
+                ShowResults(dunit.UnitType);
         }
 
         private void distancesTextBox_TextChanged(object sender, EventArgs e)
@@ -130,14 +138,14 @@ namespace Backsight.Editor.Forms
 
             // Confirm that the entered length is exact. If not,
             // ask the user to confirm.
-            double lengthLeft;
-            if (!Double.TryParse(lengthLeftTextBox.Text, out lengthLeft))
+            Distance lengthLeft;
+            if (!Distance.TryParse(lengthLeftTextBox.Text, out lengthLeft))
             {
                 MessageBox.Show("Cannot decode length left text box");
                 return;
             }
 
-            if (Math.Abs(lengthLeft) > 0.00001)
+            if (Math.Abs(lengthLeft.Meters) > 0.00001)
             {
                 string msg = "WARNING: The entered length does not add up" + System.Environment.NewLine +
                              "to the length of the leg. The distances you" + System.Environment.NewLine +

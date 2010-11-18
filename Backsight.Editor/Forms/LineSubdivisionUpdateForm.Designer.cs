@@ -41,7 +41,6 @@
             this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox.DisplayMember = "Distance";
             this.listBox.FormattingEnabled = true;
             this.listBox.ItemHeight = 16;
             this.listBox.Location = new System.Drawing.Point(12, 12);
