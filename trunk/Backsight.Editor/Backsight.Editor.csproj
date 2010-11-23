@@ -690,6 +690,7 @@
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
     <Compile Include="TextCheck.cs" />
+    <Compile Include="ThrowawayFeatureFactory.cs" />
     <Compile Include="Topology.cs" />
     <Compile Include="Operations\AttachPointOperation.cs" />
     <Compile Include="Operations\DeletionOperation.cs" />

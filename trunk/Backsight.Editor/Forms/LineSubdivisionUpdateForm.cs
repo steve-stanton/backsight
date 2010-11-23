@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 
 using Backsight.Editor.UI;
 using Backsight.Editor.Operations;
@@ -60,6 +61,11 @@ namespace Backsight.Editor.Forms
         AnnotatedDistance[] m_Face2;
 
         /// <summary>
+        /// Was the alternate face created via this dialog?
+        /// </summary>
+        bool m_IsFace2New;
+
+        /// <summary>
         /// The currently listed face (m_Face1 or m_Face2). Should never be null.
         /// </summary>
         AnnotatedDistance[] m_CurrentFace;
@@ -77,6 +83,7 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             m_UpdCmd = up;
+            m_IsFace2New = false;
             this.DialogResult = DialogResult.Cancel;
         }
 
@@ -233,23 +240,6 @@ namespace Backsight.Editor.Forms
             style.IsFixed = true;
             m_pop.Render(display, style, true);
 
-            // If we've specified the values for a new face (but it hasn't yet made
-            // it into the edit, draw the annotations and extra points).
-            if (m_Face2 != null && m_pop.AlternateFace == null)
-            {
-                LineFeature line = m_pop.Parent;
-                double[] lens = LineSubdivisionFace.GetAdjustedLengths(line, m_Face2);
-                double totlen = 0.0;
-
-                foreach (double len in lens)
-                {
-                    totlen += len;
-                    IPosition p;
-                    if (line.LineGeometry.GetPosition(new Length(totlen), out p))
-                        style.Render(display, p);
-                }
-            }
-
             // Highlight the currently selected section (if any).
             if (m_SelectedLine != null)
                 m_SelectedLine.Render(display, new HighlightStyle());
@@ -367,6 +357,10 @@ void CdUpdateSub::Refresh ( void ) {
                             return;
                         }
 
+                        // Create the new face (for use in preview only)
+                        m_pop.AlternateFace = CreateAlternateFace(dists);
+                        m_IsFace2New = true;
+
                         // Remember the entered distances for the new face.
                         m_Face2 = new AnnotatedDistance[dists.Length];
                         for (int i = 0; i < dists.Length; i++)
@@ -390,6 +384,71 @@ void CdUpdateSub::Refresh ( void ) {
                 m_CurrentFace = m_Face1;
 
             RefreshList();
+        }
+
+        /// <summary>
+        /// Creates a new face for the line (for use in previewing the outcome
+        /// of the change).
+        /// </summary>
+        /// <param name="dists">The lengths of the line sections along the alternate face</param>
+        LineSubdivisionFace CreateAlternateFace(Distance[] dists)
+        {
+            // Express the distances as an entry string
+            DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
+            StringBuilder sb = new StringBuilder();
+            string prev = String.Empty;
+            int nDist = 0;
+            
+            for (int i = 0; i < dists.Length; i++)
+            {
+                Distance d = dists[i];
+                bool appendAbbrev = (d.EntryUnit.UnitType != defaultEntryUnit.UnitType);
+                string s = dists[i].Format(appendAbbrev);
+                if (s == prev)
+                {
+                    nDist++;
+                }
+                else
+                {
+                    // If the last distance was repeared, append the repeat count
+                    if (nDist > 1)
+                        sb.AppendFormat("*{0}", nDist);
+
+                    if (i > 0)
+                        sb.Append(" ");
+
+                    // Append the distance, remember it so that we can check
+                    // next distance for repeat
+                    sb.Append(s);
+                    nDist = 1;
+                    prev = s;
+                }
+            }
+
+            // If the last distance was repeated, ensure the repeat count has
+            // been appended.
+            if (nDist > 1)
+                sb.AppendFormat("*{0}", nDist);
+
+            // Distances are assumed to come from the start of the line (the LegForm dialog
+            // doesn't let you reverse things).
+            LineSubdivisionFace face = new LineSubdivisionFace(sb.ToString(), defaultEntryUnit, false);
+
+            // Create features, but without assigning any feature IDs to anything.
+            // Unfortunately, this will end up cross-referencing the parent line end points
+            // to the throwaway line sections -- must remember to undo on close.
+            FeatureFactory ff = new ThrowawayFeatureFactory(m_pop);
+            ff.LineType = m_pop.Parent.EntityType;
+            face.CreateSections(m_pop.Parent, ff);
+
+            // Define geometry
+            face.CalculateGeometry(m_pop.Parent, null);
+
+            // Add to spatial index
+            //Feature[] feats = ff.CreatedFeatures;
+            //m_pop.MapModel.AddToIndex(feats);
+
+            return face;
         }
 
         /// <summary>
@@ -470,7 +529,15 @@ void CdUpdateSub::Refresh ( void ) {
             // status for good, the appropriate update items must be returned by GetUpdateItems.
 
             CloseFace(m_Face1, m_pop.PrimaryFace);
-            CloseFace(m_Face2, m_pop.AlternateFace);
+
+            if (m_IsFace2New)
+            {
+                m_pop.AlternateFace = null;
+            }
+            else
+            {
+                CloseFace(m_Face2, m_pop.AlternateFace);
+            }
         }
 
         void CloseFace(AnnotatedDistance[] ads, LineSubdivisionFace face)

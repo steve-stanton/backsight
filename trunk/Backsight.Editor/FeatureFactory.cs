@@ -291,7 +291,7 @@ namespace Backsight.Editor
         /// <param name="from">The point at the start of the section</param>
         /// <param name="to">The point at the end of the section</param>
         /// <returns>The created section (never null)</returns>
-        internal SectionLineFeature CreateSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
+        internal virtual SectionLineFeature CreateSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
         {
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
