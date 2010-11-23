@@ -15,7 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+
 using Backsight.Editor.Observations;
+
 
 namespace Backsight.Editor.Operations
 {
@@ -225,6 +228,25 @@ namespace Backsight.Editor.Operations
             m_Sections = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineSubdivisionFace"/> class
+        /// using a string that was previously returned by <see cref="GetInputString"/>.
+        /// </summary>
+        /// <param name="inputString">The string to parse.</param>
+        internal LineSubdivisionFace(string inputString)
+        {
+            string[] items = inputString.Split(';');
+            if (items.Length != 3)
+                throw new ArgumentException();
+
+            //m_EntryString = ParseString("EntryString", items[0]);
+            //m_DefaultEntryUnit =                         
+
+            //sb.AppendFormat("EntryString={0}; ", m_EntryString);
+            //sb.AppendFormat("DefaultEntryUnit={0}; ", (int)m_DefaultEntryUnit.UnitType);
+            //sb.AppendFormat("IsEntryFromEnd={0}", (m_IsEntryFromEnd ? 1 : 0));
+        }
+
         #endregion
 
         /// <summary>
@@ -430,6 +452,20 @@ namespace Backsight.Editor.Operations
         internal MeasuredLineFeature[] Sections
         {
             get { return m_Sections.ToArray(); }
+        }
+
+        /// <summary>
+        /// Gets a string that represents the input paramaters for this face.
+        /// </summary>
+        /// <returns>A string that contains the input parameters for this face (may
+        /// be supplied to the constructor that accepts a string).</returns>
+        internal string GetInputString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("EntryString={0}; ", m_EntryString);
+            sb.AppendFormat("DefaultEntryUnit={0}; ", (int)m_DefaultEntryUnit.UnitType);
+            sb.AppendFormat("IsEntryFromEnd={0}", (m_IsEntryFromEnd ? 1 : 0));
+            return sb.ToString();
         }
     }
 }

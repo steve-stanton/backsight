@@ -48,9 +48,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The 1-based creation sequence of this feature within the session that
-        /// created it. A value of 0 means the sequence still needs to be defined
-        /// (during initial creation of features, the <see cref="Operation.Complete"/>
-        /// method is responsible for defining the sequence number).
+        /// created it. A value of 0 means the sequence still needs to be defined.
         /// </summary>
         readonly uint m_SessionSequence;
 
@@ -93,7 +91,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="creator">The editing operation that created the feature (never null).</param>
         /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// session that created it. Specify 0 for a temporary feature that should not be added
+        /// to the model.</param>
         /// <param name="entityType">The type of real-world object that the feature corresponds to.</param>
         /// <param name="featureId">The user-perceived ID (if any) for the feature. This is the ID that
         /// is used to associate the feature with any miscellaneous attributes
@@ -106,8 +105,8 @@ namespace Backsight.Editor
             if (entityType == null)
                 throw new ArgumentNullException("Entity type must be defined");
 
-            if (sessionSequence == 0)
-                throw new ArgumentException("Session sequence must be defined");
+            //if (sessionSequence == 0)
+            //    throw new ArgumentException("Session sequence must be defined");
 
             m_Creator = creator;
             m_SessionSequence = sessionSequence;
@@ -121,7 +120,8 @@ namespace Backsight.Editor
                 m_Id.AddReference(this);
 
             // Remember this feature as part of the model
-            m_Creator.MapModel.AddFeature(this);
+            if (sessionSequence > 0)
+                m_Creator.MapModel.AddFeature(this);
         }
 
         /// <summary>

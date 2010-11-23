@@ -114,7 +114,10 @@ namespace Backsight.Editor
             m_To = end;
             m_Geom = g;
             m_Topology = null;
-            AddReferences();
+
+            // Don't cross-reference if we're dealing with a temporary feature
+            if (f.SessionSequence > 0)
+                AddReferences();
 
             if (isTopological)
                 SetTopology(true);
