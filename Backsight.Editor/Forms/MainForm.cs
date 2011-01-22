@@ -777,9 +777,17 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// <param name="action">The action that initiated this call</param>
         private void FileCoordinateSystem(IUserAction action)
         {
-            CoordSystemForm dial = new CoordSystemForm();
-            dial.ShowDialog();
-            dial.Dispose();
+            //CoordSystemForm dial = new CoordSystemForm();
+            //dial.ShowDialog();
+            //dial.Dispose();
+
+            using (CoordinateSystemForm dial = new CoordinateSystemForm())
+            {
+                if (dial.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show(dial.SelectedSystem.KeyName);
+                }
+            }
         }
 
         private bool IsFileCheckEnabled()
@@ -2082,6 +2090,16 @@ OPTION (MAXRECURSION 0)
             if (vSplitContainer.Panel2Collapsed)
                 return;
 
+            /*
+            // TEST...
+            Polygon p = (o as Polygon);
+            if (p != null)
+            {
+                IPosition[] edge = p.GetOutline(new Length(0.001));
+                double ga = CadastralMapModel.Current.CoordinateSystem.GetGroundArea(edge);
+                MessageBox.Show("ground area=" + ga);
+            }
+            */
             propertyDisplay.SetSelectedObject(o);
         }
 
