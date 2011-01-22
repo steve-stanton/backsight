@@ -149,6 +149,12 @@
       <DependentUpon>AttributeDataForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ColumnDomainConverter.cs" />
+    <Compile Include="Forms\CoordinateSystemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CoordinateSystemForm.designer.cs">
+      <DependentUpon>CoordinateSystemForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CoordSystemForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1195,6 +1201,9 @@
     <None Include="app.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Resources\ZoomOut.ico" />
+    <EmbeddedResource Include="Forms\CoordinateSystemForm.resx">
+      <DependentUpon>CoordinateSystemForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DistForm.resx">
       <DependentUpon>DistForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1239,6 +1248,10 @@
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
       <Name>Backsight</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CSLib\CSLib.vcproj">
+      <Project>{CA904B67-D8E8-4ADC-BF7C-596B79F67D8D}</Project>
+      <Name>CSLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ntx\Ntx.csproj">
       <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
