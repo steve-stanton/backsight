@@ -1,6 +1,10 @@
 #pragma once
 
+#include "DatumDef.h"
+#include "EllipsoidDef.h"
+
 using namespace System;
+using namespace System::ComponentModel;
 
 namespace CSLib
 {
@@ -8,36 +12,39 @@ namespace CSLib
 	{
 	public:
 
-		/* The name used to identify the coordinate system. */
+		[Description("The name used to identify the coordinate system.")]
 		property String^ KeyName; // key_nm [24]
 
-		/* The key name of the datum upon which the coordinate system is based. */
-		property String^ DatumKeyName; // dat_knm [24]
-		
-		/* The key name of the ellipsoid upon which the coordinate system is based. */
+		[Description("The key name of the datum upon which the coordinate system is based.")]
+		property String^ DatumKeyName; // dat_knm [24]		
+		//property DatumDef^ Datum;
+
+		[Description("The key name of the ellipsoid upon which the coordinate system is based.")]
 		property String^ EllipsoidKeyName; // elp_knm [24]
+		//property EllipsoidDef^ Ellipsoid;
 								   
-		/* The key name of the projection upon which the coordinate system is based,
-		eight characters max. */
+		[Description("The key name of the projection upon which the coordinate system is based.")]
 		property String^ ProjectionKeyName; // prj_knm [24]
 
-		/* The classification into which this coordinate system falls.  I.e.
-		State Plane 27, State Plane 83, UTM 27, etc. */
+		[Description("The classification into which this coordinate system falls.")]
 		property String^ Group; // group [24]
 
 		/* Field by which coordinate systems can be classified by location, for example,
 		world, North America, Central America, Europe, etc.  To be used by selector
 		programs. */
+		[Description("Field by which coordinate systems can be classified by location.")]
 		property String^ Location; // locatn [24]
 
 		/* Up to 24 two character codes which define the countries (or US states) in which
 		this coordinate system is designed to be used.  We use the US postal code
 		abbreviations for states in lower case, and POSC country abbreviations in upper
 		case. This also, is intended for use by a coordinate system selector program. */
+		[Description("Up to 24 two character codes which define the countries (or US states) in which this coordinate system is designed to be used")]
 		property String^ CountriesOrStates; // cntry_st [48]
 
 		/* The name of the units of the coordinate system, i.e. the units of the resulting
 		coordinate system. */
+		[Description("The name of the units of the coordinate system")]
 		property String^ Units; // unit [16]
 
 		/* Twenty four projection parameters. The actual contents depend upon the
@@ -72,25 +79,31 @@ namespace CSLib
 
 		/* The origin of the projection.  Values are in degrees.  For several
 		projections, parm1 carries the origin longitude (i.e. central meridian). */
+		[Description("The longitude origin of the projection (in degrees)")]
 		property double LongitudeOrigin; // org_lng
+		[Description("The latitude origin of the projection (in degrees)")]
 		property double LatitudeOrigin;  // org_lat
 
 		/* The false easting to be applied to keep X coordinates positive.  Values are in the
 		units of the resulting coordinates. */
+		[Description("The false easting to be applied to keep X coordinates positive.")]
 		property double FalseEasting; // x_off
 
 		/* The false northing to be applied to keep the Y coordinates positive.  Values are in
 		the units of the resulting coordinates. */
+		[Description("The false northing to be applied to keep the Y coordinates positive.")]
 		property double FalseNorthing; // y_off
 
 		/* The scale reduction which is used on some projections to distribute
 		the distortion uniformily across the map, else 1.0. */
+		[Description("The scale reduction which is used on some projections to distribute the distortion uniformily across the map")]
 		property double ScaleReduction; // scl_red
 
 		/* The scale factor required to get from coordinate system units to meters
 		by multiplication.  This factor is used to convert scalars (i.e. text height,
 		elevations, etc.) in the system unit to meters by multiplication.  It is also used
 		to convert scalars from meters to the system unit by division. */
+		[Description("The scale factor required to get from coordinate system units to meters by multiplication.")]
 		property double UnitsToMetersFactor; // unit_scl
 
 		/* The scale factor to get to the desired map scale by division (e.g. 24000 for a
@@ -98,6 +111,7 @@ namespace CSLib
 		to produce inches, millimeters, etc. on an existing map.  In this case, one sets
 		the unit to inches, millimeters, whatever, and sets this value appropriately.  Usually,
 		this value is set to 1.0. */
+		[Description("The scale factor to get to the desired map scale by division.")]
 		property double MapScaleFactor; // map_scl
 
 		/* A single scale factor which includes all the unit scale and the map scale
@@ -109,31 +123,36 @@ namespace CSLib
 		This value is used to convert the ellipsoid equatorial radius to system units before
 		all other calculations are made.  This variable exists primarily for historical
 		reasons. */
+		[Description("A single scale factor which includes all the unit scale and the map scale factors (archaic)")]
 		property double OldScaleFactor; // scale
 
 		/* Absolute values of X & Y which are smaller than this are to be converted
 		to a hard zero.  Set by the compiler to the system unit equivalent of .01
 		millimeters by the setup function. This feature is included to prevent
 		output such as 2.345E-05 which is usually undesirable. */
+		[Description("Absolute value of X which are smaller than this are to be converted to a hard zero.")]
 		property double ZeroX; // zero [2]
+		[Description("Absolute value of Y which are smaller than this are to be converted to a hard zero.")]
 		property double ZeroY;
 
 		/* The following values are set to zero by the compiler and are an attempt to
 		prepare for future changes. */
 
-		/* Longitude of the elevation point. */
+		[Description("Longitude of the elevation point.")]
 		property double ElevationPointLongitude; // hgt_lng
 
-		/* Latitude of the elevation point. */
+		[Description("Latitude of the elevation point.")]
 		property double ElevationPointLatitude; // hgt_lat
 
 		/* Elevation of the coordinate system; typically the actual elevation at
 		elevation average point.  This is an orthometric height, i.e. height
 		above the geoid. */
+		[Description("Orthometric height of the coordinate system (typically the actual elevation at elevation average point).")]
 		property double Elevation; // hgt_zz
 
 		/* If defined by the user, the height of the geoid above the ellipsoid, also
 		known as the geoid separation, at the elevation point. */
+		[Description("The height of the geoid above the ellipsoid, also known as the geoid separation, at the elevation point.")]
 		property double GeoidSeparation; // geoid_sep
 
 		/* Lat/Longs outside the rectangle established by the following
@@ -152,41 +171,43 @@ namespace CSLib
 		property double MaxX; // xy_max [2]
 		property double MaxY;
 
-		/* The complete name of the coordinate system. */
+		[Description("The complete name of the coordinate system.")]
 		property String^ Description; // desc_nm [64]
 
-		/* Description of where the data for this coordinate system came from. */
+		[Description("Description of where the data for this coordinate system came from.")]
 		property String^ Source; // source [64]
 
-		/* Quadrant of the cartesian coordinates. Used to handle coordinate systems in
-		which X increases to the left, etc. */
+		[Description("Quadrant of the cartesian coordinates. Used to handle coordinate systems in which X increases to the left, etc.")]
 		property short Quadrant; // quad
 
 		/* Order of the complex series, if any used for this coordinate system.
 		Order is currently computed automatically, so this field is currently ignored. */
+		[Description("Order of the complex series, if any used for this coordinate system (currently ignored).")]
 		property short ComplexSeriesOrder; // order;
 
 		/* Number of zones in an interrupted coordinate system definition, such
 		as sinusoidal and Goode homolosine. Currently, the number of zones is
 		automatically calculated and this field is ignored. This, of course,
 		could change. */
+		[Description("Number of zones in an interrupted coordinate system definition.")]
 		property short NumberOfZones; // zones
 
-		/* Set to TRUE is this definition is to be protected from being changed by users. */
+		[Description("Set to TRUE is this definition is to be protected from being changed by users.")]
 		property short Protect; // protect
 
 		/* In the same form as the quad member of this structure, this elelment carries
 		quad as specified by the EPSG database, originally populated with values from
 		EPSG 7.05 */
+		[Description("Quad as specified by the EPSG database")]
 		property short EPSGQuad; // epsg_qd
 
-		/* The Oracle SRID number if known, else 0. */
+		[Description("The Oracle SRID number if known, else 0.")]
 		property short OracleSRID; // srid
 
-		/* EPSG number, if known */
+		[Description("EPSG number, if known.")]
 		property short EPSGNumber; // epsgNbr
 
-		/* WKT flavor, if dervied from WKT, else zero */
+		[Description("WKT flavor, if dervied from WKT, else zero.")]
 		property short WKTFlavor; // wktFlvr
 		
 		virtual String^ ToString() override

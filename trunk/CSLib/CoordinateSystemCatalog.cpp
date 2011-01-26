@@ -23,10 +23,43 @@ namespace CSLib
 		if (res!=0)
 			throw gcnew Exception("Cannot locate coordinate system data folder");
 
-		this->Systems = ReadSystems();
 		this->Datums = ReadDatums();
 		this->Ellipsoids = ReadEllipsoids();
+		this->Systems = ReadSystems();
 		this->Categories = ReadCategories();
+	}
+
+	CoordinateSystemDef^ CoordinateSystemCatalog::FindByEPSGNumber(short epsgNumber)
+	{
+		for each (CoordinateSystemDef^ cs in this->Systems)
+		{
+			if (cs->EPSGNumber == epsgNumber)
+				return cs;
+		}
+
+		return nullptr;
+	}
+
+	DatumDef^ CoordinateSystemCatalog::FindDatumByKeyName(String^ keyName)
+	{
+		for each (DatumDef^ datum in this->Datums)
+		{
+			if (datum->KeyName == keyName)
+				return datum;
+		}
+
+		return nullptr;
+	}
+
+	EllipsoidDef^ CoordinateSystemCatalog::FindEllipsoidByKeyName(String^ keyName)
+	{
+		for each (EllipsoidDef^ e in this->Ellipsoids)
+		{
+			if (e->KeyName == keyName)
+				return e;
+		}
+
+		return nullptr;
 	}
 
 	array<CoordinateSystemDef^>^ CoordinateSystemCatalog::ReadSystems()
@@ -104,6 +137,10 @@ namespace CSLib
 			csDef->OracleSRID = cs.srid;
 			csDef->EPSGNumber = cs.epsgNbr;
 			csDef->WKTFlavor = cs.wktFlvr;
+
+			// Provide expanded versions of important fields
+			//csDef->Datum = FindDatumByKeyName(csDef->DatumKeyName);
+			//csDef->Ellipsoid = FindEllipsoidByKeyName(csDef->EllipsoidKeyName);
 
 			csDefs->Add(csDef);
 		}

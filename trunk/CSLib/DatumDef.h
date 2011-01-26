@@ -1,8 +1,10 @@
 #pragma once
 
 using namespace System;
+using namespace System::ComponentModel;
+using namespace Backsight;
 
-public ref class DatumDef
+public ref class DatumDef : IExpandablePropertyItem
 {
 public:
 
