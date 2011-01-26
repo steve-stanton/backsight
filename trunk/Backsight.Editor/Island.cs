@@ -103,7 +103,7 @@ namespace Backsight.Editor
         /// of an island is less than zero. This override negates the value so you should get back
         /// an area greater than zero.
         /// </summary>
-        internal override double Area
+        public override double Area
         {
             get { return -base.Area; }
         }
