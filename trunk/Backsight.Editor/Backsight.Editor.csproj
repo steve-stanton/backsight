@@ -469,7 +469,6 @@
     <Compile Include="PathInfo.cs" />
     <Compile Include="PathParser.cs" />
     <Compile Include="PointGeometry.cs" />
-    <Compile Include="PositionLoader.cs" />
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
     <Compile Include="RowTextFeature.cs" />
