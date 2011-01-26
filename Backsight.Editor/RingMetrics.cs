@@ -96,7 +96,7 @@ namespace Backsight.Editor
         /// test to see whether a ring is an island - instead, check whether it is an instance
         /// of <see cref="Island"/>
         /// </summary>
-        internal virtual double Area
+        public virtual double Area
         {
             get { return m_Area; }
         }
