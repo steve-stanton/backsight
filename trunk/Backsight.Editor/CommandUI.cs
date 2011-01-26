@@ -443,11 +443,6 @@ namespace Backsight.Editor
             get { return m_Recall; }
         }
 
-        internal ICoordinateSystem CoordinateSystem
-        {
-            get { return CadastralMapModel.Current.CoordinateSystem; }
-        }
-
         /// <summary>
         /// The diagonal length of a line that spans the active display when it is
         /// drawn at the overview scale.
