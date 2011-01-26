@@ -166,6 +166,10 @@
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{2D80BA27-714A-4851-903F-DF512063C237}"
+			RelativePathToProject=".\Backsight\Backsight.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -182,11 +186,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CoordinateSystemCatalog.cpp"
+				RelativePath=".\CoordinateSystem.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CSLib.cpp"
+				RelativePath=".\CoordinateSystemCatalog.cpp"
 				>
 			</File>
 			<File
@@ -224,15 +228,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CoordinateSystem.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CoordinateSystemCatalog.h"
 				>
 			</File>
 			<File
 				RelativePath=".\CoordinateSystemDef.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CSLib.h"
 				>
 			</File>
 			<File

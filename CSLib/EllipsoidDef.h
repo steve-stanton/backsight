@@ -21,8 +21,9 @@
 */
 
 using namespace System;
+using namespace Backsight;
 
-public ref class EllipsoidDef
+public ref class EllipsoidDef : IExpandablePropertyItem
 {
 public:
 
