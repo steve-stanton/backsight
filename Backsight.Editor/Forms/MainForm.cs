@@ -1990,6 +1990,48 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
+            CadastralMapModel cmm = CadastralMapModel.Current;
+            cmm.CoordinateSystem.MeanElevation = 0.0;
+            CSLib.CoordinateSystem cs = new CSLib.CoordinateSystem("UTM83-14");
+
+            // TEST -- loop through all polygons to compare ground area
+
+            /*
+            string cfile = GlobalUserSetting.Read("ControlFile");
+            MessageBox.Show(cfile);
+            ControlPoint control;
+            int nfound = 0;
+            double maxShift = 0.0;
+
+            using (StreamReader sr = File.OpenText(cfile))
+            {
+                string str;
+                while ((str = sr.ReadLine()) != null)
+                {
+                    if (ControlPoint.TryParse(str, out control))
+                    {
+                        nfound++;
+                        IPosition b = new Position(control.X + 100.0, control.Y);
+                        double sfac1 = cmm.CoordinateSystem.GetLineScaleFactor(control, b);
+                        double sfac2 = cs.GetLineScaleFactor(control, b);
+                        double diff = 100.0 * (sfac1 - sfac2);
+                        maxShift = Math.Max(maxShift, Math.Abs(diff));
+                        String msg = String.Format("SF1={0}\t SF2={1}\t diff={2:0.000000}", sfac1, sfac2, diff);
+                    }
+                }
+            }
+
+            MessageBox.Show(String.Format("maxShift={0:0.000000}", maxShift));
+            return;
+            */
+
+            //IPosition a = new Position(429000.0, 5522400.0);
+            //IPosition b = new Position(430000.0, 5522400.0);
+            //double sfac1 = cmm.CoordinateSystem.GetLineScaleFactor(a, b);
+            //MessageBox.Show(cmm.CoordinateSystem.MeanElevation.ToString());
+            //MessageBox.Show(cmm.CoordinateSystem.GeoidSeparation.ToString());
+
+
             /*
             // Experiment with recursive query
 

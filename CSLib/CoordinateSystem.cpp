@@ -6,6 +6,9 @@ namespace CSLib
 	CoordinateSystem::CoordinateSystem(String^ csKeyName)
 	{
 		m_CsData = CS_csloc(Chars::Convert(csKeyName));
+
+		if (m_CsData == nullptr)
+			throw gcnew Exception("Cannot locate coordinate system: "+csKeyName);
 	}
 
 	CoordinateSystem::~CoordinateSystem()
@@ -37,6 +40,69 @@ namespace CSLib
 		double sfa = GetScaleFactor(a);
 		double sfb = GetScaleFactor(b);
 		return 0.5 * (sfa + sfb);
+	}
+
+	double CoordinateSystem::GetGroundArea(array<IPosition^>^ v)
+	{
+        if (v->Length <= 2)
+            return 0.0;
+
+		double a = this->EquitorialRadius;
+		double b = this->PolarRadius;
+
+        // Get the ellipsoid scale factor for the map (note that
+        // geoid separation is expected to be a positive value in
+        // places where the geoid is above the reference ellipsoid).
+		double efac = a / (a + this->MeanElevation + this->GeoidSeparation);
+
+        // Get the eccentricity
+        //double asq = a*a;
+        //double esq = (asq - b*b)/(asq);
+
+        // Actually, the documentation says you should divide by b*b,
+        // not that it should make much difference
+		double bsq = b*b;
+        double esq = (a*a - bsq)/(bsq);
+
+        // Work with a local origin the corresponds to the first
+        // position (this DOES make quite a perceptible difference,
+        // especially when the area is fairly small).
+
+        double xo = v[0]->X;
+        double yo = v[0]->Y;
+
+        // The initial position is at the local origin (the
+        // multiplying factor won't be used)
+
+        double xs = 0.0;
+        double ys = 0.0;
+        double f1 = 0.0;
+
+        double f2;
+        double xe;
+        double ye;
+
+        double area = 0.0;
+
+        for ( int i=1; i<v->Length; i++, f1=f2, xs=xe, ys=ye )
+        {
+            // Get the scale factor at the end of the current segment
+            f2 = 1.0 / (GetScaleFactor(v[i]) * efac);
+            xe = (v[i]->X - xo) * f2;
+            ye = (v[i]->Y - yo) * f2;
+
+            // Use the mid-X of the segment to get the area left (signed).
+            // If the line is directed up the way, it contributes a
+            // positive area. If directed down, it contributes a
+            // negative area. So, if flat, it contributes nothing (what
+            // we are actually calculating here is double the area; we
+            // will adjust this when we are done with the loop).
+
+            double extra = (ys-ye) * (xe+xs);
+            area += extra;
+        }
+
+        return (area * 0.5);
 	}
 
 	// The structure doesn't provide the expected values, but WKT does

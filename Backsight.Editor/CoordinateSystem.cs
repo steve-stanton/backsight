@@ -36,7 +36,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Scaling factor on central meridian.
         /// </summary>
-	    double m_ScaleFactor;
+	    readonly double m_ScaleFactor;
 
         /// <summary>
         /// UTM zone number (if applicable).
@@ -94,7 +94,6 @@ namespace Backsight.Editor
             m_A = 6378137.0;
             m_B = 6356752.3141;
             m_FalseEasting = 500000.0;
-            //m_FalseNorthing = 0.0;
             m_Zone = Settings.Default.Zone;
             m_CentralMeridian = ZoneToRadians(m_Zone);
             m_MeanElevation = Settings.Default.MeanElevation;
@@ -111,7 +110,7 @@ namespace Backsight.Editor
         public double MeanElevation
         {
             get { return m_MeanElevation; }
-            internal set { m_MeanElevation = value; }
+            set { m_MeanElevation = value; }
         }
 
         public double GeoidSeparation
@@ -120,11 +119,11 @@ namespace Backsight.Editor
             internal set { m_GeoidSeparation = value; }
         }
 
-        public double ScaleFactor
-        {
-            get { return m_ScaleFactor; }
-            internal set { m_ScaleFactor = value; }
-        }
+        //public double ScaleFactor
+        //{
+        //    get { return m_ScaleFactor; }
+        //    internal set { m_ScaleFactor = value; }
+        //}
 
         public byte Zone
         {
@@ -157,15 +156,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Converts a ground position into lat-long.
+        /// Converts a projected position into geographic
         /// </summary>
-        /// <param name="p">The position to convert</param>
-        /// <param name="latitude">The corresponding latitude (in radians)</param>
-        /// <param name="longitude">The corresponding longitude (in radians)</param>
-        public void GetLatLong(IPosition p, out double latitude, out double longitude)
+        /// <param name="p">The XY position to convert</param>
+        /// <returns>The corresponding geographic position (longitude is X, latitude is Y)</returns>
+        public IPosition GetGeographic(IPosition p)
         {
-            // For now, it's always transverse mercator.
-	        TMToLatLong(p.X, p.Y, out latitude, out longitude);
+            double latitude, longitude;
+            TMToLatLong(p.X, p.Y, out latitude, out longitude);
+            return new Position(longitude, latitude);
         }
 
         /// <summary>
@@ -357,10 +356,10 @@ namespace Backsight.Editor
         public double GetLineScaleFactor(IPosition start, IPosition end)
         {
             double sLat, sLng;
-            GetLatLong(start, out sLat, out sLng);
+            TMToLatLong(start.X, start.Y, out sLat, out sLng);
 
             double eLat, eLng;
-            GetLatLong(end, out eLat, out eLng);
+            TMToLatLong(end.X, end.Y, out eLat, out eLng);
 
 	        return TMLineScaleFactor(sLat, eLat, start.X, end.X);
         }
@@ -490,7 +489,7 @@ namespace Backsight.Editor
         private double GetScaleFactor(IPosition v, double esq)
         {
             double lat, lng;
-            GetLatLong(v, out lat, out lng);
+            TMToLatLong(v.X, v.Y, out lat, out lng);
 
             double dLng = lng - m_CentralMeridian;
             double cosLat = Math.Cos(lat);

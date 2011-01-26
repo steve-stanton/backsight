@@ -22,22 +22,33 @@ namespace Backsight.Editor
         // This isn't exactly generic because it currently defines only those
         // methods the CadastralEditor needs to work with UTM.
 
-        double MeanElevation { get; }
+        double MeanElevation { get; set;  }
         double GeoidSeparation { get; }
-        double ScaleFactor { get; }
         byte Zone { get; }
         string Ellipsoid { get; }
         string Projection { get; }
 
         /// <summary>
-        /// Obtain latitude and longitude for a position
+        /// Converts a projected position into geographic
         /// </summary>
-        /// <param name="p">The position to convert</param>
-        /// <param name="latitude">The corresponding latitude (in radians)</param>
-        /// <param name="longitude">The corresponding longitude (in radians)</param>
-        void GetLatLong(IPosition p, out double latitude, out double longitude);
+        /// <param name="p">The XY position to convert</param>
+        /// <returns>The corresponding geographic position (longitude is X, latitude is Y)</returns>
+        IPosition GetGeographic(IPosition p);
 
+        /// <summary>
+        /// Obtains a scale factor (multiplier) that may be applied to ground distances,
+        /// to reduce them to the mapping projection.
+        /// </summary>
+        /// <param name="start">The starting XY position</param>
+        /// <param name="end">The terminating XY position</param>
+        /// <returns>The scale multiplier for converting ground distances</returns>
         double GetLineScaleFactor(IPosition start, IPosition end);
+
+        /// <summary>
+        /// Calculates the area of a closed shape on the ground.
+        /// </summary>
+        /// <param name="v">The positions defining the shape, on the map projection</param>
+        /// <returns>The true ground area (in the units of the coordinate system)</returns>
         double GetGroundArea(IPosition[] v);
     }
 }
