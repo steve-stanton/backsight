@@ -202,7 +202,7 @@ namespace Backsight.Editor.Observations
                 IPosition approx = Geom.Polar(from, bearing, offset);
 
                 // Calculate the line scale factor between the from-point and the approximate position.
-                ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+                ISpatialSystem sys = CadastralMapModel.Current.CoordinateSystem;
                 double sfac = sys.GetLineScaleFactor(from, approx);
 
                 // Figure out the exact offset position.
