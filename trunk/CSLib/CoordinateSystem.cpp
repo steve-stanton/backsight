@@ -3,8 +3,34 @@
 
 namespace CSLib
 {
+
+	// static
+	String^ CoordinateSystem::Home::get()
+	{
+		return s_CsFolder;
+	}
+
+	// static
+	void CoordinateSystem::Home::set(String^ folder)
+	{
+		int res = CS_altdr(Chars::Convert(folder));
+		if (res!=0)
+			throw gcnew Exception("Cannot locate coordinate system data folder");
+
+		s_CsFolder = folder;
+	}
+
 	CoordinateSystem::CoordinateSystem(String^ csKeyName)
 	{
+		if (String::IsNullOrEmpty(s_CsFolder))
+		{
+			String^ home = System::Environment::GetEnvironmentVariable("CS_MAP_DIR");
+			if (String::IsNullOrEmpty(home))
+				throw gcnew Exception("CoordinateSystem.Home property has not been defined");
+
+			this->Home = home;
+		}
+
 		m_CsData = CS_csloc(Chars::Convert(csKeyName));
 
 		if (m_CsData == nullptr)

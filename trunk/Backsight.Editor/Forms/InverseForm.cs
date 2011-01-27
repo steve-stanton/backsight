@@ -149,7 +149,7 @@ namespace Backsight.Editor.Forms
 
                 // Get string for the ground distance (don't bother with
                 // units abbreviation).
-                ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+                ISpatialSystem sys = CadastralMapModel.Current.CoordinateSystem;
                 double sfac = sys.GetLineScaleFactor(from, to);
                 double gmetric = metric/sfac;
                 string gstring = m_Unit.Format(gmetric, false, prec);

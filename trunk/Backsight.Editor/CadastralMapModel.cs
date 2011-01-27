@@ -67,6 +67,11 @@ namespace Backsight.Editor
         readonly CoordinateSystem m_CoordSystem;
 
         /// <summary>
+        /// The coordinate system (experimental).
+        /// </summary>
+        readonly CSLib.CoordinateSystem m_CS;
+
+        /// <summary>
         /// Window of all data in the map.
         /// </summary>
         Window m_Window;
@@ -124,6 +129,9 @@ namespace Backsight.Editor
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
+
+            // Create experimental coordinate system
+            m_CS = new CSLib.CoordinateSystem("UTM83-14");
         }
 
         #endregion
@@ -350,9 +358,16 @@ namespace Backsight.Editor
             get { return m_CoordSystem; }
         }
 
+        [Obsolete("Use SpatialSystem instead")]
         internal ICoordinateSystem CoordinateSystem
         {
             get { return m_CoordSystem; }
+        }
+
+        // Experimental
+        internal ISpatialSystem CS
+        {
+            get { return m_CS; }
         }
 
         /// <summary>
