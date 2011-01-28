@@ -49,15 +49,11 @@ namespace Backsight.Editor.Forms
         private void CoordSystemForm_Shown(object sender, EventArgs e)
         {
             CadastralMapModel map = CadastralMapModel.Current;
-            ICoordinateSystem sys = map.CoordinateSystem;
+            //ISpatialSystem sys = map.SpatialSystem;
+            ISpatialSystem sys = map.CS;
 
-            // Map projection & ellipsoid (currently fixed)
-            projectionLabel.Text = sys.Projection;
-            ellipsoidLabel.Text = sys.Ellipsoid;
-
-            // UTM zone
-            zoneUpDown.Value = sys.Zone;
-            zoneUpDown.Enabled = map.IsEmpty;
+            systemNameLabel.Text = sys.Name;
+            epsgNumberLabel.Text = sys.EpsgNumber.ToString();
 
             // Display mean elevation and geoid separation in the current data entry units.
             EditingController ec = EditingController.Current;
@@ -68,46 +64,36 @@ namespace Backsight.Editor.Forms
             // if the map contains stuff). The values are used to calculate the ground
             // area of polygons.
 
-            Distance elev = new Distance(sys.MeanElevation, meters);
+            Distance elev = new Distance(sys.MeanElevation.Meters, meters);
             meanElevationTextBox.Text = elev.Format(eUnit, true);
 
-            Distance sep = new Distance(sys.GeoidSeparation, meters);
+            Distance sep = new Distance(sys.GeoidSeparation.Meters, meters);
             geoidSeparationTextBox.Text = sep.Format(eUnit, true);
     	}
 
         private void okButton_Click(object sender, EventArgs e)
         {
             // Get the coordinate system in case we need to make changes.
-            CoordinateSystem sys = (CoordinateSystem)CadastralMapModel.Current.CoordinateSystem;
-
-            // Pick up the UTM zone number
-            int zone = (int)zoneUpDown.Value;
-            if (zone<1 || zone>60)
-            {
-                MessageBox.Show("Zone is out of range [1,60]");
-                return;
-            }
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
 
             // Mean elevation. If no units were specified, this
             // assumes the current data entry units.
-            double meanElev = sys.MeanElevation;
+            double meanElev = sys.MeanElevation.Meters;
             Distance elev;
             if (Distance.TryParse(meanElevationTextBox.Text, out elev))
                 meanElev = elev.Meters;
 
             // Geoid separation
-            double gSep = sys.GeoidSeparation;
+            double gSep = sys.GeoidSeparation.Meters;
             Distance sep;
             if (Distance.TryParse(geoidSeparationTextBox.Text, out sep))
                 gSep = sep.Meters;
 
-            if (zone != sys.Zone ||
-                Math.Abs(meanElev - sys.MeanElevation) > 0.0001 ||
-                Math.Abs(gSep - sys.GeoidSeparation) > 0.0001)
+            if (Math.Abs(meanElev - sys.MeanElevation.Meters) > 0.0001 ||
+                Math.Abs(gSep - sys.GeoidSeparation.Meters) > 0.0001)
             {
-                sys.Zone = (byte)zone;
-                sys.MeanElevation = meanElev;
-                sys.GeoidSeparation = gSep;
+                sys.MeanElevation = new Length(meanElev);
+                sys.GeoidSeparation = new Length(gSep);
 
                 // Update application settings too (the remembered settings become the default
                 // for any new maps subsequently created -- see CoordinateSystem constructor).
@@ -115,7 +101,6 @@ namespace Backsight.Editor.Forms
                 // TODO: The following expects the user to save. Should really utilize an editing op
                 // at this stage.
 
-                Settings.Default.Zone = sys.Zone;
                 Settings.Default.MeanElevation = meanElev;
                 Settings.Default.GeoidSeparation = gSep;
                 Settings.Default.Save();

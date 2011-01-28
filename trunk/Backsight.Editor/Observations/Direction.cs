@@ -202,28 +202,12 @@ namespace Backsight.Editor.Observations
                 IPosition approx = Geom.Polar(from, bearing, offset);
 
                 // Calculate the line scale factor between the from-point and the approximate position.
-                ISpatialSystem sys = CadastralMapModel.Current.CoordinateSystem;
+                ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
                 double sfac = sys.GetLineScaleFactor(from, approx);
 
                 // Figure out the exact offset position.
                 return Geom.Polar(from, bearing, offset*sfac);
             }
-        }
-
-        /// <summary>
-        /// The coordinate system for a direction is assumed to match the coordinate system
-        /// of the from-point.
-        /// </summary>
-        /// <devnote>
-        /// While this is currently true in practise, there is really no reason why a
-        /// direction & it's from-point should be in the same system. For this to be an
-        /// issue, Backsight would need to permit editing in coordinate systems that
-        /// differ from the coordinate system of the map model (which is not likely to
-        /// happen any time soon).
-        /// </devnote>
-        internal ICoordinateSystem CoordinateSystem
-        {
-            get { return this.From.CoordinateSystem; }
         }
 
         /// <summary>

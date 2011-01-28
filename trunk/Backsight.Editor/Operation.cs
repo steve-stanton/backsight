@@ -177,11 +177,11 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The coordinate system of the map model this operation is part of.
-        /// A shortcut to <see cref="MapModel.CoordinateSystem"/>
+        /// A shortcut to <see cref="MapModel.SpatialSystem"/>
         /// </summary>
-        internal ICoordinateSystem CoordinateSystem
+        internal ISpatialSystem SpatialSystem
         {
-            get { return MapModel.CoordinateSystem; }
+            get { return MapModel.SpatialSystem; }
         }
 
         /// <summary>

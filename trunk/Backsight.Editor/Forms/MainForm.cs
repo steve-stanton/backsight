@@ -777,16 +777,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// <param name="action">The action that initiated this call</param>
         private void FileCoordinateSystem(IUserAction action)
         {
-            //CoordSystemForm dial = new CoordSystemForm();
-            //dial.ShowDialog();
-            //dial.Dispose();
-
-            using (CoordinateSystemForm dial = new CoordinateSystemForm())
+            using (CoordSystemForm dial = new CoordSystemForm())
             {
-                if (dial.ShowDialog() == DialogResult.OK)
-                {
-                    MessageBox.Show(dial.SelectedSystem.KeyName);
-                }
+                dial.ShowDialog();
             }
         }
 
@@ -1990,11 +1983,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            CadastralMapModel cmm = CadastralMapModel.Current;
-            cmm.CoordinateSystem.MeanElevation = 0.0;
-            CSLib.CoordinateSystem cs = new CSLib.CoordinateSystem("UTM83-14");
-
             // TEST -- loop through all polygons to compare ground area
+            //CSLib.CoordinateSystem cs = new CSLib.CoordinateSystem("UTM83-14");
 
             /*
             string cfile = GlobalUserSetting.Read("ControlFile");
@@ -2024,13 +2014,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             MessageBox.Show(String.Format("maxShift={0:0.000000}", maxShift));
             return;
             */
-
-            //IPosition a = new Position(429000.0, 5522400.0);
-            //IPosition b = new Position(430000.0, 5522400.0);
-            //double sfac1 = cmm.CoordinateSystem.GetLineScaleFactor(a, b);
-            //MessageBox.Show(cmm.CoordinateSystem.MeanElevation.ToString());
-            //MessageBox.Show(cmm.CoordinateSystem.GeoidSeparation.ToString());
-
 
             /*
             // Experiment with recursive query
@@ -2129,19 +2112,20 @@ OPTION (MAXRECURSION 0)
         /// <param name="o"></param>
         internal void SetSelection(ISpatialObject o)
         {
-            if (vSplitContainer.Panel2Collapsed)
-                return;
-
-            /*
             // TEST...
             Polygon p = (o as Polygon);
             if (p != null)
             {
                 IPosition[] edge = p.GetOutline(new Length(0.001));
-                double ga = CadastralMapModel.Current.CoordinateSystem.GetGroundArea(edge);
-                MessageBox.Show("ground area=" + ga);
+                double ga1 = CadastralMapModel.Current.SpatialSystem.GetGroundArea(edge);
+                double ga2 = CadastralMapModel.Current.CS.GetGroundArea(edge);
+                MessageBox.Show(String.Format("ground area: {0:0.000000} vs {1:0.000000} - diff = {2:0.000000}",
+                            ga1, ga2, ga1 - ga2));
             }
-            */
+
+            if (vSplitContainer.Panel2Collapsed)
+                return;
+
             propertyDisplay.SetSelectedObject(o);
         }
 

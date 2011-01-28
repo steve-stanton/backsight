@@ -132,6 +132,8 @@ namespace Backsight.Editor
 
             // Create experimental coordinate system
             m_CS = new CSLib.CoordinateSystem("UTM83-14");
+            m_CS.MeanElevation = m_CoordSystem.MeanElevation;
+            m_CS.GeoidSeparation = m_CoordSystem.GeoidSeparation;
         }
 
         #endregion
@@ -354,12 +356,6 @@ namespace Backsight.Editor
         }
 
         public ISpatialSystem SpatialSystem
-        {
-            get { return m_CoordSystem; }
-        }
-
-        [Obsolete("Use SpatialSystem instead")]
-        internal ICoordinateSystem CoordinateSystem
         {
             get { return m_CoordSystem; }
         }

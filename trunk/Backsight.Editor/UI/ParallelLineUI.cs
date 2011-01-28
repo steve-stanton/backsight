@@ -635,7 +635,7 @@ namespace Backsight.Editor.UI
             IPosition spos = line.StartPoint;
             IPosition epos = line.EndPoint;
 
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
 
             // If the reference line is a circular arc, get the curve info.
             if (line is ArcFeature)

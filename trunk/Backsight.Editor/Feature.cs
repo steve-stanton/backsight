@@ -208,9 +208,9 @@ namespace Backsight.Editor
         /// </summary>
         [DisplayName("Coordinate system")]
         [Description("Spatial reference for the geometry")]
-        public ICoordinateSystem CoordinateSystem
+        public ISpatialSystem SpatialSystem
         {
-            get { return (m_Creator==null ? null : m_Creator.CoordinateSystem); }
+            get { return (m_Creator == null ? null : m_Creator.SpatialSystem); }
         }
 
         /// <summary>

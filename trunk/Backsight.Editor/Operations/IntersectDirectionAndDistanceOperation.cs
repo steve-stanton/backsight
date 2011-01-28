@@ -391,7 +391,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Reduce observed distance to the mapping plane.
-            ISpatialSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
             dist = dist * sys.GetLineScaleFactor(from, xsect);
 
             // And calculate the exact intersection (like above)...
