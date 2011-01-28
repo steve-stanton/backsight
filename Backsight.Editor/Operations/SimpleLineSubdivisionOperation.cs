@@ -179,7 +179,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Get the distance to the approximate position on the mapping plane.
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
             double planlen = dist.GetPlanarMetric(start, approx, sys);
 
             // Figure out the true position on the line.

@@ -329,7 +329,7 @@ namespace Backsight.Editor
         {
             get
             {
-                ICoordinateSystem sys = CoordinateSystem;
+                ISpatialSystem sys = SpatialSystem;
                 double sfac = sys.GetLineScaleFactor(StartPoint, EndPoint);
                 ILength length = Length;
                 return new Length(length.Meters/sfac);

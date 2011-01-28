@@ -667,7 +667,6 @@
     <Compile Include="Forms\TerminalControl.Designer.cs">
       <DependentUpon>TerminalControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ICoordinateSystem.cs" />
     <Compile Include="IFeatureDependent.cs" />
     <Compile Include="IIntersectable.cs" />
     <Compile Include="Intersection.cs" />

@@ -79,7 +79,7 @@ namespace CSLib
         // Get the ellipsoid scale factor for the map (note that
         // geoid separation is expected to be a positive value in
         // places where the geoid is above the reference ellipsoid).
-		double efac = a / (a + this->MeanElevation + this->GeoidSeparation);
+		double efac = a / (a + this->MeanElevation->Meters + this->GeoidSeparation->Meters);
 
         // Get the eccentricity
         //double asq = a*a;

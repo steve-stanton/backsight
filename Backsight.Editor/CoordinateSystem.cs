@@ -19,19 +19,19 @@ using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
 {
-    public class CoordinateSystem : ICoordinateSystem
+    public class CoordinateSystem : ISpatialSystem
     {
         #region Class data
 
         /// <summary>
         /// Mean elevation of the map.
         /// </summary>
-	    double m_MeanElevation;
+	    ILength m_MeanElevation;
 
         /// <summary>
         /// Geoid separation.
         /// </summary>
-	    double m_GeoidSeparation;
+	    ILength m_GeoidSeparation;
 
         /// <summary>
         /// Scaling factor on central meridian.
@@ -96,8 +96,8 @@ namespace Backsight.Editor
             m_FalseEasting = 500000.0;
             m_Zone = Settings.Default.Zone;
             m_CentralMeridian = ZoneToRadians(m_Zone);
-            m_MeanElevation = Settings.Default.MeanElevation;
-            m_GeoidSeparation = Settings.Default.GeoidSeparation;
+            m_MeanElevation = new Length(Settings.Default.MeanElevation);
+            m_GeoidSeparation = new Length(Settings.Default.GeoidSeparation);
         }
 
         #endregion
@@ -107,23 +107,17 @@ namespace Backsight.Editor
             return String.Format("{0}.{1} ({2})", m_Projection, m_Zone, m_Ellipsoid);
         }
 
-        public double MeanElevation
+        public ILength MeanElevation
         {
             get { return m_MeanElevation; }
             set { m_MeanElevation = value; }
         }
 
-        public double GeoidSeparation
+        public ILength GeoidSeparation
         {
             get { return m_GeoidSeparation; }
-            internal set { m_GeoidSeparation = value; }
+            set { m_GeoidSeparation = value; }
         }
-
-        //public double ScaleFactor
-        //{
-        //    get { return m_ScaleFactor; }
-        //    internal set { m_ScaleFactor = value; }
-        //}
 
         public byte Zone
         {
@@ -427,7 +421,7 @@ namespace Backsight.Editor
             // Get the ellipsoid scale factor for the map (note that
             // geoid separation is expected to be a positive value in
             // places where the geoid is above the reference ellipsoid).
-            double efac = m_A / (m_A + m_MeanElevation + m_GeoidSeparation);
+            double efac = m_A / (m_A + m_MeanElevation.Meters + m_GeoidSeparation.Meters);
 
             // Get the eccentricity
             //double asq = m_A*m_A;
@@ -499,6 +493,16 @@ namespace Backsight.Editor
             double b = 1.0 + (esq * cosLatSq);
 
             return (1.0 + (a * b)) * m_ScaleFactor;
+        }
+
+        public string Name
+        {
+            get { return String.Format("UTM {0}N - NAD83", this.Zone); }
+        }
+
+        public int EpsgNumber
+        {
+            get { return 0; }
         }
     }
 }

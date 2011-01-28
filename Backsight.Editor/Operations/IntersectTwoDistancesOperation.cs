@@ -442,7 +442,7 @@ namespace Backsight.Editor.Operations
             }
 
             // Reduce observed distances to the mapping plane.
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
 
             if (offset1==null)
                 d1 = d1 * sys.GetLineScaleFactor(from1, xsect);

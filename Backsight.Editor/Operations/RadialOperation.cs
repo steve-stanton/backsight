@@ -233,7 +233,7 @@ namespace Backsight.Editor.Operations
 
             // Using the position we've just got, reduce the length we used to a length on the
             // mapping plane (it's actually a length on the ground).
-            ICoordinateSystem sys = CadastralMapModel.Current.CoordinateSystem;
+            ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
             double sfac = sys.GetLineScaleFactor(start, to);
             return Geom.Polar(start, bearing, length * sfac);
         }

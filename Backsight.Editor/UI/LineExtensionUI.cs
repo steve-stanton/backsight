@@ -298,7 +298,7 @@ namespace Backsight.Editor.UI
             double bearing = turn.BearingInRadians;
 
             // Get the distance on the mapping plane.
-            double plandist = dist.GetPlanarMetric(start, bearing, extendLine.CoordinateSystem);
+            double plandist = dist.GetPlanarMetric(start, bearing, extendLine.SpatialSystem);
 
             // Figure out the end of the extension.
             end = Geom.Polar(start, bearing, plandist);
@@ -377,7 +377,7 @@ namespace Backsight.Editor.UI
             end = Geom.Polar(center, ebearing, radius);
 
             // Re-calculate the arc length on the mapping plane,
-            arclen = dist.GetPlanarMetric(start, end, extendLine.CoordinateSystem);
+            arclen = dist.GetPlanarMetric(start, end, extendLine.SpatialSystem);
 
             // And adjust the end position accordingly.
             sector = arclen / radius;

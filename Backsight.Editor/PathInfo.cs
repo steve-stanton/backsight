@@ -226,7 +226,7 @@ namespace Backsight.Editor
             gotend = Geom.Rotate(m_From, gotend, new RadianValue(rotation));
 
             // Calculate the line scale factor.
-            double linefac = m_From.MapModel.CoordinateSystem.GetLineScaleFactor(m_From, gotend);
+            double linefac = m_From.MapModel.SpatialSystem.GetLineScaleFactor(m_From, gotend);
 
             // Figure out where the rotated end point ends up when we apply the line scale factor.
             gotend = Geom.Polar(m_From, wantbear, gotdist*linefac);

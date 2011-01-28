@@ -308,7 +308,7 @@ namespace Backsight.Editor.Observations
         /// <param name="bearing">The bearing for the distance, in radians.</param>
         /// <param name="sys">The mapping system</param>
         /// <returns>The distance on the mapping plane.</returns>
-        internal double GetPlanarMetric(IPosition from, double bearing, ICoordinateSystem sys)
+        internal double GetPlanarMetric(IPosition from, double bearing, ISpatialSystem sys)
         {
         	// Return zero if this distance is undefined.
 	        if (!this.IsDefined)
@@ -330,7 +330,7 @@ namespace Backsight.Editor.Observations
         /// <param name="to">The approximate end position.</param>
         /// <param name="sys">The mapping system</param>
         /// <returns>The distance on the mapping plane.</returns>
-        internal double GetPlanarMetric(IPosition from, IPosition to, ICoordinateSystem sys)
+        internal double GetPlanarMetric(IPosition from, IPosition to, ISpatialSystem sys)
         {
 	        if (!this.IsDefined)
                 return 0.0;

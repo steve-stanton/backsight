@@ -24,6 +24,26 @@ namespace Backsight
     public interface ISpatialSystem
     {
         /// <summary>
+        /// A name for the coordinate system.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The EPSG number for the system (0 if not known).
+        /// </summary>
+        int EpsgNumber { get; }
+
+        /// <summary>
+        /// The mean elevation , in meters
+        /// </summary>
+        ILength MeanElevation { get; set; }
+
+        /// <summary>
+        /// Geoid separation, in meters
+        /// </summary>
+        ILength GeoidSeparation { get; set; }
+
+        /// <summary>
         /// Converts a projected position into geographic
         /// </summary>
         /// <param name="p">The XY position to convert</param>
