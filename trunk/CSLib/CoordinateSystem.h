@@ -17,7 +17,10 @@ namespace CSLib
 		double GetScaleFactor(IPosition^ p);
 
 		/* Implement ISpatialSystem */
-		/* see http://stackoverflow.com/questions/880984/implementing-an-interface-declared-in-c-from-c-cli */
+
+		/* why virtual, __clrcall, sealed? - see 
+		** http://stackoverflow.com/questions/880984/implementing-an-interface-declared-in-c-from-c-cli
+		*/
 
 		virtual IPosition^ __clrcall GetGeographic(IPosition^ p) sealed;
 		virtual double __clrcall GetLineScaleFactor(IPosition^ a, IPosition^ b) sealed;

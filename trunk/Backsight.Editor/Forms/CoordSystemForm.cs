@@ -23,11 +23,8 @@ namespace Backsight.Editor.Forms
 {
     /// <written by="Steve Stanton" was="CdCoordSystem"/>
     /// <summary>
-    /// Dialog for displaying the coordinate system of the current map model. This provides
-    /// very basic information since it was originally written only to cover requirements
-    /// in Manitoba (meaning we're dealing only with UTM on NAD83). In the longer term, it
-    /// is expected that support for coordinate systems will involve other open source
-    /// projects (likely Proj.NET).
+    /// Dialog for displaying basic information for the coordinate system of the
+    /// current map model.
     /// </summary>
     partial class CoordSystemForm : Form
     {
@@ -49,8 +46,7 @@ namespace Backsight.Editor.Forms
         private void CoordSystemForm_Shown(object sender, EventArgs e)
         {
             CadastralMapModel map = CadastralMapModel.Current;
-            //ISpatialSystem sys = map.SpatialSystem;
-            ISpatialSystem sys = map.CS;
+            ISpatialSystem sys = map.SpatialSystem;
 
             systemNameLabel.Text = sys.Name;
             epsgNumberLabel.Text = sys.EpsgNumber.ToString();
