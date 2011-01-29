@@ -2112,6 +2112,7 @@ OPTION (MAXRECURSION 0)
         /// <param name="o"></param>
         internal void SetSelection(ISpatialObject o)
         {
+            /*
             // TEST...
             Polygon p = (o as Polygon);
             if (p != null)
@@ -2122,7 +2123,7 @@ OPTION (MAXRECURSION 0)
                 MessageBox.Show(String.Format("ground area: {0:0.000000} vs {1:0.000000} - diff = {2:0.000000}",
                             ga1, ga2, ga1 - ga2));
             }
-
+            */
             if (vSplitContainer.Panel2Collapsed)
                 return;
 

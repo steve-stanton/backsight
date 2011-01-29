@@ -19,7 +19,7 @@ using Backsight.Editor.Properties;
 
 namespace Backsight.Editor
 {
-    public class CoordinateSystem : ISpatialSystem
+    public class OldCoordinateSystem : ISpatialSystem
     {
         #region Class data
 
@@ -86,7 +86,7 @@ namespace Backsight.Editor
         /// Defines a UTM coordinate system in the northern hemisphere (on NAD83).
         /// The zone is obtained from application settings.
         /// </summary>
-        public CoordinateSystem()
+        public OldCoordinateSystem()
         {
             m_ScaleFactor = 0.9996;
             m_Ellipsoid = "NAD83";

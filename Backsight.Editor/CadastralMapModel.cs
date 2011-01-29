@@ -15,15 +15,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Data;
 using System.Data.SqlClient;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.IO;
+using System.Diagnostics;
 
 using Backsight.Data;
 using Backsight.Editor.Database;
+using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Index;
 
@@ -63,11 +61,6 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The coordinate system.
-        /// </summary>
-        readonly CoordinateSystem m_CoordSystem;
-
-        /// <summary>
-        /// The coordinate system (experimental).
         /// </summary>
         readonly CSLib.CoordinateSystem m_CS;
 
@@ -121,7 +114,6 @@ namespace Backsight.Editor
         internal CadastralMapModel()
         {
             m_Rotation = 0.0;
-            m_CoordSystem = new CoordinateSystem();
             m_Window = new Window();
             m_Sessions = new List<Session>();
             m_Index = null; // new EditingIndex();
@@ -130,10 +122,10 @@ namespace Backsight.Editor
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
 
-            // Create experimental coordinate system
+            // For now, just hard-code the coordinate system uaually used in Manitoba
             m_CS = new CSLib.CoordinateSystem("UTM83-14");
-            m_CS.MeanElevation = m_CoordSystem.MeanElevation;
-            m_CS.GeoidSeparation = m_CoordSystem.GeoidSeparation;
+            m_CS.MeanElevation = new Length(Settings.Default.MeanElevation);
+            m_CS.GeoidSeparation = new Length(Settings.Default.GeoidSeparation);
         }
 
         #endregion
@@ -356,12 +348,6 @@ namespace Backsight.Editor
         }
 
         public ISpatialSystem SpatialSystem
-        {
-            get { return m_CoordSystem; }
-        }
-
-        // Experimental
-        internal ISpatialSystem CS
         {
             get { return m_CS; }
         }

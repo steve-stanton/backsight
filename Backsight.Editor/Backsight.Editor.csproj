@@ -451,6 +451,7 @@
     <Compile Include="Observations\OffsetDistance.cs" />
     <Compile Include="Observations\OffsetPoint.cs" />
     <Compile Include="Observations\ParallelDirection.cs" />
+    <Compile Include="OldCoordinateSystem.cs" />
     <Compile Include="Operations\ImportOperation.cs" />
     <Compile Include="Operations\IRecallable.cs" />
     <Compile Include="Operations\IRevisable.cs" />
@@ -494,7 +495,6 @@
     <Compile Include="Comparison.cs" />
     <Compile Include="ConnectionFinder.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="CoordinateSystem.cs" />
     <Compile Include="DataStub.cs" />
     <Compile Include="DividerObject.cs" />
     <Compile Include="Face.cs" />
