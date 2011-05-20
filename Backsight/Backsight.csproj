@@ -284,12 +284,6 @@
   <ItemGroup>
     <Content Include="Resources\HollowSquareCursor.cur" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WizardLib\WizardLib.csproj">
-      <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
-      <Name>WizardLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

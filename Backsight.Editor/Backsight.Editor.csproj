@@ -89,6 +89,10 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WizardLib, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ThirdParty\WizardLib\ExportedAssemblies\WizardLib.dll</HintPath>
+    </Reference>
     <Reference Include="YamlSerializer, Version=0.9.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ThirdParty\YamlSerializer\YamlSerializer.dll</HintPath>
@@ -1254,10 +1258,6 @@
     <ProjectReference Include="..\Ntx\Ntx.csproj">
       <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
       <Name>Ntx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WizardLib\WizardLib.csproj">
-      <Project>{BD90B1F9-A497-469A-AB6B-86C5B8B68B51}</Project>
-      <Name>WizardLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
