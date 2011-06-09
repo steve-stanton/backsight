@@ -1,0 +1,8 @@
+C:\Temp\netdxf-14863\TestDxfDocument\bin\Debug\TestDxfDocument.exe
+C:\Temp\netdxf-14863\TestDxfDocument\bin\Debug\TestDxfDocument.pdb
+C:\Temp\netdxf-14863\TestDxfDocument\bin\Debug\netDxf.dll
+C:\Temp\netdxf-14863\TestDxfDocument\bin\Debug\netDxf.pdb
+C:\Temp\netdxf-14863\TestDxfDocument\obj\Debug\ResolveAssemblyReference.cache
+C:\Temp\netdxf-14863\TestDxfDocument\obj\Debug\TestDxfDocument.exe
+C:\Temp\netdxf-14863\TestDxfDocument\obj\Debug\TestDxfDocument.pdb
+C:\Temp\netdxf-14863\TestDxfDocument\bin\Debug\netDxf.xml
