@@ -1285,12 +1285,22 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsDataExportToAutoCadEnabled()
         {
-            return false;
+            return true;
         }
 
         private void DataExportToAutoCad(IUserAction action)
         {
-            MessageBox.Show(action.Title);
+            //MessageBox.Show(action.Title);
+            try
+            {
+                //SdfExporter sx = new SdfExporter();
+                //sx.Export(@"C:\Temp\Test.sdf");
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
         }
         #endregion
 
@@ -1984,8 +1994,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
-            // TEST -- loop through all polygons to compare ground area
-            //CSLib.CoordinateSystem cs = new CSLib.CoordinateSystem("UTM83-14");
+            Stopwatch sw = Stopwatch.StartNew();
+            string wkt = EditingController.Current.GetCoordinateSystemText();
+            sw.Stop();
+            MessageBox.Show(wkt);
+            MessageBox.Show("That took " + sw.ElapsedMilliseconds / 1000.0);
 
             /*
             string cfile = GlobalUserSetting.Read("ControlFile");

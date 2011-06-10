@@ -43,15 +43,16 @@ namespace Backsight.Editor.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            Backsight.Editor.EditingHelpProvider editingHelpProvider;
+            this.backsightTextBox = new System.Windows.Forms.TextBox();
+            this.angleTextBox = new System.Windows.Forms.TextBox();
+            this.lengthTextBox = new System.Windows.Forms.TextBox();
+            this.centreOfCurveCheckBox = new System.Windows.Forms.CheckBox();
             this.cancelButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.backsightTextBox = new System.Windows.Forms.TextBox();
-            this.angleTextBox = new System.Windows.Forms.TextBox();
-            this.lengthTextBox = new System.Windows.Forms.TextBox();
-            this.centreOfCurveCheckBox = new System.Windows.Forms.CheckBox();
             this.clockwiseRadioButton = new System.Windows.Forms.RadioButton();
             this.counterClockwiseRadioButton = new System.Windows.Forms.RadioButton();
             this.offsetButton = new System.Windows.Forms.Button();
@@ -62,8 +63,59 @@ namespace Backsight.Editor.Forms
             this.label5 = new System.Windows.Forms.Label();
             this.pointIdComboBox = new System.Windows.Forms.ComboBox();
             this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
+            editingHelpProvider = new Backsight.Editor.EditingHelpProvider();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // backsightTextBox
+            // 
+            editingHelpProvider.SetHelpKeyword(this.backsightTextBox, "");
+            editingHelpProvider.SetHelpString(this.backsightTextBox, "");
+            this.backsightTextBox.Location = new System.Drawing.Point(76, 26);
+            this.backsightTextBox.Name = "backsightTextBox";
+            editingHelpProvider.SetShowHelp(this.backsightTextBox, true);
+            this.backsightTextBox.Size = new System.Drawing.Size(100, 20);
+            this.backsightTextBox.TabIndex = 0;
+            this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
+            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
+            // 
+            // angleTextBox
+            // 
+            editingHelpProvider.SetHelpKeyword(this.angleTextBox, "angleTextBox");
+            editingHelpProvider.SetHelpNavigator(this.angleTextBox, System.Windows.Forms.HelpNavigator.TopicId);
+            this.angleTextBox.Location = new System.Drawing.Point(76, 72);
+            this.angleTextBox.Name = "angleTextBox";
+            editingHelpProvider.SetShowHelp(this.angleTextBox, true);
+            this.angleTextBox.Size = new System.Drawing.Size(100, 20);
+            this.angleTextBox.TabIndex = 1;
+            this.angleTextBox.TextChanged += new System.EventHandler(this.angleTextBox_TextChanged);
+            this.angleTextBox.Enter += new System.EventHandler(this.angleTextBox_Enter);
+            // 
+            // lengthTextBox
+            // 
+            editingHelpProvider.SetHelpKeyword(this.lengthTextBox, "lengthTextBox");
+            this.lengthTextBox.Location = new System.Drawing.Point(76, 117);
+            this.lengthTextBox.Name = "lengthTextBox";
+            editingHelpProvider.SetShowHelp(this.lengthTextBox, true);
+            this.lengthTextBox.Size = new System.Drawing.Size(100, 20);
+            this.lengthTextBox.TabIndex = 2;
+            this.lengthTextBox.TextChanged += new System.EventHandler(this.lengthTextBox_TextChanged);
+            this.lengthTextBox.Enter += new System.EventHandler(this.lengthTextBox_Enter);
+            // 
+            // centreOfCurveCheckBox
+            // 
+            this.centreOfCurveCheckBox.AutoSize = true;
+            editingHelpProvider.SetHelpKeyword(this.centreOfCurveCheckBox, "centreOfCurveCheckBox");
+            editingHelpProvider.SetHelpNavigator(this.centreOfCurveCheckBox, System.Windows.Forms.HelpNavigator.TopicId);
+            this.centreOfCurveCheckBox.Location = new System.Drawing.Point(192, 27);
+            this.centreOfCurveCheckBox.Name = "centreOfCurveCheckBox";
+            editingHelpProvider.SetShowHelp(this.centreOfCurveCheckBox, true);
+            this.centreOfCurveCheckBox.Size = new System.Drawing.Size(122, 17);
+            this.centreOfCurveCheckBox.TabIndex = 9;
+            this.centreOfCurveCheckBox.TabStop = false;
+            this.centreOfCurveCheckBox.Text = "&Use Center of Curve";
+            this.centreOfCurveCheckBox.UseVisualStyleBackColor = true;
+            this.centreOfCurveCheckBox.CheckedChanged += new System.EventHandler(this.centreOfCurveCheckBox_CheckedChanged);
             // 
             // cancelButton
             // 
@@ -111,45 +163,6 @@ namespace Backsight.Editor.Forms
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 5;
             this.label4.Text = "Length";
-            // 
-            // backsightTextBox
-            // 
-            this.backsightTextBox.Location = new System.Drawing.Point(76, 26);
-            this.backsightTextBox.Name = "backsightTextBox";
-            this.backsightTextBox.Size = new System.Drawing.Size(100, 20);
-            this.backsightTextBox.TabIndex = 0;
-            this.backsightTextBox.TextChanged += new System.EventHandler(this.backsightTextBox_TextChanged);
-            this.backsightTextBox.Enter += new System.EventHandler(this.backsightTextBox_Enter);
-            // 
-            // angleTextBox
-            // 
-            this.angleTextBox.Location = new System.Drawing.Point(76, 72);
-            this.angleTextBox.Name = "angleTextBox";
-            this.angleTextBox.Size = new System.Drawing.Size(100, 20);
-            this.angleTextBox.TabIndex = 1;
-            this.angleTextBox.TextChanged += new System.EventHandler(this.angleTextBox_TextChanged);
-            this.angleTextBox.Enter += new System.EventHandler(this.angleTextBox_Enter);
-            // 
-            // lengthTextBox
-            // 
-            this.lengthTextBox.Location = new System.Drawing.Point(76, 117);
-            this.lengthTextBox.Name = "lengthTextBox";
-            this.lengthTextBox.Size = new System.Drawing.Size(100, 20);
-            this.lengthTextBox.TabIndex = 2;
-            this.lengthTextBox.TextChanged += new System.EventHandler(this.lengthTextBox_TextChanged);
-            this.lengthTextBox.Enter += new System.EventHandler(this.lengthTextBox_Enter);
-            // 
-            // centreOfCurveCheckBox
-            // 
-            this.centreOfCurveCheckBox.AutoSize = true;
-            this.centreOfCurveCheckBox.Location = new System.Drawing.Point(192, 27);
-            this.centreOfCurveCheckBox.Name = "centreOfCurveCheckBox";
-            this.centreOfCurveCheckBox.Size = new System.Drawing.Size(122, 17);
-            this.centreOfCurveCheckBox.TabIndex = 9;
-            this.centreOfCurveCheckBox.TabStop = false;
-            this.centreOfCurveCheckBox.Text = "&Use Center of Curve";
-            this.centreOfCurveCheckBox.UseVisualStyleBackColor = true;
-            this.centreOfCurveCheckBox.CheckedChanged += new System.EventHandler(this.centreOfCurveCheckBox_CheckedChanged);
             // 
             // clockwiseRadioButton
             // 
@@ -260,6 +273,10 @@ namespace Backsight.Editor.Forms
             this.entityTypeComboBox.TabIndex = 16;
             this.entityTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
             // 
+            // editingHelpProvider
+            // 
+            editingHelpProvider.HelpNamespace = "C:\\Users\\sstanton\\Code\\Files\\Backsight.chm";
+            // 
             // RadialControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -279,7 +296,10 @@ namespace Backsight.Editor.Forms
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
+            editingHelpProvider.SetHelpKeyword(this, "Sideshot");
+            editingHelpProvider.SetHelpNavigator(this, System.Windows.Forms.HelpNavigator.TopicId);
             this.Name = "RadialControl";
+            editingHelpProvider.SetShowHelp(this, true);
             this.Size = new System.Drawing.Size(724, 163);
             this.Load += new System.EventHandler(this.RadialControl_Load);
             this.groupBox1.ResumeLayout(false);

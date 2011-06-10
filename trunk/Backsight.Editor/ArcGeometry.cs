@@ -156,6 +156,19 @@ namespace Backsight.Editor
             return CircularArcGeometry.GetPosition(this, distance, out result);
         }
 
+        /// <summary>
+        /// Gets the position that is mid-way along this arc.
+        /// </summary>
+        /// <returns>The position that is mid-way along this arc.</returns>
+        internal IPosition GetMidPosition()
+        {
+            ILength arcLength = this.Length;
+            ILength midLength = new Length(arcLength.Meters * 0.5);
+            IPosition result;
+            GetPosition(midLength, out result);
+            return result;
+        }
+
         // If the specified position isn't actually on the arc, the length is to the
         // position when it's projected onto the arc (i.e. the perpendicular position)
         internal override ILength GetLength(IPosition asFarAs)

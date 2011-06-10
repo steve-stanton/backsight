@@ -595,5 +595,13 @@ namespace Backsight.Editor
                 return (e == null ? String.Empty : e.Name);
             }
         }
+
+        /// <summary>
+        /// Any islands inside this polygon (may be an empty array).
+        /// </summary>
+        internal Island[] Islands
+        {
+            get { return (m_Islands == null ? new Island[0] : m_Islands.ToArray()); }
+        }
     }
 }

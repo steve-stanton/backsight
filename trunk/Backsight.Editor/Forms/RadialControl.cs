@@ -151,7 +151,7 @@ namespace Backsight.Editor.Forms
         internal RadialControl(RadialUI cmd, PointFeature from)
         {
             InitializeComponent();
-	        Zero();
+            Zero();
 	        m_Cmd = cmd;
 	        m_From = from;
             m_Recall = (RadialOperation)cmd.Recall;
@@ -161,7 +161,7 @@ namespace Backsight.Editor.Forms
         internal RadialControl(UpdateUI updcmd)
         {
             InitializeComponent();
-	        Zero();
+            Zero();
 	        m_Cmd = updcmd;
 	        InitUpdate();
         }
