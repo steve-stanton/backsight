@@ -25,6 +25,7 @@ using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Editor.UI;
 using System.Data;
+using netDxf;
 
 
 namespace Backsight.Editor.Forms
@@ -2136,6 +2137,9 @@ OPTION (MAXRECURSION 0)
 
         private void mnuHelpAbout_Click(object sender, EventArgs e)
         {
+            const string testFile = @"C:\Temp\Test.dxf";
+            MessageBox.Show("Writing "+testFile);
+            new DxfWriter().WriteFile(testFile);
         }
 
         private void mnuHelpTopics_Click(object sender, EventArgs e)

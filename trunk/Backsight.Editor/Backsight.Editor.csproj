@@ -73,6 +73,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="netDxf, Version=0.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ThirdParty\ExportedAssemblies\netDxf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -118,6 +122,7 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
+    <Compile Include="DxfWriter.cs" />
     <Compile Include="EditingContext.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
