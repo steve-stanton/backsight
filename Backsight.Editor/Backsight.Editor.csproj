@@ -124,6 +124,9 @@
     <Compile Include="Database\UserJobData.cs" />
     <Compile Include="DxfWriter.cs" />
     <Compile Include="EditingContext.cs" />
+    <Compile Include="EditingHelpProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
     <Compile Include="EntityTranslation.cs" />

@@ -35,5 +35,14 @@
     <Setting Name="AutoAngle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="LastSystemName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LastSystemText" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="HelpFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Users\sstanton\Code\Files\Backsight.chm</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

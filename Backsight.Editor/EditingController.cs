@@ -1436,5 +1436,33 @@ namespace Backsight.Editor
         {
             get { return JobFile.Data.LineAnnotation; }
         }
+
+        /// <summary>
+        /// Gets the well known text for the coordinate system associated with the
+        /// current map model.
+        /// </summary>
+        /// <returns>The WKT for the coordinate system</returns>
+        /// <remarks>
+        /// This aims to avoid the huge delay that arises when CSMap is asked to return
+        /// the WKT for the first time (takes about 8 seconds on my machine). Given that
+        /// it is highly likely that just one coordinate system will be in regular use,
+        /// this method caches the last result as part of the application settings.
+        /// <para/>
+        /// It may be preferable to save the WKT as part of the cedx file.
+        /// </remarks>
+        internal string GetCoordinateSystemText()
+        {
+            ISpatialSystem ss = CadastralMapModel.Current.SpatialSystem;
+            if (ss.Name != Settings.Default.LastSystemName)
+            {
+                string wkt = ss.GetWellKnownText();
+
+                Settings.Default.LastSystemName = ss.Name;
+                Settings.Default.LastSystemText = wkt;
+                Settings.Default.Save();
+            }
+
+            return Settings.Default.LastSystemText;
+        }
     }
 }

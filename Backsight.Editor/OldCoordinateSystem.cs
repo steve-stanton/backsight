@@ -504,5 +504,10 @@ namespace Backsight.Editor
         {
             get { return 0; }
         }
+
+        public string GetWellKnownText()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
