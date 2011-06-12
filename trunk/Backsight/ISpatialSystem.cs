@@ -34,6 +34,11 @@ namespace Backsight
         int EpsgNumber { get; }
 
         /// <summary>
+        /// The WKT that defines the coordinate system.
+        /// </summary>
+        string GetWellKnownText();
+
+        /// <summary>
         /// The mean elevation , in meters
         /// </summary>
         ILength MeanElevation { get; set; }

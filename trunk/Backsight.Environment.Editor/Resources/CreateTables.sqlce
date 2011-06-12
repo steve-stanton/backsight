@@ -1,0 +1,355 @@
+﻿CREATE TABLE [ColumnDomains]
+(
+  [TableId] [int] NOT NULL,
+  [ColumnName] [nvarchar](100) NOT NULL,
+  [DomainId] [int] NOT NULL,
+
+  CONSTRAINT [PK_ColumnDomains] PRIMARY KEY ([TableId], [ColumnName])		
+)
+GO
+
+CREATE TABLE [DomainTables]
+(
+  [DomainId] [int] NOT NULL,
+  [TableName] [nvarchar](100) NOT NULL,
+
+  CONSTRAINT [PK_DomainTables] PRIMARY KEY ([DomainId])  
+)
+GO
+
+CREATE TABLE [Edits]
+(
+	[SessionId] [int] NOT NULL,
+	[EditSequence] [int] NOT NULL,
+	[Data] [image] NOT NULL,
+
+	CONSTRAINT [PK_Edits] PRIMARY KEY ([SessionId], [EditSequence])		
+)
+GO
+
+CREATE TABLE [EntityTypes]
+(
+	[EntityId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[IsPoint] [nchar](1) NOT NULL,
+	[IsLine] [nchar](1) NOT NULL,
+	[IsLineTopological] [nchar](1) NOT NULL,
+	[IsPolygon] [nchar](1) NOT NULL,
+	[IsText] [nchar](1) NOT NULL,
+	[FontId] [int] NOT NULL,
+	[LayerId] [int] NOT NULL,
+	[GroupId] [int] NOT NULL,
+	[IsLineTrimmed] [nchar](1) NOT NULL CONSTRAINT DF_EntityTypes_1 DEFAULT ('n'),
+	
+	CONSTRAINT [PK_EntityTypes] PRIMARY KEY ([EntityId])
+)
+GO
+
+CREATE TABLE [EntityTypeSchemas]
+(
+	[EntityId] [int] NOT NULL,
+	[SchemaId] [int] NOT NULL,
+	
+	CONSTRAINT [PK_EntityTypeSchemas] PRIMARY KEY ([EntityId], [SchemaId])
+)
+GO
+
+CREATE TABLE [Fonts]
+(
+	[FontId] [int] NOT NULL,
+	[TypeFace] [nvarchar](24) NOT NULL,
+	[PointSize] [real] NOT NULL,
+	[IsBold] [nchar](1) NOT NULL,
+	[IsItalic] [nchar](1) NOT NULL,
+	[IsUnderline] [nchar](1) NOT NULL,
+	[FontFile] [nvarchar](50) NOT NULL,
+	
+	CONSTRAINT [PK_Fonts] PRIMARY KEY ([FontId])
+)
+GO
+
+CREATE TABLE [IdAllocations]
+(
+	[LowestId] [int] NOT NULL,
+	[HighestId] [int] NOT NULL,
+	[GroupId] [int] NOT NULL,
+	[JobId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[TimeAllocated] [datetime] NOT NULL,
+	[NumUsed] [int] NOT NULL,
+
+	CONSTRAINT [PK_IdAllocations] PRIMARY KEY ([LowestId])
+)
+GO
+
+CREATE TABLE [IdFree]
+(
+	[GroupId] [int] NOT NULL,
+	[LowestId] [int] NOT NULL,
+	[HighestId] [int] NOT NULL,
+
+	CONSTRAINT [PK_IdFree] PRIMARY KEY ([GroupId], [LowestId])
+)
+GO
+
+CREATE TABLE [IdGroups]
+(
+	[GroupId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[LowestId] [int] NOT NULL,
+	[HighestId] [int] NOT NULL,
+	[PacketSize] [int] NOT NULL,
+	[CheckDigit] [nchar](1) NOT NULL,
+	[KeyFormat] [nvarchar](8) NOT NULL,
+
+	CONSTRAINT [PK_IdGroups] PRIMARY KEY ([GroupId])		
+)
+GO
+
+CREATE TABLE [Jobs]
+(
+	[JobId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[ZoneId] [int] NOT NULL,
+	[LayerId] [int] NOT NULL,
+	
+	CONSTRAINT [PK_Jobs] PRIMARY KEY ([JobId])
+)
+GO
+
+CREATE TABLE [LastRevision]
+(
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RevisionTime] [datetime] NOT NULL	
+)
+GO
+
+CREATE TABLE [Layers]
+(
+	[LayerId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[ThemeId] [int] NOT NULL,
+	[ThemeSequence] [int] NOT NULL,
+	[DefaultPointId] [int] NOT NULL,
+	[DefaultLineId] [int] NOT NULL,
+	[DefaultPolygonId] [int] NOT NULL,
+	[DefaultTextId] [int] NOT NULL,
+
+	CONSTRAINT [PK_Layers] PRIMARY KEY ([LayerId])
+)
+GO
+
+CREATE TABLE [Properties]
+(
+	[Name] [nvarchar](50) NOT NULL,
+	[Value] [nvarchar](100) NOT NULL,
+	[Description] [nvarchar](200) NOT NULL,
+
+	 CONSTRAINT [PK_Properties] PRIMARY KEY ([Name])
+)
+GO
+
+CREATE TABLE [Schemas]
+(
+	[SchemaId] [int] NOT NULL,
+	[TableName] [nvarchar](100) NOT NULL,
+	[IdColumnName] [nvarchar](100) NOT NULL,
+
+	CONSTRAINT [PK_Schemas] PRIMARY KEY ([SchemaId])
+)
+GO
+
+CREATE TABLE [SchemaTemplates]
+(
+	[SchemaId] [int] NOT NULL,
+	[TemplateId] [int] NOT NULL,
+	
+	CONSTRAINT [PK_SchemaTemplates] PRIMARY KEY ([SchemaId], [TemplateId])
+)
+GO
+
+CREATE TABLE [Sessions]
+(
+	[SessionId] [int] IDENTITY(1,1) NOT NULL,
+	[JobId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[Revision] [int] NOT NULL,
+	[StartTime] [datetime] NOT NULL,
+	[EndTime] [datetime] NOT NULL,
+	[NumItem] [int] NOT NULL,
+	
+	CONSTRAINT [PK_Sessions] PRIMARY KEY ([SessionId])
+)
+GO
+
+CREATE TABLE [SysId]
+(
+	[LastId] [int] NOT NULL,
+	
+	CONSTRAINT [PK_SysId] PRIMARY KEY ([LastId])
+)
+GO
+
+CREATE TABLE [Templates]
+(
+	[TemplateId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[TemplateFormat] [nvarchar](500) NOT NULL,
+	
+	CONSTRAINT [PK_Templates] PRIMARY KEY ([TemplateId])
+)
+GO
+
+CREATE TABLE [Themes]
+(
+	[ThemeId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	
+	CONSTRAINT [PK_Themes] PRIMARY KEY ([ThemeId])
+)
+GO
+
+CREATE TABLE [UserJobs]
+(
+	[UserId] [int] NOT NULL,
+	[JobId] [int] NOT NULL,
+	[LastRevision] [int] NOT NULL,
+	
+	CONSTRAINT [PK_UserJobs] PRIMARY KEY ([UserId], [JobId])
+)
+GO
+
+CREATE TABLE [Users]
+(
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+
+	CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+)
+GO
+
+CREATE TABLE [Zones]
+(
+	[ZoneId] [int] NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	
+	CONSTRAINT [PK_Zones] PRIMARY KEY ([ZoneId])
+)
+GO
+
+--
+-- Insert initial rows (to support foreign keys, because I don't want to make important
+-- columns nullable)
+--
+
+INSERT INTO [Fonts] ([FontId], [TypeFace], [PointSize], [IsBold], [IsItalic], [IsUnderline], [FontFile])
+VALUES (0, '', 0.0, 'n', 'n', 'n', '')
+GO
+
+INSERT INTO [IdGroups] ([GroupId], [Name], [LowestId], [HighestId], [PacketSize], [CheckDigit], [KeyFormat])
+VALUES (0, '', 0, 0, 0, 'n', '{0}')
+GO
+
+--
+-- It's more convenient if the empty entity type is associated with all spatial types (when loading things like
+-- a combobox, it means the blank entity type will show by default).
+--
+INSERT INTO [EntityTypes] ([EntityId], [Name], [IsPoint], [IsLine], [IsLineTopological], [IsPolygon], [IsText], [FontId], [LayerId], [GroupId])
+VALUES (0, '', 'y', 'y', 'n', 'y', 'y', 0, 0, 0)
+GO
+
+INSERT INTO [Themes] ([ThemeId], [Name])
+VALUES (0, '')
+GO
+
+INSERT INTO [Layers] ([LayerId], [Name], [ThemeId], [ThemeSequence], [DefaultPointId], [DefaultLineId], [DefaultPolygonId], [DefaultTextId])
+VALUES(0, '', 0, 0, 0, 0, 0, 0)
+GO
+
+--
+-- Add initial row for generating environment-related IDs
+--
+
+INSERT INTO [SysId] ([LastId]) VALUES (0)
+GO
+
+--
+-- Define foreign keys
+--
+
+ALTER TABLE [Edits] ADD CONSTRAINT [FK_Edit_Session] FOREIGN KEY([SessionId])
+REFERENCES [Sessions] ([SessionId])
+ON DELETE CASCADE
+GO
+ALTER TABLE [EntityTypes] ADD CONSTRAINT [FK_EntityType_Font] FOREIGN KEY([FontId])
+REFERENCES [Fonts] ([FontId])
+GO
+ALTER TABLE [EntityTypes] ADD CONSTRAINT [FK_EntityType_IdGroup] FOREIGN KEY([GroupId])
+REFERENCES [IdGroups] ([GroupId])
+GO
+ALTER TABLE [EntityTypes] ADD CONSTRAINT [FK_EntityType_Layer] FOREIGN KEY([LayerId])
+REFERENCES [Layers] ([LayerId])
+GO
+ALTER TABLE [EntityTypeSchemas] ADD CONSTRAINT [FK_EntityTypeSchema_EntityType] FOREIGN KEY([EntityId])
+REFERENCES [EntityTypes] ([EntityId])
+GO
+ALTER TABLE [EntityTypeSchemas] ADD CONSTRAINT [FK_EntityTypeSchema_Schema] FOREIGN KEY([SchemaId])
+REFERENCES [Schemas] ([SchemaId])
+GO
+ALTER TABLE [IdAllocations] ADD CONSTRAINT [FK_IdAllocation_IdGroup] FOREIGN KEY([GroupId])
+REFERENCES [IdGroups] ([GroupId])
+GO
+ALTER TABLE [IdAllocations] ADD CONSTRAINT [FK_IdAllocation_Job] FOREIGN KEY([JobId])
+REFERENCES [Jobs] ([JobId])
+GO
+ALTER TABLE [IdAllocations] ADD CONSTRAINT [FK_IdAllocation_User] FOREIGN KEY([UserId])
+REFERENCES [Users] ([UserId])
+GO
+ALTER TABLE [IdFree] ADD CONSTRAINT [FK_IdFree_IdGroup] FOREIGN KEY([GroupId])
+REFERENCES [IdGroups] ([GroupId])
+GO
+ALTER TABLE [Jobs] ADD CONSTRAINT [FK_Job_Layer] FOREIGN KEY([LayerId])
+REFERENCES [Layers] ([LayerId])
+GO
+ALTER TABLE [Jobs] ADD CONSTRAINT [FK_Job_Zone] FOREIGN KEY([ZoneId])
+REFERENCES [Zones] ([ZoneId])
+GO
+ALTER TABLE [Layers] ADD CONSTRAINT [FK_Layer_EntityType1] FOREIGN KEY([DefaultPointId])
+REFERENCES [EntityTypes] ([EntityId])
+GO
+ALTER TABLE [Layers] ADD CONSTRAINT [FK_Layer_EntityType2] FOREIGN KEY([DefaultLineId])
+REFERENCES [EntityTypes] ([EntityId])
+GO
+ALTER TABLE [Layers] ADD CONSTRAINT [FK_Layer_EntityType3] FOREIGN KEY([DefaultPolygonId])
+REFERENCES [EntityTypes] ([EntityId])
+GO
+ALTER TABLE [Layers] ADD CONSTRAINT [FK_Layer_EntityType4] FOREIGN KEY([DefaultTextId])
+REFERENCES [EntityTypes] ([EntityId])
+GO
+ALTER TABLE [Layers] ADD CONSTRAINT [FK_Layer_Theme] FOREIGN KEY([ThemeId])
+REFERENCES [Themes] ([ThemeId])
+GO
+ALTER TABLE [SchemaTemplates] ADD CONSTRAINT [FK_SchemaTemplate_Schema] FOREIGN KEY([SchemaId])
+REFERENCES [Schemas] ([SchemaId])
+GO
+ALTER TABLE [SchemaTemplates] ADD CONSTRAINT [FK_SchemaTemplate_Template] FOREIGN KEY([TemplateId])
+REFERENCES [Templates] ([TemplateId])
+GO
+ALTER TABLE [Sessions] ADD CONSTRAINT [FK_Session_Job] FOREIGN KEY([JobId])
+REFERENCES [Jobs] ([JobId])
+GO
+ALTER TABLE [Sessions] ADD CONSTRAINT [FK_Session_User] FOREIGN KEY([UserId])
+REFERENCES [Users] ([UserId])
+GO
+ALTER TABLE [ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_DomainTables] FOREIGN KEY([DomainId])
+REFERENCES [DomainTables] ([DomainId])
+GO
+ALTER TABLE [ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
+REFERENCES [Schemas] ([SchemaId])
+GO
+ALTER TABLE [UserJobs] ADD CONSTRAINT [FK_UserJob_Job] FOREIGN KEY([JobId])
+REFERENCES [Jobs] ([JobId])
+GO
+ALTER TABLE [UserJobs] ADD CONSTRAINT [FK_UserJob_User] FOREIGN KEY([UserId])
+REFERENCES [Users] ([UserId])
+GO

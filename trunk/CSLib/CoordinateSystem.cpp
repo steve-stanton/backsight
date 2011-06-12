@@ -140,12 +140,11 @@ namespace CSLib
 	//	return tm->x_off;
 	//}
 
-	// Takes a surprising time on first call
-	//String^ CoordinateSystem::WKT()
-	//{
-	//	char buf [512];
-	//	CS_cs2Wkt(buf, sizeof(buf), "UTM83-14", 0);
-	//	return Chars::Convert(buf);
-	//}
-
+	String^ CoordinateSystem::GetWellKnownText()
+	{		
+		// Takes a surprising time (8.9 seconds) on first call (0.1 seconds thereafter).
+		char buf [512];
+		CS_cs2Wkt(buf, sizeof(buf), m_CsData->csdef.key_nm, 0);
+		return Chars::Convert(buf);
+	}
 }

@@ -35,6 +35,7 @@ namespace Backsight.Editor
 
             CadastralMapModel mapModel = CadastralMapModel.Current;
             mapModel.Index.QueryWindow(null, SpatialType.Point, WritePoint);
+            mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
             /*
             LineType cont = LineType.Continuous;
             if (cont == null)
@@ -67,6 +68,92 @@ namespace Backsight.Editor
 
             m_Dxf.AddEntity(p);
             return true;
+        }
+
+        bool WriteLine(ISpatialObject item)
+        {
+            LineFeature line = (LineFeature)item;
+            WriteLineGeometry(line.LineGeometry);
+            return true;
+        }
+
+        void WriteLineGeometry(LineGeometry geom)
+        {
+            if (geom is SegmentGeometry)
+                WriteSegment((SegmentGeometry)geom);
+            else if (geom is ArcGeometry)
+                WriteArc((ArcGeometry)geom);
+            else if (geom is MultiSegmentGeometry)
+                WriteMultiSegment((MultiSegmentGeometry)geom);
+            else if (geom is SectionGeometry)
+                WriteSection((SectionGeometry)geom);
+            else
+                throw new NotImplementedException("Unexpected line geometry type: " + geom.GetType().Name);
+        }
+
+        void WriteSegment(SegmentGeometry line)
+        {
+            Line acLine = new Line();
+            IPointGeometry start = line.Start;
+            acLine.StartPoint = new Vector3f((float)start.X, (float)start.Y, 0.0f);
+            IPointGeometry end = line.End;
+            acLine.EndPoint = new Vector3f((float)end.X, (float)end.Y, 0.0f);
+            acLine.Layer = m_Layer;
+            m_Dxf.AddEntity(acLine);
+        }
+
+        void WriteArc(ArcGeometry line)
+        {
+            IPointGeometry center = line.Circle.Center;
+            float bcAngle = (float)GetAngle(center, line.BC);
+            float ecAngle = (float)GetAngle(center, line.EC);
+
+            Arc acLine = new Arc();
+            acLine.Center = new Vector3f((float)center.X, (float)center.Y, 0.0f);
+            acLine.Radius = (float)line.Circle.Radius;
+
+            // AutoCad arcs are *always* drawn counter-clockwise
+            if (!line.IsClockwise)
+            {
+                acLine.StartAngle = bcAngle;
+                acLine.EndAngle = ecAngle;
+            }
+            else
+            {
+                acLine.StartAngle = ecAngle;
+                acLine.EndAngle = bcAngle;
+            }
+
+            acLine.Layer = m_Layer;
+            m_Dxf.AddEntity(acLine);
+        }
+
+        double GetAngle(IPointGeometry center, IPointGeometry endPoint)
+        {
+            double ex = endPoint.X - center.X;
+            double ey = endPoint.Y - center.Y;
+
+            if (ex == 0.0 && ey == 0.0)
+                return 0.0;
+            else
+                return Math.Atan2(ey, ex);
+        }
+
+        void WriteMultiSegment(MultiSegmentGeometry line)
+        {
+            IPointGeometry[] pts = line.Data;
+            List<PolylineVertex> acVertexList = new List<PolylineVertex>(pts.Length);
+            foreach (IPointGeometry p in pts)
+                acVertexList.Add(new PolylineVertex((float)p.X, (float)p.Y));
+
+            Polyline acLine = new Polyline(acVertexList);
+            acLine.Layer = m_Layer;
+            m_Dxf.AddEntity(acLine);
+        }
+
+        void WriteSection(SectionGeometry line)
+        {
+            WriteLineGeometry(line.Make());
         }
     }
 }

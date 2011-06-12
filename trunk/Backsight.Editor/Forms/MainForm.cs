@@ -1293,6 +1293,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             //MessageBox.Show(action.Title);
             try
             {
+                const string testFile = @"C:\Temp\Test.dxf";
+                MessageBox.Show("Writing " + testFile);
+                new DxfWriter().WriteFile(testFile);
                 //SdfExporter sx = new SdfExporter();
                 //sx.Export(@"C:\Temp\Test.sdf");
             }
@@ -1994,11 +1997,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void HelpAbout(IUserAction action)
         {
+            /*
             Stopwatch sw = Stopwatch.StartNew();
             string wkt = EditingController.Current.GetCoordinateSystemText();
             sw.Stop();
             MessageBox.Show(wkt);
             MessageBox.Show("That took " + sw.ElapsedMilliseconds / 1000.0);
+             */
 
             /*
             string cfile = GlobalUserSetting.Read("ControlFile");
@@ -2145,17 +2150,6 @@ OPTION (MAXRECURSION 0)
         }
 
         private void mnuPointDefaultEntity_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void mnuHelpAbout_Click(object sender, EventArgs e)
-        {
-            const string testFile = @"C:\Temp\Test.dxf";
-            MessageBox.Show("Writing "+testFile);
-            new DxfWriter().WriteFile(testFile);
-        }
-
-        private void mnuHelpTopics_Click(object sender, EventArgs e)
         {
         }
 

@@ -25,6 +25,7 @@ namespace CSLib
 		virtual IPosition^ __clrcall GetGeographic(IPosition^ p) sealed;
 		virtual double __clrcall GetLineScaleFactor(IPosition^ a, IPosition^ b) sealed;
         virtual double __clrcall GetGroundArea(array<IPosition^>^ closedShape) sealed;
+		virtual String^ __clrcall GetWellKnownText() sealed;
 
 		virtual property ILength^ GeoidSeparation
 		{
