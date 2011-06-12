@@ -326,6 +326,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\app.manifest" />
+    <EmbeddedResource Include="Resources\CreateTables.sqlce" />
     <None Include="Resources\New.bmp" />
   </ItemGroup>
   <ItemGroup>
