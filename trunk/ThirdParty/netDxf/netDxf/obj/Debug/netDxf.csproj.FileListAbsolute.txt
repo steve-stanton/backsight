@@ -1,6 +1,0 @@
-C:\Temp\netdxf-14863\netDxf\bin\Debug\netDxf.dll
-C:\Temp\netdxf-14863\netDxf\bin\Debug\netDxf.pdb
-C:\Temp\netdxf-14863\netDxf\obj\Debug\ResolveAssemblyReference.cache
-C:\Temp\netdxf-14863\netDxf\obj\Debug\netDxf.dll
-C:\Temp\netdxf-14863\netDxf\obj\Debug\netDxf.pdb
-C:\Temp\netdxf-14863\netDxf\bin\Debug\netDxf.XML
