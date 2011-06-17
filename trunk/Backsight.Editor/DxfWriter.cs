@@ -63,7 +63,7 @@ namespace Backsight.Editor
             IPointGeometry pg = pf.Geometry;
 
             Point p = new Point();
-            p.Location = new Vector3f((float)pg.X, (float)pg.Y, 0.0f);
+            p.Location = new Vector3d(pg.X, pg.Y, 0.0);
             p.Layer = m_Layer;
 
             m_Dxf.AddEntity(p);
@@ -95,9 +95,9 @@ namespace Backsight.Editor
         {
             Line acLine = new Line();
             IPointGeometry start = line.Start;
-            acLine.StartPoint = new Vector3f((float)start.X, (float)start.Y, 0.0f);
+            acLine.StartPoint = new Vector3d(start.X, start.Y, 0.0);
             IPointGeometry end = line.End;
-            acLine.EndPoint = new Vector3f((float)end.X, (float)end.Y, 0.0f);
+            acLine.EndPoint = new Vector3d(end.X, end.Y, 0.0);
             acLine.Layer = m_Layer;
             m_Dxf.AddEntity(acLine);
         }
@@ -113,15 +113,15 @@ namespace Backsight.Editor
             acLine.Radius = line.Circle.Radius;
 
             // AutoCad arcs are *always* drawn counter-clockwise
-            if (!line.IsClockwise)
-            {
-                acLine.StartAngle = bcAngle;
-                acLine.EndAngle = ecAngle;
-            }
-            else
+            if (line.IsClockwise)
             {
                 acLine.StartAngle = ecAngle;
                 acLine.EndAngle = bcAngle;
+            }
+            else
+            {
+                acLine.StartAngle = bcAngle;
+                acLine.EndAngle = ecAngle;
             }
 
             acLine.Layer = m_Layer;
@@ -136,7 +136,7 @@ namespace Backsight.Editor
             if (ex == 0.0 && ey == 0.0)
                 return 0.0;
             else
-                return Math.Atan2(ey, ex);
+                return Math.Atan2(ey, ex) * MathConstants.RADTODEG;
         }
 
         void WriteMultiSegment(MultiSegmentGeometry line)
