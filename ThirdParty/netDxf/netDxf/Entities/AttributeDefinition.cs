@@ -67,7 +67,7 @@ namespace netDxf.Entities
         private object value;
         private TextStyle style;
         private AciColor color;
-        private Vector3f basePoint;
+        private Vector3d basePoint;
         private Layer layer;
         private LineType lineType;
         private AttributeFlags flags;
@@ -75,7 +75,7 @@ namespace netDxf.Entities
         private float height;
         private float widthFactor;
         private float rotation;
-        private Vector3f normal;
+        private Vector3d normal;
         private Dictionary<ApplicationRegistry, XData> xData;
 
         #endregion
@@ -95,7 +95,7 @@ namespace netDxf.Entities
             this.flags = AttributeFlags.Visible;
             this.text = string.Empty;
             this.value = null;
-            this.basePoint = Vector3f.Zero;
+            this.basePoint = Vector3d.Zero;
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
@@ -104,7 +104,7 @@ namespace netDxf.Entities
             this.height = this.style.Height == 0 ? 1.0f : this.style.Height;
             this.widthFactor = this.style.WidthFactor;
             this.rotation = 0.0f;
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace netDxf.Entities
             this.flags = AttributeFlags.Visible;
             this.text = string.Empty;
             this.value = null;
-            this.basePoint = Vector3f.Zero;
+            this.basePoint = Vector3d.Zero;
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
@@ -130,7 +130,7 @@ namespace netDxf.Entities
             this.height = style.Height == 0 ? 1.0f : style.Height;
             this.widthFactor = style.WidthFactor;
             this.rotation = 0.0f;
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
         }
 
         #endregion
@@ -227,9 +227,9 @@ namespace netDxf.Entities
         }
 
         /// <summary>
-        /// Gets or sets the attribute <see cref="netDxf.Vector3f">insertion point</see>.
+        /// Gets or sets the attribute <see cref="netDxf.Vector3d">insertion point</see>.
         /// </summary>
-        public Vector3f BasePoint
+        public Vector3d BasePoint
         {
             get { return this.basePoint; }
             set { this.basePoint = value; }
@@ -245,14 +245,14 @@ namespace netDxf.Entities
         }
 
         /// <summary>
-        /// Gets or sets the attribute <see cref="netDxf.Vector3f">normal</see>.
+        /// Gets or sets the attribute <see cref="netDxf.Vector3d">normal</see>.
         /// </summary>
-        public Vector3f Normal
+        public Vector3d Normal
         {
             get { return this.normal; }
             set
             {
-                if (Vector3f.Zero == value)
+                if (Vector3d.Zero == value)
                     throw new ArgumentNullException("value", "The normal can not be the zero vector");
                 value.Normalize();
                 this.normal = value;

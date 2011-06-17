@@ -67,9 +67,9 @@ namespace netDxf.Entities
             this.center = center;
             this.majorAxis = majorAxis;
             this.minorAxis = minorAxis;
-            this.startAngle = 0.0f;
-            this.endAngle = 360.0f;
-            this.rotation = 0.0f;
+            this.startAngle = 0.0;
+            this.endAngle = 360.0;
+            this.rotation = 0.0;
             this.curvePoints = 30;
             this.thickness = 0.0f;
             this.layer = Layer.Default;
@@ -85,12 +85,12 @@ namespace netDxf.Entities
             : base(DxfObjectCode.Ellipse)
         {
             this.center = Vector3d.Zero;
-            this.majorAxis = 1.0f;
-            this.minorAxis = 0.5f;
-            this.rotation = 0.0f;
-            this.startAngle = 0.0f;
-            this.endAngle = 360.0f;
-            this.rotation = 0.0f;
+            this.majorAxis = 1.0;
+            this.minorAxis = 0.5;
+            this.rotation = 0.0;
+            this.startAngle = 0.0;
+            this.endAngle = 360.0;
+            this.rotation = 0.0;
             this.curvePoints = 30;
             this.thickness = 0.0f;
             this.layer = Layer.Default;

@@ -234,7 +234,7 @@ namespace netDxf
             //    }
             //    return (double)Math.PI;
             //}
-            //Vector3f normal = Vector3f.CrossProduct(new Vector3f(u.X, u.Y, 0), new Vector3f(v.X, v.Y, 0));
+            //Vector3d normal = Vector3d.CrossProduct(new Vector3d(u.X, u.Y, 0), new Vector3d(v.X, v.Y, 0));
 
             //if (normal.Z < 0)
             //{

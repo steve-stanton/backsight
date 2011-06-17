@@ -91,7 +91,7 @@ namespace netDxf.Entities
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
             this.normal = Vector3d.UnitZ;
-            this.elevation = 0.0f;
+            this.elevation = 0.0;
             this.thickness = 0.0f;
             this.flags = PolylineTypeFlags.OpenPolyline;
             this.endSequence = new EndSequence();
@@ -109,7 +109,7 @@ namespace netDxf.Entities
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
             this.normal = Vector3d.UnitZ;
-            this.elevation = 0.0f;
+            this.elevation = 0.0;
             this.flags = PolylineTypeFlags.OpenPolyline;
             this.endSequence = new EndSequence();
         }
