@@ -59,7 +59,7 @@ namespace netDxf.Entities
         public LightWeightPolylineVertex(Vector2d location)
         {
             this.location = location;
-            this.bulge = 0.0f;
+            this.bulge = 0.0;
             this.beginThickness = 0.0f;
             this.endThickness = 0.0f;
         }
@@ -82,7 +82,7 @@ namespace netDxf.Entities
         #region public properties
 
         /// <summary>
-        /// Gets or sets the polyline vertex <see cref="netDxf.Vector2f">location</see>.
+        /// Gets or sets the polyline vertex <see cref="netDxf.Vector2d">location</see>.
         /// </summary>
         public Vector2d Location
         {

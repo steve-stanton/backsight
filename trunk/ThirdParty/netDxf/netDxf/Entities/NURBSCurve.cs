@@ -44,9 +44,9 @@ namespace netDxf.Entities
         private List<NurbsVertex> controlPoints;
         private float[] knotVector;
         private int order;
-        private float elevation;
+        private double elevation;
         private float thickness;
-        private Vector3f normal;
+        private Vector3d normal;
         private int curvePoints;
 
         #endregion
@@ -59,15 +59,15 @@ namespace netDxf.Entities
         public NurbsCurve()
         {
             this.controlPoints = new List<NurbsVertex>();
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
             this.order = 0;
             this.curvePoints = 30;
-            this.elevation = 0.0f;
+            this.elevation = 0.0;
             this.thickness = 0.0f;
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
         }
 
         /// <summary>
@@ -80,15 +80,15 @@ namespace netDxf.Entities
             if (controlPoints.Count<order)
                 throw new ArgumentOutOfRangeException("order",order,"The order of the curve must be less or equal the number of control points.");
             this.controlPoints = controlPoints;
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
             this.order = order;
             this.curvePoints = 30;
-            this.elevation = 0.0f;
+            this.elevation = 0.0;
             this.thickness = 0.0f;
-            this.normal = Vector3f.UnitZ;
+            this.normal = Vector3d.UnitZ;
         }
 
 
@@ -120,9 +120,9 @@ namespace netDxf.Entities
         }
 
         /// <summary>
-        /// Gets or sets the nurbs curve <see cref="netDxf.Vector3f">normal</see>.
+        /// Gets or sets the nurbs curve <see cref="netDxf.Vector3d">normal</see>.
         /// </summary>
-        public Vector3f Normal
+        public Vector3d Normal
         {
             get { return this.normal; }
             set
@@ -153,7 +153,7 @@ namespace netDxf.Entities
         /// <summary>
         /// Gets or sets the nurbs curve elevation.
         /// </summary>
-        public float Elevation
+        public double Elevation
         {
             get { return this.elevation; }
             set { this.elevation = value; }
@@ -238,7 +238,7 @@ namespace netDxf.Entities
         /// </summary>
         /// <param name="precision">Number of point to approximate the curve to a polyline.</param>
         /// <returns>The vertexes are expresed in object coordinate system.</returns>
-        public List<Vector2f> PolygonalVertexes(int precision)
+        public List<Vector2d> PolygonalVertexes(int precision)
         {
             if (this.controlPoints.Count < this.order)
                 throw new ArithmeticException("The order of the curve must be less or equal the number of control points.");
@@ -246,19 +246,19 @@ namespace netDxf.Entities
             this.knotVector = this.SetKnotVector();
             float[][][] nurbsBasisFunctions = this.DefineBasisFunctions(precision);
 
-            List<Vector2f> vertexes = new List<Vector2f>();
+            List<Vector2d> vertexes = new List<Vector2d>();
 
             for (int i = 0; i < precision; i++)
             {
-                float x = 0.0f;
-                float y = 0.0f;
+                double x = 0.0;
+                double y = 0.0;
                 for (int ctrlPointIndex = 0; ctrlPointIndex < this.controlPoints.Count; ctrlPointIndex++)
                 {
                     x += this.controlPoints[ctrlPointIndex].Location.X*nurbsBasisFunctions[i][ctrlPointIndex][this.order - 1];
                     y += this.controlPoints[ctrlPointIndex].Location.Y*nurbsBasisFunctions[i][ctrlPointIndex][this.order - 1];
                 }
 
-                vertexes.Add(new Vector2f(x, y));
+                vertexes.Add(new Vector2d(x, y));
             }
 
             return vertexes;

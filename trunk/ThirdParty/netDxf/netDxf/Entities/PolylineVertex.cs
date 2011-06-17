@@ -62,7 +62,7 @@ namespace netDxf.Entities
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
-            this.bulge = 0.0f;
+            this.bulge = 0.0;
             this.beginThickness = 0.0f;
             this.endThickness = 0.0f;
         }
@@ -79,7 +79,7 @@ namespace netDxf.Entities
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
-            this.bulge = 0.0f;
+            this.bulge = 0.0;
             this.beginThickness = 0.0f;
             this.endThickness = 0.0f;
         }
@@ -97,7 +97,7 @@ namespace netDxf.Entities
             this.layer = Layer.Default;
             this.color = AciColor.ByLayer;
             this.lineType = LineType.ByLayer;
-            this.bulge = 0.0f;
+            this.bulge = 0.0;
             this.beginThickness = 0.0f;
             this.endThickness = 0.0f;
         }

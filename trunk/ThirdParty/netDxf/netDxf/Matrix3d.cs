@@ -219,7 +219,7 @@ namespace netDxf
         /// Product of a matrix with a vector.
         /// </summary>
         /// <param name="a">Matrix3d.</param>
-        /// <param name="u">Vector3f.</param>
+        /// <param name="u">Vector3d.</param>
         /// <returns>Matrix3d.</returns>
         public static Vector3d operator *(Matrix3d a, Vector3d u)
         {

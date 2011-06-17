@@ -415,7 +415,7 @@ namespace netDxf
             Layer layer = null;
             string name = string.Empty;
             string handle = string.Empty;
-            Vector3f basePoint = Vector3f.Zero;
+            Vector3d basePoint = Vector3d.Zero;
             List<IEntityObject> entities = new List<IEntityObject>();
             Dictionary<string, AttributeDefinition> attdefs = new Dictionary<string, AttributeDefinition>();
 
@@ -437,15 +437,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        basePoint.X = float.Parse(code.Value);
+                        basePoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        basePoint.X = float.Parse(code.Value);
+                        basePoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        basePoint.X = float.Parse(code.Value);
+                        basePoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 3:
@@ -554,8 +554,8 @@ namespace netDxf
             string text = string.Empty;
             object value = null;
             AttributeFlags flags = AttributeFlags.Visible;
-            Vector3f firstAlignmentPoint = Vector3f.Zero;
-            Vector3f secondAlignmentPoint = Vector3f.Zero;
+            Vector3d firstAlignmentPoint = Vector3d.Zero;
+            Vector3d secondAlignmentPoint = Vector3d.Zero;
             Layer layer = Layer.Default;
             AciColor color = AciColor.ByLayer;
             LineType lineType = LineType.ByLayer;
@@ -565,7 +565,7 @@ namespace netDxf
             int horizontalAlignment = 0;
             int verticalAlignment = 0;
             float rotation = 0;
-            Vector3f normal = Vector3f.UnitZ;
+            Vector3d normal = Vector3d.UnitZ;
 
             code = this.ReadCodePair();
             while (code.Code != 0)
@@ -597,22 +597,22 @@ namespace netDxf
                         flags = (AttributeFlags) int.Parse(code.Value);
                         break;
                     case 10:
-                        firstAlignmentPoint.X = float.Parse(code.Value);
+                        firstAlignmentPoint.X = double.Parse(code.Value);
                         break;
                     case 20:
-                        firstAlignmentPoint.Y = float.Parse(code.Value);
+                        firstAlignmentPoint.Y = double.Parse(code.Value);
                         break;
                     case 30:
-                        firstAlignmentPoint.Z = float.Parse(code.Value);
+                        firstAlignmentPoint.Z = double.Parse(code.Value);
                         break;
                     case 11:
-                        secondAlignmentPoint.X = float.Parse(code.Value);
+                        secondAlignmentPoint.X = double.Parse(code.Value);
                         break;
                     case 21:
-                        secondAlignmentPoint.Y = float.Parse(code.Value);
+                        secondAlignmentPoint.Y = double.Parse(code.Value);
                         break;
                     case 31:
-                        secondAlignmentPoint.Z = float.Parse(code.Value);
+                        secondAlignmentPoint.Z = double.Parse(code.Value);
                         break;
                     case 7:
                         style = this.GetTextStyle(code.Value);
@@ -633,13 +633,13 @@ namespace netDxf
                         verticalAlignment = int.Parse(code.Value);
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         break;
                 }
 
@@ -1174,19 +1174,19 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        center.X = float.Parse(code.Value);
+                        center.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        center.Y = float.Parse(code.Value);
+                        center.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        center.Z = float.Parse(code.Value);
+                        center.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 40:
-                        circle.Radius = float.Parse(code.Value);
+                        circle.Radius = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 39:
@@ -1194,15 +1194,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1255,27 +1255,27 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        center.X = float.Parse(code.Value);
+                        center.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        center.Y = float.Parse(code.Value);
+                        center.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        center.Z = float.Parse(code.Value);
+                        center.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 11:
-                        axisPoint.X = float.Parse(code.Value);
+                        axisPoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 21:
-                        axisPoint.Y = float.Parse(code.Value);
+                        axisPoint.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 31:
-                        axisPoint.Z = float.Parse(code.Value);
+                        axisPoint.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 40:
@@ -1283,23 +1283,23 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 41:
-                        ellipse.StartAngle = (float) (double.Parse(code.Value)*MathHelper.RadToDeg);
+                        ellipse.StartAngle = double.Parse(code.Value)*MathHelper.RadToDeg;
                         code = this.ReadCodePair();
                         break;
                     case 42:
-                        ellipse.EndAngle = (float) (double.Parse(code.Value)*MathHelper.RadToDeg);
+                        ellipse.EndAngle = double.Parse(code.Value)*MathHelper.RadToDeg;
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1319,11 +1319,11 @@ namespace netDxf
                                                          (Vector3d) normal,
                                                          MathHelper.CoordinateSystem.World,
                                                          MathHelper.CoordinateSystem.Object);
-            double rotation = (float) Vector2d.AngleBetween(Vector2d.UnitX, new Vector2d(ocsAxisPoint.X, ocsAxisPoint.Y));
+            double rotation = Vector2d.AngleBetween(Vector2d.UnitX, new Vector2d(ocsAxisPoint.X, ocsAxisPoint.Y));
 
             ellipse.MajorAxis = 2*axisPoint.Modulus();
             ellipse.MinorAxis = ellipse.MajorAxis*ratio;
-            ellipse.Rotation = (float) (rotation*MathHelper.RadToDeg);
+            ellipse.Rotation = rotation*MathHelper.RadToDeg;
             ellipse.Center = center;
             ellipse.Normal = normal;
             ellipse.XData = xData;
@@ -1333,8 +1333,8 @@ namespace netDxf
         private Point ReadPoint(ref CodeValuePair code)
         {
             var point = new Point();
-            Vector3f location = Vector3f.Zero;
-            Vector3f normal = Vector3f.UnitZ;
+            Vector3d location = Vector3d.Zero;
+            Vector3d normal = Vector3d.UnitZ;
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
 
             code = this.ReadCodePair();
@@ -1359,15 +1359,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        location.X = float.Parse(code.Value);
+                        location.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        location.Y = float.Parse(code.Value);
+                        location.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        location.Z = float.Parse(code.Value);
+                        location.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 39:
@@ -1375,15 +1375,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1408,10 +1408,10 @@ namespace netDxf
         private Face3d ReadFace3D(ref CodeValuePair code)
         {
             var face = new Face3d();
-            Vector3f v0 = Vector3f.Zero;
-            Vector3f v1 = Vector3f.Zero;
-            Vector3f v2 = Vector3f.Zero;
-            Vector3f v3 = Vector3f.Zero;
+            Vector3d v0 = Vector3d.Zero;
+            Vector3d v1 = Vector3d.Zero;
+            Vector3d v2 = Vector3d.Zero;
+            Vector3d v3 = Vector3d.Zero;
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
 
             code = this.ReadCodePair();
@@ -1436,15 +1436,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        v0.X = float.Parse(code.Value);
+                        v0.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        v0.Y = float.Parse(code.Value);
+                        v0.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        v0.Z = float.Parse(code.Value);
+                        v0.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 11:
@@ -1452,35 +1452,35 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 21:
-                        v1.Y = float.Parse(code.Value);
+                        v1.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 31:
-                        v1.Z = float.Parse(code.Value);
+                        v1.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 12:
-                        v2.X = float.Parse(code.Value);
+                        v2.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 22:
-                        v2.Y = float.Parse(code.Value);
+                        v2.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 32:
-                        v2.Z = float.Parse(code.Value);
+                        v2.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 13:
-                        v3.X = float.Parse(code.Value);
+                        v3.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 23:
-                        v3.Y = float.Parse(code.Value);
+                        v3.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 33:
-                        v3.Z = float.Parse(code.Value);
+                        v3.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 70:
@@ -1512,11 +1512,11 @@ namespace netDxf
         private Solid ReadSolid(ref CodeValuePair code)
         {
             var solid = new Solid();
-            Vector3f v0 = Vector3f.Zero;
-            Vector3f v1 = Vector3f.Zero;
-            Vector3f v2 = Vector3f.Zero;
-            Vector3f v3 = Vector3f.Zero;
-            Vector3f normal = Vector3f.UnitZ;
+            Vector3d v0 = Vector3d.Zero;
+            Vector3d v1 = Vector3d.Zero;
+            Vector3d v2 = Vector3d.Zero;
+            Vector3d v3 = Vector3d.Zero;
+            Vector3d normal = Vector3d.UnitZ;
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
 
             code = this.ReadCodePair();
@@ -1541,51 +1541,51 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        v0.X = float.Parse(code.Value);
+                        v0.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        v0.Y = float.Parse(code.Value);
+                        v0.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        v0.Z = float.Parse(code.Value);
+                        v0.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 11:
-                        v1.X = float.Parse(code.Value);
+                        v1.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 21:
-                        v1.Y = float.Parse(code.Value);
+                        v1.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 31:
-                        v1.Z = float.Parse(code.Value);
+                        v1.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 12:
-                        v2.X = float.Parse(code.Value);
+                        v2.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 22:
-                        v2.Y = float.Parse(code.Value);
+                        v2.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 32:
-                        v2.Z = float.Parse(code.Value);
+                        v2.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 13:
-                        v3.X = float.Parse(code.Value);
+                        v3.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 23:
-                        v3.Y = float.Parse(code.Value);
+                        v3.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 33:
-                        v3.Z = float.Parse(code.Value);
+                        v3.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 70:
@@ -1593,15 +1593,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1630,9 +1630,9 @@ namespace netDxf
         private Insert ReadInsert(ref CodeValuePair code)
         {
             string handle = string.Empty;
-            Vector3f basePoint = Vector3f.Zero;
-            Vector3f normal = Vector3f.UnitZ;
-            Vector3f scale = new Vector3f(1, 1, 1);
+            Vector3d basePoint = Vector3d.Zero;
+            Vector3d normal = Vector3d.UnitZ;
+            Vector3d scale = new Vector3d(1, 1, 1);
             float rotation = 0.0f;
             Block block = null;
             Layer layer = Layer.Default;
@@ -1669,27 +1669,27 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        basePoint.X = float.Parse(code.Value);
+                        basePoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        basePoint.Y = float.Parse(code.Value);
+                        basePoint.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        basePoint.Z = float.Parse(code.Value);
+                        basePoint.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 41:
-                        scale.X = float.Parse(code.Value);
+                        scale.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 42:
-                        scale.X = float.Parse(code.Value);
+                        scale.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 43:
-                        scale.X = float.Parse(code.Value);
+                        scale.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 50:
@@ -1697,15 +1697,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1781,9 +1781,9 @@ namespace netDxf
         private Line ReadLine(ref CodeValuePair code)
         {
             var line = new Line();
-            Vector3f start = Vector3f.Zero;
-            Vector3f end = Vector3f.Zero;
-            Vector3f normal = Vector3f.UnitZ;
+            Vector3d start = Vector3d.Zero;
+            Vector3d end = Vector3d.Zero;
+            Vector3d normal = Vector3d.UnitZ;
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
 
             code = this.ReadCodePair();
@@ -1808,27 +1808,27 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        start.X = float.Parse(code.Value);
+                        start.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        start.Y = float.Parse(code.Value);
+                        start.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        start.Z = float.Parse(code.Value);
+                        start.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 11:
-                        end.X = float.Parse(code.Value);
+                        end.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 21:
-                        end.Y = float.Parse(code.Value);
+                        end.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 31:
-                        end.Z = float.Parse(code.Value);
+                        end.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 39:
@@ -1836,15 +1836,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -1902,7 +1902,7 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 38:
-                        pol.Elevation = float.Parse(code.Value);
+                        pol.Elevation = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 39:
@@ -1994,7 +1994,7 @@ namespace netDxf
             AciColor color = AciColor.ByLayer;
             LineType lineType = LineType.ByLayer;
             PolylineTypeFlags flags = PolylineTypeFlags.OpenPolyline;
-            float elevation = 0.0f;
+            double elevation = 0.0;
             float thickness = 0.0f;
             Vector3d normal = Vector3d.UnitZ;
             List<Vertex> vertexes = new List<Vertex>();
@@ -2025,7 +2025,7 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        elevation = float.Parse(code.Value);
+                        elevation = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 39:
@@ -2047,15 +2047,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -2262,9 +2262,9 @@ namespace netDxf
         {
             var text = new Text();
 
-            Vector3f firstAlignmentPoint = Vector3f.Zero;
-            Vector3f secondAlignmentPoint = Vector3f.Zero;
-            Vector3f normal = Vector3f.UnitZ;
+            Vector3d firstAlignmentPoint = Vector3d.Zero;
+            Vector3d secondAlignmentPoint = Vector3d.Zero;
+            Vector3d normal = Vector3d.UnitZ;
             int horizontalAlignment = 0;
             int verticalAlignment = 0;
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
@@ -2295,27 +2295,27 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        firstAlignmentPoint.X = float.Parse(code.Value);
+                        firstAlignmentPoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        firstAlignmentPoint.Y = float.Parse(code.Value);
+                        firstAlignmentPoint.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        firstAlignmentPoint.Z = float.Parse(code.Value);
+                        firstAlignmentPoint.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 11:
-                        secondAlignmentPoint.X = float.Parse(code.Value);
+                        secondAlignmentPoint.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 21:
-                        secondAlignmentPoint.Y = float.Parse(code.Value);
+                        secondAlignmentPoint.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 31:
-                        secondAlignmentPoint.Z = float.Parse(code.Value);
+                        secondAlignmentPoint.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 40:
@@ -2347,15 +2347,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 210:
-                        normal.X = float.Parse(code.Value);
+                        normal.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 220:
-                        normal.Y = float.Parse(code.Value);
+                        normal.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 230:
-                        normal.Z = float.Parse(code.Value);
+                        normal.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 1001:
@@ -2388,11 +2388,11 @@ namespace netDxf
             Layer layer = Layer.Default;
             AciColor color = AciColor.ByLayer;
             LineType lineType = LineType.ByLayer;
-            Vector3f location = new Vector3f();
+            Vector3d location = new Vector3d();
             Dictionary<ApplicationRegistry, XData> xData = new Dictionary<ApplicationRegistry, XData>();
             float endThickness = 0.0f;
             float beginThickness = 0.0f;
-            float bulge = 0.0f;
+            double bulge = 0.0;
             List<int> vertexIndexes = new List<int>();
             VertexTypeFlags flags = VertexTypeFlags.PolylineVertex;
 
@@ -2419,15 +2419,15 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 10:
-                        location.X = float.Parse(code.Value);
+                        location.X = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 20:
-                        location.Y = float.Parse(code.Value);
+                        location.Y = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 30:
-                        location.Z = float.Parse(code.Value);
+                        location.Z = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 40:
@@ -2439,7 +2439,7 @@ namespace netDxf
                         code = this.ReadCodePair();
                         break;
                     case 42:
-                        bulge = float.Parse(code.Value);
+                        bulge = double.Parse(code.Value);
                         code = this.ReadCodePair();
                         break;
                     case 70:
@@ -2517,7 +2517,7 @@ namespace netDxf
             //{
             //    vertex = new PolylineVertex
             //                 {
-            //                     Location =new Vector2f(location.X, location.Y),
+            //                     Location =new Vector2d(location.X, location.Y),
             //                     Bulge = bulge,
             //                     BeginThickness = beginThickness,
             //                     EndThickness = endThickness
