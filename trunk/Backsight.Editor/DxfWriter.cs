@@ -105,12 +105,12 @@ namespace Backsight.Editor
         void WriteArc(ArcGeometry line)
         {
             IPointGeometry center = line.Circle.Center;
-            float bcAngle = (float)GetAngle(center, line.BC);
-            float ecAngle = (float)GetAngle(center, line.EC);
+            double bcAngle = GetAngle(center, line.BC);
+            double ecAngle = GetAngle(center, line.EC);
 
             Arc acLine = new Arc();
-            acLine.Center = new Vector3f((float)center.X, (float)center.Y, 0.0f);
-            acLine.Radius = (float)line.Circle.Radius;
+            acLine.Center = new Vector3d(center.X, center.Y, 0.0);
+            acLine.Radius = line.Circle.Radius;
 
             // AutoCad arcs are *always* drawn counter-clockwise
             if (!line.IsClockwise)

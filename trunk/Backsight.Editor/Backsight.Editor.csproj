@@ -73,10 +73,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="netDxf, Version=0.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ThirdParty\ExportedAssemblies\netDxf.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -1266,6 +1262,10 @@
     <ProjectReference Include="..\Ntx\Ntx.csproj">
       <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
       <Name>Ntx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThirdParty\netDxf\netDxf\netDxf.csproj">
+      <Project>{785380E0-CEB9-4C34-82E5-60D0E33E848E}</Project>
+      <Name>netDxf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
