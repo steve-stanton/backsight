@@ -156,6 +156,12 @@
     <Compile Include="Forms\AttributeDataForm.Designer.cs">
       <DependentUpon>AttributeDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AutoCadExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AutoCadExportForm.Designer.cs">
+      <DependentUpon>AutoCadExportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ColumnDomainConverter.cs" />
     <Compile Include="Forms\CoordinateSystemForm.cs">
       <SubType>Form</SubType>
@@ -1207,6 +1213,9 @@
     <None Include="app.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Resources\ZoomOut.ico" />
+    <EmbeddedResource Include="Forms\AutoCadExportForm.resx">
+      <DependentUpon>AutoCadExportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CoordinateSystemForm.resx">
       <DependentUpon>CoordinateSystemForm.cs</DependentUpon>
     </EmbeddedResource>
