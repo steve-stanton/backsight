@@ -36,6 +36,7 @@ namespace Backsight.Editor
             CadastralMapModel mapModel = CadastralMapModel.Current;
             mapModel.Index.QueryWindow(null, SpatialType.Point, WritePoint);
             mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
+            mapModel.Index.QueryWindow(null, SpatialType.Text, WriteText);
             /*
             LineType cont = LineType.Continuous;
             if (cont == null)
@@ -154,6 +155,23 @@ namespace Backsight.Editor
         void WriteSection(SectionGeometry line)
         {
             WriteLineGeometry(line.Make());
+        }
+
+        Vector3d GetVector(IPointGeometry p)
+        {
+            return new Vector3d(p.X, p.Y, 0.0);
+        }
+
+        bool WriteText(ISpatialObject item)
+        {
+            TextFeature text = (item as TextFeature);
+            TextGeometry geom = text.TextGeometry;
+            Text acText = new Text(geom.Text, GetVector(geom.Position), geom.Height);
+            acText.Rotation = (float)geom.Rotation.Degrees;
+            acText.Layer = m_Layer;
+
+            m_Dxf.AddEntity(acText);
+            return true;
         }
     }
 }
