@@ -44,5 +44,11 @@
     <Setting Name="HelpFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Users\sstanton\Code\Files\Backsight.chm</Value>
     </Setting>
+    <Setting Name="EntityTranslation" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AutoCadVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
