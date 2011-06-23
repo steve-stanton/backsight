@@ -15,6 +15,34 @@ namespace Backsight.Editor
     {
         #region Class data
 
+        /// <summary>
+        /// The file spec for the AutoCad file.
+        /// </summary>
+        internal string FileName { get; set; }
+
+        /// <summary>
+        /// The AutoCad version to create.
+        /// </summary>
+        internal string Version { get; set; }
+
+        /// <summary>
+        /// Entity translation file to use (blank if none).
+        /// </summary>
+        internal string EntityTranslationFileName { get; set; }
+
+        /// <summary>
+        /// Exporting just topological stuff?
+        /// </summary>
+        internal bool IsTopological { get; set; }
+
+        /// <summary>
+        /// Tolerance for approximating arcs (a value of 0.0 means that arcs should
+        /// NOT be approximated).
+        /// </summary>
+        internal double ArcTolerance { get; set; }
+
+        //bool TranslateColors = true;
+
         DxfDocument m_Dxf;
         Layer m_Layer;
 
@@ -24,13 +52,40 @@ namespace Backsight.Editor
 
         internal DxfWriter()
         {
+            this.FileName = null;
+            this.Version = null;
+            this.EntityTranslationFileName = null;
+            this.IsTopological = true;
+            this.ArcTolerance = 0.001;
         }
 
         #endregion
 
-        internal void WriteFile(string path)
+        internal void WriteFile()
         {
+            if (String.IsNullOrEmpty(this.FileName))
+                throw new InvalidOperationException("Output file name has not been specified");
+
+            DxfVersion v = DxfVersion.AutoCad2007;
+            if (!String.IsNullOrEmpty(this.Version))
+            {
+                if (this.Version == "2007")
+                    v = DxfVersion.AutoCad2007;
+                else if (this.Version == "2004")
+                    v = DxfVersion.AutoCad2004;
+                else if (this.Version == "2000")
+                    v = DxfVersion.AutoCad2000;
+                else if (this.Version == "12")
+                    v = DxfVersion.AutoCad12;
+                else
+                    throw new InvalidOperationException("Unsupported AutoCad version: " + this.Version);
+            }
+
+            // Create output model and pick up some stock items
             m_Dxf = new DxfDocument();
+
+            //m_ContinuousLineType = m_Dxf
+            //m_ModelSpace = m_Dxf
             m_Layer = new Layer("TestLayer");
 
             CadastralMapModel mapModel = CadastralMapModel.Current;
@@ -55,7 +110,7 @@ namespace Backsight.Editor
                 MessageBox.Show("ok");
              */
 
-            m_Dxf.Save(path, DxfVersion.AutoCad2007);
+            m_Dxf.Save(this.FileName, v);
         }
 
         bool WritePoint(ISpatialObject item)
