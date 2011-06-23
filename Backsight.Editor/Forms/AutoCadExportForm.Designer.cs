@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.entFileTextBox = new System.Windows.Forms.TextBox();
             this.browseButton = new System.Windows.Forms.Button();
+            this.entFileTextBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.versionComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.themeLabel = new System.Windows.Forms.Label();
-            this.polDataRadioButton = new System.Windows.Forms.RadioButton();
-            this.othDataRadioButton = new System.Windows.Forms.RadioButton();
             this.arcPolylineCheckBox = new System.Windows.Forms.CheckBox();
+            this.othDataRadioButton = new System.Windows.Forms.RadioButton();
+            this.polDataRadioButton = new System.Windows.Forms.RadioButton();
+            this.themeLabel = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.saveButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -56,13 +56,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Entity Type to Layer Translation (optional)";
             // 
-            // entFileTextBox
-            // 
-            this.entFileTextBox.Location = new System.Drawing.Point(22, 36);
-            this.entFileTextBox.Name = "entFileTextBox";
-            this.entFileTextBox.Size = new System.Drawing.Size(395, 22);
-            this.entFileTextBox.TabIndex = 0;
-            // 
             // browseButton
             // 
             this.browseButton.Location = new System.Drawing.Point(441, 36);
@@ -72,6 +65,13 @@
             this.browseButton.Text = "&Browse...";
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
+            // 
+            // entFileTextBox
+            // 
+            this.entFileTextBox.Location = new System.Drawing.Point(22, 36);
+            this.entFileTextBox.Name = "entFileTextBox";
+            this.entFileTextBox.Size = new System.Drawing.Size(395, 22);
+            this.entFileTextBox.TabIndex = 0;
             // 
             // groupBox2
             // 
@@ -87,14 +87,10 @@
             // 
             this.versionComboBox.FormattingEnabled = true;
             this.versionComboBox.Items.AddRange(new object[] {
+            "2007",
+            "2004",
             "2000",
-            "14",
-            "13",
-            "11",
-            "10",
-            "9",
-            "2.6",
-            "2.5"});
+            "12"});
             this.versionComboBox.Location = new System.Drawing.Point(21, 31);
             this.versionComboBox.Name = "versionComboBox";
             this.versionComboBox.Size = new System.Drawing.Size(121, 24);
@@ -113,27 +109,15 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output Filter";
             // 
-            // themeLabel
+            // arcPolylineCheckBox
             // 
-            this.themeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.themeLabel.Location = new System.Drawing.Point(29, 31);
-            this.themeLabel.Name = "themeLabel";
-            this.themeLabel.Size = new System.Drawing.Size(315, 24);
-            this.themeLabel.TabIndex = 0;
-            this.themeLabel.Text = "Currently drawn theme";
-            this.themeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // polDataRadioButton
-            // 
-            this.polDataRadioButton.AutoSize = true;
-            this.polDataRadioButton.Location = new System.Drawing.Point(32, 74);
-            this.polDataRadioButton.Name = "polDataRadioButton";
-            this.polDataRadioButton.Size = new System.Drawing.Size(132, 20);
-            this.polDataRadioButton.TabIndex = 1;
-            this.polDataRadioButton.TabStop = true;
-            this.polDataRadioButton.Text = "&Polygon Features";
-            this.polDataRadioButton.UseVisualStyleBackColor = true;
+            this.arcPolylineCheckBox.AutoSize = true;
+            this.arcPolylineCheckBox.Location = new System.Drawing.Point(195, 86);
+            this.arcPolylineCheckBox.Name = "arcPolylineCheckBox";
+            this.arcPolylineCheckBox.Size = new System.Drawing.Size(162, 20);
+            this.arcPolylineCheckBox.TabIndex = 3;
+            this.arcPolylineCheckBox.Text = "Write &arcs as polylines";
+            this.arcPolylineCheckBox.UseVisualStyleBackColor = true;
             // 
             // othDataRadioButton
             // 
@@ -146,15 +130,27 @@
             this.othDataRadioButton.Text = "&Other Features";
             this.othDataRadioButton.UseVisualStyleBackColor = true;
             // 
-            // arcPolylineCheckBox
+            // polDataRadioButton
             // 
-            this.arcPolylineCheckBox.AutoSize = true;
-            this.arcPolylineCheckBox.Location = new System.Drawing.Point(195, 86);
-            this.arcPolylineCheckBox.Name = "arcPolylineCheckBox";
-            this.arcPolylineCheckBox.Size = new System.Drawing.Size(162, 20);
-            this.arcPolylineCheckBox.TabIndex = 3;
-            this.arcPolylineCheckBox.Text = "Write &arcs as polylines";
-            this.arcPolylineCheckBox.UseVisualStyleBackColor = true;
+            this.polDataRadioButton.AutoSize = true;
+            this.polDataRadioButton.Location = new System.Drawing.Point(32, 74);
+            this.polDataRadioButton.Name = "polDataRadioButton";
+            this.polDataRadioButton.Size = new System.Drawing.Size(132, 20);
+            this.polDataRadioButton.TabIndex = 1;
+            this.polDataRadioButton.TabStop = true;
+            this.polDataRadioButton.Text = "&Polygon Features";
+            this.polDataRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // themeLabel
+            // 
+            this.themeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.themeLabel.Location = new System.Drawing.Point(29, 31);
+            this.themeLabel.Name = "themeLabel";
+            this.themeLabel.Size = new System.Drawing.Size(315, 24);
+            this.themeLabel.TabIndex = 0;
+            this.themeLabel.Text = "Currently drawn theme";
+            this.themeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // cancelButton
             // 
@@ -164,29 +160,31 @@
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // saveButton
+            // okButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(308, 316);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(75, 23);
-            this.saveButton.TabIndex = 4;
-            this.saveButton.Text = "&Save";
-            this.saveButton.UseVisualStyleBackColor = true;
+            this.okButton.Location = new System.Drawing.Point(308, 316);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.TabIndex = 4;
+            this.okButton.Text = "&Save";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // AutoCadExportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(603, 368);
-            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "AutoCadExportForm";
             this.Text = "Export to AutoCad";
             this.Load += new System.EventHandler(this.AutoCadExportForm_Load);
@@ -212,6 +210,6 @@
         private System.Windows.Forms.RadioButton polDataRadioButton;
         private System.Windows.Forms.Label themeLabel;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button okButton;
     }
 }

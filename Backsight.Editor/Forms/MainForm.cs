@@ -1290,21 +1290,31 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void DataExportToAutoCad(IUserAction action)
         {
-            //MessageBox.Show(action.Title);
-            try
+            DxfWriter writer = null;
+
+            using (AutoCadExportForm dial = new AutoCadExportForm())
             {
-                const string testFile = @"C:\Temp\Test.dxf";
-                MessageBox.Show("Writing " + testFile);
-                new DxfWriter().WriteFile(testFile);
-                //SdfExporter sx = new SdfExporter();
-                //sx.Export(@"C:\Temp\Test.sdf");
+                if (dial.ShowDialog(this) == DialogResult.OK)
+                {
+                    writer = dial.Writer;
+                }
             }
 
-            catch (Exception ex)
+            if (writer != null)
             {
-                MessageBox.Show(ex.StackTrace, ex.Message);
+                try
+                {
+                    writer.WriteFile();
+                    MessageBox.Show("Done");
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.StackTrace, ex.Message);
+                }
             }
         }
+
         #endregion
 
         #region Point menu

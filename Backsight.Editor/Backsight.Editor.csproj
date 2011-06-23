@@ -103,6 +103,7 @@
     <Compile Include="Annotation.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttributeData.cs" />
+    <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BacksightTypeResolver.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="CircularLeg.cs" />
