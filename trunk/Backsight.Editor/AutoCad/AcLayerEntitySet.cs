@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
+
+using Backsight.Environment;
 
 using netDxf;
-using Backsight.Environment;
 using netDxf.Tables;
-using System.Windows.Forms;
 
 namespace Backsight.Editor.AutoCad
 {
@@ -26,9 +27,14 @@ namespace Backsight.Editor.AutoCad
         readonly Dictionary<string, string> m_EntityToLayer;
 
         /// <summary>
-        /// The entity types, indexed by entity type name.
+        /// The Backsight entity types, indexed by entity type name.
         /// </summary>
         readonly Dictionary<string, IEntity> m_Entities;
+
+        /// <summary>
+        /// AutoCad layers, indexed by AC layer name.
+        /// </summary>
+        readonly Dictionary<string, Layer> m_Layers;
 
         /// <summary>
         /// Any suffix to append to AC layer names that relate to PINs (property
@@ -65,6 +71,8 @@ namespace Backsight.Editor.AutoCad
             m_AcDocument = acDoc;
             m_MapModel = mapModel;
             m_EntityToLayer = new Dictionary<string, string>();
+            m_Entities = new Dictionary<string, IEntity>();
+            m_Layers = new Dictionary<string, Layer>();
 
             // Grab the entity types that relate to the active editing layer
             ILayer mapLayer = EditingController.Current.ActiveLayer;
@@ -104,18 +112,14 @@ namespace Backsight.Editor.AutoCad
                 return "-" + s;
         }
 
-
-//	@parm	Variable indicating whether a layer associated with either
-//			a topological layer data or an angle or a distance is being
-//			asked for.
-
         /// <summary>
         /// Obtains an AutoCad layer for a spatial feature (creates the
         /// layer if necessary).
         /// </summary>
         /// <param name="f">The feature that's being exported</param>
         /// <param name="lineType">The AutoCad line type</param>
-        /// <param name="useOtherLayer"></param>
+        /// <param name="useOtherLayer">Should a layer associated with a topological
+        /// layer, or an angle, or a distance be obtained?</param>
         /// <returns>The matching AutoCad layer</returns>
         Layer GetLayer(IFeature f, LineType lineType, bool useOtherLayer)
         {
@@ -171,113 +175,54 @@ namespace Backsight.Editor.AutoCad
             return derivedEnt;
         }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Given a CeEntity, return a pointer to the corresponding
-//			AutoCad layer handle. <mf CacadLayerEntitySet::AddLayers>
-//			must be called at some point previously (otherwise you'll
-//			get back a null handle).
-//
-//	@parm	The entity type to search for.
-//
-//	@parm	Variable indicating whether a layer associated with either
-//			a topological layer data or an angle or a distance is being
-//			asked for.
-//
-//	@rdesc	Pointer to the layer handle (null if not found).
-//
-//////////////////////////////////////////////////////////////////////////////
-
+        /// <summary>
+        /// Obtains an AutoCad layer for a specific entity type (creates the
+        /// layer if necessary).
+        /// </summary>
+        /// <param name="entity">The entity type to translate (not null)</param>
+        /// <param name="lineType">The AutoCad line type</param>
+        /// <param name="useOtherLayer">Should a layer associated with a topological
+        /// layer, or an angle, or a distance be obtained?</param>
+        /// <returns></returns>
         Layer GetLayer(IEntity entity, LineType lineType, bool useOtherLayer)
         {
-            return null;
+            if (entity == null)
+                throw new ArgumentNullException();
+
+            // Find the AC layer name
+            string layerName = m_EntityToLayer[entity.Name];
+
+            // If we're dealing with a polygon ID, or an angle annotation, or a distance
+            // annotation, append any suffix
+            if (useOtherLayer)
+            {
+                if (entity.IsPolygonValid && m_PinLayerSuffix != null)
+                    layerName += m_PinLayerSuffix;
+                else if (entity.IsPointValid && m_AngleLayerSuffix != null)
+                    layerName += m_AngleLayerSuffix;
+                else if (entity.IsLineValid && m_DistLayerSuffix != null)
+                    layerName += m_DistLayerSuffix;
+            }
+
+            // Return the layer object if it was previously created.
+            Layer layer;
+            if (m_Layers.TryGetValue(layerName, out layer))
+                return layer;
+
+            // Create new layer
+            return MakeALayer(lineType, entity, layerName); 
         }
-        /*
-AD_OBJHANDLE* CacadLayerEntitySet::GetpLayerHandle	( const CeEntity* const pEntity
-													, const AD_OBJHANDLE LineTypeHandle
-													, const LOGICAL UseOtherLayer
-													) {
 
-	assert (pEntity != 0);
-
-	// Find the layer name
-	CString Entity(pEntity->GetName());
-	std::map<CString,CString,CompareStr>::iterator EntToLayIter;
-	EntToLayIter = m_EntityToLayer.find(Entity);
-	CString TheLayer = (*EntToLayIter).second;
-
-	// Next it is checked if this is an output of a polygon ID and if it is then the
-	// layer name has the suffix appended to it before the layer handle is accessed
-	LOGICAL IsPolygonId = (UseOtherLayer && pEntity->IsPolygon());
-	if(IsPolygonId && m_LabelHasSuffix)
-		TheLayer += m_CEDPinLayerSuffix;
-	else if(UseOtherLayer && pEntity->IsPoint() && m_AngleHasSuffix)
-		TheLayer += m_CEDAngleLayerSuffix;
-	else if(UseOtherLayer && pEntity->IsLine() && m_DistHasSuffix)
-		TheLayer += m_CEDDistLayerSuffix;
-
-	AD_LAY* pTheLayer = 0;
-	// Find the actual layer
-	std::map<CString,AD_LAY*,CompareStr>::iterator EntToLayPtrIter;
-	EntToLayPtrIter = m_LayerToLayerPtr.find(TheLayer);
-	if(EntToLayPtrIter == m_LayerToLayerPtr.end())
-	{
-		// layer not found - not made yet, make it first
-		pTheLayer = MakeALayer( LineTypeHandle, pEntity, TheLayer );
-	}
-	else // layer found: use it
-		pTheLayer = (*EntToLayPtrIter).second;
-
-	// Get the layer's handle
-	if ( pTheLayer )
-		return &(pTheLayer->objhandle);
-	else
-		return 0;
-
-} // end of GetpLayerHandle
-        */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Return a pointer to the line type for this layer.
-//
-//	@rdesc	Pointer to the line type handle (null if no layers
-//			have been defined).
-//
-//	@devnote At the moment, there is only one possibility (since CED
-//			 does not handle line styles), so this method is kinda dumb.
-//			 It should probably accept a pointer to an entity type.
-//
-//////////////////////////////////////////////////////////////////////////////
-
-        /*
-AD_OBJHANDLE* CacadLayerEntitySet::GetpLineTypeHandle ( void ) {
-
-	std::map<CString,AD_LAY*,CompareStr>::iterator LayIter;
-
-	LayIter = m_LayerToLayerPtr.begin();
-	AD_LAY* pLayer = 0;
-	if(LayIter != m_LayerToLayerPtr.end()) AD_LAY* pLayer = (*LayIter).second;
-
-	if ( pLayer )
-		return &(pLayer->linetypeobjhandle);
-	else
-		return 0;
-
-} // end of GetpLineTypeHandle
-        */
-
-//////////////////////////////////////////////////////////////////////
-//
-//	@mfunc	Load an entity translation file. Note that during
-//			exports from CED, any wildcard in the AutoCad layer
-//			name will be treated as literals.
-//
-//	@parm	File spec of the translation file.
-//	@parm	The CED map that the translations relate to.
-//
-//////////////////////////////////////////////////////////////////////
-
+        /// <summary>
+        /// Loads an entity translation file.
+        /// </summary>
+        /// <param name="tranfile">File spec of the translation file.</param>
+        /// <param name="cedmap">The CED map that the translations relate to.</param>
+        /// <remarks>During exports from Backsight, any wildcard in the AutoCad layer
+        /// name will be treated as a literal.</remarks>
+        internal void TranslateLayerNames(string tranfile, CadastralMapModel cedmap)
+        {
+        }
         /*
 void CacadLayerEntitySet::TranslateLayerNames ( const CString& tranfile
 											  , const CeMap& cedmap ) {
@@ -363,82 +308,35 @@ void CacadLayerEntitySet::TranslateLayerNames ( const CString& tranfile
 } // end of TranslateLayerNames
         */
 
-        netDxf.Tables.Layer MakeALayer(netDxf.Tables.LineType lineType, IEntity entity)
+        /// <summary>
+        /// Creates a new AutoCad layer
+        /// </summary>
+        /// <param name="lineType">The AutoCad line type</param>
+        /// <param name="entity">The Backsight entity type</param>
+        /// <param name="layerName">The name to assign to the new layer</param>
+        /// <returns>The created layer</returns>
+        Layer MakeALayer(LineType lineType, IEntity entity, string layerName)
         {
-            return null;
+            // TODO: May need to ensure the name isn't TOO long (older versions of AutoCad may
+            // have assumed 32 chars max).
+
+            // Return existing layer if it has already been created
+            Layer result;
+            if (m_Layers.TryGetValue(layerName, out result))
+                return result;
+
+            // Create the new layer. There's no need to add to the output DXF document (in
+            // fact, there's no method to do so). The layer will be added by netDxf when
+            // we call DxfDocument.AddEntity using an object that refers to a previously
+            // unseen AutoCad layer.
+            result = new Layer(layerName);
+            result.Color = new AciColor(EntityUtil.GetColor(entity));
+            result.LineType = lineType;
+
+            // Remember the created object for subsequent lookup by this class.
+            m_Layers.Add(layerName, result);
+
+            return result;
         }
-        /*
-AD_LAY* CacadLayerEntitySet::MakeALayer( const AD_OBJHANDLE LineTypeHandle,
-		const CeEntity* pEntity, const CString TheLayer )
-{
-	std::list<CString>::iterator LayListIter;
-	LOGICAL insertit;
-
-	// go through the list of layers until end is reached or a place is
-	// found for the layer for the current entity
-	for(m_LayListIter = m_LayerList.begin();
-			m_LayListIter != m_LayerList.end()  && *m_LayListIter < TheLayer;
-			m_LayListIter++)
-		;
-
-	insertit = TRUE;
-
-	if(m_LayerList.size() && m_LayListIter != m_LayerList.end() &&
-			*m_LayListIter == TheLayer)
-		insertit = FALSE;
-
-	AD_LAY* pThisLayer = 0;
-
-	if(insertit) {
-	// a new layer name was found - insert it into the list and put it out to Acad
-		if(m_LayerList.empty())
-			m_LayerList.push_front(TheLayer);
-		else
-			m_LayerList.insert(m_LayListIter,TheLayer);
-
-// Create the actual ACAD layer
-		pThisLayer = new AD_LAY;
-
-		// Set default layer initializes the blobs etc.
-		adSetDefaultLayer(m_DwgHandle,pThisLayer);
-
-		// DON'T overwrite memory if the entity type has a long name!
-		INT4 maxname = sizeof(pThisLayer->name)-1;	// 32
-		if ( strlen((LPCTSTR)TheLayer) > maxname ) {
-			strncpy(pThisLayer->name,(LPCTSTR)TheLayer,maxname);
-			pThisLayer->name[maxname] = '\0';
-		}
-		else
-			strcpy(pThisLayer->name, (LPCTSTR)TheLayer);
-
-		COLORREF rgb = pEntity->GetRGB();
-		CacadColour Colour(rgb);
-		pThisLayer->color = Colour.GetAcadColour();
-
-		// LineType Handle
-		adHancpy(pThisLayer->linetypeobjhandle,LineTypeHandle);
-
-		// Generate new object handle
-		adGenerateObjhandle(m_DwgHandle,pThisLayer->objhandle);
-//
-
-//
-// Add an entry to the map associating the layer names to their pointers
-// and add it's pointer to the vector of pointers
-		m_LayerToLayerPtr[TheLayer] = pThisLayer;
-		m_Layers.push_back(pThisLayer);
-//
-		// add layer via OpenDWG
-		if (!adAddLayer(m_DwgHandle,pThisLayer)) {
-			CString ErrMsg = "Error adding layer: ";
-			ErrMsg += pThisLayer->name;
-			ShowMessage((LPCTSTR)ErrMsg);
-			return FALSE;
-		}
-	}
-
-	return pThisLayer;
-}
-*/
     }
 }
