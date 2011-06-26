@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 
 using Backsight.Environment;
@@ -16,9 +17,6 @@ namespace Backsight.Editor.AutoCad
     class AcLayerEntitySet
     {
         #region Class data
-
-        readonly CadastralMapModel m_MapModel;
-        readonly DxfDocument m_AcDocument;
 
         /// <summary>
         /// Relationship of Backsight entity type with AutoCad layer. The
@@ -61,15 +59,8 @@ namespace Backsight.Editor.AutoCad
         /// <summary>
         /// Initializes a new instance of the <see cref="AcLayerEntitySet"/> class.
         /// </summary>
-        /// <param name="acDoc"></param>
-        /// <param name="mapModel"></param>
-        internal AcLayerEntitySet(DxfDocument acDoc, CadastralMapModel mapModel)
+        internal AcLayerEntitySet()
         {
-            if (acDoc == null || mapModel == null)
-                throw new ArgumentNullException();
-
-            m_AcDocument = acDoc;
-            m_MapModel = mapModel;
             m_EntityToLayer = new Dictionary<string, string>();
             m_Entities = new Dictionary<string, IEntity>();
             m_Layers = new Dictionary<string, Layer>();
@@ -217,96 +208,39 @@ namespace Backsight.Editor.AutoCad
         /// Loads an entity translation file.
         /// </summary>
         /// <param name="tranfile">File spec of the translation file.</param>
-        /// <param name="cedmap">The CED map that the translations relate to.</param>
         /// <remarks>During exports from Backsight, any wildcard in the AutoCad layer
         /// name will be treated as a literal.</remarks>
-        internal void TranslateLayerNames(string tranfile, CadastralMapModel cedmap)
+        internal void TranslateLayerNames(string tranfile)
         {
+            // Load the translation file
+            string[] tranRecs = File.ReadAllLines(tranfile);
+
+            foreach (string s in tranRecs)
+            {
+                // Only process lines that contain two strings, seperated by
+                // an "=" character.
+                string[] sa = s.Split('=');
+                if (sa.Length != 2)
+                    continue;
+
+                // Ensure there is no leading or trailing white space.
+                string layName = sa[0].Trim();
+                string entName = sa[1].Trim();
+
+                // Translate the entity name into an object (exit if the translation
+                // file refers to an unknown entity type).
+                IEntity ent;
+                if (!m_Entities.TryGetValue(entName, out ent))
+                    throw new InvalidDataException(
+                        String.Format("Cannot find entity type called '{0}'", entName));
+
+                // Store translation of entity to layer (so long as it's there - the
+                // translation file may contain entries that relate to a different
+                // Backsight editing layer).
+                if (m_EntityToLayer.ContainsKey(entName))
+                    m_EntityToLayer[entName] = layName;
+            }
         }
-        /*
-void CacadLayerEntitySet::TranslateLayerNames ( const CString& tranfile
-											  , const CeMap& cedmap ) {
-
-	// We will need a pointer to the attribute database in order
-	// to translate entity names into pointers.
-	const CeAttributeStructure* const pdb = cedmap.GetpDatabase();
-
-	// Open the entity translation file.
-	FILE* fp;
-	if ( (fp=fopen((LPCTSTR)tranfile,"r"))==0 ) {
-		ShowMessage("Cannot read translation file");
-		return;
-	}
-
-	UINT4 slen;				// Number of chars in record.
-	CHARS* peq;				// Pointer to "=" character.
-	CHARS str[256];			// Input buffer.
-	CHARS layname[256];		// External name
-	CHARS entname[256];		// Entity name
-	CHARS msg[512];			// Message for user
-	CeEntity* pEnt;			// Entity pointer
-
-	while ( fgets(str,sizeof(str),fp) ) {
-
-		//	Get the number of characters (excluding the newline at
-		//	the end, as well as any other white space).
-		slen = StrLength(str);
-		if ( slen==0 ) continue;	// skip empty records
-		str[slen] = '\0';
-
-		//	Locate the position of the "=" character.
-		peq = strchr(str,'=');
-		if ( !peq || peq==&str[0] || peq==&str[slen-1] ) {
-			sprintf ( msg, "Bad record (no = sign): %s\nContinue?", str );
-			if ( ShowMessage(msg,MB_YESNO)==IDNO ) break;
-		}
-
-		// Pull out the layer name, and the name of the entity type. The
-		// layer name always comes first (for both export and import).
-		strcpy ( layname, strtok(str,"=") );
-		strcpy ( entname, strtok(NULL,"=") );
-
-		// Ensure there is no leading or trailing white space.
-
-		CString laystr(layname);
-		laystr.TrimLeft();
-		laystr.TrimRight();
-
-		CString entstr(entname);
-		entstr.TrimLeft();
-		entstr.TrimRight();
-
-		// Translate the entity name into a pointer.
-		pEnt = pdb->GetEntityPtr(os_string(entstr));
-		if ( !pEnt ) {
-
-			// If we did not find the entity type in the map, there's
-			// something wrong with the translation file (refers to
-			// an unknown entity type).
-
-			sprintf(msg,"Cannot find entity type called '%s'",entstr);
-			ShowMessage(msg);
-		}
-		else {
-
-			// store translation of entity to layer
-			m_EntityToLayer[entstr] = laystr;
-
-			// If we did not find it, just silently ignore it (It is
-			// possible that the translation file contains entries that
-			// do not relate to the map's active theme. Since THIS
-			// constructor does not load entity types that relate to
-			// other themes, there may be nothing to find).
-
-		}
-
-	} // end while (fgets)
-
-	// Close the file
-	fclose(fp);
-
-} // end of TranslateLayerNames
-        */
 
         /// <summary>
         /// Creates a new AutoCad layer
