@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Backsight.Editor.Forms;
+//using netDxf.Tables;
 
 namespace Backsight.Editor
 {
@@ -31,6 +32,12 @@ namespace Backsight.Editor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            //netDxf.DxfDocument dd = new netDxf.DxfDocument();
+            //MessageBox.Show("LineTypes.Count="+dd.LineTypes.Count);
+            //LineType lt = LineType.Continuous;
+            //MessageBox.Show(lt.Name);
+
             Application.Run(new MainForm(args));
 
             /*

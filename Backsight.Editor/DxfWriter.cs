@@ -8,6 +8,7 @@ using netDxf;
 using netDxf.Tables;
 using netDxf.Header;
 using netDxf.Entities;
+using Backsight.Editor.AutoCad;
 
 namespace Backsight.Editor
 {
@@ -42,6 +43,11 @@ namespace Backsight.Editor
         internal double ArcTolerance { get; set; }
 
         //bool TranslateColors = true;
+
+        /// <summary>
+        /// AutoCad line type for a solid (continuous) line.
+        /// </summary>
+        LineType m_ContinuousLineType;
 
         DxfDocument m_Dxf;
         Layer m_Layer;
@@ -81,15 +87,50 @@ namespace Backsight.Editor
                     throw new InvalidOperationException("Unsupported AutoCad version: " + this.Version);
             }
 
+            // Form entity->AutoCad layer index
+            AcLayerEntitySet acLayers = new AcLayerEntitySet();
+
+            // If we have an entity translation file, adjust the AutoCad layer
+            // names to correspond to the translations. If an entity type has
+            // no translation, the output layer name will be the same as the
+            // name of the entity type.
+            if (!String.IsNullOrEmpty(this.EntityTranslationFileName))
+                acLayers.TranslateLayerNames(this.EntityTranslationFileName);
+
+            // Get info for exporting fonts.
+            /*
+	CeFontFile ffile;
+	if ( !ffile.Create() )
+		ShowMessage("Cannot load font file.\nText will be exported without font information.");
+             */
+
+            // Are line annotations relevant? If so, get the font for them (assuming
+            // the font is ALWAYS Arial).
+            /*
+	AD_SHPTB* pAnnoStyle = 0;
+	UINT4 annoflags = 0;
+	if ( !isTopological ) annoflags = pMap->GetLineAnnoFlags();
+	if ( annoflags ) pAnnoStyle = ffile.GetShapeFile(DwgHandle,"Arial");
+             */
+
             // Create output model and pick up some stock items
             m_Dxf = new DxfDocument();
 
-            //m_ContinuousLineType = m_Dxf
+            m_ContinuousLineType = LineType.Continuous;
             //m_ModelSpace = m_Dxf
             m_Layer = new Layer("TestLayer");
 
             CadastralMapModel mapModel = CadastralMapModel.Current;
-            mapModel.Index.QueryWindow(null, SpatialType.Point, WritePoint);
+
+            // Convert points if doing a non-topological export
+            if (!this.IsTopological)
+            {
+                // Will we be writing out observed angles?
+                //const LOGICAL showAngles = ((annoflags & SHOW_OBSV_ANGLE) != 0);
+
+                mapModel.Index.QueryWindow(null, SpatialType.Point, WritePoint);
+            }
+
             mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
             mapModel.Index.QueryWindow(null, SpatialType.Text, WriteText);
             /*
