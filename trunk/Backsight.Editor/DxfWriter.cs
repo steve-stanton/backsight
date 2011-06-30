@@ -133,23 +133,6 @@ namespace Backsight.Editor
 
             mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
             mapModel.Index.QueryWindow(null, SpatialType.Text, WriteText);
-            /*
-            LineType cont = LineType.Continuous;
-            if (cont == null)
-                MessageBox.Show("no line type");
-            else
-                MessageBox.Show("LineType.Name=" + cont.Name);
-
-            dxf.AddEntity(cont);
-            //dxf.AddEntity(cont);
-             */
-            /*
-            LineType lineType = dxf.GetLineType("Steve");
-            if (lineType == null)
-                MessageBox.Show("cannot get continuous line type");
-            else
-                MessageBox.Show("ok");
-             */
 
             m_Dxf.Save(this.FileName, v);
         }
