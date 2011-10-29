@@ -1436,6 +1436,7 @@ typedef long32_t cs_magic_t;
 
 						/* Additional processes */
 #define cs_PRJFLG_AFFINE  (1L << 20)	/* Affine transformation post-processer */
+#define cs_PRJFLG_RNTRNT  (1L << 21)	/* Projection code is reentrant */
 
 						/* Parameter Control */
 #define cs_PRJFLG_ORGFLS  (1L << 24)	/* The projection does NOT support
@@ -6894,18 +6895,6 @@ Const char* EXP_LVL1	CS_epsgNbr2EsriName (long32_t epsgNbr);
 long32_t	EXP_LVL1	CS_epsgNbr2Oracle (long32_t epsgNbr,unsigned short* flags);
 void		EXP_LVL3	CS_erpt (int err_num);
 void		EXP_LVL1	CS_errmsg (char *user_bufr,int buf_size);
-long32_t	EXP_LVL1	CS_esriDtmName2EpsgNbr (Const char* esriName,unsigned short* flags);
-Const char* EXP_LVL1	CS_esriDtmName2Msi (Const char* esriName,unsigned short* flags);
-Const char*	EXP_LVL1	CS_esriDtmNameByIdx (unsigned short index,unsigned short* flags);
-long32_t	EXP_LVL1	CS_esriElpName2EpsgNbr (Const char* esriName);
-Const char* EXP_LVL1	CS_esriElpName2Msi (Const char* esriName);
-long32_t	EXP_LVL1	CS_esriName2EpsgNbr (Const char* esriName);
-Const char* EXP_LVL1	CS_esriName2Msi (Const char* esriName,unsigned short* flags);
-long32_t	EXP_LVL1	CS_esriName2Nbr (Const char* esriName);
-Const char*	EXP_LVL1	CS_esriNameByIdx (unsigned short index,unsigned short* flags);
-long32_t	EXP_LVL1	CS_esriNbr2Epsg (long32_t esriNbr,unsigned short* flags);
-Const char*	EXP_LVL1	CS_esriNbr2Name (long32_t esriNbr);
-long		EXP_LVL1	CS_esriNbrByIdx (unsigned short index,unsigned short* flags);
 
 void		EXP_LVL1	CS_fast (int fast);
 void		EXP_LVL3	CS_fillIn (struct cs_Csdef_ *cs_def);
@@ -6997,6 +6986,11 @@ int			EXP_LVL5	CS_isBigEndian (void);
 int			EXP_LVL1	CS_isgeo (Const char *csys);
 int			EXP_LVL1	CS_isHlpAvailable (void);
 int			EXP_LVL5	CS_isLittleEndian (void);
+int			EXP_LVL1	CS_isCsPrmReentrant (Const struct cs_Csprm_ *prjConversion);
+int			EXP_LVL1	CS_isCsReentrant (Const char *csys);
+int			EXP_LVL1	CS_isDtXfrmReentrant (Const struct cs_Dtcprm_ *dtc_ptr);
+int			EXP_LVL1	CS_isGxDefReentrant (Const struct cs_GeodeticTransform_ *gxDef);
+int			EXP_LVL1	CS_isGxfrmReentrant (Const struct cs_GxXform_ *gxXform);
 
 int			EXP_LVL3	CS_isalpha (int chr);
 int			EXP_LVL3	CS_isupper (int chr);
@@ -7081,7 +7075,7 @@ Const char*	EXP_LVL3	CS_stristr (Const char *str1,Const char *str2);
 int			EXP_LVL9	CS_strnicmp (Const char *cp1,Const char *cp2,size_t count);
 char*		EXP_LVL3	CS_strrchr (Const char *cPtr, int chr);
 double		EXP_LVL9	CS_strtod (Const char *nptr,char **endptr);
-long		EXP_LVL9	CS_strtol (Const char *nptr,char **endptr,int base);
+long32_t	EXP_LVL9	CS_strtol (Const char *nptr,char **endptr,int base);
 ulong32_t	EXP_LVL9	CS_strtoul (Const char *nptr,char **endptr,int base);
 int			EXP_LVL7	CS_swpal (void (*prog)(Const char *name));
 char*		EXP_LVL7	CS_swpfl (Const char *file_name);
