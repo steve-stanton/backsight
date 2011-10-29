@@ -415,5 +415,40 @@ namespace Backsight.Editor
 
             base.Clean();
         }
+
+        /*
+//	@mfunc	Create transient primitives (CeMiscText objects, and
+//			optionally CeSegment objects) that correspond
+//			to any angles associated with this point.
+//
+//			The caller is responsible for deleting the primitives
+//			once done with them.
+//
+//	@parm	List of pointers to created primitives.
+//	@parm	Should lines be produced too? NOT IMPLEMENTED.
+//
+//	@rdesc	The number of primitives that were created (if any).
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "CeMiscText.h"
+
+UINT4 CePoint::CreateAngleText ( CPtrList& prims
+							   , const LOGICAL wantLinesToo ) const {
+
+	// Get the creating op to create any angle text for
+	// this point.
+	CeOperation* pop = GetpCreator();
+	if ( pop ) pop->CreateAngleText(prims,wantLinesToo,this);
+
+	// Get the location to do the same for any operations that
+	// utilize this point as part of an angular observation.
+	m_pLocation->CreateAngleText(prims,wantLinesToo,this);
+
+	// Return the number of primitives in the list.
+	return prims.GetCount();
+
+} // end of CreateAngleText
+         */
     }
 }

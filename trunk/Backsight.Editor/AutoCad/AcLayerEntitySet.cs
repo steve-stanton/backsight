@@ -112,7 +112,7 @@ namespace Backsight.Editor.AutoCad
         /// <param name="useOtherLayer">Should a layer associated with a topological
         /// layer, or an angle, or a distance be obtained?</param>
         /// <returns>The matching AutoCad layer</returns>
-        Layer GetLayer(IFeature f, LineType lineType, bool useOtherLayer)
+        internal Layer GetLayer(IFeature f, LineType lineType, bool useOtherLayer)
         {
             // Get the entity type for the feature (possibly derived in
             // the case of a line).
