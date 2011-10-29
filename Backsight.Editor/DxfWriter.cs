@@ -32,6 +32,11 @@ namespace Backsight.Editor
         internal string EntityTranslationFileName { get; set; }
 
         /// <summary>
+        /// The AutoCad layers
+        /// </summary>
+        AcLayerEntitySet m_Layers;
+
+        /// <summary>
         /// Exporting just topological stuff?
         /// </summary>
         internal bool IsTopological { get; set; }
@@ -51,6 +56,11 @@ namespace Backsight.Editor
 
         DxfDocument m_Dxf;
         Layer m_Layer;
+
+        /// <summary>
+        /// Should observed angles be written?
+        /// </summary>
+        bool m_ShowAngles;
 
         #endregion
 
@@ -88,14 +98,14 @@ namespace Backsight.Editor
             }
 
             // Form entity->AutoCad layer index
-            AcLayerEntitySet acLayers = new AcLayerEntitySet();
+            m_Layers = new AcLayerEntitySet();
 
             // If we have an entity translation file, adjust the AutoCad layer
             // names to correspond to the translations. If an entity type has
             // no translation, the output layer name will be the same as the
             // name of the entity type.
             if (!String.IsNullOrEmpty(this.EntityTranslationFileName))
-                acLayers.TranslateLayerNames(this.EntityTranslationFileName);
+                m_Layers.TranslateLayerNames(this.EntityTranslationFileName);
 
             // Get info for exporting fonts.
             /*
@@ -118,7 +128,6 @@ namespace Backsight.Editor
 
             m_ContinuousLineType = LineType.Continuous;
             //m_ModelSpace = m_Dxf
-            m_Layer = new Layer("TestLayer");
 
             CadastralMapModel mapModel = CadastralMapModel.Current;
 
@@ -131,8 +140,10 @@ namespace Backsight.Editor
                 mapModel.Index.QueryWindow(null, SpatialType.Point, WritePoint);
             }
 
-            mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
+            // Convert polygon labels (or misc text)
             mapModel.Index.QueryWindow(null, SpatialType.Text, WriteText);
+
+            mapModel.Index.QueryWindow(null, SpatialType.Line, WriteLine);
 
             m_Dxf.Save(this.FileName, v);
         }
@@ -140,15 +151,112 @@ namespace Backsight.Editor
         bool WritePoint(ISpatialObject item)
         {
             PointFeature pf = (PointFeature)item;
-            IPointGeometry pg = pf.Geometry;
 
-            Point p = new Point();
-            p.Location = new Vector3d(pg.X, pg.Y, 0.0);
-            p.Layer = m_Layer;
+            // Skip if the AutoCad layer cannot be determined
+            Layer layer = m_Layers.GetLayer(pf, m_ContinuousLineType, false);
+            if (layer != null)
+            {
+                Point p = new Point();
+                p.Location = GetVector(pf.Geometry);
+                p.Layer = layer;
 
-            m_Dxf.AddEntity(p);
+                m_Dxf.AddEntity(p);
+
+                if (m_ShowAngles)
+                    ExportAngles(pf);
+
+            }
+
             return true;
         }
+
+        /// <summary>
+        /// Exports any angle observations associated with a point.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns>True if annotation was written.</returns>
+        bool ExportAngles(PointFeature p)
+        {
+            // Skip if there is no AutoCad layer for the specified point
+            // (the annotations will be going onto the same layer).
+            Layer layer = m_Layers.GetLayer(p, m_ContinuousLineType, true);
+            if (layer == null)
+                return false;
+
+            throw new NotImplementedException("DxfWriter.ExportAngles");
+
+            // Get the point to create a set of miscellaneous text objects.
+            //MiscTextGeometry[] text = p.CreateAngleText(
+
+            //return true;
+        }
+
+        /*
+
+//
+//	@parm	AutoCad entity.
+//	@parm	Cross-reference of CED entity types to AutoCad layers.
+//	@parm	The style for the annotations.
+//	@parm	The point involved.
+//
+//	@rdesc	TRUE if annotation was written.
+LOGICAL CeAutoCad::ExportAngles ( const AD_DB_HANDLE DwgHandle
+								, AD_VMADDR pEntityList
+								, PAD_ENT_HDR pEntityHeader
+								, PAD_ENT pEntity
+								, CacadLayerEntitySet* pLESet
+								, AD_SHPTB* pStyle
+								, const CePoint& pt ) const {
+
+	// Skip if there is no AutoCad layer for the specified point
+	// (the annotations will be going onto the same layer).
+	AD_OBJHANDLE* pLayerHandle = pLESet->GetpLayerHandle(&pt,
+		m_ContinuousLineTypeHandle,TRUE);
+	if ( !pLayerHandle ) return FALSE;
+
+	// Get the point to create a set of miscellaneous text
+	// objects.
+	CPtrList text;
+	UINT4 nAngle = pt.CreateAngleText(text,FALSE);
+	if ( nAngle==0 ) return FALSE;
+
+	// Export each item of text (deleting each item as we go).
+	POSITION pos = text.GetHeadPosition();
+	while ( pos ) {
+		CeMiscText* pText = (CeMiscText*)text.GetNext(pos);
+
+		// What's the actual text string?
+		CString text;
+		pText->GetText(text);
+
+		// If the text position is to the west of the point,
+		// align it on the right.
+		FLOAT8 xt = pText->GetEasting();
+		FLOAT8 yt = pText->GetNorthing();
+		INT4 halign = AD_TEXT_JUST_LEFT;
+
+		// Take special care with vertical text (allow up to 1mm
+		// of roundoff).
+		if ( (xt+0.001) < pt.GetEasting() ) halign = AD_TEXT_JUST_RIGHT;
+
+		// Pull out values for function call below.
+		CeVertex posn(xt,yt);
+		FLOAT8 grheight = pText->GetHeight();
+		FLOAT8 rotation = pText->GetRotation();
+
+		CacadText AcadText(DwgHandle,pEntityList,pEntityHeader,pEntity);
+		AcadText.ExportAngleDistText(pStyle,pLayerHandle,pText,text,posn
+									,grheight,rotation
+									,halign,AD_TEXT_VALIGN_MIDDLE);
+
+		delete pText;
+	}
+
+	// Ensure pointer to the text have been removed too.
+	text.RemoveAll();
+
+	return TRUE;
+*/
 
         bool WriteLine(ISpatialObject item)
         {
@@ -244,13 +352,53 @@ namespace Backsight.Editor
         bool WriteText(ISpatialObject item)
         {
             TextFeature text = (item as TextFeature);
+
+            if (this.IsTopological)
+            {
+                ExportKey(text);
+
+            }
+            else
+            {
+            }
+
+            // Skip if the AutoCad layer cannot be determined
+            Layer layer = m_Layers.GetLayer(text, m_ContinuousLineType, this.IsTopological);
+            if (layer != null)
+            {
+                TextGeometry geom = text.TextGeometry;
+                Text acText = new Text(geom.Text, GetVector(geom.Position), geom.Height);
+                acText.Rotation = (float)geom.Rotation.Degrees;
+                acText.Layer = layer;
+
+                m_Dxf.AddEntity(acText);
+            }
+            return true;
+        }
+
+        void ExportKey(TextFeature text)
+        {
+            Layer layer = m_Layers.GetLayer(text, m_ContinuousLineType, true);
+            if (layer == null)
+                return;
+
+            // Get the label's key string. It HAS to be defined.
+            string keystr = text.FormattedKey;
+            if (String.IsNullOrEmpty(keystr))
+                return;
+
+            // Get the label's reference position.
+            IPointGeometry refpos = text.GetPolPosition();
+
+            // Define the position for AutoCad (bottom right corner).
+
+
             TextGeometry geom = text.TextGeometry;
             Text acText = new Text(geom.Text, GetVector(geom.Position), geom.Height);
             acText.Rotation = (float)geom.Rotation.Degrees;
-            acText.Layer = m_Layer;
+            acText.Layer = layer;
 
             m_Dxf.AddEntity(acText);
-            return true;
         }
     }
 }
