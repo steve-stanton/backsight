@@ -198,7 +198,7 @@ namespace Backsight.Editor.UI
                 return false;
 
             // Get the controller to select the intersection point
-            ISpatialSelection ss = new SpatialSelection(p);
+            ISpatialSelection ss = new SpatialSelection((ISpatialObject)p);
             Controller.SetSelection(ss);
 
             m_Dialog.Dispose();

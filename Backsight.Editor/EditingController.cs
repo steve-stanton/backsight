@@ -882,7 +882,7 @@ namespace Backsight.Editor
 
         public void Select(Feature f)
         {
-            SetSelection(new SpatialSelection(f));
+            SetSelection(new SpatialSelection((ISpatialObject)f));
         }
 
         /// <summary>
