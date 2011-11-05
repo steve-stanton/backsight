@@ -126,10 +126,5 @@ namespace Backsight.Editor
         /// <param name="name">The name tag to look for</param>
         /// <returns>True if the next data item has the specified name tag</returns>
         bool IsNextName(string name);
-
-        /// <summary>
-        /// The edit that is currently being read.
-        /// </summary>
-        Operation CurrentEdit { get; }
     }
 }
