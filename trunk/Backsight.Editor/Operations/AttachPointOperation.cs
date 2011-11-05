@@ -305,6 +305,8 @@ namespace Backsight.Editor.Operations
             point = null;
         }
 
+        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
+        //internal FeatureStub(DeserializationFactory factory)
         internal AttachPointOperation(IEditReader reader)
             : base(null, 0)
         {

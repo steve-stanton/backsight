@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Environment;
+using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -55,8 +56,8 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="FeatureStub"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        internal FeatureStub(IEditReader reader)
+        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
+        internal FeatureStub(DeserializationFactory factory)
         {
         }
 
@@ -139,7 +140,8 @@ namespace Backsight.Editor
         /// <param name="writer">The mechanism for storing content.</param>
         public void WriteData(IEditWriter writer)
         {
-            writer.WriteInt32("Entity", m_What.Id);
+            writer.WriteUInt32("Id", m_SessionSequence);
+            writer.WriteEntity("Entity", m_What);
 
             if (m_Id != null)
             {
@@ -154,12 +156,20 @@ namespace Backsight.Editor
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="reader">The reader for loading data values</param>
-        static void ReadData(IEditReader reader, out int entity, out FeatureId fid)
+        /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
+        /// <param name="entity"></param>
+        /// <param name="fid">The ID of the feature (may be null).</param>
+        static void ReadData(IEditReader reader, out uint ss, out IEntity entity, out FeatureId fid)
         {
-            entity = reader.ReadInt32("Entity");
+            ss = reader.ReadUInt32("Id");
+            entity = reader.ReadEntity("Entity");
 
-            //if (reader.IsPresent("Key"))
-            throw new NotImplementedException();
+            if (reader.IsNextName("Key"))
+                fid = null;
+            else if (reader.IsNextName("ForeignKey"))
+                fid = null;
+            else
+                fid = null;
         }
     }
 }

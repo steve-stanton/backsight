@@ -53,6 +53,8 @@ namespace Backsight.Editor.Observations
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
+        //internal FeatureStub(DeserializationFactory factory)
         internal BearingDirection(IEditReader reader)
             : base(reader)
         {

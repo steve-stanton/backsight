@@ -138,7 +138,6 @@ namespace Backsight.Editor
                 string sa = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(a));
                 string sb = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(b));
                 return sa.Equals(sb);
-
             }
         }
 

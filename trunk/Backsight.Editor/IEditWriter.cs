@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Environment;
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="31-OCT-2011" />
@@ -46,6 +48,13 @@ namespace Backsight.Editor
         /// <param name="name">A name tag for the item</param>
         /// <param name="value">The four-byte signed integer to write. </param>
         void WriteInt32(string name, int value);
+
+        /// <summary>
+        /// Writes an entity type to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The entity type to write. </param>
+        void WriteEntity(string name, IEntity entity);
 
         /// <summary>
         /// Writes a four-byte unsigned integer to a storage medium.

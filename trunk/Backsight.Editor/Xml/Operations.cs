@@ -1239,29 +1239,10 @@ namespace Backsight.Editor.Xml
         internal UpdateItemData(UpdateItem item)
         {
             throw new NotImplementedException("UpdateItemData");
-            /*
-            this.Name = item.Name;
-
-            // If non-observation items are necessary, it may be better to work with
-            // sub-classes (leave UpdateItem as an abstract base class).
-
-            object iv = item.Value;
-            Observation o = (iv as Observation);
-            if (o != null)
-                this.Value = DataFactory.Instance.ObservationToString(o);
-            //else if (iv is Feature)
-            //    this.Value = (iv as Feature).DataId;
-            else
-                throw new NotImplementedException("Cannot serialize update item: " + item.Name);
-             */
         }
 
         internal UpdateItem LoadValue(ILoader loader)
         {
-            /*
-            object value = DataFactory.Instance.StringToObservation(this.Value);
-            return new UpdateItem(this.Name, value);
-             */
             throw new NotImplementedException("UpdateItemData.LoadValue");
         }
     }
@@ -1294,9 +1275,6 @@ namespace Backsight.Editor.Xml
             }
 
             // The root node always identifies an array of UpdateItem
-            //YamlConfig yc = new YamlConfig();
-            //yc.OmitTagForRootNode = true;
-            //this.Changes = new YamlSerializer(yc).Serialize(dataItems);
             this.Changes = new YamlSerializer().Serialize(dataItems);
         }
 

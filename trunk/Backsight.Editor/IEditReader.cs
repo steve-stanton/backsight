@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Environment;
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="31-OCT-2011" />
@@ -37,6 +39,13 @@ namespace Backsight.Editor
         /// <param name="name">A name tag associated with the value</param>
         /// <returns>The 4-byte value that was read.</returns>
         int ReadInt32(string name);
+
+        /// <summary>
+        /// Reads an entity type for a spatial feature.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The entity type that was read.</returns>
+        IEntity ReadEntity(string name);
 
         /// <summary>
         /// Reads a 4-byte unsigned integer.
@@ -117,5 +126,10 @@ namespace Backsight.Editor
         /// <param name="name">The name tag to look for</param>
         /// <returns>True if the next data item has the specified name tag</returns>
         bool IsNextName(string name);
+
+        /// <summary>
+        /// The edit that is currently being read.
+        /// </summary>
+        Operation CurrentEdit { get; }
     }
 }

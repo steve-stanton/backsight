@@ -38,6 +38,8 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
         /// using the data read from persistent storage.
         /// </summary>
+        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
+        //internal FeatureStub(DeserializationFactory factory)
         /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
         internal AnnotatedDistance(IEditReader reader)
             : base(reader)
