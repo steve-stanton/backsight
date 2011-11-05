@@ -22,7 +22,7 @@ namespace Backsight.Editor.Observations
     /// <summary>
     /// A distance observation.
     /// </summary>
-    class Distance : Observation, ILength, IEquatable<Distance>
+    class Distance : Observation, ILength, IEquatable<Distance>, IPersistent
     {
         #region Static
 
@@ -63,11 +63,29 @@ namespace Backsight.Editor.Observations
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Distance"/> class
+        /// with a distance of zero (and undefined units).
+        /// </summary>
         internal Distance()
         {
             m_EnteredUnit = null;
             m_ObservedMetric = 0.0;
             m_IsFixed = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Distance"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal Distance(IEditReader reader)
+        {
+            double distance;
+            DistanceUnitType unitType;
+            ReadData(reader, out distance, out unitType, out m_IsFixed);
+            m_EnteredUnit = EditingController.GetUnits(unitType);
+            m_ObservedMetric = m_EnteredUnit.ToMetric(distance);
         }
 
         /// <summary>
@@ -155,7 +173,7 @@ namespace Backsight.Editor.Observations
         /// </summary>
         /// <param name="s">The string to parse. It should look like a floating
         ///	point number, but may have a units abbreviation stuck on the end (like that
-        ///	produced by <c>Distance.Format</c>).</param>
+        ///	produced by a call to <see cref="Format"/>).</param>
         [Obsolete("Use the version that accepts the default entry unit")]
         internal Distance(string str)
             : this(str, EditingController.Current.EntryUnit)
@@ -164,6 +182,13 @@ namespace Backsight.Editor.Observations
 
         #endregion
 
+        /// <summary>
+        /// Breaks a distance string into two parts (the numeric part, and optional abbreviation).
+        /// </summary>
+        /// <param name="s">The string to parse</param>
+        /// <param name="num">The numeric part (the supplied string in a situation where
+        /// none of the characters are letters)</param>
+        /// <param name="abbr">The abbreviation (empty if an abbreviation is not present)</param>
         void ParseDistanceString(string s, out string num, out string abbr)
         {
             // Working back from the end of the string, look for the first
@@ -183,11 +208,17 @@ namespace Backsight.Editor.Observations
             abbr = String.Empty;
         }
 
+        /// <summary>
+        /// Is the distance fixed? (if so, the distance cannot be adjusted in any way).
+        /// </summary>
         internal bool IsFixed
         {
             get { return m_IsFixed; }
         }
 
+        /// <summary>
+        /// Marks this as a fixed distance (not to be adjusted).
+        /// </summary>
         internal void SetFixed()
         {
             m_IsFixed = true;
@@ -210,11 +241,17 @@ namespace Backsight.Editor.Observations
             get { return m_EnteredUnit; }
         }
 
+        /// <summary>
+        /// Observed distance, in meters on the ground.
+        /// </summary>
         public double Meters
         {
             get { return m_ObservedMetric; }
         }
 
+        /// <summary>
+        /// Observed distance, in microns on the ground.
+        /// </summary>
         public long Microns
         {
             get { return Backsight.Length.ToMicrons(m_ObservedMetric); }
@@ -339,11 +376,23 @@ namespace Backsight.Editor.Observations
         	return (m_ObservedMetric * sfac);
         }
 
+        /// <summary>
+        /// Checks whether this observation makes reference to a specific feature.
+        /// </summary>
+        /// <param name="feature">The feature to check for.</param>
+        /// <returns>False (always)</returns>
         internal override bool HasReference(Feature feat)
         {
             return false;
         }
 
+        /// <summary>
+        /// Performs actions when the operation that uses this observation is marked
+        /// for deletion as part of its rollback function. This cuts any reference from any
+        /// previously existing feature that was cross-referenced to the operation (see
+        /// calls made to AddOp).
+        /// </summary>
+        /// <param name="op">The operation that makes use of this observation.</param>
         internal override void OnRollback(Operation op)
         {
             // Nothing to do
@@ -362,16 +411,45 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// The observed distance value
+        /// The observed distance value (in data entry units)
         /// </summary>
         internal double ObservedValue
         {
             get { return GetDistance(m_EnteredUnit); }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>The result of a call to <see cref="Format"/> (with units abbreviation appended).</returns>
         public override string ToString()
         {
             return Format(true);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public virtual void WriteData(IEditWriter writer)
+        {
+            writer.WriteDouble("Value", ObservedValue);
+            writer.WriteByte("Unit", (byte)m_EnteredUnit.UnitType);
+            writer.WriteBool("Fixed", m_IsFixed);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="value">The observed distance value (in data entry units)</param>
+        /// <param name="unit">The code indicating data entry units.</param>
+        /// <param name="isFixed">Is the distance fixed</param>
+        static void ReadData(IEditReader reader, out double value, out DistanceUnitType unit, out bool isFixed)
+        {
+            value = reader.ReadDouble("Value");
+            unit = (DistanceUnitType)reader.ReadByte("Unit");
+            isFixed = reader.ReadBool("Fixed");
         }
     }
 }

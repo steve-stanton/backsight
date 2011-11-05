@@ -38,9 +38,19 @@ namespace Backsight.Editor.Observations
 
         #region Constructors
 
-        internal Direction()
+        protected Direction()
         {
             m_Offset = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Direction"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        protected Direction(IEditReader reader)
+        {
+            ReadData(reader, out m_Offset);
         }
 
         #endregion
@@ -624,6 +634,25 @@ namespace Backsight.Editor.Observations
         {
             IWindow x = display.MaxExtent;
             return Geom.Distance(x.Min, x.Max);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public virtual void WriteData(IEditWriter writer)
+        {
+            writer.WriteObject<Offset>("Offset", m_Offset);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="offset">The offset.</param>
+        static void ReadData(IEditReader reader, out Offset offset)
+        {
+            offset = reader.ReadObject<Offset>("Offset");
         }
     }
 }

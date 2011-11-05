@@ -25,7 +25,7 @@ namespace Backsight.Editor.Observations
     /// a pair of points that the direction is parallel to. Parallel directions are
     /// always regarded as FIXED directions.
     /// </summary>
-    class ParallelDirection : Direction
+    class ParallelDirection : Direction, IPersistent
     {
         #region Class data
 
@@ -53,6 +53,17 @@ namespace Backsight.Editor.Observations
         /// </summary>
         internal ParallelDirection()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParallelDirection"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal ParallelDirection(IEditReader reader)
+            : base(reader)
+        {
+            ReadData(reader, out m_From, out m_Par1, out m_Par2);
         }
 
         /// <summary>
@@ -191,6 +202,33 @@ namespace Backsight.Editor.Observations
                 return true;
 
             return base.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public override void WriteData(IEditWriter writer)
+        {
+            base.WriteData(writer);
+
+            writer.WriteFeature<PointFeature>("From", m_From);
+            writer.WriteFeature<PointFeature>("Start", m_Par1);
+            writer.WriteFeature<PointFeature>("End", m_Par2);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="from">The origin of the direction.</param>
+        /// <param name="start">Point defining start of parallel.</param>
+        /// <param name="end">Point defining end of parallel.</param>
+        static void ReadData(IEditReader reader, out PointFeature from, out PointFeature start, out PointFeature end)
+        {
+            from = reader.ReadFeature<PointFeature>("From");
+            start = reader.ReadFeature<PointFeature>("Start");
+            end = reader.ReadFeature<PointFeature>("End");
         }
     }
 }

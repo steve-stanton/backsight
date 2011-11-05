@@ -23,7 +23,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Basic information for a spatial feature, used during deserialization from the database.
     /// </summary>
-    class FeatureStub : IFeature
+    class FeatureStub : IFeature, IPersistent
     {
         #region Class data
 
@@ -50,6 +50,15 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureStub"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal FeatureStub(IEditReader reader)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureStub"/> class with the
@@ -123,5 +132,34 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public void WriteData(IEditWriter writer)
+        {
+            writer.WriteInt32("Entity", m_What.Id);
+
+            if (m_Id != null)
+            {
+                if (m_Id is NativeId)
+                    writer.WriteUInt32("Key", m_Id.RawId);
+                else
+                    writer.WriteString("ForeignKey", m_Id.FormattedKey);
+            }
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        static void ReadData(IEditReader reader, out int entity, out FeatureId fid)
+        {
+            entity = reader.ReadInt32("Entity");
+
+            //if (reader.IsPresent("Key"))
+            throw new NotImplementedException();
+        }
     }
 }

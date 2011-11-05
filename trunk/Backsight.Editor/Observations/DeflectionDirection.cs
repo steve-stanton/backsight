@@ -20,7 +20,7 @@ namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="09-JUN-1999" />
     /// <summary>A deflection angle.</summary>
-    class DeflectionDirection : AngleDirection
+    class DeflectionDirection : AngleDirection, IPersistent
     {
         #region Class data
 
@@ -35,6 +35,16 @@ namespace Backsight.Editor.Observations
         /// </summary>
         internal DeflectionDirection()
             : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeflectionDirection"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal DeflectionDirection(IEditReader reader)
+            : base(reader)
         {
         }
 
