@@ -39,8 +39,8 @@ namespace Backsight.Editor
             //LineType lt = LineType.Continuous;
             //MessageBox.Show(lt.Name);
 
-            //Application.Run(new MainForm(args));
-
+            Application.Run(new MainForm(args));
+            /*
             DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
             Backsight.Editor.Observations.Distance dist = new Backsight.Editor.Observations.Distance("123", du);
             Backsight.Editor.AnnotatedDistance d = new Backsight.Editor.AnnotatedDistance(dist, true);
@@ -58,7 +58,8 @@ namespace Backsight.Editor
 
                 using (StringReader sr = new StringReader(txa.ToString()))
                 {
-                    TextEditReader r = new TextEditReader(sr);
+                    TextEditReader r = new TextEditReader();
+                    r.SetReader(sr);
                     Backsight.Editor.Observations.Offset res = r.ReadObject<Backsight.Editor.Observations.Offset>("Test");
 
                     txa = new TextEditWriter();
@@ -71,22 +72,7 @@ namespace Backsight.Editor
             {
                 MessageBox.Show(ex.Message);
             }
-            /*
-            try
-            {
-                //Observation res = Backsight.Editor.Xml.DataFactory.Instance.StringToObservation(s);
-                object[] resArray = (object[])ys.Deserialize(s, typeof(Backsight.Editor.Xml.OffsetDistanceData));
-                //MessageBox.Show("Number of elements="+resArray.Length);
-                object res = resArray[0];
-                MessageBox.Show(res.GetType().Name);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
              */
-
         }
     }
 }

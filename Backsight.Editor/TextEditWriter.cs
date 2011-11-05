@@ -16,6 +16,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -131,6 +132,16 @@ namespace Backsight.Editor
         public void WriteInt32(string name, int value)
         {
             WriteValue(name, value);
+        }
+
+        /// <summary>
+        /// Writes an entity type to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The entity type to write. </param>
+        public void WriteEntity(string name, IEntity entity)
+        {
+            WriteValue(name, entity.Id);
         }
 
         /// <summary>

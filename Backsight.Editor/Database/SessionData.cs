@@ -25,6 +25,7 @@ using System.Xml;
 using Backsight.Data;
 using Backsight.Environment;
 using Backsight.Editor.Xml;
+using System.IO;
 
 namespace Backsight.Editor.Database
 {
@@ -80,6 +81,9 @@ namespace Backsight.Editor.Database
                 Job curJob = null;
                 Trace.Write("Reading data...");
 
+                // Create the reader for parsing the data
+                TextEditReader editReader = new TextEditReader();
+
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -106,10 +110,11 @@ namespace Backsight.Editor.Database
                             curSession = Session.CreateCurrentSession(model, curSessionData, curUser, curJob);
                         }
 
-                        SqlXml data = reader.GetSqlXml(2);
-                        using (XmlReader xr = data.CreateReader())
+                        string data = reader.GetString(2));
+                        using (TextReader tr = new StringReader(data))
                         {
-                            Operation edit = DataFactory.Instance.ToOperation(curSession, xr);
+                            editReader.SetReader(tr);
+                            Operation edit = DataFactory.Instance.ToOperation(curSession, editReader);
 
                             // The edit sequence is repeated in the XML data
                             Debug.Assert(edit.EditSequence == editSequence);

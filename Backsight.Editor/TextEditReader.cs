@@ -19,6 +19,7 @@ using System.IO;
 using System.Reflection;
 
 using Backsight.Editor.Xml;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -32,9 +33,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The mechanism for reading the text.
+        /// The mechanism for reading the text for the current edit.
         /// </summary>
-        readonly TextReader m_Reader;
+        TextReader m_Reader;
 
         /// <summary>
         /// Index of the constructors that accept an instance of <see cref="IEditReader"/> (and which
@@ -55,26 +56,30 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextEditReader"/> class
-        /// that makes use of the supplied text reader.
+        /// Initializes a new instance of the <see cref="TextEditReader"/> class.
         /// </summary>
-        /// <param name="reader">The mechanism for reading the text.</param>
         /// <exception cref="ApplicationException">If no suitable persistent classes
         /// could be found in the current assembly.</exception>
-        internal TextEditReader(TextReader reader)
+        internal TextEditReader()
         {
-            if (reader == null)
-                throw new ArgumentNullException();
-
-            m_Reader = reader;
+            m_Reader = null;
             m_Constructors = LoadConstructors();
-            ReadNextLine();
 
             if (m_Constructors.Count == 0)
                 throw new ApplicationException("Cannot find any persistent classes");
         }
 
         #endregion
+
+        /// <summary>
+        /// Specifies the current source of the text data.
+        /// </summary>
+        /// <param name="reader">The text storage medium to read from</param>
+        internal void SetReader(TextReader reader)
+        {
+            m_Reader = reader;
+            ReadNextLine();
+        }
 
         /// <summary>
         /// Loads constructor information for persistent classes.
@@ -96,10 +101,10 @@ namespace Backsight.Editor
                                                           BindingFlags.NonPublic |
                                                           BindingFlags.Instance |
                                                           BindingFlags.DeclaredOnly, null,
-                                                          new Type[] { typeof(IEditReader) }, null);
+                                                          new Type[] { typeof(DeserializationFactory) }, null);
 
                     if (ci == null)
-                        throw new ApplicationException("Class " + t.Name + " implements IPersistent but does not provide expected constructor");
+                        throw new ApplicationException("Class " + t.Name + " implements IPersistent but does not provide deserialization constructor");
 
                     result.Add(t.Name, ci);
                 }
@@ -154,7 +159,7 @@ namespace Backsight.Editor
             m_NextLine = m_Reader.ReadLine();
 
             if (m_NextLine != null)
-                m_NextLine.Trim();
+                m_NextLine = m_NextLine.Trim();
 
             return result;
         }
@@ -199,6 +204,17 @@ namespace Backsight.Editor
         public int ReadInt32(string name)
         {
             return Convert.ToInt32(ReadValue(name));
+        }
+
+        /// <summary>
+        /// Reads an entity type for a spatial feature.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The entity type that was read.</returns>
+        public IEntity ReadEntity(string name)
+        {
+            int id = Convert.ToInt32(ReadValue(name));
+            return EnvironmentContainer.FindEntityById(id);
         }
 
         /// <summary>
