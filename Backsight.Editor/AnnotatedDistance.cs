@@ -21,7 +21,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A distance that is portrayed as an annotation alongside a line.
     /// </summary>
-    class AnnotatedDistance : Distance
+    class AnnotatedDistance : Distance, IPersistent
     {
         #region Class data
 
@@ -33,6 +33,17 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal AnnotatedDistance(IEditReader reader)
+            : base(reader)
+        {
+            ReadData(reader, out m_IsFlipped);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnnotatedDistance"/> class.
@@ -64,6 +75,26 @@ namespace Backsight.Editor
         internal void ToggleIsFlipped()
         {
             m_IsFlipped = !m_IsFlipped;
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public override void WriteData(IEditWriter writer)
+        {
+            base.WriteData(writer);
+            writer.WriteBool("Flipped", m_IsFlipped);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="isFlipped">Is the annotation flipped (displayed on the non-default side)?</param>
+        static void ReadData(IEditReader reader, out bool isFlipped)
+        {
+            isFlipped = reader.ReadBool("Flipped");
         }
     }
 }

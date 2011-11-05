@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to attach a point to a line.
     /// </summary>
-    class AttachPointOperation : Operation
+    class AttachPointOperation : Operation, IPersistent
     {
         /// <summary>
         /// The max value stored for <c>m_PositionRatio</c>
@@ -273,6 +273,41 @@ namespace Backsight.Editor.Operations
         internal override LineFeature GetPredecessor(LineFeature line)
         {
             return null;
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public void WriteData(IEditWriter writer)
+        {
+            /*
+            base.WriteData(writer);
+            this.PositionRatio = op.PositionRatio;
+            this.Point = new FeatureStubData(op.NewPoint);
+
+            writer.WriteFeature<LineFeature>("Line", m_Line);
+            writer.WriteFeature<PointFeature>("From", m_From);
+             */
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="line"></param>
+        /// <param name="positionRatio"></param>
+        /// <param name="point"></param>
+        static void ReadData(IEditReader reader, out LineFeature line, out uint positionRatio, out PointFeature point)
+        {
+            line = null;
+            positionRatio = 0;
+            point = null;
+        }
+
+        internal AttachPointOperation(IEditReader reader)
+            : base(null, 0)
+        {
         }
     }
 }

@@ -23,17 +23,17 @@ namespace Backsight.Editor.Observations
     /// <summary>
     /// A bearing is an angle taken from a point with respect to grid north.
     /// </summary>
-    class BearingDirection : Direction
+    class BearingDirection : Direction, IPersistent
     {
         #region Class data
 
         /// <summary>
         /// Angle from grid north, in range [0,2*PI].
         /// </summary>
-        double m_Observation;
+        RadianValue m_Observation;
 
         /// <summary>
-        /// The point which the bearing was taken.
+        /// The point from which the bearing was taken.
         /// </summary>
         PointFeature m_From;
 
@@ -49,6 +49,17 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="BearingDirection"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal BearingDirection(IEditReader reader)
+            : base(reader)
+        {
+            ReadData(reader, out m_From, out m_Observation);
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="from">The point which the bearing was taken from.</param>
@@ -58,7 +69,7 @@ namespace Backsight.Editor.Observations
         internal BearingDirection(PointFeature from, IAngle observation)
         {
             double a = observation.Radians;
-            m_Observation = Direction.Normalize(a);
+            m_Observation = new RadianValue(Direction.Normalize(a));
             m_From = from;
         }
 
@@ -66,17 +77,17 @@ namespace Backsight.Editor.Observations
 
         internal override IAngle Bearing
         {
-            get { return new RadianValue(m_Observation); }
+            get { return m_Observation; }
         }
 
         internal override double ObservationInRadians
         {
-            get { return m_Observation; }
+            get { return m_Observation.Radians; }
         }
 
         internal void SetObservationInRadians(double value)
         {
-            m_Observation = value;
+            m_Observation = new RadianValue(value);
         }
 
         internal override PointFeature From
@@ -132,7 +143,7 @@ namespace Backsight.Editor.Observations
                 return false;
 
             return (Object.ReferenceEquals(this.m_From, that.m_From) &&
-                    Math.Abs(this.m_Observation - that.m_Observation) < Constants.TINY);
+                    Math.Abs(this.m_Observation.Value - that.m_Observation.Value) < Constants.TINY);
         }
 
         /// <summary>
@@ -146,6 +157,30 @@ namespace Backsight.Editor.Observations
                 return true;
 
             return base.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public override void WriteData(IEditWriter writer)
+        {
+            base.WriteData(writer);
+
+            writer.WriteFeature<PointFeature>("From", m_From);
+            writer.WriteRadians("Value", m_Observation);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="from">The point from which the bearing was taken.</param>
+        /// <param name="value">The angle in radians. A negated value indicates an anticlockwise angle.</param>
+        static void ReadData(IEditReader reader, out PointFeature from, out RadianValue value)
+        {
+            from = reader.ReadFeature<PointFeature>("From");
+            value = reader.ReadRadians("Value");
         }
     }
 }

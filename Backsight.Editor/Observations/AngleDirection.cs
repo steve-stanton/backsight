@@ -24,14 +24,14 @@ namespace Backsight.Editor.Observations
     /// An "angle" is an angle taken from a point, with respect to a backsight
     /// that provides the reference orientation.
     /// </summary>
-    class AngleDirection : Direction
+    class AngleDirection : Direction, IPersistent
     {
         #region Class data
 
         /// <summary>
         /// The angle in radians. A negated value indicates an anticlockwise angle.
         /// </summary>
-        double m_Observation;
+        RadianValue m_Observation;
 
         /// <summary>
         /// The backsight point.
@@ -55,6 +55,17 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AngleDirection"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal AngleDirection(IEditReader reader)
+            : base(reader)
+        {
+            ReadData(reader, out m_Backsight, out m_From, out m_Observation);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AngleDirection"/> class.
         /// </summary>
         /// <param name="backsight">The backsight point.</param>
@@ -66,19 +77,19 @@ namespace Backsight.Editor.Observations
         {
             m_Backsight = backsight;
             m_From = occupied;
-            m_Observation = observation.Radians;
+            m_Observation = new RadianValue(observation.Radians);
         }
 
         #endregion
 
         internal override double ObservationInRadians
         {
-            get { return m_Observation; }
+            get { return m_Observation.Radians; }
         }
 
         internal void SetObservationInRadians(double value)
         {
-            m_Observation = value;
+            m_Observation = new RadianValue(value);
         }
 
         /// <summary>
@@ -92,7 +103,7 @@ namespace Backsight.Editor.Observations
                 double bb = Geom.BearingInRadians(m_From, m_Backsight);
 
                 // Add on the observed angle, and restrict to [0,2*PI]
-                double a = bb + m_Observation;
+                double a = bb + m_Observation.Value;
                 return new RadianValue(Direction.Normalize(a));
             }
         }
@@ -154,7 +165,7 @@ namespace Backsight.Editor.Observations
 
             return (Object.ReferenceEquals(this.m_From, that.m_From) &&
                     Object.ReferenceEquals(this.m_Backsight, that.m_Backsight) &&
-                    Math.Abs(this.m_Observation - that.m_Observation) < Constants.TINY);
+                    Math.Abs(this.m_Observation.Value - that.m_Observation.Value) < Constants.TINY);
         }
 
         /// <summary>
@@ -182,6 +193,33 @@ namespace Backsight.Editor.Observations
                 return true;
 
             return base.HasReference(feature);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public override void WriteData(IEditWriter writer)
+        {
+            base.WriteData(writer);
+
+            writer.WriteFeature<PointFeature>("Backsight", m_Backsight);
+            writer.WriteFeature<PointFeature>("From", m_From);
+            writer.WriteRadians("Value", m_Observation);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="backsight">The backsight point.</param>
+        /// <param name="from">The occupied station.</param>
+        /// <param name="value">The angle in radians. A negated value indicates an anticlockwise angle.</param>
+        static void ReadData(IEditReader reader, out PointFeature backsight, out PointFeature from, out RadianValue value)
+        {
+            backsight = reader.ReadFeature<PointFeature>("Backsight");
+            from = reader.ReadFeature<PointFeature>("From");
+            value = reader.ReadRadians("Value");
         }
     }
 }

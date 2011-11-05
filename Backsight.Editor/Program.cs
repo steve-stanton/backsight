@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Backsight.Editor.Forms;
+using System.IO;
 //using netDxf.Tables;
 
 namespace Backsight.Editor
@@ -38,37 +39,39 @@ namespace Backsight.Editor
             //LineType lt = LineType.Continuous;
             //MessageBox.Show(lt.Name);
 
-            Application.Run(new MainForm(args));
+            //Application.Run(new MainForm(args));
 
-            /*
             DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
-            Backsight.Editor.Observations.Distance d = new Backsight.Editor.Observations.Distance("123", du);
+            Backsight.Editor.Observations.Distance dist = new Backsight.Editor.Observations.Distance("123", du);
+            Backsight.Editor.AnnotatedDistance d = new Backsight.Editor.AnnotatedDistance(dist, true);
             Backsight.Editor.Observations.OffsetDistance od = new Backsight.Editor.Observations.OffsetDistance(d, true);
 
-            // If the resultant type is known (and not abstract), you can omit the header tag. Just remember to
-            // specify the datatype when you deserialize.
-            System.Yaml.YamlConfig yc = new System.Yaml.YamlConfig();
-            yc.OmitTagForRootNode = true;
-            System.Yaml.Serialization.YamlSerializer ys = new System.Yaml.Serialization.YamlSerializer(yc);
             Backsight.Editor.Xml.ObservationData t = Backsight.Editor.Xml.DataFactory.Instance.ToData<Backsight.Editor.Xml.ObservationData>(od);
-
-            ulong testVal = 12345678901234567890L;
-            UpdateItem[] changes = new UpdateItem[2];
-            changes[0] = new UpdateItem("Name1", t);
-            changes[1] = new UpdateItem("Name2", testVal);
 
             try
             {
-                string s = ys.Serialize(changes);
-                //string s = Backsight.Editor.Xml.DataFactory.Instance.ObservationToString<Backsight.Editor.Observations.OffsetDistance>(od);
-                MessageBox.Show(s);
+                TextEditWriter txa = new TextEditWriter();
+                txa.WriteObject<Backsight.Editor.Observations.Offset>("Test", od);
+                MessageBox.Show(txa.ToString());
+
+                File.WriteAllText(@"C:\Temp\Test.txt", txa.ToString());
+
+                using (StringReader sr = new StringReader(txa.ToString()))
+                {
+                    TextEditReader r = new TextEditReader(sr);
+                    Backsight.Editor.Observations.Offset res = r.ReadObject<Backsight.Editor.Observations.Offset>("Test");
+
+                    txa = new TextEditWriter();
+                    txa.WriteObject<Backsight.Editor.Observations.Offset>("Result", res);
+                    MessageBox.Show(txa.ToString());
+                }
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
+            /*
             try
             {
                 //Observation res = Backsight.Editor.Xml.DataFactory.Instance.StringToObservation(s);

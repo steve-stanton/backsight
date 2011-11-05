@@ -48,6 +48,16 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="OffsetPoint"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
+        internal OffsetPoint(IEditReader reader)
+        {
+            ReadData(reader, out m_Point);
+        }
+
+        /// <summary>
         /// Constructor for an offset at the specified point.
         /// </summary>
         /// <param name="point">The offset point</param>
@@ -98,7 +108,7 @@ namespace Backsight.Editor.Observations
         /// offsets to the right are positive values.
         /// </summary>
         /// <param name="dir">The direction that the offset was observed with respect to.</param>
-        /// <returns></returns>
+        /// <returns>The signed offset distance, in meters on the ground</returns>
         internal override double GetMetric(Direction dir)
         {
             // Return offset of zero if there is no offset point.
@@ -163,6 +173,25 @@ namespace Backsight.Editor.Observations
         {
         	if (m_Point!=null)
                 m_Point.CutOp(op);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="writer">The mechanism for storing content.</param>
+        public override void WriteData(IEditWriter writer)
+        {
+            writer.WriteFeature<PointFeature>("Point", m_Point);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="point">The point that defines the offset position</param>
+        static void ReadData(IEditReader reader, out PointFeature point)
+        {
+            point = reader.ReadFeature<PointFeature>("Point");
         }
     }
 }

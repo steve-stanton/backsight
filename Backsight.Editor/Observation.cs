@@ -24,7 +24,20 @@ namespace Backsight.Editor
     /// </summary>
     abstract class Observation
     {
+        /// <summary>
+        /// Checks whether this observation makes reference to a specific feature.
+        /// </summary>
+        /// <param name="feature">The feature to check for.</param>
+        /// <returns>True if this direction refers to the feature</returns>
         abstract internal bool HasReference(Feature feature);
+
+        /// <summary>
+        /// Performs actions when the operation that uses this observation is marked
+        /// for deletion as part of its rollback function. This cuts any reference from any
+        /// previously existing feature that was cross-referenced to the operation (see
+        /// calls made to AddOp).
+        /// </summary>
+        /// <param name="op">The operation that makes use of this observation.</param>
         abstract internal void OnRollback(Operation op);
 
         /// <summary>
@@ -44,7 +57,7 @@ namespace Backsight.Editor
         /// other objects which won't be able to return a distance). Re-arranging the class
         /// hierarchy would be better.
         /// </devnote>
-        public ILength GetDistance(PointFeature from)
+        internal ILength GetDistance(PointFeature from)
         {
             // It's easy if the observation is a distance object.
             Distance dist = (this as Distance);
