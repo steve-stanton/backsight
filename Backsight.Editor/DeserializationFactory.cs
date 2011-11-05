@@ -14,8 +14,9 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Xml;
 
-namespace Backsight.Editor.Xml
+namespace Backsight.Editor
 {
     /// <summary>
     /// A <see cref="FeatureFactory"/> for use during deserialization from

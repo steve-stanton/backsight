@@ -110,7 +110,7 @@ namespace Backsight.Editor.Database
                             curSession = Session.CreateCurrentSession(model, curSessionData, curUser, curJob);
                         }
 
-                        string data = reader.GetString(2));
+                        string data = reader.GetString(2);
                         using (TextReader tr = new StringReader(data))
                         {
                             editReader.SetReader(tr);

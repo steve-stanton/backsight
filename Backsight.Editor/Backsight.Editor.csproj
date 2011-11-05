@@ -118,6 +118,7 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
+    <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
     <Compile Include="EditingContext.cs" />
     <Compile Include="EditingHelpProvider.cs">
@@ -1134,7 +1135,6 @@
     <Compile Include="Wildcard.cs" />
     <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\DataFactory.cs" />
-    <Compile Include="Xml\DeserializationFactory.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>
     </Compile>

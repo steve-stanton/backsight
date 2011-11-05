@@ -236,13 +236,16 @@ namespace Backsight.Editor.Xml
         /// <param name="data">The data that describes the edit</param>
         /// <returns>The created editing object</returns>
         /// <remarks>Edits are converted into xml using the <see cref="Operation.ToXml"/> method.</remarks>
-        internal Operation ToOperation(Session s, XmlReader data)
+        internal Operation ToOperation(Session s, IEditReader data)
         {
-            XmlSerializer xs = new XmlSerializer(typeof(EditData));
-            EditData et = (EditData)xs.Deserialize(data);
-            Debug.Assert(et.Operation.Length == 1);
-            OperationData ot = et.Operation[0];
-            Operation result = ot.LoadOperation(s);
+            throw new NotImplementedException();
+
+            //XmlSerializer xs = new XmlSerializer(typeof(EditData));
+            //EditData et = (EditData)xs.Deserialize(data);
+            //Debug.Assert(et.Operation.Length == 1);
+            //OperationData ot = et.Operation[0];
+            //Operation result = ot.LoadOperation(s);
+            Operation result = null;
 
             // Note that calculated geometry is NOT defined at this stage. That happens
             // when the model is asked to index the data.
