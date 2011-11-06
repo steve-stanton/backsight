@@ -52,6 +52,18 @@ namespace Backsight.Editor.Operations
             m_NewLine = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewLineOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        protected NewLineOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         /// <summary>

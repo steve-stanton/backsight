@@ -48,7 +48,7 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        abstract public void WriteData(IEditWriter writer);
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        abstract public void WriteData(EditSerializer editSerializer);
     }
 }

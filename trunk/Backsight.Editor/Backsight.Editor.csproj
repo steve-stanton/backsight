@@ -120,10 +120,12 @@
     <Compile Include="Database\UserJobData.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
+    <Compile Include="EditDeserializer.cs" />
     <Compile Include="EditingContext.cs" />
     <Compile Include="EditingHelpProvider.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="EditSerializer.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
@@ -1133,7 +1135,6 @@
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateItemCollection.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="Xml\Content.cs" />
     <Compile Include="Xml\DataFactory.cs" />
     <Compile Include="Xml\Edits.cs">
       <DependentUpon>Edits.xsd</DependentUpon>

@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Environment;
-
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="31-OCT-2011" />
@@ -39,13 +37,6 @@ namespace Backsight.Editor
         /// <param name="name">A name tag associated with the value</param>
         /// <returns>The 4-byte value that was read.</returns>
         int ReadInt32(string name);
-
-        /// <summary>
-        /// Reads an entity type for a spatial feature.
-        /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The entity type that was read.</returns>
-        IEntity ReadEntity(string name);
 
         /// <summary>
         /// Reads a 4-byte unsigned integer.
@@ -83,41 +74,14 @@ namespace Backsight.Editor
         string ReadString(string name);
 
         /// <summary>
-        /// Reads a value in radians.
+        /// Reads any text that precedes the data values for an object.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The radian value that was read.</returns>
-        RadianValue ReadRadians(string name);
+        void ReadBeginObject();
 
         /// <summary>
-        /// Reads the content of an object that implements <see cref="IPersistent"/>.
+        /// Reads any text that should follow the data values for an object.
         /// </summary>
-        /// <typeparam name="T">The type of object expected by the caller.</typeparam>
-        /// <param name="name">A name tag associated with the object</param>
-        /// <returns>The object that was read (may actually have a type that is derived
-        /// from the supplied type).</returns>
-        /// <remarks>
-        /// In addition to implementing <see cref="IPersistent"/>, the Backsight implementation
-        /// assumes that the created type will also provide a constructor that accepts an
-        /// instance of the <see cref="IEditReader"/>.
-        /// </remarks>
-        T ReadObject<T>(string name) where T : IPersistent;
-
-        /// <summary>
-        /// Reads a reference to a spatial feature, using that reference to obtain the
-        /// corresponding feature.
-        /// </summary>
-        /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The feature that was read (null if not found). May actually have a type
-        /// that is derived from the supplied type.</returns>
-        /// <remarks>This does not create a brand new feature. Rather, it uses a reference
-        /// to try to obtain a feature that should have already been created. To be able to
-        /// do this, the implementation of <see cref="IEditReader"/> will probably have to
-        /// maintain a collection of the features that have already been produced while
-        /// working through an editing stream.
-        /// </remarks>
-        T ReadFeature<T>(string name) where T : Feature;
+        void ReadEndObject();
 
         /// <summary>
         /// Checks whether the next data item has a specific name tag. Make a call to any
