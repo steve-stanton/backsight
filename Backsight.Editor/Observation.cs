@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Any sort of survey observation.
     /// </summary>
-    abstract class Observation
+    abstract class Observation : IPersistent
     {
         /// <summary>
         /// Checks whether this observation makes reference to a specific feature.
@@ -102,5 +102,11 @@ namespace Backsight.Editor
         {
             return new Feature[0];
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        abstract public void WriteData(EditSerializer editSerializer);
     }
 }

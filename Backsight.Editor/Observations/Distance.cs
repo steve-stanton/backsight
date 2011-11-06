@@ -22,7 +22,7 @@ namespace Backsight.Editor.Observations
     /// <summary>
     /// A distance observation.
     /// </summary>
-    class Distance : Observation, ILength, IEquatable<Distance>, IPersistent
+    class Distance : Observation, ILength, IEquatable<Distance>
     {
         #region Static
 
@@ -431,7 +431,7 @@ namespace Backsight.Editor.Observations
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        public virtual void WriteData(EditSerializer editSerializer)
+        public override void WriteData(EditSerializer editSerializer)
         {
             IEditWriter writer = editSerializer.Writer;
 

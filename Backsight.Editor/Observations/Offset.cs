@@ -22,7 +22,7 @@ namespace Backsight.Editor.Observations
     /// An offset with respect to something else. This is the base class for
     /// <see cref="OffsetDistance"/> and <see cref="OffsetPoint"/>.
     /// </summary>
-    abstract class Offset : Observation, IPersistent
+    abstract class Offset : Observation
     {
         /// <summary>
         /// Returns the offset distance with respect to a reference direction, in meters
@@ -49,6 +49,6 @@ namespace Backsight.Editor.Observations
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        abstract public void WriteData(EditSerializer editSerializer);
+        //abstract public void WriteData(EditSerializer editSerializer);
     }
 }

@@ -25,7 +25,7 @@ namespace Backsight.Editor.Observations
     /// a pair of points that the direction is parallel to. Parallel directions are
     /// always regarded as FIXED directions.
     /// </summary>
-    class ParallelDirection : Direction, IPersistent
+    class ParallelDirection : Direction
     {
         #region Class data
 

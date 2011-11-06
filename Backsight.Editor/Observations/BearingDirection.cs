@@ -23,7 +23,7 @@ namespace Backsight.Editor.Observations
     /// <summary>
     /// A bearing is an angle taken from a point with respect to grid north.
     /// </summary>
-    class BearingDirection : Direction, IPersistent
+    class BearingDirection : Direction
     {
         #region Class data
 
