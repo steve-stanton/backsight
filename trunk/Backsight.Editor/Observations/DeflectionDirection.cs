@@ -20,7 +20,7 @@ namespace Backsight.Editor.Observations
 {
 	/// <written by="Steve Stanton" on="09-JUN-1999" />
     /// <summary>A deflection angle.</summary>
-    class DeflectionDirection : AngleDirection, IPersistent
+    class DeflectionDirection : AngleDirection
     {
         #region Class data
 

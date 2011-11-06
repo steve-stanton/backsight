@@ -23,7 +23,7 @@ namespace Backsight.Editor.Observations
     /// <summary>
     /// An offset that is expressed in the form of a distance observation.
     /// </summary>
-    class OffsetDistance : Offset, IPersistent
+    class OffsetDistance : Offset
     {
         #region Class data
 

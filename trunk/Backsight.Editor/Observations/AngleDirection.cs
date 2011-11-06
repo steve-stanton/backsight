@@ -24,7 +24,7 @@ namespace Backsight.Editor.Observations
     /// An "angle" is an angle taken from a point, with respect to a backsight
     /// that provides the reference orientation.
     /// </summary>
-    class AngleDirection : Direction, IPersistent
+    class AngleDirection : Direction
     {
         #region Class data
 

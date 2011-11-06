@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Yaml.Serialization;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Xml;
@@ -134,9 +133,9 @@ namespace Backsight.Editor
                 if (Object.ReferenceEquals(a, b))
                     return true;
 
-                YamlSerializer ys = new YamlSerializer();
-                string sa = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(a));
-                string sb = ys.Serialize(DataFactory.Instance.ToData<ObservationData>(b));
+                // The following is kind of heavy-handed
+                string sa = EditSerializer.GetSerializedString<Observation>("Test", a);
+                string sb = EditSerializer.GetSerializedString<Observation>("Test", b);
                 return sa.Equals(sb);
             }
         }

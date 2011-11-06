@@ -21,7 +21,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A distance that is portrayed as an annotation alongside a line.
     /// </summary>
-    class AnnotatedDistance : Distance, IPersistent
+    class AnnotatedDistance : Distance
     {
         #region Class data
 

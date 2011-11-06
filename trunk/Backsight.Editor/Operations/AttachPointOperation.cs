@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to attach a point to a line.
     /// </summary>
-    class AttachPointOperation : Operation, IPersistent
+    class AttachPointOperation : Operation
     {
         /// <summary>
         /// The max value stored for <c>m_PositionRatio</c>

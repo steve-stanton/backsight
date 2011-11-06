@@ -14,13 +14,10 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Yaml.Serialization;
-using System.Yaml;
 
-using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.Xml
 {
@@ -1274,8 +1271,10 @@ namespace Backsight.Editor.Xml
                 dataItems[i] = new UpdateItem(items[i].Name, o);
             }
 
+            throw new NotImplementedException();
+
             // The root node always identifies an array of UpdateItem
-            this.Changes = new YamlSerializer().Serialize(dataItems);
+            //this.Changes = new YamlSerializer().Serialize(dataItems);
         }
 
         /// <summary>
@@ -1289,6 +1288,8 @@ namespace Backsight.Editor.Xml
             uint sequence = GetEditSequence(s);
             Operation rev = mapModel.FindOperation(this.RevisedEdit);
 
+            throw new NotImplementedException();
+            /*
             YamlSerializer ys = new YamlSerializer();
             object[] oa = ys.Deserialize(this.Changes);
             Debug.Assert(oa.Length == 1);
@@ -1321,6 +1322,7 @@ namespace Backsight.Editor.Xml
             }
 
             return new UpdateOperation(s, sequence, rev, uc);
+             */
         }
     }
 }
