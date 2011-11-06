@@ -56,8 +56,8 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="FeatureStub"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        internal FeatureStub(DeserializationFactory factory)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal FeatureStub(EditDeserializer editDeserializer)
         {
         }
 
@@ -137,11 +137,13 @@ namespace Backsight.Editor
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public void WriteData(EditSerializer editSerializer)
         {
+            IEditWriter writer = editSerializer.Writer;
+
             writer.WriteUInt32("Id", m_SessionSequence);
-            writer.WriteEntity("Entity", m_What);
+            editSerializer.WriteEntity("Entity", m_What);
 
             if (m_Id != null)
             {
@@ -155,14 +157,16 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
         /// <param name="entity"></param>
         /// <param name="fid">The ID of the feature (may be null).</param>
-        static void ReadData(IEditReader reader, out uint ss, out IEntity entity, out FeatureId fid)
+        static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
         {
+            IEditReader reader = editDeserializer.Reader;
+
             ss = reader.ReadUInt32("Id");
-            entity = reader.ReadEntity("Entity");
+            entity = editDeserializer.ReadEntity("Entity");
 
             if (reader.IsNextName("Key"))
                 fid = null;

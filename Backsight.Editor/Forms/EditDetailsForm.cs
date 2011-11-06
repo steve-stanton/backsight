@@ -19,14 +19,14 @@ using System.Windows.Forms;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Displays details about an editing operation (the XML saved to the database)
+    /// Displays details about an editing operation (the string saved to the database)
     /// </summary>
     partial class EditDetailsForm : Form
     {
         internal EditDetailsForm(Operation op)
         {
             InitializeComponent();
-            detailsLabel.Text = op.ToXml(true);
+            detailsLabel.Text = op.GetEditString();
         }
 
         private void closeButton_Click(object sender, EventArgs e)

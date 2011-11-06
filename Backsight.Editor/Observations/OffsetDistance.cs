@@ -52,12 +52,10 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        internal OffsetDistance(IEditReader reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal OffsetDistance(EditDeserializer editDeserializer)
         {
-            ReadData(reader, out m_Offset, out m_IsLeft);
+            ReadData(editDeserializer, out m_Offset, out m_IsLeft);
         }
 
         /// <summary>
@@ -209,23 +207,23 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public override void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
-            writer.WriteObject<Distance>("Offset", m_Offset);
-            writer.WriteBool("Left", m_IsLeft);
+            editSerializer.WriteObject<Distance>("Offset", m_Offset);
+            editSerializer.Writer.WriteBool("Left", m_IsLeft);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="offset">The offset</param>
         /// <param name="isLeft">Is the offset to the left of the object that acts as the reference for the offset.</param>
-        static void ReadData(IEditReader reader, out Distance offset, out bool isLeft)
+        static void ReadData(EditDeserializer editDeserializer, out Distance offset, out bool isLeft)
         {
-            offset = reader.ReadObject<Distance>("Offset");
-            isLeft = reader.ReadBool("Left");
+            offset = editDeserializer.ReadObject<Distance>("Offset");
+            isLeft = editDeserializer.Reader.ReadBool("Left");
         }
     }
 }

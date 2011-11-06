@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -239,29 +238,6 @@ namespace Backsight.Editor.Xml
         internal Operation ToOperation(Session s, IEditReader data)
         {
             throw new NotImplementedException();
-
-            //XmlSerializer xs = new XmlSerializer(typeof(EditData));
-            //EditData et = (EditData)xs.Deserialize(data);
-            //Debug.Assert(et.Operation.Length == 1);
-            //OperationData ot = et.Operation[0];
-            //Operation result = ot.LoadOperation(s);
-            Operation result = null;
-
-            // Note that calculated geometry is NOT defined at this stage. That happens
-            // when the model is asked to index the data.
-
-            // Associate referenced features with the edit
-            result.AddReferences();
-
-            // If we're dealing with an update, exchange update items
-            UpdateOperation upo = (result as UpdateOperation);
-            if (upo != null)
-                upo.ApplyChanges();
-
-            // Remember the edit as part of the session
-            s.Add(result);
-
-            return result;
         }
     }
 }

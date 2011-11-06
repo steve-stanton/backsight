@@ -219,5 +219,26 @@ namespace Backsight.Editor.Operations
             get { return m_NewPosition; }
             set { m_NewPosition = value; }
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal MovePolygonPositionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

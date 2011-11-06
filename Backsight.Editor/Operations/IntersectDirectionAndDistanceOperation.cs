@@ -506,5 +506,26 @@ namespace Backsight.Editor.Operations
             // position of the end points - we calculated one end above, the
             // other end should have been calculated by a previous edit.
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal IntersectDirectionAndDistanceOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

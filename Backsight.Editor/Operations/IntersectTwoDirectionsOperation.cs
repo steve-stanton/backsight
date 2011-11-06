@@ -380,5 +380,26 @@ namespace Backsight.Editor.Operations
             m_Direction1 = data.ExchangeObservation<Direction>(this, "Direction1", m_Direction1);
             m_Direction2 = data.ExchangeObservation<Direction>(this, "Direction2", m_Direction2);
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal IntersectTwoDirectionsOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

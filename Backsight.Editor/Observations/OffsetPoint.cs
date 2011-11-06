@@ -51,12 +51,10 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="OffsetPoint"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        internal OffsetPoint(IEditReader reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal OffsetPoint(EditDeserializer editDeserializer)
         {
-            ReadData(reader, out m_Point);
+            ReadData(editDeserializer, out m_Point);
         }
 
         /// <summary>
@@ -180,20 +178,20 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public override void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
-            writer.WriteFeature<PointFeature>("Point", m_Point);
+            editSerializer.WriteFeature<PointFeature>("Point", m_Point);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="point">The point that defines the offset position</param>
-        static void ReadData(IEditReader reader, out PointFeature point)
+        static void ReadData(EditDeserializer editDeserializer, out PointFeature point)
         {
-            point = reader.ReadFeature<PointFeature>("Point");
+            point = editDeserializer.ReadFeature<PointFeature>("Point");
         }
     }
 }

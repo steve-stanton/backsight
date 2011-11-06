@@ -171,5 +171,26 @@ namespace Backsight.Editor.Operations
         {
             return new Feature[] { m_Line };
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal SetTopologyOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

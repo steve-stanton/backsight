@@ -59,13 +59,11 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="ParallelDirection"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        internal ParallelDirection(IEditReader reader)
-            : base(reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal ParallelDirection(EditDeserializer editDeserializer)
+            : base(editDeserializer)
         {
-            ReadData(reader, out m_From, out m_Par1, out m_Par2);
+            ReadData(editDeserializer, out m_From, out m_Par1, out m_Par2);
         }
 
         /// <summary>
@@ -209,28 +207,28 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public override void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
-            base.WriteData(writer);
+            base.WriteData(editSerializer);
 
-            writer.WriteFeature<PointFeature>("From", m_From);
-            writer.WriteFeature<PointFeature>("Start", m_Par1);
-            writer.WriteFeature<PointFeature>("End", m_Par2);
+            editSerializer.WriteFeature<PointFeature>("From", m_From);
+            editSerializer.WriteFeature<PointFeature>("Start", m_Par1);
+            editSerializer.WriteFeature<PointFeature>("End", m_Par2);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="from">The origin of the direction.</param>
         /// <param name="start">Point defining start of parallel.</param>
         /// <param name="end">Point defining end of parallel.</param>
-        static void ReadData(IEditReader reader, out PointFeature from, out PointFeature start, out PointFeature end)
+        static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out PointFeature start, out PointFeature end)
         {
-            from = reader.ReadFeature<PointFeature>("From");
-            start = reader.ReadFeature<PointFeature>("Start");
-            end = reader.ReadFeature<PointFeature>("End");
+            from = editDeserializer.ReadFeature<PointFeature>("From");
+            start = editDeserializer.ReadFeature<PointFeature>("Start");
+            end = editDeserializer.ReadFeature<PointFeature>("End");
         }
     }
 }

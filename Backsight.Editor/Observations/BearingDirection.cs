@@ -52,13 +52,11 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="BearingDirection"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        internal BearingDirection(IEditReader reader)
-            : base(reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal BearingDirection(EditDeserializer editDeserializer)
+            : base(editDeserializer)
         {
-            ReadData(reader, out m_From, out m_Observation);
+            ReadData(editDeserializer, out m_From, out m_Observation);
         }
 
         /// <summary>
@@ -164,25 +162,25 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public override void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
-            base.WriteData(writer);
+            base.WriteData(editSerializer);
 
-            writer.WriteFeature<PointFeature>("From", m_From);
-            writer.WriteRadians("Value", m_Observation);
+            editSerializer.WriteFeature<PointFeature>("From", m_From);
+            editSerializer.WriteRadians("Value", m_Observation);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="from">The point from which the bearing was taken.</param>
         /// <param name="value">The angle in radians. A negated value indicates an anticlockwise angle.</param>
-        static void ReadData(IEditReader reader, out PointFeature from, out RadianValue value)
+        static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out RadianValue value)
         {
-            from = reader.ReadFeature<PointFeature>("From");
-            value = reader.ReadRadians("Value");
+            from = editDeserializer.ReadFeature<PointFeature>("From");
+            value = editDeserializer.ReadRadians("Value");
         }
     }
 }

@@ -48,6 +48,18 @@ namespace Backsight.Editor.Operations
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        protected IntersectOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         /// <summary>

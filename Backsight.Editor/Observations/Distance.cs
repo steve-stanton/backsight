@@ -78,14 +78,12 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="Distance"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        internal Distance(IEditReader reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal Distance(EditDeserializer editDeserializer)
         {
             double distance;
             DistanceUnitType unitType;
-            ReadData(reader, out distance, out unitType, out m_IsFixed);
+            ReadData(editDeserializer, out distance, out unitType, out m_IsFixed);
             m_EnteredUnit = EditingController.GetUnits(unitType);
             m_ObservedMetric = m_EnteredUnit.ToMetric(distance);
         }
@@ -432,9 +430,11 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public virtual void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public virtual void WriteData(EditSerializer editSerializer)
         {
+            IEditWriter writer = editSerializer.Writer;
+
             writer.WriteDouble("Value", ObservedValue);
             writer.WriteByte("Unit", (byte)m_EnteredUnit.UnitType);
             writer.WriteBool("Fixed", m_IsFixed);
@@ -443,12 +443,14 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="value">The observed distance value (in data entry units)</param>
         /// <param name="unit">The code indicating data entry units.</param>
         /// <param name="isFixed">Is the distance fixed</param>
-        static void ReadData(IEditReader reader, out double value, out DistanceUnitType unit, out bool isFixed)
+        static void ReadData(EditDeserializer editDeserializer, out double value, out DistanceUnitType unit, out bool isFixed)
         {
+            IEditReader reader = editDeserializer.Reader;
+
             value = reader.ReadDouble("Value");
             unit = (DistanceUnitType)reader.ReadByte("Unit");
             isFixed = reader.ReadBool("Fixed");

@@ -81,8 +81,7 @@ namespace Backsight.Editor.Database
                 Job curJob = null;
                 Trace.Write("Reading data...");
 
-                // Create the reader for parsing the data
-                TextEditReader editReader = new TextEditReader();
+                EditDeserializer editDeserializer = new EditDeserializer();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -113,8 +112,8 @@ namespace Backsight.Editor.Database
                         string data = reader.GetString(2);
                         using (TextReader tr = new StringReader(data))
                         {
-                            editReader.SetReader(tr);
-                            Operation edit = DataFactory.Instance.ToOperation(curSession, editReader);
+                            editDeserializer.Reader = new TextEditReader(tr);
+                            Operation edit = Operation.Deserialize(curSession, editDeserializer);
 
                             // The edit sequence is repeated in the XML data
                             Debug.Assert(edit.EditSequence == editSequence);

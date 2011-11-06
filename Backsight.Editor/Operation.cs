@@ -14,15 +14,15 @@
 // </remarks>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
 
 using Backsight.Data;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Xml;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -30,8 +30,40 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    abstract class Operation : IFeatureDependent
+    abstract class Operation : IFeatureDependent, IPersistent
     {
+        #region Static
+
+        /// <summary>
+        /// Loads the content of an editing operation. Prior to call, the current editing session
+        /// must be defined using the <see cref="Session.CurrentSession"/> property.
+        /// </summary>
+        /// <param name="s">The session the editing operation should be appended to</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The created editing object</returns>
+        static internal Operation Deserialize(Session s, EditDeserializer editDeserializer)
+        {
+            Operation result = editDeserializer.ReadObject<Operation>("Edit");
+
+            // Note that calculated geometry is NOT defined at this stage. That happens
+            // when the model is asked to index the data.
+
+            // Associate referenced features with the edit
+            result.AddReferences();
+
+            // If we're dealing with an update, exchange update items
+            UpdateOperation upo = (result as UpdateOperation);
+            if (upo != null)
+                upo.ApplyChanges();
+
+            // Remember the edit as part of the session
+            s.Add(result);
+
+            return result;
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -75,6 +107,15 @@ namespace Backsight.Editor
                 m_Sequence = Session.ReserveNextItem();
             else
                 m_Sequence = sequence;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Operation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected Operation(EditDeserializer editDeserializer)
+        {
         }
 
         #endregion
@@ -398,13 +439,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Represents this editing operation in XML
+        /// Represents this editing operation as a text string.
         /// </summary>
-        /// <param name="indent">Should the XML be indented for the sake of prettiness</param>
-        /// <returns>The XML for this edit</returns>
-        internal string ToXml(bool indent)
+        /// <returns>A string that can be used to save a persistent version of this edit.</returns>
+        internal string GetEditString()
         {
-            return DataFactory.Instance.ToXml(this, indent);
+            EditSerializer es = new EditSerializer();
+            es.WriteObject<Operation>("Edit", this);
+            return es.Writer.ToString();
         }
 
         /// <summary>
@@ -417,16 +459,13 @@ namespace Backsight.Editor
             Trace.Write("Saving to database");
 
             // Save the last edit in the database
-            string x = ToXml(false);
+            string editString = GetEditString();
 
             // Dump the file out (to help with debugging)
             using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
             {
-                sw.Write(x);
+                sw.Write(editString);
             }
-
-            // Validate the xml against the schema
-            Content.Validate(x);
 
             Transaction.Execute(delegate
             {
@@ -437,10 +476,10 @@ namespace Backsight.Editor
                                     " VALUES (@sessionId, @editSequence, @data)";
                 c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Xml));
+                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
                 c.Parameters[0].Value = Session.WorkingSession.Id;
                 c.Parameters[1].Value = m_Sequence;
-                c.Parameters[2].Value = x;
+                c.Parameters[2].Value = editString;
                 c.ExecuteNonQuery();
 
                 // Update the end-time associated with the session
@@ -763,5 +802,11 @@ namespace Backsight.Editor
             foreach (Feature f in fa)
                 index.RemoveFeature(f);
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        abstract public void WriteData(EditSerializer editSerializer);
     }
 }

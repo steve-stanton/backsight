@@ -47,12 +47,10 @@ namespace Backsight.Editor.Observations
         /// Initializes a new instance of the <see cref="Direction"/> class
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        protected Direction(IEditReader reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected Direction(EditDeserializer editDeserializer)
         {
-            ReadData(reader, out m_Offset);
+            ReadData(editDeserializer, out m_Offset);
         }
 
         #endregion
@@ -641,20 +639,20 @@ namespace Backsight.Editor.Observations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public virtual void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public virtual void WriteData(EditSerializer editSerializer)
         {
-            writer.WriteObject<Offset>("Offset", m_Offset);
+            editSerializer.WriteObject<Offset>("Offset", m_Offset);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="offset">The offset.</param>
-        static void ReadData(IEditReader reader, out Offset offset)
+        static void ReadData(EditDeserializer editDeserializer, out Offset offset)
         {
-            offset = reader.ReadObject<Offset>("Offset");
+            offset = editDeserializer.ReadObject<Offset>("Offset");
         }
     }
 }

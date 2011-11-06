@@ -278,36 +278,35 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
             /*
             base.WriteData(writer);
             this.PositionRatio = op.PositionRatio;
             this.Point = new FeatureStubData(op.NewPoint);
 
-            writer.WriteFeature<LineFeature>("Line", m_Line);
-            writer.WriteFeature<PointFeature>("From", m_From);
+            editSerializer.WriteFeature<LineFeature>("Line", m_Line);
+            editSerializer.WriteFeature<PointFeature>("From", m_From);
              */
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="line"></param>
         /// <param name="positionRatio"></param>
         /// <param name="point"></param>
-        static void ReadData(IEditReader reader, out LineFeature line, out uint positionRatio, out PointFeature point)
+        static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out uint positionRatio, out PointFeature point)
         {
             line = null;
             positionRatio = 0;
             point = null;
         }
 
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        internal AttachPointOperation(IEditReader reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal AttachPointOperation(EditDeserializer editDeserializer)
             : base(null, 0)
         {
         }

@@ -39,8 +39,10 @@ namespace Backsight.Editor
             //LineType lt = LineType.Continuous;
             //MessageBox.Show(lt.Name);
 
-            Application.Run(new MainForm(args));
-            /*
+            //Application.Run(new MainForm(args));
+
+            EditSerializer es = new EditSerializer();
+
             DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
             Backsight.Editor.Observations.Distance dist = new Backsight.Editor.Observations.Distance("123", du);
             Backsight.Editor.AnnotatedDistance d = new Backsight.Editor.AnnotatedDistance(dist, true);
@@ -50,21 +52,21 @@ namespace Backsight.Editor
 
             try
             {
-                TextEditWriter txa = new TextEditWriter();
-                txa.WriteObject<Backsight.Editor.Observations.Offset>("Test", od);
-                MessageBox.Show(txa.ToString());
+                es.WriteObject<Backsight.Editor.Observations.Offset>("Test", od);
+                string testString = es.Writer.ToString();
+                MessageBox.Show(testString);
 
-                File.WriteAllText(@"C:\Temp\Test.txt", txa.ToString());
+                File.WriteAllText(@"C:\Temp\Test.txt", testString);
+                EditDeserializer eds = new EditDeserializer();
 
-                using (StringReader sr = new StringReader(txa.ToString()))
+                using (StringReader sr = new StringReader(testString))
                 {
-                    TextEditReader r = new TextEditReader();
-                    r.SetReader(sr);
-                    Backsight.Editor.Observations.Offset res = r.ReadObject<Backsight.Editor.Observations.Offset>("Test");
+                    eds.Reader = new TextEditReader(sr);
+                    Backsight.Editor.Observations.Offset res = eds.ReadObject<Backsight.Editor.Observations.Offset>("Test");
 
-                    txa = new TextEditWriter();
-                    txa.WriteObject<Backsight.Editor.Observations.Offset>("Result", res);
-                    MessageBox.Show(txa.ToString());
+                    es.Writer = new TextEditWriter();
+                    es.WriteObject<Backsight.Editor.Observations.Offset>("Result", res);
+                    MessageBox.Show(es.Writer.ToString());
                 }
             }
 
@@ -72,7 +74,7 @@ namespace Backsight.Editor
             {
                 MessageBox.Show(ex.Message);
             }
-             */
+
         }
     }
 }

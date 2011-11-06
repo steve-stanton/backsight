@@ -38,13 +38,11 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
         /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="factory">The factory for obtaining objects during deserialization.</param>
-        //internal FeatureStub(DeserializationFactory factory)
-        /// <param name="reader">The reading stream (positioned ready to read the first data value).</param>
-        internal AnnotatedDistance(IEditReader reader)
-            : base(reader)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal AnnotatedDistance(EditDeserializer editDeserializer)
+            : base(editDeserializer)
         {
-            ReadData(reader, out m_IsFlipped);
+            ReadData(editDeserializer, out m_IsFlipped);
         }
 
         /// <summary>
@@ -82,21 +80,21 @@ namespace Backsight.Editor
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <param name="writer">The mechanism for storing content.</param>
-        public override void WriteData(IEditWriter writer)
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
         {
-            base.WriteData(writer);
-            writer.WriteBool("Flipped", m_IsFlipped);
+            base.WriteData(editSerializer);
+            editSerializer.Writer.WriteBool("Flipped", m_IsFlipped);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
-        /// <param name="reader">The reader for loading data values</param>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="isFlipped">Is the annotation flipped (displayed on the non-default side)?</param>
-        static void ReadData(IEditReader reader, out bool isFlipped)
+        static void ReadData(EditDeserializer editDeserializer, out bool isFlipped)
         {
-            isFlipped = reader.ReadBool("Flipped");
+            isFlipped = editDeserializer.Reader.ReadBool("Flipped");
         }
     }
 }

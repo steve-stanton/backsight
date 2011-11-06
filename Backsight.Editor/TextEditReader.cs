@@ -14,12 +14,7 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-
-using Backsight.Editor.Xml;
-using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -33,23 +28,21 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The mechanism for reading the text for the current edit.
+        /// The mechanism for reading the text.
         /// </summary>
         TextReader m_Reader;
 
         /// <summary>
-        /// Index of the constructors that accept an instance of <see cref="IEditReader"/> (and which
-        /// belong to classes that implement <see cref="IPersistent"/>), keyed by the short type name.
-        /// This is restricted to the current assembly, and excludes abstract classes, as well as miscellaneous
-        /// mystery classes that seem to be produced by NET (with type names that start with the
-        /// "&lt;" character).
+        /// The line of text AFTER the current line (used to peek ahead), broken into tokens
+        /// that are separated by commas.
         /// </summary>
-        readonly Dictionary<string, ConstructorInfo> m_Constructors;
+        string[] m_NextLine;
 
         /// <summary>
-        /// The line of text AFTER the current line (used to peek ahead).
+        /// The index of the next element in <c>m_NextLine</c> that will be returned via
+        /// a call to <see cref="ReadNextLine"/>.
         /// </summary>
-        string m_NextLine;
+        int m_NextIndex;
 
         #endregion
 
@@ -58,65 +51,32 @@ namespace Backsight.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="TextEditReader"/> class.
         /// </summary>
-        /// <exception cref="ApplicationException">If no suitable persistent classes
-        /// could be found in the current assembly.</exception>
+        [Obsolete]
         internal TextEditReader()
         {
             m_Reader = null;
-            m_Constructors = LoadConstructors();
+        }
 
-            if (m_Constructors.Count == 0)
-                throw new ApplicationException("Cannot find any persistent classes");
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextEditReader"/> class
+        /// that utilizes the supplied reader.
+        /// </summary>
+        /// <param name="reader">The mechanism for reading the text (not null).</param>
+        internal TextEditReader(TextReader reader)
+        {
+            if (reader == null)
+                throw new ArgumentNullException();
+
+            m_Reader = reader;
+            ReadNextLine();
         }
 
         #endregion
 
         /// <summary>
-        /// Specifies the current source of the text data.
-        /// </summary>
-        /// <param name="reader">The text storage medium to read from</param>
-        internal void SetReader(TextReader reader)
-        {
-            m_Reader = reader;
-            ReadNextLine();
-        }
-
-        /// <summary>
-        /// Loads constructor information for persistent classes.
-        /// </summary>
-        /// <returns>The constructors for each persistent class in this assembly, keyed by the
-        /// short type name.</returns>
-        static Dictionary<string, ConstructorInfo> LoadConstructors()
-        {
-            Dictionary<string, Type> all = DataFactory.GetTypeIndex();
-            Dictionary<string, ConstructorInfo> result = new Dictionary<string, ConstructorInfo>();
-            string iName = typeof(IPersistent).Name; // do it this way in case I rename the interface
-
-            foreach (KeyValuePair<string, Type> kvp in all)
-            {
-                Type t = kvp.Value;
-                if (t.GetInterface(iName) != null)
-                {
-                    ConstructorInfo ci = t.GetConstructor(BindingFlags.Public |
-                                                          BindingFlags.NonPublic |
-                                                          BindingFlags.Instance |
-                                                          BindingFlags.DeclaredOnly, null,
-                                                          new Type[] { typeof(DeserializationFactory) }, null);
-
-                    if (ci == null)
-                        throw new ApplicationException("Class " + t.Name + " implements IPersistent but does not provide deserialization constructor");
-
-                    result.Add(t.Name, ci);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Reads any text that precedes the data values for an object.
         /// </summary>
-        void ReadBeginObject()
+        public void ReadBeginObject()
         {
             ReadLiteralLine("{");
         }
@@ -124,7 +84,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads any text that should follow the data values for an object.
         /// </summary>
-        void ReadEndObject()
+        public void ReadEndObject()
         {
             ReadLiteralLine("}");
         }
@@ -153,6 +113,7 @@ namespace Backsight.Editor
         /// (null if there is no more text).</returns>
         string ReadNextLine()
         {
+            /*
             string result = m_NextLine;
 
             // You get back null on reaching the end
@@ -162,6 +123,44 @@ namespace Backsight.Editor
                 m_NextLine = m_NextLine.Trim();
 
             return result;
+            */
+            string result = PeekNext;
+
+            // Point to the array item we'll return next time
+            m_NextIndex++;
+
+            // If we've exhausted all the items that were present in the line, read the next full
+            // line and split up any inline items.
+            if (m_NextLine == null || m_NextIndex >= m_NextLine.Length)
+            {
+                string fullLine = m_Reader.ReadLine();
+
+                if (fullLine == null)
+                {
+                    m_NextLine = null;
+                    m_NextIndex = -1;
+                }
+                else
+                {
+                    // Ignore the possibility of embedded commas in name tags or values
+                    m_NextLine = fullLine.Split(',');
+                    m_NextIndex = 0;
+
+                    for (int i = 0; i < m_NextLine.Length; i++)
+                        m_NextLine[i] = m_NextLine[i].Trim();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// The next line that will be returned by a call to <see cref="ReadNextLine"/> (null
+        /// if we have reached the end).
+        /// </summary>
+        string PeekNext
+        {
+            get { return (m_NextLine == null ? null : m_NextLine[m_NextIndex]); }
         }
 
         /// <summary>
@@ -174,7 +173,7 @@ namespace Backsight.Editor
         {
             string s = ReadNextLine();
             if (!s.StartsWith(name))
-                throw new ArgumentException(String.Format("Expected {0} but found {1}", name, s));
+                throw new ArgumentException(String.Format("Expected '{0}' but found '{1}'", name, s));
 
             int eqIndex = s.IndexOf('=');
             if (eqIndex < 0)
@@ -204,17 +203,6 @@ namespace Backsight.Editor
         public int ReadInt32(string name)
         {
             return Convert.ToInt32(ReadValue(name));
-        }
-
-        /// <summary>
-        /// Reads an entity type for a spatial feature.
-        /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The entity type that was read.</returns>
-        public IEntity ReadEntity(string name)
-        {
-            int id = Convert.ToInt32(ReadValue(name));
-            return EnvironmentContainer.FindEntityById(id);
         }
 
         /// <summary>
@@ -273,88 +261,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reads a value in radians.
-        /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The radian value that was read.</returns>
-        public RadianValue ReadRadians(string name)
-        {
-            string s = ReadString(name);
-            double d = RadianValue.Parse(s);
-            return new RadianValue(d);
-        }
-
-        /// <summary>
-        /// Reads the content of an object that implements <see cref="IPersistent"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of object expected by the caller.</typeparam>
-        /// <param name="name">A name tag associated with the object</param>
-        /// <returns>
-        /// The object that was read (may actually have a type that is derived
-        /// from the supplied type).
-        /// </returns>
-        /// <remarks>
-        /// In addition to implementing <see cref="IPersistent"/>, the Backsight implementation
-        /// assumes that the created type will also provide a constructor that accepts an
-        /// instance of the <see cref="IEditReader"/>.
-        /// </remarks>
-        /// <exception cref="ApplicationException">If the type name read from storage does
-        /// not correspond to a suitable type within this assembly.</exception>
-        public T ReadObject<T>(string name) where T : IPersistent
-        {
-            string typeName = ReadValue(name);
-
-            // A string of "null" is used to denote a null
-            if (typeName == "null")
-                return default(T);
-
-            // Getting back an *actual* null means there was nothing after the name tag, meaning
-            // that the type known to the caller is what we want to create.
-            if (typeName == null)
-                typeName = typeof(T).Name;
-
-            ConstructorInfo ci;
-            if (!m_Constructors.TryGetValue(typeName, out ci))
-                throw new ApplicationException("Cannot locate constructor for type: " + typeName);
-
-            // Read opening bracket
-            ReadBeginObject();
-
-            try
-            {
-                return (T)ci.Invoke(new object[] { this });
-            }
-
-            finally
-            {
-                // Read the closing bracket
-                ReadEndObject();
-            }
-        }
-
-        /// <summary>
-        /// Reads a reference to a spatial feature, using that reference to obtain the
-        /// corresponding feature.
-        /// </summary>
-        /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
-        /// <param name="name">A name tag associated with the value</param>
-        /// <returns>
-        /// The feature that was read (null if not found, or the reference was undefined). May
-        /// actually have a type that is derived from the supplied type.
-        /// </returns>
-        /// <remarks>This does not create a brand new feature. Rather, it uses a reference
-        /// to try to obtain a feature that should have already been created.
-        /// </remarks>
-        public T ReadFeature<T>(string name) where T : Feature
-        {
-            string dataId = ReadValue(name);
-            if (dataId == null)
-                return default(T);
-
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Checks whether the next line of text refers to a specific name tag. Make a call to
         /// <see cref="ReadNextLine"/> to actually advance.
         /// </summary>
@@ -362,17 +268,19 @@ namespace Backsight.Editor
         /// <returns>True if the next line refers to the specified name tag</returns>
         public bool IsNextName(string name)
         {
-            if (String.IsNullOrEmpty(m_NextLine))
+            string s = PeekNext;
+
+            if (String.IsNullOrEmpty(s))
                 return false;
 
-            int eqIndex = m_NextLine.IndexOf('=');
+            int eqIndex = s.IndexOf('=');
             if (eqIndex < 0)
                 return false;
 
             if (eqIndex != name.Length)
                 return false;
 
-            string result = m_NextLine.Substring(0, name.Length);
+            string result = s.Substring(0, name.Length);
             return (result == name);
         }
 

@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+
 using Backsight.Editor.Xml;
 
 namespace Backsight.Editor
@@ -26,6 +27,8 @@ namespace Backsight.Editor
     class DeserializationFactory : FeatureFactory
     {
         #region Class data
+
+        // none
 
         #endregion
 
