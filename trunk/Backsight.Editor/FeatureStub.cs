@@ -14,9 +14,9 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 
 using Backsight.Environment;
-using Backsight.Editor.Xml;
 
 
 namespace Backsight.Editor
@@ -59,6 +59,9 @@ namespace Backsight.Editor
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         internal FeatureStub(EditDeserializer editDeserializer)
         {
+            m_Creator = editDeserializer.CurrentEdit;
+            Debug.Assert(m_Creator != null);
+            ReadData(editDeserializer, out m_SessionSequence, out m_What, out m_Id);
         }
 
         /// <summary>
@@ -94,6 +97,23 @@ namespace Backsight.Editor
             m_SessionSequence = sessionSequence;
             m_What = ent;
             m_Id = fid;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureStub"/> class
+        /// that contains a copy of the properties of a feature.
+        /// </summary>
+        /// <param name="f">The feature containing the properties to copy (not null).</param>
+        /// <exception cref="ArgumentNullException">If the supplied feature is null.</exception>
+        internal FeatureStub(IFeature f)
+        {
+            if (f == null)
+                throw new ArgumentNullException();
+
+            m_Creator = f.Creator;
+            m_SessionSequence = f.SessionSequence;
+            m_What = f.EntityType;
+            m_Id = f.FeatureId;
         }
 
         #endregion
@@ -140,18 +160,9 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            IEditWriter writer = editSerializer.Writer;
-
-            writer.WriteUInt32("Id", m_SessionSequence);
+            editSerializer.Writer.WriteUInt32("Id", m_SessionSequence);
             editSerializer.WriteEntity("Entity", m_What);
-
-            if (m_Id != null)
-            {
-                if (m_Id is NativeId)
-                    writer.WriteUInt32("Key", m_Id.RawId);
-                else
-                    writer.WriteString("ForeignKey", m_Id.FormattedKey);
-            }
+            editSerializer.WriteFeatureId(m_Id);
         }
 
         /// <summary>
@@ -159,21 +170,13 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
-        /// <param name="entity"></param>
+        /// <param name="entity">The type of real-world object that the feature corresponds to.</param>
         /// <param name="fid">The ID of the feature (may be null).</param>
         static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
         {
-            IEditReader reader = editDeserializer.Reader;
-
-            ss = reader.ReadUInt32("Id");
+            ss = editDeserializer.Reader.ReadUInt32("Id");
             entity = editDeserializer.ReadEntity("Entity");
-
-            if (reader.IsNextName("Key"))
-                fid = null;
-            else if (reader.IsNextName("ForeignKey"))
-                fid = null;
-            else
-                fid = null;
+            fid = editDeserializer.ReadFeatureId();
         }
     }
 }

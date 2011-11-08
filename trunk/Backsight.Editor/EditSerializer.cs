@@ -1,11 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// <remarks>
+// Copyright 2011 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
+
 using Backsight.Environment;
+using System.Text;
+using System;
 
 namespace Backsight.Editor
 {
+    /// <written by="Steve Stanton" on="06-NOV-2011" />
+    /// <summary>
+    /// Serializes instances of <see cref="IPersistent"/>. Objects that have been saved in
+    /// this way can be loaded back using an instance of <see cref="EditDeserializer"/>.
+    /// </summary>
     class EditSerializer
     {
         #region Static
@@ -21,7 +39,7 @@ namespace Backsight.Editor
         internal static string GetSerializedString<T>(string name, T value) where T : IPersistent
         {
             EditSerializer es = new EditSerializer();
-            es.WriteObject(name, value);
+            es.WritePersistent(name, value);
             return es.Writer.ToString();
         }
 
@@ -29,17 +47,29 @@ namespace Backsight.Editor
 
         #region Class data
 
+        /// <summary>
+        /// The mechanism for writing out data.
+        /// </summary>
         IEditWriter m_Writer;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditSerializer"/> class
+        /// that makes use of a <see cref="TextEditWriter"/>.
+        /// </summary>
         internal EditSerializer()
             : this(new TextEditWriter())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditSerializer"/> class
+        /// that makes use of the supplied writer.
+        /// </summary>
+        /// <param name="writer">The mechanism for writing out data.</param>
         internal EditSerializer(IEditWriter writer)
         {
             m_Writer = writer;
@@ -47,10 +77,70 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// The mechanism for writing out data.
+        /// </summary>
         internal IEditWriter Writer
         {
             get { return m_Writer; }
             set { m_Writer = value; }
+        }
+
+        /// <summary>
+        /// Writes an array of objects to a storage medium.
+        /// </summary>
+        /// <typeparam name="T">The type of objects within the array (as it is known to the instance
+        /// that refers to it)</typeparam>
+        /// <param name="name">A name tag for the array</param>
+        /// <param name="array">The array to write (may be null)</param>
+        internal void WritePersistentArray<T>(string name, T[] array) where T : IPersistent
+        {
+            if (array == null)
+            {
+                m_Writer.WriteString(name, "null");
+            }
+            else
+            {
+                m_Writer.WriteString(name, null);
+                m_Writer.WriteBeginObject();
+                m_Writer.WriteUInt32("Length", (uint)array.Length);
+
+                for (int i=0; i<array.Length; i++)
+                {
+                    string itemName = string.Format("[{0}]", i);
+                    WritePersistent<T>(itemName, array[i]);
+                }
+
+                m_Writer.WriteEndObject();
+            }
+        }
+
+        /// <summary>
+        /// Writes an array of simple types to a storage medium.
+        /// </summary>
+        /// <typeparam name="T">The type of objects within the array (as it is known to the instance
+        /// that refers to it)</typeparam>
+        /// <param name="name">A name tag for the array</param>
+        /// <param name="array">The array to write (may be null)</param>
+        internal void WriteSimpleArray<T>(string name, T[] array) where T : IConvertible
+        {
+            if (array == null)
+            {
+                m_Writer.WriteString(name, "null");
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (i > 0)
+                        sb.Append(";");
+
+                    sb.Append(array[i].ToString());
+                }
+
+                m_Writer.WriteString(name, sb.ToString());
+            }
         }
 
         /// <summary>
@@ -60,7 +150,7 @@ namespace Backsight.Editor
         /// that contains it)</typeparam>
         /// <param name="name">A name tag for the item</param>
         /// <param name="value">The object to write (may be null)</param>
-        internal void WriteObject<T>(string name, T value) where T : IPersistent
+        internal void WritePersistent<T>(string name, T value) where T : IPersistent
         {
             if (value == null)
             {
@@ -109,9 +199,37 @@ namespace Backsight.Editor
         /// <typeparam name="T">The type of spatial feature being written</typeparam>
         /// <param name="name">A name tag for the item</param>
         /// <param name="feature">The feature that is referenced.</param>
-        internal void WriteFeature<T>(string name, T feature) where T : Feature
+        internal void WriteFeatureRef<T>(string name, T feature) where T : Feature
         {
             m_Writer.WriteString(name, feature.DataId);
+        }
+
+        /// <summary>
+        /// Writes a user-perceived feature ID to a storage medium using a standard naming
+        /// convention.
+        /// </summary>
+        /// <param name="featureId">The ID to write (if null, nothing will be written)</param>
+        internal void WriteFeatureId(FeatureId featureId)
+        {
+            WriteFeatureId("Key", "ForeignKey", featureId);
+        }
+
+        /// <summary>
+        /// Writes a user-perceived feature ID to a storage medium using the specified naming tags.
+        /// convention.
+        /// </summary>
+        /// <param name="nativeName">The name tag to use for a native ID.</param>
+        /// <param name="foreignName">The name tag to use for a foreign ID.</param>
+        /// <param name="featureId">The ID to write (if null, nothing will be written)</param>
+        void WriteFeatureId(string nativeName, string foreignName, FeatureId featureId)
+        {
+            if (featureId != null)
+            {
+                if (featureId is NativeId)
+                    m_Writer.WriteUInt32(nativeName, featureId.RawId);
+                else
+                    m_Writer.WriteString(foreignName, featureId.FormattedKey);
+            }
         }
     }
 }

@@ -39,8 +39,8 @@ namespace Backsight.Editor
             //LineType lt = LineType.Continuous;
             //MessageBox.Show(lt.Name);
 
-            //Application.Run(new MainForm(args));
-
+            Application.Run(new MainForm(args));
+            /*
             EditSerializer es = new EditSerializer();
 
             DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
@@ -52,20 +52,28 @@ namespace Backsight.Editor
 
             try
             {
-                es.WriteObject<Backsight.Editor.Observations.Offset>("Test", od);
+                //string[] a = new string[] { "Animal", "Dog", "Cat" };
+                float[] a = new float[] { 1.2f, 3.4f, 5.6f };
+                es.WriteSimpleArray<float>("Test", a);
+
+                //Observation[] a = new Observation[] { dist, d, od };
+                //es.WritePersistentArray<Backsight.Editor.Observation>("Test", a);
                 string testString = es.Writer.ToString();
                 MessageBox.Show(testString);
 
                 File.WriteAllText(@"C:\Temp\Test.txt", testString);
+
                 EditDeserializer eds = new EditDeserializer();
 
                 using (StringReader sr = new StringReader(testString))
                 {
                     eds.Reader = new TextEditReader(sr);
-                    Backsight.Editor.Observations.Offset res = eds.ReadObject<Backsight.Editor.Observations.Offset>("Test");
+                    float[] res = eds.ReadSimpleArray<float>("Test");
+                    //Backsight.Editor.Observation[] res = eds.ReadPersistentArray<Backsight.Editor.Observation>("Test");
 
                     es.Writer = new TextEditWriter();
-                    es.WriteObject<Backsight.Editor.Observations.Offset>("Result", res);
+                    //es.WritePersistentArray<Backsight.Editor.Observation>("Result", res);
+                    es.WriteSimpleArray<float>("Result", res);
                     MessageBox.Show(es.Writer.ToString());
                 }
             }
@@ -74,7 +82,7 @@ namespace Backsight.Editor
             {
                 MessageBox.Show(ex.Message);
             }
-
+*/
         }
     }
 }

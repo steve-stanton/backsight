@@ -41,6 +41,16 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnsectionedLineGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected UnsectionedLineGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         #endregion
 
         /// <summary>

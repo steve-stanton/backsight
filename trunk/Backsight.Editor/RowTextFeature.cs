@@ -22,6 +22,11 @@ namespace Backsight.Editor
     /// </summary>
     class RowTextFeature : TextFeature
     {
+        internal RowTextFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         internal RowTextFeature(Operation creator, uint sessionSequence, IEntity ent, RowTextGeometry text)
             : base(creator, sessionSequence, ent, text)
         {

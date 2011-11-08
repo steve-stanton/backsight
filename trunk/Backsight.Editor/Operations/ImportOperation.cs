@@ -14,8 +14,6 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
-
 using Backsight.Editor.Observations;
 
 
@@ -52,6 +50,18 @@ namespace Backsight.Editor.Operations
             m_Data = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal ImportOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Data = editDeserializer.ReadPersistentArray<Feature>("Features");
+        }
+
         #endregion
 
         /// <summary>
@@ -74,18 +84,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records the features created by this edit (for use during deserialization).
-        /// </summary>
-        /// <param name="data">The features created by this import.</param>
-        internal void SetFeatures(Feature[] data)
-        {
-            if (data == null)
-                throw new ArgumentNullException();
-
-            m_Data = data;
-        }
-
-        /// <summary>
         /// The unique identifier for this edit.
         /// </summary>
         internal override EditingActionId EditId
@@ -101,11 +99,20 @@ namespace Backsight.Editor.Operations
             get { return "Data import"; }
         }
 
+        /// <summary>
+        /// Finds the observed length of a line that was created by this operation.
+        /// </summary>
+        /// <param name="line">The line to find</param>
+        /// <returns>The observed length of the line (always null)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
             return null; // nothing to do
         }
 
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        /// <returns>True if operation was rolled back ok</returns>
         internal override bool Undo()
         {
             base.OnRollback();
@@ -164,19 +171,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImportOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal ImportOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WritePersistentArray<Feature>("Features", this.Features);
         }
     }
 }

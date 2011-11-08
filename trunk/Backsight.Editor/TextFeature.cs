@@ -106,89 +106,34 @@ namespace Backsight.Editor
             m_PolygonPosition = polPosition;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextFeature"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal TextFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            bool isTopological;
+            ReadData(editDeserializer, out isTopological, out m_PolygonPosition, out m_Geom);
+            SetTopology(isTopological);
+
+            if (m_Geom is KeyTextGeometry)
+                (m_Geom as KeyTextGeometry).Label = this;
+        }
+
         #endregion
 
-        /*
-        public static TextFeature New(ITextGeometry g, IEntity ent)
-        {
-            //if (ent==null)
-            //    throw new ArgumentNullException("Entity type not specified");
-
-            // Create the text primitive.         
-            MiscText miscText = new MiscText(topLeft, text, height, spacing, rotation);
-
-            // Define the text metrics.
-            miscText.Spacing = spacing;
-            miscText.Rotation = rotation;
-            miscText.Height = height;
-
-            // If an entity type has not been given, get the default entity type for text.
-	        IEntity newEnt = ent;
-	        if (newEnt==null) newEnt = CeMap::GetpEntity(ANNOTATION);
-	        if (newEnt==null)
-                throw new Exception("CeMap::AddMiscLabel\nUnspecified entity type.");
-
-            // Do standard stuff for adding a label.
-            TextFeature label = new TextFeature(g, ent);
-            return label;
-
-            // Cross-reference the text to the label.
-	        //miscText.AddObject(label);
-
-            // If a height has been explicitly given, use that. If
-            // no height, but we have a default font, use the height
-            // of that font. Otherwise fall back on the height of
-            // line annotations.
-
-            ISimpleFont font = ent.DefaultFont;
-
-            if (height < Constants.TINY)
-            {
-                // If we can, use default font (and height). Otherwise
-                // the text gets the height of line annotation, but
-                // does NOT get a font.
-
-                if (font != null) // entity has font assigned, use that
-                {
-                    miscText.Height = font.Height;
-                    miscText.DefaultFont = font;
-                }              
-                else if (CeMap::m_pFont)
-                {
-                    text.SetHeight(m_pFont->GetHeight());
-                    text.SetFont(*m_pFont);
-                }
-                else
-                    text.Height = (float)(CeMap::m_LineAnnoHeight);
-            }
-            else
-            {
-                // If we have a default font, initialize with that.
-                if (font != null)
-                    miscText.Font = font;
-                else if (m_pFont)
-                    text.SetFont(*m_pFont);
-
-                // Use the height supplied. If this height is not
-                // consistent with the font (if any), this may cause
-                // a new font to be added to the map.
-                miscText.Height = height;
-            }
-
-            // And add to the spatial index.
-            // no... during imports, we do this AFTER
-            if (label!=null)
-                m_Space.Add(label);
-
-            return label;
-        }
-         */
-    
         public override SpatialType SpatialType
         {
             get { return SpatialType.Text; }
         }
 
+        /// <summary>
+        /// Draws this object on the specified display
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="style">The drawing style</param>
         public override void Render(ISpatialDisplay display, IDrawStyle style)
         {
             m_Geom.Render(display, style);
@@ -206,11 +151,19 @@ namespace Backsight.Editor
             }
         }
 
+        /// <summary>
+        /// The covering rectangle that encloses this feature.
+        /// </summary>
         public override IWindow Extent
         {
             get { return m_Geom.Extent; }
         }
 
+        /// <summary>
+        /// The shortest distance between this object and the specified position.
+        /// </summary>
+        /// <param name="point">The position of interest</param>
+        /// <returns>The shortest distance between the specified position and this object</returns>
         public override ILength Distance(IPosition point)
         {
             return m_Geom.Distance(point);
@@ -397,5 +350,61 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+
+            IEditWriter writer = editSerializer.Writer;
+            writer.WriteBool("Topological", IsTopological);
+
+            IPointGeometry tp = Position;
+            IPointGeometry pp = GetPolPosition();
+            if (pp != null)
+            {
+                if (pp.Easting.Microns != tp.Easting.Microns || pp.Northing.Microns != tp.Northing.Microns)
+                {
+                    writer.WriteInt64("PolygonX", pp.Easting.Microns);
+                    writer.WriteInt64("PolygonY", pp.Northing.Microns);
+                }
+            }
+
+            // RowText is problematic on deserialization because the database rows might not
+            // be there. To cover that possibility, use a proxy object.
+            if (m_Geom is RowTextGeometry)
+                editSerializer.WritePersistent<TextGeometry>("Type", new RowTextContent((RowTextGeometry)m_Geom));
+            else
+                editSerializer.WritePersistent<TextGeometry>("Type", m_Geom);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="isTopological">Are we dealing with a polygon label</param>
+        /// <param name="polPos">The label reference point (usually applies onlt to polygon labels). Null if it's
+        /// identical to the position recorded via the geometry object.</param>
+        /// <param name="geom">The geometry for the text.</param>
+        static void ReadData(EditDeserializer editDeserializer, out bool isTopological, out PointGeometry polPos, out TextGeometry geom)
+        {
+            IEditReader reader = editDeserializer.Reader;
+            isTopological = reader.ReadBool("Topological");
+
+            if (reader.IsNextName("PolygonX"))
+            {
+                long x = reader.ReadInt64("PolygonX");
+                long y = reader.ReadInt64("PolygonY");
+                polPos = new PointGeometry(x, y);
+            }
+            else
+            {
+                polPos = null;
+            }
+
+            geom = editDeserializer.ReadPersistent<TextGeometry>("Type");
+        }
     }
 }

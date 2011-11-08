@@ -127,7 +127,11 @@ namespace Backsight.Editor
         /// </summary>
         IdGroup[] GetGroups()
         {
-            IIdGroup[] groups = EnvironmentContainer.Current.IdGroups;
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            if (ec == null)
+                return new IdGroup[0];
+
+            IIdGroup[] groups = ec.IdGroups;
             List<IdGroup> result = new List<IdGroup>(groups.Length);
 
             foreach(IIdGroup group in groups)
@@ -151,7 +155,11 @@ namespace Backsight.Editor
         /// the values are elements in the <paramref name="groups"/> array.</returns>
         Dictionary<int, IdGroup> GetEntityGroups(IdGroup[] groups)
         {
-            IEntity[] ents = EnvironmentContainer.Current.EntityTypes;
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            if (ec == null)
+                return new Dictionary<int, IdGroup>();
+
+            IEntity[] ents = ec.EntityTypes;
             Dictionary<int, IdGroup> result = new Dictionary<int, IdGroup>(ents.Length);
 
             foreach (IEntity e in ents)

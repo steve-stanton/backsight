@@ -14,15 +14,14 @@
 // </remarks>
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using Backsight.Environment;
 using Backsight.Forms;
-using Backsight.Data;
 
 namespace Backsight.Editor
 {
@@ -37,7 +36,7 @@ namespace Backsight.Editor
     /// editing). Features are meant to be things that the user explicitly creates.
     /// </summary>
     [DefaultProperty("EntityType")]
-    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpandablePropertyItem
+    abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpandablePropertyItem, IPersistent
     {
         #region Class data
 
@@ -132,6 +131,27 @@ namespace Backsight.Editor
         protected Feature(IFeature f)
             : this(f.Creator, f.SessionSequence, f.EntityType, f.FeatureId)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Feature"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected Feature(EditDeserializer editDeserializer)
+        {
+            m_Creator = editDeserializer.CurrentEdit;
+            Debug.Assert(m_Creator != null);
+            ReadData(editDeserializer, out m_SessionSequence, out m_What, out m_Id);
+            m_References = null;
+            m_Flag = 0;
+
+            // If a user-defined ID is present, ensure it knows about this feature, and vice versa
+            if (m_Id != null)
+                m_Id.AddReference(this);
+
+            // Remember this feature as part of the model
+            m_Creator.MapModel.AddFeature(this);
         }
 
         #endregion
@@ -905,6 +925,31 @@ namespace Backsight.Editor
         {
             get { return IsFlagSet(FeatureFlag.FlipDist); }
             set { SetFlag(FeatureFlag.FlipDist, value); }
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public virtual void WriteData(EditSerializer editSerializer)
+        {
+            editSerializer.Writer.WriteUInt32("Id", m_SessionSequence);
+            editSerializer.WriteEntity("Entity", m_What);
+            editSerializer.WriteFeatureId(m_Id);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
+        /// <param name="entity">The type of real-world object that the feature corresponds to.</param>
+        /// <param name="fid">The ID of the feature (may be null).</param>
+        static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
+        {
+            ss = editDeserializer.Reader.ReadUInt32("Id");
+            entity = editDeserializer.ReadEntity("Entity");
+            fid = editDeserializer.ReadFeatureId();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A line feature.
     /// </summary>
-    abstract class LineFeature : Feature, IFeatureDependent, IIntersectable
+    abstract class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
     {
         #region Class data
 
@@ -118,6 +118,23 @@ namespace Backsight.Editor
             // Don't cross-reference if we're dealing with a temporary feature
             if (f.SessionSequence > 0)
                 AddReferences();
+
+            if (isTopological)
+                SetTopology(true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineFeature"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal LineFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            bool isTopological;
+            ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
+
+            AddReferences();
 
             if (isTopological)
                 SetTopology(true);
@@ -1333,6 +1350,73 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
                 RemoveTopology();
                 m_Topology = Topology.CreateTopology(this);
                 IsMoved = true;
+            }
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
+            editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
+            editSerializer.Writer.WriteBool("Topological", IsTopological);
+
+            // For simple line segments (perhaps 80% of the case when dealing with cadastral
+            // data), we already have what we need with the from & to points.
+            if (!(m_Geom is SegmentGeometry))
+                editSerializer.WritePersistent<LineGeometry>("Type", m_Geom);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="from">The point at the start of the line</param>
+        /// <param name="to">The point at the end of the line</param>
+        /// <param name="isTopological">Does the line act as a polygon boundary </param>
+        /// <param name="geom">The geometry for the line.</param>
+        static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out PointFeature to, out bool isTopological,
+                                out LineGeometry geom)
+        {
+            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
+            to = editDeserializer.ReadFeatureRef<PointFeature>("To");
+            isTopological = editDeserializer.Reader.ReadBool("Topological");
+
+            if (editDeserializer.Reader.IsNextName("Type"))
+            {
+                geom = editDeserializer.ReadPersistent<LineGeometry>("Type");
+
+                // Ensure terminals have been defined (since there was no easy way to pass them
+                // through to the LineGeometry constructor).
+                geom.StartTerminal = from;
+                geom.EndTerminal = to;
+
+                // If we're dealing with a circular arc, and the bc/ec points have defined
+                // positions (e.g. coming from an import), we can calculate the radius now.
+                // Otherwise we'll need to wait until geometry has been calculated.
+
+                // The radius is defined here only because it's consistent with older code.
+                // It may well be better to leave the definition of circle radius till later
+                // (i.e. do all circles after geometry has been calculated).
+
+                ArcGeometry arc = (geom as ArcGeometry);
+                if (arc != null)
+                {
+                    Circle c = (Circle)arc.Circle;
+                    PointFeature center = c.CenterPoint;
+
+                    if (center.PointGeometry != null && from.PointGeometry != null)
+                        c.Radius = Geom.Distance(center.PointGeometry, from.PointGeometry);
+                }
+
+            }
+            else
+            {
+                geom = new SegmentGeometry(from, to);
             }
         }
     }

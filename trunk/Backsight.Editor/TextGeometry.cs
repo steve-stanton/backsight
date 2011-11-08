@@ -15,10 +15,8 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 
 using Backsight.Environment;
-using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -27,7 +25,7 @@ namespace Backsight.Editor
     /// A text object is some sort of string that appears on a map. This is the base class for
     ///	<see cref="MiscTextGeometry"/>, <see cref="KeyTextGeometry"/>, and <see cref="RowTextGeometry"/>.
     /// </summary>
-    abstract class TextGeometry : IString
+    abstract class TextGeometry : IString, IPersistent
     {
         #region Class data
 
@@ -39,9 +37,9 @@ namespace Backsight.Editor
         private IFont m_Font;
 
         /// <summary>
-        /// The total width of the text, in meters on the ground.
+        /// Position of the text's reference point (always the top left corner of the string).
         /// </summary>
-        private float m_Width;
+        private PointGeometry m_Position;
         
         /// <summary>
         /// The height of the text, in meters on the ground.
@@ -49,14 +47,14 @@ namespace Backsight.Editor
         private float m_Height;
 
         /// <summary>
+        /// The total width of the text, in meters on the ground.
+        /// </summary>
+        private float m_Width;
+
+        /// <summary>
         /// Clockwise rotation from horizontal
         /// </summary>
         private IAngle m_Rotation;
-
-        /// <summary>
-        /// Position of the text's reference point (always the top left corner of the string).
-        /// </summary>
-        private PointGeometry m_Position;
 
         #endregion
 
@@ -90,6 +88,16 @@ namespace Backsight.Editor
             m_Height = copy.m_Height;
             m_Width = copy.m_Width;
             m_Rotation = copy.m_Rotation;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected TextGeometry(EditDeserializer editDeserializer)
+        {
+            ReadData(editDeserializer, out m_Font, out m_Position, out m_Height, out m_Width, out m_Rotation);
         }
 
         #endregion
@@ -376,5 +384,56 @@ namespace Backsight.Editor
         {
             get { return null; }
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public virtual void WriteData(EditSerializer editSerializer)
+        {
+            IEditWriter writer = editSerializer.Writer;
+
+            if (m_Font != null)
+                writer.WriteInt32("Font", m_Font.Id);
+
+            writer.WriteInt64("X", m_Position.Easting.Microns);
+            writer.WriteInt64("Y", m_Position.Northing.Microns);
+            writer.WriteDouble("Width", Math.Round((double)m_Width, 2));
+            writer.WriteDouble("Height", Math.Round((double)m_Height, 2));
+
+            // TODO: May want to cover indirect rotations
+            editSerializer.WriteRadians("Rotation", new RadianValue(m_Rotation.Radians));
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="font">The text style</param>
+        /// <param name="position">Position of the text's reference point</param>
+        /// <param name="height">The height of the text, in meters on the ground.</param>
+        /// <param name="width">The total width of the text, in meters on the ground.</param>
+        /// <param name="rotation">Clockwise rotation from horizontal</param>
+        static void ReadData(EditDeserializer editDeserializer, out IFont font, out PointGeometry position,
+                                out float height, out float width, out IAngle rotation)
+        {
+            IEditReader reader = editDeserializer.Reader;
+
+            if (reader.IsNextName("Font"))
+            {
+                int fontId = reader.ReadInt32("Font");
+                font = EnvironmentContainer.FindFontById(fontId);
+            }
+            else
+            {
+                font = null;
+            }
+
+            position = new PointGeometry(reader.ReadInt64("X"), reader.ReadInt64("Y"));
+            width = (float)reader.ReadDouble("Width");
+            height = (float)reader.ReadDouble("Height");
+            rotation = editDeserializer.ReadRadians("Rotation");
+        }
+
     }
 }

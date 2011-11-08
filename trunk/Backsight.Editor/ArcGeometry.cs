@@ -52,6 +52,42 @@ namespace Backsight.Editor
             m_IsClockwise = isClockwise;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArcGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal ArcGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_IsClockwise = editDeserializer.Reader.ReadBool("Clockwise");
+
+            if (editDeserializer.Reader.IsNextName("Center"))
+            {
+                PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
+                Debug.Assert(center != null);
+
+                // The arc is the first arc attached to the circle. However, we cannot
+                // calculate the radius just yet because the bc/ec points are not persisted
+                // as part of the ArcGeometry definition (they are defined as part of the
+                // LineFeature object that utilizes the ArcGeometry).
+
+                // Even if we did have the bc/ec points at this stage, their positions will
+                // only be available if the data came from an import (they will still be
+                // undefined if the geometry is calculated, since calculation only occurs
+                // after deserialization has been completed).
+
+                m_Circle = new Circle(center, 0.0);
+                center.AddReference(m_Circle);
+            }
+            else
+            {
+                ArcFeature firstArc = editDeserializer.ReadFeatureRef<ArcFeature>("FirstArc");
+                Debug.Assert(firstArc != null);
+                m_Circle = firstArc.Circle;
+            }
+        }
+
         #endregion
 
         #region ICircularArcGeometry Members
@@ -819,6 +855,24 @@ namespace Backsight.Editor
                 angle = bearing + MathConstants.PI;
 
             return angle;
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            editSerializer.Writer.WriteBool("Clockwise", m_IsClockwise);
+
+            // If the circle's first arc has geometry that corresponds to this instance, write
+            // out the circle center point. Otherwise refer to the first arc (we'll get the
+            // circle geometry from there).
+
+            if (Object.ReferenceEquals(m_Circle.FirstArc.Geometry, this))
+                editSerializer.WriteFeatureRef<PointFeature>("Center", m_Circle.CenterPoint);
+            else
+                editSerializer.WriteFeatureRef<ArcFeature>("FirstArc", m_Circle.FirstArc);
         }
     }
 }

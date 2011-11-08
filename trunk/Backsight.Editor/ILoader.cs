@@ -16,8 +16,9 @@
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Helps with deserialization of XML data (when loading from the database).
+    /// Helps with deserialization of data (e.g. when loading from the database).
     /// </summary>
+    /// <remarks>This interface is likely obsolete. Use the implementation provided by CadastralMapModel.</remarks>
     interface ILoader
     {
         /// <summary>

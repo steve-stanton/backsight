@@ -56,7 +56,11 @@ namespace Backsight.Editor.Xml
         /// </summary>
         /// <param name="s">The session the editing operation should be appended to</param>
         /// <returns>The editing operation that was loaded</returns>
-        abstract internal Operation LoadOperation(Session s);
+        //abstract internal Operation LoadOperation(Session s);
+        internal virtual Operation LoadOperation(Session s)
+        {
+            throw new ApplicationException();
+        }
 
         /// <summary>
         /// Records information for a line split
@@ -193,6 +197,7 @@ namespace Backsight.Editor.Xml
         }
     }
 
+    /*
     public partial class ImportData
     {
         public ImportData()
@@ -229,6 +234,7 @@ namespace Backsight.Editor.Xml
             return op;
         }
     }
+    */
 
     public partial class IntersectDirectionAndDistanceData
     {

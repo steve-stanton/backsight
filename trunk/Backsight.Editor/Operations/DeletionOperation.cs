@@ -55,6 +55,22 @@ namespace Backsight.Editor.Operations
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeletionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal DeletionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            ReadData(editDeserializer, out m_Deletions);
+
+            // Deactivate features (means they will never make it into the spatial index, and
+            // any lines will be invisible as far as intersection tests are concerned).
+            DeserializationFactory dff = new DeserializationFactory(this);
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -270,19 +286,33 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            string[] ids = new string[m_Deletions.Count];
+            for (int i=0; i<ids.Length; i++)
+                ids[i] = m_Deletions[i].DataId;
+
+            editSerializer.WriteSimpleArray<string>("Delete", ids);
         }
 
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeletionOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal DeletionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="line">The line the point should appear on </param>
+        /// <param name="positionRatio">The position ratio of the attached point.</param>
+        /// <param name="point">The point that was created.</param>
+        static void ReadData(EditDeserializer editDeserializer, out List<Feature> deletions)
         {
-            throw new NotImplementedException();
+            string[] ids = editDeserializer.ReadSimpleArray<string>("Delete");
+            deletions = new List<Feature>(ids.Length);
+            CadastralMapModel mapModel = editDeserializer.MapModel;
+
+            foreach (string id in ids)
+            {
+                Feature f = mapModel.Find<Feature>(id);
+                Debug.Assert(f != null);
+                deletions.Add(f);
+            }
         }
     }
 }

@@ -14,6 +14,7 @@
 // </remarks>
 
 using Backsight.Environment;
+using System;
 
 namespace Backsight.Editor
 {
@@ -21,7 +22,7 @@ namespace Backsight.Editor
     /// A representation of <see cref="RowTextGeometry"/> that is used during
     /// database serialization.
     /// </summary>
-    class RowTextContent : RowTextGeometry
+    class RowTextContent : TextGeometry
     {
         #region Class data
 
@@ -29,6 +30,11 @@ namespace Backsight.Editor
         /// The Backsight ID for the database table
         /// </summary>
         int m_TableId;
+
+        /// <summary>
+        /// The ID of the formatting template.
+        /// </summary>
+        int m_TemplateId;
 
         #endregion
 
@@ -46,11 +52,36 @@ namespace Backsight.Editor
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The total width of the text, in meters on the ground.</param>
         /// <param name="rotation">Clockwise rotation from horizontal</param>
+        [Obsolete]
         internal RowTextContent(int tableId, ITemplate template,
                                  PointGeometry pos, IFont font, double height, double width, float rotation)
-            : base(null, template, pos, font, height, width, rotation)
+            : base(pos, font, height, width, rotation)
         {
             m_TableId = tableId;
+            m_TemplateId = 0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RowTextContent"/> class.
+        /// </summary>
+        /// <param name="copy">The copy.</param>
+        internal RowTextContent(RowTextGeometry copy)
+            : base(copy)
+        {
+            m_TableId = copy.Row.Table.Id;
+            m_TemplateId = copy.Template.Id;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RowTextContent"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal RowTextContent(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_TableId = editDeserializer.Reader.ReadInt32("Table");
+            m_TemplateId = editDeserializer.Reader.ReadInt32("Template");
         }
 
         #endregion
@@ -76,6 +107,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The ID of the formatting template.
+        /// </summary>
+        internal int TemplateId
+        {
+            get { return m_TemplateId; }
+        }
+
+        /// <summary>
         /// The text string represented by this geometry is "NoData" (always).
         /// Instances of <c>RowTextContent</c> should exist only for a short
         /// period during deserialization from the database (however, if database
@@ -85,6 +124,19 @@ namespace Backsight.Editor
         public override string Text
         {
             get { return "NoData"; }
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+
+            IEditWriter writer = editSerializer.Writer;
+            writer.WriteInt32("Table", m_TableId);
+            writer.WriteInt32("Template", m_TemplateId);
         }
     }
 }

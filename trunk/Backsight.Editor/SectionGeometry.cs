@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The line that the section is based on.
         /// </summary>
-        LineFeature m_Base; // readonly
+        readonly LineFeature m_Base;
 
         #endregion
 
@@ -55,6 +55,20 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Base = baseLine;            
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SectionGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal SectionGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Base = editDeserializer.ReadFeatureRef<LineFeature>("Base");
+
+            if (m_Base == null)
+                throw new ArgumentNullException();
         }
 
         #endregion
@@ -275,6 +289,15 @@ namespace Backsight.Editor
         internal override double GetRotation(IPointGeometry p)
         {
             return Make().GetRotation(p);
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            editSerializer.WriteFeatureRef<LineFeature>("Base", m_Base);
         }
     }
 }

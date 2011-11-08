@@ -53,6 +53,19 @@ namespace Backsight.Editor.Operations
             m_Features = new List<PointFeature>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetControlOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal GetControlOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            PointFeature[] points = editDeserializer.ReadPersistentArray<PointFeature>("Points");
+            m_Features = new List<PointFeature>(points);
+        }
+
         #endregion
 
         /// <summary>
@@ -184,6 +197,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="p">The point created by this edit.</param>
         /// <remarks>Used during deserialization from the database</remarks>
+        [Obsolete]
         internal void AddControlPoint(PointFeature p)
         {
             m_Features.Add(p);
@@ -242,19 +256,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetControlOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal GetControlOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WritePersistentArray<PointFeature>("Points", m_Features.ToArray());
         }
     }
 }

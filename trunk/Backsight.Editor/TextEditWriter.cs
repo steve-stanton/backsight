@@ -145,6 +145,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes an eight-byte signed integer to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The eight-byte signed integer to write.</param>
+        public void WriteInt64(string name, long value)
+        {
+            WriteValue(name, value);
+        }
+
+        /// <summary>
         /// Writes an eight-byte floating-point value to a storage medium.
         /// </summary>
         /// <param name="name">A name tag for the item</param>

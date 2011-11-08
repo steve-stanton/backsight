@@ -46,6 +46,16 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal SegmentGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         #endregion
 
         public override ILength Length
@@ -613,6 +623,20 @@ namespace Backsight.Editor
             }
         
             return rotation;
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            // Do nothing - line features that are represented by simple line segments
+            // do not need to be written out (see comment in LineFeature.WriteData).
+            // This method should therefore never get called (I am virtually certain
+            // that it would not be used in any other context).
+
+            throw new ApplicationException("Unexpected call to SegmentGeometry.WriteData");
         }
     }
 }

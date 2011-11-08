@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of line geometry.
     /// </summary>
-    abstract class LineGeometry : ILineGeometry, IIntersectable
+    abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     {
         #region Class data
 
@@ -56,6 +56,20 @@ namespace Backsight.Editor
 
             m_Start = start;
             m_End = end;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        protected LineGeometry(EditDeserializer editDeserializer)
+        {
+            // When deserializing line geometry (in the context of line features), passing
+            // the terminal down via the EditDeserializer is a bit too contrived. Instead,
+            // we'll set the terminals back in LineFeature.ReadData.
+
+            m_Start = m_End = null;
         }
 
         #endregion
@@ -304,5 +318,11 @@ namespace Backsight.Editor
 
             return distr;
         }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        abstract public void WriteData(EditSerializer editSerializer);
     }
 }

@@ -61,6 +61,16 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArcFeature"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal ArcFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         #endregion
 
         /// <summary>
