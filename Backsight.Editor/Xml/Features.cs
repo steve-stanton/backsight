@@ -280,8 +280,9 @@ namespace Backsight.Editor.Xml
             bool isTopological, PointGeometry polPosition)
         {
             IFeature f = GetFeatureStub(creator);
-            RowTextFeature result = new RowTextFeature(f, geom, isTopological, polPosition);
-            return result;
+            throw new NotImplementedException();
+            //RowTextFeature result = new RowTextFeature(f, geom, isTopological, polPosition);
+            //return result;
         }
     }
 

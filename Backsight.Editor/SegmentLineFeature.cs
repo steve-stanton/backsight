@@ -22,6 +22,11 @@ namespace Backsight.Editor
     /// </summary>
     class SegmentLineFeature : LineFeature
     {
+        internal SegmentLineFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         /// <summary>
         /// Creates a <c>LineFeature</c> consisting of a simple line segment.
         /// </summary>

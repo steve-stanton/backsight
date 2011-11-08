@@ -212,9 +212,9 @@ namespace Backsight.Editor.Observations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeature<PointFeature>("From", m_From);
-            editSerializer.WriteFeature<PointFeature>("Start", m_Par1);
-            editSerializer.WriteFeature<PointFeature>("End", m_Par2);
+            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
+            editSerializer.WriteFeatureRef<PointFeature>("Start", m_Par1);
+            editSerializer.WriteFeatureRef<PointFeature>("End", m_Par2);
         }
 
         /// <summary>
@@ -226,9 +226,9 @@ namespace Backsight.Editor.Observations
         /// <param name="end">Point defining end of parallel.</param>
         static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out PointFeature start, out PointFeature end)
         {
-            from = editDeserializer.ReadFeature<PointFeature>("From");
-            start = editDeserializer.ReadFeature<PointFeature>("Start");
-            end = editDeserializer.ReadFeature<PointFeature>("End");
+            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
+            start = editDeserializer.ReadFeatureRef<PointFeature>("Start");
+            end = editDeserializer.ReadFeatureRef<PointFeature>("End");
         }
     }
 }

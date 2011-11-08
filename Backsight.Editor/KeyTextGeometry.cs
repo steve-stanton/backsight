@@ -52,6 +52,18 @@ namespace Backsight.Editor
             m_Feature = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyTextGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal KeyTextGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            // Nothing to do - the TextFeature constructor must define the Label property after
+            // this geometry object has been created.
+        }
+
         #endregion
 
         /// <summary>

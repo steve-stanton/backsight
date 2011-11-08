@@ -22,6 +22,11 @@ namespace Backsight.Editor
     /// </summary>
     class SectionLineFeature : LineFeature
     {
+        internal SectionLineFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         internal SectionLineFeature(Operation creator, uint sessionSequence, SectionGeometry section)
             : base(creator, sessionSequence, section.BaseLine.EntityType, (PointFeature)section.Start,
                     (PointFeature)section.End, section)

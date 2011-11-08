@@ -38,12 +38,11 @@ namespace Backsight.Editor
         /// Loads the content of an editing operation. Prior to call, the current editing session
         /// must be defined using the <see cref="Session.CurrentSession"/> property.
         /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         /// <returns>The created editing object</returns>
-        static internal Operation Deserialize(Session s, EditDeserializer editDeserializer)
+        static internal Operation Deserialize(EditDeserializer editDeserializer)
         {
-            Operation result = editDeserializer.ReadObject<Operation>("Edit");
+            Operation result = editDeserializer.ReadPersistent<Operation>("Edit");
 
             // Note that calculated geometry is NOT defined at this stage. That happens
             // when the model is asked to index the data.
@@ -57,7 +56,7 @@ namespace Backsight.Editor
                 upo.ApplyChanges();
 
             // Remember the edit as part of the session
-            s.Add(result);
+            editDeserializer.MapModel.LastSession.Add(result);
 
             return result;
         }
@@ -116,6 +115,16 @@ namespace Backsight.Editor
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         protected Operation(EditDeserializer editDeserializer)
         {
+            editDeserializer.CurrentEdit = this;
+            m_Session = editDeserializer.MapModel.LastSession;
+
+            string id = editDeserializer.Reader.ReadString("Id");
+            uint sessionId;
+            InternalIdValue.Parse(id, out sessionId, out m_Sequence);
+
+            // Consistency check (mainly for debugging).
+            if (m_Session.Id != sessionId)
+                throw new ApplicationException();
         }
 
         #endregion
@@ -445,7 +454,7 @@ namespace Backsight.Editor
         internal string GetEditString()
         {
             EditSerializer es = new EditSerializer();
-            es.WriteObject<Operation>("Edit", this);
+            es.WritePersistent<Operation>("Edit", this);
             return es.Writer.ToString();
         }
 
@@ -807,6 +816,9 @@ namespace Backsight.Editor
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        abstract public void WriteData(EditSerializer editSerializer);
+        public virtual void WriteData(EditSerializer editSerializer)
+        {
+            editSerializer.Writer.WriteString("Id", DataId);
+        }
     }
 }

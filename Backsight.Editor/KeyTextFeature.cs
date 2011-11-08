@@ -22,6 +22,11 @@ namespace Backsight.Editor
     /// </summary>
     class KeyTextFeature : TextFeature
     {
+        internal KeyTextFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         internal KeyTextFeature(Operation creator, uint sessionSequence, IEntity ent, KeyTextGeometry text)
             : base(creator, sessionSequence, ent, text)
         {

@@ -1,12 +1,32 @@
-﻿using System;
+﻿// <remarks>
+// Copyright 2011 - Steve Stanton. This file is part of Backsight
+//
+// Backsight is free software; you can redistribute it and/or modify it under the terms
+// of the GNU Lesser General Public License as published by the Free Software Foundation;
+// either version 3 of the License, or (at your option) any later version.
+//
+// Backsight is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// </remarks>
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Reflection;
+
 using Backsight.Environment;
 
 namespace Backsight.Editor
 {
+    /// <written by="Steve Stanton" on="06-NOV-2011" />
+    /// <summary>
+    /// Deserializes instances of <see cref="IPersistent"/> that have been saved using
+    /// an instance of <see cref="EditSerializer"/>.
+    /// </summary>
     class EditDeserializer
     {
         #region Static
@@ -53,7 +73,7 @@ namespace Backsight.Editor
         IEditReader m_Reader;
 
         /// <summary>
-        /// Index of the constructors that accept an instance of <see cref="DeserializationFactory"/> (and which
+        /// Index of the constructors that accept an instance of <see cref="EditDeserializer"/> (and which
         /// belong to classes that implement <see cref="IPersistent"/>), keyed by the short type name.
         /// This is restricted to the current assembly, and excludes abstract classes, as well as miscellaneous
         /// mystery classes that seem to be produced by NET (with type names that start with the
@@ -61,23 +81,149 @@ namespace Backsight.Editor
         /// </summary>
         readonly Dictionary<string, ConstructorInfo> m_Constructors;
 
+        /// <summary>
+        /// The map model that deserialized data will be loaded into (not null).
+        /// </summary>
+        readonly CadastralMapModel m_MapModel;
+
+        /// <summary>
+        /// The edit (if any) that is currently being deserialized (defined as a result
+        /// of calling <see cref="Operation(EditDeserializer)"/>). 
+        /// </summary>
+        Operation m_CurrentEdit;
+
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditDeserializer"/> class
+        /// with an empty map model.
+        /// </summary>
+        /// <remarks>
+        /// While this constructor is good for testing, the empty map model that gets utilized may not
+        /// be complete unless the environment has been properly initialized (e.g. have ID groups been
+        /// loaded from the database?).
+        /// </remarks>
         internal EditDeserializer()
+            : this(new CadastralMapModel())
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditDeserializer"/> class by
+        /// scanning the current assembly to look for constructors that accept an instance of
+        /// <see cref="EditDeserializer"/>. Before attempting to deserialize anything,
+        /// you must also define the <see cref="Reader"/> property.
+        /// </summary>
+        /// <param name="mapModel">The map model to load deserialized data into (not null).</param>
+        /// <exception cref="ArgumentNullException">If the supplied map model is null.</exception>
+        /// <exception cref="ApplicationException">If no deserialization constructors can be found
+        /// in the current assembly.</exception>
+        internal EditDeserializer(CadastralMapModel mapModel)
+        {
+            if (mapModel == null)
+                throw new ArgumentNullException();
+
+            m_MapModel = mapModel;
+            m_CurrentEdit = null;
             m_Constructors = LoadConstructors();
+
             if (m_Constructors.Count == 0)
                 throw new ApplicationException("Cannot find any deserialization constructors");
         }
 
         #endregion
 
+        /// <summary>
+        /// The mechanism for loading persistent data (not null).
+        /// </summary>
         internal IEditReader Reader
         {
             get { return m_Reader; }
             set { m_Reader = value; }
+        }
+
+        /// <summary>
+        /// The map model that deserialized data is loaded into (not null).
+        /// </summary>
+        internal CadastralMapModel MapModel
+        {
+            get { return m_MapModel; }
+        }
+
+        /// <summary>
+        /// The edit (if any) that is currently being deserialized (defined as a result
+        /// of calling the <see cref="Operation(EditDeserializer)"/> constructor).
+        /// </summary>
+        internal Operation CurrentEdit
+        {
+            get { return m_CurrentEdit; }
+
+            set
+            {
+                if (value != null && m_CurrentEdit != null)
+                    throw new ApplicationException("Edits appear to be nested");
+
+                m_CurrentEdit = value;
+            }
+        }
+
+        /// <summary>
+        /// Reads the content of an array containing elements that implement <see cref="IPersistent"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of each array element expected by the caller.</typeparam>
+        /// <param name="name">A name tag associated with the array</param>
+        /// <returns>The array that was read</returns>
+        internal T[] ReadPersistentArray<T>(string name) where T : IPersistent
+        {
+            // The array itself should not have a type name unless it happens to be "null" (denoting
+            // an array reference that is null).
+
+            string typeName = m_Reader.ReadString(name);
+            if (typeName != null)
+            {
+                if (typeName == "null")
+                    return null;
+
+                throw new ApplicationException("Unexpected type name for array element " + name);
+            }
+
+            m_Reader.ReadBeginObject();
+            uint nItem = m_Reader.ReadUInt32("Length");
+            T[] result = new T[nItem];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                string itemName = string.Format("[{0}]", i);
+                result[i] = ReadPersistent<T>(itemName);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Reads an array of simple types to a storage medium.
+        /// </summary>
+        /// <typeparam name="T">The type of each array element expected by the caller.</typeparam>
+        /// <param name="name">A name tag associated with the array</param>
+        /// <returns>The array that was read</returns>
+        internal T[] ReadSimpleArray<T>(string name) where T : IConvertible
+        {
+            // The array itself should not have a type name unless it happens to be "null" (denoting
+            // an array reference that is null).
+
+            string data = m_Reader.ReadString(name);
+            if (data == "null")
+                return null;
+
+            string[] items = data.Split(';');
+            T[] result = new T[items.Length];
+
+            for (int i=0; i<items.Length; i++)
+                result[i] = (T)Convert.ChangeType(items[i], typeof(T));
+
+            return result;
         }
 
         /// <summary>
@@ -96,7 +242,7 @@ namespace Backsight.Editor
         /// </remarks>
         /// <exception cref="ApplicationException">If the type name read from storage does
         /// not correspond to a suitable type within this assembly.</exception>
-        internal T ReadObject<T>(string name) where T : IPersistent
+        internal T ReadPersistent<T>(string name) where T : IPersistent
         {
             string typeName = m_Reader.ReadString(name);
 
@@ -115,16 +261,35 @@ namespace Backsight.Editor
 
 
             m_Reader.ReadBeginObject(); // Read opening bracket
+            T result = default(T);
 
             try
             {
-                return (T)ci.Invoke(new object[] { this });
+                result = (T)ci.Invoke(new object[] { this });
+            }
+
+            catch
+            {
+                throw new ApplicationException("Failed to create instance of " + typeName);
             }
 
             finally
             {
                 m_Reader.ReadEndObject(); // Read the closing bracket
+
+                // The current edit is defined by the Operation constructor that accepts this
+                // EditDeserializer instance. Edits should never be nested, so make sure we
+                // clear the current edit when necessary.
+                if (result is Operation)
+                {
+                    Debug.Assert(m_CurrentEdit != null);
+                    Debug.Assert(Object.ReferenceEquals(m_CurrentEdit, result));
+
+                    m_CurrentEdit = null;
+                }
             }
+
+            return result;
         }
 
         /// <summary>
@@ -163,13 +328,55 @@ namespace Backsight.Editor
         /// <remarks>This does not create a brand new feature. Rather, it uses a reference
         /// to try to obtain a feature that should have already been created.
         /// </remarks>
-        internal T ReadFeature<T>(string name) where T : Feature
+        internal T ReadFeatureRef<T>(string name) where T : Feature
         {
             string dataId = m_Reader.ReadString(name);
             if (dataId == null)
                 return default(T);
 
-            throw new NotImplementedException();
+            return m_MapModel.Find<T>(dataId);
+        }
+
+        /// <summary>
+        /// Reads a user-perceived feature ID using the standard naming convention.
+        /// </summary>
+        /// <returns>The user-perceived ID that was read (may be null)</returns>
+        internal FeatureId ReadFeatureId()
+        {
+            return ReadFeatureId("Key", "ForeignKey");
+        }
+
+        /// <summary>
+        /// Reads a user-perceived feature ID using the specified naming tags.
+        /// </summary>
+        /// <param name="nativeName">The name tag to use for a native ID.</param>
+        /// <param name="foreignName">The name tag to use for a foreign ID.</param>
+        /// <returns>The user-perceived ID that was read (may be null)</returns>
+        internal FeatureId ReadFeatureId(string nativeName, string foreignName)
+        {
+            if (m_Reader.IsNextName(nativeName))
+            {
+                uint nativeKey = m_Reader.ReadUInt32(nativeName);
+                NativeId nid = m_MapModel.FindNativeId(nativeKey);
+
+                if (nid == null)
+                    return m_MapModel.AddNativeId(nativeKey);
+                else
+                    return nid;
+            }
+
+            if (m_Reader.IsNextName(foreignName))
+            {
+                string key = m_Reader.ReadString(foreignName);
+                ForeignId fid = m_MapModel.FindForeignId(key);
+
+                if (fid == null)
+                    return m_MapModel.AddForeignId(key);
+                else
+                    return fid;
+            }
+
+            return null;
         }
     }
 }

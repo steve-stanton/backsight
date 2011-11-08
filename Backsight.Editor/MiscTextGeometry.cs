@@ -49,6 +49,17 @@ namespace Backsight.Editor
             m_Text = text;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiscTextGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal MiscTextGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Text = editDeserializer.Reader.ReadString("Text");
+        }
+
         #endregion
 
         /// <summary>
@@ -127,5 +138,15 @@ namespace Backsight.Editor
 	        return pEx;          
         }
         */
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+            editSerializer.Writer.WriteString("Text", m_Text);
+        }
     }
 }

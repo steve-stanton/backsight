@@ -113,6 +113,17 @@ namespace Backsight.Editor.Operations
             m_Point = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AttachPointOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal AttachPointOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            ReadData(editDeserializer, out m_Line, out m_PositionRatio, out m_Point);
+        }
+
         #endregion
 
         /// <summary>
@@ -281,34 +292,26 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            /*
-            base.WriteData(writer);
-            this.PositionRatio = op.PositionRatio;
-            this.Point = new FeatureStubData(op.NewPoint);
+            base.WriteData(editSerializer);
 
-            editSerializer.WriteFeature<LineFeature>("Line", m_Line);
-            editSerializer.WriteFeature<PointFeature>("From", m_From);
-             */
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
+            editSerializer.Writer.WriteUInt32("PositionRatio", m_PositionRatio);
+            editSerializer.WritePersistent<FeatureStub>("Point", new FeatureStub(m_Point));
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="line"></param>
-        /// <param name="positionRatio"></param>
-        /// <param name="point"></param>
+        /// <param name="line">The line the point should appear on </param>
+        /// <param name="positionRatio">The position ratio of the attached point.</param>
+        /// <param name="point">The point that was created.</param>
         static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out uint positionRatio, out PointFeature point)
         {
-            line = null;
-            positionRatio = 0;
-            point = null;
-        }
-
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal AttachPointOperation(EditDeserializer editDeserializer)
-            : base(null, 0)
-        {
+            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            positionRatio = editDeserializer.Reader.ReadUInt32("PositionRatio");
+            FeatureStub stub = editDeserializer.ReadPersistent<FeatureStub>("Point");
+            point = new PointFeature(stub, null);
         }
     }
 }

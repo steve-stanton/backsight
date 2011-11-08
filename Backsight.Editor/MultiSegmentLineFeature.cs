@@ -26,6 +26,11 @@ namespace Backsight.Editor
     /// </summary>
     class MultiSegmentLineFeature : LineFeature
     {
+        internal MultiSegmentLineFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         /// <summary>
         /// Creates a <c>MultiSegmentLineFeature</c> consisting of a series of connected line segments.
         /// </summary>

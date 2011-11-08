@@ -22,6 +22,11 @@ namespace Backsight.Editor
     /// </summary>
     class MiscTextFeature : TextFeature
     {
+        internal MiscTextFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+        }
+
         internal MiscTextFeature(Operation creator, uint sessionSequence, IEntity ent, MiscTextGeometry text)
             : base(creator, sessionSequence, ent, text)
         {

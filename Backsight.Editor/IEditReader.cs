@@ -46,6 +46,13 @@ namespace Backsight.Editor
         uint ReadUInt32(string name);
 
         /// <summary>
+        /// Reads an 8-byte signed integer.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 8-byte value that was read.</returns>
+        long ReadInt64(string name);
+
+        /// <summary>
         /// Reads an eight-byte floating-point value.
         /// </summary>
         /// <param name="name">A name tag associated with the value</param>
@@ -70,7 +77,7 @@ namespace Backsight.Editor
         /// Reads a string.
         /// </summary>
         /// <param name="name">A name tag associated with the value</param>
-        /// <returns>The string that was read.</returns>
+        /// <returns>The string that was read (null if nothing follows the name)</returns>
         string ReadString(string name);
 
         /// <summary>

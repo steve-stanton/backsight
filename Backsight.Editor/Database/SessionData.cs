@@ -15,17 +15,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
-using System.Data;
-using System.Data.SqlTypes;
-using System.Xml;
 
 using Backsight.Data;
 using Backsight.Environment;
-using Backsight.Editor.Xml;
-using System.IO;
 
 namespace Backsight.Editor.Database
 {
@@ -81,7 +78,7 @@ namespace Backsight.Editor.Database
                 Job curJob = null;
                 Trace.Write("Reading data...");
 
-                EditDeserializer editDeserializer = new EditDeserializer();
+                EditDeserializer editDeserializer = new EditDeserializer(model);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -113,9 +110,9 @@ namespace Backsight.Editor.Database
                         using (TextReader tr = new StringReader(data))
                         {
                             editDeserializer.Reader = new TextEditReader(tr);
-                            Operation edit = Operation.Deserialize(curSession, editDeserializer);
+                            Operation edit = Operation.Deserialize(editDeserializer);
 
-                            // The edit sequence is repeated in the XML data
+                            // The edit sequence should be repeated in the data string
                             Debug.Assert(edit.EditSequence == editSequence);
                         }
                     }

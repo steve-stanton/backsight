@@ -96,7 +96,24 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Row = row;
-            m_Template = content.Template;
+            m_Template = EnvironmentContainer.FindTemplateById(content.TemplateId);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MiscTextGeometry"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal RowTextGeometry(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            // This constructor exists only to satisfy the requirement that classes implementing
+            // IPersistent (as specified by the TextGeometry class) must also provide a constructor
+            // that accepts a deserializer object. The RowTextContent class must be used instead.
+
+            throw new ApplicationException("Unexpected attempt to deserialize RowTextGeometry");
+            int templateId = editDeserializer.Reader.ReadInt32("Template");
+            m_Template = EnvironmentContainer.FindTemplateById(templateId);
         }
 
         #endregion
@@ -286,6 +303,16 @@ namespace Backsight.Editor
                 if (startIndex < text.Length)
                     sb.Append(text.Substring(startIndex));
             }
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            // RowTextGeometry must be written out via the RowTextContent class.
+            throw new ApplicationException("Unexpected attempt to serialize RowTextGeometry");
         }
     }
 }

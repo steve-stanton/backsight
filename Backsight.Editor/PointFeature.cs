@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// A point feature (e.g. control point, any sort of computed point). A point feature must
     /// exist at both ends of every <see cref="LineFeature"/>.
     /// </summary>
-    class PointFeature : Feature, IPoint, ITerminal
+    class PointFeature : Feature, IPoint, ITerminal, IPersistent
     {
         #region Class data
 
@@ -75,6 +75,19 @@ namespace Backsight.Editor
                 m_Geom = null;
             else
                 m_Geom = new Node(this, g);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PointFeature"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal PointFeature(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            long x, y;
+            ReadData(editDeserializer, out x, out y);
+            m_Geom = new Node(this, new PointGeometry(x, y));
         }
 
         #endregion
@@ -450,5 +463,32 @@ UINT4 CePoint::CreateAngleText ( CPtrList& prims
 
 } // end of CreateAngleText
          */
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+
+            IEditWriter writer = editSerializer.Writer;
+            writer.WriteInt64("X", m_Geom.Easting.Microns);
+            writer.WriteInt64("Y", m_Geom.Northing.Microns);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="line">The line the point should appear on </param>
+        /// <param name="positionRatio">The position ratio of the attached point.</param>
+        /// <param name="point">The point that was created.</param>
+        static void ReadData(EditDeserializer editDeserializer, out long x, out long y)
+        {
+            IEditReader reader = editDeserializer.Reader;
+            x = reader.ReadInt64("X");
+            y = reader.ReadInt64("Y");
+        }
     }
 }
