@@ -193,17 +193,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Records an additional control point as part of this edit.
-        /// </summary>
-        /// <param name="p">The point created by this edit.</param>
-        /// <remarks>Used during deserialization from the database</remarks>
-        [Obsolete]
-        internal void AddControlPoint(PointFeature p)
-        {
-            m_Features.Add(p);
-        }
-
-        /// <summary>
         /// Obtains the features that are referenced by this operation (including features
         /// that are indirectly referenced by observation classes).
         /// </summary>

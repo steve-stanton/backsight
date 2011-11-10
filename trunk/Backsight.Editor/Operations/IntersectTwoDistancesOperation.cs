@@ -103,6 +103,27 @@ namespace Backsight.Editor.Operations
             m_Default = isdefault;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal IntersectTwoDistancesOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub to, line1, line2;
+            ReadData(editDeserializer, out m_Distance1, out m_From1, out m_Distance2, out m_From2, out m_Default,
+                            out to, out line1, out line2);
+
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", to);
+            dff.AddFeatureStub("Line1", line1);
+            dff.AddFeatureStub("Line2", line2);
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -540,19 +561,46 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WritePersistent<Observation>("Distance1", m_Distance1);
+            editSerializer.WriteFeatureRef<PointFeature>("From1", m_From1);
+            editSerializer.WritePersistent<Observation>("Distance2", m_Distance2);
+            editSerializer.WriteFeatureRef<PointFeature>("From2", m_From2);
+            editSerializer.Writer.WriteBool("Default", m_Default);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+
+            if (m_Line1 != null)
+                editSerializer.WritePersistent<FeatureStub>("Line1", new FeatureStub(m_Line1));
+
+            if (m_Line2 != null)
+                editSerializer.WritePersistent<FeatureStub>("Line2", new FeatureStub(m_Line2));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal IntersectTwoDistancesOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="dist1">First observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
+        /// <param name="from1">The point the 1st distance was measured from.</param>
+        /// <param name="dist2">Second observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
+        /// <param name="from2">The point the 2nd distance was measured from.</param>
+        /// <param name="isDefault">True if it was the default intersection.</param>
+        /// <param name="to">The created intersection point.</param>
+        /// <param name="line1">The first line created (if any).</param>
+        /// <param name="line2">The second line created (if any).</param>
+        static void ReadData(EditDeserializer editDeserializer, out Observation dist1, out PointFeature from1,
+                                out Observation dist2, out PointFeature from2, out bool isDefault,
+                                out FeatureStub to, out FeatureStub line1, out FeatureStub line2)
         {
-            throw new NotImplementedException();
+            dist1 = editDeserializer.ReadPersistent<Observation>("Distance1");
+            from1 = editDeserializer.ReadFeatureRef<PointFeature>("From1");
+            dist2 = editDeserializer.ReadPersistent<Observation>("Distance2");
+            from2 = editDeserializer.ReadFeatureRef<PointFeature>("From2");
+            isDefault = editDeserializer.Reader.ReadBool("Default");
+            to = editDeserializer.ReadPersistent<FeatureStub>("To");
+            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line1");
+            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line2");
         }
     }
 }

@@ -286,13 +286,14 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
+            base.WriteData(editSerializer);
+
             string[] ids = new string[m_Deletions.Count];
             for (int i=0; i<ids.Length; i++)
                 ids[i] = m_Deletions[i].DataId;
 
             editSerializer.WriteSimpleArray<string>("Delete", ids);
         }
-
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>

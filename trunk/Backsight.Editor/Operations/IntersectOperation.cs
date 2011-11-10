@@ -57,7 +57,6 @@ namespace Backsight.Editor.Operations
         protected IntersectOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            throw new NotImplementedException();
         }
 
         #endregion

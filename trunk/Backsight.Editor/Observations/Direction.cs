@@ -642,7 +642,8 @@ namespace Backsight.Editor.Observations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WritePersistent<Offset>("Offset", m_Offset);
+            if (m_Offset != null)
+                editSerializer.WritePersistent<Offset>("Offset", m_Offset);
         }
 
         /// <summary>
@@ -652,7 +653,7 @@ namespace Backsight.Editor.Observations
         /// <param name="offset">The offset.</param>
         static void ReadData(EditDeserializer editDeserializer, out Offset offset)
         {
-            offset = editDeserializer.ReadPersistent<Offset>("Offset");
+            offset = editDeserializer.ReadPersistentOrNull<Offset>("Offset");
         }
     }
 }
