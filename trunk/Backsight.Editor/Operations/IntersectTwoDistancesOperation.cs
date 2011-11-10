@@ -108,7 +108,6 @@ namespace Backsight.Editor.Operations
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
         internal IntersectTwoDistancesOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {

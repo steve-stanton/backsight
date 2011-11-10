@@ -115,6 +115,31 @@ namespace Backsight.Editor.Operations
             m_CloseTo = closeTo;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectTwoLinesOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal IntersectTwoLinesOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub to;
+            string idLine1a, idLine1b, idLine2a, idLine2b;
+            ReadData(editDeserializer, out m_Line1, out m_Line2, out m_CloseTo,
+                            out to, out idLine1a, out idLine1b, out idLine2a, out idLine2b);
+
+            m_IsSplit1 = (idLine1a != null && idLine1b != null);
+            m_IsSplit2 = (idLine2a != null && idLine2b != null);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", to);
+            dff.AddLineSplit(m_Line1, "SplitBefore1", idLine1a);
+            dff.AddLineSplit(m_Line1, "SplitAfter1", idLine1b);
+            dff.AddLineSplit(m_Line2, "SplitBefore2", idLine2a);
+            dff.AddLineSplit(m_Line2, "SplitAfter2", idLine2b);
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -455,19 +480,51 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<LineFeature>("Line1", m_Line1);
+            editSerializer.WriteFeatureRef<LineFeature>("Line2", m_Line2);
+            editSerializer.WriteFeatureRef<PointFeature>("CloseTo", m_CloseTo);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_Intersection));
+
+            if (m_Line1a != null)
+                editSerializer.Writer.WriteString("SplitBefore1", m_Line1a.DataId);
+
+            if (m_Line1b != null)
+                editSerializer.Writer.WriteString("SplitAfter1", m_Line1b.DataId);
+
+            if (m_Line2a != null)
+                editSerializer.Writer.WriteString("SplitBefore2", m_Line2a.DataId);
+
+            if (m_Line2b != null)
+                editSerializer.Writer.WriteString("SplitAfter2", m_Line2b.DataId);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectTwoLinesOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal IntersectTwoLinesOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="line1">The 1st line to intersect.</param>
+        /// <param name="line2">The 2nd line to intersect.</param>
+        /// <param name="closeTo">The point closest to the intersection.</param>
+        /// <param name="to">The created intersection point (if any). May have existed previously.</param>
+        /// <param name="idLine1a">The ID of the portion of the first line prior to the intersection (null if no split).</param>
+        /// <param name="idLine1b">The ID of the portion of the first line after the intersection (null if no split).</param>
+        /// <param name="idLine2a">The ID of the portion of the second line prior to the intersection (null if no split).</param>
+        /// <param name="idLine2b">The ID of the portion of the second line after the intersection (null if no split).</param>
+        static void ReadData(EditDeserializer editDeserializer, out LineFeature line1, out LineFeature line2, out PointFeature closeTo,
+                                out FeatureStub to, out string idLine1a, out string idLine1b, out string idLine2a, out string idLine2b)
         {
-            throw new NotImplementedException();
+            line1 = editDeserializer.ReadFeatureRef<LineFeature>("Line1");
+            line2 = editDeserializer.ReadFeatureRef<LineFeature>("Line2");
+            closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
+            to = editDeserializer.ReadPersistent<FeatureStub>("To");
+
+            IEditReader reader = editDeserializer.Reader;
+            idLine1a = (reader.IsNextName("SplitBefore1") ? reader.ReadString("SplitBefore1") : null);
+            idLine1b = (reader.IsNextName("SplitAfter1") ? reader.ReadString("SplitAfter1") : null);
+            idLine2a = (reader.IsNextName("SplitBefore2") ? reader.ReadString("SplitBefore2") : null);
+            idLine2b = (reader.IsNextName("SplitAfter2") ? reader.ReadString("SplitAfter2") : null);
         }
     }
 }

@@ -434,7 +434,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
         internal RadialOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
