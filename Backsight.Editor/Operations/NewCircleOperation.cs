@@ -14,10 +14,10 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
 using Backsight.Environment;
-using System.Collections.Generic;
 
 
 namespace Backsight.Editor.Operations
@@ -379,7 +379,6 @@ namespace Backsight.Editor.Operations
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
         internal NewCircleOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
