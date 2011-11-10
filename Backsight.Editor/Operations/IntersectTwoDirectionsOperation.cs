@@ -78,6 +78,25 @@ namespace Backsight.Editor.Operations
             m_Direction2 = dir2;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal IntersectTwoDirectionsOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub to, line1, line2;
+            ReadData(editDeserializer, out m_Direction1, out m_Direction2, out to, out line1, out line2);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", to);
+            dff.AddFeatureStub("Line1", line1);
+            dff.AddFeatureStub("Line2", line2);
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -387,19 +406,36 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WritePersistent<Direction>("Direction1", m_Direction1);
+            editSerializer.WritePersistent<Direction>("Direction2", m_Direction2);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+
+            if (m_Line1 != null)
+                editSerializer.WritePersistent<FeatureStub>("Line1", new FeatureStub(m_Line1));
+
+            if (m_Line2 != null)
+                editSerializer.WritePersistent<FeatureStub>("Line2", new FeatureStub(m_Line2));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal IntersectTwoDirectionsOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="dir1">The first observed direction.</param>
+        /// <param name="dir2">The second observed direction</param>
+        /// <param name="to">The created intersection point.</param>
+        /// <param name="line1">The first line created (if any).</param>
+        /// <param name="line1">The second line created (if any).</param>
+        static void ReadData(EditDeserializer editDeserializer, out Direction dir1, out Direction dir2,
+                                out FeatureStub to, out FeatureStub line1, out FeatureStub line2)
         {
-            throw new NotImplementedException();
+            dir1 = editDeserializer.ReadPersistent<Direction>("Direction1");
+            dir2 = editDeserializer.ReadPersistent<Direction>("Direction2");
+            to = editDeserializer.ReadPersistent<FeatureStub>("To");
+            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line1");
+            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line2");
         }
     }
 }

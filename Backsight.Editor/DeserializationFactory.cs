@@ -52,6 +52,30 @@ namespace Backsight.Editor
                 AddFeatureDescription(itemName, data.GetFeatureStub(base.Creator));
         }
 
+        internal void AddFeatureStub(string itemName, FeatureStub stub)
+        {
+            if (stub != null)
+                AddFeatureDescription(itemName, stub);
+        }
+
+        /// <summary>
+        /// Records information for a line split
+        /// </summary>
+        /// <param name="parentLine">The line that may be getting split</param>
+        /// <param name="itemName">The name of the item that should be attached to the line split info</param>
+        /// <param name="dataId">The ID for the section (null if there is no split)</param>
+        /// <returns>True if a line split was recorded, false if the <paramref name="splitSection"/> is null.</returns>
+        internal bool AddLineSplit(LineFeature parentLine, string itemName, string dataId)
+        {
+            if (dataId == null)
+                return false;
+
+            uint sessionId, ss;
+            InternalIdValue.Parse(dataId, out sessionId, out ss);
+            AddFeatureDescription(itemName, new FeatureStub(Creator, ss, parentLine.EntityType, null));
+            return true;
+        }
+
         /// <summary>
         /// Creates a new instance of <see cref="PointFeature"/>, using the feature
         /// stub with the specified name.

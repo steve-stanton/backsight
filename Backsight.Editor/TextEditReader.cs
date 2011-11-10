@@ -284,14 +284,16 @@ namespace Backsight.Editor
                 return false;
 
             int eqIndex = s.IndexOf('=');
-            if (eqIndex < 0)
-                return false;
+            if (eqIndex > 0)
+            {
+                if (eqIndex != name.Length)
+                    return false;
 
-            if (eqIndex != name.Length)
-                return false;
+                string result = s.Substring(0, name.Length);
+                return (result == name);
+            }
 
-            string result = s.Substring(0, name.Length);
-            return (result == name);
+            return (s == name);
         }
 
         #endregion

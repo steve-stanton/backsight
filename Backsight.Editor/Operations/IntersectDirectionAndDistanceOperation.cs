@@ -16,9 +16,9 @@
 using System;
 using System.Collections.Generic;
 
-using Backsight.Geometry;
-using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Environment;
+using Backsight.Geometry;
 
 namespace Backsight.Editor.Operations
 {
@@ -93,6 +93,25 @@ namespace Backsight.Editor.Operations
             m_Distance = dist;
             m_From = from;
             m_Default = useDefault;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal IntersectDirectionAndDistanceOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub to, dirLine, distLine;
+            ReadData(editDeserializer, out m_Direction, out m_Distance, out m_From, out m_Default,
+                            out to, out dirLine, out distLine);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", to);
+            dff.AddFeatureStub("DirLine", dirLine);
+            dff.AddFeatureStub("DistLine", distLine);
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -513,19 +532,42 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
+            editSerializer.WritePersistent<Observation>("Distance", m_Distance);
+            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
+            editSerializer.Writer.WriteBool("Default", m_Default);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+
+            if (m_DirLine != null)
+                editSerializer.WritePersistent<FeatureStub>("DirLine", new FeatureStub(m_DirLine));
+
+            if (m_DistLine != null)
+                editSerializer.WritePersistent<FeatureStub>("DistLine", new FeatureStub(m_DistLine));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal IntersectDirectionAndDistanceOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="dir">The observed direction.</param>
+        /// <param name="dist">The observed distance (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
+        /// <param name="from">The point the distance was measured from.</param>
+        /// <param name="isDefault">True if it was the default intersection (the one closest to the origin of the direction).</param>
+        /// <param name="to">The created intersection point.</param>
+        /// <param name="dirLine">The first line created (if any).</param>
+        /// <param name="distLine">The second line created (if any).</param>
+        static void ReadData(EditDeserializer editDeserializer, out Direction dir, out Observation dist, out PointFeature from,
+                                out bool isDefault, out FeatureStub to, out FeatureStub dirLine, out FeatureStub distLine)
         {
-            throw new NotImplementedException();
+            dir = editDeserializer.ReadPersistent<Direction>("Direction");
+            dist = editDeserializer.ReadPersistent<Observation>("Distance");
+            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
+            isDefault = editDeserializer.Reader.ReadBool("Default");
+            to = editDeserializer.ReadPersistent<FeatureStub>("To");
+            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
+            distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DistLine");
         }
     }
 }

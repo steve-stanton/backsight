@@ -293,6 +293,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reads the content of an object that implements <see cref="IPersistent"/>, 
+        /// having confirmed that the specified name tag comes next.
+        /// </summary>
+        /// <typeparam name="T">The type of object expected by the caller.</typeparam>
+        /// <param name="name">A name tag associated with the object</param>
+        /// <returns>
+        /// The object that was read (if the specified name tag was there), or null (if
+        /// the next name tag is something else).
+        /// </returns>
+        internal T ReadPersistentOrNull<T>(string name) where T : IPersistent
+        {
+            if (m_Reader.IsNextName(name))
+                return ReadPersistent<T>(name);
+            else
+                return default(T);
+        }
+
+        /// <summary>
         /// Reads an entity type for a spatial feature.
         /// </summary>
         /// <param name="name">A name tag associated with the value</param>

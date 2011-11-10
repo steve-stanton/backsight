@@ -15,11 +15,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-using Backsight.Geometry;
-using Backsight.Environment;
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 
 namespace Backsight.Editor.Operations
@@ -106,6 +104,30 @@ namespace Backsight.Editor.Operations
             m_Line = line;
             m_IsSplit = wantsplit;
             m_CloseTo = closeTo;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntersectDirectionAndLineOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// </summary>
+        internal IntersectDirectionAndLineOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub to, dirLine;
+            string idLineA, idLineB;
+            ReadData(editDeserializer, out m_Direction, out m_Line, out m_CloseTo,
+                            out to, out dirLine, out idLineA, out idLineB);
+
+            m_IsSplit = (idLineA != null && idLineB != null);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", to);
+            dff.AddFeatureStub("DirLine", dirLine);
+            dff.AddLineSplit(m_Line, "SplitBefore", idLineA);
+            dff.AddLineSplit(m_Line, "SplitAfter", idLineB);
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -489,19 +511,46 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
+            editSerializer.WriteFeatureRef<PointFeature>("CloseTo", m_CloseTo);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_Intersection));
+
+            if (m_DirLine != null)
+                editSerializer.WritePersistent<FeatureStub>("DirLine", new FeatureStub(m_DirLine));
+
+            if (m_LineA != null)
+                editSerializer.Writer.WriteString("SplitBefore", m_LineA.DataId);
+
+            if (m_LineB != null)
+                editSerializer.Writer.WriteString("SplitAfter", m_LineB.DataId);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntersectDirectionAndLineOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// </summary>
-        internal IntersectDirectionAndLineOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="dir">The direction observation.</param>
+        /// <param name="line">The line the direction needs to intersect.</param>
+        /// <param name="closeTo">The point closest to the intersection.</param>
+        /// <param name="to">The created intersection point. May have existed previously.</param>
+        /// <param name="dirLine">Line (if any) that was added along the direction line.</param>
+        /// <param name="idLineA">The ID of the portion of the intersected line prior to the intersection (null if no split).</param>
+        /// <param name="idLineB">The ID of the portion of the intersected line after the intersection (null if no split).</param>
+        static void ReadData(EditDeserializer editDeserializer, out Direction dir, out LineFeature line, out PointFeature closeTo,
+                                out FeatureStub to, out FeatureStub dirLine, out string idLineA, out string idLineB)
         {
-            throw new NotImplementedException();
+            dir = editDeserializer.ReadPersistent<Direction>("Direction");
+            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
+            to = editDeserializer.ReadPersistent<FeatureStub>("To");
+            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
+
+            IEditReader reader = editDeserializer.Reader;
+            idLineA = (reader.IsNextName("SplitBefore") ? reader.ReadString("SplitBefore") : null);
+            idLineB = (reader.IsNextName("SplitAfter") ? reader.ReadString("SplitAfter") : null);
         }
     }
 }
