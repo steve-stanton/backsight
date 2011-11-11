@@ -36,6 +36,18 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewArcOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal NewArcOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>("Line");
+            SetNewLine(arc);
+        }
+
+        /// <summary>
         /// Creates a new circular arc.
         /// </summary>
         /// <param name="start">The point at the start of the new arc.</param>
@@ -98,18 +110,10 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
+            base.WriteData(editSerializer);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewArcOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal NewArcOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            ArcFeature arc = (ArcFeature)base.Line;
+            editSerializer.WritePersistent<ArcFeature>("Line", arc);
         }
     }
 }

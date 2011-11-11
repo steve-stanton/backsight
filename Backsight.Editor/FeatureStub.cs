@@ -155,6 +155,18 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
+        /// The formatted ID of the unique identifier for the feature
+        /// </summary>
+        public string DataId
+        {
+            get
+            {
+                uint sessionId = m_Creator.Session.Id;
+                return InternalIdValue.Format(sessionId, m_SessionSequence);
+            }
+        }
+
+        /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>

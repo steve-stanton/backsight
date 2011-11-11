@@ -65,6 +65,17 @@ namespace Backsight.Editor.Operations
             m_NewPosition = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal MovePolygonPositionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            ReadData(editDeserializer, out m_Label, out m_NewPosition, out m_OldPosition);
+        }
+
         #endregion
 
         /// <summary>
@@ -226,18 +237,32 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<TextFeature>("Label", m_Label);
+            editSerializer.WritePointGeometry("NewX", "NewY", m_NewPosition);
+
+            if (m_OldPosition != null)
+                editSerializer.WritePointGeometry("OldX", "OldY", m_OldPosition);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MovePolygonPositionOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal MovePolygonPositionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="label">The polygon label that was modified</param>
+        /// <param name="newPosition">The revised position of the reference point.</param>
+        /// <param name="oldPosition">The original position of the reference point.</param>
+        static void ReadData(EditDeserializer editDeserializer, out TextFeature label, out PointGeometry newPosition,
+                                out PointGeometry oldPosition)
         {
-            throw new NotImplementedException();
+            label = editDeserializer.ReadFeatureRef<TextFeature>("Label");
+            newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
+
+            if (editDeserializer.Reader.IsNextName("OldX"))
+                oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
+            else
+                oldPosition = null;
         }
     }
 }

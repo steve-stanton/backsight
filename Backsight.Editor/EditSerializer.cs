@@ -116,6 +116,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes an array of <see cref="FeatureStub"/>, creating them from the supplied
+        /// feature array.
+        /// </summary>
+        /// <param name="name">A name tag for the array</param>
+        /// <param name="features">The features to convert into stubs before writing them out.</param>
+        internal void WriteFeatureStubArray(string name, Feature[] features)
+        {
+            var stubs = new FeatureStub[features.Length];
+
+            for (int i = 0; i < stubs.Length; i++)
+                stubs[i] = new FeatureStub(features[i]);
+
+            WritePersistentArray<FeatureStub>(name, stubs);
+        }
+
+        /// <summary>
         /// Writes an array of simple types to a storage medium.
         /// </summary>
         /// <typeparam name="T">The type of objects within the array (as it is known to the instance
@@ -177,10 +193,20 @@ namespace Backsight.Editor
         /// Writes an entity type to a storage medium.
         /// </summary>
         /// <param name="name">A name tag for the item</param>
-        /// <param name="value">The entity type to write. </param>
+        /// <param name="value">The entity type to write</param>
         internal void WriteEntity(string name, IEntity entity)
         {
             m_Writer.WriteInt32(name, entity.Id);
+        }
+
+        /// <summary>
+        /// Writes a distance unit type to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The distance unit type to write</param>
+        internal void WriteDistanceUnit(string name, DistanceUnit value)
+        {
+            m_Writer.WriteInt32(name, (int)value.UnitType);
         }
 
         /// <summary>
@@ -191,6 +217,18 @@ namespace Backsight.Editor
         internal void WriteRadians(string name, RadianValue value)
         {
             m_Writer.WriteString(name, value.AsShortString());
+        }
+
+        /// <summary>
+        /// Writes a 2D position to a storage medium.
+        /// </summary>
+        /// <param name="xName">A name tag for the easting value</param>
+        /// <param name="yName">A name tag for the northing value</param>
+        /// <param name="value">The position to write</param>
+        internal void WritePointGeometry(string xName, string yName, PointGeometry value)
+        {
+            m_Writer.WriteInt64(xName, value.Easting.Microns);
+            m_Writer.WriteInt64(yName, value.Northing.Microns);
         }
 
         /// <summary>

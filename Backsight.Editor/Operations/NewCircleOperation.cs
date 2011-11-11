@@ -371,9 +371,42 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<PointFeature>("Center", m_Center);
+            editSerializer.WritePersistent<Observation>("Radius", m_Radius);
+            editSerializer.WritePersistent<FeatureStub>("Arc", new FeatureStub(Line));
+            editSerializer.WriteFeatureRef<PointFeature>("ClosingPoint", Line.StartPoint);
         }
 
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        static void ReadData(EditDeserializer editDeserializer, out PointFeature center, out Observation radius,
+                                out FeatureStub arc, out FeatureStub closingPoint)
+        {
+            center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
+            radius = editDeserializer.ReadPersistent<Observation>("Radius");
+            arc = editDeserializer.ReadPersistent<FeatureStub>("Arc");
+            closingPoint = editDeserializer.ReadPersistent<FeatureStub>("ClosingPoint");
+        }
+
+        /*
+
+            // Remember closing point if it was created by the op.
+            InternalIdValue cpid = new InternalIdValue(this.ClosingPoint);
+            if (cpid.SessionId == s.Id && cpid.ItemSequence > sequence)
+            {
+                FeatureStubData cp = new FeatureStubData();
+                cp.Id = this.ClosingPoint;
+                dff.AddFeatureStub("ClosingPoint", cp);
+            }
+
+            FeatureStubData arc = new FeatureStubData();
+            arc.Id = this.Arc;
+            dff.AddFeatureStub("Arc", arc);
+         */
         /// <summary>
         /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
         /// using the data read from persistent storage.
@@ -382,7 +415,11 @@ namespace Backsight.Editor.Operations
         internal NewCircleOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            throw new NotImplementedException();
+            FeatureStub arc, closingPoint;
+            ReadData(editDeserializer, out m_Center, out m_Radius, out arc, out closingPoint);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            ProcessFeatures(dff);
         }
     }
 }

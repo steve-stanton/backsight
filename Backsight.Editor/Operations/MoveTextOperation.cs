@@ -70,6 +70,17 @@ namespace Backsight.Editor.Operations
             m_NewPosition = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoveTextOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal MoveTextOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            ReadData(editDeserializer, out m_Text, out m_OldPosition, out m_NewPosition, out m_OldPolPosition);
+        }
+
         #endregion
 
         /// <summary>
@@ -255,18 +266,35 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<TextFeature>("Text", m_Text);
+            editSerializer.WritePointGeometry("OldX", "OldY", m_OldPosition);
+            editSerializer.WritePointGeometry("NewX", "NewY", m_NewPosition);
+
+            if (m_OldPolPosition != null)
+                editSerializer.WritePointGeometry("OldPolygonX", "OldPolygonY", m_OldPolPosition);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MoveTextOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal MoveTextOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="text">The feature that was moved</param>
+        /// <param name="oldPosition">The original position of the text.</param>
+        /// <param name="newPosition">Where the text was moved to. This doubles as the new polygon reference position.</param>
+        /// <param name="oldPolPosition">The old reference position (null if its identical to the old position)</param>
+        static void ReadData(EditDeserializer editDeserializer, out TextFeature text, out PointGeometry oldPosition,
+                                out PointGeometry newPosition, out PointGeometry oldPolPosition)
         {
-            throw new NotImplementedException();
+            text = editDeserializer.ReadFeatureRef<TextFeature>("Text");
+            oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
+            newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
+
+            if (editDeserializer.Reader.IsNextName("OldPolygonX"))
+                oldPolPosition = editDeserializer.ReadPointGeometry("OldPolygonX", "OldPolygonY");
+            else
+                oldPolPosition = null;
         }
     }
 }

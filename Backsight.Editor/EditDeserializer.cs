@@ -322,6 +322,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reads a distance unit type.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <returns>The distance unit that was read.</returns>
+        internal DistanceUnit ReadDistanceUnit(string name)
+        {
+            DistanceUnitType unitType = (DistanceUnitType)m_Reader.ReadInt32(name);
+            return EditingController.GetUnits(unitType);
+        }
+
+        /// <summary>
         /// Reads a value in radians.
         /// </summary>
         /// <param name="name">A name tag associated with the value</param>
@@ -331,6 +342,20 @@ namespace Backsight.Editor
             string s = m_Reader.ReadString(name);
             double d = RadianValue.Parse(s);
             return new RadianValue(d);
+        }
+
+        /// <summary>
+        /// Reads a 2D position.
+        /// </summary>
+        /// <param name="xName">A name tag for the easting value</param>
+        /// <param name="yName">A name tag for the northing value</param>
+        /// <param name="value">The position to write</param>
+        /// <returns>The position that was read</returns>
+        internal PointGeometry ReadPointGeometry(string xName, string yName)
+        {
+            long x = m_Reader.ReadInt64(xName);
+            long y = m_Reader.ReadInt64(yName);
+            return new PointGeometry(x, y);
         }
 
         /// <summary>

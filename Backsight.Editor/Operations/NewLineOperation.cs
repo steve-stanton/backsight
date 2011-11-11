@@ -60,8 +60,7 @@ namespace Backsight.Editor.Operations
         protected NewLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            // remember NewArcOperation too
-            throw new NotImplementedException();
+            // Covered by derived classes
         }
 
         #endregion
