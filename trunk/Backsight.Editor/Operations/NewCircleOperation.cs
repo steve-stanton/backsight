@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Observations;
 using Backsight.Environment;
@@ -61,6 +62,23 @@ namespace Backsight.Editor.Operations
         {
             m_Center = center;
             m_Radius = radius;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal NewCircleOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub closingPoint, arc;
+            ReadData(editDeserializer, out m_Center, out m_Radius, out closingPoint, out arc);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("ClosingPoint", closingPoint);
+            dff.AddFeatureStub("Arc", arc);
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -375,51 +393,41 @@ namespace Backsight.Editor.Operations
 
             editSerializer.WriteFeatureRef<PointFeature>("Center", m_Center);
             editSerializer.WritePersistent<Observation>("Radius", m_Radius);
+
+            // Record a closing point only if it was created by this edit -- in that case, the radius must
+            // be a plain Distance (if the radius is defined using an OffsetPoint observation, the closing
+            // point will coincide with the offset point itself -- we don't have to write anything further,
+            // because the reference to the offset point is part of the observation object written above).
+
+            if (Line.StartPoint.Creator == this)
+            {
+                Debug.Assert(m_Radius is Distance);
+                editSerializer.WritePersistent<FeatureStub>("ClosingPoint", new FeatureStub(Line.StartPoint));
+            }
+            else
+            {
+                Debug.Assert(m_Radius is OffsetPoint);
+            }
+
             editSerializer.WritePersistent<FeatureStub>("Arc", new FeatureStub(Line));
-            editSerializer.WriteFeatureRef<PointFeature>("ClosingPoint", Line.StartPoint);
         }
 
         /// <summary>
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="center">Point at the center of the circle.</param>
+        /// <param name="radius">The radius of the circle.</param>
+        /// <param name="arc">The arc running around the circumference of the circle</param>
+        /// <param name="closingPoint">The closing point of the circle (if it was created by this edit). Null
+        /// if the radius was specified using an offset point.</param>
         static void ReadData(EditDeserializer editDeserializer, out PointFeature center, out Observation radius,
-                                out FeatureStub arc, out FeatureStub closingPoint)
+                                out FeatureStub closingPoint, out FeatureStub arc)
         {
             center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
             radius = editDeserializer.ReadPersistent<Observation>("Radius");
+            closingPoint = editDeserializer.ReadPersistentOrNull<FeatureStub>("ClosingPoint");
             arc = editDeserializer.ReadPersistent<FeatureStub>("Arc");
-            closingPoint = editDeserializer.ReadPersistent<FeatureStub>("ClosingPoint");
-        }
-
-        /*
-
-            // Remember closing point if it was created by the op.
-            InternalIdValue cpid = new InternalIdValue(this.ClosingPoint);
-            if (cpid.SessionId == s.Id && cpid.ItemSequence > sequence)
-            {
-                FeatureStubData cp = new FeatureStubData();
-                cp.Id = this.ClosingPoint;
-                dff.AddFeatureStub("ClosingPoint", cp);
-            }
-
-            FeatureStubData arc = new FeatureStubData();
-            arc.Id = this.Arc;
-            dff.AddFeatureStub("Arc", arc);
-         */
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal NewCircleOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            FeatureStub arc, closingPoint;
-            ReadData(editDeserializer, out m_Center, out m_Radius, out arc, out closingPoint);
-
-            DeserializationFactory dff = new DeserializationFactory(this);
-            ProcessFeatures(dff);
         }
     }
 }
