@@ -60,7 +60,7 @@ namespace Backsight.Editor.Operations
         protected NewLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            // Covered by derived classes
+            m_NewLine = editDeserializer.ReadPersistent<LineFeature>("Line");
         }
 
         #endregion
@@ -238,6 +238,16 @@ namespace Backsight.Editor.Operations
         public override Feature[] GetRequiredFeatures()
         {
             return new Feature[] { m_NewLine.StartPoint, m_NewLine.EndPoint };
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+            editSerializer.WritePersistent<LineFeature>("Line", m_NewLine);
         }
     }
 }

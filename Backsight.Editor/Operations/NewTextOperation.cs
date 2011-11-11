@@ -14,9 +14,7 @@
 // </remarks>
 
 using System;
-using System.Data;
 
-using Backsight.Environment;
 using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Operations
@@ -60,8 +58,7 @@ namespace Backsight.Editor.Operations
         protected NewTextOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            // see NewMiscText, NewRowText, NewKeyText
-            throw new NotImplementedException();
+            m_NewText = editDeserializer.ReadPersistent<TextFeature>("Text");
         }
 
         #endregion
@@ -170,6 +167,16 @@ namespace Backsight.Editor.Operations
         bool HasReference(Feature feat)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer editSerializer)
+        {
+            base.WriteData(editSerializer);
+            editSerializer.WritePersistent<TextFeature>("Text", m_NewText);
         }
 
 /*

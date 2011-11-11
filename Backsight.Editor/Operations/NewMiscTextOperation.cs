@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+using System.Diagnostics;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
@@ -30,6 +30,17 @@ namespace Backsight.Editor.Operations
         internal NewMiscTextOperation(Session s, uint sequence)
             : base(s, sequence)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewMiscTextOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal NewMiscTextOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            // Nothing to do
         }
 
         /// <summary>
@@ -72,18 +83,11 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
+            base.WriteData(editSerializer);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewMiscTextOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal NewMiscTextOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            // Nothing to do - the relevant info should have come out via the geometry object attached
+            // to the created text feature
+            Debug.Assert(base.Text.TextGeometry is MiscTextGeometry);
         }
     }
 }
