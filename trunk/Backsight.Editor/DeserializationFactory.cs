@@ -44,6 +44,20 @@ namespace Backsight.Editor
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeserializationFactory"/> class that
+        /// contains the supplied feature stubs (each stub will be identified by the <see cref="FeatureStub.DataId"/>
+        /// property).
+        /// </summary>
+        /// <param name="op">The editing operation that needs to create features (not null).</param>
+        /// <param name="stubs">The stubs to include in the factory</param>
+        internal DeserializationFactory(Operation op, FeatureStub[] stubs)
+            : base(op)
+        {
+            foreach (FeatureStub stub in stubs)
+                AddFeatureStub(stub.DataId, stub);
+        }
+
         #endregion
 
         internal void AddFeatureStub(string itemName, FeatureStubData data)

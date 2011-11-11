@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// The sections that define one face of a subdivided line.
     /// </summary>
-    class LineSubdivisionFace
+    class LineSubdivisionFace : IPersistent
     {
         #region Static
 
@@ -230,21 +230,15 @@ namespace Backsight.Editor.Operations
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LineSubdivisionFace"/> class
-        /// using a string that was previously returned by <see cref="GetInputString"/>.
+        /// using the data read from persistent storage.
         /// </summary>
-        /// <param name="inputString">The string to parse.</param>
-        internal LineSubdivisionFace(string inputString)
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal LineSubdivisionFace(EditDeserializer editDeserializer)
         {
-            string[] items = inputString.Split(';');
-            if (items.Length != 3)
-                throw new ArgumentException();
+            ReadData(editDeserializer, out m_EntryString, out m_IsEntryFromEnd, out m_DefaultEntryUnit);
 
-            //m_EntryString = ParseString("EntryString", items[0]);
-            //m_DefaultEntryUnit =                         
-
-            //sb.AppendFormat("EntryString={0}; ", m_EntryString);
-            //sb.AppendFormat("DefaultEntryUnit={0}; ", (int)m_DefaultEntryUnit.UnitType);
-            //sb.AppendFormat("IsEntryFromEnd={0}", (m_IsEntryFromEnd ? 1 : 0));
+            // The sections are calculated ??
+            m_Sections = null;
         }
 
         #endregion
@@ -455,17 +449,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Gets a string that represents the input paramaters for this face.
+        /// Writes the content of this instance to a persistent storage area.
         /// </summary>
-        /// <returns>A string that contains the input parameters for this face (may
-        /// be supplied to the constructor that accepts a string).</returns>
-        internal string GetInputString()
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        public void WriteData(EditSerializer editSerializer)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("EntryString={0}; ", m_EntryString);
-            sb.AppendFormat("DefaultEntryUnit={0}; ", (int)m_DefaultEntryUnit.UnitType);
-            sb.AppendFormat("IsEntryFromEnd={0}", (m_IsEntryFromEnd ? 1 : 0));
-            return sb.ToString();
+            editSerializer.Writer.WriteString("EntryString", m_EntryString);
+            editSerializer.Writer.WriteBool("EntryFromEnd", m_IsEntryFromEnd);
+            editSerializer.WriteDistanceUnit("DefaultEntryUnit", m_DefaultEntryUnit);
+        }
+
+        /// <summary>
+        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
+        /// <param name="entryFromEnd">Are the distances observed from the end of the line?</param>
+        /// <param name="defaultEntryUnit">The default distance units to use when decoding the data entry string.</param>
+        static void ReadData(EditDeserializer editDeserializer, out string entryString, out bool entryFromEnd, out DistanceUnit defaultEntryUnit)
+        {
+            entryString = editDeserializer.Reader.ReadString("EntryString");
+            entryFromEnd = editDeserializer.Reader.ReadBool("EntryFromEnd");
+            defaultEntryUnit = editDeserializer.ReadDistanceUnit("DefaultEntryUnit");
         }
     }
 }

@@ -70,6 +70,21 @@ namespace Backsight.Editor.Operations
             m_AlternateFace = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineSubdivisionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal LineSubdivisionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub[] sections;
+            ReadData(editDeserializer, out m_Line, out m_PrimaryFace, out sections);
+
+            DeserializationFactory result = new DeserializationFactory(this, sections);
+            ProcessFeatures(result);
+        }
+
         #endregion
 
         /// <summary>
@@ -303,18 +318,27 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            // The alternate face is currently added only via update edits
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
+            editSerializer.WritePersistent<LineSubdivisionFace>("PrimaryFace", m_PrimaryFace);
+            editSerializer.WriteFeatureStubArray("Result", this.Features);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineSubdivisionOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal LineSubdivisionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="line">The line that was subdivided.</param>
+        /// <param name="primaryFace">Definition of the original face for this subdivision.</param>
+        /// <param name="result">Information about the created line sections.</param>
+        static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out LineSubdivisionFace primaryFace,
+                                out FeatureStub[] result)
         {
-            throw new NotImplementedException();
+            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>("PrimaryFace");
+            result = editDeserializer.ReadPersistentArray<FeatureStub>("Result");
         }
     }
 }

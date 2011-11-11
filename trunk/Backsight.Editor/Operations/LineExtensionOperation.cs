@@ -15,12 +15,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
 
-using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -83,6 +82,23 @@ namespace Backsight.Editor.Operations
 
             m_NewLine = null;
             m_NewPoint = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal LineExtensionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            FeatureStub newPoint, newLine;
+            ReadData(editDeserializer, out m_ExtendLine, out m_IsExtendFromEnd, out m_Length, out newPoint, out newLine);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("NewPoint", newPoint);
+            dff.AddFeatureStub("NewLine", newLine);
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -424,18 +440,34 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_ExtendLine);
+            editSerializer.Writer.WriteBool("ExtendFromEnd", m_IsExtendFromEnd);
+            editSerializer.WritePersistent<Distance>("Distance", m_Length);
+            editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
+
+            if (m_NewLine != null)
+                editSerializer.WritePersistent<FeatureStub>("NewLine", new FeatureStub(m_NewLine));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
-        /// using the data read from persistent storage.
+        /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal LineExtensionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="extendLine">The line being extended.</param>
+        /// <param name="isExtendFromEnd">True if extending from the end of the extension line. False if extending from the start.</param>
+        /// <param name="length">The observed length of the extension.</param>
+        /// <param name="newPoint">The point at the end of the extension.</param>
+        /// <param name="newLine">The actual extension line (if any).</param>
+        static void ReadData(EditDeserializer editDeserializer, out LineFeature extendLine, out bool isExtendFromEnd,
+                                out Distance length, out FeatureStub newPoint, out FeatureStub newLine)
         {
-            throw new NotImplementedException();
+            extendLine = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            isExtendFromEnd = editDeserializer.Reader.ReadBool("ExtendFromEnd");
+            length = editDeserializer.ReadPersistent<Distance>("Distance");
+            newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
+            newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("NewLine");
         }
     }
 }
