@@ -82,6 +82,27 @@ namespace Backsight.Editor.Operations
             m_Distance = dist;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal SimpleLineSubdivisionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            m_Distance = editDeserializer.ReadPersistent<Distance>("Distance");
+            FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
+            string dataId1 = editDeserializer.Reader.ReadString("NewLine1");
+            string dataId2 = editDeserializer.Reader.ReadString("NewLine2");
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("NewPoint", newPoint);
+            dff.AddLineSplit(m_Line, "NewLine1", dataId1);
+            dff.AddLineSplit(m_Line, "NewLine2", dataId2);
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -453,18 +474,13 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
+            base.WriteData(editSerializer);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal SimpleLineSubdivisionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
+            editSerializer.WritePersistent<Distance>("Distance", m_Distance);
+            editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
+            editSerializer.Writer.WriteString("NewLine1", m_NewLine1.DataId);
+            editSerializer.Writer.WriteString("NewLine2", m_NewLine2.DataId);
         }
     }
 }
