@@ -426,7 +426,14 @@ void CeRadial::CreateAngleText ( CPtrList& text
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
+            editSerializer.WritePersistent<Observation>("Length", m_Length);
+            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+
+            if (m_Line != null)
+                editSerializer.WritePersistent<FeatureStub>("Line", new FeatureStub(m_Line));
         }
 
         /// <summary>
@@ -437,7 +444,13 @@ void CeRadial::CreateAngleText ( CPtrList& text
         internal RadialOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            throw new NotImplementedException();
+            m_Direction = editDeserializer.ReadPersistent<Direction>("Direction");
+            m_Length = editDeserializer.ReadPersistent<Observation>("Length");
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("To", editDeserializer.ReadPersistent<FeatureStub>("To"));
+            dff.AddFeatureStub("Line", editDeserializer.ReadPersistentOrNull<FeatureStub>("Line"));
+            ProcessFeatures(dff);
         }
     }
 }

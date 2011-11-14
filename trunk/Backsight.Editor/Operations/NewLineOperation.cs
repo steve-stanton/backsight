@@ -246,7 +246,7 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            base.WriteData(editSerializer);
+            base.WriteData(editSerializer);            
             editSerializer.WritePersistent<LineFeature>("Line", m_NewLine);
         }
     }

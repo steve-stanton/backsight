@@ -696,7 +696,27 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WriteFeatureRef<LineFeature>("RefLine", m_RefLine);
+
+            if (m_Term1 != null)
+                editSerializer.WriteFeatureRef<LineFeature>("Term1", m_Term1);
+
+            if (m_Term2 != null)
+                editSerializer.WriteFeatureRef<LineFeature>("Term2", m_Term2);
+
+            if (IsArcReversed)
+                editSerializer.Writer.WriteBool("ReverseArc", true);
+
+            editSerializer.WritePersistent<Observation>("Offset", m_Offset);
+
+            if (m_ParLine.StartPoint != OffsetPoint)
+                editSerializer.WritePersistent<FeatureStub>("From", new FeatureStub(m_ParLine.StartPoint));
+
+            if (m_ParLine.EndPoint != OffsetPoint)
+                editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_ParLine.EndPoint));
+
+            editSerializer.WritePersistent<FeatureStub>("NewLine", new FeatureStub(m_ParLine));
         }
 
         /// <summary>
@@ -707,7 +727,26 @@ namespace Backsight.Editor.Operations
         internal ParallelLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            throw new NotImplementedException();
+            IEditReader reader = editDeserializer.Reader;
+
+            m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>("RefLine");
+
+            if (reader.IsNextName("Term1"))
+                m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>("Term1");
+
+            if (reader.IsNextName("Term2"))
+                m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>("Term2");
+
+            if (reader.IsNextName("ReverseArc") && reader.ReadBool("ReverseArc") == true)
+                m_Flags = 1;
+
+            m_Offset = editDeserializer.ReadPersistent<Observation>("Offset");
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub("From", editDeserializer.ReadPersistentOrNull<FeatureStub>("From"));
+            dff.AddFeatureStub("To", editDeserializer.ReadPersistentOrNull<FeatureStub>("To"));
+            dff.AddFeatureStub("NewLine", editDeserializer.ReadPersistent<FeatureStub>("NewLine"));
+            ProcessFeatures(dff);
         }
     }
 }
