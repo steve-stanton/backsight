@@ -63,61 +63,6 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    public partial class PathData
-    {
-        public PathData()
-        {
-        }
-
-        internal PathData(PathOperation op)
-            : base(op)
-        {
-            this.From = op.StartPoint.DataId;
-            this.To = op.EndPoint.DataId;
-            this.EntryString = op.EntryString;
-            this.DefaultEntryUnit = (int)op.EntryUnit.UnitType;
-            this.Result = new FactoryData(op);
-        }
-
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            CadastralMapModel mapModel = s.MapModel;
-            PointFeature from = mapModel.Find<PointFeature>(this.From);
-            PointFeature to = mapModel.Find<PointFeature>(this.To);
-            DistanceUnitType unitType = (DistanceUnitType)this.DefaultEntryUnit;
-            DistanceUnit defaultEntryUnit = EditingController.GetUnits(unitType);
-
-            uint sequence = GetEditSequence(s);
-            PathOperation op = new PathOperation(s, sequence, from, to, this.EntryString, defaultEntryUnit);
-
-            DeserializationFactory dff = this.Result.CreateFactory(op);
-            op.ProcessFeatures(dff);
-
-            // Create the legs
-            /*
-            LegData[] legs = t.Leg;
-            m_Legs = new List<Leg>(legs.Length);
-            PointFeature startPoint = m_From;
-            IEntity lineType = EnvironmentContainer.FindEntityById(t.LineType);
-
-            for (int i = 0; i < legs.Length; i++)
-            {
-                Leg leg = t.Leg[i].LoadLeg(this);
-                m_Legs.Add(leg);
-
-                // Create features for each span (without any geometry)
-                startPoint = leg.CreateSpans(this, t.Leg[i].Span, startPoint, lineType);
-            }
-            */
-            return op;
-        }
-    }
-
     public partial class UpdateItemData
     {
         public UpdateItemData()

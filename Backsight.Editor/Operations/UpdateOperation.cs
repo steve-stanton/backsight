@@ -210,7 +210,32 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+
+            editSerializer.Writer.WriteString("RevisedEdit", m_Edit.DataId);
+
+            UpdateItem[] items = m_Changes.ToArray();
+            /*
+
+            // Re-express update items using *Data objects
+            UpdateItem[] items = op.Changes.ToArray();
+            UpdateItem[] dataItems = new UpdateItem[items.Length];
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                object o = items[i].Value;
+
+                if (o is Feature)
+                    o = (o as Feature).DataId;
+                else if (o is Observation)
+                    o = DataFactory.Instance.ToData<ObservationData>((Observation)o);
+
+                dataItems[i] = new UpdateItem(items[i].Name, o);
+            }
+
+            // The root node always identifies an array of UpdateItem
+            //this.Changes = new YamlSerializer().Serialize(dataItems);
+             */
         }
 
         /// <summary>
