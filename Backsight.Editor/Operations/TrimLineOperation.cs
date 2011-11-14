@@ -126,6 +126,20 @@ namespace Backsight.Editor.Operations
             m_Points = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal TrimLineOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Lines = editDeserializer.ReadFeatureRefArray<LineFeature>("Lines");
+            m_Points = editDeserializer.ReadFeatureRefArray<PointFeature>("Points");
+
+            ProcessFeatures(null);
+        }
+
         #endregion
 
         /// <summary>
@@ -320,18 +334,9 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal TrimLineOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WriteFeatureRefArray<LineFeature>("Lines", m_Lines);
+            editSerializer.WriteFeatureRefArray<PointFeature>("Points", m_Points);
         }
     }
 }

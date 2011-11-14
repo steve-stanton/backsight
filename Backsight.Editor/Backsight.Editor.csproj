@@ -1248,7 +1248,6 @@
     <EmbeddedResource Include="Xml\Edits.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Xml\Edits.cd" />
     <None Include="Xml\Edits.xsx">
       <DependentUpon>Edits.xsd</DependentUpon>
     </None>

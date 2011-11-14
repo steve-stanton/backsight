@@ -287,12 +287,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-
-            string[] ids = new string[m_Deletions.Count];
-            for (int i=0; i<ids.Length; i++)
-                ids[i] = m_Deletions[i].DataId;
-
-            editSerializer.WriteSimpleArray<string>("Delete", ids);
+            editSerializer.WriteFeatureRefArray<Feature>("Delete", m_Deletions.ToArray());
         }
 
         /// <summary>
@@ -304,16 +299,8 @@ namespace Backsight.Editor.Operations
         /// <param name="point">The point that was created.</param>
         static void ReadData(EditDeserializer editDeserializer, out List<Feature> deletions)
         {
-            string[] ids = editDeserializer.ReadSimpleArray<string>("Delete");
-            deletions = new List<Feature>(ids.Length);
-            CadastralMapModel mapModel = editDeserializer.MapModel;
-
-            foreach (string id in ids)
-            {
-                Feature f = mapModel.Find<Feature>(id);
-                Debug.Assert(f != null);
-                deletions.Add(f);
-            }
+            Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>("Delete");
+            deletions = new List<Feature>(dels);
         }
     }
 }

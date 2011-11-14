@@ -338,7 +338,7 @@ namespace Backsight.Editor.Operations
         {
             line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
             primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>("PrimaryFace");
-            result = editDeserializer.ReadPersistentArray<FeatureStub>("Result");
+            result = editDeserializer.ReadFeatureStubArray("Result");
         }
     }
 }

@@ -56,6 +56,18 @@ namespace Backsight.Editor.Operations
             m_Rotation = m_PrevRotation = 0.0;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextRotationOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal TextRotationOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            RadianValue value = editDeserializer.ReadRadians("Value");
+            m_Rotation = value.Radians;
+        }
+
         #endregion
 
         /// <summary>
@@ -196,18 +208,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TextRotationOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal TextRotationOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WriteRadians("Value", new RadianValue(m_Rotation));
         }
     }
 }

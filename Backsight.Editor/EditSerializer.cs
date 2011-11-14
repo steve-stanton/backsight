@@ -243,6 +243,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes an array of references to spatial features.
+        /// </summary>
+        /// <typeparam name="T">The type of spatial feature being written</typeparam>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="features">The features that are referenced.</param>
+        internal void WriteFeatureRefArray<T>(string name, T[] features) where T : Feature
+        {
+            string[] ids = new string[features.Length];
+            for (int i=0; i<ids.Length; i++)
+                ids[i] = features[i].DataId;
+
+            WriteSimpleArray<string>(name, ids);
+        }
+
+        /// <summary>
         /// Writes a user-perceived feature ID to a storage medium using a standard naming
         /// convention.
         /// </summary>

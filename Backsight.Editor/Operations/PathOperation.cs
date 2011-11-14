@@ -82,6 +82,27 @@ namespace Backsight.Editor.Operations
             m_Legs = new List<Leg>(legs);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PathOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal PathOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_From = editDeserializer.ReadFeatureRef<PointFeature>("From");
+            m_To = editDeserializer.ReadFeatureRef<PointFeature>("To");
+            m_EntryString = editDeserializer.Reader.ReadString("EntryString");
+            m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit("DefaultEntryUnit");
+
+            Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
+            m_Legs = new List<Leg>(legs);
+
+            FeatureStub[] stubs = editDeserializer.ReadFeatureStubArray("Result");
+            DeserializationFactory result = new DeserializationFactory(this, stubs);
+            ProcessFeatures(result);
+        }
+
         #endregion
 
         /// <summary>
@@ -1040,18 +1061,13 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
+            base.WriteData(editSerializer);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal PathOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
+            editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
+            editSerializer.Writer.WriteString("EntryString", m_EntryString);
+            editSerializer.WriteDistanceUnit("DefaultEntryUnit", m_DefaultEntryUnit);
+            editSerializer.WriteFeatureStubArray("Result", this.Features);
         }
     }
 }

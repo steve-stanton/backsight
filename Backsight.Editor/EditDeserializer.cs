@@ -203,6 +203,18 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reads an array of feature stubs.
+        /// </summary>
+        /// <param name="name">A name tag associated with the array</param>
+        /// <returns>The array that was read</returns>
+        internal FeatureStub[] ReadFeatureStubArray(string name)
+        {
+            // Just read an array the usual way (ReadFeatureStubArray exists only to provide symmetry with WriteFeatureStubArray)
+
+            return ReadPersistentArray<FeatureStub>(name);
+        }
+
+        /// <summary>
         /// Reads an array of simple types to a storage medium.
         /// </summary>
         /// <typeparam name="T">The type of each array element expected by the caller.</typeparam>
@@ -378,6 +390,26 @@ namespace Backsight.Editor
                 return default(T);
 
             return m_MapModel.Find<T>(dataId);
+        }
+
+        /// <summary>
+        /// Reads an array of spatial features (using their unique IDs the read them from the map model).
+        /// </summary>
+        /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
+        /// <param name="name">A name tag associated with the array</param>
+        /// <returns>The features that were read (should all be not null).</returns>
+        internal T[] ReadFeatureRefArray<T>(string name) where T : Feature
+        {
+            string[] ids = ReadSimpleArray<string>(name);
+            T[] result = new T[ids.Length];
+
+            for (int i=0; i<result.Length; i++)
+            {
+                result[i] = m_MapModel.Find<T>(ids[i]);
+                Debug.Assert(result[i] != null);                 
+            }
+
+            return result;
         }
 
         /// <summary>
