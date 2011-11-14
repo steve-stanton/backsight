@@ -82,94 +82,6 @@ namespace Backsight.Editor.Xml
         }
     }
 
-    /*
-    public partial class NewSegmentData
-    {
-        public NewSegmentData()
-        {
-        }
-
-        internal NewSegmentData(NewSegmentOperation op)
-            : base(op)
-        {
-            this.Line = new SegmentData((SegmentLineFeature)op.Line);
-        }
-
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            uint sequence = GetEditSequence(s);
-            NewSegmentOperation op = new NewSegmentOperation(s, sequence);
-            SegmentLineFeature f = this.Line.CreateSegmentLineFeature(op);
-            op.SetNewLine(f);
-            return op;
-        }
-    }
-    */
-
-    public partial class ParallelLineData
-    {
-        //public ParallelLineData()
-        //{
-        //}
-
-        internal ParallelLineData(ParallelLineOperation op)
-            : base(op)
-        {
-            this.RefLine = op.ReferenceLine.DataId;
-
-            if (op.Terminal1 != null)
-                this.Term1 = op.Terminal1.DataId;
-
-            if (op.Terminal2 != null)
-                this.Term2 = op.Terminal2.DataId;
-
-            if (op.IsArcReversed)
-                this.ReverseArc = true;
-
-            this.Offset = DataFactory.Instance.ToData<ObservationData>(op.Offset);
-            LineFeature parLine = op.ParallelLine;
-            this.From = new FeatureStubData(parLine.StartPoint, (parLine.StartPoint.Creator == op));
-            this.To = new FeatureStubData(parLine.EndPoint, (parLine.EndPoint.Creator == op));
-            this.NewLine = new FeatureStubData(parLine);
-        }
-
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            uint sequence = GetEditSequence(s);
-            ILoader loader = s.MapModel;
-            LineFeature refLine = loader.Find<LineFeature>(this.RefLine);
-            Observation offset = this.Offset.LoadObservation(loader);
-            LineFeature term1 = (this.Term1==null ? null : loader.Find<LineFeature>(this.Term1));
-            LineFeature term2 = (this.Term2==null ? null : loader.Find<LineFeature>(this.Term2));
-            ParallelLineOperation op = new ParallelLineOperation(s, sequence, refLine, offset, term1, term2, this.ReverseArc);
-
-            DeserializationFactory dff = new DeserializationFactory(op);
-
-            // Define terminal points only if they need to be created
-            PointFeature p = op.OffsetPoint;
-            if (p==null || p.DataId!=this.From.Id)
-                dff.AddFeatureStub("From", this.From);
-
-            if (p==null || p.DataId!=this.To.Id)
-                dff.AddFeatureStub("To", this.To);
-
-            dff.AddFeatureStub("NewLine", this.NewLine);
-
-            op.ProcessFeatures(dff);
-            return op;
-        }
-    }
-
     public partial class PathData
     {
         public PathData()
@@ -224,7 +136,7 @@ namespace Backsight.Editor.Xml
             return op;
         }
     }
-
+/*
     public partial class PolygonSubdivisionData
     {
         public PolygonSubdivisionData()
@@ -275,71 +187,7 @@ namespace Backsight.Editor.Xml
             return op;
         }
     }
-
-    public partial class RadialData
-    {
-        public RadialData()
-        {
-        }
-
-        internal RadialData(RadialOperation op)
-            : base(op)
-        {
-            this.Direction = DataFactory.Instance.ToData<DirectionData>(op.Direction);
-            this.Length = DataFactory.Instance.ToData<ObservationData>(op.Length);
-            this.To = new FeatureStubData(op.Point);
-
-            if (op.Line != null)
-                this.Line = new FeatureStubData(op.Line);
-        }
-
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            ILoader loader = s.MapModel;
-            uint sequence = GetEditSequence(s);
-            Direction dir = (Direction)this.Direction.LoadObservation(loader);
-            Observation length = this.Length.LoadObservation(loader);
-            RadialOperation op = new RadialOperation(s, sequence, dir, length);
-
-            DeserializationFactory dff = new DeserializationFactory(op);
-            dff.AddFeatureStub("To", this.To);
-            dff.AddFeatureStub("Line", this.Line);
-            op.ProcessFeatures(dff);
-            return op;
-        }
-    }
-
-    public partial class SetTopologyData
-    {
-        public SetTopologyData()
-        {
-        }
-
-        internal SetTopologyData(SetTopologyOperation op)
-            : base(op)
-        {
-            this.Line = op.Line.DataId;
-        }
-
-        /// <summary>
-        /// Loads this editing operation into a session
-        /// </summary>
-        /// <param name="s">The session the editing operation should be appended to</param>
-        /// <returns>The editing operation that was loaded</returns>
-        internal override Operation LoadOperation(Session s)
-        {
-            uint sequence = GetEditSequence(s);
-            LineFeature line = s.MapModel.Find<LineFeature>(this.Line);
-            SetTopologyOperation op = new SetTopologyOperation(s, sequence, line);
-            op.ProcessFeatures(new DeserializationFactory(op));
-            return op;
-        }
-    }
+    */
 
     public partial class SimpleLineSubdivisionData
     {

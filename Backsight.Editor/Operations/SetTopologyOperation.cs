@@ -54,6 +54,18 @@ namespace Backsight.Editor.Operations
             m_Line = line;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal SetTopologyOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            m_Line.SwitchTopology(); // later?
+        }
+
         #endregion
 
         /// <summary>
@@ -134,8 +146,6 @@ namespace Backsight.Editor.Operations
         /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
         /// </summary>
         /// <param name="ff">The factory class for generating any spatial features</param>
-        /// <remarks>This implementation does nothing. Derived classes that need to are
-        /// expected to provide a suitable override.</remarks>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
             m_Line.SwitchTopology();
@@ -178,18 +188,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal SetTopologyOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            base.WriteData(editSerializer);
+            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
         }
     }
 }

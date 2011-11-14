@@ -14,10 +14,10 @@
 // </remarks>
 
 using System;
-
-using Backsight.Environment;
-using Backsight.Editor.Observations;
 using System.Collections.Generic;
+
+using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -35,9 +35,9 @@ namespace Backsight.Editor.Operations
         TextFeature m_Label;
 
         /// <summary>
-        /// The lines that were created.
+        /// The lines that were created (all simple line segments).
         /// </summary>
-        SegmentLineFeature[] m_Lines;
+        LineFeature[] m_Lines;
  
         #endregion
 
@@ -54,6 +54,23 @@ namespace Backsight.Editor.Operations
         internal PolygonSubdivisionOperation(Session s, uint sequence)
             : base(s, sequence)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal PolygonSubdivisionOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            if (editDeserializer.Reader.IsNextName("DeactivatedLabel"))
+            {
+                m_Label = editDeserializer.ReadFeatureRef<TextFeature>("DeactivatedLabel");
+                m_Label.IsInactive = true; // later ?
+            }
+
+            m_Lines = editDeserializer.ReadPersistentArray<LineFeature>("Lines");
         }
 
         #endregion
@@ -87,10 +104,9 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The lines that were created.
         /// </summary>
-        internal SegmentLineFeature[] NewLines
+        internal LineFeature[] NewLines
         {
             get { return m_Lines; }
-            set { m_Lines = value; }
         }
 
         internal override EditingActionId EditId
@@ -221,18 +237,12 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
-        }
+            base.WriteData(editSerializer);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal PolygonSubdivisionOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            throw new NotImplementedException();
+            if (m_Label != null)
+                editSerializer.WriteFeatureRef<TextFeature>("DeactivatedLabel", m_Label);
+
+            editSerializer.WritePersistentArray<LineFeature>("Lines", m_Lines);
         }
     }
 }

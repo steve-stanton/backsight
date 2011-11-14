@@ -43,8 +43,9 @@ namespace Backsight.Editor.Operations
         internal NewArcOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>("Line");
-            SetNewLine(arc);
+            // Let the base class do it
+            // ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>("Line");
+            // SetNewLine(arc);
         }
 
         /// <summary>
@@ -112,8 +113,9 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            ArcFeature arc = (ArcFeature)base.Line;
-            editSerializer.WritePersistent<ArcFeature>("Line", arc);
+            // Let the base class do it
+            // ArcFeature arc = (ArcFeature)base.Line;
+            // editSerializer.WritePersistent<ArcFeature>("Line", arc);
         }
     }
 }
