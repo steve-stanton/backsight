@@ -565,7 +565,7 @@ namespace Backsight.Editor.Operations
             editSerializer.WritePersistent<Direction>("Direction", m_Direction);
             editSerializer.WritePersistent<Observation>("Distance", m_Distance);
             editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
-            editSerializer.Writer.WriteBool("Default", m_Default);
+            editSerializer.WriteBool("Default", m_Default);
             editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
 
             if (m_DirLine != null)
@@ -592,7 +592,7 @@ namespace Backsight.Editor.Operations
             dir = editDeserializer.ReadPersistent<Direction>("Direction");
             dist = editDeserializer.ReadPersistent<Observation>("Distance");
             from = editDeserializer.ReadFeatureRef<PointFeature>("From");
-            isDefault = editDeserializer.Reader.ReadBool("Default");
+            isDefault = editDeserializer.ReadBool("Default");
             to = editDeserializer.ReadPersistent<FeatureStub>("To");
             dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
             distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DistLine");

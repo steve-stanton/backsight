@@ -145,6 +145,45 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
+        /// </summary>
+        /// <param name="newPosition">The revised position</param>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Position newPosition)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.AddItem<double>("X", m_NewPoint.Easting.Meters, newPosition.X);
+            result.AddItem<double>("Y", m_NewPoint.Northing.Meters, newPosition.Y);
+            return result;
+        }
+
+        /// <summary>
+        /// Writes updates for an editing operation to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="data">The collection of changes to write</param>
+        public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
+        {
+            data.WriteItem<double>(editSerializer, "X");
+            data.WriteItem<double>(editSerializer, "Y");
+        }
+
+        /// <summary>
+        /// Reads back updates made to an editing operation.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The changes made to the edit</returns>
+        public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.ReadItem<double>(editDeserializer, "X");
+            result.ReadItem<double>(editDeserializer, "Y");
+            return result;
+        }
+
+        /// <summary>
         /// Exchanges any previously generated update items (this is currently done
         /// by <see cref="NewPointForm.GetUpdateItems"/>).
         /// </summary>

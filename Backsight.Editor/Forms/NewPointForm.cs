@@ -403,17 +403,13 @@ namespace Backsight.Editor.Forms
         {
             PointFeature p = this.UpdatePoint;
 
-            UpdateItemCollection result = new UpdateItemCollection();
+            if (p.Creator is NewPointOperation)
+                return (p.Creator as NewPointOperation).GetUpdateItems(m_Position);
 
-            // Unconditionally add an item that identifies the feature involved. This
-            // is kind of klunky, covering the fact that this dialog is also utilized
-            // when updating points created via the GetControlOperation class (the ID
-            // tells us which specific point is being updated).
-            result.Add(new UpdateItem("Id", p.DataId));
+            if (p.Creator is GetControlOperation)
+                return (p.Creator as GetControlOperation).GetUpdateItems(p, m_Position);
 
-            result.AddItem<double>("X", p.Easting.Meters, m_Position.X);
-            result.AddItem<double>("Y", p.Northing.Meters, m_Position.Y);
-            return result;
+            throw new ApplicationException("Unexpected editing type: " + p.Creator.GetType().Name);
         }
     }
 }

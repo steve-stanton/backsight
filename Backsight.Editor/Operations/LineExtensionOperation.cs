@@ -467,7 +467,7 @@ namespace Backsight.Editor.Operations
             base.WriteData(editSerializer);
 
             editSerializer.WriteFeatureRef<LineFeature>("Line", m_ExtendLine);
-            editSerializer.Writer.WriteBool("ExtendFromEnd", m_IsExtendFromEnd);
+            editSerializer.WriteBool("ExtendFromEnd", m_IsExtendFromEnd);
             editSerializer.WritePersistent<Distance>("Distance", m_Length);
             editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
 
@@ -488,7 +488,7 @@ namespace Backsight.Editor.Operations
                                 out Distance length, out FeatureStub newPoint, out FeatureStub newLine)
         {
             extendLine = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            isExtendFromEnd = editDeserializer.Reader.ReadBool("ExtendFromEnd");
+            isExtendFromEnd = editDeserializer.ReadBool("ExtendFromEnd");
             length = editDeserializer.ReadPersistent<Distance>("Distance");
             newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
             newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("NewLine");

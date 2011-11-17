@@ -92,7 +92,7 @@ namespace Backsight.Editor.Operations
         {
             m_From = editDeserializer.ReadFeatureRef<PointFeature>("From");
             m_To = editDeserializer.ReadFeatureRef<PointFeature>("To");
-            m_EntryString = editDeserializer.Reader.ReadString("EntryString");
+            m_EntryString = editDeserializer.ReadString("EntryString");
             m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit("DefaultEntryUnit");
 
             Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
@@ -1065,9 +1065,37 @@ void CePath::CreateAngleText ( CPtrList& text
 
             editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
             editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
-            editSerializer.Writer.WriteString("EntryString", m_EntryString);
+            editSerializer.WriteString("EntryString", m_EntryString);
             editSerializer.WriteDistanceUnit("DefaultEntryUnit", m_DefaultEntryUnit);
             editSerializer.WriteFeatureStubArray("Result", this.Features);
         }
+
+        /// <summary>
+        /// Writes updates for an editing operation to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="data">The collection of changes to write</param>
+        public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reads back updates made to an editing operation.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The changes made to the edit</returns>
+        public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+            throw new NotImplementedException();
+            return result;
+        }
+
+        public virtual void ExchangeData(UpdateItemCollection data)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

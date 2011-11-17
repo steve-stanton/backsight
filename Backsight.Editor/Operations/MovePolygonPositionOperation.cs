@@ -259,7 +259,7 @@ namespace Backsight.Editor.Operations
             label = editDeserializer.ReadFeatureRef<TextFeature>("Label");
             newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
 
-            if (editDeserializer.Reader.IsNextName("OldX"))
+            if (editDeserializer.IsNextName("OldX"))
                 oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
             else
                 oldPosition = null;

@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to subdivide a line.
     /// </summary>
-    class LineSubdivisionOperation : Operation, IRecallable, IRevisable
+    class LineSubdivisionOperation : Operation, IRecallable //, IRevisable
     {
         #region Class data
 

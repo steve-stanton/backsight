@@ -93,8 +93,8 @@ namespace Backsight.Editor.Operations
             m_Line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
             m_Distance = editDeserializer.ReadPersistent<Distance>("Distance");
             FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
-            string dataId1 = editDeserializer.Reader.ReadString("NewLine1");
-            string dataId2 = editDeserializer.Reader.ReadString("NewLine2");
+            string dataId1 = editDeserializer.ReadString("NewLine1");
+            string dataId2 = editDeserializer.ReadString("NewLine2");
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub("NewPoint", newPoint);
@@ -501,8 +501,8 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
             editSerializer.WritePersistent<Distance>("Distance", m_Distance);
             editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
-            editSerializer.Writer.WriteString("NewLine1", m_NewLine1.DataId);
-            editSerializer.Writer.WriteString("NewLine2", m_NewLine2.DataId);
+            editSerializer.WriteString("NewLine1", m_NewLine1.DataId);
+            editSerializer.WriteString("NewLine2", m_NewLine2.DataId);
         }
     }
 }

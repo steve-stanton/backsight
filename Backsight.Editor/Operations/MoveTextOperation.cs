@@ -291,7 +291,7 @@ namespace Backsight.Editor.Operations
             oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
             newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
 
-            if (editDeserializer.Reader.IsNextName("OldPolygonX"))
+            if (editDeserializer.IsNextName("OldPolygonX"))
                 oldPolPosition = editDeserializer.ReadPointGeometry("OldPolygonX", "OldPolygonY");
             else
                 oldPolPosition = null;

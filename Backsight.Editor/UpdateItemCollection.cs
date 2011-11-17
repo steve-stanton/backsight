@@ -92,6 +92,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Unconditionally records an update item that simply refers to a specific spatial feature.
+        /// </summary>
+        /// <typeparam name="T">The spatial feature class</typeparam>
+        /// <param name="name">The name for the change item</param>
+        /// <param name="oldValue">Tne current value (may be null)</param>
+        /// <returns>True (always)</returns>
+        internal bool AddFeature<T>(string name, T value) where T : Feature
+        {
+            Add(new UpdateItem(name, value));
+            return true;
+        }
+
+        /// <summary>
         /// Writes a feature reference to a storage medium if the item is present as part of this collection.
         /// </summary>
         /// <typeparam name="T">The type of feature being referenced (as it is known to the edit
@@ -123,7 +136,7 @@ namespace Backsight.Editor
         /// stream does not have the specified name.</returns>
         internal bool ReadFeature<T>(EditDeserializer editDeserializer, string name) where T : Feature
         {
-            if (editDeserializer.Reader.IsNextName(name))
+            if (editDeserializer.IsNextName(name))
             {
                 T result = editDeserializer.ReadFeatureRef<T>(name);
                 Add(new UpdateItem(name, result));
@@ -187,7 +200,7 @@ namespace Backsight.Editor
         /// stream does not have the specified name.</returns>
         internal bool ReadObservation<T>(EditDeserializer editDeserializer, string name) where T : Observation
         {
-            if (editDeserializer.Reader.IsNextName(name))
+            if (editDeserializer.IsNextName(name))
             {
                 T result = editDeserializer.ReadPersistent<T>(name);
                 Add(new UpdateItem(name, result));
@@ -278,7 +291,7 @@ namespace Backsight.Editor
         /// stream does not have the specified name.</returns>
         internal bool ReadItem<T>(EditDeserializer editDeserializer, string name) where T : IConvertible
         {
-            if (editDeserializer.Reader.IsNextName(name))
+            if (editDeserializer.IsNextName(name))
             {
                 T result = editDeserializer.ReadValue<T>(name);
                 Add(new UpdateItem(name, result));

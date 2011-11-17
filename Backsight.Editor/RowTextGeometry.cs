@@ -112,7 +112,7 @@ namespace Backsight.Editor
             // that accepts a deserializer object. The RowTextContent class must be used instead.
 
             throw new ApplicationException("Unexpected attempt to deserialize RowTextGeometry");
-            int templateId = editDeserializer.Reader.ReadInt32("Template");
+            int templateId = editDeserializer.ReadInt32("Template");
             m_Template = EnvironmentContainer.FindTemplateById(templateId);
         }
 

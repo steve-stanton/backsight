@@ -30,7 +30,7 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
-        /// The edit being updated (not null). Must implement <see cref="IRevisable"/>.
+        /// The edit being updated (not null).
         /// </summary>
         readonly Operation m_Edit;
 
@@ -212,8 +212,8 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.Writer.WriteString("RevisedEdit", m_Edit.DataId);
-            m_Edit.WriteUpdateItems(m_Changes.ToArray());
+            editSerializer.WriteString("RevisedEdit", m_Edit.DataId);
+            (m_Edit as IRevisable).WriteUpdateItems(editSerializer, m_Changes);
             /*
 
             // Re-express update items using *Data objects

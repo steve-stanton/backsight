@@ -67,9 +67,6 @@ namespace Backsight.Editor
 
         #region Class data
 
-        /// <summary>
-        /// The mechanism for loading persistent data (not null).
-        /// </summary>
         IEditReader m_Reader;
 
         /// <summary>
@@ -114,7 +111,7 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="EditDeserializer"/> class by
         /// scanning the current assembly to look for constructors that accept an instance of
         /// <see cref="EditDeserializer"/>. Before attempting to deserialize anything,
-        /// you must also define the <see cref="Reader"/> property.
+        /// you must also define a reader using <see cref="SetReader"/>.
         /// </summary>
         /// <param name="mapModel">The map model to load deserialized data into (not null).</param>
         /// <exception cref="ArgumentNullException">If the supplied map model is null.</exception>
@@ -136,12 +133,12 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The mechanism for loading persistent data (not null).
+        /// Records the reader that should be used when deserializing data.
         /// </summary>
-        internal IEditReader Reader
+        /// <param name="reader">The mechanism for loading persistent data (not null).</param>
+        internal void SetReader(IEditReader reader)
         {
-            get { return m_Reader; }
-            set { m_Reader = value; }
+            m_Reader = reader;
         }
 
         /// <summary>
@@ -503,6 +500,97 @@ namespace Backsight.Editor
             }
 
             throw new NotSupportedException("Unexpected value type: " + typeof(T).Name);
+        }
+
+        /// <summary>
+        /// Reads the next byte.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The byte value that was read.</returns>
+        internal byte ReadByte(string name)
+        {
+            return m_Reader.ReadByte(name);
+        }
+
+        /// <summary>
+        /// Reads a 4-byte signed integer.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 4-byte value that was read.</returns>
+        internal int ReadInt32(string name)
+        {
+            return m_Reader.ReadInt32(name);
+        }
+
+        /// <summary>
+        /// Reads a 4-byte unsigned integer.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 4-byte unsigned value that was read.</returns>
+        internal uint ReadUInt32(string name)
+        {
+            return m_Reader.ReadUInt32(name);
+        }
+
+        /// <summary>
+        /// Reads an 8-byte signed integer.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 8-byte value that was read.</returns>
+        internal long ReadInt64(string name)
+        {
+            return m_Reader.ReadInt64(name);
+        }
+
+        /// <summary>
+        /// Reads an eight-byte floating-point value.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 8-byte floating-point value that was read.</returns>
+        internal double ReadDouble(string name)
+        {
+            return m_Reader.ReadDouble(name);
+        }
+
+        /// <summary>
+        /// Reads a four-byte floating-point value.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The 4-byte floating-point value that was read.</returns>
+        internal float ReadSingle(string name)
+        {
+            return m_Reader.ReadSingle(name);
+        }
+
+        /// <summary>
+        /// Reads a one-byte boolean value.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The boolean value that was read.</returns>
+        internal bool ReadBool(string name)
+        {
+            return m_Reader.ReadBool(name);
+        }
+
+        /// <summary>
+        /// Reads a string.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The string that was read (null if nothing follows the name)</returns>
+        internal string ReadString(string name)
+        {
+            return m_Reader.ReadString(name);
+        }
+
+        /// <summary>
+        /// Checks whether the next data item has a specific name tag. Make a call to any
+        /// <c>Read</c> method to actually advance.
+        /// </summary>
+        /// <param name="name">The name tag to look for</param>
+        /// <returns>True if the next data item has the specified name tag</returns>
+        internal bool IsNextName(string name)
+        {
+            return m_Reader.IsNextName(name);
         }
     }
 }

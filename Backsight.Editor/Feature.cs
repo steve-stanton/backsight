@@ -933,7 +933,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public virtual void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.Writer.WriteUInt32("Id", m_SessionSequence);
+            editSerializer.WriteUInt32("Id", m_SessionSequence);
             editSerializer.WriteEntity("Entity", m_What);
             editSerializer.WriteFeatureId(m_Id);
         }
@@ -947,7 +947,7 @@ namespace Backsight.Editor
         /// <param name="fid">The ID of the feature (may be null).</param>
         static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
         {
-            ss = editDeserializer.Reader.ReadUInt32("Id");
+            ss = editDeserializer.ReadUInt32("Id");
             entity = editDeserializer.ReadEntity("Entity");
             fid = editDeserializer.ReadFeatureId();
         }

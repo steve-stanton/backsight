@@ -114,6 +114,7 @@
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="Database\UserJobData.cs" />
+    <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
     <Compile Include="EditDeserializer.cs" />

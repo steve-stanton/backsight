@@ -109,7 +109,7 @@ namespace Backsight.Editor.Database
                         string data = reader.GetString(2);
                         using (TextReader tr = new StringReader(data))
                         {
-                            editDeserializer.Reader = new TextEditReader(tr);
+                            editDeserializer.SetReader(new TextEditReader(tr));
                             Operation edit = Operation.Deserialize(editDeserializer);
 
                             // The edit sequence should be repeated in the data string

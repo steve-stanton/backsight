@@ -391,15 +391,13 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public virtual void WriteData(EditSerializer editSerializer)
         {
-            IEditWriter writer = editSerializer.Writer;
-
             if (m_Font != null)
-                writer.WriteInt32("Font", m_Font.Id);
+                editSerializer.WriteInt32("Font", m_Font.Id);
 
-            writer.WriteInt64("X", m_Position.Easting.Microns);
-            writer.WriteInt64("Y", m_Position.Northing.Microns);
-            writer.WriteDouble("Width", Math.Round((double)m_Width, 2));
-            writer.WriteDouble("Height", Math.Round((double)m_Height, 2));
+            editSerializer.WriteInt64("X", m_Position.Easting.Microns);
+            editSerializer.WriteInt64("Y", m_Position.Northing.Microns);
+            editSerializer.WriteDouble("Width", Math.Round((double)m_Width, 2));
+            editSerializer.WriteDouble("Height", Math.Round((double)m_Height, 2));
 
             // TODO: May want to cover indirect rotations
             editSerializer.WriteRadians("Rotation", new RadianValue(m_Rotation.Radians));
@@ -417,11 +415,9 @@ namespace Backsight.Editor
         static void ReadData(EditDeserializer editDeserializer, out IFont font, out PointGeometry position,
                                 out float height, out float width, out IAngle rotation)
         {
-            IEditReader reader = editDeserializer.Reader;
-
-            if (reader.IsNextName("Font"))
+            if (editDeserializer.IsNextName("Font"))
             {
-                int fontId = reader.ReadInt32("Font");
+                int fontId = editDeserializer.ReadInt32("Font");
                 font = EnvironmentContainer.FindFontById(fontId);
             }
             else
@@ -429,9 +425,9 @@ namespace Backsight.Editor
                 font = null;
             }
 
-            position = new PointGeometry(reader.ReadInt64("X"), reader.ReadInt64("Y"));
-            width = (float)reader.ReadDouble("Width");
-            height = (float)reader.ReadDouble("Height");
+            position = new PointGeometry(editDeserializer.ReadInt64("X"), editDeserializer.ReadInt64("Y"));
+            width = (float)editDeserializer.ReadDouble("Width");
+            height = (float)editDeserializer.ReadDouble("Height");
             rotation = editDeserializer.ReadRadians("Rotation");
         }
 

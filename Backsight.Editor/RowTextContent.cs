@@ -80,8 +80,8 @@ namespace Backsight.Editor
         internal RowTextContent(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_TableId = editDeserializer.Reader.ReadInt32("Table");
-            m_TemplateId = editDeserializer.Reader.ReadInt32("Template");
+            m_TableId = editDeserializer.ReadInt32("Table");
+            m_TemplateId = editDeserializer.ReadInt32("Template");
         }
 
         #endregion
@@ -134,9 +134,8 @@ namespace Backsight.Editor
         {
             base.WriteData(editSerializer);
 
-            IEditWriter writer = editSerializer.Writer;
-            writer.WriteInt32("Table", m_TableId);
-            writer.WriteInt32("Template", m_TemplateId);
+            editSerializer.WriteInt32("Table", m_TableId);
+            editSerializer.WriteInt32("Template", m_TemplateId);
         }
     }
 }
