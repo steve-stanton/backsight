@@ -213,8 +213,7 @@ namespace Backsight.Editor.Operations
             base.WriteData(editSerializer);
 
             editSerializer.Writer.WriteString("RevisedEdit", m_Edit.DataId);
-
-            UpdateItem[] items = m_Changes.ToArray();
+            m_Edit.WriteUpdateItems(m_Changes.ToArray());
             /*
 
             // Re-express update items using *Data objects

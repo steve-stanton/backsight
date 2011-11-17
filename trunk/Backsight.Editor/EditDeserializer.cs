@@ -453,5 +453,56 @@ namespace Backsight.Editor
 
             return null;
         }
+
+        /// <summary>
+        /// Reads a miscellaneous value.
+        /// </summary>
+        /// <typeparam name="T">The type of simple value that is known to the caller.</typeparam>
+        /// <param name="name">A name tag for the item</param>
+        internal T ReadValue<T>(string name) where T : IConvertible
+        {
+            object o = ReadValueAsObject<T>(name);
+            return (T)o;
+        }
+
+        /// <summary>
+        /// Reads a miscellaneous value as an <c>object</c>
+        /// </summary>
+        /// <typeparam name="T">The type of simple value that is known to the caller.</typeparam>
+        /// <param name="name">A name tag for the item</param>
+        /// <returns>The object obtained from the input stream</returns>
+        object ReadValueAsObject<T>(string name) where T : IConvertible
+        {
+            TypeCode typeCode = Type.GetTypeCode(typeof(T));
+
+            switch (typeCode)
+            {
+                case TypeCode.Byte:
+                    return m_Reader.ReadByte(name);
+
+                case TypeCode.Int32:
+                    return m_Reader.ReadInt32(name);
+
+                case TypeCode.UInt32:
+                    return m_Reader.ReadUInt32(name);
+
+                case TypeCode.Int64:
+                    return m_Reader.ReadInt64(name);
+
+                case TypeCode.Double:
+                    return m_Reader.ReadDouble(name);
+
+                case TypeCode.Single:
+                    return m_Reader.ReadSingle(name);
+
+                case TypeCode.Boolean:
+                    return m_Reader.ReadBool(name);
+
+                case TypeCode.String:
+                    return m_Reader.ReadString(name);
+            }
+
+            throw new NotSupportedException("Unexpected value type: " + typeof(T).Name);
+        }
     }
 }

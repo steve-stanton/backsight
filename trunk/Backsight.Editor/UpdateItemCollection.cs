@@ -38,7 +38,7 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateData"/> class
+        /// Initializes a new instance of the <see cref="UpdateItemCollection"/> class
         /// that contains no changes.
         /// </summary>
         internal UpdateItemCollection()
@@ -92,6 +92,48 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes a feature reference to a storage medium if the item is present as part of this collection.
+        /// </summary>
+        /// <typeparam name="T">The type of feature being referenced (as it is known to the edit
+        /// that contains it)</typeparam>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="name">A name tag for the item</param>
+        /// <returns>True if a feature reference was written, false if the item with the specific name is not present
+        /// in this collection.</returns>
+        internal bool WriteFeature<T>(EditSerializer editSerializer, string name) where T : Feature
+        {
+            UpdateItem item;
+            if (m_Changes.TryGetValue(name, out item))
+            {
+                editSerializer.WriteFeatureRef<T>(name, (T)item.Value);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Loads a feature reference back from a storage medium (so long as it comes next in the supplied
+        /// deserialization stream).
+        /// </summary>
+        /// <typeparam name="T">The type of feature expected by the caller.</typeparam>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="name">A name tag associated with the object</param>
+        /// <returns>True if a feature reference was loaded, false if the next item in the deserialization
+        /// stream does not have the specified name.</returns>
+        internal bool ReadFeature<T>(EditDeserializer editDeserializer, string name) where T : Feature
+        {
+            if (editDeserializer.Reader.IsNextName(name))
+            {
+                T result = editDeserializer.ReadFeatureRef<T>(name);
+                Add(new UpdateItem(name, result));
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Records an update item that refers to some sort of observation.
         /// </summary>
         /// <typeparam name="T">The observation class</typeparam>
@@ -108,6 +150,48 @@ namespace Backsight.Editor
                     Add(new UpdateItem(name, newValue));
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Writes an observation to a storage medium if the item is present as part of this collection.
+        /// </summary>
+        /// <typeparam name="T">The type of object being written (as it is known to the edit
+        /// that contains it)</typeparam>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="name">A name tag for the item</param>
+        /// <returns>True if an observation was written, false if the item with the specific name is not present
+        /// in this collection.</returns>
+        internal bool WriteObservation<T>(EditSerializer editSerializer, string name) where T : Observation
+        {
+            UpdateItem item;
+            if (m_Changes.TryGetValue(name, out item))
+            {
+                editSerializer.WritePersistent<T>(name, (T)item.Value);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Loads an observation back from a storage medium (so long as it comes next in the supplied
+        /// deserialization stream).
+        /// </summary>
+        /// <typeparam name="T">The type of object expected by the caller.</typeparam>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="name">A name tag associated with the object</param>
+        /// <returns>True if an observation was loaded, false if the next item in the deserialization
+        /// stream does not have the specified name.</returns>
+        internal bool ReadObservation<T>(EditDeserializer editDeserializer, string name) where T : Observation
+        {
+            if (editDeserializer.Reader.IsNextName(name))
+            {
+                T result = editDeserializer.ReadPersistent<T>(name);
+                Add(new UpdateItem(name, result));
+                return true;
             }
 
             return false;
@@ -157,6 +241,48 @@ namespace Backsight.Editor
                     Add(new UpdateItem(name, newValue));
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Writes a miscellaneous value to a storage medium if the item is present as part of this collection.
+        /// </summary>
+        /// <typeparam name="T">The type of value being written (as it is known to the edit
+        /// that contains it)</typeparam>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="name">A name tag for the item</param>
+        /// <returns>True if an item was written, false if the item with the specific name is not present
+        /// in this collection.</returns>
+        internal bool WriteItem<T>(EditSerializer editSerializer, string name) where T : IConvertible
+        {
+            UpdateItem item;
+            if (m_Changes.TryGetValue(name, out item))
+            {
+                editSerializer.WriteValue<T>(name, (T)item.Value);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Loads a miscellaneous value back from a storage medium (so long as it comes next in the supplied
+        /// deserialization stream).
+        /// </summary>
+        /// <typeparam name="T">The type of value expected by the caller.</typeparam>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>True if an item was loaded, false if the next item in the deserialization
+        /// stream does not have the specified name.</returns>
+        internal bool ReadItem<T>(EditDeserializer editDeserializer, string name) where T : IConvertible
+        {
+            if (editDeserializer.Reader.IsNextName(name))
+            {
+                T result = editDeserializer.ReadValue<T>(name);
+                Add(new UpdateItem(name, result));
+                return true;
             }
 
             return false;
@@ -316,5 +442,36 @@ namespace Backsight.Editor
         {
             get { return m_Changes.Count; }
         }
+
+        /*
+        public void WriteData(EditSerializer editSerializer)
+        {
+            IEditWriter writer = editSerializer.Writer;
+            writer.WriteInt32("Length", m_Changes.Count);
+
+            foreach (KeyValuePair<string, object> kvp in m_Changes)
+            {
+                object o = kvp.Value;
+
+                if (o is Feature)
+                {
+                    editSerializer.WriteFeatureRef<Feature>(kvp.Key, (Feature)o);
+                }
+                else if (o is Observation)
+                {
+                    editSerializer.WritePersistent<Observation>(kvp.Key, (Observation)o);
+                }
+                else if (o is IConvertible)
+                {
+                    // Just write it as a string
+                    TypeCode typeCode = Type.GetTypeCode(o.GetType());
+
+                    switch (typeCode)
+                    {
+                    }
+                }
+            }
+        }
+             */
     }
 }

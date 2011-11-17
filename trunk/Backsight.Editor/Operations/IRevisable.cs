@@ -36,5 +36,19 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The update data to apply to the edit (modified to
         /// hold the values that were previously defined for the edit)</param>
         void ExchangeData(UpdateItemCollection data);
+
+        /// <summary>
+        /// Writes updates for an editing operation to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="data">The collection of changes to write</param>
+        void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data);
+
+        /// <summary>
+        /// Reads back updates made to an editing operation.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The changes made to the edit</returns>
+        UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer);
     }
 }
