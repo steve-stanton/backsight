@@ -284,5 +284,54 @@ namespace Backsight.Editor
                     m_Writer.WriteString(foreignName, featureId.FormattedKey);
             }
         }
+
+        /// <summary>
+        /// Writes a miscellaneous value to a storage medium.
+        /// </summary>
+        /// <typeparam name="T">The type of simple value that is known to the caller.</typeparam>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The value to write</param>
+        internal void WriteValue<T>(string name, T value) where T : IConvertible
+        {
+            TypeCode typeCode = Type.GetTypeCode(typeof(T));
+            object o = (object)value;
+
+            switch (typeCode)
+            {
+                case TypeCode.Byte:
+                    m_Writer.WriteByte(name, (byte)o);
+                    return;
+
+                case TypeCode.Int32:
+                    m_Writer.WriteInt32(name, (int)o);
+                    return;
+
+                case TypeCode.UInt32:
+                    m_Writer.WriteUInt32(name, (uint)o);
+                    return;
+
+                case TypeCode.Int64:
+                    m_Writer.WriteInt64(name, (long)o);
+                    return;
+
+                case TypeCode.Double:
+                    m_Writer.WriteDouble(name, (double)o);
+                    return;
+
+                case TypeCode.Single:
+                    m_Writer.WriteSingle(name, (float)o);
+                    return;
+
+                case TypeCode.Boolean:
+                    m_Writer.WriteBool(name, (bool)o);
+                    return;
+
+                case TypeCode.String:
+                    m_Writer.WriteString(name, (string)o);
+                    return;
+            }
+
+            throw new NotSupportedException("Unexpected value type: " + typeof(T).Name);
+        }
     }
 }

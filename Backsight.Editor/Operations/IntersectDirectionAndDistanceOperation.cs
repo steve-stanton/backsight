@@ -480,6 +480,34 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
+        /// Writes updates for an editing operation to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="data">The collection of changes to write</param>
+        public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
+        {
+            data.WriteObservation<Direction>(editSerializer, "Direction");
+            data.WriteObservation<Observation>(editSerializer, "Distance");
+            data.WriteFeature<PointFeature>(editSerializer, "From");
+            data.WriteItem<bool>(editSerializer, "Default");
+        }
+
+        /// <summary>
+        /// Reads back updates made to an editing operation.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The changes made to the edit</returns>
+        public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+            result.ReadObservation<Direction>(editDeserializer, "Direction");
+            result.ReadObservation<Observation>(editDeserializer, "Distance");
+            result.ReadFeature<PointFeature>(editDeserializer, "From");
+            result.ReadItem<bool>(editDeserializer, "Default");
+            return result;
+        }
+
+        /// <summary>
         /// Exchanges update items that were previously generated via
         /// a call to <see cref="GetUpdateItems"/>.
         /// </summary>
