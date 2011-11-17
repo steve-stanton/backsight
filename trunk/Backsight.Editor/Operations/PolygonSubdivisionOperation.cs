@@ -64,7 +64,7 @@ namespace Backsight.Editor.Operations
         internal PolygonSubdivisionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            if (editDeserializer.Reader.IsNextName("DeactivatedLabel"))
+            if (editDeserializer.IsNextName("DeactivatedLabel"))
             {
                 m_Label = editDeserializer.ReadFeatureRef<TextFeature>("DeactivatedLabel");
                 m_Label.IsInactive = true; // later ?

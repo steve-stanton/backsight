@@ -1363,7 +1363,7 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
 
             editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
             editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
-            editSerializer.Writer.WriteBool("Topological", IsTopological);
+            editSerializer.WriteBool("Topological", IsTopological);
 
             // For simple line segments (perhaps 80% of the case when dealing with cadastral
             // data), we already have what we need with the from & to points.
@@ -1384,9 +1384,9 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         {
             from = editDeserializer.ReadFeatureRef<PointFeature>("From");
             to = editDeserializer.ReadFeatureRef<PointFeature>("To");
-            isTopological = editDeserializer.Reader.ReadBool("Topological");
+            isTopological = editDeserializer.ReadBool("Topological");
 
-            if (editDeserializer.Reader.IsNextName("Type"))
+            if (editDeserializer.IsNextName("Type"))
             {
                 geom = editDeserializer.ReadPersistent<LineGeometry>("Type");
 

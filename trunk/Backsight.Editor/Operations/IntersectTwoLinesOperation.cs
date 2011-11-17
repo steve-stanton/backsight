@@ -488,16 +488,16 @@ namespace Backsight.Editor.Operations
             editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_Intersection));
 
             if (m_Line1a != null)
-                editSerializer.Writer.WriteString("SplitBefore1", m_Line1a.DataId);
+                editSerializer.WriteString("SplitBefore1", m_Line1a.DataId);
 
             if (m_Line1b != null)
-                editSerializer.Writer.WriteString("SplitAfter1", m_Line1b.DataId);
+                editSerializer.WriteString("SplitAfter1", m_Line1b.DataId);
 
             if (m_Line2a != null)
-                editSerializer.Writer.WriteString("SplitBefore2", m_Line2a.DataId);
+                editSerializer.WriteString("SplitBefore2", m_Line2a.DataId);
 
             if (m_Line2b != null)
-                editSerializer.Writer.WriteString("SplitAfter2", m_Line2b.DataId);
+                editSerializer.WriteString("SplitAfter2", m_Line2b.DataId);
         }
 
         /// <summary>
@@ -519,12 +519,10 @@ namespace Backsight.Editor.Operations
             line2 = editDeserializer.ReadFeatureRef<LineFeature>("Line2");
             closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
             to = editDeserializer.ReadPersistent<FeatureStub>("To");
-
-            IEditReader reader = editDeserializer.Reader;
-            idLine1a = (reader.IsNextName("SplitBefore1") ? reader.ReadString("SplitBefore1") : null);
-            idLine1b = (reader.IsNextName("SplitAfter1") ? reader.ReadString("SplitAfter1") : null);
-            idLine2a = (reader.IsNextName("SplitBefore2") ? reader.ReadString("SplitBefore2") : null);
-            idLine2b = (reader.IsNextName("SplitAfter2") ? reader.ReadString("SplitAfter2") : null);
+            idLine1a = (editDeserializer.IsNextName("SplitBefore1") ? editDeserializer.ReadString("SplitBefore1") : null);
+            idLine1b = (editDeserializer.IsNextName("SplitAfter1") ? editDeserializer.ReadString("SplitAfter1") : null);
+            idLine2a = (editDeserializer.IsNextName("SplitBefore2") ? editDeserializer.ReadString("SplitBefore2") : null);
+            idLine2b = (editDeserializer.IsNextName("SplitAfter2") ? editDeserializer.ReadString("SplitAfter2") : null);
         }
     }
 }

@@ -211,7 +211,7 @@ namespace Backsight.Editor.Observations
         public override void WriteData(EditSerializer editSerializer)
         {
             editSerializer.WritePersistent<Distance>("Offset", m_Offset);
-            editSerializer.Writer.WriteBool("Left", m_IsLeft);
+            editSerializer.WriteBool("Left", m_IsLeft);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Backsight.Editor.Observations
         static void ReadData(EditDeserializer editDeserializer, out Distance offset, out bool isLeft)
         {
             offset = editDeserializer.ReadPersistent<Distance>("Offset");
-            isLeft = editDeserializer.Reader.ReadBool("Left");
+            isLeft = editDeserializer.ReadBool("Left");
         }
     }
 }

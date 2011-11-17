@@ -736,7 +736,7 @@ namespace Backsight.Editor.Operations
                 editSerializer.WriteFeatureRef<LineFeature>("Term2", m_Term2);
 
             if (IsArcReversed)
-                editSerializer.Writer.WriteBool("ReverseArc", true);
+                editSerializer.WriteBool("ReverseArc", true);
 
             editSerializer.WritePersistent<Observation>("Offset", m_Offset);
 
@@ -757,17 +757,15 @@ namespace Backsight.Editor.Operations
         internal ParallelLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            IEditReader reader = editDeserializer.Reader;
-
             m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>("RefLine");
 
-            if (reader.IsNextName("Term1"))
+            if (editDeserializer.IsNextName("Term1"))
                 m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>("Term1");
 
-            if (reader.IsNextName("Term2"))
+            if (editDeserializer.IsNextName("Term2"))
                 m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>("Term2");
 
-            if (reader.IsNextName("ReverseArc") && reader.ReadBool("ReverseArc") == true)
+            if (editDeserializer.IsNextName("ReverseArc") && editDeserializer.ReadBool("ReverseArc") == true)
                 m_Flags = 1;
 
             m_Offset = editDeserializer.ReadPersistent<Observation>("Offset");

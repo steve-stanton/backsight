@@ -118,7 +118,7 @@ namespace Backsight.Editor
             editDeserializer.CurrentEdit = this;
             m_Session = editDeserializer.MapModel.LastSession;
 
-            string id = editDeserializer.Reader.ReadString("Id");
+            string id = editDeserializer.ReadString("Id");
             uint sessionId;
             InternalIdValue.Parse(id, out sessionId, out m_Sequence);
 
@@ -455,7 +455,7 @@ namespace Backsight.Editor
         {
             EditSerializer es = new EditSerializer();
             es.WritePersistent<Operation>("Edit", this);
-            return es.Writer.ToString();
+            return es.ToSerializedString();
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public virtual void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.Writer.WriteString("Id", DataId);
+            editSerializer.WriteString("Id", DataId);
         }
     }
 }

@@ -596,7 +596,7 @@ namespace Backsight.Editor.Operations
             editSerializer.WriteFeatureRef<PointFeature>("From1", m_From1);
             editSerializer.WritePersistent<Observation>("Distance2", m_Distance2);
             editSerializer.WriteFeatureRef<PointFeature>("From2", m_From2);
-            editSerializer.Writer.WriteBool("Default", m_Default);
+            editSerializer.WriteBool("Default", m_Default);
             editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
 
             if (m_Line1 != null)
@@ -626,7 +626,7 @@ namespace Backsight.Editor.Operations
             from1 = editDeserializer.ReadFeatureRef<PointFeature>("From1");
             dist2 = editDeserializer.ReadPersistent<Observation>("Distance2");
             from2 = editDeserializer.ReadFeatureRef<PointFeature>("From2");
-            isDefault = editDeserializer.Reader.ReadBool("Default");
+            isDefault = editDeserializer.ReadBool("Default");
             to = editDeserializer.ReadPersistent<FeatureStub>("To");
             line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line1");
             line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line2");

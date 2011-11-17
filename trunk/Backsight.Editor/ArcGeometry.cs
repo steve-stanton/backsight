@@ -60,9 +60,9 @@ namespace Backsight.Editor
         internal ArcGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_IsClockwise = editDeserializer.Reader.ReadBool("Clockwise");
+            m_IsClockwise = editDeserializer.ReadBool("Clockwise");
 
-            if (editDeserializer.Reader.IsNextName("Center"))
+            if (editDeserializer.IsNextName("Center"))
             {
                 PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
                 Debug.Assert(center != null);
@@ -863,7 +863,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.Writer.WriteBool("Clockwise", m_IsClockwise);
+            editSerializer.WriteBool("Clockwise", m_IsClockwise);
 
             // If the circle's first arc has geometry that corresponds to this instance, write
             // out the circle center point. Otherwise refer to the first arc (we'll get the

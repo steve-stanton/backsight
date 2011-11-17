@@ -433,11 +433,9 @@ namespace Backsight.Editor.Observations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            IEditWriter writer = editSerializer.Writer;
-
-            writer.WriteDouble("Value", ObservedValue);
-            writer.WriteByte("Unit", (byte)m_EnteredUnit.UnitType);
-            writer.WriteBool("Fixed", m_IsFixed);
+            editSerializer.WriteDouble("Value", ObservedValue);
+            editSerializer.WriteByte("Unit", (byte)m_EnteredUnit.UnitType);
+            editSerializer.WriteBool("Fixed", m_IsFixed);
         }
 
         /// <summary>
@@ -449,11 +447,9 @@ namespace Backsight.Editor.Observations
         /// <param name="isFixed">Is the distance fixed</param>
         static void ReadData(EditDeserializer editDeserializer, out double value, out DistanceUnitType unit, out bool isFixed)
         {
-            IEditReader reader = editDeserializer.Reader;
-
-            value = reader.ReadDouble("Value");
-            unit = (DistanceUnitType)reader.ReadByte("Unit");
-            isFixed = reader.ReadBool("Fixed");
+            value = editDeserializer.ReadDouble("Value");
+            unit = (DistanceUnitType)editDeserializer.ReadByte("Unit");
+            isFixed = editDeserializer.ReadBool("Fixed");
         }
     }
 }

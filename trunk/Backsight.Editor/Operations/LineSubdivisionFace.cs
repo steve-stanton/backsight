@@ -454,8 +454,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.Writer.WriteString("EntryString", m_EntryString);
-            editSerializer.Writer.WriteBool("EntryFromEnd", m_IsEntryFromEnd);
+            editSerializer.WriteString("EntryString", m_EntryString);
+            editSerializer.WriteBool("EntryFromEnd", m_IsEntryFromEnd);
             editSerializer.WriteDistanceUnit("DefaultEntryUnit", m_DefaultEntryUnit);
         }
 
@@ -468,8 +468,8 @@ namespace Backsight.Editor.Operations
         /// <param name="defaultEntryUnit">The default distance units to use when decoding the data entry string.</param>
         static void ReadData(EditDeserializer editDeserializer, out string entryString, out bool entryFromEnd, out DistanceUnit defaultEntryUnit)
         {
-            entryString = editDeserializer.Reader.ReadString("EntryString");
-            entryFromEnd = editDeserializer.Reader.ReadBool("EntryFromEnd");
+            entryString = editDeserializer.ReadString("EntryString");
+            entryFromEnd = editDeserializer.ReadBool("EntryFromEnd");
             defaultEntryUnit = editDeserializer.ReadDistanceUnit("DefaultEntryUnit");
         }
     }

@@ -13,9 +13,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Environment;
-using System.Text;
 using System;
+using System.Text;
+
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -40,7 +41,7 @@ namespace Backsight.Editor
         {
             EditSerializer es = new EditSerializer();
             es.WritePersistent(name, value);
-            return es.Writer.ToString();
+            return es.ToSerializedString();
         }
 
         #endregion
@@ -76,15 +77,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        /// <summary>
-        /// The mechanism for writing out data.
-        /// </summary>
-        internal IEditWriter Writer
-        {
-            get { return m_Writer; }
-            set { m_Writer = value; }
-        }
 
         /// <summary>
         /// Writes an array of objects to a storage medium.
@@ -332,6 +324,95 @@ namespace Backsight.Editor
             }
 
             throw new NotSupportedException("Unexpected value type: " + typeof(T).Name);
+        }
+
+        /// <summary>
+        /// Writes an unsigned byte to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The unsigned byte to write.</param>
+        internal void WriteByte(string name, byte value)
+        {
+            m_Writer.WriteByte(name, value);
+        }
+
+        /// <summary>
+        /// Writes a four-byte signed integer to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The four-byte signed integer to write.</param>
+        internal void WriteInt32(string name, int value)
+        {
+            m_Writer.WriteInt32(name, value);
+        }
+
+        /// <summary>
+        /// Writes a four-byte unsigned integer to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The four-byte unsigned integer to write.</param>
+        internal void WriteUInt32(string name, uint value)
+        {
+            m_Writer.WriteUInt32(name, value);
+        }
+
+        /// <summary>
+        /// Writes an eight-byte signed integer to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The eight-byte signed integer to write.</param>
+        internal void WriteInt64(string name, long value)
+        {
+            m_Writer.WriteInt64(name, value);
+        }
+
+        /// <summary>
+        /// Writes an eight-byte floating-point value to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The eight-byte floating-point value to write.</param>
+        internal void WriteDouble(string name, double value)
+        {
+            m_Writer.WriteDouble(name, value);
+        }
+
+        /// <summary>
+        /// Writes an four-byte floating-point value to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The four-byte floating-point value to write.</param>
+        internal void WriteSingle(string name, float value)
+        {
+            m_Writer.WriteSingle(name, value);
+        }
+
+        /// <summary>
+        /// Writes a one-byte boolean value to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The boolean value to write (0 or 1).</param>
+        internal void WriteBool(string name, bool value)
+        {
+            m_Writer.WriteBool(name, value);
+        }
+
+        /// <summary>
+        /// Writes a string to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="value">The string to write (if a null is supplied, just the name tag will be written).</param>
+        internal void WriteString(string name, string value)
+        {
+            m_Writer.WriteString(name, value);
+        }
+
+        /// <summary>
+        /// Expresses the content produced by this serializer as a string.
+        /// </summary>
+        /// <returns>The content produced by this serializer</returns>
+        internal string ToSerializedString()
+        {
+            return m_Writer.ToString();
         }
     }
 }

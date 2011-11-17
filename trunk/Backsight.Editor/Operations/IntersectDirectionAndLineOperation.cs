@@ -547,10 +547,10 @@ namespace Backsight.Editor.Operations
                 editSerializer.WritePersistent<FeatureStub>("DirLine", new FeatureStub(m_DirLine));
 
             if (m_LineA != null)
-                editSerializer.Writer.WriteString("SplitBefore", m_LineA.DataId);
+                editSerializer.WriteString("SplitBefore", m_LineA.DataId);
 
             if (m_LineB != null)
-                editSerializer.Writer.WriteString("SplitAfter", m_LineB.DataId);
+                editSerializer.WriteString("SplitAfter", m_LineB.DataId);
         }
 
         /// <summary>
@@ -572,10 +572,8 @@ namespace Backsight.Editor.Operations
             closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
             to = editDeserializer.ReadPersistent<FeatureStub>("To");
             dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
-
-            IEditReader reader = editDeserializer.Reader;
-            idLineA = (reader.IsNextName("SplitBefore") ? reader.ReadString("SplitBefore") : null);
-            idLineB = (reader.IsNextName("SplitAfter") ? reader.ReadString("SplitAfter") : null);
+            idLineA = (editDeserializer.IsNextName("SplitBefore") ? editDeserializer.ReadString("SplitBefore") : null);
+            idLineB = (editDeserializer.IsNextName("SplitAfter") ? editDeserializer.ReadString("SplitAfter") : null);
         }
     }
 }

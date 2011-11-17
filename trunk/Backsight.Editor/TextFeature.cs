@@ -358,8 +358,7 @@ namespace Backsight.Editor
         {
             base.WriteData(editSerializer);
 
-            IEditWriter writer = editSerializer.Writer;
-            writer.WriteBool("Topological", IsTopological);
+            editSerializer.WriteBool("Topological", IsTopological);
 
             IPointGeometry tp = Position;
             IPointGeometry pp = GetPolPosition();
@@ -367,8 +366,8 @@ namespace Backsight.Editor
             {
                 if (pp.Easting.Microns != tp.Easting.Microns || pp.Northing.Microns != tp.Northing.Microns)
                 {
-                    writer.WriteInt64("PolygonX", pp.Easting.Microns);
-                    writer.WriteInt64("PolygonY", pp.Northing.Microns);
+                    editSerializer.WriteInt64("PolygonX", pp.Easting.Microns);
+                    editSerializer.WriteInt64("PolygonY", pp.Northing.Microns);
                 }
             }
 
@@ -390,13 +389,12 @@ namespace Backsight.Editor
         /// <param name="geom">The geometry for the text.</param>
         static void ReadData(EditDeserializer editDeserializer, out bool isTopological, out PointGeometry polPos, out TextGeometry geom)
         {
-            IEditReader reader = editDeserializer.Reader;
-            isTopological = reader.ReadBool("Topological");
+            isTopological = editDeserializer.ReadBool("Topological");
 
-            if (reader.IsNextName("PolygonX"))
+            if (editDeserializer.IsNextName("PolygonX"))
             {
-                long x = reader.ReadInt64("PolygonX");
-                long y = reader.ReadInt64("PolygonY");
+                long x = editDeserializer.ReadInt64("PolygonX");
+                long y = editDeserializer.ReadInt64("PolygonY");
                 polPos = new PointGeometry(x, y);
             }
             else

@@ -23,7 +23,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Edit to add an item of text (perhaps a polygon label).
     /// </summary>
-    abstract class NewTextOperation : Operation, IRevisable
+    abstract class NewTextOperation : Operation //, IRevisable
     {
         #region Class data
 
