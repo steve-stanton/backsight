@@ -15,8 +15,6 @@
 
 using System;
 
-using Backsight.Editor.Xml;
-
 namespace Backsight.Editor
 {
     /// <summary>
@@ -59,12 +57,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        internal void AddFeatureStub(string itemName, FeatureStubData data)
-        {
-            if (data != null)
-                AddFeatureDescription(itemName, data.GetFeatureStub(base.Creator));
-        }
 
         internal void AddFeatureStub(string itemName, FeatureStub stub)
         {

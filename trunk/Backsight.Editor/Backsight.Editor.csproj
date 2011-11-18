@@ -1132,13 +1132,6 @@
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateItemCollection.cs" />
     <Compile Include="Wildcard.cs" />
-    <Compile Include="Xml\DataFactory.cs" />
-    <Compile Include="Xml\Edits.cs">
-      <DependentUpon>Edits.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\Features.cs" />
-    <Compile Include="Xml\Observations.cs" />
-    <Compile Include="Xml\Operations.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomRectangle.ico" />
@@ -1246,12 +1239,6 @@
     <EmbeddedResource Include="Forms\SimpleLineSubdivisionControl.resx">
       <DependentUpon>SimpleLineSubdivisionControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Xml\Edits.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <None Include="Xml\Edits.xsx">
-      <DependentUpon>Edits.xsd</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
@@ -1346,6 +1333,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Xml\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
