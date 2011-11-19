@@ -487,7 +487,6 @@
     <Compile Include="PointGeometry.cs" />
     <Compile Include="RadianValue.cs" />
     <Compile Include="RowTextContent.cs" />
-    <Compile Include="RowTextFeature.cs" />
     <Compile Include="RowTextGeometry.cs" />
     <Compile Include="Operations\GetControlOperation.cs" />
     <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />

@@ -1038,7 +1038,7 @@ namespace Backsight.Editor
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
             uint ss = Session.ReserveNextItem();
-            TextFeature label = new RowTextFeature(creator, ss, ent, null);
+            TextFeature label = new TextFeature(creator, ss, ent, null);
 
             // Define the label's ID and attach the row to it
             Row r = new Row(id, atemplate.Schema, row);
@@ -1074,7 +1074,7 @@ namespace Backsight.Editor
             // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
             uint ss = Session.ReserveNextItem();
-            TextFeature label = new RowTextFeature(creator, ss, ent, null);
+            TextFeature label = new TextFeature(creator, ss, ent, null);
 
             // Define the label's ID and attach the row to it
             FeatureId id = polygonId.CreateId(label);
