@@ -471,9 +471,7 @@ UINT4 CePoint::CreateAngleText ( CPtrList& prims
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-
-            editSerializer.WriteInt64("X", m_Geom.Easting.Microns);
-            editSerializer.WriteInt64("Y", m_Geom.Northing.Microns);
+            editSerializer.WritePointGeometry(DataField.X, DataField.Y, m_Geom);
         }
 
         /// <summary>
@@ -485,8 +483,8 @@ UINT4 CePoint::CreateAngleText ( CPtrList& prims
         /// <param name="point">The point that was created.</param>
         static void ReadData(EditDeserializer editDeserializer, out long x, out long y)
         {
-            x = editDeserializer.ReadInt64("X");
-            y = editDeserializer.ReadInt64("Y");
+            x = editDeserializer.ReadInt64(DataField.X);
+            y = editDeserializer.ReadInt64(DataField.Y);
         }
     }
 }

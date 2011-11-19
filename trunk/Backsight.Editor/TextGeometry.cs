@@ -392,15 +392,14 @@ namespace Backsight.Editor
         public virtual void WriteData(EditSerializer editSerializer)
         {
             if (m_Font != null)
-                editSerializer.WriteInt32("Font", m_Font.Id);
+                editSerializer.WriteInt32(DataField.Font, m_Font.Id);
 
-            editSerializer.WriteInt64("X", m_Position.Easting.Microns);
-            editSerializer.WriteInt64("Y", m_Position.Northing.Microns);
-            editSerializer.WriteDouble("Width", Math.Round((double)m_Width, 2));
-            editSerializer.WriteDouble("Height", Math.Round((double)m_Height, 2));
+            editSerializer.WritePointGeometry(DataField.X, DataField.Y, m_Position);
+            editSerializer.WriteDouble(DataField.Width, Math.Round((double)m_Width, 2));
+            editSerializer.WriteDouble(DataField.Height, Math.Round((double)m_Height, 2));
 
             // TODO: May want to cover indirect rotations
-            editSerializer.WriteRadians("Rotation", new RadianValue(m_Rotation.Radians));
+            editSerializer.WriteRadians(DataField.Rotation, new RadianValue(m_Rotation.Radians));
         }
 
         /// <summary>
@@ -415,9 +414,9 @@ namespace Backsight.Editor
         static void ReadData(EditDeserializer editDeserializer, out IFont font, out PointGeometry position,
                                 out float height, out float width, out IAngle rotation)
         {
-            if (editDeserializer.IsNextName("Font"))
+            if (editDeserializer.IsNextField(DataField.Font))
             {
-                int fontId = editDeserializer.ReadInt32("Font");
+                int fontId = editDeserializer.ReadInt32(DataField.Font);
                 font = EnvironmentContainer.FindFontById(fontId);
             }
             else
@@ -425,11 +424,10 @@ namespace Backsight.Editor
                 font = null;
             }
 
-            position = new PointGeometry(editDeserializer.ReadInt64("X"), editDeserializer.ReadInt64("Y"));
-            width = (float)editDeserializer.ReadDouble("Width");
-            height = (float)editDeserializer.ReadDouble("Height");
-            rotation = editDeserializer.ReadRadians("Rotation");
+            position = editDeserializer.ReadPointGeometry(DataField.X, DataField.Y);
+            width = (float)editDeserializer.ReadDouble(DataField.Width);
+            height = (float)editDeserializer.ReadDouble(DataField.Height);
+            rotation = editDeserializer.ReadRadians(DataField.Rotation);
         }
-
     }
 }

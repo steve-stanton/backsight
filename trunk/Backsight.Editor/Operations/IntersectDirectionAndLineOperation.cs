@@ -475,9 +475,9 @@ namespace Backsight.Editor.Operations
                                                         PointFeature closeTo)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Direction>("Direction", m_Direction, dir);
-            result.AddFeature<LineFeature>("Line", m_Line, line);
-            result.AddFeature<PointFeature>("CloseTo", m_CloseTo, closeTo);
+            result.AddObservation<Direction>(DataField.Direction, m_Direction, dir);
+            result.AddFeature<LineFeature>(DataField.Line, m_Line, line);
+            result.AddFeature<PointFeature>(DataField.CloseTo, m_CloseTo, closeTo);
             return result;
         }
 
@@ -488,9 +488,9 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Direction>(editSerializer, "Direction");
-            data.WriteFeature<LineFeature>(editSerializer, "Line");
-            data.WriteFeature<PointFeature>(editSerializer, "CloseTo");
+            data.WriteObservation<Direction>(editSerializer, DataField.Direction);
+            data.WriteFeature<LineFeature>(editSerializer, DataField.Line);
+            data.WriteFeature<PointFeature>(editSerializer, DataField.CloseTo);
         }
 
         /// <summary>
@@ -501,9 +501,9 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Direction>(editDeserializer, "Direction");
-            result.ReadFeature<LineFeature>(editDeserializer, "Line");
-            result.ReadFeature<PointFeature>(editDeserializer, "CloseTo");
+            result.ReadObservation<Direction>(editDeserializer, DataField.Direction);
+            result.ReadFeature<LineFeature>(editDeserializer, DataField.Line);
+            result.ReadFeature<PointFeature>(editDeserializer, DataField.CloseTo);
             return result;
         }
 
@@ -515,9 +515,9 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
-            m_Line = data.ExchangeFeature<LineFeature>(this, "Line", m_Line);
-            m_CloseTo = data.ExchangeFeature<PointFeature>(this, "CloseTo", m_CloseTo);
+            m_Direction = data.ExchangeObservation<Direction>(this, DataField.Direction, m_Direction);
+            m_Line = data.ExchangeFeature<LineFeature>(this, DataField.Line, m_Line);
+            m_CloseTo = data.ExchangeFeature<PointFeature>(this, DataField.CloseTo, m_CloseTo);
         }
 
         internal LineFeature LineBeforeSplit
@@ -538,19 +538,19 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
-            editSerializer.WriteFeatureRef<PointFeature>("CloseTo", m_CloseTo);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_Intersection));
+            editSerializer.WritePersistent<Direction>(DataField.Direction, m_Direction);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.CloseTo, m_CloseTo);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_Intersection));
 
             if (m_DirLine != null)
-                editSerializer.WritePersistent<FeatureStub>("DirLine", new FeatureStub(m_DirLine));
+                editSerializer.WritePersistent<FeatureStub>(DataField.DirLine, new FeatureStub(m_DirLine));
 
             if (m_LineA != null)
-                editSerializer.WriteString("SplitBefore", m_LineA.DataId);
+                editSerializer.WriteString(DataField.SplitBefore, m_LineA.DataId);
 
             if (m_LineB != null)
-                editSerializer.WriteString("SplitAfter", m_LineB.DataId);
+                editSerializer.WriteString(DataField.SplitAfter, m_LineB.DataId);
         }
 
         /// <summary>
@@ -567,13 +567,13 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out Direction dir, out LineFeature line, out PointFeature closeTo,
                                 out FeatureStub to, out FeatureStub dirLine, out string idLineA, out string idLineB)
         {
-            dir = editDeserializer.ReadPersistent<Direction>("Direction");
-            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
-            to = editDeserializer.ReadPersistent<FeatureStub>("To");
-            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
-            idLineA = (editDeserializer.IsNextName("SplitBefore") ? editDeserializer.ReadString("SplitBefore") : null);
-            idLineB = (editDeserializer.IsNextName("SplitAfter") ? editDeserializer.ReadString("SplitAfter") : null);
+            dir = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            closeTo = editDeserializer.ReadFeatureRef<PointFeature>(DataField.CloseTo);
+            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
+            idLineA = (editDeserializer.IsNextField(DataField.SplitBefore) ? editDeserializer.ReadString(DataField.SplitBefore) : null);
+            idLineB = (editDeserializer.IsNextField(DataField.SplitAfter) ? editDeserializer.ReadString(DataField.SplitAfter) : null);
         }
     }
 }

@@ -321,8 +321,8 @@ namespace Backsight.Editor.Operations
         internal UpdateItemCollection GetUpdateItems(bool isFromEnd, Distance length)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddItem<bool>("ExtendFromEnd", m_IsExtendFromEnd, isFromEnd);
-            result.AddObservation<Distance>("Distance", m_Length, length);
+            result.AddItem<bool>(DataField.ExtendFromEnd, m_IsExtendFromEnd, isFromEnd);
+            result.AddObservation<Distance>(DataField.Distance, m_Length, length);
             return result;
         }
 
@@ -333,8 +333,8 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteItem<bool>(editSerializer, "ExtendFromEnd");
-            data.WriteObservation<Distance>(editSerializer, "Distance");
+            data.WriteItem<bool>(editSerializer, DataField.ExtendFromEnd);
+            data.WriteObservation<Distance>(editSerializer, DataField.Distance);
         }
 
         /// <summary>
@@ -345,8 +345,8 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadItem<bool>(editDeserializer, "ExtendFromEnd");
-            result.ReadObservation<Distance>(editDeserializer, "Distance");
+            result.ReadItem<bool>(editDeserializer, DataField.ExtendFromEnd);
+            result.ReadObservation<Distance>(editDeserializer, DataField.Distance);
             return result;
         }
 
@@ -358,8 +358,8 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_IsExtendFromEnd = data.ExchangeValue<bool>("ExtendFromEnd", m_IsExtendFromEnd);
-            m_Length = data.ExchangeObservation<Distance>(this, "Distance", m_Length);
+            m_IsExtendFromEnd = data.ExchangeValue<bool>(DataField.ExtendFromEnd, m_IsExtendFromEnd);
+            m_Length = data.ExchangeObservation<Distance>(this, DataField.Distance, m_Length);
         }
 
         /// <summary>
@@ -466,13 +466,13 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_ExtendLine);
-            editSerializer.WriteBool("ExtendFromEnd", m_IsExtendFromEnd);
-            editSerializer.WritePersistent<Distance>("Distance", m_Length);
-            editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_ExtendLine);
+            editSerializer.WriteBool(DataField.ExtendFromEnd, m_IsExtendFromEnd);
+            editSerializer.WritePersistent<Distance>(DataField.Distance, m_Length);
+            editSerializer.WritePersistent<FeatureStub>(DataField.NewPoint, new FeatureStub(m_NewPoint));
 
             if (m_NewLine != null)
-                editSerializer.WritePersistent<FeatureStub>("NewLine", new FeatureStub(m_NewLine));
+                editSerializer.WritePersistent<FeatureStub>(DataField.NewLine, new FeatureStub(m_NewLine));
         }
 
         /// <summary>
@@ -487,11 +487,11 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out LineFeature extendLine, out bool isExtendFromEnd,
                                 out Distance length, out FeatureStub newPoint, out FeatureStub newLine)
         {
-            extendLine = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            isExtendFromEnd = editDeserializer.ReadBool("ExtendFromEnd");
-            length = editDeserializer.ReadPersistent<Distance>("Distance");
-            newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
-            newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("NewLine");
+            extendLine = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            isExtendFromEnd = editDeserializer.ReadBool(DataField.ExtendFromEnd);
+            length = editDeserializer.ReadPersistent<Distance>(DataField.Distance);
+            newPoint = editDeserializer.ReadPersistent<FeatureStub>(DataField.NewPoint);
+            newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.NewLine);
         }
     }
 }

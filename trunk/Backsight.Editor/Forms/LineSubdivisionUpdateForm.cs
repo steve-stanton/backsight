@@ -515,11 +515,14 @@ void CdUpdateSub::Refresh ( void ) {
 
                 AnnotatedDistance revisedSection = dists[i];
 
+                throw new NotImplementedException();
+                /*
                 if (originalLength.Equals(revisedSection) == false)
                     uc.AddObservation<Distance>(line.DataId, originalLength, revisedSection);
 
                 if (revisedSection.IsFlipped)
                     uc.AddItem<bool>("A" + line.DataId, !line.IsLineAnnotationFlipped, line.IsLineAnnotationFlipped);
+                 */
             }
         }
 

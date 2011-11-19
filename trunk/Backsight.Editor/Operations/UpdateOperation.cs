@@ -212,7 +212,7 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteString("RevisedEdit", m_Edit.DataId);
+            editSerializer.WriteString(DataField.RevisedEdit, m_Edit.DataId);
             (m_Edit as IRevisable).WriteUpdateItems(editSerializer, m_Changes);
             /*
 

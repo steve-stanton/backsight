@@ -79,7 +79,7 @@ namespace Backsight.Editor
         internal MultiSegmentGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Data = editDeserializer.ReadSimpleArray<byte>("Data");
+            m_Data = editDeserializer.ReadSimpleArray<byte>(DataField.Data);
         }
 
         #endregion
@@ -1135,7 +1135,7 @@ namespace Backsight.Editor
         public override void WriteData(EditSerializer editSerializer)
         {
             // Just write the packed array
-            editSerializer.WriteSimpleArray<byte>("Data", m_Data);
+            editSerializer.WriteSimpleArray<byte>(DataField.Data, m_Data);
         }
     }
 }

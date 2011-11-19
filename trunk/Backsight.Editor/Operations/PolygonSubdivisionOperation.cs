@@ -64,13 +64,13 @@ namespace Backsight.Editor.Operations
         internal PolygonSubdivisionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            if (editDeserializer.IsNextName("DeactivatedLabel"))
+            if (editDeserializer.IsNextField(DataField.DeactivatedLabel))
             {
-                m_Label = editDeserializer.ReadFeatureRef<TextFeature>("DeactivatedLabel");
+                m_Label = editDeserializer.ReadFeatureRef<TextFeature>(DataField.DeactivatedLabel);
                 m_Label.IsInactive = true; // later ?
             }
 
-            m_Lines = editDeserializer.ReadPersistentArray<LineFeature>("Lines");
+            m_Lines = editDeserializer.ReadPersistentArray<LineFeature>(DataField.Lines);
         }
 
         #endregion
@@ -240,9 +240,9 @@ namespace Backsight.Editor.Operations
             base.WriteData(editSerializer);
 
             if (m_Label != null)
-                editSerializer.WriteFeatureRef<TextFeature>("DeactivatedLabel", m_Label);
+                editSerializer.WriteFeatureRef<TextFeature>(DataField.DeactivatedLabel, m_Label);
 
-            editSerializer.WritePersistentArray<LineFeature>("Lines", m_Lines);
+            editSerializer.WritePersistentArray<LineFeature>(DataField.Lines, m_Lines);
         }
     }
 }

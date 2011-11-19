@@ -382,8 +382,8 @@ namespace Backsight.Editor.Operations
         internal UpdateItemCollection GetUpdateItems(Direction dir1, Direction dir2)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Direction>("Direction1", m_Direction1, dir1);
-            result.AddObservation<Direction>("Direction2", m_Direction2, dir2);
+            result.AddObservation<Direction>(DataField.Direction1, m_Direction1, dir1);
+            result.AddObservation<Direction>(DataField.Direction2, m_Direction2, dir2);
             return result;
         }
 
@@ -394,8 +394,8 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Direction>(editSerializer, "Direction1");
-            data.WriteObservation<Direction>(editSerializer, "Direction2");
+            data.WriteObservation<Direction>(editSerializer, DataField.Direction1);
+            data.WriteObservation<Direction>(editSerializer, DataField.Direction2);
         }
 
         /// <summary>
@@ -406,8 +406,8 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Direction>(editDeserializer, "Direction1");
-            result.ReadObservation<Direction>(editDeserializer, "Direction2");
+            result.ReadObservation<Direction>(editDeserializer, DataField.Direction1);
+            result.ReadObservation<Direction>(editDeserializer, DataField.Direction2);
             return result;
         }
 
@@ -419,8 +419,8 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Direction1 = data.ExchangeObservation<Direction>(this, "Direction1", m_Direction1);
-            m_Direction2 = data.ExchangeObservation<Direction>(this, "Direction2", m_Direction2);
+            m_Direction1 = data.ExchangeObservation<Direction>(this, DataField.Direction1, m_Direction1);
+            m_Direction2 = data.ExchangeObservation<Direction>(this, DataField.Direction2, m_Direction2);
         }
 
         /// <summary>
@@ -431,15 +431,15 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WritePersistent<Direction>("Direction1", m_Direction1);
-            editSerializer.WritePersistent<Direction>("Direction2", m_Direction2);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+            editSerializer.WritePersistent<Direction>(DataField.Direction1, m_Direction1);
+            editSerializer.WritePersistent<Direction>(DataField.Direction2, m_Direction2);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_To));
 
             if (m_Line1 != null)
-                editSerializer.WritePersistent<FeatureStub>("Line1", new FeatureStub(m_Line1));
+                editSerializer.WritePersistent<FeatureStub>(DataField.Line1, new FeatureStub(m_Line1));
 
             if (m_Line2 != null)
-                editSerializer.WritePersistent<FeatureStub>("Line2", new FeatureStub(m_Line2));
+                editSerializer.WritePersistent<FeatureStub>(DataField.Line2, new FeatureStub(m_Line2));
         }
 
         /// <summary>
@@ -454,11 +454,11 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out Direction dir1, out Direction dir2,
                                 out FeatureStub to, out FeatureStub line1, out FeatureStub line2)
         {
-            dir1 = editDeserializer.ReadPersistent<Direction>("Direction1");
-            dir2 = editDeserializer.ReadPersistent<Direction>("Direction2");
-            to = editDeserializer.ReadPersistent<FeatureStub>("To");
-            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line1");
-            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line2");
+            dir1 = editDeserializer.ReadPersistent<Direction>(DataField.Direction1);
+            dir2 = editDeserializer.ReadPersistent<Direction>(DataField.Direction2);
+            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line1);
+            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line2);
         }
     }
 }

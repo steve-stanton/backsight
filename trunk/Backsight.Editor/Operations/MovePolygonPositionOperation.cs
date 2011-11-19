@@ -239,11 +239,11 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<TextFeature>("Label", m_Label);
-            editSerializer.WritePointGeometry("NewX", "NewY", m_NewPosition);
+            editSerializer.WriteFeatureRef<TextFeature>(DataField.Label, m_Label);
+            editSerializer.WritePointGeometry(DataField.NewX, DataField.NewY, m_NewPosition);
 
             if (m_OldPosition != null)
-                editSerializer.WritePointGeometry("OldX", "OldY", m_OldPosition);
+                editSerializer.WritePointGeometry(DataField.OldX, DataField.OldY, m_OldPosition);
         }
 
         /// <summary>
@@ -256,11 +256,11 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out TextFeature label, out PointGeometry newPosition,
                                 out PointGeometry oldPosition)
         {
-            label = editDeserializer.ReadFeatureRef<TextFeature>("Label");
-            newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
+            label = editDeserializer.ReadFeatureRef<TextFeature>(DataField.Label);
+            newPosition = editDeserializer.ReadPointGeometry(DataField.NewX, DataField.NewY);
 
-            if (editDeserializer.IsNextName("OldX"))
-                oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
+            if (editDeserializer.IsNextField(DataField.OldX))
+                oldPosition = editDeserializer.ReadPointGeometry(DataField.OldX, DataField.OldY);
             else
                 oldPosition = null;
         }

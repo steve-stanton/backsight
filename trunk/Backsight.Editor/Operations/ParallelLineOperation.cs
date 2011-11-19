@@ -506,11 +506,11 @@ namespace Backsight.Editor.Operations
         {
             UpdateItemCollection result = new UpdateItemCollection();
 
-            result.AddFeature<LineFeature>("RefLine", m_RefLine, refline);
-            result.AddObservation<Observation>("Offset", m_Offset, offset);
-            result.AddFeature<LineFeature>("Term1", m_Term1, term1);
-            result.AddFeature<LineFeature>("Term2", m_Term2, term2);
-            result.AddItem<bool>("ReverseArc", this.IsArcReversed, isArcReversed);
+            result.AddFeature<LineFeature>(DataField.RefLine, m_RefLine, refline);
+            result.AddObservation<Observation>(DataField.Offset, m_Offset, offset);
+            result.AddFeature<LineFeature>(DataField.Term1, m_Term1, term1);
+            result.AddFeature<LineFeature>(DataField.Term2, m_Term2, term2);
+            result.AddItem<bool>(DataField.ReverseArc, this.IsArcReversed, isArcReversed);
 
             return result;
         }
@@ -522,11 +522,11 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteFeature<LineFeature>(editSerializer, "RefLine");
-            data.WriteObservation<Observation>(editSerializer, "Offset");
-            data.WriteFeature<LineFeature>(editSerializer, "Term1");
-            data.WriteFeature<LineFeature>(editSerializer, "Term2");
-            data.WriteItem<bool>(editSerializer, "ReverseArc");
+            data.WriteFeature<LineFeature>(editSerializer, DataField.RefLine);
+            data.WriteObservation<Observation>(editSerializer, DataField.Offset);
+            data.WriteFeature<LineFeature>(editSerializer, DataField.Term1);
+            data.WriteFeature<LineFeature>(editSerializer, DataField.Term2);
+            data.WriteItem<bool>(editSerializer, DataField.ReverseArc);
         }
 
         /// <summary>
@@ -537,11 +537,11 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadFeature<LineFeature>(editDeserializer, "RefLine");
-            result.ReadObservation<Observation>(editDeserializer, "Offset");
-            result.ReadFeature<LineFeature>(editDeserializer, "Term1");
-            result.ReadFeature<LineFeature>(editDeserializer, "Term2");
-            result.ReadItem<bool>(editDeserializer, "ReverseArc");
+            result.ReadFeature<LineFeature>(editDeserializer, DataField.RefLine);
+            result.ReadObservation<Observation>(editDeserializer, DataField.Offset);
+            result.ReadFeature<LineFeature>(editDeserializer, DataField.Term1);
+            result.ReadFeature<LineFeature>(editDeserializer, DataField.Term2);
+            result.ReadItem<bool>(editDeserializer, DataField.ReverseArc);
             return result;
         }
 
@@ -553,13 +553,13 @@ namespace Backsight.Editor.Operations
         /// <returns>The original values for the update items.</returns>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_RefLine = data.ExchangeFeature<LineFeature>(this, "RefLine", m_RefLine);
-            m_Offset = data.ExchangeObservation<Observation>(this, "Offset", m_Offset);
-            m_Term1 = data.ExchangeFeature<LineFeature>(this, "Term1", m_Term1);
-            m_Term2 = data.ExchangeFeature<LineFeature>(this, "Term1", m_Term2);
+            m_RefLine = data.ExchangeFeature<LineFeature>(this, DataField.RefLine, m_RefLine);
+            m_Offset = data.ExchangeObservation<Observation>(this, DataField.Offset, m_Offset);
+            m_Term1 = data.ExchangeFeature<LineFeature>(this, DataField.Term1, m_Term1);
+            m_Term2 = data.ExchangeFeature<LineFeature>(this, DataField.Term1, m_Term2);
 
             // Alter arc direction if necessary.
-            bool isArcReversed = data.ExchangeValue<bool>("ReverseArc", this.IsArcReversed);
+            bool isArcReversed = data.ExchangeValue<bool>(DataField.ReverseArc, this.IsArcReversed);
 
             if (isArcReversed)
                 m_Flags = 1;
@@ -727,26 +727,26 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteFeatureRef<LineFeature>("RefLine", m_RefLine);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.RefLine, m_RefLine);
 
             if (m_Term1 != null)
-                editSerializer.WriteFeatureRef<LineFeature>("Term1", m_Term1);
+                editSerializer.WriteFeatureRef<LineFeature>(DataField.Term1, m_Term1);
 
             if (m_Term2 != null)
-                editSerializer.WriteFeatureRef<LineFeature>("Term2", m_Term2);
+                editSerializer.WriteFeatureRef<LineFeature>(DataField.Term2, m_Term2);
 
             if (IsArcReversed)
-                editSerializer.WriteBool("ReverseArc", true);
+                editSerializer.WriteBool(DataField.ReverseArc, true);
 
-            editSerializer.WritePersistent<Observation>("Offset", m_Offset);
+            editSerializer.WritePersistent<Observation>(DataField.Offset, m_Offset);
 
             if (m_ParLine.StartPoint != OffsetPoint)
-                editSerializer.WritePersistent<FeatureStub>("From", new FeatureStub(m_ParLine.StartPoint));
+                editSerializer.WritePersistent<FeatureStub>(DataField.From, new FeatureStub(m_ParLine.StartPoint));
 
             if (m_ParLine.EndPoint != OffsetPoint)
-                editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_ParLine.EndPoint));
+                editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_ParLine.EndPoint));
 
-            editSerializer.WritePersistent<FeatureStub>("NewLine", new FeatureStub(m_ParLine));
+            editSerializer.WritePersistent<FeatureStub>(DataField.NewLine, new FeatureStub(m_ParLine));
         }
 
         /// <summary>
@@ -757,23 +757,23 @@ namespace Backsight.Editor.Operations
         internal ParallelLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>("RefLine");
+            m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>(DataField.RefLine);
 
-            if (editDeserializer.IsNextName("Term1"))
-                m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>("Term1");
+            if (editDeserializer.IsNextField(DataField.Term1))
+                m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Term1);
 
-            if (editDeserializer.IsNextName("Term2"))
-                m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>("Term2");
+            if (editDeserializer.IsNextField(DataField.Term2))
+                m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Term2);
 
-            if (editDeserializer.IsNextName("ReverseArc") && editDeserializer.ReadBool("ReverseArc") == true)
+            if (editDeserializer.IsNextField(DataField.ReverseArc) && editDeserializer.ReadBool(DataField.ReverseArc) == true)
                 m_Flags = 1;
 
-            m_Offset = editDeserializer.ReadPersistent<Observation>("Offset");
+            m_Offset = editDeserializer.ReadPersistent<Observation>(DataField.Offset);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("From", editDeserializer.ReadPersistentOrNull<FeatureStub>("From"));
-            dff.AddFeatureStub("To", editDeserializer.ReadPersistentOrNull<FeatureStub>("To"));
-            dff.AddFeatureStub("NewLine", editDeserializer.ReadPersistent<FeatureStub>("NewLine"));
+            dff.AddFeatureStub("From", editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.From));
+            dff.AddFeatureStub("To", editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.To));
+            dff.AddFeatureStub("NewLine", editDeserializer.ReadPersistent<FeatureStub>(DataField.NewLine));
             ProcessFeatures(dff);
         }
     }

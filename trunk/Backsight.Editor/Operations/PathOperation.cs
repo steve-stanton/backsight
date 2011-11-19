@@ -90,15 +90,15 @@ namespace Backsight.Editor.Operations
         internal PathOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_From = editDeserializer.ReadFeatureRef<PointFeature>("From");
-            m_To = editDeserializer.ReadFeatureRef<PointFeature>("To");
-            m_EntryString = editDeserializer.ReadString("EntryString");
-            m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit("DefaultEntryUnit");
+            m_From = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
+            m_To = editDeserializer.ReadFeatureRef<PointFeature>(DataField.To);
+            m_EntryString = editDeserializer.ReadString(DataField.EntryString);
+            m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
 
             Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
             m_Legs = new List<Leg>(legs);
 
-            FeatureStub[] stubs = editDeserializer.ReadFeatureStubArray("Result");
+            FeatureStub[] stubs = editDeserializer.ReadFeatureStubArray(DataField.Result);
             DeserializationFactory result = new DeserializationFactory(this, stubs);
             ProcessFeatures(result);
         }
@@ -1063,11 +1063,11 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
-            editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
-            editSerializer.WriteString("EntryString", m_EntryString);
-            editSerializer.WriteDistanceUnit("DefaultEntryUnit", m_DefaultEntryUnit);
-            editSerializer.WriteFeatureStubArray("Result", this.Features);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From, m_From);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.To, m_To);
+            editSerializer.WriteString(DataField.EntryString, m_EntryString);
+            editSerializer.WriteDistanceUnit(DataField.DefaultEntryUnit, m_DefaultEntryUnit);
+            editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
         }
 
         /// <summary>

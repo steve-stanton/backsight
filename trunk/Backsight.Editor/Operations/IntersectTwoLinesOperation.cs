@@ -482,22 +482,22 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<LineFeature>("Line1", m_Line1);
-            editSerializer.WriteFeatureRef<LineFeature>("Line2", m_Line2);
-            editSerializer.WriteFeatureRef<PointFeature>("CloseTo", m_CloseTo);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_Intersection));
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line1, m_Line1);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line2, m_Line2);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.CloseTo, m_CloseTo);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_Intersection));
 
             if (m_Line1a != null)
-                editSerializer.WriteString("SplitBefore1", m_Line1a.DataId);
+                editSerializer.WriteString(DataField.SplitBefore1, m_Line1a.DataId);
 
             if (m_Line1b != null)
-                editSerializer.WriteString("SplitAfter1", m_Line1b.DataId);
+                editSerializer.WriteString(DataField.SplitAfter1, m_Line1b.DataId);
 
             if (m_Line2a != null)
-                editSerializer.WriteString("SplitBefore2", m_Line2a.DataId);
+                editSerializer.WriteString(DataField.SplitBefore2, m_Line2a.DataId);
 
             if (m_Line2b != null)
-                editSerializer.WriteString("SplitAfter2", m_Line2b.DataId);
+                editSerializer.WriteString(DataField.SplitAfter2, m_Line2b.DataId);
         }
 
         /// <summary>
@@ -515,14 +515,14 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out LineFeature line1, out LineFeature line2, out PointFeature closeTo,
                                 out FeatureStub to, out string idLine1a, out string idLine1b, out string idLine2a, out string idLine2b)
         {
-            line1 = editDeserializer.ReadFeatureRef<LineFeature>("Line1");
-            line2 = editDeserializer.ReadFeatureRef<LineFeature>("Line2");
-            closeTo = editDeserializer.ReadFeatureRef<PointFeature>("CloseTo");
-            to = editDeserializer.ReadPersistent<FeatureStub>("To");
-            idLine1a = (editDeserializer.IsNextName("SplitBefore1") ? editDeserializer.ReadString("SplitBefore1") : null);
-            idLine1b = (editDeserializer.IsNextName("SplitAfter1") ? editDeserializer.ReadString("SplitAfter1") : null);
-            idLine2a = (editDeserializer.IsNextName("SplitBefore2") ? editDeserializer.ReadString("SplitBefore2") : null);
-            idLine2b = (editDeserializer.IsNextName("SplitAfter2") ? editDeserializer.ReadString("SplitAfter2") : null);
+            line1 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line1);
+            line2 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line2);
+            closeTo = editDeserializer.ReadFeatureRef<PointFeature>(DataField.CloseTo);
+            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            idLine1a = (editDeserializer.IsNextField(DataField.SplitBefore1) ? editDeserializer.ReadString(DataField.SplitBefore1) : null);
+            idLine1b = (editDeserializer.IsNextField(DataField.SplitAfter1) ? editDeserializer.ReadString(DataField.SplitAfter1) : null);
+            idLine2a = (editDeserializer.IsNextField(DataField.SplitBefore2) ? editDeserializer.ReadString(DataField.SplitBefore2) : null);
+            idLine2b = (editDeserializer.IsNextField(DataField.SplitAfter2) ? editDeserializer.ReadString(DataField.SplitAfter2) : null);
         }
     }
 }

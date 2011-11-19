@@ -1361,14 +1361,14 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
-            editSerializer.WriteFeatureRef<PointFeature>("To", m_To);
-            editSerializer.WriteBool("Topological", IsTopological);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From, m_From);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.To, m_To);
+            editSerializer.WriteBool(DataField.Topological, IsTopological);
 
             // For simple line segments (perhaps 80% of the case when dealing with cadastral
             // data), we already have what we need with the from & to points.
             if (!(m_Geom is SegmentGeometry))
-                editSerializer.WritePersistent<LineGeometry>("Type", m_Geom);
+                editSerializer.WritePersistent<LineGeometry>(DataField.Type, m_Geom);
         }
 
         /// <summary>
@@ -1382,13 +1382,13 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out PointFeature to, out bool isTopological,
                                 out LineGeometry geom)
         {
-            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
-            to = editDeserializer.ReadFeatureRef<PointFeature>("To");
-            isTopological = editDeserializer.ReadBool("Topological");
+            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
+            to = editDeserializer.ReadFeatureRef<PointFeature>(DataField.To);
+            isTopological = editDeserializer.ReadBool(DataField.Topological);
 
-            if (editDeserializer.IsNextName("Type"))
+            if (editDeserializer.IsNextField(DataField.Type))
             {
-                geom = editDeserializer.ReadPersistent<LineGeometry>("Type");
+                geom = editDeserializer.ReadPersistent<LineGeometry>(DataField.Type);
 
                 // Ensure terminals have been defined (since there was no easy way to pass them
                 // through to the LineGeometry constructor).

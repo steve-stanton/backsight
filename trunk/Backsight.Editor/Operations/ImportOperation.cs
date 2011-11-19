@@ -58,7 +58,7 @@ namespace Backsight.Editor.Operations
         internal ImportOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Data = editDeserializer.ReadPersistentArray<Feature>("Features");
+            m_Data = editDeserializer.ReadPersistentArray<Feature>(DataField.Features);
         }
 
         #endregion
@@ -171,7 +171,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WritePersistentArray<Feature>("Features", this.Features);
+            editSerializer.WritePersistentArray<Feature>(DataField.Features, this.Features);
         }
     }
 }

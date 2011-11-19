@@ -358,7 +358,7 @@ namespace Backsight.Editor
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteBool("Topological", IsTopological);
+            editSerializer.WriteBool(DataField.Topological, IsTopological);
 
             IPointGeometry tp = Position;
             IPointGeometry pp = GetPolPosition();
@@ -366,17 +366,17 @@ namespace Backsight.Editor
             {
                 if (pp.Easting.Microns != tp.Easting.Microns || pp.Northing.Microns != tp.Northing.Microns)
                 {
-                    editSerializer.WriteInt64("PolygonX", pp.Easting.Microns);
-                    editSerializer.WriteInt64("PolygonY", pp.Northing.Microns);
+                    editSerializer.WriteInt64(DataField.PolygonX, pp.Easting.Microns);
+                    editSerializer.WriteInt64(DataField.PolygonY, pp.Northing.Microns);
                 }
             }
 
             // RowText is problematic on deserialization because the database rows might not
             // be there. To cover that possibility, use a proxy object.
             if (m_Geom is RowTextGeometry)
-                editSerializer.WritePersistent<TextGeometry>("Type", new RowTextContent((RowTextGeometry)m_Geom));
+                editSerializer.WritePersistent<TextGeometry>(DataField.Type, new RowTextContent((RowTextGeometry)m_Geom));
             else
-                editSerializer.WritePersistent<TextGeometry>("Type", m_Geom);
+                editSerializer.WritePersistent<TextGeometry>(DataField.Type, m_Geom);
         }
 
         /// <summary>
@@ -389,20 +389,14 @@ namespace Backsight.Editor
         /// <param name="geom">The geometry for the text.</param>
         static void ReadData(EditDeserializer editDeserializer, out bool isTopological, out PointGeometry polPos, out TextGeometry geom)
         {
-            isTopological = editDeserializer.ReadBool("Topological");
+            isTopological = editDeserializer.ReadBool(DataField.Topological);
 
-            if (editDeserializer.IsNextName("PolygonX"))
-            {
-                long x = editDeserializer.ReadInt64("PolygonX");
-                long y = editDeserializer.ReadInt64("PolygonY");
-                polPos = new PointGeometry(x, y);
-            }
+            if (editDeserializer.IsNextField(DataField.PolygonX))
+                polPos = editDeserializer.ReadPointGeometry(DataField.PolygonX, DataField.PolygonY);
             else
-            {
                 polPos = null;
-            }
 
-            geom = editDeserializer.ReadPersistent<TextGeometry>("Type");
+            geom = editDeserializer.ReadPersistent<TextGeometry>(DataField.Type);
         }
     }
 }

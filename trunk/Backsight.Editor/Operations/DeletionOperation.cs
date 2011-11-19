@@ -287,7 +287,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteFeatureRefArray<Feature>("Delete", m_Deletions.ToArray());
+            editSerializer.WriteFeatureRefArray<Feature>(DataField.Delete, m_Deletions.ToArray());
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Backsight.Editor.Operations
         /// <param name="point">The point that was created.</param>
         static void ReadData(EditDeserializer editDeserializer, out List<Feature> deletions)
         {
-            Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>("Delete");
+            Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>(DataField.Delete);
             deletions = new List<Feature>(dels);
         }
     }

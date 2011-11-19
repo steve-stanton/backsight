@@ -30,7 +30,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The change items
         /// </summary>
-        readonly Dictionary<string, UpdateItem> m_Changes;
+        readonly Dictionary<DataField, UpdateItem> m_Changes;
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace Backsight.Editor
         /// </summary>
         internal UpdateItemCollection()
         {
-            m_Changes = new Dictionary<string, UpdateItem>();
+            m_Changes = new Dictionary<DataField, UpdateItem>();
         }
 
         /// <summary>
@@ -51,10 +51,10 @@ namespace Backsight.Editor
         /// <param name="copy">The collection to copy</param>
         internal UpdateItemCollection(UpdateItemCollection copy)
         {
-            m_Changes = new Dictionary<string, UpdateItem>(copy.m_Changes.Count);
+            m_Changes = new Dictionary<DataField, UpdateItem>(copy.m_Changes.Count);
 
             foreach (UpdateItem item in copy.m_Changes.Values)
-                m_Changes.Add(item.Name, new UpdateItem(item.Name, item.Value));
+                m_Changes.Add(item.Field, new UpdateItem(item.Field, item.Value));
         }
 
         #endregion
@@ -65,24 +65,24 @@ namespace Backsight.Editor
         /// <param name="item">The item to add (not null)</param>
         internal void Add(UpdateItem item)
         {
-            m_Changes.Add(item.Name, item);
+            m_Changes.Add(item.Field, item);
         }
 
         /// <summary>
         /// Records an update item that refers to a spatial feature.
         /// </summary>
         /// <typeparam name="T">The spatial feature class</typeparam>
-        /// <param name="name">The name for the change item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <param name="oldValue">Tne current value (may be null)</param>
         /// <param name="newValue">The modified value (may be null)</param>
         /// <returns>True if item added. False if there's no change.</returns>
-        internal bool AddFeature<T>(string name, T oldValue, T newValue) where T : Feature
+        internal bool AddFeature<T>(DataField field, T oldValue, T newValue) where T : Feature
         {
             if (oldValue != null || newValue != null)
             {
                 if (oldValue == null || newValue == null || oldValue.DataId.Equals(newValue.DataId) == false)
                 {
-                    Add(new UpdateItem(name, newValue));
+                    Add(new UpdateItem(field, newValue));
                     return true;
                 }
             }
@@ -94,12 +94,12 @@ namespace Backsight.Editor
         /// Unconditionally records an update item that simply refers to a specific spatial feature.
         /// </summary>
         /// <typeparam name="T">The spatial feature class</typeparam>
-        /// <param name="name">The name for the change item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <param name="oldValue">Tne current value (may be null)</param>
         /// <returns>True (always)</returns>
-        internal bool AddFeature<T>(string name, T value) where T : Feature
+        internal bool AddFeature<T>(DataField field, T value) where T : Feature
         {
-            Add(new UpdateItem(name, value));
+            Add(new UpdateItem(field, value));
             return true;
         }
 
@@ -109,15 +109,15 @@ namespace Backsight.Editor
         /// <typeparam name="T">The type of feature being referenced (as it is known to the edit
         /// that contains it)</typeparam>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        /// <param name="name">A name tag for the item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>True if a feature reference was written, false if the item with the specific name is not present
         /// in this collection.</returns>
-        internal bool WriteFeature<T>(EditSerializer editSerializer, string name) where T : Feature
+        internal bool WriteFeature<T>(EditSerializer editSerializer, DataField field) where T : Feature
         {
             UpdateItem item;
-            if (m_Changes.TryGetValue(name, out item))
+            if (m_Changes.TryGetValue(field, out item))
             {
-                editSerializer.WriteFeatureRef<T>(name, (T)item.Value);
+                editSerializer.WriteFeatureRef<T>(field, (T)item.Value);
                 return true;
             }
 
@@ -130,15 +130,15 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The type of feature expected by the caller.</typeparam>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="name">A name tag associated with the object</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>True if a feature reference was loaded, false if the next item in the deserialization
         /// stream does not have the specified name.</returns>
-        internal bool ReadFeature<T>(EditDeserializer editDeserializer, string name) where T : Feature
+        internal bool ReadFeature<T>(EditDeserializer editDeserializer, DataField field) where T : Feature
         {
-            if (editDeserializer.IsNextName(name))
+            if (editDeserializer.IsNextField(field))
             {
-                T result = editDeserializer.ReadFeatureRef<T>(name);
-                Add(new UpdateItem(name, result));
+                T result = editDeserializer.ReadFeatureRef<T>(field);
+                Add(new UpdateItem(field, result));
                 return true;
             }
 
@@ -149,17 +149,17 @@ namespace Backsight.Editor
         /// Records an update item that refers to some sort of observation.
         /// </summary>
         /// <typeparam name="T">The observation class</typeparam>
-        /// <param name="name">The name for the change item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <param name="oldValue">Tne current value (may be null)</param>
         /// <param name="newValue">The modified value (may be null)</param>
         /// <returns>True if item added. False if there's no change.</returns>
-        internal bool AddObservation<T>(string name, T oldValue, T newValue) where T : Observation
+        internal bool AddObservation<T>(DataField field, T oldValue, T newValue) where T : Observation
         {
             if (oldValue != null || newValue != null)
             {
                 if (oldValue == null || newValue == null || IsEqual(oldValue, newValue) == false)
                 {
-                    Add(new UpdateItem(name, newValue));
+                    Add(new UpdateItem(field, newValue));
                     return true;
                 }
             }
@@ -173,15 +173,15 @@ namespace Backsight.Editor
         /// <typeparam name="T">The type of object being written (as it is known to the edit
         /// that contains it)</typeparam>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        /// <param name="name">A name tag for the item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>True if an observation was written, false if the item with the specific name is not present
         /// in this collection.</returns>
-        internal bool WriteObservation<T>(EditSerializer editSerializer, string name) where T : Observation
+        internal bool WriteObservation<T>(EditSerializer editSerializer, DataField field) where T : Observation
         {
             UpdateItem item;
-            if (m_Changes.TryGetValue(name, out item))
+            if (m_Changes.TryGetValue(field, out item))
             {
-                editSerializer.WritePersistent<T>(name, (T)item.Value);
+                editSerializer.WritePersistent<T>(field, (T)item.Value);
                 return true;
             }
 
@@ -194,15 +194,15 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The type of object expected by the caller.</typeparam>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="name">A name tag associated with the object</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>True if an observation was loaded, false if the next item in the deserialization
         /// stream does not have the specified name.</returns>
-        internal bool ReadObservation<T>(EditDeserializer editDeserializer, string name) where T : Observation
+        internal bool ReadObservation<T>(EditDeserializer editDeserializer, DataField field) where T : Observation
         {
-            if (editDeserializer.IsNextName(name))
+            if (editDeserializer.IsNextField(field))
             {
-                T result = editDeserializer.ReadPersistent<T>(name);
-                Add(new UpdateItem(name, result));
+                T result = editDeserializer.ReadPersistent<T>(field);
+                Add(new UpdateItem(field, result));
                 return true;
             }
 
@@ -230,8 +230,8 @@ namespace Backsight.Editor
                     return true;
 
                 // The following is kind of heavy-handed
-                string sa = EditSerializer.GetSerializedString<Observation>("Test", a);
-                string sb = EditSerializer.GetSerializedString<Observation>("Test", b);
+                string sa = EditSerializer.GetSerializedString<Observation>(DataField.Test, a);
+                string sb = EditSerializer.GetSerializedString<Observation>(DataField.Test, b);
                 return sa.Equals(sb);
             }
         }
@@ -240,17 +240,17 @@ namespace Backsight.Editor
         /// Records an update item that refers to a miscellaneous value.
         /// </summary>
         /// <typeparam name="T">The object type</typeparam>
-        /// <param name="name">The name for the change item</param>
+        /// <param name="field">The tag that identifies the change item.</param>
         /// <param name="oldValue">Tne current value (may be null)</param>
         /// <param name="newValue">The modified value (may be null)</param>
         /// <returns>True if item added. False if there's no change.</returns>
-        internal bool AddItem<T>(string name, T oldValue, T newValue) where T : IEquatable<T>
+        internal bool AddItem<T>(DataField field, T oldValue, T newValue) where T : IEquatable<T>
         {
             if (oldValue != null || newValue != null)
             {
                 if (oldValue == null || newValue == null || oldValue.Equals(newValue) == false)
                 {
-                    Add(new UpdateItem(name, newValue));
+                    Add(new UpdateItem(field, newValue));
                     return true;
                 }
             }
@@ -264,15 +264,15 @@ namespace Backsight.Editor
         /// <typeparam name="T">The type of value being written (as it is known to the edit
         /// that contains it)</typeparam>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        /// <param name="name">A name tag for the item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>True if an item was written, false if the item with the specific name is not present
         /// in this collection.</returns>
-        internal bool WriteItem<T>(EditSerializer editSerializer, string name) where T : IConvertible
+        internal bool WriteItem<T>(EditSerializer editSerializer, DataField field) where T : IConvertible
         {
             UpdateItem item;
-            if (m_Changes.TryGetValue(name, out item))
+            if (m_Changes.TryGetValue(field, out item))
             {
-                editSerializer.WriteValue<T>(name, (T)item.Value);
+                editSerializer.WriteValue<T>(field, (T)item.Value);
                 return true;
             }
 
@@ -285,15 +285,15 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The type of value expected by the caller.</typeparam>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">The tag that identifies the value.</param>
         /// <returns>True if an item was loaded, false if the next item in the deserialization
         /// stream does not have the specified name.</returns>
-        internal bool ReadItem<T>(EditDeserializer editDeserializer, string name) where T : IConvertible
+        internal bool ReadItem<T>(EditDeserializer editDeserializer, DataField field) where T : IConvertible
         {
-            if (editDeserializer.IsNextName(name))
+            if (editDeserializer.IsNextField(field))
             {
-                T result = editDeserializer.ReadValue<T>(name);
-                Add(new UpdateItem(name, result));
+                T result = editDeserializer.ReadValue<T>(field);
+                Add(new UpdateItem(field, result));
                 return true;
             }
 
@@ -305,17 +305,17 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The spatial feature class</typeparam>
         /// <param name="edit">The edit these updates relate to</param>
-        /// <param name="name">The name of the change item</param>
+        /// <param name="field">The tag that identifies the change item.</param>
         /// <param name="value">The value to save as part of this collection</param>
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeFeature<T>(Operation edit, string name, T value) where T : Feature
+        internal T ExchangeFeature<T>(Operation edit, DataField field, T value) where T : Feature
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
             UpdateItem item;
-            if (!m_Changes.TryGetValue(name, out item))
+            if (!m_Changes.TryGetValue(field, out item))
                 return value;
 
             // Do nothing if the before and after values are the same
@@ -342,17 +342,17 @@ namespace Backsight.Editor
         /// </summary>
         /// <typeparam name="T">The observation class</typeparam>
         /// <param name="edit">The edit these updates relate to</param>
-        /// <param name="name">The name of the change item</param>
+        /// <param name="field">The tag that identifies the change item.</param>
         /// <param name="value">The value to save as part of this collection</param>
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeObservation<T>(Operation edit, string name, T value) where T : Observation
+        internal T ExchangeObservation<T>(Operation edit, DataField field, T value) where T : Observation
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
             UpdateItem item;
-            if (!m_Changes.TryGetValue(name, out item))
+            if (!m_Changes.TryGetValue(field, out item))
                 return value;
 
             // Do nothing if the before and after values are the same
@@ -377,17 +377,17 @@ namespace Backsight.Editor
         /// Replaces a miscellaneous object referenced by a specific change item.
         /// </summary>
         /// <typeparam name="T">The object class</typeparam>
-        /// <param name="name">The name of the change item</param>
+        /// <param name="field">The tag that identifies the change item.</param>
         /// <param name="value">The value to save as part of this collection</param>
         /// <returns>The value that was previously recorded in this collection. If
         /// the named item isn't recorded as part of this collection, you get
         /// back the supplied value.</returns>
-        internal T ExchangeValue<T>(string name, T value) where T : IEquatable<T>
+        internal T ExchangeValue<T>(DataField field, T value) where T : IEquatable<T>
         {
             // If the specified item isn't in the change list, just return
             // the value that was supplied.
             UpdateItem item;
-            if (!m_Changes.TryGetValue(name, out item))
+            if (!m_Changes.TryGetValue(field, out item))
                 return value;
 
             // Replace the value we had with the supplied value, and return
@@ -401,12 +401,12 @@ namespace Backsight.Editor
         /// Obtains the value of the item with a specific name.
         /// </summary>
         /// <typeparam name="T">The object class</typeparam>
-        /// <param name="name">The name of the item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <returns>The value associated with the item (null if not found)</returns>
-        internal T GetValue<T>(string name)
+        internal T GetValue<T>(DataField field)
         {
             UpdateItem item;
-            if (m_Changes.TryGetValue(name, out item))
+            if (m_Changes.TryGetValue(field, out item))
                 return (T)item.Value;
             else
                 return default(T);

@@ -42,7 +42,7 @@ namespace Backsight.Editor
         /// <returns>The created editing object</returns>
         static internal Operation Deserialize(EditDeserializer editDeserializer)
         {
-            Operation result = editDeserializer.ReadPersistent<Operation>("Edit");
+            Operation result = editDeserializer.ReadPersistent<Operation>(DataField.Edit);
 
             // Note that calculated geometry is NOT defined at this stage. That happens
             // when the model is asked to index the data.
@@ -118,7 +118,7 @@ namespace Backsight.Editor
             editDeserializer.CurrentEdit = this;
             m_Session = editDeserializer.MapModel.LastSession;
 
-            string id = editDeserializer.ReadString("Id");
+            string id = editDeserializer.ReadString(DataField.Id);
             uint sessionId;
             InternalIdValue.Parse(id, out sessionId, out m_Sequence);
 
@@ -454,7 +454,7 @@ namespace Backsight.Editor
         internal string GetEditString()
         {
             EditSerializer es = new EditSerializer();
-            es.WritePersistent<Operation>("Edit", this);
+            es.WritePersistent<Operation>(DataField.Edit, this);
             return es.ToSerializedString();
         }
 
@@ -818,7 +818,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public virtual void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteString("Id", DataId);
+            editSerializer.WriteString(DataField.Id, DataId);
         }
     }
 }

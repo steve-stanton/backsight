@@ -250,8 +250,8 @@ namespace Backsight.Editor.Operations
         internal UpdateItemCollection GetUpdateItems(Direction dir, Observation length)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Direction>("Direction", m_Direction, dir);
-            result.AddObservation<Observation>("Length", m_Length, length);
+            result.AddObservation<Direction>(DataField.Direction, m_Direction, dir);
+            result.AddObservation<Observation>(DataField.Length, m_Length, length);
             return result;
         }
 
@@ -262,8 +262,8 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Direction>(editSerializer, "Direction");
-            data.WriteObservation<Observation>(editSerializer, "Length");
+            data.WriteObservation<Direction>(editSerializer, DataField.Direction);
+            data.WriteObservation<Observation>(editSerializer, DataField.Length);
         }
 
         /// <summary>
@@ -274,8 +274,8 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Direction>(editDeserializer, "Direction");
-            result.ReadObservation<Observation>(editDeserializer, "Length");
+            result.ReadObservation<Direction>(editDeserializer, DataField.Direction);
+            result.ReadObservation<Observation>(editDeserializer, DataField.Length);
             return result;
         }
 
@@ -287,8 +287,8 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
-            m_Length = data.ExchangeObservation<Observation>(this, "Length", m_Length);
+            m_Direction = data.ExchangeObservation<Direction>(this, DataField.Direction, m_Direction);
+            m_Length = data.ExchangeObservation<Observation>(this, DataField.Length, m_Length);
         }
 
         /// <summary>
@@ -452,12 +452,12 @@ void CeRadial::CreateAngleText ( CPtrList& text
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
-            editSerializer.WritePersistent<Observation>("Length", m_Length);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+            editSerializer.WritePersistent<Direction>(DataField.Direction, m_Direction);
+            editSerializer.WritePersistent<Observation>(DataField.Length, m_Length);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_To));
 
             if (m_Line != null)
-                editSerializer.WritePersistent<FeatureStub>("Line", new FeatureStub(m_Line));
+                editSerializer.WritePersistent<FeatureStub>(DataField.Line, new FeatureStub(m_Line));
         }
 
         /// <summary>
@@ -468,12 +468,12 @@ void CeRadial::CreateAngleText ( CPtrList& text
         internal RadialOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Direction = editDeserializer.ReadPersistent<Direction>("Direction");
-            m_Length = editDeserializer.ReadPersistent<Observation>("Length");
+            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", editDeserializer.ReadPersistent<FeatureStub>("To"));
-            dff.AddFeatureStub("Line", editDeserializer.ReadPersistentOrNull<FeatureStub>("Line"));
+            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
+            dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
             ProcessFeatures(dff);
         }
     }

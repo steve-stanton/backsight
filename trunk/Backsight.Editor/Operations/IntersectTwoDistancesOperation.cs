@@ -531,11 +531,11 @@ namespace Backsight.Editor.Operations
             Observation dist2, PointFeature from2, bool isdefault)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Observation>("Distance1", m_Distance1, dist1);
-            result.AddFeature<PointFeature>("From1", m_From1, from1);
-            result.AddObservation<Observation>("Distance2", m_Distance2, dist2);
-            result.AddFeature<PointFeature>("From2", m_From2, from2);
-            result.AddItem<bool>("Default", m_Default, isdefault);
+            result.AddObservation<Observation>(DataField.Distance1, m_Distance1, dist1);
+            result.AddFeature<PointFeature>(DataField.From1, m_From1, from1);
+            result.AddObservation<Observation>(DataField.Distance2, m_Distance2, dist2);
+            result.AddFeature<PointFeature>(DataField.From2, m_From2, from2);
+            result.AddItem<bool>(DataField.Default, m_Default, isdefault);
             return result;
         }
 
@@ -546,11 +546,11 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Observation>(editSerializer, "Distance1");
-            data.WriteFeature<PointFeature>(editSerializer, "From1");
-            data.WriteObservation<Observation>(editSerializer, "Distance2");
-            data.WriteFeature<PointFeature>(editSerializer, "From2");
-            data.WriteItem<bool>(editSerializer, "Default");
+            data.WriteObservation<Observation>(editSerializer, DataField.Distance1);
+            data.WriteFeature<PointFeature>(editSerializer, DataField.From1);
+            data.WriteObservation<Observation>(editSerializer, DataField.Distance2);
+            data.WriteFeature<PointFeature>(editSerializer, DataField.From2);
+            data.WriteItem<bool>(editSerializer, DataField.Default);
         }
 
         /// <summary>
@@ -561,11 +561,11 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Observation>(editDeserializer, "Distance1");
-            result.ReadFeature<PointFeature>(editDeserializer, "From1");
-            result.ReadObservation<Observation>(editDeserializer, "Distance2");
-            result.ReadFeature<PointFeature>(editDeserializer, "From2");
-            result.ReadItem<bool>(editDeserializer, "Default");
+            result.ReadObservation<Observation>(editDeserializer, DataField.Distance1);
+            result.ReadFeature<PointFeature>(editDeserializer, DataField.From1);
+            result.ReadObservation<Observation>(editDeserializer, DataField.Distance2);
+            result.ReadFeature<PointFeature>(editDeserializer, DataField.From2);
+            result.ReadItem<bool>(editDeserializer, DataField.Default);
             return result;
         }
 
@@ -577,11 +577,11 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Distance1 = data.ExchangeObservation<Observation>(this, "Distance1", m_Distance1);
-            m_From1 = data.ExchangeFeature<PointFeature>(this, "From1", m_From1);
-            m_Distance2 = data.ExchangeObservation<Observation>(this, "Distance2", m_Distance2);
-            m_From2 = data.ExchangeFeature<PointFeature>(this, "From2", m_From2);
-            m_Default = data.ExchangeValue<bool>("Default", m_Default);
+            m_Distance1 = data.ExchangeObservation<Observation>(this, DataField.Distance1, m_Distance1);
+            m_From1 = data.ExchangeFeature<PointFeature>(this, DataField.From1, m_From1);
+            m_Distance2 = data.ExchangeObservation<Observation>(this, DataField.Distance2, m_Distance2);
+            m_From2 = data.ExchangeFeature<PointFeature>(this, DataField.From2, m_From2);
+            m_Default = data.ExchangeValue<bool>(DataField.Default, m_Default);
         }
 
         /// <summary>
@@ -592,18 +592,18 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WritePersistent<Observation>("Distance1", m_Distance1);
-            editSerializer.WriteFeatureRef<PointFeature>("From1", m_From1);
-            editSerializer.WritePersistent<Observation>("Distance2", m_Distance2);
-            editSerializer.WriteFeatureRef<PointFeature>("From2", m_From2);
-            editSerializer.WriteBool("Default", m_Default);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+            editSerializer.WritePersistent<Observation>(DataField.Distance1, m_Distance1);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From1, m_From1);
+            editSerializer.WritePersistent<Observation>(DataField.Distance2, m_Distance2);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From2, m_From2);
+            editSerializer.WriteBool(DataField.Default, m_Default);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_To));
 
             if (m_Line1 != null)
-                editSerializer.WritePersistent<FeatureStub>("Line1", new FeatureStub(m_Line1));
+                editSerializer.WritePersistent<FeatureStub>(DataField.Line1, new FeatureStub(m_Line1));
 
             if (m_Line2 != null)
-                editSerializer.WritePersistent<FeatureStub>("Line2", new FeatureStub(m_Line2));
+                editSerializer.WritePersistent<FeatureStub>(DataField.Line2, new FeatureStub(m_Line2));
         }
 
         /// <summary>
@@ -622,14 +622,14 @@ namespace Backsight.Editor.Operations
                                 out Observation dist2, out PointFeature from2, out bool isDefault,
                                 out FeatureStub to, out FeatureStub line1, out FeatureStub line2)
         {
-            dist1 = editDeserializer.ReadPersistent<Observation>("Distance1");
-            from1 = editDeserializer.ReadFeatureRef<PointFeature>("From1");
-            dist2 = editDeserializer.ReadPersistent<Observation>("Distance2");
-            from2 = editDeserializer.ReadFeatureRef<PointFeature>("From2");
-            isDefault = editDeserializer.ReadBool("Default");
-            to = editDeserializer.ReadPersistent<FeatureStub>("To");
-            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line1");
-            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>("Line2");
+            dist1 = editDeserializer.ReadPersistent<Observation>(DataField.Distance1);
+            from1 = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From1);
+            dist2 = editDeserializer.ReadPersistent<Observation>(DataField.Distance2);
+            from2 = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From2);
+            isDefault = editDeserializer.ReadBool(DataField.Default);
+            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line1);
+            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line2);
         }
     }
 }

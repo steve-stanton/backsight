@@ -391,8 +391,8 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<PointFeature>("Center", m_Center);
-            editSerializer.WritePersistent<Observation>("Radius", m_Radius);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.Center, m_Center);
+            editSerializer.WritePersistent<Observation>(DataField.Radius, m_Radius);
 
             // Record a closing point only if it was created by this edit -- in that case, the radius must
             // be a plain Distance (if the radius is defined using an OffsetPoint observation, the closing
@@ -402,14 +402,14 @@ namespace Backsight.Editor.Operations
             if (Line.StartPoint.Creator == this)
             {
                 Debug.Assert(m_Radius is Distance);
-                editSerializer.WritePersistent<FeatureStub>("ClosingPoint", new FeatureStub(Line.StartPoint));
+                editSerializer.WritePersistent<FeatureStub>(DataField.ClosingPoint, new FeatureStub(Line.StartPoint));
             }
             else
             {
                 Debug.Assert(m_Radius is OffsetPoint);
             }
 
-            editSerializer.WritePersistent<FeatureStub>("Arc", new FeatureStub(Line));
+            editSerializer.WritePersistent<FeatureStub>(DataField.Arc, new FeatureStub(Line));
         }
 
         /// <summary>
@@ -424,10 +424,10 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out PointFeature center, out Observation radius,
                                 out FeatureStub closingPoint, out FeatureStub arc)
         {
-            center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
-            radius = editDeserializer.ReadPersistent<Observation>("Radius");
-            closingPoint = editDeserializer.ReadPersistentOrNull<FeatureStub>("ClosingPoint");
-            arc = editDeserializer.ReadPersistent<FeatureStub>("Arc");
+            center = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Center);
+            radius = editDeserializer.ReadPersistent<Observation>(DataField.Radius);
+            closingPoint = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.ClosingPoint);
+            arc = editDeserializer.ReadPersistent<FeatureStub>(DataField.Arc);
         }
     }
 }

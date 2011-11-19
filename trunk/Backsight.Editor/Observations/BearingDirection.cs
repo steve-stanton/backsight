@@ -167,8 +167,8 @@ namespace Backsight.Editor.Observations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
-            editSerializer.WriteRadians("Value", m_Observation);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From, m_From);
+            editSerializer.WriteRadians(DataField.Value, m_Observation);
         }
 
         /// <summary>
@@ -179,8 +179,8 @@ namespace Backsight.Editor.Observations
         /// <param name="value">The angle in radians. A negated value indicates an anticlockwise angle.</param>
         static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out RadianValue value)
         {
-            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
-            value = editDeserializer.ReadRadians("Value");
+            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
+            value = editDeserializer.ReadRadians(DataField.Value);
         }
     }
 }

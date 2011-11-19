@@ -294,9 +294,9 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
-            editSerializer.WriteUInt32("PositionRatio", m_PositionRatio);
-            editSerializer.WritePersistent<FeatureStub>("Point", new FeatureStub(m_Point));
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
+            editSerializer.WriteUInt32(DataField.PositionRatio, m_PositionRatio);
+            editSerializer.WritePersistent<FeatureStub>(DataField.Point, new FeatureStub(m_Point));
         }
 
         /// <summary>
@@ -308,9 +308,9 @@ namespace Backsight.Editor.Operations
         /// <param name="point">The point that was created.</param>
         static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out uint positionRatio, out PointFeature point)
         {
-            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            positionRatio = editDeserializer.ReadUInt32("PositionRatio");
-            FeatureStub stub = editDeserializer.ReadPersistent<FeatureStub>("Point");
+            line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            positionRatio = editDeserializer.ReadUInt32(DataField.PositionRatio);
+            FeatureStub stub = editDeserializer.ReadPersistent<FeatureStub>(DataField.Point);
             point = new PointFeature(stub, null);
         }
     }

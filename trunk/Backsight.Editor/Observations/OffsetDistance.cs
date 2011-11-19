@@ -210,8 +210,8 @@ namespace Backsight.Editor.Observations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WritePersistent<Distance>("Offset", m_Offset);
-            editSerializer.WriteBool("Left", m_IsLeft);
+            editSerializer.WritePersistent<Distance>(DataField.Offset, m_Offset);
+            editSerializer.WriteBool(DataField.Left, m_IsLeft);
         }
 
         /// <summary>
@@ -222,8 +222,8 @@ namespace Backsight.Editor.Observations
         /// <param name="isLeft">Is the offset to the left of the object that acts as the reference for the offset.</param>
         static void ReadData(EditDeserializer editDeserializer, out Distance offset, out bool isLeft)
         {
-            offset = editDeserializer.ReadPersistent<Distance>("Offset");
-            isLeft = editDeserializer.ReadBool("Left");
+            offset = editDeserializer.ReadPersistent<Distance>(DataField.Offset);
+            isLeft = editDeserializer.ReadBool(DataField.Left);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Backsight.Editor
         internal MiscTextGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Text = editDeserializer.ReadString("Text");
+            m_Text = editDeserializer.ReadString(DataField.Text);
         }
 
         #endregion
@@ -146,7 +146,7 @@ namespace Backsight.Editor
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteString("Text", m_Text);
+            editSerializer.WriteString(DataField.Text, m_Text);
         }
     }
 }

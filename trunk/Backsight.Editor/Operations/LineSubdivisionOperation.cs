@@ -276,6 +276,8 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
+            throw new NotImplementedException();
+            /*
             foreach (UpdateItem item in data.ToArray())
             {
                 // Items that start with "A" relate to the flip status of the annotation
@@ -292,6 +294,7 @@ namespace Backsight.Editor.Operations
                 else
                     mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
             }
+             */
         }
 
         /// <summary>
@@ -321,9 +324,9 @@ namespace Backsight.Editor.Operations
             base.WriteData(editSerializer);
 
             // The alternate face is currently added only via update edits
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
-            editSerializer.WritePersistent<LineSubdivisionFace>("PrimaryFace", m_PrimaryFace);
-            editSerializer.WriteFeatureStubArray("Result", this.Features);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
+            editSerializer.WritePersistent<LineSubdivisionFace>(DataField.PrimaryFace, m_PrimaryFace);
+            editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
         }
 
         /// <summary>
@@ -336,9 +339,9 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out LineSubdivisionFace primaryFace,
                                 out FeatureStub[] result)
         {
-            line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>("PrimaryFace");
-            result = editDeserializer.ReadFeatureStubArray("Result");
+            line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.PrimaryFace);
+            result = editDeserializer.ReadFeatureStubArray(DataField.Result);
         }
     }
 }
