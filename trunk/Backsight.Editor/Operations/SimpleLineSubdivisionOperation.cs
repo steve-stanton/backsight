@@ -244,7 +244,7 @@ namespace Backsight.Editor.Operations
         internal override void ProcessFeatures(FeatureFactory ff)
         {
             m_NewPoint = ff.CreatePointFeature(DataField.NewPoint);
-            SectionLineFeature line1, line2;
+            LineFeature line1, line2;
             ff.MakeSections(m_Line, DataField.NewLine1, m_NewPoint, DataField.NewLine2, out line1, out line2);
             m_NewLine1 = line1;
             m_NewLine2 = line2;

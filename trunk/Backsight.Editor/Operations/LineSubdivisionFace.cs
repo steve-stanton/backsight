@@ -329,7 +329,7 @@ namespace Backsight.Editor.Operations
                 }
 
                 item.ItemSequence++;
-                SectionLineFeature line = ff.CreateSection(item.ToString(), parentLine, start, end);
+                LineFeature line = ff.CreateSection(item.ToString(), parentLine, start, end);
                 m_Sections.Add(new MeasuredLineFeature(line, distances[i]));
                 start = end;
             }

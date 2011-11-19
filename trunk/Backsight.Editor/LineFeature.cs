@@ -120,6 +120,12 @@ namespace Backsight.Editor
             Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
         }
 
+        internal LineFeature(Operation creator, uint sessionSequence, SectionGeometry section)
+            : this(creator, sessionSequence, section.BaseLine.EntityType, (PointFeature)section.Start,
+                    (PointFeature)section.End, section)
+        {
+        }
+
         /// <summary>
         /// Creates a new <c>LineFeature</c>
         /// </summary>
@@ -145,6 +151,21 @@ namespace Backsight.Editor
             // If the entity type denotes a topological boundary, initialize the topology.
             if (e.IsPolygonBoundaryValid)
                 SetTopology(true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineFeature"/> class that corresponds to
+        /// a section of another line, and records it as part of the map model.
+        /// </summary>
+        /// <param name="f">Basic information about the feature (not null).</param>
+        /// <param name="baseLine">The line that this section is part of</param>
+        /// <param name="start">The point at the start of the line</param>
+        /// <param name="end">The point at the end of the line</param>
+        /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
+        /// <paramref name="creator"/> is null.</exception>
+        internal LineFeature(IFeature f, LineFeature baseLine, PointFeature start, PointFeature end, bool isTopological)
+            : this(f, start, end, new SectionGeometry(baseLine, start, end), isTopological)
+        {
         }
 
         /// <summary>
@@ -732,9 +753,9 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// session that created it.</param>
         /// <param name="section">The geometry for the new line.</param>
         /// <returns>The new line</returns>
-        internal SectionLineFeature MakeSubSection(Operation creator, uint sessionSequence, SectionGeometry section)
+        internal LineFeature MakeSubSection(Operation creator, uint sessionSequence, SectionGeometry section)
         {
-            SectionLineFeature result = new SectionLineFeature(creator, sessionSequence, section);
+            LineFeature result = new LineFeature(creator, sessionSequence, section);
 
             //PointFeature start = (PointFeature)section.Start;
             //PointFeature end = (PointFeature)section.End;
@@ -1372,11 +1393,12 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
         /// <summary>
         /// Attempts to locate the circular arc (if any) that this line is based on.
         /// </summary>
-        /// <returns>Null (always). The <see cref="ArcFeature"/> and <see cref="SectionLineFeature"/>
-        /// classes provide overrides.</returns>
+        /// <returns>The circular arc this line is based on (may well be null, it's only not null
+        /// if this line is a section based on an arc). The <see cref="ArcFeature"/> class provides an override.</returns>
         internal virtual ArcFeature GetArcBase()
         {
-            return null;
+            SectionGeometry s = (m_Geom as SectionGeometry);
+            return (s==null ? null : s.BaseLine.GetArcBase());
         }
 
         /// <summary>
