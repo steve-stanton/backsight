@@ -119,7 +119,7 @@ namespace Backsight.Editor.Operations
             base.OnRollback();
 
             // Mark each created line for undo
-            foreach (SegmentLineFeature line in m_Lines)
+            foreach (LineFeature line in m_Lines)
                 Rollback(line);
 
             // If the polygon originally had a label, restore it.
@@ -178,7 +178,7 @@ namespace Backsight.Editor.Operations
             IEntity ent = map.DefaultLineType;
 
             // Allocate array to point to the lines we will be creating.
-            m_Lines = new SegmentLineFeature[numLine];
+            m_Lines = new LineFeature[numLine];
 
             // Add lines for each link
             PointFeature start, end;
@@ -222,7 +222,7 @@ namespace Backsight.Editor.Operations
         {
             List<Feature> result = new List<Feature>(m_Lines.Length * 2);
 
-            foreach (SegmentLineFeature line in m_Lines)
+            foreach (LineFeature line in m_Lines)
             {
                 result.Add(line.StartPoint);
                 result.Add(line.EndPoint);

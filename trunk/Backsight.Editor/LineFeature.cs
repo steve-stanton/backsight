@@ -30,7 +30,7 @@ namespace Backsight.Editor
     /// <summary>
     /// A line feature.
     /// </summary>
-    abstract class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
+    class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
     {
         #region Class data
 
@@ -57,6 +57,47 @@ namespace Backsight.Editor
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Creates a <c>LineFeature</c> consisting of a simple line segment.
+        /// </summary>
+        /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="e">The entity type for the feature.</param>
+        /// <param name="start">The point at the start of the line</param>
+        /// <param name="end">The point at the end of the line</param>
+        internal LineFeature(Operation creator, uint sessionSequence, IEntity e, PointFeature start, PointFeature end)
+            : this(creator, sessionSequence, e, start, end, new SegmentGeometry(start, end))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="f">Basic information about the feature (not null).</param>
+        /// <param name="start">The point at the start of the line (not null).</param>
+        /// <param name="end">The point at the end of the line (not null).</param>
+        /// <exception cref="ArgumentNullException">If any parameter is null.</exception>
+        internal LineFeature(IFeature f, PointFeature start, PointFeature end)
+            : this(f, start, end, f.EntityType.IsPolygonBoundaryValid)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LineFeature"/> class, and records it
+        /// as part of the map model.
+        /// </summary>
+        /// <param name="f">Basic information about the feature (not null).</param>
+        /// <param name="start">The point at the start of the line (not null).</param>
+        /// <param name="end">The point at the end of the line (not null).</param>
+        /// <param name="isTopological">Should the line be tagged as a polygon boundary?</param>
+        /// <exception cref="ArgumentNullException">If any parameter is null.</exception>
+        internal LineFeature(IFeature f, PointFeature start, PointFeature end, bool isTopological)
+            : this(f, start, end, new SegmentGeometry(start, end), isTopological)
+        {
+        }
 
         /// <summary>
         /// Creates a new <c>LineFeature</c>
