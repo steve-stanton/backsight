@@ -62,7 +62,7 @@ namespace Backsight.Editor.Operations
         internal SetTopologyOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
             m_Line.SwitchTopology(); // later?
         }
 
@@ -189,7 +189,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
         }
     }
 }

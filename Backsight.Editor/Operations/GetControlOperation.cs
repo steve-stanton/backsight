@@ -61,7 +61,7 @@ namespace Backsight.Editor.Operations
         internal GetControlOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            PointFeature[] points = editDeserializer.ReadPersistentArray<PointFeature>("Points");
+            PointFeature[] points = editDeserializer.ReadPersistentArray<PointFeature>(DataField.Points);
             m_Features = new List<PointFeature>(points);
         }
 
@@ -218,10 +218,10 @@ namespace Backsight.Editor.Operations
             // Unconditionally add an item that identifies the feature involved. This
             // is kind of klunky, covering the fact that this dialog for updating control
             // only deals with one point at a time.
-            result.AddFeature<PointFeature>("UpdatedPoint", p);
+            result.AddFeature<PointFeature>(DataField.UpdatedPoint, p);
 
-            result.AddItem<double>("X", p.PointGeometry.Easting.Meters, newPosition.X);
-            result.AddItem<double>("Y", p.PointGeometry.Northing.Meters, newPosition.Y);
+            result.AddItem<double>(DataField.X, p.PointGeometry.Easting.Meters, newPosition.X);
+            result.AddItem<double>(DataField.Y, p.PointGeometry.Northing.Meters, newPosition.Y);
             return result;
         }
 
@@ -232,9 +232,9 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteFeature<PointFeature>(editSerializer, "UpdatedPoint");
-            data.WriteItem<double>(editSerializer, "X");
-            data.WriteItem<double>(editSerializer, "Y");
+            data.WriteFeature<PointFeature>(editSerializer, DataField.UpdatedPoint);
+            data.WriteItem<double>(editSerializer, DataField.X);
+            data.WriteItem<double>(editSerializer, DataField.Y);
         }
 
         /// <summary>
@@ -245,9 +245,9 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadFeature<PointFeature>(editDeserializer, "UpdatedPoint");
-            result.ReadItem<double>(editDeserializer, "X");
-            result.ReadItem<double>(editDeserializer, "Y");
+            result.ReadFeature<PointFeature>(editDeserializer, DataField.UpdatedPoint);
+            result.ReadItem<double>(editDeserializer, DataField.X);
+            result.ReadItem<double>(editDeserializer, DataField.Y);
             return result;
         }
 
@@ -276,11 +276,11 @@ namespace Backsight.Editor.Operations
                 UpdateItemCollection data = uec.UpdateSource.Changes;
 
                 // Locate the specific point that was modified
-                string id = data.GetValue<string>("Id");
+                string id = data.GetValue<string>(DataField.Id);
                 PointFeature p = this.MapModel.Find<PointFeature>(id);
 
-                double x = data.ExchangeValue<double>("X", p.Easting.Meters);
-                double y = data.ExchangeValue<double>("Y", p.Northing.Meters);
+                double x = data.ExchangeValue<double>(DataField.X, p.Easting.Meters);
+                double y = data.ExchangeValue<double>(DataField.Y, p.Northing.Meters);
                 PointGeometry pg = new PointGeometry(x, y);
                 p.ApplyPointGeometry(ctx, pg);
             }
@@ -293,7 +293,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WritePersistentArray<PointFeature>("Points", m_Features.ToArray());
+            editSerializer.WritePersistentArray<PointFeature>(DataField.Points, m_Features.ToArray());
         }
     }
 }

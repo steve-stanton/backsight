@@ -276,7 +276,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="name">The name tag to check for</param>
         /// <returns>True if the next line refers to the specified name tag</returns>
-        public bool IsNextName(string name)
+        public bool IsNextField(string name)
         {
             string s = PeekNext;
 

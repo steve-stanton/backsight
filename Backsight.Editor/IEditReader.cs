@@ -96,6 +96,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="name">The name tag to look for</param>
         /// <returns>True if the next data item has the specified name tag</returns>
-        bool IsNextName(string name);
+        bool IsNextField(string name);
     }
 }

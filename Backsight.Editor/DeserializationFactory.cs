@@ -58,10 +58,27 @@ namespace Backsight.Editor
 
         #endregion
 
+        internal void AddFeatureStub(DataField field, FeatureStub stub)
+        {
+            AddFeatureStub(field.ToString(), stub);
+        }
+
         internal void AddFeatureStub(string itemName, FeatureStub stub)
         {
             if (stub != null)
                 AddFeatureDescription(itemName, stub);
+        }
+
+        /// <summary>
+        /// Records information for a line split
+        /// </summary>
+        /// <param name="parentLine">The line that may be getting split</param>
+        /// <param name="field">The tag of the item that should be attached to the line split info</param>
+        /// <param name="dataId">The ID for the section (null if there is no split)</param>
+        /// <returns>True if a line split was recorded, false if the <paramref name="splitSection"/> is null.</returns>
+        internal bool AddLineSplit(LineFeature parentLine, DataField field, string dataId)
+        {
+            return AddLineSplit(parentLine, field.ToString(), dataId);
         }
 
         /// <summary>

@@ -170,20 +170,20 @@ namespace Backsight.Editor
         /// Reads the content of an array containing elements that implement <see cref="IPersistent"/>.
         /// </summary>
         /// <typeparam name="T">The type of each array element expected by the caller.</typeparam>
-        /// <param name="name">A name tag associated with the array</param>
+        /// <param name="field">A tag associated with the array</param>
         /// <returns>The array that was read</returns>
-        internal T[] ReadPersistentArray<T>(string name) where T : IPersistent
+        internal T[] ReadPersistentArray<T>(DataField field) where T : IPersistent
         {
             // The array itself should not have a type name unless it happens to be "null" (denoting
             // an array reference that is null).
 
-            string typeName = m_Reader.ReadString(name);
+            string typeName = m_Reader.ReadString(field.ToString());
             if (typeName != null)
             {
                 if (typeName == "null")
                     return null;
 
-                throw new ApplicationException("Unexpected type name for array element " + name);
+                throw new ApplicationException("Unexpected type name for array element " + field);
             }
 
             m_Reader.ReadBeginObject();
@@ -202,27 +202,27 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads an array of feature stubs.
         /// </summary>
-        /// <param name="name">A name tag associated with the array</param>
+        /// <param name="field">A tag associated with the array</param>
         /// <returns>The array that was read</returns>
-        internal FeatureStub[] ReadFeatureStubArray(string name)
+        internal FeatureStub[] ReadFeatureStubArray(DataField field)
         {
             // Just read an array the usual way (ReadFeatureStubArray exists only to provide symmetry with WriteFeatureStubArray)
 
-            return ReadPersistentArray<FeatureStub>(name);
+            return ReadPersistentArray<FeatureStub>(field);
         }
 
         /// <summary>
         /// Reads an array of simple types to a storage medium.
         /// </summary>
         /// <typeparam name="T">The type of each array element expected by the caller.</typeparam>
-        /// <param name="name">A name tag associated with the array</param>
+        /// <param name="field">A tag associated with the array</param>
         /// <returns>The array that was read</returns>
-        internal T[] ReadSimpleArray<T>(string name) where T : IConvertible
+        internal T[] ReadSimpleArray<T>(DataField field) where T : IConvertible
         {
             // The array itself should not have a type name unless it happens to be "null" (denoting
             // an array reference that is null).
 
-            string data = m_Reader.ReadString(name);
+            string data = m_Reader.ReadString(field.ToString());
             if (data == "null")
                 return null;
 
@@ -233,6 +233,27 @@ namespace Backsight.Editor
                 result[i] = (T)Convert.ChangeType(items[i], typeof(T));
 
             return result;
+        }
+
+        /// <summary>
+        /// Reads the content of an object that implements <see cref="IPersistent"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of object expected by the caller.</typeparam>
+        /// <param name="field">A tag associated with the object</param>
+        /// <returns>
+        /// The object that was read (may actually have a type that is derived
+        /// from the supplied type).
+        /// </returns>
+        /// <remarks>
+        /// In addition to implementing <see cref="IPersistent"/>, the Backsight implementation
+        /// assumes that the created type will also provide a constructor that accepts an
+        /// instance of the <see cref="IEditReader"/>.
+        /// </remarks>
+        /// <exception cref="ApplicationException">If the type name read from storage does
+        /// not correspond to a suitable type within this assembly.</exception>
+        internal T ReadPersistent<T>(DataField field) where T : IPersistent
+        {
+            return ReadPersistent<T>(field.ToString());
         }
 
         /// <summary>
@@ -251,7 +272,7 @@ namespace Backsight.Editor
         /// </remarks>
         /// <exception cref="ApplicationException">If the type name read from storage does
         /// not correspond to a suitable type within this assembly.</exception>
-        internal T ReadPersistent<T>(string name) where T : IPersistent
+        T ReadPersistent<T>(string name) where T : IPersistent
         {
             string typeName = m_Reader.ReadString(name);
 
@@ -306,15 +327,15 @@ namespace Backsight.Editor
         /// having confirmed that the specified name tag comes next.
         /// </summary>
         /// <typeparam name="T">The type of object expected by the caller.</typeparam>
-        /// <param name="name">A name tag associated with the object</param>
+        /// <param name="field">A tag associated with the object</param>
         /// <returns>
         /// The object that was read (if the specified name tag was there), or null (if
         /// the next name tag is something else).
         /// </returns>
-        internal T ReadPersistentOrNull<T>(string name) where T : IPersistent
+        internal T ReadPersistentOrNull<T>(DataField field) where T : IPersistent
         {
-            if (m_Reader.IsNextName(name))
-                return ReadPersistent<T>(name);
+            if (IsNextField(field))
+                return ReadPersistent<T>(field);
             else
                 return default(T);
         }
@@ -322,33 +343,33 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads an entity type for a spatial feature.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The entity type that was read.</returns>
-        internal IEntity ReadEntity(string name)
+        internal IEntity ReadEntity(DataField field)
         {
-            int id = m_Reader.ReadInt32(name);
+            int id = m_Reader.ReadInt32(field.ToString());
             return EnvironmentContainer.FindEntityById(id);
         }
 
         /// <summary>
         /// Reads a distance unit type.
         /// </summary>
-        /// <param name="name">A name tag for the item</param>
+        /// <param name="field">A tag associated with the item</param>
         /// <returns>The distance unit that was read.</returns>
-        internal DistanceUnit ReadDistanceUnit(string name)
+        internal DistanceUnit ReadDistanceUnit(DataField field)
         {
-            DistanceUnitType unitType = (DistanceUnitType)m_Reader.ReadInt32(name);
+            DistanceUnitType unitType = (DistanceUnitType)m_Reader.ReadInt32(field.ToString());
             return EditingController.GetUnits(unitType);
         }
 
         /// <summary>
         /// Reads a value in radians.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The radian value that was read.</returns>
-        internal RadianValue ReadRadians(string name)
+        internal RadianValue ReadRadians(DataField field)
         {
-            string s = m_Reader.ReadString(name);
+            string s = m_Reader.ReadString(field.ToString());
             double d = RadianValue.Parse(s);
             return new RadianValue(d);
         }
@@ -356,14 +377,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads a 2D position.
         /// </summary>
-        /// <param name="xName">A name tag for the easting value</param>
-        /// <param name="yName">A name tag for the northing value</param>
+        /// <param name="xField">A tag for the easting value</param>
+        /// <param name="yField">A tag for the northing value</param>
         /// <param name="value">The position to write</param>
         /// <returns>The position that was read</returns>
-        internal PointGeometry ReadPointGeometry(string xName, string yName)
+        internal PointGeometry ReadPointGeometry(DataField xField, DataField yField)
         {
-            long x = m_Reader.ReadInt64(xName);
-            long y = m_Reader.ReadInt64(yName);
+            long x = m_Reader.ReadInt64(xField.ToString());
+            long y = m_Reader.ReadInt64(yField.ToString());
             return new PointGeometry(x, y);
         }
 
@@ -372,7 +393,7 @@ namespace Backsight.Editor
         /// corresponding feature.
         /// </summary>
         /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>
         /// The feature that was read (null if not found, or the reference was undefined). May
         /// actually have a type that is derived from the supplied type.
@@ -380,9 +401,9 @@ namespace Backsight.Editor
         /// <remarks>This does not create a brand new feature. Rather, it uses a reference
         /// to try to obtain a feature that should have already been created.
         /// </remarks>
-        internal T ReadFeatureRef<T>(string name) where T : Feature
+        internal T ReadFeatureRef<T>(DataField field) where T : Feature
         {
-            string dataId = m_Reader.ReadString(name);
+            string dataId = m_Reader.ReadString(field.ToString());
             if (dataId == null)
                 return default(T);
 
@@ -393,11 +414,11 @@ namespace Backsight.Editor
         /// Reads an array of spatial features (using their unique IDs the read them from the map model).
         /// </summary>
         /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
-        /// <param name="name">A name tag associated with the array</param>
+        /// <param name="field">A tag associated with the array</param>
         /// <returns>The features that were read (should all be not null).</returns>
-        internal T[] ReadFeatureRefArray<T>(string name) where T : Feature
+        internal T[] ReadFeatureRefArray<T>(DataField field) where T : Feature
         {
-            string[] ids = ReadSimpleArray<string>(name);
+            string[] ids = ReadSimpleArray<string>(field);
             T[] result = new T[ids.Length];
 
             for (int i=0; i<result.Length; i++)
@@ -415,20 +436,20 @@ namespace Backsight.Editor
         /// <returns>The user-perceived ID that was read (may be null)</returns>
         internal FeatureId ReadFeatureId()
         {
-            return ReadFeatureId("Key", "ForeignKey");
+            return ReadFeatureId(DataField.Key, DataField.ForeignKey);
         }
 
         /// <summary>
         /// Reads a user-perceived feature ID using the specified naming tags.
         /// </summary>
-        /// <param name="nativeName">The name tag to use for a native ID.</param>
-        /// <param name="foreignName">The name tag to use for a foreign ID.</param>
+        /// <param name="nativeField">The tag to use for a native ID.</param>
+        /// <param name="foreignField">The tag to use for a foreign ID.</param>
         /// <returns>The user-perceived ID that was read (may be null)</returns>
-        internal FeatureId ReadFeatureId(string nativeName, string foreignName)
+        internal FeatureId ReadFeatureId(DataField nativeField, DataField foreignField)
         {
-            if (m_Reader.IsNextName(nativeName))
+            if (IsNextField(nativeField))
             {
-                uint nativeKey = m_Reader.ReadUInt32(nativeName);
+                uint nativeKey = m_Reader.ReadUInt32(nativeField.ToString());
                 NativeId nid = m_MapModel.FindNativeId(nativeKey);
 
                 if (nid == null)
@@ -437,9 +458,9 @@ namespace Backsight.Editor
                     return nid;
             }
 
-            if (m_Reader.IsNextName(foreignName))
+            if (IsNextField(foreignField))
             {
-                string key = m_Reader.ReadString(foreignName);
+                string key = m_Reader.ReadString(foreignField.ToString());
                 ForeignId fid = m_MapModel.FindForeignId(key);
 
                 if (fid == null)
@@ -455,10 +476,10 @@ namespace Backsight.Editor
         /// Reads a miscellaneous value.
         /// </summary>
         /// <typeparam name="T">The type of simple value that is known to the caller.</typeparam>
-        /// <param name="name">A name tag for the item</param>
-        internal T ReadValue<T>(string name) where T : IConvertible
+        /// <param name="field">A tag for the item</param>
+        internal T ReadValue<T>(DataField field) where T : IConvertible
         {
-            object o = ReadValueAsObject<T>(name);
+            object o = ReadValueAsObject<T>(field);
             return (T)o;
         }
 
@@ -466,10 +487,11 @@ namespace Backsight.Editor
         /// Reads a miscellaneous value as an <c>object</c>
         /// </summary>
         /// <typeparam name="T">The type of simple value that is known to the caller.</typeparam>
-        /// <param name="name">A name tag for the item</param>
+        /// <param name="field">A tag for the item</param>
         /// <returns>The object obtained from the input stream</returns>
-        object ReadValueAsObject<T>(string name) where T : IConvertible
+        object ReadValueAsObject<T>(DataField field) where T : IConvertible
         {
+            string name = field.ToString();
             TypeCode typeCode = Type.GetTypeCode(typeof(T));
 
             switch (typeCode)
@@ -505,92 +527,92 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads the next byte.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The byte value that was read.</returns>
-        internal byte ReadByte(string name)
+        internal byte ReadByte(DataField field)
         {
-            return m_Reader.ReadByte(name);
+            return m_Reader.ReadByte(field.ToString());
         }
 
         /// <summary>
         /// Reads a 4-byte signed integer.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The 4-byte value that was read.</returns>
-        internal int ReadInt32(string name)
+        internal int ReadInt32(DataField field)
         {
-            return m_Reader.ReadInt32(name);
+            return m_Reader.ReadInt32(field.ToString());
         }
 
         /// <summary>
         /// Reads a 4-byte unsigned integer.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The 4-byte unsigned value that was read.</returns>
-        internal uint ReadUInt32(string name)
+        internal uint ReadUInt32(DataField field)
         {
-            return m_Reader.ReadUInt32(name);
+            return m_Reader.ReadUInt32(field.ToString());
         }
 
         /// <summary>
         /// Reads an 8-byte signed integer.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The 8-byte value that was read.</returns>
-        internal long ReadInt64(string name)
+        internal long ReadInt64(DataField field)
         {
-            return m_Reader.ReadInt64(name);
+            return m_Reader.ReadInt64(field.ToString());
         }
 
         /// <summary>
         /// Reads an eight-byte floating-point value.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The 8-byte floating-point value that was read.</returns>
-        internal double ReadDouble(string name)
+        internal double ReadDouble(DataField field)
         {
-            return m_Reader.ReadDouble(name);
+            return m_Reader.ReadDouble(field.ToString());
         }
 
         /// <summary>
         /// Reads a four-byte floating-point value.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The 4-byte floating-point value that was read.</returns>
-        internal float ReadSingle(string name)
+        internal float ReadSingle(DataField field)
         {
-            return m_Reader.ReadSingle(name);
+            return m_Reader.ReadSingle(field.ToString());
         }
 
         /// <summary>
         /// Reads a one-byte boolean value.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The boolean value that was read.</returns>
-        internal bool ReadBool(string name)
+        internal bool ReadBool(DataField field)
         {
-            return m_Reader.ReadBool(name);
+            return m_Reader.ReadBool(field.ToString());
         }
 
         /// <summary>
         /// Reads a string.
         /// </summary>
-        /// <param name="name">A name tag associated with the value</param>
+        /// <param name="field">A tag associated with the value</param>
         /// <returns>The string that was read (null if nothing follows the name)</returns>
-        internal string ReadString(string name)
+        internal string ReadString(DataField field)
         {
-            return m_Reader.ReadString(name);
+            return m_Reader.ReadString(field.ToString());
         }
 
         /// <summary>
-        /// Checks whether the next data item has a specific name tag. Make a call to any
+        /// Checks whether the next data item has a specific field tag. Make a call to any
         /// <c>Read</c> method to actually advance.
         /// </summary>
-        /// <param name="name">The name tag to look for</param>
-        /// <returns>True if the next data item has the specified name tag</returns>
-        internal bool IsNextName(string name)
+        /// <param name="field">The field to look for</param>
+        /// <returns>True if the next data item has the specified field tag</returns>
+        internal bool IsNextField(DataField field)
         {
-            return m_Reader.IsNextName(name);
+            return m_Reader.IsNextField(field.ToString());
         }
     }
 }

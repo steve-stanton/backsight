@@ -60,11 +60,11 @@ namespace Backsight.Editor
         internal ArcGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_IsClockwise = editDeserializer.ReadBool("Clockwise");
+            m_IsClockwise = editDeserializer.ReadBool(DataField.Clockwise);
 
-            if (editDeserializer.IsNextName("Center"))
+            if (editDeserializer.IsNextField(DataField.Center))
             {
-                PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>("Center");
+                PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Center);
                 Debug.Assert(center != null);
 
                 // The arc is the first arc attached to the circle. However, we cannot
@@ -82,7 +82,7 @@ namespace Backsight.Editor
             }
             else
             {
-                ArcFeature firstArc = editDeserializer.ReadFeatureRef<ArcFeature>("FirstArc");
+                ArcFeature firstArc = editDeserializer.ReadFeatureRef<ArcFeature>(DataField.FirstArc);
                 Debug.Assert(firstArc != null);
                 m_Circle = firstArc.Circle;
             }
@@ -863,16 +863,16 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteBool("Clockwise", m_IsClockwise);
+            editSerializer.WriteBool(DataField.Clockwise, m_IsClockwise);
 
             // If the circle's first arc has geometry that corresponds to this instance, write
             // out the circle center point. Otherwise refer to the first arc (we'll get the
             // circle geometry from there).
 
             if (Object.ReferenceEquals(m_Circle.FirstArc.Geometry, this))
-                editSerializer.WriteFeatureRef<PointFeature>("Center", m_Circle.CenterPoint);
+                editSerializer.WriteFeatureRef<PointFeature>(DataField.Center, m_Circle.CenterPoint);
             else
-                editSerializer.WriteFeatureRef<ArcFeature>("FirstArc", m_Circle.FirstArc);
+                editSerializer.WriteFeatureRef<ArcFeature>(DataField.FirstArc, m_Circle.FirstArc);
         }
     }
 }

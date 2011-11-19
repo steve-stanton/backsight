@@ -181,7 +181,7 @@ namespace Backsight.Editor.Observations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteFeatureRef<PointFeature>("Point", m_Point);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.Point, m_Point);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Backsight.Editor.Observations
         /// <param name="point">The point that defines the offset position</param>
         static void ReadData(EditDeserializer editDeserializer, out PointFeature point)
         {
-            point = editDeserializer.ReadFeatureRef<PointFeature>("Point");
+            point = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Point);
         }
     }
 }

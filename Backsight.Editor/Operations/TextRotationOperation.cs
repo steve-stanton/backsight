@@ -64,7 +64,7 @@ namespace Backsight.Editor.Operations
         internal TextRotationOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            RadianValue value = editDeserializer.ReadRadians("Value");
+            RadianValue value = editDeserializer.ReadRadians(DataField.Value);
             m_Rotation = value.Radians;
         }
 
@@ -209,7 +209,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteRadians("Value", new RadianValue(m_Rotation));
+            editSerializer.WriteRadians(DataField.Value, new RadianValue(m_Rotation));
         }
     }
 }

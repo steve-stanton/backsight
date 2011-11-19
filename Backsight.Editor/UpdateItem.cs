@@ -25,9 +25,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// A name for the item (may be repeated across different types of editing operations).
+        /// The tag that identifies the item (may be repeated across different types of editing operations).
         /// </summary>
-        string m_Name;
+        DataField m_Field;
 
         /// <summary>
         /// The value associated with the item. This may either refer to the value prior
@@ -44,30 +44,30 @@ namespace Backsight.Editor
         /// </summary>
         public UpdateItem()
         {
-            m_Name = String.Empty;
+            m_Field = DataField.Empty;
             m_Value = null;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateItem&lt;T&gt;"/> class.
         /// </summary>
-        /// <param name="name">A name for the item</param>
+        /// <param name="field">The tag that identifies the item.</param>
         /// <param name="value">The value associated with the item.</param>
-        internal UpdateItem(string name, object value)
+        internal UpdateItem(DataField field, object value)
         {
-            m_Name = name;
+            m_Field = field;
             m_Value = value;
         }
 
         #endregion
 
         /// <summary>
-        /// A name for the item (may be repeated across different types of editing operations).
+        /// The tag that identifies the item (may be repeated across different types of editing operations).
         /// </summary>
-        public string Name
+        public DataField Field
         {
-            get { return m_Name; }
-            set { m_Name = value; }
+            get { return m_Field; }
+            set { m_Field = value; }
         }
 
         /// <summary>

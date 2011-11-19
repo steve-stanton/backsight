@@ -134,8 +134,8 @@ namespace Backsight.Editor.Operations
         internal TrimLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Lines = editDeserializer.ReadFeatureRefArray<LineFeature>("Lines");
-            m_Points = editDeserializer.ReadFeatureRefArray<PointFeature>("Points");
+            m_Lines = editDeserializer.ReadFeatureRefArray<LineFeature>(DataField.Lines);
+            m_Points = editDeserializer.ReadFeatureRefArray<PointFeature>(DataField.Points);
 
             ProcessFeatures(null);
         }
@@ -335,8 +335,8 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteFeatureRefArray<LineFeature>("Lines", m_Lines);
-            editSerializer.WriteFeatureRefArray<PointFeature>("Points", m_Points);
+            editSerializer.WriteFeatureRefArray<LineFeature>(DataField.Lines, m_Lines);
+            editSerializer.WriteFeatureRefArray<PointFeature>(DataField.Points, m_Points);
         }
     }
 }

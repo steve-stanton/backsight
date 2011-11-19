@@ -65,7 +65,7 @@ namespace Backsight.Editor
         internal SectionGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Base = editDeserializer.ReadFeatureRef<LineFeature>("Base");
+            m_Base = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Base);
 
             if (m_Base == null)
                 throw new ArgumentNullException();
@@ -297,7 +297,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteFeatureRef<LineFeature>("Base", m_Base);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Base, m_Base);
         }
     }
 }

@@ -472,10 +472,10 @@ namespace Backsight.Editor.Operations
                                                         PointFeature from, bool isdefault)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Direction>("Direction", m_Direction, dir);
-            result.AddObservation<Observation>("Distance", m_Distance, distance);
-            result.AddFeature<PointFeature>("From", m_From, from);
-            result.AddItem<bool>("Default", m_Default, isdefault);
+            result.AddObservation<Direction>(DataField.Direction, m_Direction, dir);
+            result.AddObservation<Observation>(DataField.Distance, m_Distance, distance);
+            result.AddFeature<PointFeature>(DataField.From, m_From, from);
+            result.AddItem<bool>(DataField.Default, m_Default, isdefault);
             return result;
         }
 
@@ -486,10 +486,10 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Direction>(editSerializer, "Direction");
-            data.WriteObservation<Observation>(editSerializer, "Distance");
-            data.WriteFeature<PointFeature>(editSerializer, "From");
-            data.WriteItem<bool>(editSerializer, "Default");
+            data.WriteObservation<Direction>(editSerializer, DataField.Direction);
+            data.WriteObservation<Observation>(editSerializer, DataField.Distance);
+            data.WriteFeature<PointFeature>(editSerializer, DataField.From);
+            data.WriteItem<bool>(editSerializer, DataField.Default);
         }
 
         /// <summary>
@@ -500,10 +500,10 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Direction>(editDeserializer, "Direction");
-            result.ReadObservation<Observation>(editDeserializer, "Distance");
-            result.ReadFeature<PointFeature>(editDeserializer, "From");
-            result.ReadItem<bool>(editDeserializer, "Default");
+            result.ReadObservation<Direction>(editDeserializer, DataField.Direction);
+            result.ReadObservation<Observation>(editDeserializer, DataField.Distance);
+            result.ReadFeature<PointFeature>(editDeserializer, DataField.From);
+            result.ReadItem<bool>(editDeserializer, DataField.Default);
             return result;
         }
 
@@ -515,10 +515,10 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Direction = data.ExchangeObservation<Direction>(this, "Direction", m_Direction);
-            m_Distance = data.ExchangeObservation<Observation>(this, "Distance", m_Distance);
-            m_From = data.ExchangeFeature<PointFeature>(this, "From", m_From);
-            m_Default = data.ExchangeValue<bool>("Default", m_Default);
+            m_Direction = data.ExchangeObservation<Direction>(this, DataField.Direction, m_Direction);
+            m_Distance = data.ExchangeObservation<Observation>(this, DataField.Distance, m_Distance);
+            m_From = data.ExchangeFeature<PointFeature>(this, DataField.From, m_From);
+            m_Default = data.ExchangeValue<bool>(DataField.Default, m_Default);
         }
 
         /// <summary>
@@ -527,15 +527,15 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreatePointFeature("To");
+            m_To = ff.CreatePointFeature(DataField.To);
             OffsetPoint op = m_Direction.Offset as OffsetPoint;
             PointFeature from = (op == null ? m_Direction.From : op.Point);
 
-            if (ff.HasFeatureDescription("DirLine"))
-                m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_To);
+            if (ff.HasFeatureDescription(DataField.DirLine))
+                m_DirLine = ff.CreateSegmentLineFeature(DataField.DirLine, from, m_To);
 
-            if (ff.HasFeatureDescription("DistLine"))
-                m_DistLine = ff.CreateSegmentLineFeature("DistLine", m_From, m_To);
+            if (ff.HasFeatureDescription(DataField.DistLine))
+                m_DistLine = ff.CreateSegmentLineFeature(DataField.DistLine, m_From, m_To);
         }
 
         /// <summary>
@@ -562,17 +562,17 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WritePersistent<Direction>("Direction", m_Direction);
-            editSerializer.WritePersistent<Observation>("Distance", m_Distance);
-            editSerializer.WriteFeatureRef<PointFeature>("From", m_From);
-            editSerializer.WriteBool("Default", m_Default);
-            editSerializer.WritePersistent<FeatureStub>("To", new FeatureStub(m_To));
+            editSerializer.WritePersistent<Direction>(DataField.Direction, m_Direction);
+            editSerializer.WritePersistent<Observation>(DataField.Distance, m_Distance);
+            editSerializer.WriteFeatureRef<PointFeature>(DataField.From, m_From);
+            editSerializer.WriteBool(DataField.Default, m_Default);
+            editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_To));
 
             if (m_DirLine != null)
-                editSerializer.WritePersistent<FeatureStub>("DirLine", new FeatureStub(m_DirLine));
+                editSerializer.WritePersistent<FeatureStub>(DataField.DirLine, new FeatureStub(m_DirLine));
 
             if (m_DistLine != null)
-                editSerializer.WritePersistent<FeatureStub>("DistLine", new FeatureStub(m_DistLine));
+                editSerializer.WritePersistent<FeatureStub>(DataField.DistLine, new FeatureStub(m_DistLine));
         }
 
         /// <summary>
@@ -589,13 +589,13 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out Direction dir, out Observation dist, out PointFeature from,
                                 out bool isDefault, out FeatureStub to, out FeatureStub dirLine, out FeatureStub distLine)
         {
-            dir = editDeserializer.ReadPersistent<Direction>("Direction");
-            dist = editDeserializer.ReadPersistent<Observation>("Distance");
-            from = editDeserializer.ReadFeatureRef<PointFeature>("From");
-            isDefault = editDeserializer.ReadBool("Default");
-            to = editDeserializer.ReadPersistent<FeatureStub>("To");
-            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DirLine");
-            distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>("DistLine");
+            dir = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            dist = editDeserializer.ReadPersistent<Observation>(DataField.Distance);
+            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
+            isDefault = editDeserializer.ReadBool(DataField.Default);
+            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
+            distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DistLine);
         }
     }
 }

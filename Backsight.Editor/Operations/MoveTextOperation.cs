@@ -268,12 +268,12 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<TextFeature>("Text", m_Text);
-            editSerializer.WritePointGeometry("OldX", "OldY", m_OldPosition);
-            editSerializer.WritePointGeometry("NewX", "NewY", m_NewPosition);
+            editSerializer.WriteFeatureRef<TextFeature>(DataField.Text, m_Text);
+            editSerializer.WritePointGeometry(DataField.OldX, DataField.OldY, m_OldPosition);
+            editSerializer.WritePointGeometry(DataField.NewX, DataField.NewY, m_NewPosition);
 
             if (m_OldPolPosition != null)
-                editSerializer.WritePointGeometry("OldPolygonX", "OldPolygonY", m_OldPolPosition);
+                editSerializer.WritePointGeometry(DataField.OldPolygonX, DataField.OldPolygonY, m_OldPolPosition);
         }
 
         /// <summary>
@@ -287,12 +287,12 @@ namespace Backsight.Editor.Operations
         static void ReadData(EditDeserializer editDeserializer, out TextFeature text, out PointGeometry oldPosition,
                                 out PointGeometry newPosition, out PointGeometry oldPolPosition)
         {
-            text = editDeserializer.ReadFeatureRef<TextFeature>("Text");
-            oldPosition = editDeserializer.ReadPointGeometry("OldX", "OldY");
-            newPosition = editDeserializer.ReadPointGeometry("NewX", "NewY");
+            text = editDeserializer.ReadFeatureRef<TextFeature>(DataField.Text);
+            oldPosition = editDeserializer.ReadPointGeometry(DataField.OldX, DataField.OldY);
+            newPosition = editDeserializer.ReadPointGeometry(DataField.NewX, DataField.NewY);
 
-            if (editDeserializer.IsNextName("OldPolygonX"))
-                oldPolPosition = editDeserializer.ReadPointGeometry("OldPolygonX", "OldPolygonY");
+            if (editDeserializer.IsNextField(DataField.OldPolygonX))
+                oldPolPosition = editDeserializer.ReadPointGeometry(DataField.OldPolygonX, DataField.OldPolygonY);
             else
                 oldPolPosition = null;
         }

@@ -54,7 +54,7 @@ namespace Backsight.Editor.Operations
         internal NewPointOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_NewPoint = editDeserializer.ReadPersistent<PointFeature>("Point");
+            m_NewPoint = editDeserializer.ReadPersistent<PointFeature>(DataField.Point);
         }
 
         #endregion
@@ -154,8 +154,8 @@ namespace Backsight.Editor.Operations
         internal UpdateItemCollection GetUpdateItems(Position newPosition)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddItem<double>("X", m_NewPoint.Easting.Meters, newPosition.X);
-            result.AddItem<double>("Y", m_NewPoint.Northing.Meters, newPosition.Y);
+            result.AddItem<double>(DataField.X, m_NewPoint.Easting.Meters, newPosition.X);
+            result.AddItem<double>(DataField.Y, m_NewPoint.Northing.Meters, newPosition.Y);
             return result;
         }
 
@@ -166,8 +166,8 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteItem<double>(editSerializer, "X");
-            data.WriteItem<double>(editSerializer, "Y");
+            data.WriteItem<double>(editSerializer, DataField.X);
+            data.WriteItem<double>(editSerializer, DataField.Y);
         }
 
         /// <summary>
@@ -178,8 +178,8 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadItem<double>(editDeserializer, "X");
-            result.ReadItem<double>(editDeserializer, "Y");
+            result.ReadItem<double>(editDeserializer, DataField.X);
+            result.ReadItem<double>(editDeserializer, DataField.Y);
             return result;
         }
 
@@ -222,8 +222,8 @@ namespace Backsight.Editor.Operations
             {
                 UpdateEditingContext uec = (ctx as UpdateEditingContext);
                 UpdateItemCollection data = uec.UpdateSource.Changes;
-                double x = data.ExchangeValue<double>("X", m_NewPoint.Easting.Meters);
-                double y = data.ExchangeValue<double>("Y", m_NewPoint.Northing.Meters);
+                double x = data.ExchangeValue<double>(DataField.X, m_NewPoint.Easting.Meters);
+                double y = data.ExchangeValue<double>(DataField.Y, m_NewPoint.Northing.Meters);
                 PointGeometry pg = new PointGeometry(x, y);
                 m_NewPoint.ApplyPointGeometry(ctx, pg);
             }
@@ -236,7 +236,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WritePersistent<PointFeature>("Point", m_NewPoint);
+            editSerializer.WritePersistent<PointFeature>(DataField.Point, m_NewPoint);
         }
     }
 }

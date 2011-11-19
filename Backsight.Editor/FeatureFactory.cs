@@ -196,6 +196,18 @@ namespace Backsight.Editor
         /// <summary>
         /// Checks whether feature info has been defined for a specific item.
         /// </summary>
+        /// <param name="field">The tag associated with a feature (unique to the editing
+        /// operation that this factory is for).</param>
+        /// <returns>True if information has been supplied via a prior call to
+        /// <see cref="AddFeatureDescription"/>.</returns>
+        internal bool HasFeatureDescription(DataField field)
+        {
+            return m_FeatureInfo.ContainsKey(field.ToString());
+        }
+
+        /// <summary>
+        /// Checks whether feature info has been defined for a specific item.
+        /// </summary>
         /// <param name="itemName">The name associated with a feature (unique to the editing
         /// operation that this factory is for).</param>
         /// <returns>True if information has been supplied via a prior call to
@@ -203,6 +215,16 @@ namespace Backsight.Editor
         internal bool HasFeatureDescription(string itemName)
         {
             return m_FeatureInfo.ContainsKey(itemName);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="PointFeature"/>, with the currently
+        /// active entity type (and a user-perceived ID if it applies), and adds to the model.
+        /// </summary>
+        /// <returns>The new feature (never null)</returns>
+        internal virtual PointFeature CreatePointFeature(DataField field)
+        {
+            return CreatePointFeature(field.ToString());
         }
 
         /// <summary>
@@ -227,6 +249,19 @@ namespace Backsight.Editor
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SegmentLineFeature"/> using information previously
+        /// recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
+        /// <param name="field">The tag for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created feature (never null)</returns>
+        internal virtual SegmentLineFeature CreateSegmentLineFeature(DataField field, PointFeature from, PointFeature to)
+        {
+            return CreateSegmentLineFeature(field.ToString(), from, to);
         }
 
         /// <summary>

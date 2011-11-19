@@ -90,16 +90,16 @@ namespace Backsight.Editor.Operations
         internal SimpleLineSubdivisionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Line = editDeserializer.ReadFeatureRef<LineFeature>("Line");
-            m_Distance = editDeserializer.ReadPersistent<Distance>("Distance");
-            FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>("NewPoint");
-            string dataId1 = editDeserializer.ReadString("NewLine1");
-            string dataId2 = editDeserializer.ReadString("NewLine2");
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            m_Distance = editDeserializer.ReadPersistent<Distance>(DataField.Distance);
+            FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>(DataField.NewPoint);
+            string dataId1 = editDeserializer.ReadString(DataField.NewLine1);
+            string dataId2 = editDeserializer.ReadString(DataField.NewLine2);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("NewPoint", newPoint);
-            dff.AddLineSplit(m_Line, "NewLine1", dataId1);
-            dff.AddLineSplit(m_Line, "NewLine2", dataId2);
+            dff.AddFeatureStub(DataField.NewPoint, newPoint);
+            dff.AddLineSplit(m_Line, DataField.NewLine1, dataId1);
+            dff.AddLineSplit(m_Line, DataField.NewLine2, dataId2);
             ProcessFeatures(dff);
         }
 
@@ -297,7 +297,7 @@ namespace Backsight.Editor.Operations
                 d.SetPositive();
 
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Distance>("Distance", m_Distance, d);
+            result.AddObservation<Distance>(DataField.Distance, m_Distance, d);
             return result;
         }
 
@@ -308,7 +308,7 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            data.WriteObservation<Distance>(editSerializer, "Distance");
+            data.WriteObservation<Distance>(editSerializer, DataField.Distance);
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace Backsight.Editor.Operations
         public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            result.ReadObservation<Distance>(editDeserializer, "Distance");
+            result.ReadObservation<Distance>(editDeserializer, DataField.Distance);
             return result;
         }
 
@@ -331,7 +331,7 @@ namespace Backsight.Editor.Operations
         /// <returns>The original values for the update items.</returns>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            m_Distance = data.ExchangeObservation<Distance>(this, "Distance", m_Distance);
+            m_Distance = data.ExchangeObservation<Distance>(this, DataField.Distance, m_Distance);
         }
 
         /// <summary>
@@ -498,11 +498,11 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteFeatureRef<LineFeature>("Line", m_Line);
-            editSerializer.WritePersistent<Distance>("Distance", m_Distance);
-            editSerializer.WritePersistent<FeatureStub>("NewPoint", new FeatureStub(m_NewPoint));
-            editSerializer.WriteString("NewLine1", m_NewLine1.DataId);
-            editSerializer.WriteString("NewLine2", m_NewLine2.DataId);
+            editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
+            editSerializer.WritePersistent<Distance>(DataField.Distance, m_Distance);
+            editSerializer.WritePersistent<FeatureStub>(DataField.NewPoint, new FeatureStub(m_NewPoint));
+            editSerializer.WriteString(DataField.NewLine1, m_NewLine1.DataId);
+            editSerializer.WriteString(DataField.NewLine2, m_NewLine2.DataId);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Backsight.Editor.Operations
         protected NewTextOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_NewText = editDeserializer.ReadPersistent<TextFeature>("Text");
+            m_NewText = editDeserializer.ReadPersistent<TextFeature>(DataField.Text);
         }
 
         #endregion
@@ -176,7 +176,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WritePersistent<TextFeature>("Text", m_NewText);
+            editSerializer.WritePersistent<TextFeature>(DataField.Text, m_NewText);
         }
 
 /*
