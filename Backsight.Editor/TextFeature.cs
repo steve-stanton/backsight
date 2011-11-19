@@ -24,7 +24,7 @@ using Backsight.Forms;
 
 namespace Backsight.Editor
 {
-    abstract class TextFeature : Feature
+    class TextFeature : Feature
     {
         #region Static
 
@@ -81,7 +81,7 @@ namespace Backsight.Editor
         /// <param name="ent">The entity type for the string.</param>
         /// <param name="text">The text geometry (including the text string itself)</param>
         /// </param>
-        protected TextFeature(Operation creator, uint sessionSequence, IEntity ent, TextGeometry text)
+        internal TextFeature(Operation creator, uint sessionSequence, IEntity ent, TextGeometry text)
             : base(creator, sessionSequence, ent, null)
         {
             m_Geom = text;

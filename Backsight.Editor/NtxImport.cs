@@ -526,7 +526,7 @@ namespace Backsight.Editor
                 string keystr = name.Text;
                 KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
                 uint ss = Session.ReserveNextItem();
-                result = new KeyTextFeature(creator, ss, entity, kt);
+                result = new TextFeature(creator, ss, entity, kt);
                 kt.Label = result;
                 result.SetTopology(true);
 

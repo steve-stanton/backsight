@@ -984,7 +984,7 @@ namespace Backsight.Editor
             PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
             uint ss = Session.ReserveNextItem();
-            TextFeature label = new KeyTextFeature(creator, ss, ent, text);
+            TextFeature label = new TextFeature(creator, ss, ent, text);
 
             // Define the label's ID
       		polygonId.CreateId(label);
@@ -1012,7 +1012,7 @@ namespace Backsight.Editor
 
             // Do standard stuff for adding a label
             uint ss = Session.ReserveNextItem();
-            TextFeature result = new KeyTextFeature(creator, ss, ent, text);
+            TextFeature result = new TextFeature(creator, ss, ent, text);
             text.Label = result;
             return result;
         }

@@ -452,7 +452,6 @@
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
-    <Compile Include="KeyTextFeature.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="Database\LastRevision.cs" />
     <Compile Include="MiscTextFeature.cs" />
