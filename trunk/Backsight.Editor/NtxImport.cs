@@ -545,7 +545,7 @@ namespace Backsight.Editor
                 // Create a miscellaneous text label.
                 MiscTextGeometry mt = new MiscTextGeometry(text, topleft, font, height, width, rotation);
                 uint ss = Session.ReserveNextItem();
-                result = new MiscTextFeature(creator, ss, entity, mt);
+                result = new TextFeature(creator, ss, entity, mt);
                 result.SetTopology(false);
             }
 
