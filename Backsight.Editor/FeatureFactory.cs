@@ -337,7 +337,7 @@ namespace Backsight.Editor
         /// <param name="from">The point at the start of the section</param>
         /// <param name="to">The point at the end of the section</param>
         /// <returns>The created section (never null)</returns>
-        internal virtual SectionLineFeature CreateSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
+        internal virtual LineFeature CreateSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
         {
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
@@ -346,7 +346,7 @@ namespace Backsight.Editor
                 f = new FeatureStub(m_Operation, ss, baseLine.EntityType, baseLine.FeatureId);
             }
 
-            return new SectionLineFeature(f, baseLine, from, to, baseLine.IsTopological);
+            return new LineFeature(f, baseLine, from, to, baseLine.IsTopological);
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace Backsight.Editor
         /// <exception cref="InvalidOperationException">If information for either item has not been
         /// attached to this factory.</exception>
         internal void MakeSections(LineFeature baseLine, DataField itemBefore, PointFeature x, DataField itemAfter,
-                                        out SectionLineFeature lineBefore, out SectionLineFeature lineAfter)
+                                        out LineFeature lineBefore, out LineFeature lineAfter)
         {
             lineBefore = lineAfter = null;
 
@@ -382,7 +382,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <see cref="SectionLineFeature"/> using the session sequence number
+        /// Creates a new <see cref="LineFeature"/> using the session sequence number
         /// that was previously recorded via a call to <see cref="AddFeatureDescription"/>.
         /// <para/>
         /// Only the session sequence number will be used when creating the section (any
@@ -397,7 +397,7 @@ namespace Backsight.Editor
         /// <returns>The created feature (null if a feature description was not previously added)</returns>
         /// <exception cref="InvalidOperationException">If information for the item has not been
         /// attached to this factory.</exception>
-        SectionLineFeature MakeSection(DataField field, LineFeature baseLine, PointFeature from, PointFeature to)
+        LineFeature MakeSection(DataField field, LineFeature baseLine, PointFeature from, PointFeature to)
         {
             IFeature f = FindFeatureDescription(field.ToString());
             if (f == null)

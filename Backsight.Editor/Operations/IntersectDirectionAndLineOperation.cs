@@ -403,7 +403,7 @@ namespace Backsight.Editor.Operations
 
             if (m_IsSplit)
             {
-                SectionLineFeature lineBefore, lineAfter;
+                LineFeature lineBefore, lineAfter;
                 ff.MakeSections(m_Line, DataField.SplitBefore, m_Intersection, DataField.SplitAfter,
                                     out lineBefore, out lineAfter);
                 m_LineA = lineBefore;

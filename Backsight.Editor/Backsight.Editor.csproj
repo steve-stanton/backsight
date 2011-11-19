@@ -502,7 +502,6 @@
     <Compile Include="Operations\TrimLineOperation.cs" />
     <Compile Include="PathItem.cs" />
     <Compile Include="PathItemType.cs" />
-    <Compile Include="SectionLineFeature.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="CheckItem.cs" />
     <Compile Include="CheckType.cs" />

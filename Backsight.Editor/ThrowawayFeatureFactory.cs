@@ -58,11 +58,11 @@ namespace Backsight.Editor
         /// <param name="from">The point at the start of the section</param>
         /// <param name="to">The point at the end of the section</param>
         /// <returns>The created section (never null)</returns>
-        internal override SectionLineFeature CreateSection(string itemName, LineFeature baseLine,
+        internal override LineFeature CreateSection(string itemName, LineFeature baseLine,
                                                             PointFeature from, PointFeature to)
         {
             IFeature f = new FeatureStub(this.Creator, 0, baseLine.EntityType, null);
-            return new SectionLineFeature(f, baseLine, from, to, false);
+            return new LineFeature(f, baseLine, from, to, false);
         }
 
     }
