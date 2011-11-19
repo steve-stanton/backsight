@@ -76,8 +76,8 @@ namespace Backsight.Editor.Operations
             ReadData(editDeserializer, out m_Center, out m_Radius, out closingPoint, out arc);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("ClosingPoint", closingPoint);
-            dff.AddFeatureStub("Arc", arc);
+            dff.AddFeatureStub(DataField.ClosingPoint, closingPoint);
+            dff.AddFeatureStub(DataField.Arc, arc);
             ProcessFeatures(dff);
         }
 
@@ -272,10 +272,10 @@ namespace Backsight.Editor.Operations
             OffsetPoint offset = (m_Radius as OffsetPoint);
             PointFeature p = (offset == null ? null : offset.Point);
             if (p == null)
-                p = ff.CreatePointFeature("ClosingPoint");
+                p = ff.CreatePointFeature(DataField.ClosingPoint);
 
             // Form the construction line (there is no associated circle at this stage)
-            ArcFeature arc = ff.CreateArcFeature("Arc", p, p);
+            ArcFeature arc = ff.CreateArcFeature(DataField.Arc, p, p);
 
             base.SetNewLine(arc);
         }

@@ -132,11 +132,11 @@ namespace Backsight.Editor.Operations
             m_IsSplit2 = (idLine2a != null && idLine2b != null);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", to);
-            dff.AddLineSplit(m_Line1, "SplitBefore1", idLine1a);
-            dff.AddLineSplit(m_Line1, "SplitAfter1", idLine1b);
-            dff.AddLineSplit(m_Line2, "SplitBefore2", idLine2a);
-            dff.AddLineSplit(m_Line2, "SplitAfter2", idLine2b);
+            dff.AddFeatureStub(DataField.To, to);
+            dff.AddLineSplit(m_Line1, DataField.SplitBefore1, idLine1a);
+            dff.AddLineSplit(m_Line1, DataField.SplitAfter1, idLine1b);
+            dff.AddLineSplit(m_Line2, DataField.SplitBefore2, idLine2a);
+            dff.AddLineSplit(m_Line2, DataField.SplitAfter2, idLine2b);
             ProcessFeatures(dff);
         }
 
@@ -361,20 +361,20 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (m_IsSplit1)
             {
                 // See FeatureFactory.MakeSection - the only thing that really matters is the
                 // session sequence number that will get picked up by the FeatureStub constructor.
-                ff.AddFeatureDescription("SplitBefore1", new FeatureStub(this, m_Line1.EntityType, null));
-                ff.AddFeatureDescription("SplitAfter1", new FeatureStub(this, m_Line1.EntityType, null));
+                ff.AddFeatureDescription(DataField.SplitBefore1, new FeatureStub(this, m_Line1.EntityType, null));
+                ff.AddFeatureDescription(DataField.SplitAfter1, new FeatureStub(this, m_Line1.EntityType, null));
             }
 
             if (m_IsSplit2)
             {
-                ff.AddFeatureDescription("SplitBefore2", new FeatureStub(this, m_Line2.EntityType, null));
-                ff.AddFeatureDescription("SplitAfter2", new FeatureStub(this, m_Line2.EntityType, null));
+                ff.AddFeatureDescription(DataField.SplitBefore2, new FeatureStub(this, m_Line2.EntityType, null));
+                ff.AddFeatureDescription(DataField.SplitAfter2, new FeatureStub(this, m_Line2.EntityType, null));
             }
 
             base.Execute(ff);
@@ -410,12 +410,12 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_Intersection = ff.CreatePointFeature("To");
+            m_Intersection = ff.CreatePointFeature(DataField.To);
 
             if (m_IsSplit1)
             {
                 SectionLineFeature lineBefore1, lineAfter1;
-                ff.MakeSections(m_Line1, "SplitBefore1", m_Intersection, "SplitAfter1",
+                ff.MakeSections(m_Line1, DataField.SplitBefore1, m_Intersection, DataField.SplitAfter1,
                                     out lineBefore1, out lineAfter1);
                 m_Line1a = lineBefore1;
                 m_Line1b = lineAfter1;
@@ -424,7 +424,7 @@ namespace Backsight.Editor.Operations
             if (m_IsSplit2)
             {
                 SectionLineFeature lineBefore2, lineAfter2;
-                ff.MakeSections(m_Line2, "SplitBefore2", m_Intersection, "SplitAfter2",
+                ff.MakeSections(m_Line2, DataField.SplitBefore2, m_Intersection, DataField.SplitAfter2,
                                     out lineBefore2, out lineAfter2);
                 m_Line2a = lineBefore2;
                 m_Line2b = lineAfter2;

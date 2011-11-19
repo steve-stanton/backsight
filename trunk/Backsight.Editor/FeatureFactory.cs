@@ -34,8 +34,7 @@ namespace Backsight.Editor
         readonly Operation m_Operation;
 
         /// <summary>
-        /// Information about features that will be created, keyed by a name (that
-        /// corresponds to the element name when represented in XML).
+        /// Information about features that will be created, keyed by a name.
         /// </summary>
         readonly Dictionary<string, IFeature> m_FeatureInfo;
 
@@ -166,10 +165,21 @@ namespace Backsight.Editor
         /// <summary>
         /// Records information for a feature that needs to be produced by this factory.
         /// </summary>
+        /// <param name="field">A name tag associated with the feature (unique to the editing
+        /// operation that this factory is for).</param>
+        /// <param name="f">Basic information for the feature.</param>
+        internal void AddFeatureDescription(DataField field, IFeature f)
+        {
+            AddFeatureDescription(field.ToString(), f);
+        }
+
+        /// <summary>
+        /// Records information for a feature that needs to be produced by this factory.
+        /// </summary>
         /// <param name="itemName">A name associated with the feature (unique to the editing
         /// operation that this factory is for).</param>
         /// <param name="f">Basic information for the feature.</param>
-        internal void AddFeatureDescription(string itemName, IFeature f)
+        protected void AddFeatureDescription(string itemName, IFeature f)
         {
             if (f.Creator != m_Operation)
                 throw new ArgumentException();
@@ -206,23 +216,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Checks whether feature info has been defined for a specific item.
-        /// </summary>
-        /// <param name="itemName">The name associated with a feature (unique to the editing
-        /// operation that this factory is for).</param>
-        /// <returns>True if information has been supplied via a prior call to
-        /// <see cref="AddFeatureDescription"/>.</returns>
-        internal bool HasFeatureDescription(string itemName)
-        {
-            return m_FeatureInfo.ContainsKey(itemName);
-        }
-
-        /// <summary>
         /// Creates a new instance of <see cref="PointFeature"/>, with the currently
         /// active entity type (and a user-perceived ID if it applies), and adds to the model.
         /// </summary>
         /// <returns>The new feature (never null)</returns>
-        internal virtual PointFeature CreatePointFeature(DataField field)
+        internal PointFeature CreatePointFeature(DataField field)
         {
             return CreatePointFeature(field.ToString());
         }
@@ -295,6 +293,19 @@ namespace Backsight.Editor
         /// Creates a new <see cref="ArcFeature"/> using information previously
         /// recorded via a call to <see cref="AddFeatureDescription"/>.
         /// </summary>
+        /// <param name="field">The name tag for the item involved</param>
+        /// <param name="from">The point at the start of the line (not null).</param>
+        /// <param name="to">The point at the end of the line (not null).</param>
+        /// <returns>The created feature (never null)</returns>
+        internal ArcFeature CreateArcFeature(DataField field, PointFeature from, PointFeature to)
+        {
+            return CreateArcFeature(field.ToString(), from, to);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ArcFeature"/> using information previously
+        /// recorded via a call to <see cref="AddFeatureDescription"/>.
+        /// </summary>
         /// <param name="itemName">The name for the item involved</param>
         /// <param name="from">The point at the start of the line (not null).</param>
         /// <param name="to">The point at the end of the line (not null).</param>
@@ -355,7 +366,7 @@ namespace Backsight.Editor
         /// <param name="lineAfter">The created section after the split point (corresponding to <paramref name="itemAfter"/>)</param>
         /// <exception cref="InvalidOperationException">If information for either item has not been
         /// attached to this factory.</exception>
-        internal void MakeSections(LineFeature baseLine, string itemBefore, PointFeature x, string itemAfter,
+        internal void MakeSections(LineFeature baseLine, DataField itemBefore, PointFeature x, DataField itemAfter,
                                         out SectionLineFeature lineBefore, out SectionLineFeature lineAfter)
         {
             lineBefore = lineAfter = null;
@@ -378,7 +389,7 @@ namespace Backsight.Editor
         /// entity type and feature ID that may have been presented through <see cref="AddFeatureDescription"/>
         /// will be ignored - the values from the parent line will be applied instead).
         /// </summary>
-        /// <param name="itemName">The name for the item involved (must refer to information
+        /// <param name="field">The name for the item involved (must refer to information
         /// previously attached via a call to <see cref="AddFeatureDescription"/>)</param>
         /// <param name="baseLine">The line that's being subdivided</param>
         /// <param name="from">The point at the start of the section (not null).</param>
@@ -386,9 +397,9 @@ namespace Backsight.Editor
         /// <returns>The created feature (null if a feature description was not previously added)</returns>
         /// <exception cref="InvalidOperationException">If information for the item has not been
         /// attached to this factory.</exception>
-        SectionLineFeature MakeSection(string itemName, LineFeature baseLine, PointFeature from, PointFeature to)
+        SectionLineFeature MakeSection(DataField field, LineFeature baseLine, PointFeature from, PointFeature to)
         {
-            IFeature f = FindFeatureDescription(itemName);
+            IFeature f = FindFeatureDescription(field.ToString());
             if (f == null)
                 throw new InvalidOperationException();
 

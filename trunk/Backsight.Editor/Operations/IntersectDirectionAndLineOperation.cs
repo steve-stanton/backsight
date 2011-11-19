@@ -122,10 +122,10 @@ namespace Backsight.Editor.Operations
             m_IsSplit = (idLineA != null && idLineB != null);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", to);
-            dff.AddFeatureStub("DirLine", dirLine);
-            dff.AddLineSplit(m_Line, "SplitBefore", idLineA);
-            dff.AddLineSplit(m_Line, "SplitAfter", idLineB);
+            dff.AddFeatureStub(DataField.To, to);
+            dff.AddFeatureStub(DataField.DirLine, dirLine);
+            dff.AddLineSplit(m_Line, DataField.SplitBefore, idLineA);
+            dff.AddLineSplit(m_Line, DataField.SplitAfter, idLineB);
             ProcessFeatures(dff);
         }
 
@@ -341,14 +341,14 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (m_IsSplit)
             {
                 // See FeatureFactory.MakeSection - the only thing that really matters is the
                 // session sequence number that will get picked up by the FeatureStub constructor.
-                ff.AddFeatureDescription("SplitBefore", new FeatureStub(this, m_Line.EntityType, null));
-                ff.AddFeatureDescription("SplitAfter", new FeatureStub(this, m_Line.EntityType, null));                
+                ff.AddFeatureDescription(DataField.SplitBefore, new FeatureStub(this, m_Line.EntityType, null));
+                ff.AddFeatureDescription(DataField.SplitAfter, new FeatureStub(this, m_Line.EntityType, null));                
             }
 
             if (dirEnt != null)
@@ -362,7 +362,7 @@ namespace Backsight.Editor.Operations
                     throw new ApplicationException("Cannot add direction line because a distance offset is involved");
 
                 IFeature f = new FeatureStub(this, dirEnt, null);
-                ff.AddFeatureDescription("DirLine", f);
+                ff.AddFeatureDescription(DataField.DirLine, f);
             }
 
             base.Execute(ff);
@@ -399,12 +399,12 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_Intersection = ff.CreatePointFeature("To");
+            m_Intersection = ff.CreatePointFeature(DataField.To);
 
             if (m_IsSplit)
             {
                 SectionLineFeature lineBefore, lineAfter;
-                ff.MakeSections(m_Line, "SplitBefore", m_Intersection, "SplitAfter",
+                ff.MakeSections(m_Line, DataField.SplitBefore, m_Intersection, DataField.SplitAfter,
                                     out lineBefore, out lineAfter);
                 m_LineA = lineBefore;
                 m_LineB = lineAfter;
@@ -413,8 +413,8 @@ namespace Backsight.Editor.Operations
             OffsetPoint op = m_Direction.Offset as OffsetPoint;
             PointFeature from = (op == null ? m_Direction.From : op.Point);
 
-            if (ff.HasFeatureDescription("DirLine"))
-                m_DirLine = ff.CreateSegmentLineFeature("DirLine", from, m_Intersection);
+            if (ff.HasFeatureDescription(DataField.DirLine))
+                m_DirLine = ff.CreateSegmentLineFeature(DataField.DirLine, from, m_Intersection);
         }
 
         /// <summary>

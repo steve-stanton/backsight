@@ -53,20 +53,15 @@ namespace Backsight.Editor
             : base(op)
         {
             foreach (FeatureStub stub in stubs)
-                AddFeatureStub(stub.DataId, stub);
+                AddFeatureDescription(stub.DataId, stub);
         }
 
         #endregion
 
         internal void AddFeatureStub(DataField field, FeatureStub stub)
         {
-            AddFeatureStub(field.ToString(), stub);
-        }
-
-        internal void AddFeatureStub(string itemName, FeatureStub stub)
-        {
             if (stub != null)
-                AddFeatureDescription(itemName, stub);
+                AddFeatureDescription(field, stub);
         }
 
         /// <summary>
@@ -78,24 +73,12 @@ namespace Backsight.Editor
         /// <returns>True if a line split was recorded, false if the <paramref name="splitSection"/> is null.</returns>
         internal bool AddLineSplit(LineFeature parentLine, DataField field, string dataId)
         {
-            return AddLineSplit(parentLine, field.ToString(), dataId);
-        }
-
-        /// <summary>
-        /// Records information for a line split
-        /// </summary>
-        /// <param name="parentLine">The line that may be getting split</param>
-        /// <param name="itemName">The name of the item that should be attached to the line split info</param>
-        /// <param name="dataId">The ID for the section (null if there is no split)</param>
-        /// <returns>True if a line split was recorded, false if the <paramref name="splitSection"/> is null.</returns>
-        internal bool AddLineSplit(LineFeature parentLine, string itemName, string dataId)
-        {
             if (dataId == null)
                 return false;
 
             uint sessionId, ss;
             InternalIdValue.Parse(dataId, out sessionId, out ss);
-            AddFeatureDescription(itemName, new FeatureStub(Creator, ss, parentLine.EntityType, null));
+            AddFeatureDescription(field, new FeatureStub(Creator, ss, parentLine.EntityType, null));
             return true;
         }
 

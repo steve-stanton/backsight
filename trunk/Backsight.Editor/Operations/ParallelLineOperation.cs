@@ -380,13 +380,13 @@ namespace Backsight.Editor.Operations
             if (!IsPositionAtOffsetPoint(spar))
             {
                 IFeature f = CreateFeatureDescription(pointType);
-                ff.AddFeatureDescription("From", f);
+                ff.AddFeatureDescription(DataField.From, f);
             }
 
             if (!IsPositionAtOffsetPoint(epar))
             {
                 IFeature f = CreateFeatureDescription(pointType);
-                ff.AddFeatureDescription("To", f);
+                ff.AddFeatureDescription(DataField.To, f);
             }
 
             base.Execute(ff);
@@ -428,13 +428,13 @@ namespace Backsight.Editor.Operations
 
             PointFeature from, to;
 
-            if (ff.HasFeatureDescription("From"))
-                from = ff.CreatePointFeature("From");
+            if (ff.HasFeatureDescription(DataField.From))
+                from = ff.CreatePointFeature(DataField.From);
             else
                 from = this.OffsetPoint;
 
-            if (ff.HasFeatureDescription("To"))
-                to = ff.CreatePointFeature("To");
+            if (ff.HasFeatureDescription(DataField.To))
+                to = ff.CreatePointFeature(DataField.To);
             else
                 to = this.OffsetPoint;
 
@@ -445,9 +445,9 @@ namespace Backsight.Editor.Operations
             // arc, or a section that's based on a circular arc.
 
             if (m_RefLine.GetArcBase() == null)
-                m_ParLine = ff.CreateSegmentLineFeature("NewLine", from, to);
+                m_ParLine = ff.CreateSegmentLineFeature(DataField.NewLine, from, to);
             else
-                m_ParLine = ff.CreateArcFeature("NewLine", from, to);
+                m_ParLine = ff.CreateArcFeature(DataField.NewLine, from, to);
         }
 
         /// <summary>
@@ -771,9 +771,9 @@ namespace Backsight.Editor.Operations
             m_Offset = editDeserializer.ReadPersistent<Observation>(DataField.Offset);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("From", editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.From));
-            dff.AddFeatureStub("To", editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.To));
-            dff.AddFeatureStub("NewLine", editDeserializer.ReadPersistent<FeatureStub>(DataField.NewLine));
+            dff.AddFeatureStub(DataField.From, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.From));
+            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.To));
+            dff.AddFeatureStub(DataField.NewLine, editDeserializer.ReadPersistent<FeatureStub>(DataField.NewLine));
             ProcessFeatures(dff);
         }
     }

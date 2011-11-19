@@ -90,9 +90,9 @@ namespace Backsight.Editor.Operations
             ReadData(editDeserializer, out m_Direction1, out m_Direction2, out to, out line1, out line2);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", to);
-            dff.AddFeatureStub("Line1", line1);
-            dff.AddFeatureStub("Line2", line2);
+            dff.AddFeatureStub(DataField.To, to);
+            dff.AddFeatureStub(DataField.Line1, line1);
+            dff.AddFeatureStub(DataField.Line2, line2);
             ProcessFeatures(dff);
         }
 
@@ -251,7 +251,7 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (lineEnt1 != null)
             {
@@ -264,7 +264,7 @@ namespace Backsight.Editor.Operations
                     throw new ApplicationException("Cannot add direction line because a distance offset is involved");
 
                 IFeature f = new FeatureStub(this, lineEnt1, null);
-                ff.AddFeatureDescription("Line1", f);
+                ff.AddFeatureDescription(DataField.Line1, f);
             }
 
             if (lineEnt2 != null)
@@ -273,7 +273,7 @@ namespace Backsight.Editor.Operations
                     throw new ApplicationException("Cannot add direction line because a distance offset is involved");
 
                 IFeature f = new FeatureStub(this, lineEnt2, null);
-                ff.AddFeatureDescription("Line2", f);
+                ff.AddFeatureDescription(DataField.Line2, f);
             }
 
             base.Execute(ff);
@@ -315,20 +315,20 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreatePointFeature("To");
+            m_To = ff.CreatePointFeature(DataField.To);
 
-            if (ff.HasFeatureDescription("Line1"))
+            if (ff.HasFeatureDescription(DataField.Line1))
             {
                 OffsetPoint op1 = m_Direction1.Offset as OffsetPoint;
                 PointFeature from1 = (op1 == null ? m_Direction1.From : op1.Point);
-                m_Line1 = ff.CreateSegmentLineFeature("Line1", from1, m_To);
+                m_Line1 = ff.CreateSegmentLineFeature(DataField.Line1, from1, m_To);
             }
 
-            if (ff.HasFeatureDescription("Line2"))
+            if (ff.HasFeatureDescription(DataField.Line2))
             {
                 OffsetPoint op2 = m_Direction2.Offset as OffsetPoint;
                 PointFeature from2 = (op2 == null ? m_Direction2.From : op2.Point);
-                m_Line2 = ff.CreateSegmentLineFeature("Line2", from2, m_To);
+                m_Line2 = ff.CreateSegmentLineFeature(DataField.Line2, from2, m_To);
             }
         }
 

@@ -227,8 +227,8 @@ namespace Backsight.Editor.Operations
 
             // See FeatureFactory.MakeSection - the only thing that really matters is the
             // session sequence number that will get picked up by the FeatureStub constructor.
-            ff.AddFeatureDescription("NewLine1", new FeatureStub(this, m_Line.EntityType, null));
-            ff.AddFeatureDescription("NewLine2", new FeatureStub(this, m_Line.EntityType, null));
+            ff.AddFeatureDescription(DataField.NewLine1, new FeatureStub(this, m_Line.EntityType, null));
+            ff.AddFeatureDescription(DataField.NewLine2, new FeatureStub(this, m_Line.EntityType, null));
 
             base.Execute(ff);
         }
@@ -243,9 +243,9 @@ namespace Backsight.Editor.Operations
         /// expected to provide a suitable override.</remarks>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_NewPoint = ff.CreatePointFeature("NewPoint");
+            m_NewPoint = ff.CreatePointFeature(DataField.NewPoint);
             SectionLineFeature line1, line2;
-            ff.MakeSections(m_Line, "NewLine1", m_NewPoint, "NewLine2", out line1, out line2);
+            ff.MakeSections(m_Line, DataField.NewLine1, m_NewPoint, DataField.NewLine2, out line1, out line2);
             m_NewLine1 = line1;
             m_NewLine2 = line2;
         }

@@ -234,7 +234,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_Point = ff.CreatePointFeature("Point");
+            m_Point = ff.CreatePointFeature(DataField.Point);
         }
 
         /// <summary>
