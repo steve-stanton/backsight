@@ -330,7 +330,7 @@ namespace Backsight.Editor
             if (pts.Length==2)
                 result = new LineFeature(creator, ss, what, ps, pe);
             else
-                result = new MultiSegmentLineFeature(creator, ss, what, ps, pe, pts);
+                result = new LineFeature(creator, ss, what, ps, pe, pts);
 
             if (line.IsTopologicalArc)
                 result.SetTopology(true);

@@ -100,6 +100,27 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Creates a <c>LineFeature</c> consisting of a series of connected line segments.
+        /// </summary>
+        /// <param name="creator">The operation that created the feature (not null)</param>
+        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
+        /// session that created it.</param>
+        /// <param name="e">The entity type for the feature.</param>
+        /// <param name="start">The point at the start of the line</param>
+        /// <param name="end">The point at the end of the line</param>
+        /// <param name="data">The positions defining the shape of the line. The first position must
+        /// coincide precisely with the supplied <paramref name="start"/>, and the last position
+        /// must coincide precisely with <paramref name="end"/>. Expected to be more than two positions.</param>
+        internal LineFeature(Operation creator, uint sessionSequence, IEntity e,
+                                            PointFeature start, PointFeature end, IPointGeometry[] data)
+            : this(creator, sessionSequence, e, start, end, new MultiSegmentGeometry(start, end, data))
+        {
+            Debug.Assert(data.Length>2);
+            Debug.Assert(start.Geometry.IsCoincident(data[0]));
+            Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
+        }
+
+        /// <summary>
         /// Creates a new <c>LineFeature</c>
         /// </summary>
         /// <param name="creator">The operation that created the feature (not null)</param>
