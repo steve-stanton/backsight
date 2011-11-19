@@ -958,7 +958,7 @@ namespace Backsight.Editor
 
             // Do standard stuff for adding a label.
             uint ss = Session.ReserveNextItem();
-            return new MiscTextFeature(creator, ss, newEnt, text);
+            return new TextFeature(creator, ss, newEnt, text);
         }
 
         /// <summary>
