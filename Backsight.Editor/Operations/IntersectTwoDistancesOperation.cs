@@ -117,9 +117,9 @@ namespace Backsight.Editor.Operations
 
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", to);
-            dff.AddFeatureStub("Line1", line1);
-            dff.AddFeatureStub("Line2", line2);
+            dff.AddFeatureStub(DataField.To, to);
+            dff.AddFeatureStub(DataField.Line1, line1);
+            dff.AddFeatureStub(DataField.Line2, line2);
             ProcessFeatures(dff);
         }
 
@@ -315,18 +315,18 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (ent1 != null)
             {
                 IFeature f = new FeatureStub(this, ent1, null);
-                ff.AddFeatureDescription("Line1", f);
+                ff.AddFeatureDescription(DataField.Line1, f);
             }
 
             if (ent2 != null)
             {
                 IFeature f = new FeatureStub(this, ent2, null);
-                ff.AddFeatureDescription("Line2", f);
+                ff.AddFeatureDescription(DataField.Line2, f);
             }
 
             base.Execute(ff);
@@ -360,9 +360,9 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreatePointFeature("To");
-            m_Line1 = ff.CreateSegmentLineFeature("Line1", m_From1, m_To);
-            m_Line2 = ff.CreateSegmentLineFeature("Line2", m_From2, m_To);
+            m_To = ff.CreatePointFeature(DataField.To);
+            m_Line1 = ff.CreateSegmentLineFeature(DataField.Line1, m_From1, m_To);
+            m_Line2 = ff.CreateSegmentLineFeature(DataField.Line2, m_From2, m_To);
         }
 
         /// <summary>

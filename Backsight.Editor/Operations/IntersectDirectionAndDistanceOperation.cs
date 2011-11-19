@@ -108,9 +108,9 @@ namespace Backsight.Editor.Operations
                             out to, out dirLine, out distLine);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("To", to);
-            dff.AddFeatureStub("DirLine", dirLine);
-            dff.AddFeatureStub("DistLine", distLine);
+            dff.AddFeatureStub(DataField.To, to);
+            dff.AddFeatureStub(DataField.DirLine, dirLine);
+            dff.AddFeatureStub(DataField.DistLine, distLine);
             ProcessFeatures(dff);
         }
 
@@ -287,7 +287,7 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (ent1 != null)
             {
@@ -300,13 +300,13 @@ namespace Backsight.Editor.Operations
                     throw new ApplicationException("Cannot add direction line because a distance offset is involved");
 
                 IFeature f = new FeatureStub(this, ent1, null);
-                ff.AddFeatureDescription("DirLine", f);
+                ff.AddFeatureDescription(DataField.DirLine, f);
             }
 
             if (ent2 != null)
             {
                 IFeature f = new FeatureStub(this, ent2, null);
-                ff.AddFeatureDescription("DistLine", f);
+                ff.AddFeatureDescription(DataField.DistLine, f);
             }
 
             base.Execute(ff);

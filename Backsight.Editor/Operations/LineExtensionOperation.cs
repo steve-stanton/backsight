@@ -96,8 +96,8 @@ namespace Backsight.Editor.Operations
             ReadData(editDeserializer, out m_ExtendLine, out m_IsExtendFromEnd, out m_Length, out newPoint, out newLine);
 
             DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub("NewPoint", newPoint);
-            dff.AddFeatureStub("NewLine", newLine);
+            dff.AddFeatureStub(DataField.NewPoint, newPoint);
+            dff.AddFeatureStub(DataField.NewLine, newLine);
             ProcessFeatures(dff);
         }
 
@@ -169,12 +169,12 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature xp = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("NewPoint", xp);
+            ff.AddFeatureDescription(DataField.NewPoint, xp);
 
             if (lineEnt != null)
             {
                 IFeature f = new FeatureStub(this, lineEnt, null);
-                ff.AddFeatureDescription("NewLine", f);
+                ff.AddFeatureDescription(DataField.NewLine, f);
             }
 
             base.Execute(ff);
@@ -237,17 +237,17 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_NewPoint = ff.CreatePointFeature("NewPoint");
+            m_NewPoint = ff.CreatePointFeature(DataField.NewPoint);
 
-            if (ff.HasFeatureDescription("NewLine"))
+            if (ff.HasFeatureDescription(DataField.NewLine))
             {
                 PointFeature from = (m_IsExtendFromEnd ? m_ExtendLine.EndPoint : m_ExtendLine.StartPoint);
                 ArcFeature arc = m_ExtendLine.GetArcBase();
 
                 if (arc == null)
-                    m_NewLine = ff.CreateSegmentLineFeature("NewLine", from, m_NewPoint);
+                    m_NewLine = ff.CreateSegmentLineFeature(DataField.NewLine, from, m_NewPoint);
                 else
-                    m_NewLine = ff.CreateArcFeature("NewLine", from, m_NewPoint);
+                    m_NewLine = ff.CreateArcFeature(DataField.NewLine, from, m_NewPoint);
             }
         }
 

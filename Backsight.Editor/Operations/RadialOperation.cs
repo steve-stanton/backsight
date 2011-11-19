@@ -156,12 +156,12 @@ namespace Backsight.Editor.Operations
 
             FeatureId fid = pointId.CreateId();
             IFeature x = new FeatureStub(this, pointId.Entity, fid);
-            ff.AddFeatureDescription("To", x);
+            ff.AddFeatureDescription(DataField.To, x);
 
             if (lineType != null)
             {
                 IFeature f = new FeatureStub(this, lineType, null);
-                ff.AddFeatureDescription("Line", f);
+                ff.AddFeatureDescription(DataField.Line, f);
             }
 
             base.Execute(ff);
@@ -177,10 +177,10 @@ namespace Backsight.Editor.Operations
         /// expected to provide a suitable override.</remarks>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            m_To = ff.CreatePointFeature("To");
+            m_To = ff.CreatePointFeature(DataField.To);
 
-            if (ff.HasFeatureDescription("Line"))
-                m_Line = ff.CreateSegmentLineFeature("Line", m_Direction.From, m_To);
+            if (ff.HasFeatureDescription(DataField.Line))
+                m_Line = ff.CreateSegmentLineFeature(DataField.Line, m_Direction.From, m_To);
         }
 
         /// <summary>

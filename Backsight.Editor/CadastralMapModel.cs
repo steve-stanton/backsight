@@ -414,8 +414,8 @@ namespace Backsight.Editor
         /// <param name="to">The end point for the new line</param>
         /// <param name="e">The entity type for the line (not null)</param>
         /// <param name="creator">The operation creating the line</param>
-        /// <returns>The created line feature.</returns>
-        internal SegmentLineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
+        /// <returns>The created line segment.</returns>
+        internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
             uint ss = Session.ReserveNextItem();
             SegmentLineFeature f = new SegmentLineFeature(creator, ss, e, from, to);
