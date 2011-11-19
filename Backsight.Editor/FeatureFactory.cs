@@ -250,40 +250,40 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <see cref="SegmentLineFeature"/> using information previously
+        /// Creates a new <see cref="LineFeature"/> (with <see cref="SegmentGeometry"/>) using information previously
         /// recorded via a call to <see cref="AddFeatureDescription"/>.
         /// </summary>
         /// <param name="field">The tag for the item involved</param>
         /// <param name="from">The point at the start of the line (not null).</param>
         /// <param name="to">The point at the end of the line (not null).</param>
         /// <returns>The created feature (never null)</returns>
-        internal virtual SegmentLineFeature CreateSegmentLineFeature(DataField field, PointFeature from, PointFeature to)
+        internal virtual LineFeature CreateSegmentLineFeature(DataField field, PointFeature from, PointFeature to)
         {
             return CreateSegmentLineFeature(field.ToString(), from, to);
         }
 
         /// <summary>
-        /// Creates a new <see cref="SegmentLineFeature"/> using information previously
+        /// Creates a new <see cref="LineFeature"/> (with <see cref="SegmentGeometry"/>) using information previously
         /// recorded via a call to <see cref="AddFeatureDescription"/>.
         /// </summary>
         /// <param name="itemName">The name for the item involved</param>
         /// <param name="from">The point at the start of the line (not null).</param>
         /// <param name="to">The point at the end of the line (not null).</param>
         /// <returns>The created feature (never null)</returns>
-        internal virtual SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
+        internal virtual LineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
         {
-            SegmentLineFeature result = null;
+            LineFeature result = null;
             IFeature f = FindFeatureDescription(itemName);
 
             if (f == null)
             {
                 uint ss = Session.ReserveNextItem();
-                result = new SegmentLineFeature(m_Operation, ss, LineType, from, to);
+                result = new LineFeature(m_Operation, ss, LineType, from, to);
                 result.SetNextId();
             }
             else
             {
-                result = new SegmentLineFeature(f, from, to);
+                result = new LineFeature(f, from, to);
             }
 
             return result;

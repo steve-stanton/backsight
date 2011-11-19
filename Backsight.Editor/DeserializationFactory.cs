@@ -100,21 +100,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new <see cref="SegmentLineFeature"/> using the feature
+        /// Creates a new <see cref="LineFeature"/> (with <see cref="SegmentGeometry"/>) using the feature
         /// stub with the specified name.
         /// </summary>
         /// <param name="itemName">The name for the item involved</param>
         /// <param name="from">The point at the start of the line (not null).</param>
         /// <param name="to">The point at the end of the line (not null).</param>
         /// <returns>The created feature (null if there is no feature stub)</returns>
-        internal override SegmentLineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
+        internal override LineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
         {
             IFeature f = FindFeatureDescription(itemName);
 
             if (f == null)
                 return null;
             else
-                return new SegmentLineFeature(f, from, to);
+                return new LineFeature(f, from, to);
         }
 
         /// <summary>

@@ -418,7 +418,7 @@ namespace Backsight.Editor
         internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
             uint ss = Session.ReserveNextItem();
-            SegmentLineFeature f = new SegmentLineFeature(creator, ss, e, from, to);
+            LineFeature f = new LineFeature(creator, ss, e, from, to);
             //m_Window.Union(f.Extent);
             //m_Index.Add(f);
 

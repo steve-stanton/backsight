@@ -328,7 +328,7 @@ namespace Backsight.Editor
             uint ss = Session.ReserveNextItem();
 
             if (pts.Length==2)
-                result = new SegmentLineFeature(creator, ss, what, ps, pe);
+                result = new LineFeature(creator, ss, what, ps, pe);
             else
                 result = new MultiSegmentLineFeature(creator, ss, what, ps, pe, pts);
 
