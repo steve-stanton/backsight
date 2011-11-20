@@ -14,19 +14,19 @@
 // </remarks>
 
 using System;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Windows.Forms;
 
+using Backsight.Data;
+using Backsight.Editor.Database;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
-using Backsight.Forms;
-using Backsight.Environment;
-using Backsight.Editor.Database;
-using Backsight.Data;
 using Backsight.Editor.UI;
+using Backsight.Environment;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {

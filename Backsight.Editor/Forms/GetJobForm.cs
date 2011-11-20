@@ -14,14 +14,11 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using System.IO;
 
 using Backsight.Editor.Database;
 using Backsight.Environment;
-using Backsight.Data;
-using Backsight.Editor.Properties;
-using System.Collections.Generic;
 
 namespace Backsight.Editor.Forms
 {

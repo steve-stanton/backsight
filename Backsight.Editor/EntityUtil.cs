@@ -14,13 +14,13 @@
 // </remarks>
 
 using System;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 
+using Backsight.Data;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
-using Backsight.Data;
 
 namespace Backsight.Editor
 {

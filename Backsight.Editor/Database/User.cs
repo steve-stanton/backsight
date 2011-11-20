@@ -14,8 +14,8 @@
 // </remarks>
 
 using System;
-using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 using Backsight.Data;
 

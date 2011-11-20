@@ -14,17 +14,13 @@
 // </remarks>
 
 using System;
-using System.IO;
 using System.Windows.Forms;
-//using System.Data.SqlClient;
-
-using Microsoft.Win32;
 
 using Backsight.Data;
-using Backsight.SqlServer;
 using Backsight.Editor.Database;
-using Backsight.Environment;
 using Backsight.Editor.Forms;
+using Backsight.Environment;
+using Backsight.SqlServer;
 
 namespace Backsight.Editor
 {

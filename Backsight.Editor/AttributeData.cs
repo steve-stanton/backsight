@@ -16,14 +16,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Windows.Forms;
 
-using Backsight.Environment;
 using Backsight.Data;
 using Backsight.Editor.Database;
 using Backsight.Editor.Forms;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {

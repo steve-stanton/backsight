@@ -43,13 +43,6 @@ namespace Backsight.Editor.Observations
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
-        /// </summary>
-        internal OffsetDistance()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>

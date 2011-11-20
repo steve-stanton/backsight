@@ -14,9 +14,9 @@
 // </remarks>
 
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Data;
 
 using Backsight.Data;
 using Backsight.Environment;
