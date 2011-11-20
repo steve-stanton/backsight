@@ -14,13 +14,8 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.IO;
 
-using Backsight.Environment;
-using Backsight.Data;
 using Backsight.Editor.Observations;
 
 
