@@ -114,27 +114,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            // No point doing anything if the line is undefined.
-            if (line==null)
-                return null;
-
-            // Ask each leg to try to locate the line.
-            Distance dist = null;
-
-            for (int i = 0; i < m_Legs.Count && dist == null; i++)
-                dist = m_Legs[i].GetDistance(line);
-
-            return dist;
-        }
-
-        /// <summary>
         /// The features created by this editing operation.
         /// </summary>
         internal override Feature[] Features

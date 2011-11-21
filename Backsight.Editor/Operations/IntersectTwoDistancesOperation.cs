@@ -210,26 +210,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            // If the distance-line is the one we're after, AND it was
-            // defined as a distance (as opposed to an offset point),
-            // return a reference to it.
-            if (Object.ReferenceEquals(line, m_Line1))
-                return (m_Distance1 as Distance);
-
-            if (Object.ReferenceEquals(line, m_Line2))
-                return (m_Distance2 as Distance);
-
-            return null;
-        }
-
-        /// <summary>
         /// The features created by this editing operation.
         /// </summary>
         internal override Feature[] Features
@@ -361,8 +341,26 @@ namespace Backsight.Editor.Operations
         internal override void ProcessFeatures(FeatureFactory ff)
         {
             m_To = ff.CreatePointFeature(DataField.To);
-            m_Line1 = ff.CreateSegmentLineFeature(DataField.Line1, m_From1, m_To);
-            m_Line2 = ff.CreateSegmentLineFeature(DataField.Line2, m_From2, m_To);
+
+            if (ff.HasFeatureDescription(DataField.Line1))
+                m_Line1 = ff.CreateSegmentLineFeature(DataField.Line1, m_From1, m_To);
+
+            if (ff.HasFeatureDescription(DataField.Line2))
+                m_Line2 = ff.CreateSegmentLineFeature(DataField.Line2, m_From2, m_To);
+
+            AssignObservedLengths();
+        }
+
+        /// <summary>
+        /// Assigns observed lengths to any lines created by this edit.
+        /// </summary>
+        void AssignObservedLengths()
+        {
+            if (m_Line1 != null)
+                m_Line1.ObservedLength = (m_Distance1 as Distance);
+
+            if (m_Line2 != null)
+                m_Line2.ObservedLength = (m_Distance2 as Distance);
         }
 
         /// <summary>
@@ -582,6 +580,8 @@ namespace Backsight.Editor.Operations
             m_Distance2 = data.ExchangeObservation<Observation>(this, DataField.Distance2, m_Distance2);
             m_From2 = data.ExchangeFeature<PointFeature>(this, DataField.From2, m_From2);
             m_Default = data.ExchangeValue<bool>(DataField.Default, m_Default);
+
+            AssignObservedLengths();
         }
 
         /// <summary>

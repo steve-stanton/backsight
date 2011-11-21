@@ -311,7 +311,7 @@ namespace Backsight.Editor
                 return;
 
         	// See if there is an observed distance.
-            Distance dist = GetObservedLength();
+            Distance dist = this.ObservedLength;
             bool isFlipped = this.IsLineAnnotationFlipped;
 
             LineAnnotationStyle annoStyle = ec.LineAnnotationStyle;
@@ -327,16 +327,6 @@ namespace Backsight.Editor
                 if (dist != null)
                     m_Geom.RenderDistance(display, style, dist, isFlipped, true);
             }
-        }
-
-        /// <summary>
-        /// The distance observation (if any) that was specified as the observed
-        /// length of this line.
-        /// </summary>
-        /// <returns>The observed distance (if any).</returns>
-        Distance GetObservedLength()
-        {
-            return this.Creator.GetDistance(this);
         }
 
         /// <summary>

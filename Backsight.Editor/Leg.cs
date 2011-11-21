@@ -148,6 +148,7 @@ namespace Backsight.Editor
                 {
                     itemId.ItemSequence++;
                     LineFeature line = CreateLine(ff, itemId.ToString(), from, to);
+                    line.ObservedLength = span.ObservedDistance;
                     span.CreatedFeature = line;
                 }
                 else
@@ -397,38 +398,6 @@ namespace Backsight.Editor
                     feat.IsMoved = true;
             }
         }
-
-        /// <summary>
-        /// Tries to find the observed length for a feature that may have been
-        /// created on this leg. Note that for lines representing cul-de-sacs
-        /// with no observed spans, there is no observed length (the length
-        /// in that case comes from the central angle & radius).
-        /// </summary>
-        /// <param name="feat">The feature to find.</param>
-        /// <returns>Reference to the distance (null if not found).</returns>
-        internal Distance GetDistance(Feature feat)
-        {
-            foreach (SpanInfo sd in m_Spans)
-            {
-                Feature f = sd.CreatedFeature;
-                if (Object.ReferenceEquals(f, feat))
-                    return sd.ObservedDistance;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Loads a list with references to all the features that exist on
-        /// this leg. This function is called by <see cref="PathOperation.GetFeatures"/>
-        /// </summary>
-        /// <param name="features">The list to load.</param>
-        /*
-        void GetFeatures(List<Feature> features)
-        {
-            features.AddRange(m_Creations);
-        }
-        */
 
         /// <summary>
         /// Loads a list of the features that were created by this leg.

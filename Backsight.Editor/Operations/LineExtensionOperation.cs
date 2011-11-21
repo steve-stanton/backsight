@@ -248,6 +248,8 @@ namespace Backsight.Editor.Operations
                     m_NewLine = ff.CreateSegmentLineFeature(DataField.NewLine, from, m_NewPoint);
                 else
                     m_NewLine = ff.CreateArcFeature(DataField.NewLine, from, m_NewPoint);
+
+                m_NewLine.ObservedLength = m_Length;
             }
         }
 
@@ -360,6 +362,7 @@ namespace Backsight.Editor.Operations
         {
             m_IsExtendFromEnd = data.ExchangeValue<bool>(DataField.ExtendFromEnd, m_IsExtendFromEnd);
             m_Length = data.ExchangeObservation<Distance>(this, DataField.Distance, m_Length);
+            m_NewLine.ObservedLength = m_Length;
         }
 
         /// <summary>
@@ -368,20 +371,6 @@ namespace Backsight.Editor.Operations
         public override string Name
         {
             get { return "Line extension"; }
-        }
-
-        /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            if (Object.ReferenceEquals(line, m_NewLine))
-                return m_Length;
-            else
-                return null;
         }
 
         /// <summary>

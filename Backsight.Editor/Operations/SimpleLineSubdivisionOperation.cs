@@ -346,6 +346,11 @@ namespace Backsight.Editor.Operations
         {
             m_Distance = data.ExchangeObservation<Distance>(this, DataField.Distance, m_Distance);
             m_IsFromEnd = data.ExchangeValue<bool>(DataField.EntryFromEnd, m_IsFromEnd);
+
+            if (m_IsFromEnd)
+                m_NewLine2.ObservedLength = m_Distance;
+            else
+                m_NewLine1.ObservedLength = m_Distance;
         }
 
         /// <summary>
