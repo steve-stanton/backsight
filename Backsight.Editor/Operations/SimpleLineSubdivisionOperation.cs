@@ -14,7 +14,6 @@
 // </remarks>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
@@ -39,10 +38,15 @@ namespace Backsight.Editor.Operations
         readonly LineFeature m_Line;
 
         /// <summary>
-        /// The distance to the point. A negated distance refers to the distance from the end of the line.
+        /// The distance to the point.
         /// </summary>
         Distance m_Distance;
-        
+
+        /// <summary>
+        /// Is the distance observed from the end of the line?
+        /// </summary>
+        bool m_IsFromEnd;
+
         // Creations ...
 
         /// <summary>
@@ -73,13 +77,15 @@ namespace Backsight.Editor.Operations
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
         /// <param name="splitLine">The line to split.</param>
-        /// <param name="dist">The distance to the split point (specify a negated distance
-        /// if it's from the end of the line).</param>
-        internal SimpleLineSubdivisionOperation(Session session, uint sequence, LineFeature splitLine, Distance dist)
+        /// <param name="dist">The distance to the split point.</param>
+        /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
+        internal SimpleLineSubdivisionOperation(Session session, uint sequence, LineFeature splitLine, Distance dist,
+                                                    bool isFromEnd)
             : base(session, sequence)
         {
             m_Line = splitLine;
             m_Distance = dist;
+            m_IsFromEnd = isFromEnd;
         }
 
         /// <summary>
@@ -92,6 +98,7 @@ namespace Backsight.Editor.Operations
         {
             m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
             m_Distance = editDeserializer.ReadPersistent<Distance>(DataField.Distance);
+            m_IsFromEnd = editDeserializer.ReadBool(DataField.EntryFromEnd);
             FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>(DataField.NewPoint);
             string dataId1 = editDeserializer.ReadString(DataField.NewLine1);
             string dataId2 = editDeserializer.ReadString(DataField.NewLine2);
@@ -141,11 +148,19 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The distance to the point. A negated distance refers to the distance from the end of the line.
+        /// The distance to the point.
         /// </summary>
         internal Distance Distance
         {
             get { return m_Distance; }
+        }
+
+        /// <summary>
+        /// Is the distance observed from the end of the line?
+        /// </summary>
+        internal bool IsFromEnd
+        {
+            get { return m_IsFromEnd; }
         }
 
         /// <summary>
@@ -155,9 +170,7 @@ namespace Backsight.Editor.Operations
         /// or supplied information is incomplete)</returns>
         IPosition Calculate()
         {
-            Distance d = new Distance(m_Distance);
-            bool isFromEnd = d.SetPositive();
-            return Calculate(m_Line, d, isFromEnd);
+            return Calculate(m_Line, m_Distance, m_IsFromEnd);
         }
 
         /// <summary>
@@ -248,6 +261,11 @@ namespace Backsight.Editor.Operations
             ff.MakeSections(m_Line, DataField.NewLine1, m_NewPoint, DataField.NewLine2, out line1, out line2);
             m_NewLine1 = line1;
             m_NewLine2 = line2;
+
+            if (m_IsFromEnd)
+                m_NewLine2.ObservedLength = m_Distance;
+            else
+                m_NewLine1.ObservedLength = m_Distance;
         }
 
         /// <summary>
@@ -288,16 +306,9 @@ namespace Backsight.Editor.Operations
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
         internal UpdateItemCollection GetUpdateItems(Distance dist, bool isFromEnd)
         {
-            Distance d = new Distance(dist);
-
-            // And make sure the sign is correct.
-            if (isFromEnd)
-                d.SetNegative();
-            else
-                d.SetPositive();
-
             UpdateItemCollection result = new UpdateItemCollection();
-            result.AddObservation<Distance>(DataField.Distance, m_Distance, d);
+            result.AddObservation<Distance>(DataField.Distance, m_Distance, dist);
+            result.AddItem<bool>(DataField.EntryFromEnd, m_IsFromEnd, isFromEnd);
             return result;
         }
 
@@ -309,6 +320,7 @@ namespace Backsight.Editor.Operations
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
             data.WriteObservation<Distance>(editSerializer, DataField.Distance);
+            data.WriteItem<bool>(editSerializer, DataField.EntryFromEnd);
         }
 
         /// <summary>
@@ -320,6 +332,7 @@ namespace Backsight.Editor.Operations
         {
             UpdateItemCollection result = new UpdateItemCollection();
             result.ReadObservation<Distance>(editDeserializer, DataField.Distance);
+            result.ReadItem<bool>(editDeserializer, DataField.EntryFromEnd);
             return result;
         }
 
@@ -332,6 +345,7 @@ namespace Backsight.Editor.Operations
         public override void ExchangeData(UpdateItemCollection data)
         {
             m_Distance = data.ExchangeObservation<Distance>(this, DataField.Distance, m_Distance);
+            m_IsFromEnd = data.ExchangeValue<bool>(DataField.EntryFromEnd, m_IsFromEnd);
         }
 
         /// <summary>
@@ -340,33 +354,6 @@ namespace Backsight.Editor.Operations
         public override string Name
         {
             get { return "Line subdivide (one distance)"; }
-        }
-
-        /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            // Return the distance if the specified line is the one associated
-            // with the observed distance.
-
-            if (m_Distance.Meters < 0.0)
-            {
-                // Distance relates to the second line that was created.
-                if (Object.ReferenceEquals(line, m_NewLine2))
-                    return m_Distance;
-            }
-            else
-            {
-                // Distance relates to the first line that was created.
-                if (Object.ReferenceEquals(line, m_NewLine1))
-                    return m_Distance;
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -500,6 +487,7 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
 
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
             editSerializer.WritePersistent<Distance>(DataField.Distance, m_Distance);
+            editSerializer.WriteBool(DataField.EntryFromEnd, m_IsFromEnd);
             editSerializer.WritePersistent<FeatureStub>(DataField.NewPoint, new FeatureStub(m_NewPoint));
             editSerializer.WriteString(DataField.NewLine1, m_NewLine1.DataId);
             editSerializer.WriteString(DataField.NewLine2, m_NewLine2.DataId);

@@ -192,10 +192,6 @@ namespace Backsight.Editor.UI
             // Get info from the dialog.
             m_Length = m_Dialog.Length;
 
-            Distance d = new Distance(m_Length);
-            if (m_Dialog.IsFromEnd)
-                d.SetNegative();
-
             // If we are doing an update, alter the original operation.
             UpdateUI up = this.Update;
 
@@ -211,7 +207,7 @@ namespace Backsight.Editor.UI
 
                 // Remember the changes as part of the UI object (the original edit remains
                 // unchanged for now)
-                UpdateItemCollection changes = pop.GetUpdateItems(m_Dialog.Length, m_Dialog.IsFromEnd);
+                UpdateItemCollection changes = pop.GetUpdateItems(m_Length, m_Dialog.IsFromEnd);
                 if (!up.AddUpdate(pop, changes))
                     return false;
             }
@@ -223,7 +219,7 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession, 0, m_Line, d);
+                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession, 0, m_Line, m_Length, m_Dialog.IsFromEnd);
                     op.Execute();
                 }
 

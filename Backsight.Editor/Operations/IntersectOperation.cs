@@ -90,18 +90,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// This implementation always returns null.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// Adds to list of features created by this operation. This appends the
         /// supplied line (if it's not null) to the results, and may also add the
         /// point at the start of the line (this covers a situation where an offset

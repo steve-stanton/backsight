@@ -54,6 +54,16 @@ namespace Backsight.Editor
         /// </summary>
         PointFeature m_To;
 
+        /// <summary>
+        /// Any observed length for the line (on the ground). 
+        /// </summary>
+        internal Distance ObservedLength { get; set; }
+
+        /// <summary>
+        /// Has the annotation for this line been switched to the non-default side?
+        /// </summary>
+        internal bool IsAnnotationFlipped { get; set; }
+
         #endregion
 
         #region Constructors

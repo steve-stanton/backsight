@@ -71,7 +71,7 @@ namespace Backsight.Editor.Forms
             if (op!=null)
             {
                 m_Length = new Distance(op.Distance);
-                m_IsFromEnd = m_Length.SetPositive();
+                m_IsFromEnd = op.IsFromEnd;
             }
             else
             {
@@ -235,7 +235,7 @@ namespace Backsight.Editor.Forms
 
             m_Line = pop.Line;
             m_Length = new Distance(pop.Distance);
-            m_IsFromEnd = m_Length.SetPositive();
+            m_IsFromEnd = pop.IsFromEnd;
 
             return true;
         }

@@ -160,7 +160,11 @@ namespace Backsight.Editor
         /// <param name="line">The line to find</param>
         /// <returns>The observed length of the line (null if this operation doesn't
         /// reference the specified line)</returns>
-        abstract internal Distance GetDistance(LineFeature line);
+        [Obsolete("Use LineFeature.ObservedLength")]
+        internal virtual Distance GetDistance(LineFeature line)
+        {
+            return line.ObservedLength;
+        }
 
         /// <summary>
         /// The features created by this editing operation (may be an empty array, but

@@ -128,11 +128,6 @@ namespace Backsight.Editor.Operations
         internal LineFeature Terminal1 { get { return m_Term1; } }
         internal LineFeature Terminal2 { get { return m_Term2; } }
 
-        internal override Distance GetDistance(LineFeature line)
-        {
-            return null; // nothing to do
-        }
-
         /// <summary>
         /// A user-perceived title for this operation.
         /// </summary>

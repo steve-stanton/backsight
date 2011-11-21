@@ -96,11 +96,6 @@ namespace Backsight.Editor.Operations
             }
         }
 
-        internal override Distance GetDistance(LineFeature line)
-        {
-            return null;
-        }
-
         internal override Feature[] Features
         {
             get { return new Feature[] { m_NewLine }; }
