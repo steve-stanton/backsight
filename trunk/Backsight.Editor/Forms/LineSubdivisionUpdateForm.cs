@@ -101,15 +101,15 @@ namespace Backsight.Editor.Forms
             if (face == null)
                 return null;
 
-            MeasuredLineFeature[] sections = face.Sections;
+            LineFeature[] sections = face.Sections;
             AnnotatedDistance[] result = new AnnotatedDistance[sections.Length];
 
             for (int i = 0; i < result.Length; i++)
             {
-                MeasuredLineFeature mf = sections[i];
+                LineFeature line = sections[i];
 
                 // Don't hold the ACTUAL flip status, just record whether it has been changed
-                result[i] = new AnnotatedDistance(mf.ObservedLength, false);
+                result[i] = new AnnotatedDistance(line.ObservedLength, false);
             }
 
             return result;
@@ -184,11 +184,11 @@ namespace Backsight.Editor.Forms
                 return null;
 
             if (m_CurrentFace == m_Face1)
-                return m_pop.PrimaryFace.Sections[listIndex].Line;
+                return m_pop.PrimaryFace.Sections[listIndex];
 
             // May have just added new face
             if (m_CurrentFace == m_Face2 && m_pop.AlternateFace != null)
-                return m_pop.AlternateFace.Sections[listIndex].Line;
+                return m_pop.AlternateFace.Sections[listIndex];
 
             return null;
         }
@@ -504,14 +504,13 @@ void CdUpdateSub::Refresh ( void ) {
         void AddUpdateItems(UpdateItemCollection uc, LineSubdivisionFace face, AnnotatedDistance[] dists)
         {
             Debug.Assert(face != null);
-            MeasuredLineFeature[] sections = face.Sections;
+            LineFeature[] sections = face.Sections;
             Debug.Assert(sections.Length == dists.Length);
 
             for (int i = 0; i < sections.Length; i++)
             {
-                MeasuredLineFeature originalSection = sections[i];
-                LineFeature line = originalSection.Line;
-                Distance originalLength = originalSection.ObservedLength;
+                LineFeature line = sections[i];
+                Distance originalLength = line.ObservedLength;
 
                 AnnotatedDistance revisedSection = dists[i];
 
@@ -548,16 +547,13 @@ void CdUpdateSub::Refresh ( void ) {
             if (face == null)
                 return;
 
-            MeasuredLineFeature[] sections = face.Sections;
+            LineFeature[] sections = face.Sections;
             Debug.Assert(sections.Length == ads.Length);
 
             for (int i = 0; i < sections.Length; i++)
             {
                 if (ads[i].IsFlipped)
-                {
-                    LineFeature line = sections[i].Line;
-                    line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
-                }
+                    sections[i].IsAnnotationFlipped = !sections[i].IsAnnotationFlipped;
             }
         }
     }

@@ -180,7 +180,10 @@ namespace Backsight.Editor.Operations
             m_To = ff.CreatePointFeature(DataField.To);
 
             if (ff.HasFeatureDescription(DataField.Line))
+            {
                 m_Line = ff.CreateSegmentLineFeature(DataField.Line, m_Direction.From, m_To);
+                m_Line.ObservedLength = (m_Length as Distance);
+            }
         }
 
         /// <summary>
@@ -289,24 +292,6 @@ namespace Backsight.Editor.Operations
         {
             m_Direction = data.ExchangeObservation<Direction>(this, DataField.Direction, m_Direction);
             m_Length = data.ExchangeObservation<Observation>(this, DataField.Length, m_Length);
-        }
-
-        /// <summary>
-        /// Find the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            // If the length of the sideshot arm was specified as an
-            // entered distance (as opposed to an offset point), return
-            // a reference to it.
-
-            if (Object.ReferenceEquals(line, m_Line))
-                return (m_Length as Distance);
-            else
-                return null;
         }
 
         /// <summary>

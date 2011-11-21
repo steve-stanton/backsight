@@ -723,7 +723,6 @@
     <Compile Include="SectionGeometry.cs" />
     <Compile Include="SectionTopology.cs" />
     <Compile Include="SegmentGeometry.cs" />
-    <Compile Include="MeasuredLineFeature.cs" />
     <Compile Include="Circle.cs" />
     <Compile Include="OperationFlag.cs" />
     <Compile Include="Operations\LineSubdivisionOperation.cs" />

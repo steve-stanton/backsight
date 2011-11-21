@@ -14,8 +14,8 @@
 // </remarks>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 
 using Backsight.Editor.Observations;
 
@@ -207,7 +207,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The sections of the subdivided line.
         /// </summary>
-        List<MeasuredLineFeature> m_Sections;
+        List<LineFeature> m_Sections;
 
         #endregion
 
@@ -250,16 +250,7 @@ namespace Backsight.Editor.Operations
         /// <returns>True if one of the section on this face matches the supplied line.</returns>
         internal bool HasSection(LineFeature line)
         {
-            if (m_Sections != null)
-            {
-                foreach (MeasuredLineFeature mlf in m_Sections)
-                {
-                    if (Object.ReferenceEquals(mlf.Line, line))
-                        return true;
-                }
-            }
-
-            return false;
+            return (m_Sections == null ? false : m_Sections.Contains(line));
         }
 
         /// <summary>
@@ -313,7 +304,7 @@ namespace Backsight.Editor.Operations
             if (distances.Length < 2)
                 throw new ArgumentException();
 
-            m_Sections = new List<MeasuredLineFeature>(distances.Length);
+            m_Sections = new List<LineFeature>(distances.Length);
             PointFeature start = parentLine.StartPoint;
             InternalIdValue item = new InternalIdValue(ff.Creator.DataId);
 
@@ -330,7 +321,8 @@ namespace Backsight.Editor.Operations
 
                 item.ItemSequence++;
                 LineFeature line = ff.CreateSection(item.ToString(), parentLine, start, end);
-                m_Sections.Add(new MeasuredLineFeature(line, distances[i]));
+                line.ObservedLength = distances[i];
+                m_Sections.Add(line);
                 start = end;
             }
         }
@@ -361,8 +353,8 @@ namespace Backsight.Editor.Operations
                     throw new Exception("Cannot adjust line section");
 
                 // Get the point feature at the end of the span
-                MeasuredLineFeature mf = m_Sections[i];
-                PointFeature end = mf.Line.EndPoint;
+                LineFeature line = m_Sections[i];
+                PointFeature end = line.EndPoint;
 
                 // Assign the calculated position so long as we're not at
                 // the end of the line
@@ -372,25 +364,6 @@ namespace Backsight.Editor.Operations
                 // The end of the current span is the start of the next one
                 start = end;
             }
-        }
-
-        /// <summary>
-        /// Finds the observed length of a line section on this face.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The corresponding distance (null if not found)</returns>
-        internal Distance GetDistance(LineFeature line)
-        {
-            if (m_Sections != null)
-            {
-                foreach (MeasuredLineFeature mf in m_Sections)
-                {
-                    if (Object.ReferenceEquals(mf.Line, line))
-                        return mf.ObservedLength;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -406,15 +379,15 @@ namespace Backsight.Editor.Operations
             Operation parentEdit = parentLine.Creator;
             List<Feature> result = new List<Feature>();
 
-            foreach (MeasuredLineFeature mf in m_Sections)
+            foreach (LineFeature line in m_Sections)
             {
                 // Append point feature at the end of the section (so long as it's not
                 // the end of the subdivided line).
-                PointFeature pf = mf.Line.EndPoint;
+                PointFeature pf = line.EndPoint;
                 if (pf.Creator != parentEdit)
                     result.Add(pf);
 
-                result.Add(mf.Line);
+                result.Add(line);
             }
 
             return result.ToArray();
@@ -425,15 +398,15 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="dataId">The ID to look for</param>
         /// <returns>The observation for the corresponding section (null if not found)</returns>
-        internal MeasuredLineFeature FindObservedLine(string dataId)
+        internal LineFeature FindObservedLine(string dataId)
         {
-            MeasuredLineFeature result = null;
+            LineFeature result = null;
 
             if (m_Sections != null)
             {
-                result = m_Sections.Find(delegate(MeasuredLineFeature t)
+                result = m_Sections.Find(delegate(LineFeature t)
                 {
-                    return (t.Line.DataId == dataId);
+                    return (t.DataId == dataId);
                 });
             }
 
@@ -443,7 +416,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The line sections associated with this face
         /// </summary>
-        internal MeasuredLineFeature[] Sections
+        internal LineFeature[] Sections
         {
             get { return m_Sections.ToArray(); }
         }

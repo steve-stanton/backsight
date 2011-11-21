@@ -109,11 +109,6 @@ namespace Backsight.Editor.Operations
             get { return "Add point"; }
         }
 
-        internal override Distance GetDistance(LineFeature line)
-        {
-            return null; // nothing to do
-        }
-
         internal override bool Undo()
         {
             base.OnRollback();

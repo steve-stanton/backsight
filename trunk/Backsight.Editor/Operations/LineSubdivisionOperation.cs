@@ -152,18 +152,7 @@ namespace Backsight.Editor.Operations
         /// <returns>The corresponding distance (null if not found)</returns>
         internal override Distance GetDistance(LineFeature line)
         {
-            if (line==null)
-                return null;
-
-            Distance d = null;
-
-            if (m_PrimaryFace != null)
-                d = m_PrimaryFace.GetDistance(line);
-
-            if (d == null && m_AlternateFace != null)
-                d = m_AlternateFace.GetDistance(line);
-
-            return d;
+            return (line == null ? null : line.ObservedLength);
         }
 
         /// <summary>
@@ -302,9 +291,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="dataId">The ID to look for</param>
         /// <returns>The observation for the corresponding section (null if not found)</returns>
-        MeasuredLineFeature FindObservedLine(string dataId)
+        LineFeature FindObservedLine(string dataId)
         {
-            MeasuredLineFeature result = null;
+            LineFeature result = null;
 
             if (m_PrimaryFace != null)
                 result = m_PrimaryFace.FindObservedLine(dataId);
