@@ -192,23 +192,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Finds the observed length of a line that was created by this operation.
-        /// </summary>
-        /// <param name="line">The line to find</param>
-        /// <returns>The observed length of the line (null if this operation doesn't
-        /// reference the specified line)</returns>
-        internal override Distance GetDistance(LineFeature line)
-        {
-            // If the distance-line is the one we're after, AND it was
-            // defined as a distance (as opposed to an offset point),
-            // return a reference to it.
-            if (Object.ReferenceEquals(line, m_DistLine))
-                return (m_Distance as Distance);
-
-            return null;
-        }
-
-        /// <summary>
         /// The features created by this editing operation.
         /// </summary>
         internal override Feature[] Features
@@ -519,6 +502,8 @@ namespace Backsight.Editor.Operations
             m_Distance = data.ExchangeObservation<Observation>(this, DataField.Distance, m_Distance);
             m_From = data.ExchangeFeature<PointFeature>(this, DataField.From, m_From);
             m_Default = data.ExchangeValue<bool>(DataField.Default, m_Default);
+
+            AssignObservedLengths();
         }
 
         /// <summary>
@@ -536,6 +521,17 @@ namespace Backsight.Editor.Operations
 
             if (ff.HasFeatureDescription(DataField.DistLine))
                 m_DistLine = ff.CreateSegmentLineFeature(DataField.DistLine, m_From, m_To);
+
+            AssignObservedLengths();
+        }
+
+        /// <summary>
+        /// Assigns observed lengths to any lines created by this edit.
+        /// </summary>
+        void AssignObservedLengths()
+        {
+            if (m_DistLine != null)
+                m_DistLine.ObservedLength = (m_Distance as Distance);
         }
 
         /// <summary>

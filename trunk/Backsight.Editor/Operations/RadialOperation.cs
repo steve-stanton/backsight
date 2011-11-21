@@ -16,10 +16,8 @@
 using System;
 using System.Collections.Generic;
 
-using Backsight.Environment;
 using Backsight.Editor.Observations;
-using Backsight.Editor.UI;
-using System.Diagnostics;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
