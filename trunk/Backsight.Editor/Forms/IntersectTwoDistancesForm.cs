@@ -72,13 +72,13 @@ namespace Backsight.Editor.Forms
 
                     if (getDistance1.LineType!=null)
                     {
-                        PointFeature p = getDistance2.From;
+                        PointFeature p = getDistance1.From;
                         style.Render(display, new IPosition[] { p, x });
                     }
 
                     if (getDistance2.LineType!=null)
                     {
-                        PointFeature p = getDistance1.From;
+                        PointFeature p = getDistance2.From;
                         style.Render(display, new IPosition[] { p, x });
                     }
                 }
