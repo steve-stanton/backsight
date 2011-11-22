@@ -38,12 +38,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Feature should be restored
         /// </summary>
-        Restore=0x0004,
+        //Restore=0x0004,
 
         /// <summary>
         /// Point feature was added at a previously existing location
         /// </summary>
-        OldLoc=0x0008,
+        //OldLoc=0x0008,
 
         /// <summary>
         /// Feature has moved in rollforward
@@ -53,13 +53,13 @@ namespace Backsight.Editor
         /// <summary>
         /// System-defined entity type
         /// </summary>
-        SysEnt=0x0020,
+        //SysEnt=0x0020,
 
         /// <summary>
         /// Feature marked for some reason (currently used to indicate that the feature
         /// relates to an incomplete op).
         /// </summary>
-        Marked=0x0040,
+        //Marked=0x0040,
 
         /// <summary>
         /// Is this feature topological?
@@ -69,7 +69,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Is topology represented by system-defined sections?
         /// </summary>
-        SysTopol=0x0100,
+        //SysTopol=0x0100,
 
         /// <summary>
         /// Does line represent a staggered property face?
