@@ -55,7 +55,7 @@
             this.distancesTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.distancesTextBox.Multiline = true;
             this.distancesTextBox.Name = "distancesTextBox";
-            this.distancesTextBox.Size = new System.Drawing.Size(111, 159);
+            this.distancesTextBox.Size = new System.Drawing.Size(145, 159);
             this.distancesTextBox.TabIndex = 17;
             this.distancesTextBox.WordWrap = false;
             this.distancesTextBox.TextChanged += new System.EventHandler(this.distancesTextBox_TextChanged);
@@ -139,11 +139,11 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.totalEnteredTextBox);
-            this.groupBox1.Location = new System.Drawing.Point(158, 16);
+            this.groupBox1.Location = new System.Drawing.Point(188, 16);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(267, 159);
+            this.groupBox1.Size = new System.Drawing.Size(278, 159);
             this.groupBox1.TabIndex = 24;
             this.groupBox1.TabStop = false;
             // 
@@ -186,7 +186,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(308, 194);
+            this.okButton.Location = new System.Drawing.Point(337, 194);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 28);
@@ -198,7 +198,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(190, 194);
+            this.cancelButton.Location = new System.Drawing.Point(219, 194);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(100, 28);
@@ -223,7 +223,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(452, 246);
+            this.ClientSize = new System.Drawing.Size(489, 246);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
