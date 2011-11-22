@@ -553,7 +553,7 @@ void CdUpdateSub::Refresh ( void ) {
             for (int i = 0; i < sections.Length; i++)
             {
                 if (ads[i].IsFlipped)
-                    sections[i].IsAnnotationFlipped = !sections[i].IsAnnotationFlipped;
+                    sections[i].IsLineAnnotationFlipped = !sections[i].IsLineAnnotationFlipped;
             }
         }
     }

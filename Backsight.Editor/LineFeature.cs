@@ -59,11 +59,6 @@ namespace Backsight.Editor
         /// </summary>
         internal Distance ObservedLength { get; set; }
 
-        /// <summary>
-        /// Has the annotation for this line been switched to the non-default side?
-        /// </summary>
-        internal bool IsAnnotationFlipped { get; set; }
-
         #endregion
 
         #region Constructors
