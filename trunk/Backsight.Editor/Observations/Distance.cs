@@ -435,7 +435,9 @@ namespace Backsight.Editor.Observations
         {
             editSerializer.WriteDouble(DataField.Value, ObservedValue);
             editSerializer.WriteByte(DataField.Unit, (byte)m_EnteredUnit.UnitType);
-            editSerializer.WriteBool(DataField.Fixed, m_IsFixed);
+
+            if (m_IsFixed)
+                editSerializer.WriteBool(DataField.Fixed, true);
         }
 
         /// <summary>
@@ -449,7 +451,11 @@ namespace Backsight.Editor.Observations
         {
             value = editDeserializer.ReadDouble(DataField.Value);
             unit = (DistanceUnitType)editDeserializer.ReadByte(DataField.Unit);
-            isFixed = editDeserializer.ReadBool(DataField.Fixed);
+
+            if (editDeserializer.IsNextField(DataField.Fixed))
+                isFixed = editDeserializer.ReadBool(DataField.Fixed);
+            else
+                isFixed = false;
         }
     }
 }
