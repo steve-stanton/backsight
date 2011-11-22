@@ -123,6 +123,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="EditSerializer.cs" />
+    <Compile Include="EnvironmentResource.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
@@ -1278,6 +1279,7 @@
     <Content Include="Resources\CheckSmallLineIcon.ico" />
     <Content Include="Resources\CheckSmallPolygonIcon.ico" />
     <Content Include="Resources\CircleIcon.ico" />
+    <EmbeddedResource Include="Resources\DefaultEnvironment.xml" />
     <Content Include="Resources\DiagonalCursor.cur" />
     <Content Include="Resources\DomainIcon.ico" />
     <Content Include="Resources\Editor.ico" />
