@@ -72,12 +72,6 @@ namespace Backsight.Editor
         /// marked as "floating".
         /// </summary>
         /// <returns>True if built ok.</returns>
-        /// <remarks>
-        /// Although the area of the enclosing polygon is reduced by the area covered by
-        /// the island, the perimeter length of the enclosing polygon is currently left
-        /// unchanged. It is not clear whether it should be added to the perimeter of the
-        /// enclosing polygon (do we even need the perimeter for anything?).
-        /// </remarks>
         internal void SetContainer()
         {
             if (m_Container!=null)
