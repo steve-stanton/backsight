@@ -235,7 +235,9 @@ namespace Backsight.Editor.Operations
         internal UpdateOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            throw new NotImplementedException();
+            string dataId = editDeserializer.ReadString(DataField.RevisedEdit);
+            m_Edit = editDeserializer.MapModel.FindOperation(dataId);
+            m_Changes = (m_Edit as IRevisable).ReadUpdateItems(editDeserializer);
         }
     }
 }
