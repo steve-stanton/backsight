@@ -14,18 +14,13 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
 
-
-using System.Data.SqlClient; // test
-
-using Backsight.Forms;
-using Backsight.Environment;
 using Backsight.Editor.UI;
-using System.Data;
-using netDxf;
+using Backsight.Environment;
+using Backsight.Forms;
 
 
 namespace Backsight.Editor.Forms

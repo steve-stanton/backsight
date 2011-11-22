@@ -116,12 +116,9 @@ namespace Backsight.Editor
 
                 try
                 {
-                    IEnvironmentContainer ec = new EnvironmentDatabase(cs);
+                    //IEnvironmentContainer ec = new EnvironmentDatabase(cs);
+                    IEnvironmentContainer ec = new EnvironmentResource();
                     EnvironmentContainer.Current = ec;
-                    //using (SqlConnection c = new SqlConnection(cs))
-                    //{
-                    //    c.Open();
-                    //}
 
                     // Remember the successful connection
                     SetConnectionString(cs);
