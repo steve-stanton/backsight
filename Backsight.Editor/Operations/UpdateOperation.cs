@@ -204,27 +204,6 @@ namespace Backsight.Editor.Operations
 
             editSerializer.WriteString(DataField.RevisedEdit, m_Edit.DataId);
             (m_Edit as IRevisable).WriteUpdateItems(editSerializer, m_Changes);
-            /*
-
-            // Re-express update items using *Data objects
-            UpdateItem[] items = op.Changes.ToArray();
-            UpdateItem[] dataItems = new UpdateItem[items.Length];
-
-            for (int i = 0; i < items.Length; i++)
-            {
-                object o = items[i].Value;
-
-                if (o is Feature)
-                    o = (o as Feature).DataId;
-                else if (o is Observation)
-                    o = DataFactory.Instance.ToData<ObservationData>((Observation)o);
-
-                dataItems[i] = new UpdateItem(items[i].Name, o);
-            }
-
-            // The root node always identifies an array of UpdateItem
-            //this.Changes = new YamlSerializer().Serialize(dataItems);
-             */
         }
 
         /// <summary>

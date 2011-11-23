@@ -84,7 +84,9 @@ namespace Backsight.Editor
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
-            editSerializer.WriteBool(DataField.Flipped, m_IsFlipped);
+
+            if (m_IsFlipped)
+                editSerializer.WriteBool(DataField.Flipped, m_IsFlipped);
         }
 
         /// <summary>
@@ -94,7 +96,10 @@ namespace Backsight.Editor
         /// <param name="isFlipped">Is the annotation flipped (displayed on the non-default side)?</param>
         static void ReadData(EditDeserializer editDeserializer, out bool isFlipped)
         {
-            isFlipped = editDeserializer.ReadBool(DataField.Flipped);
+            if (editDeserializer.IsNextField(DataField.Flipped))
+                isFlipped = editDeserializer.ReadBool(DataField.Flipped);
+            else
+                isFlipped = false;
         }
     }
 }

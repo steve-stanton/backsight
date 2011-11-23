@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to subdivide a line.
     /// </summary>
-    class LineSubdivisionOperation : Operation, IRecallable //, IRevisable
+    class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     {
         #region Class data
 
@@ -255,7 +255,16 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            throw new NotImplementedException();
+            UpdateItem face1 = data.GetUpdateItem(DataField.Face1);
+            if (face1 != null)
+                m_PrimaryFace.ExchangeData(face1);
+
+            //UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
+            //if (face2 != null)
+            //{
+            //    if (m_AlternateFace == null)
+            //}
+            
             /*
             foreach (UpdateItem item in data.ToArray())
             {
@@ -304,7 +313,7 @@ namespace Backsight.Editor.Operations
 
             // The alternate face is currently added only via update edits
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
-            editSerializer.WritePersistent<LineSubdivisionFace>(DataField.PrimaryFace, m_PrimaryFace);
+            editSerializer.WritePersistent<LineSubdivisionFace>(DataField.Face1, m_PrimaryFace);
             editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
         }
 
@@ -319,8 +328,54 @@ namespace Backsight.Editor.Operations
                                 out FeatureStub[] result)
         {
             line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
-            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.PrimaryFace);
+            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.Face1);
             result = editDeserializer.ReadFeatureStubArray(DataField.Result);
         }
+
+        #region IRevisable Members
+
+        /// <summary>
+        /// Writes updates for an editing operation to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
+        /// <param name="data">The collection of changes to write</param>
+        public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
+        {
+            // The logic that follows is based on the update items that get defined by LineSubdivisionUpdateForm.GetUpdateItems
+
+            UpdateItem face1 = data.GetUpdateItem(DataField.Face1);
+            if (face1 != null)
+                editSerializer.WritePersistentArray<AnnotatedDistance>(DataField.Face1, (AnnotatedDistance[])face1.Value);
+
+            UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
+            if (face2 != null)
+                editSerializer.WritePersistentArray<AnnotatedDistance>(DataField.Face2, (AnnotatedDistance[])face2.Value);
+        }
+
+        /// <summary>
+        /// Reads back updates made to an editing operation.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The changes made to the edit</returns>
+        public UpdateItemCollection ReadUpdateItems(EditDeserializer editDeserializer)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+
+            if (editDeserializer.IsNextField(DataField.Face1))
+            {
+                AnnotatedDistance[] face1 = editDeserializer.ReadPersistentArray<AnnotatedDistance>(DataField.Face1);
+                result.Add(new UpdateItem(DataField.Face1, face1));
+            }
+
+            if (editDeserializer.IsNextField(DataField.Face2))
+            {
+                AnnotatedDistance[] face2 = editDeserializer.ReadPersistentArray<AnnotatedDistance>(DataField.Face2);
+                result.Add(new UpdateItem(DataField.Face2, face2));
+            }
+
+            return result;
+        }
+
+        #endregion
     }
 }

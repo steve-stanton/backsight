@@ -448,6 +448,20 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Performs a lookup for an update item that is tagged with a specific data field.
+        /// </summary>
+        /// <param name="field">The field to look for</param>
+        /// <returns>The corresponding update item (null if the field is not present in this update collection)</returns>
+        internal UpdateItem GetUpdateItem(DataField field)
+        {
+            UpdateItem result;
+            if (m_Changes.TryGetValue(field, out result))
+                return result;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// The number of items in this collection.
         /// </summary>
         internal int Count
