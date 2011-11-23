@@ -18,6 +18,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Backsight.Editor.Observations;
+using System.Diagnostics;
 
 
 namespace Backsight.Editor.Operations
@@ -444,6 +445,43 @@ namespace Backsight.Editor.Operations
             entryString = editDeserializer.ReadString(DataField.EntryString);
             entryFromEnd = editDeserializer.ReadBool(DataField.EntryFromEnd);
             defaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
+        }
+
+        internal void ExchangeData(UpdateItem item)
+        {
+            // Note the distances currently attached to the line sections
+            Distance[] lineDistances = GetCurrentDistances();
+
+            // Apply the new distances and/or flip the annotation side
+            AnnotatedDistance[] newDistances = (AnnotatedDistance[])item.Value;
+            Debug.Assert(newDistances.Length == m_Sections.Count);
+            AnnotatedDistance[] oldDistances = new AnnotatedDistance[newDistances.Length];
+
+            for (int i = 0; i < newDistances.Length; i++)
+            {
+                // Remember the current distance for the section, noting whether the annotation is being
+                // flipped to the other side (it's possible it has previously been switched).
+                LineFeature section = m_Sections[i];
+                oldDistances[i] = new AnnotatedDistance(section.ObservedLength, newDistances[i].IsFlipped);
+
+                // Attach the updated length to the line and optionally flip the side the annotation will appear on.
+                section.ObservedLength = new Distance(newDistances[i]);
+
+                if (newDistances[i].IsFlipped)
+                    section.IsLineAnnotationFlipped = !section.IsLineAnnotationFlipped;
+            }
+
+            item.Value = oldDistances;
+        }
+
+        Distance[] GetCurrentDistances()
+        {
+            Distance[] result = new Distance[m_Sections.Count];
+
+            for (int i = 0; i < result.Length; i++)
+                result[i] = m_Sections[i].ObservedLength;
+
+            return result;
         }
     }
 }

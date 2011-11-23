@@ -475,54 +475,17 @@ void CdUpdateSub::Refresh ( void ) {
         internal UpdateItemCollection GetUpdateItems()
         {
             UpdateItemCollection result = new UpdateItemCollection();
-            AddUpdateItems(result, m_pop.PrimaryFace, m_Face1);
 
-            // If an alternate face previously exists, handle it like the primary face.
-            // Otherwise record the new face.
+            // Should really check whether any of the items have actually changed. For now, just
+            // output both faces in their entirety. If the logic here gets changed, need to also
+            // visit LineSubdivisionOperation.WriteUpdateItems
+
+            result.Add(new UpdateItem(DataField.Face1, m_Face1));
 
             if (m_Face2 != null)
-            {
-                if (m_pop.AlternateFace == null)
-                {
-                    // Record new face
-                }
-                else
-                {
-                    AddUpdateItems(result, m_pop.AlternateFace, m_Face2);
-                }
-            }
+                result.Add(new UpdateItem(DataField.Face2, m_Face2));
 
             return result;
-        }
-
-        /// <summary>
-        /// Adds update items for a previously created face.
-        /// </summary>
-        /// <param name="uc">The item collection to append to</param>
-        /// <param name="face">The previously created face (not null)</param>
-        /// <param name="dists">The distances specified by the user (not null)</param>
-        void AddUpdateItems(UpdateItemCollection uc, LineSubdivisionFace face, AnnotatedDistance[] dists)
-        {
-            Debug.Assert(face != null);
-            LineFeature[] sections = face.Sections;
-            Debug.Assert(sections.Length == dists.Length);
-
-            for (int i = 0; i < sections.Length; i++)
-            {
-                LineFeature line = sections[i];
-                Distance originalLength = line.ObservedLength;
-
-                AnnotatedDistance revisedSection = dists[i];
-
-                throw new NotImplementedException();
-                /*
-                if (originalLength.Equals(revisedSection) == false)
-                    uc.AddObservation<Distance>(line.DataId, originalLength, revisedSection);
-
-                if (revisedSection.IsFlipped)
-                    uc.AddItem<bool>("A" + line.DataId, !line.IsLineAnnotationFlipped, line.IsLineAnnotationFlipped);
-                 */
-            }
         }
 
         private void LineSubdivisionUpdateForm_FormClosing(object sender, FormClosingEventArgs e)
