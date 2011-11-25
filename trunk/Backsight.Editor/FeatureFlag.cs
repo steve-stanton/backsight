@@ -36,40 +36,14 @@ namespace Backsight.Editor
         Inactive=0x0002,
 
         /// <summary>
-        /// Feature should be restored
-        /// </summary>
-        //Restore=0x0004,
-
-        /// <summary>
-        /// Point feature was added at a previously existing location
-        /// </summary>
-        //OldLoc=0x0008,
-
-        /// <summary>
         /// Feature has moved in rollforward
         /// </summary>
         Moved=0x0010,
 
         /// <summary>
-        /// System-defined entity type
-        /// </summary>
-        //SysEnt=0x0020,
-
-        /// <summary>
-        /// Feature marked for some reason (currently used to indicate that the feature
-        /// relates to an incomplete op).
-        /// </summary>
-        //Marked=0x0040,
-
-        /// <summary>
         /// Is this feature topological?
         /// </summary>
         Topol=0x0080,
-
-        /// <summary>
-        /// Is topology represented by system-defined sections?
-        /// </summary>
-        //SysTopol=0x0100,
 
         /// <summary>
         /// Does line represent a staggered property face?
@@ -100,10 +74,5 @@ namespace Backsight.Editor
         /// Is the feature spatially indexed?
         /// </summary>
         Indexed=0x4000,
-
-        /// <summary>
-        /// Is distance annotation drawn on non-standard side of line feature?
-        /// </summary>
-        FlipDist=0x8000,
     };
 }

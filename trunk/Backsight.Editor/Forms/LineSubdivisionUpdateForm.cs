@@ -53,12 +53,12 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The distances for the primary face
         /// </summary>
-        AnnotatedDistance[] m_Face1;
+        Distance[] m_Face1;
 
         /// <summary>
         /// The distances for the alternate face (if there is one)
         /// </summary>
-        AnnotatedDistance[] m_Face2;
+        Distance[] m_Face2;
 
         /// <summary>
         /// Was the alternate face created via this dialog?
@@ -68,7 +68,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The currently listed face (m_Face1 or m_Face2). Should never be null.
         /// </summary>
-        AnnotatedDistance[] m_CurrentFace;
+        Distance[] m_CurrentFace;
 
         #endregion
 
@@ -94,22 +94,22 @@ namespace Backsight.Editor.Forms
         /// to whether the annotation has been flipped or not).
         /// </summary>
         /// <param name="face">The face of interest (may be null)</param>
-        /// <returns>The distances along the face (including information about
-        /// placement of annotation). Null if the supplied face is null.</returns>
-        AnnotatedDistance[] GetDistances(LineSubdivisionFace face)
+        /// <returns>A copy of the distances along the face (null if the supplied face is null).</returns>
+        Distance[] GetDistances(LineSubdivisionFace face)
         {
             if (face == null)
                 return null;
 
             LineFeature[] sections = face.Sections;
-            AnnotatedDistance[] result = new AnnotatedDistance[sections.Length];
+            Distance[] result = new Distance[sections.Length];
 
             for (int i = 0; i < result.Length; i++)
             {
                 LineFeature line = sections[i];
 
                 // Don't hold the ACTUAL flip status, just record whether it has been changed
-                result[i] = new AnnotatedDistance(line.ObservedLength, false);
+                result[i] = new Distance(line.ObservedLength);
+                result[i].IsAnnotationFlipped = false;
             }
 
             return result;
@@ -196,8 +196,8 @@ namespace Backsight.Editor.Forms
         private void updateButton_Click(object sender, EventArgs e)
         {
             // Get the selected distance.
-            AnnotatedDistance ad = (listBox.SelectedItem as AnnotatedDistance);
-            if (ad == null)
+            Distance d = (listBox.SelectedItem as Distance);
+            if (d == null)
             {
                 MessageBox.Show("You must first select a distance from the list.");
                 return;
@@ -205,13 +205,14 @@ namespace Backsight.Editor.Forms
 
             m_SelectedLine = GetLine(listBox.SelectedIndex);
 
-            using (DistForm dist = new DistForm(ad, false))
+            using (DistForm dist = new DistForm(d, false))
             {
                 if (dist.ShowDialog() == DialogResult.OK)
                 {
                     // Change the displayed distance
 
-                    m_CurrentFace[listBox.SelectedIndex] = new AnnotatedDistance(dist.Distance, ad.IsFlipped);
+                    m_CurrentFace[listBox.SelectedIndex] = new Distance(dist.Distance);
+                    m_CurrentFace[listBox.SelectedIndex].IsAnnotationFlipped = d.IsAnnotationFlipped;
                     RefreshList();
                 }
             }
@@ -312,14 +313,13 @@ void CdUpdateSub::Refresh ( void ) {
                 return;
             }
 
-            AnnotatedDistance ad = m_CurrentFace[index];
-            ad.ToggleIsFlipped();
+            Distance faceDist = m_CurrentFace[index];
+            faceDist.ToggleIsFlipped();
 
             // Change the line too, so that it will highlight with the annotation
             // on the other side. Remember that this will need to be switched back
             // when this dialog closes.
-            LineFeature line = GetLine(index);
-            line.IsLineAnnotationFlipped = !line.IsLineAnnotationFlipped;
+            GetLine(index).ObservedLength.ToggleIsFlipped();
 
             // Ensure stuff gets redrawn
             m_UpdCmd.ErasePainting();
@@ -362,9 +362,12 @@ void CdUpdateSub::Refresh ( void ) {
                         m_IsFace2New = true;
 
                         // Remember the entered distances for the new face.
-                        m_Face2 = new AnnotatedDistance[dists.Length];
+                        m_Face2 = new Distance[dists.Length];
                         for (int i = 0; i < dists.Length; i++)
-                            m_Face2[i] = new AnnotatedDistance(dists[i], true);
+                        {
+                            m_Face2[i] = new Distance(dists[i]);
+                            m_Face2[i].IsAnnotationFlipped = true;
+                        }
 
                         newFaceButton.Text = "&Other Face";
                     }
@@ -462,8 +465,8 @@ void CdUpdateSub::Refresh ( void ) {
 
             double length = 0.0;
 
-            foreach (AnnotatedDistance ad in m_CurrentFace)
-                length += ad.Meters;
+            foreach (Distance d in m_CurrentFace)
+                length += d.Meters;
 
             return length;
         }
@@ -505,18 +508,21 @@ void CdUpdateSub::Refresh ( void ) {
             }
         }
 
-        void CloseFace(AnnotatedDistance[] ads, LineSubdivisionFace face)
+        void CloseFace(Distance[] dists, LineSubdivisionFace face)
         {
             if (face == null)
                 return;
 
             LineFeature[] sections = face.Sections;
-            Debug.Assert(sections.Length == ads.Length);
+            Debug.Assert(sections.Length == dists.Length);
 
             for (int i = 0; i < sections.Length; i++)
             {
-                if (ads[i].IsFlipped)
-                    sections[i].IsLineAnnotationFlipped = !sections[i].IsLineAnnotationFlipped;
+                if (dists[i].IsAnnotationFlipped)
+                {
+                    Distance d = sections[i].ObservedLength;
+                    d.ToggleIsFlipped();
+                }
             }
         }
     }

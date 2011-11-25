@@ -919,15 +919,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Is distance annotation drawn on non-standard side of line feature?
-        /// </summary>
-        internal bool IsLineAnnotationFlipped
-        {
-            get { return IsFlagSet(FeatureFlag.FlipDist); }
-            set { SetFlag(FeatureFlag.FlipDist, value); }
-        }
-
-        /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
