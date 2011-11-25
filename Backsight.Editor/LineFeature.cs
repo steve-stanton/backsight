@@ -307,7 +307,7 @@ namespace Backsight.Editor
 
         	// See if there is an observed distance.
             Distance dist = this.ObservedLength;
-            bool isFlipped = this.IsLineAnnotationFlipped;
+            bool isFlipped = dist.IsAnnotationFlipped;
 
             LineAnnotationStyle annoStyle = ec.LineAnnotationStyle;
             if (annoStyle.ShowAdjustedLengths)

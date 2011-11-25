@@ -59,6 +59,12 @@ namespace Backsight.Editor.Observations
         /// </summary>
         bool m_IsFixed;
 
+        /// <summary>
+        /// Should any annotation of this distance be drawn on non-standard side of an
+        /// associated line feature?
+        /// </summary>
+        internal bool IsAnnotationFlipped { get; set; }
+
         #endregion
 
         #region Constructors
@@ -72,6 +78,7 @@ namespace Backsight.Editor.Observations
             m_EnteredUnit = null;
             m_ObservedMetric = 0.0;
             m_IsFixed = false;
+            IsAnnotationFlipped = false;
         }
 
         /// <summary>
@@ -81,11 +88,20 @@ namespace Backsight.Editor.Observations
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         internal Distance(EditDeserializer editDeserializer)
         {
-            double distance;
-            DistanceUnitType unitType;
-            ReadData(editDeserializer, out distance, out unitType, out m_IsFixed);
+            double distance = editDeserializer.ReadDouble(DataField.Value);
+            DistanceUnitType unitType = (DistanceUnitType)editDeserializer.ReadByte(DataField.Unit);
             m_EnteredUnit = EditingController.GetUnits(unitType);
             m_ObservedMetric = m_EnteredUnit.ToMetric(distance);
+
+            if (editDeserializer.IsNextField(DataField.Fixed))
+                m_IsFixed = editDeserializer.ReadBool(DataField.Fixed);
+            else
+                m_IsFixed = false;
+
+            if (editDeserializer.IsNextField(DataField.Flipped))
+                IsAnnotationFlipped = editDeserializer.ReadBool(DataField.Flipped);
+            else
+                IsAnnotationFlipped = false;
         }
 
         /// <summary>
@@ -94,21 +110,11 @@ namespace Backsight.Editor.Observations
         /// <param name="distance">The entered distance value</param>
         /// <param name="unit">The units for the entered distance.</param>
         internal Distance(double distance, DistanceUnit unit)
-            : this(distance, unit, false)
         {
-        }
-
-        /// <summary>
-        /// Creates a distance
-        /// </summary>
-        /// <param name="distance">The entered distance value</param>
-        /// <param name="unit">The units for the entered distance.</param>
-        /// <param name="isFixed">Should the distance be treated as fixed?</param>
-        internal Distance(double distance, DistanceUnit unit, bool isFixed)
-        {
-	        m_ObservedMetric = unit.ToMetric(distance);
-	        m_EnteredUnit = unit;
-            m_IsFixed = isFixed;
+            m_ObservedMetric = unit.ToMetric(distance);
+            m_EnteredUnit = unit;
+            m_IsFixed = false;
+            IsAnnotationFlipped = false;
         }
 
         /// <summary>
@@ -120,6 +126,7 @@ namespace Backsight.Editor.Observations
             m_ObservedMetric = copy.m_ObservedMetric;
             m_EnteredUnit = copy.m_EnteredUnit;
             m_IsFixed = copy.m_IsFixed;
+            IsAnnotationFlipped = copy.IsAnnotationFlipped;
         }
 
         /// <summary>
@@ -136,6 +143,7 @@ namespace Backsight.Editor.Observations
             m_ObservedMetric = 0.0;
             m_EnteredUnit = null;
             m_IsFixed = false;
+            IsAnnotationFlipped = false;
 
             // Ignore any trailing white space. Return if it's ALL white space.
             string s = str.Trim();
@@ -438,24 +446,17 @@ namespace Backsight.Editor.Observations
 
             if (m_IsFixed)
                 editSerializer.WriteBool(DataField.Fixed, true);
+
+            if (IsAnnotationFlipped)
+                editSerializer.WriteBool(DataField.Flipped, true);
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Toggles the <see cref="IsAnnotationFlipped"/> property.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="value">The observed distance value (in data entry units)</param>
-        /// <param name="unit">The code indicating data entry units.</param>
-        /// <param name="isFixed">Is the distance fixed</param>
-        static void ReadData(EditDeserializer editDeserializer, out double value, out DistanceUnitType unit, out bool isFixed)
+        internal void ToggleIsFlipped()
         {
-            value = editDeserializer.ReadDouble(DataField.Value);
-            unit = (DistanceUnitType)editDeserializer.ReadByte(DataField.Unit);
-
-            if (editDeserializer.IsNextField(DataField.Fixed))
-                isFixed = editDeserializer.ReadBool(DataField.Fixed);
-            else
-                isFixed = false;
+            IsAnnotationFlipped = !IsAnnotationFlipped;
         }
     }
 }

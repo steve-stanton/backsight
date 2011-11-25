@@ -345,11 +345,11 @@ namespace Backsight.Editor.Operations
 
             UpdateItem face1 = data.GetUpdateItem(DataField.Face1);
             if (face1 != null)
-                editSerializer.WritePersistentArray<AnnotatedDistance>(DataField.Face1, (AnnotatedDistance[])face1.Value);
+                editSerializer.WritePersistentArray<Distance>(DataField.Face1, (Distance[])face1.Value);
 
             UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
             if (face2 != null)
-                editSerializer.WritePersistentArray<AnnotatedDistance>(DataField.Face2, (AnnotatedDistance[])face2.Value);
+                editSerializer.WritePersistentArray<Distance>(DataField.Face2, (Distance[])face2.Value);
         }
 
         /// <summary>
@@ -363,13 +363,13 @@ namespace Backsight.Editor.Operations
 
             if (editDeserializer.IsNextField(DataField.Face1))
             {
-                AnnotatedDistance[] face1 = editDeserializer.ReadPersistentArray<AnnotatedDistance>(DataField.Face1);
+                Distance[] face1 = editDeserializer.ReadPersistentArray<Distance>(DataField.Face1);
                 result.Add(new UpdateItem(DataField.Face1, face1));
             }
 
             if (editDeserializer.IsNextField(DataField.Face2))
             {
-                AnnotatedDistance[] face2 = editDeserializer.ReadPersistentArray<AnnotatedDistance>(DataField.Face2);
+                Distance[] face2 = editDeserializer.ReadPersistentArray<Distance>(DataField.Face2);
                 result.Add(new UpdateItem(DataField.Face2, face2));
             }
 

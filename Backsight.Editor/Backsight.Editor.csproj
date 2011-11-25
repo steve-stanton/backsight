@@ -95,7 +95,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnnotatedDistance.cs" />
     <Compile Include="Annotation.cs" />
     <Compile Include="ArcGeometry.cs" />
     <Compile Include="AttributeData.cs" />

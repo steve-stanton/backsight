@@ -453,22 +453,24 @@ namespace Backsight.Editor.Operations
             Distance[] lineDistances = GetCurrentDistances();
 
             // Apply the new distances and/or flip the annotation side
-            AnnotatedDistance[] newDistances = (AnnotatedDistance[])item.Value;
+            Distance[] newDistances = (Distance[])item.Value;
             Debug.Assert(newDistances.Length == m_Sections.Count);
-            AnnotatedDistance[] oldDistances = new AnnotatedDistance[newDistances.Length];
+            Distance[] oldDistances = new Distance[newDistances.Length];
 
             for (int i = 0; i < newDistances.Length; i++)
             {
                 // Remember the current distance for the section, noting whether the annotation is being
                 // flipped to the other side (it's possible it has previously been switched).
                 LineFeature section = m_Sections[i];
-                oldDistances[i] = new AnnotatedDistance(section.ObservedLength, newDistances[i].IsFlipped);
+                oldDistances[i] = new Distance(section.ObservedLength);
+                oldDistances[i].IsAnnotationFlipped = newDistances[i].IsAnnotationFlipped;
 
                 // Attach the updated length to the line and optionally flip the side the annotation will appear on.
-                section.ObservedLength = new Distance(newDistances[i]);
+                Distance d = new Distance(newDistances[i]);
+                section.ObservedLength = d;
 
-                if (newDistances[i].IsFlipped)
-                    section.IsLineAnnotationFlipped = !section.IsLineAnnotationFlipped;
+                if (newDistances[i].IsAnnotationFlipped)
+                    d.IsAnnotationFlipped = true; // check this for re-flips
             }
 
             item.Value = oldDistances;
