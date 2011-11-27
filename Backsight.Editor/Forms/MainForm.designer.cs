@@ -56,7 +56,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileStatistics = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileCoordinateSystem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileCheck = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuFilePublish = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFilePrintWindowRotated = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFilePrintWindow = new System.Windows.Forms.ToolStripMenuItem();
@@ -178,6 +177,7 @@ namespace Backsight.Editor.Forms
             this.toolLineSubdividePolygon = new System.Windows.Forms.ToolStripButton();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage0 = new System.Windows.Forms.TabPage();
+            this.propertyDisplay = new Backsight.Editor.Forms.PropertyDisplayControl();
             this.textToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolTextAddPolygonLabels = new System.Windows.Forms.ToolStripButton();
             this.toolTextDefaultRotationAngle = new System.Windows.Forms.ToolStripButton();
@@ -293,12 +293,13 @@ namespace Backsight.Editor.Forms
             this.ctxNewText25 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxNewTextCancel = new System.Windows.Forms.ToolStripMenuItem();
-            this.propertyDisplay = new Backsight.Editor.Forms.PropertyDisplayControl();
             this.mainMenuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vSplitContainer)).BeginInit();
             this.vSplitContainer.Panel1.SuspendLayout();
             this.vSplitContainer.Panel2.SuspendLayout();
             this.vSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hSplitContainer)).BeginInit();
             this.hSplitContainer.Panel1.SuspendLayout();
             this.hSplitContainer.Panel2.SuspendLayout();
             this.hSplitContainer.SuspendLayout();
@@ -353,7 +354,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileStatistics,
             this.mnuFileCoordinateSystem,
             this.mnuFileCheck,
-            this.mnuFilePublish,
             this.toolStripSeparator4,
             this.mnuFilePrintWindowRotated,
             this.mnuFilePrintWindow,
@@ -425,12 +425,6 @@ namespace Backsight.Editor.Forms
             this.mnuFileCheck.Size = new System.Drawing.Size(193, 22);
             this.mnuFileCheck.Text = "Chec&k...";
             this.mnuFileCheck.ToolTipText = "Check all polygons have labels & attributes";
-            // 
-            // mnuFilePublish
-            // 
-            this.mnuFilePublish.Name = "mnuFilePublish";
-            this.mnuFilePublish.Size = new System.Drawing.Size(193, 22);
-            this.mnuFilePublish.Text = "Pu&blish...";
             // 
             // toolStripSeparator4
             // 
@@ -1298,7 +1292,7 @@ namespace Backsight.Editor.Forms
             // 
             this.hSplitContainer.Panel2.Controls.Add(this.tabControl);
             this.hSplitContainer.Size = new System.Drawing.Size(744, 673);
-            this.hSplitContainer.SplitterDistance = 478;
+            this.hSplitContainer.SplitterDistance = 477;
             this.hSplitContainer.TabIndex = 0;
             // 
             // toolStripContainer
@@ -1307,11 +1301,11 @@ namespace Backsight.Editor.Forms
             // toolStripContainer.ContentPanel
             // 
             this.toolStripContainer.ContentPanel.Controls.Add(this.mapControl);
-            this.toolStripContainer.ContentPanel.Size = new System.Drawing.Size(744, 439);
+            this.toolStripContainer.ContentPanel.Size = new System.Drawing.Size(744, 438);
             this.toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer.Name = "toolStripContainer";
-            this.toolStripContainer.Size = new System.Drawing.Size(744, 478);
+            this.toolStripContainer.Size = new System.Drawing.Size(744, 477);
             this.toolStripContainer.TabIndex = 3;
             this.toolStripContainer.Text = "toolStripContainer1";
             // 
@@ -1331,7 +1325,7 @@ namespace Backsight.Editor.Forms
             this.mapControl.Location = new System.Drawing.Point(0, 0);
             this.mapControl.MapScale = double.NaN;
             this.mapControl.Name = "mapControl";
-            this.mapControl.Size = new System.Drawing.Size(744, 439);
+            this.mapControl.Size = new System.Drawing.Size(744, 438);
             this.mapControl.TabIndex = 2;
             // 
             // lineToolStrip
@@ -1401,7 +1395,7 @@ namespace Backsight.Editor.Forms
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(744, 191);
+            this.tabControl.Size = new System.Drawing.Size(744, 192);
             this.tabControl.TabIndex = 0;
             // 
             // tabPage0
@@ -1409,10 +1403,19 @@ namespace Backsight.Editor.Forms
             this.tabPage0.Location = new System.Drawing.Point(4, 22);
             this.tabPage0.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage0.Name = "tabPage0";
-            this.tabPage0.Size = new System.Drawing.Size(736, 165);
+            this.tabPage0.Size = new System.Drawing.Size(736, 166);
             this.tabPage0.TabIndex = 0;
             this.tabPage0.Text = "Command";
             this.tabPage0.UseVisualStyleBackColor = true;
+            // 
+            // propertyDisplay
+            // 
+            this.propertyDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyDisplay.Location = new System.Drawing.Point(0, 0);
+            this.propertyDisplay.Name = "propertyDisplay";
+            this.propertyDisplay.Size = new System.Drawing.Size(340, 673);
+            this.propertyDisplay.TabIndex = 0;
+            this.propertyDisplay.ControlClosed += new Backsight.Editor.Forms.OnControlClosed(this.propertyDisplay_ControlClosed);
             // 
             // textToolStrip
             // 
@@ -2271,15 +2274,6 @@ namespace Backsight.Editor.Forms
             this.ctxNewTextCancel.Size = new System.Drawing.Size(121, 22);
             this.ctxNewTextCancel.Text = "Cancel";
             // 
-            // propertyDisplay
-            // 
-            this.propertyDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyDisplay.Location = new System.Drawing.Point(0, 0);
-            this.propertyDisplay.Name = "propertyDisplay";
-            this.propertyDisplay.Size = new System.Drawing.Size(340, 673);
-            this.propertyDisplay.TabIndex = 0;
-            this.propertyDisplay.ControlClosed += new Backsight.Editor.Forms.OnControlClosed(this.propertyDisplay_ControlClosed);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2300,8 +2294,8 @@ namespace Backsight.Editor.Forms
             this.Name = "MainForm";
             this.Text = "Map Title";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
@@ -2309,9 +2303,11 @@ namespace Backsight.Editor.Forms
             this.statusStrip.PerformLayout();
             this.vSplitContainer.Panel1.ResumeLayout(false);
             this.vSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.vSplitContainer)).EndInit();
             this.vSplitContainer.ResumeLayout(false);
             this.hSplitContainer.Panel1.ResumeLayout(false);
             this.hSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.hSplitContainer)).EndInit();
             this.hSplitContainer.ResumeLayout(false);
             this.toolStripContainer.ContentPanel.ResumeLayout(false);
             this.toolStripContainer.TopToolStripPanel.ResumeLayout(false);
@@ -2591,7 +2587,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator39;
         private System.Windows.Forms.ToolStripMenuItem mnuFileRecent;
         private System.Windows.Forms.ToolStripStatusLabel infoLabel;
-        private System.Windows.Forms.ToolStripMenuItem mnuFilePublish;
         private System.Windows.Forms.ToolStripMenuItem mnuTextMovePolygonPosition;
         private System.Windows.Forms.ToolStripMenuItem ctxTextMovePolygonPosition;
         private PropertyDisplayControl propertyDisplay;

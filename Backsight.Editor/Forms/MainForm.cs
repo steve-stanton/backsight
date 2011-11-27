@@ -208,7 +208,6 @@ namespace Backsight.Editor.Forms
             AddAction(mnuFileStatistics, IsFileStatisticsEnabled, FileStatistics);
             AddAction(mnuFileCoordinateSystem, IsFileCoordinateSystemEnabled, FileCoordinateSystem);
             AddAction(mnuFileCheck, IsFileCheckEnabled, FileCheck);
-            AddAction(mnuFilePublish, IsFilePublishEnabled, FilePublish);
             AddAction(mnuFilePrintWindowRotated, IsFilePrintWindowRotatedEnabled, FilePrintWindowRotated);
             AddAction(mnuFilePrintWindow, IsFilePrintWindowEnabled, FilePrintWindow);
             AddAction(new ToolStripItem[] { mnuFilePrint, toolFilePrint }, IsFilePrintEnabled, FilePrint);
@@ -787,18 +786,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void FileCheck(IUserAction action)
         {
             EditingController.Current.StartCheck();
-        }
-
-        private bool IsFilePublishEnabled()
-        {
-            return (HasMap && m_Controller.CanPublish);
-        }
-
-        private void FilePublish(IUserAction action)
-        {
-            PublishForm dial = new PublishForm();
-            dial.ShowDialog();
-            dial.Dispose();
         }
 
         private bool IsFilePrintWindowRotatedEnabled()

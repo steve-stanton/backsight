@@ -117,13 +117,6 @@ CREATE TABLE [Jobs]
 )
 GO
 
-CREATE TABLE [LastRevision]
-(
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[RevisionTime] [datetime] NOT NULL	
-)
-GO
-
 CREATE TABLE [Layers]
 (
 	[LayerId] [int] NOT NULL,
@@ -173,7 +166,6 @@ CREATE TABLE [Sessions]
 	[SessionId] [int] IDENTITY(1,1) NOT NULL,
 	[JobId] [int] NOT NULL,
 	[UserId] [int] NOT NULL,
-	[Revision] [int] NOT NULL,
 	[StartTime] [datetime] NOT NULL,
 	[EndTime] [datetime] NOT NULL,
 	[NumItem] [int] NOT NULL,

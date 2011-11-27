@@ -165,49 +165,6 @@ namespace Backsight.Editor
             return result.ToArray();
         }
 
-        /*
-        /// <summary>
-        /// Unconditionally moves the location of this point (this will also drag along the
-        /// position of any additional points that share the geometry). This point (and any
-        /// lines connected to it) will be removed from the spatial index prior to the move,
-        /// then re-indexed after the move.
-        /// </summary>
-        /// <param name="to">The new position for this point</param>
-        void MovePoint(PointGeometry to)
-        {
-            // Notify all dependents that this point is about to move (and remove
-            // this feature from spatial index)
-            PreMove();
-
-            // Take the point(s) attached to the geometry for this point, and
-            // attach them to a new geometry.
-            PointFeature[] pts = m_Geom.Points;
-            m_Geom = new Node(pts, to);
-
-            // Notify all dependents that this point has been moved (and add
-            // this feature back into the spatial index)
-            PostMove();
-        }
-        */
-
-        /// <summary>
-        /// Moves the location of this point, to reflect some sort of editing revision.
-        /// </summary>
-        /// <param name="to">The new position for this point</param>
-        /// <returns>True if a move was made. False if this point already has a position that
-        /// is exactly the same as the supplied position.</returns>
-        //internal bool MovePoint(IPosition newLocation)
-        //{
-        //    PointGeometry newPosition = PointGeometry.Create(newLocation);
-        //    if (newPosition.IsCoincident(m_Geom))
-        //        return false;
-
-        //    uc.AddMove(this);
-        //    MovePoint(newPosition);
-
-        //    return true;
-        //}
-
         /// <summary>
         /// The geometry defining the position of this feature.
         /// </summary>

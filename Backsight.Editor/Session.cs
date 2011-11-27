@@ -279,9 +279,6 @@ namespace Backsight.Editor
         /// <exception cref="InvalidOperationException">If the session has been published</exception>
         internal int Rollback()
         {
-            if (Revision!=0)
-                throw new InvalidOperationException("Cannot rollback session because it has been published");
-
             // Return if there is nothing to rollback.
             if (m_Operations.Count==0)
                 return 0;
@@ -431,15 +428,6 @@ namespace Backsight.Editor
         internal DateTime EndTime
         {
             get { return m_Data.EndTime; }
-        }
-
-        /// <summary>
-        /// The revision number for the session (0 if the session has not been published)
-        /// </summary>
-        internal uint Revision
-        {
-            get { return m_Data.Revision; }
-            set { m_Data.Revision = value; }
         }
 
         /// <summary>

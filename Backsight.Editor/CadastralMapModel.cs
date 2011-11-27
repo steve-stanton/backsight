@@ -874,9 +874,6 @@ namespace Backsight.Editor
         /// <returns>True if rollback succeeded</returns>
         internal bool Rollback(Session s)
         {
-            if (s.Revision!=0)
-                return false;
-
             int editSequence = s.Rollback();
             if (editSequence <= 0)
                 return false;
@@ -1195,43 +1192,6 @@ namespace Backsight.Editor
         internal Session WorkingSession
         {
             get { return m_WorkingSession; }
-        }
-
-        /// <summary>
-        /// Scans the editing sessions that make up this model, counting up the number of
-        /// edits that have not been published.
-        /// </summary>
-        /// <returns>The number of unpublished edits</returns>
-        internal uint GetUnpublishedEditCount()
-        {
-            uint total = 0;
-
-            for (int i=m_Sessions.Count-1; i>=0; i--)
-            {
-                Session s = m_Sessions[i];
-                if (s.Revision!=0)
-                    break;
-
-                total += (uint)s.OperationCount;
-            }
-
-            return total;
-        }
-
-        /// <summary>
-        /// Marks unpublished sessions with the specified revision number.
-        /// </summary>
-        /// <param name="revision">The revision number of a publication</param>
-        internal void SetPublished(uint revision)
-        {
-            for (int i=m_Sessions.Count-1; i>=0; i--)
-            {
-                Session s = m_Sessions[i];
-                if (s.Revision!=0)
-                    break;
-
-                s.Revision = revision;
-            }
         }
 
         /// <summary>

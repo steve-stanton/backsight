@@ -1315,52 +1315,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Can the current map model be published?
-        /// </summary>
-        /// <value>True if the current map model is an instance of <see cref="CadastralMapModel"/></value>
-        internal bool CanPublish
-        {
-            get { return (MapModel is CadastralMapModel); }
-        }
-
-        /// <summary>
-        /// Publishes the current map model
-        /// </summary>
-        /// <returns>The revision number assigned to the publication</returns>
-        internal uint Publish()
-        {
-            CadastralMapModel cmm = CadastralMapModel.Current;
-            if (cmm==null)
-                return 0;
-
-            // Get the next revision number
-            uint revision = LastRevision.ReserveValue();
-
-            // Give the working session an end-time that matches time of publication
-            Session.WorkingSession.UpdateEndTime();
-
-            Transaction.Execute(delegate
-            {
-                // Update the sessions table
-                SessionData.SetLastRevision(m_JobData, m_User, revision);
-
-                // Remember the publication for the current user & job
-                UserJobData.SetLastRevision(m_JobData, m_User, revision);
-            });
-
-            // Modify the session objects
-            cmm.SetPublished(revision);
-
-            // Start a new session
-            Session s = cmm.AppendWorkingSession(m_JobData, m_User);
-
-            // Write a new job file (not sure if this is really necessary)
-            s.SaveChanges();
-
-            return revision;
-        }
-
-        /// <summary>
         /// The current user
         /// </summary>
         internal User User

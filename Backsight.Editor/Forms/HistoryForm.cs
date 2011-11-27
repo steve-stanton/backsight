@@ -59,11 +59,7 @@ namespace Backsight.Editor.Forms
                 row.Cells["StartTime"].Value = sa[i].StartTime;
                 row.Cells["EndTime"].Value = sa[i].EndTime;
                 row.Cells["EditCount"].Value = sa[i].OperationCount;
-                row.Cells["Revision"].Value = sa[i].Revision;
                 row.Tag = sa[i];
-
-                //if (sa[i].Revision==0)
-                //    row.DefaultCellStyle.BackColor = Color.Orange;
             }
 
             grid.CurrentCell = null;
@@ -96,15 +92,6 @@ namespace Backsight.Editor.Forms
 
                 // Get the session that precedes the working session
                 Session s = sa[sa.Length-2];
-
-                // Disallow if it's been published
-                if (s.Revision!=0)
-                {
-                    MessageBox.Show("Cannot undo any more because edits have been published");
-                    rollbackButton.Enabled = false;
-                    return;
-                }
-
                 done = CadastralMapModel.Current.Rollback(s);
             }
 

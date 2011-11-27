@@ -112,7 +112,6 @@
     <Compile Include="Database\Job.cs" />
     <Compile Include="Database\SessionData.cs" />
     <Compile Include="Database\User.cs" />
-    <Compile Include="Database\UserJobData.cs" />
     <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
@@ -407,12 +406,6 @@
     <Compile Include="Forms\PropertyPage.Designer.cs">
       <DependentUpon>PropertyPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PublishForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PublishForm.Designer.cs">
-      <DependentUpon>PublishForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\RecalledEditingAction.cs" />
     <Compile Include="Forms\ScaleSpecificPen.cs" />
     <Compile Include="Forms\SchemaComboBox.cs">
@@ -453,7 +446,6 @@
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
-    <Compile Include="Database\LastRevision.cs" />
     <Compile Include="MiscTextGeometry.cs" />
     <Compile Include="NativeId.cs" />
     <Compile Include="Node.cs" />
@@ -1026,10 +1018,6 @@
     <EmbeddedResource Include="Forms\PropertyPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PropertyPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PublishForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PublishForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SchemaComboBox.resx">
       <SubType>Designer</SubType>
