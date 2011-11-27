@@ -129,21 +129,6 @@ namespace Backsight.Editor
 
         #endregion
 
-        /// <summary>
-        /// Chains this editing operation with an edit that represents a revision of this edit
-        /// </summary>
-        /// <param name="next">The revised version of this edit</param>
-        /*
-        void SetNextRevision(Operation next)
-        {
-            Debug.Assert(m_Next==null);
-            Debug.Assert(next.m_Previous==null);
-
-            m_Next = next;
-            next.m_Previous = this;
-        }
-        */
-
         public override string ToString()
         {
             return Name;

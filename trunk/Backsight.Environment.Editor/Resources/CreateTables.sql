@@ -200,18 +200,6 @@ CREATE TABLE [ced].[Jobs]
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[LastRevision]') AND type in (N'U'))
-BEGIN
-PRINT 'CREATE TABLE LastRevision';
-CREATE TABLE [ced].[LastRevision]
-(
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[RevisionTime] [datetime] NOT NULL
-	
-) ON [PRIMARY]
-END
-GO
-
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[Layers]') AND type in (N'U'))
 BEGIN
 PRINT 'CREATE TABLE Layers';
@@ -288,7 +276,6 @@ CREATE TABLE [ced].[Sessions]
 	[SessionId] [int] IDENTITY(1,1) NOT NULL,
 	[JobId] [int] NOT NULL,
 	[UserId] [int] NOT NULL,
-	[Revision] [int] NOT NULL,
 	[StartTime] [datetime] NOT NULL,
 	[EndTime] [datetime] NOT NULL,
 	[NumItem] [int] NOT NULL,

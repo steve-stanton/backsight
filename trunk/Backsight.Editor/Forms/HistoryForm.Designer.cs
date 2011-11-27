@@ -36,7 +36,7 @@ namespace Backsight.Editor.Forms
             this.StartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EditCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Revision = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -71,8 +71,7 @@ namespace Backsight.Editor.Forms
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.StartTime,
             this.EndTime,
-            this.EditCount,
-            this.Revision});
+            this.EditCount});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 0);
             this.grid.MultiSelect = false;
@@ -142,14 +141,6 @@ namespace Backsight.Editor.Forms
             this.EditCount.Name = "EditCount";
             this.EditCount.ReadOnly = true;
             // 
-            // Revision
-            // 
-            this.Revision.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Revision.FillWeight = 50F;
-            this.Revision.HeaderText = "Revision";
-            this.Revision.Name = "Revision";
-            this.Revision.ReadOnly = true;
-            // 
             // HistoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -161,6 +152,7 @@ namespace Backsight.Editor.Forms
             this.Shown += new System.EventHandler(this.HistoryForm_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
@@ -177,6 +169,5 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn StartTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn EndTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn EditCount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Revision;
     }
 }
