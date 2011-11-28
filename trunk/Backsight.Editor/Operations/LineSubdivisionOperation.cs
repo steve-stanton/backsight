@@ -332,6 +332,32 @@ namespace Backsight.Editor.Operations
             result = editDeserializer.ReadFeatureStubArray(DataField.Result);
         }
 
+        /// <summary>
+        /// Obtains update items for a revised version of this edit
+        /// (for later use with <see cref="ExchangeData"/>).
+        /// </summary>
+        /// <param name="face1">The observed lengths for each section on the primary face</param>
+        /// <param name="face2">The observed lengths for each section on the alternate face (null if there is no
+        /// alternate face).</param>
+        /// <returns>The items representing the change (may be subsequently supplied to
+        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
+        internal UpdateItemCollection GetUpdateItems(Distance[] face1, Distance[] face2)
+        {
+            UpdateItemCollection result = new UpdateItemCollection();
+
+            result.Add(m_PrimaryFace.GetUpdateItem(DataField.Face1, face1));
+
+            // When creating a new face, the update UI creates the alternate face for the sake
+            // of rendering a preview.
+            if (face2 != null)
+            {
+                Debug.Assert(m_AlternateFace != null);
+                result.Add(m_AlternateFace.GetUpdateItem(DataField.Face2, face2));
+            }
+
+            return result;
+        }
+
         #region IRevisable Members
 
         /// <summary>

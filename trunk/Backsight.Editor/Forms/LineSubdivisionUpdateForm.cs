@@ -477,18 +477,7 @@ void CdUpdateSub::Refresh ( void ) {
         /// <returns>The items representing the change.</returns>
         internal UpdateItemCollection GetUpdateItems()
         {
-            UpdateItemCollection result = new UpdateItemCollection();
-
-            // Should really check whether any of the items have actually changed. For now, just
-            // output both faces in their entirety. If the logic here gets changed, need to also
-            // visit LineSubdivisionOperation.WriteUpdateItems
-
-            result.Add(new UpdateItem(DataField.Face1, m_Face1));
-
-            if (m_Face2 != null)
-                result.Add(new UpdateItem(DataField.Face2, m_Face2));
-
-            return result;
+            return m_pop.GetUpdateItems(m_Face1, m_Face2);
         }
 
         private void LineSubdivisionUpdateForm_FormClosing(object sender, FormClosingEventArgs e)
