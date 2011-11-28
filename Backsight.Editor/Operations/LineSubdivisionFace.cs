@@ -14,11 +14,10 @@
 // </remarks>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Observations;
-using System.Diagnostics;
 
 
 namespace Backsight.Editor.Operations
@@ -447,43 +446,41 @@ namespace Backsight.Editor.Operations
             defaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
         }
 
+        /// <summary>
+        /// Exchanges update items that were previously generated via
+        /// a call to <see cref="GetUpdateItem"/>.
+        /// </summary>
+        /// <param name="data">The update data to apply to the edit (modified to
+        /// hold the values that were previously defined for the edit)</param>
         internal void ExchangeData(UpdateItem item)
         {
-            // Note the distances currently attached to the line sections
-            Distance[] lineDistances = GetCurrentDistances();
-
-            // Apply the new distances and/or flip the annotation side
             Distance[] newDistances = (Distance[])item.Value;
-            Debug.Assert(newDistances.Length == m_Sections.Count);
-            Distance[] oldDistances = new Distance[newDistances.Length];
+            Distance[] oldDistances = new Distance[m_Sections.Count];
+            Debug.Assert(newDistances.Length == oldDistances.Length);
 
             for (int i = 0; i < newDistances.Length; i++)
             {
-                // Remember the current distance for the section, noting whether the annotation is being
-                // flipped to the other side (it's possible it has previously been switched).
                 LineFeature section = m_Sections[i];
-                oldDistances[i] = new Distance(section.ObservedLength);
-                oldDistances[i].IsAnnotationFlipped = newDistances[i].IsAnnotationFlipped;
-
-                // Attach the updated length to the line and optionally flip the side the annotation will appear on.
-                Distance d = new Distance(newDistances[i]);
-                section.ObservedLength = d;
-
-                if (newDistances[i].IsAnnotationFlipped)
-                    d.IsAnnotationFlipped = true; // check this for re-flips
+                oldDistances[i] = section.ObservedLength;
+                section.ObservedLength = newDistances[i];
             }
 
             item.Value = oldDistances;
         }
 
-        Distance[] GetCurrentDistances()
+        /// <summary>
+        /// Obtains update items for a revised version of this face (for later use with <see cref="ExchangeData"/>).
+        /// </summary>
+        /// <param name="field">The tag that identifies this face</param>
+        /// <param name="sections">The distances that will be used for the revised version of this face</param>
+        /// <returns>The item representing the change (may be subsequently supplied to the <see cref="ExchangeData"/> method).</returns>
+        internal UpdateItem GetUpdateItem(DataField field, Distance[] sections)
         {
-            Distance[] result = new Distance[m_Sections.Count];
+            if (sections.Length != m_Sections.Count)
+                throw new ArgumentException();
 
-            for (int i = 0; i < result.Length; i++)
-                result[i] = m_Sections[i].ObservedLength;
-
-            return result;
+            // Just package up every supplied section (even those that have not changed)
+            return new UpdateItem(field, sections);
         }
     }
 }
