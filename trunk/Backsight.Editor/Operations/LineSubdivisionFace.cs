@@ -190,14 +190,9 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
-        /// The data entry string that defines the subdivision sections.
+        /// The lengths for each subdivision section.
         /// </summary>
-        readonly string m_EntryString;
-
-        /// <summary>
-        /// The default distance units to use when decoding the data entry string.
-        /// </summary>
-        readonly DistanceUnit m_DefaultEntryUnit;
+        readonly Distance[] m_Distances;
 
         /// <summary>
         /// Are the distances observed from the end of the line?
@@ -216,14 +211,13 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="LineSubdivisionFace"/> class.
         /// </summary>
-        /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
+        /// <param name="distances">The lengths for each subdivision section.</param>
         /// <param name="defaultEntryUnit">The default distance units to use when decoding
         /// the data entry string.</param>
         /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
-        internal LineSubdivisionFace(string entryString, DistanceUnit defaultEntryUnit, bool isEntryFromEnd)
+        internal LineSubdivisionFace(Distance[] distances, bool isEntryFromEnd)
         {
-            m_EntryString = entryString;
-            m_DefaultEntryUnit = defaultEntryUnit;
+            m_Distances = distances;
             m_IsEntryFromEnd = isEntryFromEnd;
             m_Sections = null;
         }
@@ -235,7 +229,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         internal LineSubdivisionFace(EditDeserializer editDeserializer)
         {
-            ReadData(editDeserializer, out m_EntryString, out m_IsEntryFromEnd, out m_DefaultEntryUnit);
+            m_IsEntryFromEnd = editDeserializer.ReadBool(DataField.EntryFromEnd);
+            m_Distances = editDeserializer.ReadPersistentArray<Distance>(DataField.Sections);
 
             // The sections are calculated ??
             m_Sections = null;
@@ -254,40 +249,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The data entry string that defines the sections on this face.
-        /// </summary>
-        internal string EntryString
-        {
-            get { return m_EntryString; }
-        }
-
-        /// <summary>
-        /// Are the distances observed from the end of the line?
-        /// </summary>
-        internal bool EntryFromEnd
-        {
-            get { return m_IsEntryFromEnd; }
-        }
-
-        /// <summary>
-        /// The default distance units to use when decoding the data entry string.
-        /// </summary>
-        internal DistanceUnit EntryUnit
-        {
-            get { return m_DefaultEntryUnit; }
-        }
-
-        /// <summary>
-        /// Converts the data entry string into the corresponding observations.
-        /// </summary>
-        /// <returns>The distances that correspond to the entry string, starting at the
-        /// beginning of the line</returns>
-        internal Distance[] GetDistances()
-        {
-            return GetDistances(m_EntryString, m_DefaultEntryUnit, m_IsEntryFromEnd);
-        }
-
-        /// <summary>
         /// Creates line sections along this face.
         /// </summary>
         /// <param name="parentLine">The line that is being subdivided</param>
@@ -295,23 +256,21 @@ namespace Backsight.Editor.Operations
         /// is the editing operation that's involved).</param>
         internal void CreateSections(LineFeature parentLine, FeatureFactory ff)
         {
-            Distance[] distances = GetDistances();
-
             // Must have at least two distances
-            if (distances == null)
+            if (m_Distances == null)
                 throw new ArgumentNullException();
 
-            if (distances.Length < 2)
+            if (m_Distances.Length < 2)
                 throw new ArgumentException();
 
-            m_Sections = new List<LineFeature>(distances.Length);
+            m_Sections = new List<LineFeature>(m_Distances.Length);
             PointFeature start = parentLine.StartPoint;
             InternalIdValue item = new InternalIdValue(ff.Creator.DataId);
 
-            for (int i = 0; i < distances.Length; i++)
+            for (int i = 0; i < m_Distances.Length; i++)
             {
                 PointFeature end;
-                if (i == distances.Length - 1)
+                if (i == m_Distances.Length - 1)
                     end = parentLine.EndPoint;
                 else
                 {
@@ -321,7 +280,7 @@ namespace Backsight.Editor.Operations
 
                 item.ItemSequence++;
                 LineFeature line = ff.CreateSection(item.ToString(), parentLine, start, end);
-                line.ObservedLength = distances[i];
+                line.ObservedLength = m_Distances[i];
                 m_Sections.Add(line);
                 start = end;
             }
@@ -335,10 +294,7 @@ namespace Backsight.Editor.Operations
         internal void CalculateGeometry(LineFeature parentLine, EditingContext ctx)
         {
             // Get adjusted lengths for each section
-            Distance[] distances = new Distance[m_Sections.Count];
-            for (int i = 0; i < distances.Length; i++)
-                distances[i] = m_Sections[i].ObservedLength;
-            double[] adjray = GetAdjustedLengths(parentLine, distances);
+            double[] adjray = GetAdjustedLengths(parentLine, m_Distances);
 
             double edist = 0.0;		// Distance to end of section.
             PointFeature start = parentLine.StartPoint;
@@ -427,23 +383,8 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteString(DataField.EntryString, m_EntryString);
             editSerializer.WriteBool(DataField.EntryFromEnd, m_IsEntryFromEnd);
-            editSerializer.WriteDistanceUnit(DataField.DefaultEntryUnit, m_DefaultEntryUnit);
-        }
-
-        /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
-        /// <param name="entryFromEnd">Are the distances observed from the end of the line?</param>
-        /// <param name="defaultEntryUnit">The default distance units to use when decoding the data entry string.</param>
-        static void ReadData(EditDeserializer editDeserializer, out string entryString, out bool entryFromEnd, out DistanceUnit defaultEntryUnit)
-        {
-            entryString = editDeserializer.ReadString(DataField.EntryString);
-            entryFromEnd = editDeserializer.ReadBool(DataField.EntryFromEnd);
-            defaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
+            editSerializer.WritePersistentArray<Distance>(DataField.Sections, m_Distances);
         }
 
         /// <summary>
@@ -481,6 +422,22 @@ namespace Backsight.Editor.Operations
 
             // Just package up every supplied section (even those that have not changed)
             return new UpdateItem(field, sections);
+        }
+
+        /// <summary>
+        /// The lengths for each subdivision section.
+        /// </summary>
+        internal Distance[] ObservedLengths
+        {
+            get { return m_Distances; }
+        }
+
+        /// <summary>
+        /// Are the distances observed from the end of the line?
+        /// </summary>
+        internal bool IsEntryFromEnd
+        {
+            get { return m_IsEntryFromEnd; }
         }
     }
 }

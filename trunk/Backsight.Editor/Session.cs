@@ -61,7 +61,7 @@ namespace Backsight.Editor
         /// <param name="job">The job the session is associated with</param>
         /// <returns>The created session (can also be subsequently accessed through the
         /// <see cref="CurrentSession"/> property</returns>
-        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, User user, Job job)
+        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, Job job)
         {
             s_CurrentSession = new Session(model, sessionData, user, job);
             model.AddSession(s_CurrentSession);
@@ -94,7 +94,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        readonly User m_Who;
+        readonly IUser m_Who;
 
         /// <summary>
         /// The job the session is associated with
@@ -129,7 +129,7 @@ namespace Backsight.Editor
         /// <param name="user">The user who performed the session</param>
         /// <param name="job">The job the session is associated with</param>
         /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
-        Session(CadastralMapModel model, SessionData sessionData, User user, Job job)
+        Session(CadastralMapModel model, SessionData sessionData, IUser user, Job job)
         {
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
@@ -257,7 +257,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        internal User User
+        internal IUser User
         {
             get { return m_Who; }
         }

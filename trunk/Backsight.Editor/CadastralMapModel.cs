@@ -1090,10 +1090,10 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="job">The job to load</param>
         /// <param name="user">The user who is doing the load</param>
-        internal void Load(Job job, User user)
+        internal void Load(Job job, IUser user)
         {
             m_Sessions.Clear();
-            SessionData.Load(this, job, user);
+            SessionData.Load(this, job);
 
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
@@ -1165,7 +1165,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal Session AppendWorkingSession(Job job, User user)
+        internal Session AppendWorkingSession(Job job, IUser user)
         {
             SessionData data = SessionData.Insert(job.JobId, user.UserId);
 

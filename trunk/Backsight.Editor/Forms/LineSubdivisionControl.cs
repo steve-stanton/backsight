@@ -130,17 +130,14 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
-                string entryString = GetEntryString();
+                Distance[] distances = GetDistances();
                 Session session = Session.WorkingSession;
-                op = new LineSubdivisionOperation(session, 0, m_Line, entryString, defaultEntryUnit,
-                                                    !m_FromStart);
+                op = new LineSubdivisionOperation(session, 0, m_Line, distances, !m_FromStart);
                 op.Execute();
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
         }

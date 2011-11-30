@@ -16,11 +16,10 @@
 using System;
 using System.Windows.Forms;
 
-using Backsight.Data;
 using Backsight.Editor.Database;
+using Backsight.Editor.FileStore;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
-using Backsight.SqlServer;
 
 namespace Backsight.Editor
 {
@@ -41,7 +40,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the user involved (null for no user)
         /// </summary>
-        User m_User;
+        IUser m_User;
 
         #endregion
 
@@ -66,19 +65,6 @@ namespace Backsight.Editor
         {
             m_JobFile = jobFile;
             m_User = null;
-
-            /*
-            if (m_JobFile == null)
-            {
-                m_ConnectionString = String.Empty;
-                m_JobId = 0;
-            }
-            else
-            {
-                m_ConnectionString = m_JobFile.Data.ConnectionString;
-                m_JobId = m_JobFile.JobId;
-            }
-             */
         }
 
         #endregion
@@ -90,6 +76,11 @@ namespace Backsight.Editor
         /// has failed to start.</returns>
         internal bool Open()
         {
+            // Pick up a canned environment from embedded resource file
+            IEnvironmentContainer ec = new EnvironmentResource();
+            EnvironmentContainer.Current = ec;
+
+            /*
             // If a job file was specified, attempt to connect to the database.
 
             ConnectionFactory.ConnectionString = String.Empty;
@@ -116,8 +107,7 @@ namespace Backsight.Editor
 
                 try
                 {
-                    //IEnvironmentContainer ec = new EnvironmentDatabase(cs);
-                    IEnvironmentContainer ec = new EnvironmentResource();
+                    IEnvironmentContainer ec = new EnvironmentDatabase(cs);
                     EnvironmentContainer.Current = ec;
 
                     // Remember the successful connection
@@ -132,9 +122,11 @@ namespace Backsight.Editor
             }
 
             // If we get here, it means we have a valid database connection...
+            */
 
             // Get the ID of the current user
-            m_User = User.GetCurrentUser();
+            //m_User = User.GetCurrentUser();
+            m_User = AnyLocalUser.Instance;
 
             // Confirm that we can get the job info from the database
 
@@ -167,6 +159,7 @@ namespace Backsight.Editor
             return (m_JobFile != null);
         }
 
+        /*
         string GetConnectionString()
         {
             string cs = String.Empty;
@@ -187,11 +180,12 @@ namespace Backsight.Editor
             ConnectionFactory.ConnectionString = cs;
             LastDatabase.ConnectionString = cs;
         }
+        */
 
         /// <summary>
         /// The current user (null if not known)
         /// </summary>
-        internal User User
+        internal IUser User
         {
             get { return m_User; }
         }

@@ -22,7 +22,7 @@ using System.Windows.Forms;
 
 using Backsight.Data;
 using Backsight.Editor.Properties;
-using Backsight.SqlServer;
+//using Backsight.SqlServer;
 
 namespace Backsight.Editor.Forms
 {

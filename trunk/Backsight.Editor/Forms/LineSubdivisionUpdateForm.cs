@@ -63,7 +63,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Was the alternate face created via this dialog?
         /// </summary>
-        bool m_IsFace2New;
+        //bool m_IsFace2New;
 
         /// <summary>
         /// The currently listed face (m_Face1 or m_Face2). Should never be null.
@@ -83,7 +83,7 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             m_UpdCmd = up;
-            m_IsFace2New = false;
+            //m_IsFace2New = false;
             this.DialogResult = DialogResult.Cancel;
         }
 
@@ -95,22 +95,16 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="face">The face of interest (may be null)</param>
         /// <returns>A copy of the distances along the face (null if the supplied face is null).</returns>
-        Distance[] GetDistances(LineSubdivisionFace face)
+        Distance[] CopyDistances(LineSubdivisionFace face)
         {
             if (face == null)
                 return null;
 
-            LineFeature[] sections = face.Sections;
-            Distance[] result = new Distance[sections.Length];
+            Distance[] current = face.ObservedLengths;
+            Distance[] result = new Distance[current.Length];
 
             for (int i = 0; i < result.Length; i++)
-            {
-                LineFeature line = sections[i];
-
-                // Don't hold the ACTUAL flip status, just record whether it has been changed
-                result[i] = new Distance(line.ObservedLength);
-                result[i].IsAnnotationFlipped = false;
-            }
+                result[i] = new Distance(current[i]);
 
             return result;
         }
@@ -128,16 +122,14 @@ namespace Backsight.Editor.Forms
             Debug.Assert(m_pop != null);
 
             // Grab something we throw away if the user decides to cancel
-            m_Face1 = GetDistances(m_pop.PrimaryFace);
-            m_Face2 = GetDistances(m_pop.AlternateFace);
+            m_Face1 = CopyDistances(m_pop.PrimaryFace);
+            m_Face2 = CopyDistances(m_pop.AlternateFace);
 
-            // If we have two faces, the "New Face" button means
-            // you want to switch to the other face.
-            if (m_pop.AlternateFace != null)
+            // If we have two faces, the "New Face" button means you want to switch to the other face.
+            if (m_Face2 != null)
                 newFaceButton.Text = "&Other Face";
 
-            // If we have a selected line section that is on the second face,
-            // make that the initial face.
+            // If we have a selected line section that is on the second face, make that the initial face.
             m_CurrentFace = m_Face1;
             if (m_SelectedLine != null && m_Face2 != null)
             {
@@ -203,14 +195,14 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            m_SelectedLine = GetLine(listBox.SelectedIndex);
+            //m_SelectedLine = GetLine(listBox.SelectedIndex);
+            Distance dCopy = new Distance(d);
 
-            using (DistForm dist = new DistForm(d, false))
+            using (DistForm dist = new DistForm(dCopy, false))
             {
                 if (dist.ShowDialog() == DialogResult.OK)
                 {
                     // Change the displayed distance
-
                     m_CurrentFace[listBox.SelectedIndex] = new Distance(dist.Distance);
                     m_CurrentFace[listBox.SelectedIndex].IsAnnotationFlipped = d.IsAnnotationFlipped;
                     RefreshList();
@@ -235,9 +227,9 @@ namespace Backsight.Editor.Forms
         /// </summary>
         internal void Draw()
         {
-            // Draw the features created by the op in magenta.
+            // Draw the features originally created by the op in gray.
             ISpatialDisplay display = m_UpdCmd.ActiveDisplay;
-            IDrawStyle style = m_UpdCmd.Controller.Style(Color.Magenta);
+            IDrawStyle style = m_UpdCmd.Controller.Style(Color.Gray);
             style.IsFixed = true;
             m_pop.Render(display, style, true);
 
@@ -245,22 +237,26 @@ namespace Backsight.Editor.Forms
             if (m_SelectedLine != null)
                 m_SelectedLine.Render(display, new HighlightStyle());
 
-            // Draw the points (except the last one, which should
+            // Draw points on the current face (except the last one, which should
             // coincide with the end of the parent line).
-            // TODO: Ideally, the original points should be drawn in gray, the
-            // adjusted new points in magenta. This was commented out in CEdit,
-            // so I'm not going to reintroduce it just now.
+
+            // Leave for now.... need to also cover possible reverse, and annotations
+
+            // and need annotations only if they're drawn
+            //if (!EditingController.Current.AreLineAnnotationsDrawn)
 
             /*
-	            // Get a list of positions on the arc we are subdividing.
-	            CeArc* pArc = m_pop->GetpParent();
-	            CeVertex* pos = new CeVertex[m_NumDist];
-	            pArc->GetPositions(m_NumDist,m_Dists,TRUE,pos);
+            double[] offsets = LineSubdivisionFace.GetAdjustedLengths(m_pop.Parent, m_CurrentFace);
+            LineGeometry geom = m_pop.Parent.LineGeometry;
+            IPosition start = geom.Start;
+            IPosition end = null;
 
-    		    for ( UINT4 i=0; i<(m_NumDist-1); i++ ) {
-    			    pDraw->Draw(pos[i],COL_MAGENTA);
-    		    }
-             */
+            for (int i = 0; i < offsets.Length - 1; i++, start = end)
+            {
+                geom.GetPosition(new Length(offsets[i]), out end);
+
+            }
+            */
         }
 
         void RefreshList()
@@ -268,40 +264,13 @@ namespace Backsight.Editor.Forms
             // Highlight currently selected line (if any).
             Draw();
 
-            // List the observed distances, relating each distance
-            // to the corresponding line.
-
+            // List the observed distances, relating each distance to the corresponding line.
             listBox.Items.Clear();
             listBox.Items.AddRange(m_CurrentFace);
 
             // Always leave the focus in the list of distances.
             listBox.Focus();
         }
-
-        /*
-
-void CdUpdateSub::Refresh ( void ) {
-
-	// There may be no arc sections if this is a new face.
-
-	CeFeature** pFeats = new CeFeature*[m_NumDist];
-	m_pop->GetpArcs(m_CurIndex,pFeats);
-	CListBox* pList = (CListBox*)GetDlgItem(IDC_LIST);
-	pList->ResetContent();
-
-	for ( UINT4 i=0; i<m_NumDist; i++ ) {
-		INT4 index = pList->AddString(m_Dists[i].Format());
-		pList->SetItemDataPtr(index,pFeats[i]);
-		if ( pFeats[i] == m_pSelArc ) pList->SetCurSel(index);
-	}
-
-	delete [] pFeats;
-
-	// Always leave the focus in the list of distances.
-	pList->SetFocus();
-
-} // end of Refresh
-         */
 
         private void flipDistButton_Click(object sender, EventArgs e)
         {
@@ -316,11 +285,6 @@ void CdUpdateSub::Refresh ( void ) {
             Distance faceDist = m_CurrentFace[index];
             faceDist.ToggleIsFlipped();
 
-            // Change the line too, so that it will highlight with the annotation
-            // on the other side. Remember that this will need to be switched back
-            // when this dialog closes.
-            GetLine(index).ObservedLength.ToggleIsFlipped();
-
             // Ensure stuff gets redrawn
             m_UpdCmd.ErasePainting();
         }
@@ -333,8 +297,7 @@ void CdUpdateSub::Refresh ( void ) {
             if (m_SelectedLine != null)
                 m_SelectedLine = null;
 
-            // If a second face doesn't already exist, get the
-            // user to specify the distances.
+            // If a second face doesn't already exist, get the user to specify the distances.
 
             if (m_Face2 == null)
             {
@@ -357,17 +320,14 @@ void CdUpdateSub::Refresh ( void ) {
                             return;
                         }
 
-                        // Create the new face (for use in preview only)
-                        m_pop.AlternateFace = CreateAlternateFace(dists);
-                        m_IsFace2New = true;
+                        // Default annotations to the flip side
+                        foreach (Distance d in dists)
+                            d.IsAnnotationFlipped = true;
 
-                        // Remember the entered distances for the new face.
-                        m_Face2 = new Distance[dists.Length];
-                        for (int i = 0; i < dists.Length; i++)
-                        {
-                            m_Face2[i] = new Distance(dists[i]);
-                            m_Face2[i].IsAnnotationFlipped = true;
-                        }
+                        // Create the new face (for use in preview only)
+                        //m_pop.AlternateFace = CreateAlternateFace(dists);
+                        m_Face2 = dists;
+                        //m_IsFace2New = true;
 
                         newFaceButton.Text = "&Other Face";
                     }
@@ -396,50 +356,15 @@ void CdUpdateSub::Refresh ( void ) {
         /// <param name="dists">The lengths of the line sections along the alternate face</param>
         LineSubdivisionFace CreateAlternateFace(Distance[] dists)
         {
-            // Express the distances as an entry string
-            DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
-            StringBuilder sb = new StringBuilder();
-            string prev = String.Empty;
-            int nDist = 0;
-            
-            for (int i = 0; i < dists.Length; i++)
-            {
-                Distance d = dists[i];
-                bool appendAbbrev = (d.EntryUnit.UnitType != defaultEntryUnit.UnitType);
-                string s = dists[i].Format(appendAbbrev);
-                if (s == prev)
-                {
-                    nDist++;
-                }
-                else
-                {
-                    // If the last distance was repeared, append the repeat count
-                    if (nDist > 1)
-                        sb.AppendFormat("*{0}", nDist);
-
-                    if (i > 0)
-                        sb.Append(" ");
-
-                    // Append the distance, remember it so that we can check
-                    // next distance for repeat
-                    sb.Append(s);
-                    nDist = 1;
-                    prev = s;
-                }
-            }
-
-            // If the last distance was repeated, ensure the repeat count has
-            // been appended.
-            if (nDist > 1)
-                sb.AppendFormat("*{0}", nDist);
-
             // Distances are assumed to come from the start of the line (the LegForm dialog
             // doesn't let you reverse things).
-            LineSubdivisionFace face = new LineSubdivisionFace(sb.ToString(), defaultEntryUnit, false);
+            LineSubdivisionFace face = new LineSubdivisionFace(dists, false);
 
             // Create features, but without assigning any feature IDs to anything.
-            // Unfortunately, this will end up cross-referencing the parent line end points
-            // to the throwaway line sections -- must remember to undo on close.
+            // The ThrowawayFeatureFactory creates stuff with a session ID of 0 (denoting a temporary
+            // feature that shouldn't get pointed to by anything else).
+            // - prob better to do stuff entirely in Draw
+            /*
             FeatureFactory ff = new ThrowawayFeatureFactory(m_pop);
             ff.LineType = m_pop.Parent.EntityType;
             face.CreateSections(m_pop.Parent, ff);
@@ -450,7 +375,7 @@ void CdUpdateSub::Refresh ( void ) {
             // Add to spatial index
             //Feature[] feats = ff.CreatedFeatures;
             //m_pop.MapModel.AddToIndex(feats);
-
+            */
             return face;
         }
 
@@ -485,6 +410,8 @@ void CdUpdateSub::Refresh ( void ) {
             // Ensure any flipped annotations have been temporarily flipped back. To set the
             // status for good, the appropriate update items must be returned by GetUpdateItems.
 
+            // ...avoid the complication here, calculate stuff as part of Draw
+            /*
             CloseFace(m_Face1, m_pop.PrimaryFace);
 
             if (m_IsFace2New)
@@ -495,10 +422,12 @@ void CdUpdateSub::Refresh ( void ) {
             {
                 CloseFace(m_Face2, m_pop.AlternateFace);
             }
+             */
         }
 
         void CloseFace(Distance[] dists, LineSubdivisionFace face)
         {
+            /*
             if (face == null)
                 return;
 
@@ -513,6 +442,7 @@ void CdUpdateSub::Refresh ( void ) {
                     d.ToggleIsFlipped();
                 }
             }
+             */
         }
     }
 }

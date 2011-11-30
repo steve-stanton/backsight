@@ -58,7 +58,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user
         /// </summary>
-        User m_User;
+        IUser m_User;
 
         /// <summary>
         /// Information about the current job file
@@ -1317,7 +1317,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user
         /// </summary>
-        internal User User
+        internal IUser User
         {
             get { return m_User; }
         }
