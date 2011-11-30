@@ -201,16 +201,6 @@ CREATE TABLE [Themes]
 )
 GO
 
-CREATE TABLE [UserJobs]
-(
-	[UserId] [int] NOT NULL,
-	[JobId] [int] NOT NULL,
-	[LastRevision] [int] NOT NULL,
-	
-	CONSTRAINT [PK_UserJobs] PRIMARY KEY ([UserId], [JobId])
-)
-GO
-
 CREATE TABLE [Users]
 (
 	[UserId] [int] IDENTITY(1,1) NOT NULL,
@@ -338,10 +328,4 @@ REFERENCES [DomainTables] ([DomainId])
 GO
 ALTER TABLE [ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
 REFERENCES [Schemas] ([SchemaId])
-GO
-ALTER TABLE [UserJobs] ADD CONSTRAINT [FK_UserJob_Job] FOREIGN KEY([JobId])
-REFERENCES [Jobs] ([JobId])
-GO
-ALTER TABLE [UserJobs] ADD CONSTRAINT [FK_UserJob_User] FOREIGN KEY([UserId])
-REFERENCES [Users] ([UserId])
 GO

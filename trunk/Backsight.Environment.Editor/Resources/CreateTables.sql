@@ -332,22 +332,6 @@ CREATE TABLE [ced].[Themes]
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[UserJobs]') AND type in (N'U'))
-BEGIN
-PRINT 'CREATE TABLE UserJobs';
-CREATE TABLE [ced].[UserJobs]
-(
-	[UserId] [int] NOT NULL,
-	[JobId] [int] NOT NULL,
-	[LastRevision] [int] NOT NULL,
-	
-	CONSTRAINT [PK_UserJobs] PRIMARY KEY CLUSTERED ([UserId] ASC, [JobId] ASC)
-		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
-		
-) ON [PRIMARY]
-END
-GO
-
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ced].[Users]') AND type in (N'U'))
 BEGIN
 PRINT 'CREATE TABLE Users';
@@ -749,17 +733,4 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_ColumnDomains_Schemas]') AND parent_object_id = OBJECT_ID(N'[ced].[ColumnDomains]'))
 ALTER TABLE [ced].[ColumnDomains] ADD CONSTRAINT [FK_ColumnDomains_Schemas] FOREIGN KEY([TableId])
 REFERENCES [ced].[Schemas] ([SchemaId])
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_UserJob_Job]') AND parent_object_id = OBJECT_ID(N'[ced].[UserJobs]'))
-ALTER TABLE [ced].[UserJobs]  WITH CHECK ADD  CONSTRAINT [FK_UserJob_Job] FOREIGN KEY([JobId])
-REFERENCES [ced].[Jobs] ([JobId])
-GO
-ALTER TABLE [ced].[UserJobs] CHECK CONSTRAINT [FK_UserJob_Job]
-GO
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[ced].[FK_UserJob_User]') AND parent_object_id = OBJECT_ID(N'[ced].[UserJobs]'))
-ALTER TABLE [ced].[UserJobs]  WITH CHECK ADD  CONSTRAINT [FK_UserJob_User] FOREIGN KEY([UserId])
-REFERENCES [ced].[Users] ([UserId])
-GO
-ALTER TABLE [ced].[UserJobs] CHECK CONSTRAINT [FK_UserJob_User]
 GO
