@@ -118,6 +118,7 @@ namespace Backsight.Editor
         ExtendFromEnd,
         Fixed,
         Unit,
-        UpdatedPoint
+        UpdatedPoint,
+        Sections
     }
 }

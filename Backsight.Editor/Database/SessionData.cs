@@ -38,13 +38,12 @@ namespace Backsight.Editor.Database
         /// </summary>
         /// <param name="model">The model to load</param>
         /// <param name="job">The job to load</param>
-        /// <param name="user">The user who is doing the load</param>
-        internal static void Load(CadastralMapModel model, Job job, User user)
+        internal static void Load(CadastralMapModel model, Job job)
         {
             List<SessionData> sessions = new List<SessionData>(1000);
 
             // Grab information about all defined users
-            User[] allUsers = User.FindAll();
+            IUser[] allUsers = User.FindAll();
 
             // Grab information about all defined jobs
             // TODO: This isn't very smart!
@@ -57,7 +56,7 @@ namespace Backsight.Editor.Database
                 LoadSessions(con, sessions, job);
 
                 // Stuff the session IDs into a temp table and use it to load the edits
-                string sessionTable = String.Format("#sessions_{0}_{1}", job.JobId, user.UserId);
+                string sessionTable = String.Format("#sessions_{0}", job.JobId);
                 CopySessionIdsToTable(con, sessions, sessionTable);
 
                 // Initialize session capacity in the model
@@ -73,7 +72,7 @@ namespace Backsight.Editor.Database
 
                 SessionData curSessionData = null;
                 Session curSession = null;
-                User curUser = null;
+                IUser curUser = null;
                 Job curJob = null;
                 Trace.Write("Reading data...");
 
@@ -93,7 +92,7 @@ namespace Backsight.Editor.Database
                                             { return (s.m_SessionId==sessionId); });
                             Debug.Assert(curSessionData != null);
 
-                            curUser = Array.Find<User>(allUsers, delegate(User u)
+                            curUser = Array.Find<IUser>(allUsers, delegate(IUser u)
                                             { return (u.UserId==curSessionData.UserId); });
                             Debug.Assert(curUser != null);
 

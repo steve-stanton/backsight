@@ -24,7 +24,7 @@ namespace Backsight.Editor.Database
     /// <summary>
     /// Database access to the <c>Users</c> table.
     /// </summary>
-    class User
+    class User : IUser
     {
         #region Static
 
@@ -139,7 +139,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The internal ID for the user
         /// </summary>
-        internal uint UserId
+        public uint UserId
         {
             get { return m_UserId; }
         }
@@ -147,7 +147,7 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// The user-perceived name for the user
         /// </summary>
-        internal string Name
+        public string Name
         {
             get { return m_Name; }
         }

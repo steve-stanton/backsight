@@ -57,16 +57,14 @@ namespace Backsight.Editor.Operations
         /// a new sequence number should be reserved). A non-zero value is specified during
         /// deserialization from the database.</param>
         /// <param name="line">The line that is being subdivided.</param>
-        /// <param name="entryString">The data entry string that defines the subdivision sections.</param>
-        /// <param name="defaultEntryUnit">The default distance units to use when decoding
-        /// the data entry string.</param>
+        /// <param name="distances">The lengths for each subdivision section.</param>
         /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
         internal LineSubdivisionOperation(Session session, uint sequence, LineFeature line,
-                                            string entryString, DistanceUnit defaultEntryUnit, bool isEntryFromEnd)
+                                            Distance[] distances, bool isEntryFromEnd)
             : base(session, sequence)
         {
             m_Line = line;
-            m_PrimaryFace = new LineSubdivisionFace(entryString, defaultEntryUnit, isEntryFromEnd);
+            m_PrimaryFace = new LineSubdivisionFace(distances, isEntryFromEnd);
             m_AlternateFace = null;
         }
 
