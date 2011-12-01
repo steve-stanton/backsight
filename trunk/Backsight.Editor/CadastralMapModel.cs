@@ -138,11 +138,10 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The user-name of the model (including the path).
-        /// Blank if the model is undefined, or it's got a temporary system-generated name.
         /// </summary>
         public string Name
         {
-            get { return EditingController.Current.JobFile.Name; }
+            get { return EditingController.Current.JobInfo.Name; }
         }
 
         /// <summary>
@@ -229,18 +228,18 @@ namespace Backsight.Editor
 
             // Suppress text if the display scale is too small
             EditingController ec = EditingController.Current;
-            JobFileInfo jfi = ec.JobFile.Data;
-            if (display.MapScale > jfi.ShowLabelScale)
+            IJobInfo ji = ec.JobInfo;
+            if (display.MapScale > ji.ShowLabelScale)
                 types ^= SpatialType.Text;
 
             // Suppress points if the display scale is too small
-            if (display.MapScale > ec.JobFile.Data.ShowPointScale)
+            if (display.MapScale > ec.JobInfo.ShowPointScale)
                 types ^= SpatialType.Point;
 
             new DrawQuery(m_Index, display, style, types);
 
             // Draw intersections if necessary
-            if (jfi.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
+            if (ji.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
                 (m_Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
@@ -717,13 +716,13 @@ namespace Backsight.Editor
         internal void SetDefaultEntity(SpatialType t, int entityId)
         {
             if (t == SpatialType.Point)
-                EditingController.Current.JobFile.Data.DefaultPointType = entityId;
+                EditingController.Current.JobInfo.DefaultPointType = entityId;
             else if (t == SpatialType.Line)
-                EditingController.Current.JobFile.Data.DefaultLineType = entityId;
+                EditingController.Current.JobInfo.DefaultLineType = entityId;
             else if (t == SpatialType.Polygon)
-                EditingController.Current.JobFile.Data.DefaultPolygonType = entityId;
+                EditingController.Current.JobInfo.DefaultPolygonType = entityId;
             else if (t == SpatialType.Text)
-                EditingController.Current.JobFile.Data.DefaultTextType = entityId;
+                EditingController.Current.JobInfo.DefaultTextType = entityId;
             else
                 throw new NotImplementedException("SetDefaultEntityType");
         }
@@ -732,7 +731,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobFile.Data.DefaultPointType;
+                int entityId = EditingController.Current.JobInfo.DefaultPointType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -741,7 +740,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobFile.Data.DefaultLineType;
+                int entityId = EditingController.Current.JobInfo.DefaultLineType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -750,7 +749,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobFile.Data.DefaultPolygonType;
+                int entityId = EditingController.Current.JobInfo.DefaultPolygonType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -759,7 +758,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobFile.Data.DefaultTextType;
+                int entityId = EditingController.Current.JobInfo.DefaultTextType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -1089,8 +1088,7 @@ namespace Backsight.Editor
         /// Loads this model from the database
         /// </summary>
         /// <param name="job">The job to load</param>
-        /// <param name="user">The user who is doing the load</param>
-        internal void Load(Job job, IUser user)
+        internal void Load(IJobInfo job, IUser user)
         {
             m_Sessions.Clear();
             SessionData.Load(this, job);
@@ -1119,11 +1117,13 @@ namespace Backsight.Editor
 
             // Now go through the sessions to notify the ID manager about IDs
             // that have been used
+            /*
             foreach (Session s in m_Sessions)
             {
                 if (s.Job.JobId == job.JobId && s.User.UserId == user.UserId)
                     s.LoadUsedIds(m_IdManager);
             }
+             */
         }
 
         /// <summary>

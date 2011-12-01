@@ -29,19 +29,15 @@ namespace Backsight.Editor.Forms
         private void InitializeComponent()
         {
             this.cancelButton = new System.Windows.Forms.Button();
-            this.saveButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.jobNameTextBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.zoneComboBox = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.layerComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cancelButton
             // 
-            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cancelButton.Location = new System.Drawing.Point(185, 173);
+            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cancelButton.Location = new System.Drawing.Point(248, 81);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -50,21 +46,21 @@ namespace Backsight.Editor.Forms
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // saveButton
+            // okButton
             // 
-            this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.saveButton.Location = new System.Drawing.Point(281, 173);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(75, 23);
-            this.saveButton.TabIndex = 3;
-            this.saveButton.Text = "Save...";
-            this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.okButton.Location = new System.Drawing.Point(156, 81);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.TabIndex = 1;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 126);
+            this.label1.Location = new System.Drawing.Point(10, 31);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(68, 16);
             this.label1.TabIndex = 2;
@@ -72,74 +68,28 @@ namespace Backsight.Editor.Forms
             // 
             // jobNameTextBox
             // 
-            this.jobNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.jobNameTextBox.Location = new System.Drawing.Point(107, 123);
+            this.jobNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.jobNameTextBox.Location = new System.Drawing.Point(102, 28);
             this.jobNameTextBox.Name = "jobNameTextBox";
-            this.jobNameTextBox.Size = new System.Drawing.Size(413, 22);
-            this.jobNameTextBox.TabIndex = 2;
-            this.jobNameTextBox.Enter += new System.EventHandler(this.jobNameTextBox_Enter);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 26);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 16);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Zone";
-            // 
-            // zoneComboBox
-            // 
-            this.zoneComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.zoneComboBox.FormattingEnabled = true;
-            this.zoneComboBox.Location = new System.Drawing.Point(108, 23);
-            this.zoneComboBox.Name = "zoneComboBox";
-            this.zoneComboBox.Size = new System.Drawing.Size(412, 24);
-            this.zoneComboBox.TabIndex = 0;
-            this.zoneComboBox.SelectedValueChanged += new System.EventHandler(this.zoneComboBox_SelectedValueChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 76);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(82, 16);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Editing layer";
-            // 
-            // layerComboBox
-            // 
-            this.layerComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.layerComboBox.FormattingEnabled = true;
-            this.layerComboBox.Location = new System.Drawing.Point(107, 73);
-            this.layerComboBox.Name = "layerComboBox";
-            this.layerComboBox.Size = new System.Drawing.Size(413, 24);
-            this.layerComboBox.TabIndex = 1;
-            this.layerComboBox.SelectedValueChanged += new System.EventHandler(this.layerComboBox_SelectedValueChanged);
+            this.jobNameTextBox.Size = new System.Drawing.Size(292, 22);
+            this.jobNameTextBox.TabIndex = 0;
             // 
             // NewJobForm
             // 
-            this.AcceptButton = this.saveButton;
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(547, 226);
-            this.Controls.Add(this.layerComboBox);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.zoneComboBox);
-            this.Controls.Add(this.label2);
+            this.ClientSize = new System.Drawing.Size(429, 128);
             this.Controls.Add(this.jobNameTextBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewJobForm";
             this.Text = "Create New Job";
-            this.Load += new System.EventHandler(this.NewJobForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,13 +98,9 @@ namespace Backsight.Editor.Forms
         #endregion
 
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox jobNameTextBox;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox zoneComboBox;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox layerComboBox;
 
     }
 }

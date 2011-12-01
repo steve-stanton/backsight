@@ -106,6 +106,8 @@ namespace Backsight.Editor.Forms
 
         private void databaseButton_Click(object sender, EventArgs e)
         {
+            throw new NotImplementedException();
+            /*
             ConnectionForm dial = new ConnectionForm();
             if (dial.ShowDialog() == DialogResult.OK)
             {
@@ -114,6 +116,7 @@ namespace Backsight.Editor.Forms
             }
 
             dial.Dispose();
+             */
         }
 
         private void openLastButton_Click(object sender, EventArgs e)

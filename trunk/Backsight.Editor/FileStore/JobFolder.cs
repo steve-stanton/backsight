@@ -15,6 +15,8 @@
 
 using System;
 using System.IO;
+using Backsight.Editor.Properties;
+using System.Collections.Generic;
 
 namespace Backsight.Editor.FileStore
 {
@@ -64,7 +66,16 @@ namespace Backsight.Editor.FileStore
                 throw new ArgumentException("Specified editing job already exists");
 
             Directory.CreateDirectory(jobFolder);
-            return null;
+
+            // Save the information in a job file
+            string jobFileName = Path.Combine(jobFolder, jobName + ".cedx");
+            JobFileInfo jfi = new JobFileInfo();
+            IJobInfo result = JobFile.SaveJobFile(jobFileName, jfi);
+
+            Settings.Default.LastMap = jobName;
+            Settings.Default.Save();
+
+            return result;
         }
 
         /// <summary>
@@ -92,6 +103,39 @@ namespace Backsight.Editor.FileStore
         public string[] FindAllJobNames()
         {
             return Directory.GetDirectories(m_FolderName);
+        }
+
+        public ISession[] LoadSessions(string jobName, CadastralMapModel model)
+        {
+            EditDeserializer editDeserializer = new EditDeserializer(model);
+
+            List<ISession> result = new List<ISession>();
+            string jobFolder = Path.Combine(m_FolderName, jobName);
+
+            foreach (string sFolder in Directory.GetDirectories(jobFolder, "s.*"))
+            {
+                Operation[] edits = LoadEdits(sFolder, editDeserializer);
+                ISession s = new Session(edits);
+            }
+
+            return result.ToArray();
+        }
+
+        Operation[] LoadEdits(string sFolder, EditDeserializer editDeserializer)
+        {
+            List<Operation> edits = new List<Operation>();
+
+            foreach (string editFile in Directory.GetFiles(sFolder))
+            {
+                using (TextReader tr = File.OpenText(editFile))
+                {
+                    editDeserializer.SetReader(new TextEditReader(tr));
+                    Operation edit = Operation.Deserialize(editDeserializer);
+                    edits.Add(edit);
+                }
+            }
+
+            return edits.ToArray();
         }
 
         #endregion

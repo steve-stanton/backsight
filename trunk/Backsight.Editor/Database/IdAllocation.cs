@@ -67,18 +67,18 @@ namespace Backsight.Editor.Database
         /// <param name="insertTime"></param>
         /// <param name="numUsed">The number of IDs already used</param>
         internal static IdAllocation Insert(IdGroup idGroup, int lowestId, int highestId,
-                                                Job job, IUser user, DateTime insertTime, int numUsed)
+                                                int jobId, IUser user, DateTime insertTime, int numUsed)
         {
             using (IConnection ic = ConnectionFactory.Create())
             {
                 StringBuilder sb = new StringBuilder(200);
                 sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
                 sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-                    idGroup.Id, lowestId, highestId, job.JobId, user.UserId,
+                    idGroup.Id, lowestId, highestId, jobId, user.UserId,
                     DbUtil.GetDateTimeString(insertTime), numUsed);
                 SqlCommand cmd = new SqlCommand(sb.ToString(), ic.Value);
                 cmd.ExecuteNonQuery();
-                return new IdAllocation(idGroup.Id, lowestId, highestId, (int)job.JobId, (int)user.UserId,
+                return new IdAllocation(idGroup.Id, lowestId, highestId, jobId, (int)user.UserId,
                                             insertTime, numUsed);
             }
         }

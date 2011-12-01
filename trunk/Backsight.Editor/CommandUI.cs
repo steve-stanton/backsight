@@ -548,7 +548,7 @@ namespace Backsight.Editor
         {
             ISpatialDisplay display = ActiveDisplay;
             EditingController ec = EditingController.Current;
-            return (display.MapScale < ec.JobFile.Data.ShowPointScale);
+            return (display.MapScale < ec.JobInfo.ShowPointScale);
         }
     }
 }

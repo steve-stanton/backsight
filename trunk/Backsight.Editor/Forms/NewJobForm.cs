@@ -15,92 +15,49 @@
 
 using System;
 using System.Windows.Forms;
-using System.IO;
-using System.Collections.Generic;
-
-using Backsight.Editor.Database;
-using Backsight.Environment;
-using Backsight.Editor.Properties;
 
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog for defining a new editing job (the entry in the database, plus
-    /// the job file). The work of actually storing the new job in the database is done
-    /// as part of the <see cref="GetJobForm"/> class.
+    /// Dialog for defining a new editing job.
     /// </summary>
     public partial class NewJobForm : Form
     {
         #region Class data
 
         /// <summary>
-        /// The dialog displaying this one (if any)
+        /// The container for jobs (not null).
         /// </summary>
-        readonly GetJobForm m_Parent;
+        readonly IJobContainer m_Container;
 
         /// <summary>
-        /// The new job file (created when user clicks on OK)
+        /// Information for the newly created job (defined when user clicks the OK button)
         /// </summary>
-        //JobFile m_NewJob;
-
-        /// <summary>
-        /// The newly created job (created when user clicks on OK)
-        /// </summary>
-        Job m_NewJob;
+        IJobInfo m_NewJob;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>NewJobForm</c>
+        /// Initializes a new instance of the <see cref="NewJobForm"/> class.
         /// </summary>
-        /// <param name="parent">The dialog displaying this one (not null)</param>
-        /// <exception cref="ArgumentNullException">If the specified parent is null</exception>
-        public NewJobForm(GetJobForm parent)
+        /// <param name="jobContainer">The container for jobs (not null).</param>
+        /// <exception cref="ArgumentNullException">If the specified container is null.</exception>
+        internal NewJobForm(IJobContainer jobContainer)
         {
             InitializeComponent();
-            m_Parent = parent;
-            m_NewJob = null;
 
-            if (m_Parent==null)
+            if (jobContainer == null)
                 throw new ArgumentNullException();
+
+            m_Container = jobContainer;
         }
 
         #endregion
 
-        private void NewJobForm_Load(object sender, EventArgs e)
+        private void okButton_Click(object sender, EventArgs e)
         {
-            IEnvironmentContainer ec = EnvironmentContainer.Current;
-
-            // Load all defined zones
-            List<IZone> zones = new List<IZone>(ec.Zones);
-            zones.Sort(delegate(IZone a, IZone b) { return a.Name.CompareTo(b.Name); });
-            zoneComboBox.DataSource = zones;
-
-            // Load all defined editing layers
-            layerComboBox.DataSource = ec.Layers;
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            // Grab the defined info. The zone and editing layer must
-            // both be defined. And the job name of course.
-
-            IZone zone = (zoneComboBox.SelectedItem as IZone);
-            if (zone == null || zone.Id==0)
-            {
-                MessageBox.Show("You must specify a spatial zone for the job");
-                return;
-            }
-
-            ILayer layer = (layerComboBox.SelectedItem as ILayer);
-            if (layer == null || layer.Id==0)
-            {
-                MessageBox.Show("You must specify the editing layer for the job");
-                return;
-            }
-
             string jobName = jobNameTextBox.Text.Trim();
             if (jobName.Length == 0)
             {
@@ -108,19 +65,24 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            // Get the parent dialog to do the rest
-            m_NewJob = m_Parent.CreateJob(jobName, zone, layer);
-            if (m_NewJob!=null)
+            // Confirm that the name is unique
+            string[] names = m_Container.FindAllJobNames();
+            if (Array.Exists<string>(names, delegate(string s) { return (String.Compare(s, jobName, true) == 0); }))
             {
-                DialogResult = DialogResult.OK;
-                Close();
+                MessageBox.Show("Job name has already been used.");
+                return;
             }
+
+            // Create the job
+            m_NewJob = m_Container.CreateJob(jobName);
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         /// <summary>
-        /// The new job (created when user clicks on Save)
+        /// The new job (created when user clicks on OK)
         /// </summary>
-        internal Job NewJob
+        internal IJobInfo NewJob
         {
             get { return m_NewJob; }
         }
@@ -130,114 +92,5 @@ namespace Backsight.Editor.Forms
             DialogResult = DialogResult.Cancel;
             Close();
         }
-
-        /// <summary>
-        /// Creates a new job after validating the details
-        /// </summary>
-        /// <param name="jobName">The user-perceived name for the job (not null or blank)</param>
-        /// <param name="zone">The spatial zone the job covers (not null)</param>
-        /// <param name="layer">The (base) map layer for the job (not null)</param>
-        /// <returns>The created job file (null on any validation or database insert error)</returns>
-        /*
-        JobFile CreateJob(string jobName, IZone zone, ILayer layer)
-        {
-            if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
-                throw new ArgumentNullException();
-
-            // Confirm the job name is unique
-            Job job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return String.Compare(j.Name, jobName, true)==0; });
-            if (job != null)
-            {
-                if (m_Parent!=null)
-                    m_Parent.SelectJob(job);
-                MessageBox.Show("A job with that name already exists");
-                return null;
-            }
-
-            // Confirm that there isn't another job that refers to the
-            // same zone and editing layer
-            job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return (j.ZoneId==zone.Id && j.LayerId==layer.Id); });
-            if (job != null)
-            {
-                if (m_Parent!=null)
-                    m_Parent.SelectJob(job);
-                string msg = String.Format("{0} already refers to the same zone and editing layer", job.Name);
-                MessageBox.Show(msg);
-                return null;
-            }
-
-            // Insert the new job into the database.
-            // Don't bother including in m_AllJobs, since returning a valid job should cause
-            // this dialog to close momentarily.
-            job = Job.Insert(jobName, zone.Id, layer.Id);
-
-            // Save a job file as well
-            return EditingController.Current.SaveJobFile(job);
-        }
-         */
-
-        private void zoneComboBox_SelectedValueChanged(object sender, EventArgs e)
-        {
-            layerComboBox.Focus();
-        }
-
-        private void layerComboBox_SelectedValueChanged(object sender, EventArgs e)
-        {
-            jobNameTextBox.Focus();
-        }
-
-        private void jobNameTextBox_Enter(object sender, EventArgs e)
-        {
-            if (jobNameTextBox.Text.Length == 0 && this.Visible)
-            {
-                IZone zone = (zoneComboBox.SelectedItem as IZone);
-                if (zone == null || zone.Id==0)
-                    return;
-
-                //ILayer layer = (layerComboBox.SelectedItem as ILayer);
-                //if (layer == null || layer.Id==0)
-                //    return;
-
-                // Just default to the zone name, since appending the layer name is a bit verbose, and
-                // it's quite likely that everyone in a given shop will utilize the same layer. Using
-                // just the zone name is also consistent with the naming convention that was utilized
-                // in prehistoric (CEdit) times.
-                //string fileName = String.Format("{0}-{1}{2}", zone.Name, layer.Name, JobFileInfo.TYPE);
-                /*
-                string fileName = String.Format("{0}{1}", zone.Name, JobFileInfo.TYPE);
-                string dirName;
-                string lastMap = Settings.Default.LastMap;
-
-                if (String.IsNullOrEmpty(lastMap))
-                    dirName = Directory.GetCurrentDirectory();
-                else
-                    dirName = Path.GetDirectoryName(lastMap);
-
-                jobNameTextBox.Text = Path.Combine(dirName, fileName);
-                 */
-                jobNameTextBox.Text = zone.Name;
-            }
-        }
-
-        /*
-        private void browseButton_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Title = "Save As";
-            dial.DefaultExt = JobFileInfo.TYPE;
-            dial.FileName = jobNameTextBox.Text;
-            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-
-            if (!String.IsNullOrEmpty(dial.FileName))
-                dial.InitialDirectory = Path.GetDirectoryName(dial.FileName);
-
-            if (dial.ShowDialog() == DialogResult.OK)
-                jobNameTextBox.Text = dial.FileName;
-
-            dial.Dispose();
-        }
-         */
     }
 }

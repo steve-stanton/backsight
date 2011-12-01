@@ -314,8 +314,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Should intersection points be drawn? Relevant only if points
-        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/>
-        /// property).
+        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/> property).
         /// </summary>
         [XmlElement("IntersectionsDrawn")]
         public bool AreIntersectionsDrawn

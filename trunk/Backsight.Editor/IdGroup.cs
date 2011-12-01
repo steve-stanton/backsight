@@ -107,7 +107,6 @@ namespace Backsight.Editor
             //List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
-            Job curjob = EditingController.Current.Job;
             IUser curuser = Session.WorkingSession.User;
             DateTime curtime = DateTime.Now;
 
@@ -174,7 +173,8 @@ namespace Backsight.Editor
                         //ranges.Add(range);
 
                         // Insert a row into the IdAllocation table.
-                        IdAllocation ida = IdAllocation.Insert(this, minid, maxid, curjob, curuser, curtime, 0);
+                        const int jobId = 0;
+                        IdAllocation ida = IdAllocation.Insert(this, minid, maxid, jobId, curuser, curtime, 0);
 
                         // Remember it as part of this group
                         AddIdPacket(ida);

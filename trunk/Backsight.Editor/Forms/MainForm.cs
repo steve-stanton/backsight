@@ -177,8 +177,8 @@ namespace Backsight.Editor.Forms
             }
 
             // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
-            string fullMapName = m_Controller.CadastralMapModel.Name;
-            m_MruMenu.AddFile(fullMapName);
+            string jobName = m_Controller.CadastralMapModel.Name;
+            m_MruMenu.AddFile(jobName);
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
@@ -465,10 +465,10 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CadastralMapModel map = CadastralMapModel.Current;
-            if (map != null)
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            if (mapModel != null)
             {
-                AddRecentFile(map.Name);
+                AddRecentFile(mapModel.Name);
                 EditingController.Current.CheckSave();
             }
 
@@ -501,7 +501,7 @@ namespace Backsight.Editor.Forms
                 pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
                 ent = map.DefaultLineType;
                 lineEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
-                string name = m_Controller.JobFile.Name;
+                string name = m_Controller.JobInfo.Name;
                 this.Text = (String.IsNullOrEmpty(name) ? "(Untitled map)" : name);
             }
 
@@ -722,7 +722,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 try
                 {
                     m_Controller.OpenJob(null);
-                    m_MruMenu.AddFile(m_Controller.JobFile.Name);
+                    m_MruMenu.AddFile(m_Controller.JobInfo.Name);
                 }
 
                 catch (Exception ex2)
@@ -1495,7 +1495,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             get
             {
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= m_Controller.JobFile.Data.ShowPointScale);
+                return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowPointScale);
             }
         }
 
@@ -1515,15 +1515,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
                 Debug.Assert(display!=null);
                 double scale = display.MapScale;
-                m_Controller.JobFile.Data.ShowPointScale = (scale + 1.0);
+                m_Controller.JobInfo.ShowPointScale = (scale + 1.0);
                 double height = 0.001 * scale;
-                m_Controller.JobFile.Data.PointHeight = Math.Max(0.01, height);
+                m_Controller.JobInfo.PointHeight = Math.Max(0.01, height);
             }
             else
             {
                 // Increase by a meter on the ground.
-                double oldHeight = m_Controller.JobFile.Data.PointHeight;
-                m_Controller.JobFile.Data.PointHeight = oldHeight + 1.0;
+                double oldHeight = m_Controller.JobInfo.PointHeight;
+                m_Controller.JobInfo.PointHeight = oldHeight + 1.0;
             }
 
             // Redraw (no need for erase).
@@ -1537,14 +1537,14 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointReduce(IUserAction action)
         {
-            JobFileInfo jfi = m_Controller.JobFile.Data;
+            IJobInfo ji = m_Controller.JobInfo;
             CadastralMapModel cmm = m_Controller.CadastralMapModel;
             ISpatialDisplay display = m_Controller.ActiveDisplay;
             if (display==null)
                 return;
 
             // Reduce the current size of points by a metre. 
-            double height = jfi.PointHeight;
+            double height = ji.PointHeight;
             if ((height-1.0) < 1.0)
                 height -= 0.2;
             else
@@ -1554,9 +1554,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // up below 0.1mm at the current draw scale, turn them off.
             double size = height / display.MapScale;
             if (size < 0.0001)
-                jfi.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
+                ji.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
             else
-                jfi.PointHeight = Math.Max(0.01, height);
+                ji.PointHeight = Math.Max(0.01, height);
 
             // Force redraw (with erase).
             m_Controller.RefreshAllDisplays();
@@ -1813,7 +1813,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             get
             {
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= m_Controller.JobFile.Data.ShowLabelScale);
+                return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowLabelScale);
             }
         }
 
