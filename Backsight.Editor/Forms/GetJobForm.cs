@@ -19,6 +19,7 @@ using System.Windows.Forms;
 
 using Backsight.Editor.Database;
 using Backsight.Environment;
+using Backsight.Editor.FileStore;
 
 namespace Backsight.Editor.Forms
 {
@@ -85,7 +86,7 @@ namespace Backsight.Editor.Forms
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            NewJobForm dial = new NewJobForm(this);
+            NewJobForm dial = new NewJobForm(new JobFolder());
             dial.ShowDialog();
             dial.Dispose();
         }

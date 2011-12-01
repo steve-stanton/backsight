@@ -27,7 +27,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An editing session.
     /// </summary>
-    class Session
+    class Session : ISession
     {
         #region Static
 
@@ -102,12 +102,6 @@ namespace Backsight.Editor
         readonly Job m_Job;
 
         /// <summary>
-        /// The map layer associated with the job (null until the <see cref="ActiveLayer"/>
-        /// property is accessed).
-        /// </summary>
-        ILayer m_Layer;
-
-        /// <summary>
         /// Operations (if any) that were performed during the session. 
         /// </summary>
         readonly List<Operation> m_Operations;
@@ -141,7 +135,6 @@ namespace Backsight.Editor
             m_Data = sessionData;
             m_Who = user;
             m_Job = job;
-            m_Layer = null;
             m_Operations = new List<Operation>();
             m_LastSavedItem = 0;
         }
@@ -170,30 +163,6 @@ namespace Backsight.Editor
         {
             get { return m_Model; }
         }
-
-        /// <summary>
-        /// The map layer that was active throughout the session.
-        /// </summary>
-        internal ILayer ActiveLayer
-        {
-            get
-            {
-                if (m_Layer == null)
-                    m_Layer = EnvironmentContainer.FindLayerById(m_Job.LayerId);
-
-                return m_Layer;
-            }
-        }
-
-        /// <summary>
-        /// Have any persistent objects been created via this editing session?
-        /// </summary>
-        /*
-        internal bool IsEmpty
-        {
-            get { return m_Data.NumItem==0; }
-        }
-        */
 
         /// <summary>
         /// Deletes information about this session from the database.
@@ -365,7 +334,7 @@ namespace Backsight.Editor
 
             // Save the job file for good measure. If the user looks at the file
             // timestamp, this will reassure them that something really has been done!
-            EditingController.Current.JobFile.Save();
+            EditingController.Current.JobInfo.Save();
         }
 
         /// <summary>

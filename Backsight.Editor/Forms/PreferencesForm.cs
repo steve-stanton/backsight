@@ -167,15 +167,15 @@ void CdPrefLabel::OnFont()
 
         void ShowPointsPage(CadastralMapModel cmm)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
-            pointScaleTextBox.Text = String.Format("{0:F0}", jfi.ShowPointScale);
-            pointSizeTextBox.Text = String.Format("{0:F2}", jfi.PointHeight);
-            showIntersectionsCheckBox.Checked = jfi.AreIntersectionsDrawn;
+            IJobInfo ji = EditingController.Current.JobInfo;
+            pointScaleTextBox.Text = String.Format("{0:F0}", ji.ShowPointScale);
+            pointSizeTextBox.Text = String.Format("{0:F2}", ji.PointHeight);
+            showIntersectionsCheckBox.Checked = ji.AreIntersectionsDrawn;
         }
 
         bool SavePointsPage(CadastralMapModel cmm)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
+            IJobInfo ji = EditingController.Current.JobInfo;
 
             // Point threshold scale
 
@@ -188,9 +188,9 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(pointScale - jfi.ShowPointScale) > 0.001)
+            if (Math.Abs(pointScale - ji.ShowPointScale) > 0.001)
             {
-                jfi.ShowPointScale = pointScale;
+                ji.ShowPointScale = pointScale;
             }
 
             // Point size
@@ -204,26 +204,26 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(pointSize - jfi.PointHeight) > 0.001)
-                jfi.PointHeight = pointSize;
+            if (Math.Abs(pointSize - ji.PointHeight) > 0.001)
+                ji.PointHeight = pointSize;
 
             // Should intersections be drawn?
-            jfi.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
+            ji.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
             return true;
         }
 
         void ShowLabelsPage(CadastralMapModel cmm)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
-            labelScaleTextBox.Text = String.Format("{0:F0}", jfi.ShowLabelScale);
+            IJobInfo ji = EditingController.Current.JobInfo;
+            labelScaleTextBox.Text = String.Format("{0:F0}", ji.ShowLabelScale);
             textRotationAngleLabel.Text = RadianValue.AsShortString(cmm.DefaultTextRotation);
-            nominalScaleTextBox.Text = jfi.NominalMapScale.ToString();
+            nominalScaleTextBox.Text = ji.NominalMapScale.ToString();
             ShowFont();
         }
 
         bool SaveLabelsPage(CadastralMapModel cmm)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
+            IJobInfo ji = EditingController.Current.JobInfo;
 
             // Label threshold scale
 
@@ -236,8 +236,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(labelScale - jfi.ShowLabelScale) > 0.001)
-                jfi.ShowLabelScale = labelScale;
+            if (Math.Abs(labelScale - ji.ShowLabelScale) > 0.001)
+                ji.ShowLabelScale = labelScale;
 
             // Rotation angle (can't be changed via this dialog)
 
@@ -251,8 +251,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (nominalScale != jfi.NominalMapScale)
-                jfi.NominalMapScale = (uint)nominalScale;
+            if (nominalScale != ji.NominalMapScale)
+                ji.NominalMapScale = (uint)nominalScale;
 
             // TODO: Font
 
@@ -315,23 +315,23 @@ void CdPrefLabel::OnFont()
 
         bool SaveUnitsPage(CadastralMapModel cmm)
         {
-            JobFileInfo jfi = EditingController.Current.JobFile.Data;
+            IJobInfo ji = EditingController.Current.JobInfo;
 
             if (enterMetersRadioButton.Checked)
-                jfi.EntryUnitType = DistanceUnitType.Meters;
+                ji.EntryUnitType = DistanceUnitType.Meters;
             else if (enterFeetRadioButton.Checked)
-                jfi.EntryUnitType = DistanceUnitType.Feet;
+                ji.EntryUnitType = DistanceUnitType.Feet;
             else if (enterChainsRadioButton.Checked)
-                jfi.EntryUnitType = DistanceUnitType.Chains;
+                ji.EntryUnitType = DistanceUnitType.Chains;
 
             if (displayMetersRadioButton.Checked)
-                jfi.DisplayUnitType = DistanceUnitType.Meters;
+                ji.DisplayUnitType = DistanceUnitType.Meters;
             else if (displayFeetRadioButton.Checked)
-                jfi.DisplayUnitType = DistanceUnitType.Feet;
+                ji.DisplayUnitType = DistanceUnitType.Feet;
             else if (displayChainsRadioButton.Checked)
-                jfi.DisplayUnitType = DistanceUnitType.Chains;
+                ji.DisplayUnitType = DistanceUnitType.Chains;
             else if (displayAsEnteredRadioButton.Checked)
-                jfi.DisplayUnitType = DistanceUnitType.AsEntered;
+                ji.DisplayUnitType = DistanceUnitType.AsEntered;
 
             return true;
         }

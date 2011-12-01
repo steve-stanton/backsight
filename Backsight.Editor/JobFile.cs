@@ -14,13 +14,16 @@
 // </remarks>
 
 using System;
+using System.IO;
+using Backsight.Forms;
+using Backsight.Editor.FileStore;
 
 namespace Backsight.Editor
 {
     /// <summary>
     /// The file holding job information (with the "cedx" file extension).
     /// </summary>
-    class JobFile
+    class JobFile : IJobInfo
     {
         #region Static
 
@@ -76,19 +79,162 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The full name of the job file (including directory)
+        /// The container for the job data.
         /// </summary>
-        internal string Name
+        IJobContainer IJobInfo.Container
         {
-            get { return m_FileName; }
+            get { return new JobFolder(); }
         }
 
         /// <summary>
-        /// Saves the job file to disk
+        /// The user-perceived name of the job.
         /// </summary>
-        internal void Save()
+        string IJobInfo.Name
+        {
+            get { return Path.GetFileNameWithoutExtension(m_FileName); }
+        }
+
+        /// <summary>
+        /// Information about the area that was last drawn.
+        /// </summary>
+        DrawInfo IJobInfo.LastDraw
+        {
+            get { return m_Info.LastDraw; }
+            set { m_Info.LastDraw = value; }
+        }
+
+        /// <summary>
+        /// Current display units
+        /// </summary>
+        DistanceUnitType IJobInfo.DisplayUnitType
+        {
+            get { return m_Info.DisplayUnitType; }
+            set { m_Info.DisplayUnitType = value; }
+        }
+
+        /// <summary>
+        /// Current data entry units
+        /// </summary>
+        DistanceUnitType IJobInfo.EntryUnitType
+        {
+            get { return m_Info.EntryUnitType; }
+            set { m_Info.EntryUnitType = value; }
+        }
+
+        /// <summary>
+        /// Height of point symbols, in meters on the ground.
+        /// </summary>
+        double IJobInfo.PointHeight
+        {
+            get { return m_Info.PointHeight; }
+            set { m_Info.PointHeight = value; }
+        }
+
+        /// <summary>
+        /// Scale denominator at which labels (text) will start to be drawn.
+        /// </summary>
+        double IJobInfo.ShowLabelScale
+        {
+            get { return m_Info.ShowLabelScale; }
+            set { m_Info.ShowLabelScale = value; }
+        }
+
+        /// <summary>
+        /// Scale denominator at which points will start to be drawn.
+        /// </summary>
+        double IJobInfo.ShowPointScale
+        {
+            get { return m_Info.ShowPointScale; }
+            set { m_Info.ShowPointScale = value; }
+        }
+
+        /// <summary>
+        /// Should feature IDs be assigned automatically? (false if the user must specify).
+        /// </summary>
+        bool IJobInfo.IsAutoNumber
+        {
+            get { return m_Info.IsAutoNumber; }
+            set { m_Info.IsAutoNumber = value; }
+        }
+
+        /// <summary>
+        /// Has modified job information been saved?
+        /// </summary>
+        bool IJobInfo.IsSaved
+        {
+            get { return m_Info.IsSaved; }
+        }
+
+        /// <summary>
+        /// Saves the job info as part of a persistent storage area.
+        /// </summary>
+        void IJobInfo.Save()
         {
             m_Info.WriteXML(m_FileName);
+        }
+
+        /// <summary>
+        /// The ID of the default entity type for points (0 if undefined)
+        /// </summary>
+        int IJobInfo.DefaultPointType
+        {
+            get { return m_Info.DefaultPointType; }
+            set { m_Info.DefaultPointType = value; }
+        }
+
+        /// <summary>
+        /// The ID of the default entity type for lines (0 if undefined)
+        /// </summary>
+        int IJobInfo.DefaultLineType
+        {
+            get { return m_Info.DefaultLineType; }
+            set { m_Info.DefaultLineType = value; }
+        }
+
+        /// <summary>
+        /// The ID of the default entity type for polygons (0 if undefined)
+        /// </summary>
+        int IJobInfo.DefaultPolygonType
+        {
+            get { return m_Info.DefaultPolygonType; }
+            set { m_Info.DefaultPolygonType = value; }
+        }
+
+        /// <summary>
+        /// The ID of the default entity type for text (0 if undefined)
+        /// </summary>
+        int IJobInfo.DefaultTextType
+        {
+            get { return m_Info.DefaultTextType; }
+            set { m_Info.DefaultTextType = value; }
+        }
+
+        /// <summary>
+        /// The nominal map scale, for use in converting the size of fonts.
+        /// </summary>
+        uint IJobInfo.NominalMapScale
+        {
+            get { return m_Info.NominalMapScale; }
+            set { m_Info.NominalMapScale = value; }
+        }
+
+        /// <summary>
+        /// The style for annotating lines with distances (and angles)
+        /// </summary>
+        LineAnnotationStyle IJobInfo.LineAnnotation
+        {
+            get { return m_Info.LineAnnotation; }
+            set { m_Info.LineAnnotation = value; }
+        }
+
+        /// <summary>
+        /// Should intersection points be drawn? Relevant only if points
+        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/> property).
+        /// </summary>
+        bool IJobInfo.AreIntersectionsDrawn
+        {
+            get { return m_Info.AreIntersectionsDrawn; }
+            set { m_Info.AreIntersectionsDrawn = value; }
         }
     }
 }
