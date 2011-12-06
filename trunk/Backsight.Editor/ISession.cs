@@ -13,15 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Backsight.Editor
 {
+    /// <summary>
+    /// An editing session
+    /// </summary>
     interface ISession
     {
+        /// <summary>
+        /// The edits performed in this session.
+        /// </summary>
         Operation[] Edits { get; }
     }
 }

@@ -22,5 +22,41 @@ namespace Backsight.Editor.FileStore
 {
     class SessionFolder : ISession
     {
+        #region Class data
+
+        /// <summary>
+        /// The path to the folder where the edits were loaded from.
+        /// </summary>
+        readonly string m_FolderName;
+
+        /// <summary>
+        /// Operations (if any) that were performed during the session. 
+        /// </summary>
+        readonly List<Operation> m_Operations;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SessionFolder"/> class.
+        /// </summary>
+        /// <param name="folderName">The path to the folder where the edits were loaded from.</param>
+        /// <param name="edits">Operations (if any) that were performed during the session.</param>
+        internal SessionFolder(string folderName, Operation[] edits)
+        {
+            m_FolderName = folderName;
+            m_Operations = new List<Operation>(edits);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The edits performed in this session.
+        /// </summary>
+        Operation[] ISession.Edits
+        {
+            get { return m_Operations.ToArray(); }
+        }
     }
 }

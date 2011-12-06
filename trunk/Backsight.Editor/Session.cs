@@ -450,5 +450,13 @@ namespace Backsight.Editor
                     op.Touch(deps);
             }
         }
+
+        /// <summary>
+        /// The edits performed in this session.
+        /// </summary>
+        Operation[] ISession.Edits
+        {
+            get { return m_Operations.ToArray(); }
+        }
     }
 }
