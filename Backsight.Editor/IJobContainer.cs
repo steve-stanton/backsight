@@ -39,5 +39,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>The names of all editing jobs in this container.</returns>
         string[] FindAllJobNames();
+
+        /// <summary>
+        /// Loads a map model with the content of this container.
+        /// </summary>
+        /// <param name="jobName">The name of the job to load</param>
+        /// <param name="mapModel">The model to load</param>
+        void LoadModel(string jobName, CadastralMapModel mapModel);
     }
 }

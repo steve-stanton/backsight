@@ -14,9 +14,10 @@
 // </remarks>
 
 using System;
-using System.IO;
-using Backsight.Editor.Properties;
 using System.Collections.Generic;
+using System.IO;
+
+using Backsight.Editor.Properties;
 
 namespace Backsight.Editor.FileStore
 {
@@ -105,6 +106,16 @@ namespace Backsight.Editor.FileStore
             return Directory.GetDirectories(m_FolderName);
         }
 
+        /// <summary>
+        /// Loads a map model with the content of this container.
+        /// </summary>
+        /// <param name="jobName">The name of the job to load</param>
+        /// <param name="mapModel">The model to load</param>
+        void IJobContainer.LoadModel(string jobName, CadastralMapModel mapModel)
+        {
+            throw new NotImplementedException();
+        }
+
         public ISession[] LoadSessions(string jobName, CadastralMapModel model)
         {
             EditDeserializer editDeserializer = new EditDeserializer(model);
@@ -115,7 +126,7 @@ namespace Backsight.Editor.FileStore
             foreach (string sFolder in Directory.GetDirectories(jobFolder, "s.*"))
             {
                 Operation[] edits = LoadEdits(sFolder, editDeserializer);
-                ISession s = new Session(edits);
+                ISession s = new SessionFolder(sFolder, edits);
             }
 
             return result.ToArray();
