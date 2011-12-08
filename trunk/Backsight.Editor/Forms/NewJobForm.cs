@@ -15,6 +15,7 @@
 
 using System;
 using System.Windows.Forms;
+using Backsight.Editor.FileStore;
 
 namespace Backsight.Editor.Forms
 {
@@ -38,6 +39,15 @@ namespace Backsight.Editor.Forms
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewJobForm"/> class that
+        /// uses a job container implemented by <see cref="JobFolder"/>.
+        /// </summary>
+        internal NewJobForm()
+            : this(new JobFolder())
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewJobForm"/> class.

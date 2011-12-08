@@ -123,7 +123,6 @@
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
     <Compile Include="FileStore\AnyLocalUser.cs" />
-    <Compile Include="FileStore\JobFolder.cs" />
     <Compile Include="FileStore\SessionFolder.cs" />
     <Compile Include="IEditingJob.cs" />
     <Compile Include="IJobContainer.cs" />

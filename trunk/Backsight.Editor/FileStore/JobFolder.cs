@@ -92,6 +92,9 @@ namespace Backsight.Editor.FileStore
             if (!Directory.Exists(jobFolder))
                 throw new ArgumentException("Editing job does not exist");
 
+            Settings.Default.LastMap = jobName;
+            Settings.Default.Save();
+
             return null;
         }
 

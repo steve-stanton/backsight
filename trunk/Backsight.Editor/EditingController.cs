@@ -446,16 +446,16 @@ namespace Backsight.Editor
         /// <summary>
         /// Attempts to open a job
         /// </summary>
-        /// <param name="jf">The job file (null if the user should be asked)</param>
+        /// <param name="jobInfo">The job info (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
-        internal void OpenJob(JobFile jf)
+        internal void OpenJob(IJobInfo jobInfo)
         {
             m_User = null;
-            m_JobInfo = jf;
+            m_JobInfo = jobInfo;
             m_ActiveLayer = null;
 
             // Pass the job file (if any) over to a dedicated starter instance
-            Starter s = new Starter(jf);
+            Starter s = new Starter(jobInfo);
 
             if (!s.Open())
                 throw new Exception("Cannot access editing job");
@@ -1257,49 +1257,6 @@ namespace Backsight.Editor
 
                 return (s.IsSaved && m_JobInfo.IsSaved);
             }
-        }
-
-        /// <summary>
-        /// Saves a job file for the supplied job
-        /// </summary>
-        /// <param name="job">The job information that should be written to disk</param>
-        /// <returns>An object representing the saved job information (null if the user
-        /// cancelled from the <c>SaveFileDialog</c>)</returns>
-        internal JobFile SaveJobFile(Job job)
-        {
-            JobFile jobFile = null;
-
-            SaveFileDialog dial = new SaveFileDialog();
-            dial.Title = "Save As";
-            dial.DefaultExt = JobFileInfo.TYPE;
-            dial.FileName = job.Name + JobFileInfo.TYPE;
-            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-
-            string lastMap = Settings.Default.LastMap;
-            if (!String.IsNullOrEmpty(lastMap))
-                dial.InitialDirectory = Path.GetDirectoryName(lastMap);
-
-            if (dial.ShowDialog() == DialogResult.OK)
-            {
-                JobFileInfo jfi = new JobFileInfo();
-                jfi.ConnectionString = ConnectionFactory.ConnectionString;
-                jfi.JobId = job.JobId;
-
-                // Remember default entity types for points, lines, text, polygons
-                ILayer layer = EnvironmentContainer.FindLayerById(job.LayerId);
-                jfi.DefaultPointType = layer.DefaultPointType.Id;
-                jfi.DefaultLineType = layer.DefaultLineType.Id;
-                jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
-                jfi.DefaultTextType = layer.DefaultTextType.Id;
-
-                jobFile = JobFile.SaveJobFile(dial.FileName, jfi);
-
-                Settings.Default.LastMap = dial.FileName;
-                Settings.Default.Save();
-            }
-
-            dial.Dispose();
-            return jobFile;
         }
 
         /// <summary>

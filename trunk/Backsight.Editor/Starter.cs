@@ -32,10 +32,10 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The job file that the user double-clicked on (null if the application
+        /// The job that the user double-clicked on (null if the application
         /// was launched some other way)
         /// </summary>
-        JobFile m_JobFile;
+        IJobInfo m_Job;
 
         /// <summary>
         /// The ID of the user involved (null for no user)
@@ -47,23 +47,14 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>Starter</c> object in a situation where the user
-        /// hasn't double-clicked on any job file.
-        /// </summary>
-        internal Starter()
-            : this(null)
-        {
-        }
-
-        /// <summary>
         /// Creates a new <c>Starter</c> in a situation where the user may have
         /// double-clicked on a job file.
         /// </summary>
-        /// <param name="jobFile">The job file (could be null if user needs to be asked
+        /// <param name="job">The job info (could be null if user needs to be asked
         /// for info)</param>
-        internal Starter(JobFile jobFile)
+        internal Starter(IJobInfo job)
         {
-            m_JobFile = jobFile;
+            m_Job = job;
             m_User = null;
         }
 
@@ -128,35 +119,37 @@ namespace Backsight.Editor
             //m_User = User.GetCurrentUser();
             m_User = AnyLocalUser.Instance;
 
+            /*
             // Confirm that we can get the job info from the database
 
-            if (m_JobFile != null)
+            if (m_Job != null)
             {
                 try
                 {
-                    uint jobId = m_JobFile.Data.JobId;
+                    uint jobId = m_Job.Data.JobId;
                     Job j = Job.FindByJobId(jobId);
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    m_JobFile = null;
+                    m_Job = null;
                 }
             }
+            */
 
             // If we don't have a job, ask the user whether they want to open an existing
             // job, or create a new one.
-            if (m_JobFile==null)
+            if (m_Job==null)
             {
                 GetJobForm dial = new GetJobForm();
                 if (dial.ShowDialog() == DialogResult.OK)
-                    m_JobFile = dial.NewJobFile;
+                    m_Job = dial.NewJob;
 
                 dial.Dispose();
             }
 
-            return (m_JobFile != null);
+            return (m_Job != null);
         }
 
         /*
@@ -195,7 +188,7 @@ namespace Backsight.Editor
         /// </summary>
         internal JobFile JobFile
         {
-            get { return m_JobFile; }
+            get { return m_Job; }
         }
     }
 }

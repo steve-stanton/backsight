@@ -1165,7 +1165,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal Session AppendWorkingSession(Job job, IUser user)
+        internal Session AppendWorkingSession(IJobInfo job, IUser user)
         {
             SessionData data = SessionData.Insert(job.JobId, user.UserId);
 

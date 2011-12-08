@@ -538,22 +538,10 @@ namespace Backsight.Forms // was JWC
 
 		#region Add Methods
 
-		public void SetFiles(string[] filenames)
-		{
-			RemoveAll();
-			for (int i = filenames.GetLength(0) - 1; i >= 0; i--)
-			{
-				AddFile(filenames[i]);
-			}
-		}
-
-		public void AddFiles(string[] filenames)
-		{
-			for (int i = filenames.GetLength(0) - 1; i >= 0; i--)
-			{
-				AddFile(filenames[i]);
-			}
-		}
+        public void AddString(string s)
+        {
+            AddFile(s, s);
+        }
 
 		public void AddFile(string filename)
 		{
@@ -658,40 +646,6 @@ namespace Backsight.Forms // was JWC
 				Disable();
 				numEntries = 0;
 			}
-		}
-
-		#endregion
-
-		#region Rename Methods
-
-		public void RenameFile(string oldFilename, string newFilename)
-		{
-			string newPathname = Path.GetFullPath(newFilename);
-
-			RenameFile(Path.GetFullPath(oldFilename), newPathname, ShortenPathname(newPathname, MaxShortenPathLength));
-		}
-
-		public void RenameFile(string oldFilename, string newFilename, string newEntryname)
-		{
-			if (newFilename == null)
-				throw new ArgumentNullException("newFilename");
-
-			if (newFilename.Length == 0)
-				throw new ArgumentException("newFilename");
-
-			if (numEntries > 0)
-			{
-				int index = FindFilenameMenuIndex(oldFilename);
-				if (index >= 0)
-				{
-					MruMenuItem menuItem = (MruMenuItem)MenuItems[index];
-					menuItem.Text = FixupEntryname(0, newEntryname);
-					menuItem.Filename = newFilename;
-					return;
-				}
-			}
-
-			AddFile(newFilename, newEntryname);
 		}
 
 		#endregion
