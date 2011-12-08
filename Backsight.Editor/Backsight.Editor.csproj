@@ -110,7 +110,10 @@
     <Compile Include="Database\IdAllocation.cs" />
     <Compile Include="Database\IdFree.cs" />
     <Compile Include="Database\Job.cs" />
-    <Compile Include="Database\SessionData.cs" />
+    <Compile Include="Database\SessionData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Database\SessionDataFactory.cs" />
     <Compile Include="Database\User.cs" />
     <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
