@@ -56,7 +56,7 @@ namespace Backsight.Editor.Forms
 
         private void GetJobForm_Shown(object sender, EventArgs e)
         {
-            m_AllJobs = new JobFolder().FindAllJobNames();
+            m_AllJobs = new JobCollectionFolder().FindAllJobNames();
             listBox.DataSource = m_AllJobs;
         }
 
@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
 
         void OpenJobAndClose(string jobName)
         {
-            m_Job = new JobFolder().OpenJob(jobName);
+            m_Job = new JobCollectionFolder().OpenJob(jobName);
 
             if (m_Job != null)
             {

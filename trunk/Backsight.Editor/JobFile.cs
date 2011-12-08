@@ -83,7 +83,7 @@ namespace Backsight.Editor
         /// </summary>
         IJobContainer IJobInfo.Container
         {
-            get { return new JobFolder(); }
+            get { return new JobCollectionFolder(); }
         }
 
         /// <summary>

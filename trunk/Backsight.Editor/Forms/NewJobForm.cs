@@ -42,10 +42,10 @@ namespace Backsight.Editor.Forms
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewJobForm"/> class that
-        /// uses a job container implemented by <see cref="JobFolder"/>.
+        /// uses a job container implemented by <see cref="JobCollectionFolder"/>.
         /// </summary>
         internal NewJobForm()
-            : this(new JobFolder())
+            : this(new JobCollectionFolder())
         {
         }
 
