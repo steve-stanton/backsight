@@ -20,6 +20,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Information about current options for an editing job.
     /// </summary>
+    /// <remarks>Implemented by <see cref="JobFile"/></remarks>
     interface IJobInfo
     {
         /// <summary>

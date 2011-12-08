@@ -178,7 +178,7 @@ namespace Backsight.Editor.Forms
 
             // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
             string jobName = m_Controller.CadastralMapModel.Name;
-            m_MruMenu.AddFile(jobName);
+            m_MruMenu.AddString(jobName);
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
@@ -468,7 +468,7 @@ namespace Backsight.Editor.Forms
             CadastralMapModel mapModel = CadastralMapModel.Current;
             if (mapModel != null)
             {
-                AddRecentFile(mapModel.Name);
+                AddRecentJob(mapModel.Name);
                 EditingController.Current.CheckSave();
             }
 
@@ -635,21 +635,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
-            GetJob();
-        }
-
-        internal bool GetJob()
-        {
-            GetJobForm dial = new GetJobForm();
-            bool isOk = (dial.ShowDialog() == DialogResult.OK);
-            if (isOk)
+            using (NewJobForm dial = new NewJobForm())
             {
-                JobFile jobFile = dial.NewJobFile;
-                m_Controller.OpenJob(jobFile);
-                AddRecentFile(jobFile.Name);
+                if (dial.ShowDialog() == DialogResult.OK)
+                {
+                    IJobInfo job = dial.NewJob;
+                    m_Controller.OpenJob(job);
+                    AddRecentJob(job.Name);
+                }
             }
-            dial.Dispose();
-            return isOk;
         }
 
         private bool IsFileOpenEnabled()
@@ -679,16 +673,16 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                     m_Controller.OpenJob(jf);
                 }
 
-                AddRecentFile(dial.FileName);
+                AddRecentJob(dial.FileName);
             }
 
             dial.Dispose();
             return isOk;
         }
 
-        void AddRecentFile(string fileName)
+        void AddRecentJob(string jobName)
         {
-            m_MruMenu.AddFile(fileName);
+            m_MruMenu.AddString(jobName);
             m_MruMenu.SaveToRegistry();
         }
 
@@ -722,7 +716,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 try
                 {
                     m_Controller.OpenJob(null);
-                    m_MruMenu.AddFile(m_Controller.JobInfo.Name);
+                    m_MruMenu.AddString(m_Controller.JobInfo.Name);
                 }
 
                 catch (Exception ex2)

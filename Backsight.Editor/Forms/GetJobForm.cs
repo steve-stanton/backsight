@@ -32,14 +32,14 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The job file (null if nothing was selected)
+        /// The job info (null if nothing was selected)
         /// </summary>
-        JobFile m_JobFile;
+        IJobInfo m_Job;
 
         /// <summary>
-        /// All defined jobs
+        /// The names of all defined jobs
         /// </summary>
-        Job[] m_AllJobs;
+        string[] m_AllJobs;
 
         #endregion
 
@@ -48,180 +48,40 @@ namespace Backsight.Editor.Forms
         public GetJobForm()
         {
             InitializeComponent();
-            m_JobFile = null;
+            m_Job = null;
             m_AllJobs = null;
         }
 
         #endregion
 
-        /// <summary>
-        /// All defined jobs
-        /// </summary>
-        internal Job[] Jobs
-        {
-            get { return m_AllJobs; }
-        }
-
-        /// <summary>
-        /// Selects a specific item in the job list
-        /// </summary>
-        /// <param name="job">The instance to select</param>
-        internal void SelectJob(Job job)
-        {
-            listBox.SelectedItem = job;
-        }
-
         private void GetJobForm_Shown(object sender, EventArgs e)
         {
-            m_AllJobs = Job.FindAll();
+            m_AllJobs = new JobFolder().FindAllJobNames();
             listBox.DataSource = m_AllJobs;
         }
 
         private void listBox_DoubleClick(object sender, EventArgs e)
         {
-            Job j = (Job)listBox.SelectedItem;
-            if (j!=null)
-                SaveFileAndClose(j);
+            if (listBox.SelectedItem != null)
+                OpenJobAndClose(listBox.SelectedItem.ToString());
         }
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            NewJobForm dial = new NewJobForm(new JobFolder());
-            dial.ShowDialog();
-            dial.Dispose();
+            using (NewJobForm dial = new NewJobForm())
+            {
+                if (dial.ShowDialog() == DialogResult.OK)
+                {
+                    m_Job = dial.NewJob;
+                }
+            }
         }
 
-        /// <summary>
-        /// Callback from <see cref="NewJobForm"/> that first validates the details for a new
-        /// job, then records it in the database.
-        /// </summary>
-        /// <param name="jobFileName">The user-perceived name for the job (not null or blank)</param>
-        /// <param name="zone">The spatial zone the job covers (not null)</param>
-        /// <param name="layer">The (base) map layer for the job (not null)</param>
-        /// <returns>The created job data (null on any validation or database insert error)</returns>
-        /*
-        internal JobFile CreateJob(string jobFileName, IZone zone, ILayer layer)
+        void OpenJobAndClose(string jobName)
         {
-            if (String.IsNullOrEmpty(jobFileName) || zone==null || layer==null)
-                throw new ArgumentNullException();
+            m_Job = new JobFolder().OpenJob(jobName);
 
-            string jobName = Path.GetFileNameWithoutExtension(jobFileName);
-
-            // Confirm the job name is unique
-            Job job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return String.Compare(j.Name, jobName, true)==0; });
-            if (job != null)
-            {
-                listBox.SelectedItem = job;
-                MessageBox.Show("A job with that name already exists");
-                return null;
-            }
-
-            // Confirm that there isn't another job that refers to the
-            // same zone and editing layer
-            job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return (j.ZoneId==zone.Id && j.LayerId==layer.Id); });
-            if (job != null)
-            {
-                listBox.SelectedItem = job;
-                string msg = String.Format("{0} already refers to the same zone and editing layer", job.Name);
-                MessageBox.Show(msg);
-                return null;
-            }
-
-            // Insert the new job into the database.
-            // Don't bother including in m_AllJobs, since returning a valid job should cause
-            // this dialog to close momentarily.
-            job = Job.Insert(jobName, zone.Id, layer.Id);
-
-            // Include the new job in the list of all known jobs and select it
-            List<Job> tmp = new List<Job>(m_AllJobs.Length+1);
-            tmp.AddRange(m_AllJobs);
-            tmp.Add(job);
-            m_AllJobs = tmp.ToArray();
-            listBox.DataSource = m_AllJobs;
-            SelectJob(job);
-
-            // Save the information in a job file
-            JobFileInfo jfi = new JobFileInfo();
-            jfi.ConnectionString = AdapterFactory.ConnectionString;
-            jfi.JobId = job.JobId;
-            JobFile jobFile = JobFile.SaveJobFile(jobFileName, jfi);
-
-            Settings.Default.LastMap = jobFileName;
-            Settings.Default.Save();
-
-            return jobFile;
-        }
-        */
-
-        /// <summary>
-        /// Callback from <see cref="NewJobForm"/> that first validates the details for a new
-        /// job, then records it in the database.
-        /// </summary>
-        /// <param name="jobName">The user-perceived name for the job (not null or blank)</param>
-        /// <param name="zone">The spatial zone the job covers (not null)</param>
-        /// <param name="layer">The (base) map layer for the job (not null)</param>
-        /// <returns>The created job data (null on any validation or database insert error)</returns>
-        internal Job CreateJob(string jobName, IZone zone, ILayer layer)
-        {
-            if (String.IsNullOrEmpty(jobName) || zone==null || layer==null)
-                throw new ArgumentNullException();
-
-            // Confirm the job name is unique
-            Job job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return String.Compare(j.Name, jobName, true)==0; });
-            if (job != null)
-            {
-                listBox.SelectedItem = job;
-                MessageBox.Show("A job with that name already exists");
-                return null;
-            }
-
-            // Confirm that there isn't another job that refers to the
-            // same zone and editing layer
-            job = Array.Find<Job>(m_AllJobs, delegate(Job j)
-                { return (j.ZoneId==zone.Id && j.LayerId==layer.Id); });
-            if (job != null)
-            {
-                listBox.SelectedItem = job;
-                string msg = String.Format("{0} already refers to the same zone and editing layer", job.Name);
-                MessageBox.Show(msg);
-                return null;
-            }
-
-            // Insert the new job into the database.
-            // Don't bother including in m_AllJobs, since returning a valid job should cause
-            // this dialog to close momentarily.
-            job = Job.Insert(jobName, zone.Id, layer.Id);
-
-            // Include the new job in the list of all known jobs and select it
-            List<Job> tmp = new List<Job>(m_AllJobs.Length+1);
-            tmp.AddRange(m_AllJobs);
-            tmp.Add(job);
-            m_AllJobs = tmp.ToArray();
-            listBox.DataSource = m_AllJobs;
-            SelectJob(job);
-
-            return job;
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            Job j = (listBox.SelectedItem as Job);
-            if (j==null)
-            {
-                MessageBox.Show("You must first select an editing job from the list");
-                return;
-            }
-
-            SaveFileAndClose(j);
-        }
-
-        void SaveFileAndClose(Job job)
-        {
-            m_JobFile = EditingController.Current.SaveJobFile(job);
-            if (m_JobFile != null)
+            if (m_Job != null)
             {
                 DialogResult = DialogResult.OK;
                 Close();
@@ -235,11 +95,19 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// The new job file (created when user clicks on Save button)
+        /// Info for the new job (created when user clicks on Save button)
         /// </summary>
-        internal JobFile NewJobFile
+        internal IJobInfo NewJob
         {
-            get { return m_JobFile; }
+            get { return m_Job; }
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            if (listBox.SelectedItem == null)
+                MessageBox.Show("You must first select an existing job");
+            else
+                OpenJobAndClose(listBox.SelectedItem.ToString());
         }
     }
 }
