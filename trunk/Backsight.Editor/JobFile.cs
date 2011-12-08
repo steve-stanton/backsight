@@ -236,5 +236,22 @@ namespace Backsight.Editor
             get { return m_Info.AreIntersectionsDrawn; }
             set { m_Info.AreIntersectionsDrawn = value; }
         }
+
+        /// <summary>
+        /// An internal ID for the job (0 if the job is only local).
+        /// </summary>
+        uint IJobInfo.JobId
+        {
+            get { return m_Info.JobId; }
+        }
+
+        /// <summary>
+        /// Identifies a map layer associated with the job.
+        /// </summary>
+        /// <value>Always 0</value>
+        int IJobInfo.LayerId
+        {
+            get { return 0; }
+        }
     }
 }

@@ -34,6 +34,17 @@ namespace Backsight.Editor
         string Name { get; }
 
         /// <summary>
+        /// An internal ID for the job (0 if the job is only local).
+        /// </summary>
+        uint JobId { get; }
+
+        /// <summary>
+        /// Identifies a map layer associated with the job.
+        /// </summary>
+        /// <remarks>Possibly obsolete. Return 0 in the meantime.</remarks>
+        int LayerId { get; }
+
+        /// <summary>
         /// Information about the area that was last drawn.
         /// </summary>
         DrawInfo LastDraw { get; set; }
