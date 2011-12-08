@@ -24,7 +24,7 @@ namespace Backsight.Editor.FileStore
     /// <summary>
     /// A container for editing jobs that corresponds to an operating system folder.
     /// </summary>
-    class JobFolder : IJobContainer
+    class JobCollectionFolder : IJobContainer
     {
         #region Class data
 
@@ -39,10 +39,10 @@ namespace Backsight.Editor.FileStore
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JobFolder"/> class that corresponds to C:\Backsight.
+        /// Initializes a new instance of the <see cref="JobCollectionFolder"/> class that corresponds to C:\Backsight.
         /// If the folder does not already exist, an attempt to create it will be made.
         /// </summary>
-        internal JobFolder()
+        internal JobCollectionFolder()
         {
             m_FolderName = @"C:\Backsight";
             if (!Directory.Exists(m_FolderName))
