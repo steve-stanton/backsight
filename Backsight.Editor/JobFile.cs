@@ -237,6 +237,18 @@ namespace Backsight.Editor
             set { m_Info.AreIntersectionsDrawn = value; }
         }
 
+        string IJobInfo.SplashIncrement
+        {
+            get { return m_Info.SplashIncrement; }
+            set { m_Info.SplashIncrement = value; }
+        }
+
+        string IJobInfo.SplashPercents
+        {
+            get { return m_Info.SplashPercents; }
+            set { m_Info.SplashPercents = value; }
+        }
+
         /// <summary>
         /// An internal ID for the job (0 if the job is only local).
         /// </summary>
@@ -252,6 +264,15 @@ namespace Backsight.Editor
         int IJobInfo.LayerId
         {
             get { return 0; }
+        }
+
+        /// <summary>
+        /// Loads a map model with the content of this job.
+        /// </summary>
+        /// <param name="mapModel">The model to load</param>
+        void IJobInfo.LoadModel(CadastralMapModel mapModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -35,6 +35,9 @@ namespace Backsight.Editor.Database
         /// <param name="job">The job to load</param>
         internal static void Load(CadastralMapModel model, IJobInfo job)
         {
+            throw new NotImplementedException();
+
+            /*
             List<SessionData> sessions = new List<SessionData>(1000);
 
             // Grab information about all defined users
@@ -123,6 +126,7 @@ namespace Backsight.Editor.Database
                 Trace.Write("Indexing...");
                 model.CreateIndex(edits);
             }
+             */
         }
 
         /// <summary>
@@ -133,6 +137,9 @@ namespace Backsight.Editor.Database
         /// <param name="job">The job that's being loaded</param>
         static void LoadSessions(SqlConnection con, List<SessionData> sessions, IJobInfo job)
         {
+            throw new NotImplementedException();
+
+            /*
             // Get the layer associated with the job
             ILayer layer = EnvironmentContainer.FindLayerById(job.LayerId);
             Debug.Assert(layer != null);
@@ -156,6 +163,7 @@ namespace Backsight.Editor.Database
 
             SqlCommand cmd = new SqlCommand(sb.ToString(), con);
             LoadSessions(cmd, sessions);
+             */
         }
 
         /// <summary>

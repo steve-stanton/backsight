@@ -24,8 +24,7 @@ using Backsight.Editor.FileStore;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog that lets the user indicate whether they want to open an existing job, create
-    /// a new one, or exit.
+    /// Dialog that lets the user specify an an existing job.
     /// </summary>
     public partial class GetJobForm : Form
     {
@@ -66,17 +65,6 @@ namespace Backsight.Editor.Forms
                 OpenJobAndClose(listBox.SelectedItem.ToString());
         }
 
-        private void createButton_Click(object sender, EventArgs e)
-        {
-            using (NewJobForm dial = new NewJobForm())
-            {
-                if (dial.ShowDialog() == DialogResult.OK)
-                {
-                    m_Job = dial.NewJob;
-                }
-            }
-        }
-
         void OpenJobAndClose(string jobName)
         {
             m_Job = new JobCollectionFolder().OpenJob(jobName);
@@ -97,7 +85,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Info for the new job (created when user clicks on Save button)
         /// </summary>
-        internal IJobInfo NewJob
+        internal IJobInfo Job
         {
             get { return m_Job; }
         }

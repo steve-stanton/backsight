@@ -26,12 +26,12 @@ namespace Backsight.Editor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastMap {
+        public string LastJobName {
             get {
-                return ((string)(this["LastMap"]));
+                return ((string)(this["LastJobName"]));
             }
             set {
-                this["LastMap"] = value;
+                this["LastJobName"] = value;
             }
         }
         

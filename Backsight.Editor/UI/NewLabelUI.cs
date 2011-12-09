@@ -527,6 +527,7 @@ namespace Backsight.Editor.UI
             if (m_Polygon.Label==null)
                 return true;
 
+            /*
             // Disallow if the polygon contains a label that was created on the current editing layer (but
             // allow if it was created on any other base layer)
 
@@ -536,6 +537,7 @@ namespace Backsight.Editor.UI
                 if (label.BaseLayerId == activeLayerId)
                     return false;
             }
+            */
 
             return true;
         }
