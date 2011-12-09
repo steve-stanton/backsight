@@ -77,7 +77,7 @@ namespace Backsight.Editor.Forms
             this.openFileButton.Size = new System.Drawing.Size(256, 25);
             this.openFileButton.TabIndex = 7;
             this.openFileButton.TabStop = false;
-            this.openFileButton.Text = "Open anothe&r existing job file";
+            this.openFileButton.Text = "Open anothe&r job";
             this.toolTip.SetToolTip(this.openFileButton, "You will be asked to pick an existing cedx file");
             this.openFileButton.UseVisualStyleBackColor = true;
             this.openFileButton.Click += new System.EventHandler(this.openFileButton_Click);
@@ -90,7 +90,7 @@ namespace Backsight.Editor.Forms
             this.newJobButton.Size = new System.Drawing.Size(256, 25);
             this.newJobButton.TabIndex = 6;
             this.newJobButton.TabStop = false;
-            this.newJobButton.Text = "List &all registered jobs";
+            this.newJobButton.Text = "Create a &new job";
             this.toolTip.SetToolTip(this.newJobButton, "Look at all jobs that have been registered in the database (with option to create" +
                     " new jobs)");
             this.newJobButton.UseVisualStyleBackColor = true;
@@ -123,7 +123,7 @@ namespace Backsight.Editor.Forms
             // lastDatabaseLabel
             // 
             this.lastDatabaseLabel.Name = "lastDatabaseLabel";
-            this.lastDatabaseLabel.Size = new System.Drawing.Size(100, 17);
+            this.lastDatabaseLabel.Size = new System.Drawing.Size(99, 17);
             this.lastDatabaseLabel.Text = "Database unknown";
             // 
             // databaseButton

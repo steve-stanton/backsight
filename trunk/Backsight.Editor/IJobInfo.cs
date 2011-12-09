@@ -115,6 +115,10 @@ namespace Backsight.Editor
         /// </summary>
         bool AreIntersectionsDrawn { get; set; }
 
+        string SplashIncrement { get; set; }
+
+        string SplashPercents { get; set; }
+
         /// <summary>
         /// Has modified job information been saved?
         /// </summary>
@@ -124,5 +128,11 @@ namespace Backsight.Editor
         /// Saves the job info as part of a persistent storage area.
         /// </summary>
         void Save();
+
+        /// <summary>
+        /// Loads a map model with the content of this job.
+        /// </summary>
+        /// <param name="mapModel">The model to load</param>
+        void LoadModel(CadastralMapModel mapModel);
     }
 }

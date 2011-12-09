@@ -234,7 +234,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        internal Job Job
+        internal IJobInfo Job
         {
             get { return m_Job; }
         }

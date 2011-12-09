@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
+using Backsight.Editor.FileStore;
 
 
 namespace Backsight.Editor.Forms
@@ -87,35 +88,35 @@ namespace Backsight.Editor.Forms
             SplashScreen.SetStatus(msg);
         }
 
-        internal void OpenJobFile(string jobFile)
+        internal void OpenJob(string jobName)
         {
-            if (String.IsNullOrEmpty(jobFile))
+            if (String.IsNullOrEmpty(jobName))
                 return;
 
-            if (!File.Exists(jobFile))
+            IJobContainer jc = new JobCollectionFolder();
+            IJobInfo job = jc.OpenJob(jobName);
+            if (job == null)
                 return;
 
             ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
             Stopwatch sw = Stopwatch.StartNew();
-            JobFile jf = null;
 
             try
             {
-                jf = new JobFile(jobFile);
-                string increment = jf.Data.SplashIncrement;
-                string percents = jf.Data.SplashPercents;
+                string increment = job.SplashIncrement;
+                string percents = job.SplashPercents;
 
                 // Don't show splash screen if it's a brand new file
                 //if (percents.Length > 0)
                 SplashScreen.ShowSplashScreen(increment, percents);
 
                 Trace.Listeners.Add(trace);
-                Trace.Write("Loading " + jobFile);
+                Trace.Write("Loading " + jobName);
 
                 // Display the map name in the dialog title (nice to see what's loading
                 // rather than the default "Map Title" text)
-                this.Text = jobFile;
-                m_Controller.OpenJob(jf);
+                this.Text = jobName;
+                m_Controller.OpenJob(job);
             }
 
             catch (Exception ex)
@@ -124,8 +125,8 @@ namespace Backsight.Editor.Forms
                 MessageBox.Show(ex.Message);
                 Trace.Write(ex.StackTrace);
 
-                // Don't save any changes to the job file
-                jf = null;
+                // Don't save any changes to the job
+                job = null;
             }
 
             finally
@@ -143,23 +144,23 @@ namespace Backsight.Editor.Forms
                 ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
                 SplashScreen.CloseForm();
 
-                if (jf != null && ss != null)
+                if (job != null && ss != null)
                 {
                     // Save the splash settings now. This is perhaps a little premature, since
                     // the original splash screen implementation waited until the screen had
                     // completely faded away. The drawback with that is that the job file would
                     // then be rewritten on another thread, which could trample on things that
                     // are happening here.
-                    jf.Data.SplashIncrement = ss.GetIncrement();
-                    jf.Data.SplashPercents = ss.GetPercents();
-                    jf.Save();
+                    job.SplashIncrement = ss.GetIncrement();
+                    job.SplashPercents = ss.GetPercents();
+                    job.Save();
                 }
             }
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            OpenJobFile(m_InitialJobFile);
+            OpenJob(m_InitialJobFile);
 
             // If a model hasn't been obtained, ask
             if (m_Controller.CadastralMapModel==null)
@@ -653,31 +654,22 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileOpen(IUserAction action)
         {
-            OpenFile(false);
+            OpenFile();
         }
 
-        internal bool OpenFile(bool showSplash)
+        internal bool OpenFile()
         {
-            OpenFileDialog dial = new OpenFileDialog();
-            dial.Filter = "Cadastral Editor files (*.cedx)|*.cedx|All files (*)|*";
-            bool isOk = (dial.ShowDialog() == DialogResult.OK);
-            if (isOk)
+            using (GetJobForm dial = new GetJobForm())
             {
-                if (showSplash)
+                if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    OpenJobFile(dial.FileName);
+                    m_Controller.OpenJob(dial.Job);
+                    AddRecentJob(dial.Job.Name);
+                    return true;
                 }
-                else
-                {
-                    JobFile jf = new JobFile(dial.FileName);
-                    m_Controller.OpenJob(jf);
-                }
-
-                AddRecentJob(dial.FileName);
             }
 
-            dial.Dispose();
-            return isOk;
+            return false;
         }
 
         void AddRecentJob(string jobName)

@@ -144,7 +144,7 @@ namespace Backsight.Editor
             {
                 GetJobForm dial = new GetJobForm();
                 if (dial.ShowDialog() == DialogResult.OK)
-                    m_Job = dial.NewJob;
+                    m_Job = dial.Job;
 
                 dial.Dispose();
             }
@@ -184,9 +184,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The job file used to launch the application
+        /// The job used to launch the application
         /// </summary>
-        internal JobFile JobFile
+        internal IJobInfo Job
         {
             get { return m_Job; }
         }

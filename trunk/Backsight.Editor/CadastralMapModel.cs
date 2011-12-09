@@ -1091,6 +1091,8 @@ namespace Backsight.Editor
         internal void Load(IJobInfo job, IUser user)
         {
             m_Sessions.Clear();
+            job.LoadModel(this);
+
             SessionDataFactory.Load(this, job);
 
             // Intersect topological lines that aren't marked for deletion

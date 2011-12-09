@@ -73,7 +73,7 @@ namespace Backsight.Editor.FileStore
             JobFileInfo jfi = new JobFileInfo();
             IJobInfo result = JobFile.SaveJobFile(jobFileName, jfi);
 
-            Settings.Default.LastMap = jobName;
+            Settings.Default.LastJobName = jobName;
             Settings.Default.Save();
 
             return result;
@@ -92,7 +92,7 @@ namespace Backsight.Editor.FileStore
             if (!Directory.Exists(jobFolder))
                 throw new ArgumentException("Editing job does not exist");
 
-            Settings.Default.LastMap = jobName;
+            Settings.Default.LastJobName = jobName;
             Settings.Default.Save();
 
             return null;
@@ -107,16 +107,6 @@ namespace Backsight.Editor.FileStore
         public string[] FindAllJobNames()
         {
             return Directory.GetDirectories(m_FolderName);
-        }
-
-        /// <summary>
-        /// Loads a map model with the content of this container.
-        /// </summary>
-        /// <param name="jobName">The name of the job to load</param>
-        /// <param name="mapModel">The model to load</param>
-        void IJobContainer.LoadModel(string jobName, CadastralMapModel mapModel)
-        {
-            throw new NotImplementedException();
         }
 
         public ISession[] LoadSessions(string jobName, CadastralMapModel model)

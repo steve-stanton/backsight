@@ -31,7 +31,7 @@ namespace Backsight.Editor
         /// Opens an editing job that was previously created.
         /// </summary>
         /// <param name="jobName">The name of the job</param>
-        /// <returns>Information describing the state of the job.</returns>
+        /// <returns>Information describing the state of the job (null if it could not be found).</returns>
         IJobInfo OpenJob(string jobName);
 
         /// <summary>
@@ -39,12 +39,5 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>The names of all editing jobs in this container.</returns>
         string[] FindAllJobNames();
-
-        /// <summary>
-        /// Loads a map model with the content of this container.
-        /// </summary>
-        /// <param name="jobName">The name of the job to load</param>
-        /// <param name="mapModel">The model to load</param>
-        void LoadModel(string jobName, CadastralMapModel mapModel);
     }
 }

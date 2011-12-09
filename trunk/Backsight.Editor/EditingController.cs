@@ -464,7 +464,7 @@ namespace Backsight.Editor
             // defined in the AdapterFactory.ConnectionString property.
 
             m_User = s.User;
-            m_JobInfo = s.JobFile;
+            m_JobInfo = s.Job;
             //m_JobData = Job.FindByJobId(m_JobInfo.Data.JobId);
 
             //if (m_JobData==null)
@@ -491,12 +491,10 @@ namespace Backsight.Editor
                 // the model has been loaded)
                 SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
 
-                m_JobInfo.Container.LoadModel(cmm);
-
                 cmm.Load(m_JobInfo, m_User);
                 cmm.AppendWorkingSession(m_JobInfo, m_User);
 
-                Settings.Default.LastMap = m_JobInfo.Name;
+                Settings.Default.LastJobName = m_JobInfo.Name;
                 Settings.Default.Save();
             }
 

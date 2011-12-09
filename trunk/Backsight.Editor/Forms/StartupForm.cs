@@ -47,7 +47,7 @@ namespace Backsight.Editor.Forms
         {
             ShowDatabaseName();
 
-            string lastFile = Settings.Default.LastMap;
+            string lastFile = Settings.Default.LastJobName;
             openLastButton.Enabled = File.Exists(lastFile);
             if (openLastButton.Enabled)
                 openLastButton.Text = "&Open " + Path.GetFileName(lastFile);
@@ -90,7 +90,7 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                if (m_Parent.OpenFile(true))
+                if (m_Parent.OpenFile())
                 {
                     DialogResult = DialogResult.OK;
                     Close();
@@ -121,16 +121,16 @@ namespace Backsight.Editor.Forms
 
         private void openLastButton_Click(object sender, EventArgs e)
         {
-            string lastFile = Settings.Default.LastMap;
+            string lastJobName = Settings.Default.LastJobName;
 
             try
             {
                 // Splash screen isn't shown here, so provide user with a visual cue
-                openLastButton.Text = "Opening "+Path.GetFileName(lastFile)+" ...";
+                openLastButton.Text = "Opening "+lastJobName+" ...";
                 openLastButton.BackColor = Color.Yellow;
                 openLastButton.Refresh();
 
-                m_Parent.OpenJobFile(lastFile);
+                m_Parent.OpenJob(lastJobName);
                 //JobFile jf = new JobFile(lastFile);
                 //EditingController.Current.OpenJob(jf);
                 Close();
@@ -138,7 +138,7 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("Error reading {0} ({1})", lastFile, ex.Message));
+                MessageBox.Show(String.Format("Error reading {0} ({1})", lastJobName, ex.Message));
                 Trace.Write(ex.StackTrace);
                 openLastButton.Enabled = false;
             }
