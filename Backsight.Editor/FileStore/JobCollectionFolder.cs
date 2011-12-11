@@ -95,7 +95,8 @@ namespace Backsight.Editor.FileStore
             Settings.Default.LastJobName = jobName;
             Settings.Default.Save();
 
-            return null;
+            string jobFileName = Path.Combine(jobFolder, jobName + ".cedx");
+            return new JobFile(jobFileName);
         }
 
         /// <summary>
@@ -106,7 +107,13 @@ namespace Backsight.Editor.FileStore
         /// </returns>
         public string[] FindAllJobNames()
         {
-            return Directory.GetDirectories(m_FolderName);
+            string[] result = Directory.GetDirectories(m_FolderName);
+
+            // Strip off the path
+            for (int i=0; i<result.Length; i++)
+                result[i] = Path.GetFileName(result[i]);
+
+            return result;
         }
 
         public ISession[] LoadSessions(string jobName, CadastralMapModel model)

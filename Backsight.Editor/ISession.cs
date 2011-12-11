@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+
 namespace Backsight.Editor
 {
     /// <summary>
@@ -24,5 +26,20 @@ namespace Backsight.Editor
         /// The edits performed in this session.
         /// </summary>
         Operation[] Edits { get; }
+
+        /// <summary>
+        /// The number of edits performed in this session
+        /// </summary>
+        int OperationCount { get; }
+
+        /// <summary>
+        /// When was session started? 
+        /// </summary>
+        DateTime StartTime { get; }
+
+        /// <summary>
+        /// When was the last edit performed?
+        /// </summary>
+        DateTime EndTime { get; }
     }
 }

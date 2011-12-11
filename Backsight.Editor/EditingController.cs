@@ -448,7 +448,8 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="jobInfo">The job info (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
-        internal void OpenJob(IJobInfo jobInfo)
+        /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
+        internal bool OpenJob(IJobInfo jobInfo)
         {
             m_User = null;
             m_JobInfo = jobInfo;
@@ -458,7 +459,8 @@ namespace Backsight.Editor
             Starter s = new Starter(jobInfo);
 
             if (!s.Open())
-                throw new Exception("Cannot access editing job");
+                //throw new Exception("Cannot access editing job");
+                return false;
 
             // If you get here, the database connection string should now be
             // defined in the AdapterFactory.ConnectionString property.
@@ -496,6 +498,7 @@ namespace Backsight.Editor
 
                 Settings.Default.LastJobName = m_JobInfo.Name;
                 Settings.Default.Save();
+                return true;
             }
 
             catch (Exception ex)
@@ -519,6 +522,8 @@ namespace Backsight.Editor
                     (ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
                 }
             }
+
+            return false;
         }
 
         internal bool AutoSelect

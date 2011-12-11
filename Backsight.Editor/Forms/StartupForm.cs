@@ -22,6 +22,7 @@ using System.Windows.Forms;
 
 using Backsight.Data;
 using Backsight.Editor.Properties;
+using Backsight.Editor.FileStore;
 //using Backsight.SqlServer;
 
 namespace Backsight.Editor.Forms
@@ -46,13 +47,26 @@ namespace Backsight.Editor.Forms
         private void StartupForm_Load(object sender, EventArgs e)
         {
             ShowDatabaseName();
+            IJobContainer jc = new JobCollectionFolder();
+            IJobInfo job = null;
 
-            string lastFile = Settings.Default.LastJobName;
-            openLastButton.Enabled = File.Exists(lastFile);
-            if (openLastButton.Enabled)
-                openLastButton.Text = "&Open " + Path.GetFileName(lastFile);
-            else
+            string lastJobName = Settings.Default.LastJobName;
+            if (!String.IsNullOrEmpty(lastJobName))
+                job = jc.OpenJob(lastJobName);
+
+            if (job == null)
+            {
+                newJobButton.BackColor = openLastButton.BackColor;
+                this.AcceptButton = newJobButton;
                 openLastButton.BackColor = SystemColors.Control;
+                openLastButton.Enabled = false;
+            }
+            else
+            {
+                openLastButton.Text = "&Open " + lastJobName;
+                openLastButton.BackColor = SystemColors.Control;
+                this.AcceptButton = openLastButton;
+            }
         }
 
         void ShowDatabaseName()

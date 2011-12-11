@@ -48,7 +48,7 @@ namespace Backsight.Editor.Forms
 
         void LoadSessionList()
         {
-            Session[] sa = CadastralMapModel.Current.Sessions;
+            ISession[] sa = CadastralMapModel.Current.Sessions;
             grid.ColumnCount = 4;
             grid.RowCount = sa.Length;
             int rowIndex = grid.RowCount;
@@ -80,7 +80,7 @@ namespace Backsight.Editor.Forms
                 done = CadastralMapModel.Current.Rollback(ws);
             else
             {
-                Session[] sa = CadastralMapModel.Current.Sessions;
+                ISession[] sa = CadastralMapModel.Current.Sessions;
                 Debug.Assert(sa.Length>0);
 
                 if (sa.Length == 1)
@@ -91,7 +91,7 @@ namespace Backsight.Editor.Forms
                 }
 
                 // Get the session that precedes the working session
-                Session s = sa[sa.Length-2];
+                ISession s = sa[sa.Length-2];
                 done = CadastralMapModel.Current.Rollback(s);
             }
 
