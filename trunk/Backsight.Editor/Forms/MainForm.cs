@@ -116,7 +116,8 @@ namespace Backsight.Editor.Forms
                 // Display the map name in the dialog title (nice to see what's loading
                 // rather than the default "Map Title" text)
                 this.Text = jobName;
-                m_Controller.OpenJob(job);
+                if (!m_Controller.OpenJob(job))
+                    throw new ApplicationException("Cannot access job");
             }
 
             catch (Exception ex)
@@ -641,8 +642,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
                     IJobInfo job = dial.NewJob;
-                    m_Controller.OpenJob(job);
-                    AddRecentJob(job.Name);
+                    if (m_Controller.OpenJob(job))
+                        AddRecentJob(job.Name);
                 }
             }
         }
@@ -663,9 +664,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    m_Controller.OpenJob(dial.Job);
-                    AddRecentJob(dial.Job.Name);
-                    return true;
+                    if (m_Controller.OpenJob(dial.Job))
+                    {
+                        AddRecentJob(dial.Job.Name);
+                        return true;
+                    }
                 }
             }
 
@@ -695,7 +698,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             try
             {
                 JobFile jf = new JobFile(filename);
-                m_Controller.OpenJob(jf);
+                if (!m_Controller.OpenJob(jf))
+                    throw new ApplicationException();
+
                 m_MruMenu.SetFirstFile(number);
             }
 
@@ -707,8 +712,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
                 try
                 {
-                    m_Controller.OpenJob(null);
-                    m_MruMenu.AddString(m_Controller.JobInfo.Name);
+                    if (m_Controller.OpenJob(null))
+                        m_MruMenu.AddString(m_Controller.JobInfo.Name);
                 }
 
                 catch (Exception ex2)

@@ -142,11 +142,11 @@ namespace Backsight.Editor
             // job, or create a new one.
             if (m_Job==null)
             {
-                GetJobForm dial = new GetJobForm();
-                if (dial.ShowDialog() == DialogResult.OK)
-                    m_Job = dial.Job;
-
-                dial.Dispose();
+                using (NewJobForm dial = new NewJobForm())
+                {
+                    if (dial.ShowDialog() == DialogResult.OK)
+                        m_Job = dial.NewJob;
+                }
             }
 
             return (m_Job != null);

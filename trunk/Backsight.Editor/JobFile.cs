@@ -17,6 +17,9 @@ using System;
 using System.IO;
 using Backsight.Forms;
 using Backsight.Editor.FileStore;
+using System.Diagnostics;
+using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -272,7 +275,48 @@ namespace Backsight.Editor
         /// <param name="mapModel">The model to load</param>
         void IJobInfo.LoadModel(CadastralMapModel mapModel)
         {
-            throw new NotImplementedException();
+            //SessionDataFactory.Load(mapModel, this);
+            Trace.Write("Reading data...");
+
+            EditDeserializer editDeserializer = new EditDeserializer(mapModel);
+
+            // Look for a Sessions folder in the same place as this job file
+            // (not sure if m_FileName really has the full path when loaded from MRU)
+            string jobFolder = Path.GetDirectoryName(m_FileName);
+            string sessionsFolder = Path.Combine(jobFolder, "Sessions");
+
+            // If the sessions folder doesn't exist, just create it and return (there's
+            // nothing to load).
+            if (!Directory.Exists(sessionsFolder))
+            {
+                Directory.CreateDirectory(sessionsFolder);
+                return;
+            }
+
+            // Load each session
+            foreach (string s in Directory.EnumerateDirectories(sessionsFolder))
+            {
+                LoadSessionFolder(s, mapModel, editDeserializer);
+            }
         }
+
+        void LoadSessionFolder(string sessionFolder, CadastralMapModel mapModel, EditDeserializer editDeserializer)
+        {
+            List<Operation> edits = new List<Operation>();
+
+            foreach (string editFile in Directory.EnumerateFiles(sessionFolder))
+            {
+                using (TextReader tr = File.OpenText(editFile))
+                {
+                    editDeserializer.SetReader(new TextEditReader(tr));
+                    Operation edit = Operation.Deserialize(editDeserializer);
+                    edits.Add(edit);
+                }
+            }
+
+            ISession s = new SessionFolder(sessionFolder, edits.ToArray());
+            //mapModel.AddSession(s);
+        }
+
     }
 }

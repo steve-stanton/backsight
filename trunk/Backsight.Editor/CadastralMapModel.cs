@@ -72,7 +72,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Editing sessions.
         /// </summary>
-        readonly List<Session> m_Sessions;
+        readonly List<ISession> m_Sessions;
 
         /// <summary>
         /// Management of user-specified IDs
@@ -115,7 +115,7 @@ namespace Backsight.Editor
         {
             m_Rotation = 0.0;
             m_Window = new Window();
-            m_Sessions = new List<Session>();
+            m_Sessions = new List<ISession>();
             m_Index = null; // new EditingIndex();
             m_IdManager = new IdManager();
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
@@ -191,7 +191,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The editing sessions that define this model
         /// </summary>
-        internal Session[] Sessions
+        internal ISession[] Sessions
         {
             get { return m_Sessions.ToArray(); }
         }
@@ -871,7 +871,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="s">The session to rollback (all subsequent sessions must be empty)</param>
         /// <returns>True if rollback succeeded</returns>
-        internal bool Rollback(Session s)
+        internal bool Rollback(ISession s)
         {
             int editSequence = s.Rollback();
             if (editSequence <= 0)
@@ -1092,8 +1092,6 @@ namespace Backsight.Editor
         {
             m_Sessions.Clear();
             job.LoadModel(this);
-
-            SessionDataFactory.Load(this, job);
 
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
