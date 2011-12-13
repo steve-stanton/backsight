@@ -564,14 +564,12 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new ParallelLineOperation(Session.WorkingSession, 0, m_Line, offset,
-                        m_TermLine1, m_TermLine2, m_IsReversed);
+                    op = new ParallelLineOperation(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
                     op.Execute();
                 }
 
                 catch (Exception ex)
                 {
-                    //Session.WorkingSession.Remove(op);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                     return false;
                 }

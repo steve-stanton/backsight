@@ -73,7 +73,7 @@ namespace Backsight.Editor.Forms
         private void rollbackButton_Click(object sender, EventArgs e)
         {
             // If the working session contains anything, rollback that
-            Session ws = Session.WorkingSession;
+            ISession ws = CadastralMapModel.Current.WorkingSession;
             bool done = false;
 
             if (ws.OperationCount > 0)

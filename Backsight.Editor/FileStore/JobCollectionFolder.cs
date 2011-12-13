@@ -116,6 +116,7 @@ namespace Backsight.Editor.FileStore
             return result;
         }
 
+        /*
         public ISession[] LoadSessions(string jobName, CadastralMapModel model)
         {
             EditDeserializer editDeserializer = new EditDeserializer(model);
@@ -131,7 +132,9 @@ namespace Backsight.Editor.FileStore
 
             return result.ToArray();
         }
+        */
 
+        /*
         Operation[] LoadEdits(string sFolder, EditDeserializer editDeserializer)
         {
             List<Operation> edits = new List<Operation>();
@@ -148,7 +151,7 @@ namespace Backsight.Editor.FileStore
 
             return edits.ToArray();
         }
-
+        */
         #endregion
     }
 }

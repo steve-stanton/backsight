@@ -688,7 +688,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSave(IUserAction action)
         {
-            Session s = Session.WorkingSession;
+            ISession s = CadastralMapModel.Current.WorkingSession;
             Debug.Assert(s != null);
             s.SaveChanges();
         }
@@ -910,7 +910,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                Session s = Session.WorkingSession;
+                ISession s = CadastralMapModel.Current.WorkingSession;
                 return (s==null ? true : s.LastOperation==null);
             }
         }
@@ -926,7 +926,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
 
             // Get the last operation.
-            Operation op = Session.WorkingSession.LastOperation;
+            Operation op = CadastralMapModel.Current.WorkingSession.LastOperation;
             if (op==null)
                 return;
 
@@ -982,7 +982,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
             // Get the user to select an edit from the current session (restricted
             // to those edits that implement IRecallable)
-            Session s = Session.WorkingSession;
+            ISession s = CadastralMapModel.Current.WorkingSession;
             Operation op = null;
 
             using (PickEditForm dial = new PickEditForm(s))
@@ -1206,7 +1206,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsDataImportMapEnabled()
         {
-            return (Session.WorkingSession!=null);
+            return (CadastralMapModel.Current.WorkingSession != null);
         }
 
         private void DataImportMap(IUserAction action)

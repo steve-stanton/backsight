@@ -179,7 +179,7 @@ namespace Backsight.Editor.Database
         /// <returns>The reserved item number</returns>
         internal uint ReserveNextItem()
         {
-            Debug.Assert(m_SessionId == Session.WorkingSession.Id);
+            Debug.Assert(m_SessionId == CadastralMapModel.Current.WorkingSession.Id);
             m_NumItem++;
             return m_NumItem;
         }

@@ -36,6 +36,7 @@ namespace Backsight.Editor
         /// </summary>
         static Session s_CurrentSession = null;
 
+        /*
         /// <summary>
         /// The current editing session. During initial data loading, this may actually refer
         /// to a historical session. To obtain the session to which brand new edits should
@@ -45,11 +46,14 @@ namespace Backsight.Editor
         {
             get { return s_CurrentSession; }
         }
+        */
 
-        internal static Session WorkingSession
+        /*
+        internal static ISession WorkingSession
         {
             get { return CadastralMapModel.Current.WorkingSession; }
         }
+        */
 
         /// <summary>
         /// Creates a new session and remembers it as the "current" session.
@@ -144,7 +148,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Unique ID for the session.
         /// </summary>
-        internal uint Id
+        uint ISession.Id
         {
             get { return m_Data.Id; }
         }
@@ -159,7 +163,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The model that contains this session
         /// </summary>
-        internal CadastralMapModel MapModel
+        CadastralMapModel ISession.MapModel
         {
             get { return m_Model; }
         }
@@ -167,7 +171,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Deletes information about this session from the database.
         /// </summary>
-        internal void Delete()
+        void ISession.Delete()
         {
             m_Data.Delete();
         }
@@ -175,7 +179,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Updates the end-time (and item count) associated with this session
         /// </summary>
-        internal void UpdateEndTime()
+        void ISession.UpdateEndTime()
         {
             m_Data.UpdateEndTime();
         }
@@ -226,7 +230,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        internal IUser User
+        IUser ISession.User
         {
             get { return m_Who; }
         }
@@ -292,7 +296,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The last editing operation in this session (null if no edits have been performed)
         /// </summary>
-        internal Operation LastOperation
+        Operation ISession.LastOperation
         {
             get
             {
@@ -325,7 +329,7 @@ namespace Backsight.Editor
         /// Records the fact that this session has been "saved". This doesn't actually
         /// save anything, since that happens each time you perform an edit.
         /// </summary>
-        internal void SaveChanges()
+        void ISession.SaveChanges()
         {
             // Update the number of the last saved item (as far as the user's session
             // is concerned). Note that m_Data.NumItem corresponds to what's already
@@ -357,6 +361,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reserves an item number for use with the current session. It is a lightweight
+        /// request, because it just increments a counter. The database gets updated
+        /// when an edit completes.
+        /// </summary>
+        /// <returns>The reserved item number</returns>
+        uint ISession.AllocateNextItem()
+        {
+            return m_Data.ReserveNextItem();
+        }
+
+        /// <summary>
         /// Scans this session to note the native IDs that have been used.
         /// Before calling this method, you must make a call to <see cref="Load"/>
         /// to obtain the relevant allocations.
@@ -378,7 +393,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of edits performed in this session
         /// </summary>
-        internal int OperationCount
+        int ISession.OperationCount
         {
             get { return m_Operations.Count; }
         }
@@ -386,7 +401,7 @@ namespace Backsight.Editor
         /// <summary>
         /// When was session started? 
         /// </summary>
-        internal DateTime StartTime
+        DateTime ISession.StartTime
         {
             get { return m_Data.StartTime; }
         }
@@ -394,7 +409,7 @@ namespace Backsight.Editor
         /// <summary>
         /// When was the last edit performed?
         /// </summary>
-        internal DateTime EndTime
+        DateTime ISession.EndTime
         {
             get { return m_Data.EndTime; }
         }

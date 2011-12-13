@@ -131,8 +131,7 @@ namespace Backsight.Editor.Forms
             try
             {
                 Distance[] distances = GetDistances();
-                Session session = Session.WorkingSession;
-                op = new LineSubdivisionOperation(session, 0, m_Line, distances, !m_FromStart);
+                op = new LineSubdivisionOperation(m_Line, distances, !m_FromStart);
                 op.Execute();
             }
 

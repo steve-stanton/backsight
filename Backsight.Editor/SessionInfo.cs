@@ -13,46 +13,22 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor.FileStore
+using System;
+
+namespace Backsight.Editor
 {
     /// <summary>
-    /// A user that corresponds to anyone logged on to the localhost.
+    /// Information about an editing session.
     /// </summary>
-    class AnyLocalUser : User
+    public class SessionInfo
     {
-        #region Static
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
-        /// The singleton instance of this class.
+        /// The number of items (objects) created by the session
         /// </summary>
-        static IUser s_Instance = new AnyLocalUser();
-
-        /// <summary>
-        /// The singleton instance of this class.
-        /// </summary>
-        internal static IUser Instance
-        {
-            get { return s_Instance; }
-        }
-
-        #endregion
-
-        #region Class data
-
-        // None
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnyLocalUser"/> class.
-        /// </summary>
-        AnyLocalUser()
-            : base("Local user")
-        {
-        }
-
-        #endregion
+        public uint NumItem { get; set; }
     }
 }

@@ -127,7 +127,7 @@ namespace Backsight.Editor.Forms
 
         void LoadNtx(string ntxFile)
         {
-            Debug.Assert(Session.WorkingSession!=null);
+            Debug.Assert(CadastralMapModel.Current.WorkingSession != null);
 
             // If the model is currently empty, we'll want to draw an overview upon
             // completion of the import (otherwise we'll refresh using the currently
@@ -139,7 +139,7 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                i = new ImportOperation(Session.WorkingSession, 0);
+                i = new ImportOperation();
                 NtxImport ni = new NtxImport(ntxFile, this);
                 i.Execute(ni);
                 Trace.Write("Map model updates completed");
@@ -147,7 +147,6 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(i);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

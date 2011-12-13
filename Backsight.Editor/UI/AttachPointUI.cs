@@ -184,7 +184,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new AttachPointOperation(Session.WorkingSession, 0, m_Line, pr);
+                op = new AttachPointOperation(m_Line, pr);
                 FeatureFactory ff = new FeatureFactory(op);
                 ff.PointType = m_PointType;
                 op.Execute(ff);
@@ -196,7 +196,6 @@ namespace Backsight.Editor.UI
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
                 return true;
             }

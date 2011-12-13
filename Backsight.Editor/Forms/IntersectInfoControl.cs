@@ -165,7 +165,9 @@ namespace Backsight.Editor.Forms
 
                 // Load the entity combo box with a list for point features
                 // and disable it.
-                pointTypeComboBox.Load(SpatialType.Point, feat.BaseLayer);
+                ILayer layer = EditingController.Current.ActiveLayer;
+                pointTypeComboBox.Load(SpatialType.Point, layer);
+                //pointTypeComboBox.Load(SpatialType.Point, feat.BaseLayer);
 
                 // Scroll the entity combo to the previously defined
                 // entity type for the intersection point.

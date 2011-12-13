@@ -101,14 +101,13 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new TextRotationOperation(Session.WorkingSession, 0);
+                op = new TextRotationOperation();
                 op.Execute(point1, point2);
                 FinishCommand();
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
                 AbortCommand();
             }

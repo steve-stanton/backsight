@@ -35,7 +35,10 @@ namespace Backsight.Editor
         #region Static
 
         /// <summary>
-        /// Loads the content of an editing operation. Prior to call, the current editing session
+        /// Loads the content of an editing operation.
+        /// <para/>
+        /// Deprecated -- 
+        /// Prior to call, the current editing session
         /// must be defined using the <see cref="Session.CurrentSession"/> property.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
@@ -56,7 +59,7 @@ namespace Backsight.Editor
                 upo.ApplyChanges();
 
             // Remember the edit as part of the session
-            editDeserializer.MapModel.LastSession.Add(result);
+            //editDeserializer.MapModel.LastSession.Add(result);
 
             return result;
         }
@@ -68,7 +71,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The session in which this operation was originally defined (not null)
         /// </summary>
-        readonly Session m_Session;
+        readonly ISession m_Session;
 
         /// <summary>
         /// The item sequence number of this operation (starts at 1 for each session).
@@ -85,27 +88,19 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Operation"/> class.
+        /// Initializes a new instance of the <see cref="Operation"/> class that will be
+        /// included in the current editing session.
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
-        protected Operation(Session s, uint sequence)
+        protected Operation()
         {
-            if (s==null)
+            m_Session = CadastralMapModel.Current.WorkingSession;
+            if (m_Session == null)
                 throw new ArgumentNullException();
-
-            m_Session = s;
 
             // The edit is now added to the session at the very end of SaveOperation
             //m_Session.Add(this);
 
-            if (sequence == 0)
-                m_Sequence = Session.ReserveNextItem();
-            else
-                m_Sequence = sequence;
+            m_Sequence = m_Session.AllocateNextItem();
         }
 
         /// <summary>
@@ -117,6 +112,7 @@ namespace Backsight.Editor
         {
             editDeserializer.CurrentEdit = this;
             m_Session = editDeserializer.MapModel.LastSession;
+            Debug.Assert(m_Session != null);
 
             string id = editDeserializer.ReadString(DataField.Id);
             uint sessionId;
@@ -197,7 +193,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The session in which this operation was originally defined (never null).
         /// </summary>        
-        internal Session Session
+        internal ISession Session
         {
             get { return m_Session; }
         }
@@ -376,7 +372,7 @@ namespace Backsight.Editor
         protected void Complete()
         {
             // Is this method being called as part of application startup?
-            bool isStartup = !Object.ReferenceEquals(m_Session, Session.WorkingSession);
+            bool isStartup = !Object.ReferenceEquals(m_Session, CadastralMapModel.Current.WorkingSession);
 
             // Index features that were created (and ensure the map extent has been
             // expanded to include the new features)
@@ -463,17 +459,17 @@ namespace Backsight.Editor
                 c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
                 c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
-                c.Parameters[0].Value = Session.WorkingSession.Id;
+                c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
                 c.Parameters[1].Value = m_Sequence;
                 c.Parameters[2].Value = editString;
                 c.ExecuteNonQuery();
 
                 // Update the end-time associated with the session
-                Session.WorkingSession.UpdateEndTime();
+                CadastralMapModel.Current.WorkingSession.UpdateEndTime();
             });
 
             // Remember the edit as part of the session
-            Session.WorkingSession.Add(this);
+            CadastralMapModel.Current.WorkingSession.Add(this);
         }
 
         /// <summary>
@@ -714,7 +710,7 @@ namespace Backsight.Editor
         /// the edit is not expected to create anything).</param>
         internal void Execute(FeatureFactory ff)
         {
-            Debug.Assert(m_Session == Session.WorkingSession);
+            Debug.Assert(m_Session == CadastralMapModel.Current.WorkingSession);
             CadastralMapModel mapModel = this.MapModel;
 
             // Create the spatial features

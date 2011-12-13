@@ -270,6 +270,7 @@ namespace Backsight.Editor
             if (style != null)
                 return style;
 
+            /*
             // If we didn't get anything, look for a style that
             // refers to the line's base theme.
             ILayer t = line.Line.BaseLayer;
@@ -279,6 +280,7 @@ namespace Backsight.Editor
                 if (style != null)
                     return style;
             }
+            */
 
             // Return the default style
             return s_BlackStyle;
@@ -305,6 +307,7 @@ namespace Backsight.Editor
             if (style != null)
                 return style;
 
+            /*
             // If we didn't get anything, look for a style that
             // refers to the line's base layer.
             ILayer t = f.BaseLayer;
@@ -314,6 +317,7 @@ namespace Backsight.Editor
                 if (style != null)
                     return style;
             }
+            */
 
             // Return the default style
             return s_BlackStyle;

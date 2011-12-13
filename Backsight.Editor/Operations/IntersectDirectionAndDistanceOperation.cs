@@ -76,18 +76,13 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectDirectionAndDistanceOperation"/> class
         /// </summary>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="dir">Direction observation.</param>
         /// <param name="dist">Distance observation.</param>
         /// <param name="from">The point the distance was observed from.</param>
         /// <param name="usedefault">True if the default intersection is required (the one 
         /// closer to the origin of the direction line). False for the other one (if any).</param>
-        internal IntersectDirectionAndDistanceOperation(Session session, uint sequence, Direction dir,
-                                                        Observation dist, PointFeature from, bool useDefault)
-            : base(session, sequence)
+        internal IntersectDirectionAndDistanceOperation(Direction dir, Observation dist, PointFeature from, bool useDefault)
+            : base()
         {
             m_Direction = dir;
             m_Distance = dist;

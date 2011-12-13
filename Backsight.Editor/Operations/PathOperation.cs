@@ -61,17 +61,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="PathOperation"/> class
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="entryString"></param>
-        internal PathOperation(Session session, uint sequence, PointFeature from, PointFeature to,
-                                    string entryString, DistanceUnit defaultEntryUnit)
-            : base(session, sequence)
+        internal PathOperation(PointFeature from, PointFeature to, string entryString, DistanceUnit defaultEntryUnit)
+            : base()
         {
             m_From = from;
             m_To = to;

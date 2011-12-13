@@ -174,7 +174,7 @@ namespace Backsight.Editor.Forms
             {
                 string str = GetEnteredPath();
                 DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
-                op = new PathOperation(Session.WorkingSession, 0, m_From, m_To, str, defaultEntryUnit);
+                op = new PathOperation(m_From, m_To, str, defaultEntryUnit);
                 op.Execute();
                 Finish();
             }
@@ -182,7 +182,6 @@ namespace Backsight.Editor.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(ex.StackTrace, ex.Message);
-                //Session.WorkingSession.Remove(op);
             }
         }
 

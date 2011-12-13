@@ -147,14 +147,13 @@ namespace Backsight.Editor.Forms
                     Debug.Assert(closeTo != null);
                 }
 
-                op = new IntersectTwoLinesOperation(Session.WorkingSession, 0, line1, wantSplit1, line2, wantSplit2, closeTo);
+                op = new IntersectTwoLinesOperation(line1, wantSplit1, line2, wantSplit2, closeTo);
                 op.Execute(pointId);
                 return op.IntersectionPoint;
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

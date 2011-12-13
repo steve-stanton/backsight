@@ -71,17 +71,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleLineSubdivisionOperation"/> class
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="splitLine">The line to split.</param>
         /// <param name="dist">The distance to the split point.</param>
         /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
-        internal SimpleLineSubdivisionOperation(Session session, uint sequence, LineFeature splitLine, Distance dist,
-                                                    bool isFromEnd)
-            : base(session, sequence)
+        internal SimpleLineSubdivisionOperation(LineFeature splitLine, Distance dist, bool isFromEnd)
+            : base()
         {
             m_Line = splitLine;
             m_Distance = dist;

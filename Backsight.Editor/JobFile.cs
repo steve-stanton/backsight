@@ -296,11 +296,15 @@ namespace Backsight.Editor
             // Load each session
             foreach (string s in Directory.EnumerateDirectories(sessionsFolder))
             {
-                LoadSessionFolder(s, mapModel, editDeserializer);
+                // Only those folder names that are numbers are valid
+                string subFolderName = Path.GetFileName(s);
+                uint sessionId;
+                if (UInt32.TryParse(subFolderName, out sessionId))
+                    LoadSessionFolder(sessionId, s, mapModel, editDeserializer);
             }
         }
 
-        void LoadSessionFolder(string sessionFolder, CadastralMapModel mapModel, EditDeserializer editDeserializer)
+        void LoadSessionFolder(uint sessionId, string sessionFolder, CadastralMapModel mapModel, EditDeserializer editDeserializer)
         {
             List<Operation> edits = new List<Operation>();
 
@@ -314,8 +318,8 @@ namespace Backsight.Editor
                 }
             }
 
-            ISession s = new SessionFolder(sessionFolder, edits.ToArray());
-            //mapModel.AddSession(s);
+            ISession s = new SessionFolder(sessionId, sessionFolder, edits.ToArray());
+            mapModel.AddSession(s);
         }
 
     }

@@ -250,13 +250,12 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    pop = new RadialOperation(Session.WorkingSession, 0, dir, len);
+                    pop = new RadialOperation(dir, len);
                     pop.Execute(idh, lineEnt);
                 }
 
                 catch (Exception ex)
                 {
-                    //Session.WorkingSession.Remove(pop);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                 }
         	}

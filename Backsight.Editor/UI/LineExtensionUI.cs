@@ -237,13 +237,12 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new LineExtensionOperation(Session.WorkingSession, 0, m_ExtendLine, m_IsExtendFromEnd, m_Length);
+                    op = new LineExtensionOperation(m_ExtendLine, m_IsExtendFromEnd, m_Length);
                     op.Execute(idh, m_LineType);
                 }
 
                 catch (Exception ex)
                 {
-                    //Session.WorkingSession.Remove(op);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                     return false;
                 }

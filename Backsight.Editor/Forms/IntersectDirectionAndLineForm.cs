@@ -172,15 +172,13 @@ namespace Backsight.Editor.Forms
                     Debug.Assert(closeTo != null);
                 }
 
-                op = new IntersectDirectionAndLineOperation(Session.WorkingSession, 0, dir, line,
-                                                                wantSplit, closeTo);
+                op = new IntersectDirectionAndLineOperation(dir, line, wantSplit, closeTo);
                 op.Execute(pointId, dirEnt);
                 return op.IntersectionPoint;
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

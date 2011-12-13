@@ -65,14 +65,10 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDirectionsOperation"/> class.
         /// </summary>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="dir1">The first observed direction</param>
         /// <param name="dir2">The second observed direction</param>
-        internal IntersectTwoDirectionsOperation(Session session, uint sequence, Direction dir1, Direction dir2)
-            : base(session, sequence)
+        internal IntersectTwoDirectionsOperation(Direction dir1, Direction dir2)
+            : base()
         {
             m_Direction1 = dir1;
             m_Direction2 = dir2;

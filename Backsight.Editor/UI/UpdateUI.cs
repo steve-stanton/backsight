@@ -1045,7 +1045,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 return false;
             }
 
-            UpdateOperation uop = new UpdateOperation(Session.WorkingSession, 0, revisedEdit, changes);
+            UpdateOperation uop = new UpdateOperation(revisedEdit, changes);
             m_Updates.Push(uop);
 
             if (m_Info != null)

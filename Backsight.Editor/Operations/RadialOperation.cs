@@ -64,16 +64,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="RadialOperation"/> class.
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="dir">The direction (could contain an offset).</param>
         /// <param name="length">The length of the sideshot arm (either a <see cref="Distance"/> or
         /// an <see cref="OffsetPoint"/>).</param>
-        internal RadialOperation(Session session, uint sequence, Direction dir, Observation length)
-            : base(session, sequence)
+        internal RadialOperation(Direction dir, Observation length)
+            : base()
         {
             m_Direction = dir;
             m_Length = length;

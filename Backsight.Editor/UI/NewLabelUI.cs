@@ -616,7 +616,7 @@ namespace Backsight.Editor.UI
                     // Save the attributes in the database
                     DbUtil.SaveRow(m_LastRow);
 
-                    NewRowTextOperation op = new NewRowTextOperation(Session.WorkingSession, 0);
+                    NewRowTextOperation op = new NewRowTextOperation();
                     txop = op;
                     op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
 
@@ -630,7 +630,7 @@ namespace Backsight.Editor.UI
                 }
                 else
                 {
-                    NewKeyTextOperation op = new NewKeyTextOperation(Session.WorkingSession, 0);
+                    NewKeyTextOperation op = new NewKeyTextOperation();
                     txop = op;
                     op.Execute(posn, m_PolygonId, m_Polygon, Height, Width, Rotation);
                 }
@@ -640,7 +640,6 @@ namespace Backsight.Editor.UI
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(txop);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

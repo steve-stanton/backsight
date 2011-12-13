@@ -83,19 +83,14 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectDirectionAndLineOperation"/> class
         /// </summary>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="dir">Direction observation.</param>
         /// <param name="line">The line to intersect.</param>
         /// <param name="wantsplit">True if line should be split at the intersection.</param>
         /// <param name="closeTo">The point the intersection has to be close to. Used if
         /// there is more than one intersection to choose from. If null is specified, a
         /// default point will be selected.</param>
-        internal IntersectDirectionAndLineOperation(Session session, uint sequence, Direction dir,
-                                                    LineFeature line, bool wantsplit, PointFeature closeTo)
-            : base(session, sequence)
+        internal IntersectDirectionAndLineOperation(Direction dir, LineFeature line, bool wantsplit, PointFeature closeTo)
+            : base()
         {
             if (dir==null || line==null || closeTo==null)
                 throw new ArgumentNullException();

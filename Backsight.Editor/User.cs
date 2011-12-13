@@ -13,46 +13,54 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor.FileStore
+namespace Backsight.Editor
 {
-    /// <summary>
-    /// A user that corresponds to anyone logged on to the localhost.
-    /// </summary>
-    class AnyLocalUser : User
+    class User : IUser
     {
-        #region Static
-
-        /// <summary>
-        /// The singleton instance of this class.
-        /// </summary>
-        static IUser s_Instance = new AnyLocalUser();
-
-        /// <summary>
-        /// The singleton instance of this class.
-        /// </summary>
-        internal static IUser Instance
-        {
-            get { return s_Instance; }
-        }
-
-        #endregion
-
         #region Class data
 
-        // None
+        /// <summary>
+        /// The login name of the user.
+        /// </summary>
+        readonly string m_LoginName;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnyLocalUser"/> class.
+        /// Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
-        AnyLocalUser()
-            : base("Local user")
+        internal User(string loginName)
         {
+            m_LoginName = loginName;
         }
 
         #endregion
+
+        /// <summary>
+        /// The internal ID for the user
+        /// </summary>
+        public uint UserId
+        {
+            get { return 0; }
+        }
+
+        /// <summary>
+        /// The user-perceived name for the user
+        /// </summary>
+        public string Name
+        {
+            get { return m_LoginName; }
+        }
+
+        /// <summary>
+        /// Provides a string for representing this object
+        /// </summary>
+        /// <returns>The <see cref="Name"/> property</returns>
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

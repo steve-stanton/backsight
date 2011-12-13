@@ -294,13 +294,12 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new NewArcOperation(Session.WorkingSession, 0);
+                op = new NewArcOperation();
                 op.Execute(StartPoint, end, m_NewArcCircle, m_IsShortArc);
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
         }

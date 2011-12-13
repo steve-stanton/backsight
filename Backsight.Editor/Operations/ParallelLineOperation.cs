@@ -78,20 +78,15 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="ParallelLineOperation"/> class
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="refLine">The reference line.</param>
         /// <param name="offset">The observed offset (either a <c>Distance</c> or
         /// an <c>OffsetPoint</c>).</param>
         /// <param name="term1">A line that the parallel should start on.</param>
         /// <param name="term2">A line that the parallel should end on.</param>
         /// <param name="isArcReversed">Should circular arc be reversed?</param>
-        internal ParallelLineOperation(Session session, uint sequence, LineFeature refLine, Observation offset,
-            LineFeature term1, LineFeature term2, bool isArcReversed)
-            : base(session, sequence)
+        internal ParallelLineOperation(LineFeature refLine, Observation offset, LineFeature term1, LineFeature term2,
+                                            bool isArcReversed)
+            : base()
         {
             m_RefLine = refLine;
             m_Offset = offset;

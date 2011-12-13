@@ -197,13 +197,12 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new NewCircleOperation(Session.WorkingSession, 0, center, radius);
+                    op = new NewCircleOperation(center, radius);
                     op.Execute();
                 }
 
                 catch (Exception ex)
                 {
-                    //Session.WorkingSession.Remove(op);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                     return false;
                 }

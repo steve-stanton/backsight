@@ -414,13 +414,12 @@ namespace Backsight.Editor.Forms
             try
             {
                 m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.WaitCursor;
-                op = new GetControlOperation(Session.WorkingSession, 0);
+                op = new GetControlOperation();
                 op.Execute(cps, ent);
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 
