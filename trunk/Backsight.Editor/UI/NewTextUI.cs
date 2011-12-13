@@ -271,14 +271,13 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new NewMiscTextOperation(Session.WorkingSession, 0);
+                op = new NewMiscTextOperation();
                 op.Execute(m_NewText, Entity, posn, Height, Width, Rotation);
                 return op.Text;
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

@@ -90,10 +90,6 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoLinesOperation"/> class
         /// </summary>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="line1">The 1st line to intersect.</param>
         /// <param name="wantsplit1">True if 1st line should be split at the intersection.</param>
         /// <param name="line2">The 2nd line to intersect.</param>
@@ -101,9 +97,9 @@ namespace Backsight.Editor.Operations
         /// <param name="closeTo">The point the intersection has to be close to. Used if
         /// there is more than one intersection to choose from. If null is specified, a
         /// default point will be selected.</param>
-        internal IntersectTwoLinesOperation(Session session, uint sequence, LineFeature line1, bool wantSplit1,
+        internal IntersectTwoLinesOperation(LineFeature line1, bool wantSplit1,
                                             LineFeature line2, bool wantSplit2, PointFeature closeTo)
-            : base(session, sequence)
+            : base()
         {
             if (line1==null || line2==null || closeTo==null)
                 throw new ArgumentNullException();

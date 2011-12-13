@@ -133,6 +133,7 @@
     <Compile Include="IJobInfo.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="IUser.cs" />
+    <Compile Include="SessionInfo.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
@@ -1123,6 +1124,7 @@
     <Compile Include="UpdateEditingContext.cs" />
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateItemCollection.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Wildcard.cs" />
   </ItemGroup>
   <ItemGroup>

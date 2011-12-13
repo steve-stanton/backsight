@@ -140,7 +140,7 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new MoveTextOperation(Session.WorkingSession, 0, m_Text);
+                op = new MoveTextOperation(m_Text);
                 op.Execute(PointGeometry.Create(p));
                 FinishCommand();
                 return true;

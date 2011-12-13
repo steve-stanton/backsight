@@ -39,14 +39,9 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class.
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="line">The line that needs to be changed.</param>
-        internal SetTopologyOperation(Session s, uint sequence, LineFeature line)
-            : base(s, sequence)
+        internal SetTopologyOperation(LineFeature line)
+            : base()
         {
             if (line == null)
                 throw new ArgumentNullException();

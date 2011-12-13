@@ -237,7 +237,7 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = Session.ReserveNextItem();
+                uint ss = MapModel.WorkingSession.AllocateNextItem();
                 result = new PointFeature(m_Operation, ss, PointType, null);
                 result.SetNextId();
             }
@@ -277,7 +277,7 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = Session.ReserveNextItem();
+                uint ss = MapModel.WorkingSession.AllocateNextItem();
                 result = new LineFeature(m_Operation, ss, LineType, from, to);
                 result.SetNextId();
             }
@@ -317,7 +317,7 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = Session.ReserveNextItem();
+                uint ss = MapModel.WorkingSession.AllocateNextItem();
                 result = new ArcFeature(m_Operation, ss, LineType, null, from, to, true);
                 result.SetNextId();
             }
@@ -342,7 +342,7 @@ namespace Backsight.Editor
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
             {
-                uint ss = Session.ReserveNextItem();
+                uint ss = MapModel.WorkingSession.AllocateNextItem();
                 f = new FeatureStub(m_Operation, ss, baseLine.EntityType, baseLine.FeatureId);
             }
 

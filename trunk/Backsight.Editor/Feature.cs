@@ -442,7 +442,7 @@ namespace Backsight.Editor
         /// </summary>
         internal void SetNextId()
         {
-            if (Session.WorkingSession != null)
+            if (CadastralMapModel.Current.WorkingSession != null)
             {
                 // Disallow if this feature already has an ID.
                 if (m_Id!=null)
@@ -849,6 +849,7 @@ namespace Backsight.Editor
                 newFeature.SetBuilt(true);
         }
 
+        /*
         /// <summary>
         /// The layer that was active when this feature was created
         /// </summary>
@@ -864,7 +865,9 @@ namespace Backsight.Editor
                 return EnvironmentContainer.FindLayerById(layerId);
             }
         }
+        */
 
+        /*
         /// <summary>
         /// The ID of the layer that was active when this feature was created
         /// </summary>
@@ -872,6 +875,7 @@ namespace Backsight.Editor
         {
             get { return m_Creator.Session.Job.LayerId; }
         }
+        */
 
         /// <summary>
         /// Is this feature considered to be "void". This status is used to mark

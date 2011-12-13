@@ -50,15 +50,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="NewCircleOperation"/> class
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="center">The point at the center of the circle.</param>
         /// <param name="radius">The radius of the circle (either a <see cref="Distance"/> object,
         /// or an <see cref="OffsetPoint"/> that sits on the circumference of the circle.</param>
-        internal NewCircleOperation(Session s, uint sequence, PointFeature center, Observation radius)
-            : base(s, sequence)
+        internal NewCircleOperation(PointFeature center, Observation radius)
+            : base()
         {
             m_Center = center;
             m_Radius = radius;

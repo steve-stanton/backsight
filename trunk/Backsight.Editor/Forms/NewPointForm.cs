@@ -340,7 +340,7 @@ namespace Backsight.Editor.Forms
 
             try
             {
-                op = new NewPointOperation(Session.WorkingSession, 0);
+                op = new NewPointOperation();
 
                 IEntity ent = entityTypeComboBox.SelectedEntityType;
                 m_PointId.Entity = ent;
@@ -354,7 +354,6 @@ namespace Backsight.Editor.Forms
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

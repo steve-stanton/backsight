@@ -80,10 +80,6 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="IntersectTwoDistancesOperation"/> class
         /// </summary>
-        /// <param name="session">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="dist1">First observed distance  (either a <see cref="Distance"/>, or
         /// an <see cref="OffsetPoint"/>).</param>
         /// <param name="from1">The point the 1st distance was measured from.</param>
@@ -92,9 +88,9 @@ namespace Backsight.Editor.Operations
         /// <param name="from2">The point the 2nd distance was measured from.</param>
         /// <param name="isdefault">True if it was the default intersection (the one with the lowest bearing
         /// with respect to <paramref name="from1"/> and <paramref name="from2"/>).</param>
-        internal IntersectTwoDistancesOperation(Session session, uint sequence, Observation dist1, PointFeature from1,
+        internal IntersectTwoDistancesOperation(Observation dist1, PointFeature from1,
                                                 Observation dist2, PointFeature from2, bool isdefault)
-            : base(session, sequence)
+            : base()
         {
             m_Distance1 = dist1;
             m_From1 = from1;

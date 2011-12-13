@@ -64,17 +64,11 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="LineExtensionOperation"/> class
         /// </summary>
-        /// <param name="s">The session the operation should be referred to (the session itself
-        /// is not modified until the editing operation is saved to the database).</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
         /// <param name="extendLine">The line that's being extended.</param>
         /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
         /// <param name="length">The length of the extension.</param>
-        internal LineExtensionOperation(Session session, uint sequence,
-                                        LineFeature extendLine, bool isFromEnd, Distance length)
-            : base(session, sequence)
+        internal LineExtensionOperation(LineFeature extendLine, bool isFromEnd, Distance length)
+            : base()
         {
             m_ExtendLine = extendLine;
             m_IsExtendFromEnd = isFromEnd;

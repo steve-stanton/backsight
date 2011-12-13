@@ -26,12 +26,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="NewArcOperation"/> class.
         /// </summary>
-        /// <param name="s">The session the new instance should be added to</param>
-        /// <param name="sequence">The sequence number of the edit within the session (specify 0 if
-        /// a new sequence number should be reserved). A non-zero value is specified during
-        /// deserialization from the database.</param>
-        internal NewArcOperation(Session s, uint sequence)
-            : base(s, sequence)
+        internal NewArcOperation()
+            : base()
         {
         }
 

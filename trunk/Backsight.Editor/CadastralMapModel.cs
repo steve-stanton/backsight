@@ -83,7 +83,7 @@ namespace Backsight.Editor
         /// The session that we are currently appending to. Defined on a call to
         /// <see cref="AppendWorkingSession"/>
         /// </summary>
-        Session m_WorkingSession;
+        ISession m_WorkingSession;
 
         /// <summary>
         /// Spatial features that have been loaded (including features that may
@@ -300,13 +300,13 @@ namespace Backsight.Editor
 
         internal void Close()
         {
-            Session s = Session.WorkingSession;
-            if (s!=null)
+            ISession s = m_WorkingSession;
+            if (m_WorkingSession != null)
             {
-                if (s.OperationCount==0)
-                    s.Delete();
+                if (m_WorkingSession.OperationCount == 0)
+                    m_WorkingSession.Delete();
                 else
-                    s.UpdateEndTime();
+                    m_WorkingSession.UpdateEndTime();
 
                 m_Sessions.Clear();
                 Session.ClearCurrentSession();
@@ -314,18 +314,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The sequence number of the last edit in the last session (0 if no edits have
-        /// been performed in the last session)
+        /// The sequence number of the last edit in the working session (0 if no edits have
+        /// been performed)
         /// </summary>
         internal uint LastOpSequence
         {
             get
             {
-                Session s = LastSession;
-                if (s==null)
+                if (m_WorkingSession == null)
                     return 0;
 
-                Operation o = s.LastOperation;
+                Operation o = m_WorkingSession.LastOperation;
                 if (o==null)
                     return 0;
 
@@ -337,7 +336,7 @@ namespace Backsight.Editor
         /// The last editing session in this model (null if this is a freshly created model,
         /// and data is still being loaded)
         /// </summary>
-        internal Session LastSession
+        internal ISession LastSession
         {
             get
             {
@@ -365,7 +364,7 @@ namespace Backsight.Editor
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
             PointGeometry g = PointGeometry.Create(p);
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             PointFeature f = new PointFeature(creator, ss, e, g);
             //m_Window.Union(p);
             //m_Index.Add(f);
@@ -416,7 +415,7 @@ namespace Backsight.Editor
         /// <returns>The created line segment.</returns>
         internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             LineFeature f = new LineFeature(creator, ss, e, from, to);
             //m_Window.Union(f.Extent);
             //m_Index.Add(f);
@@ -815,7 +814,7 @@ namespace Backsight.Editor
         internal LineFeature AddCircularArc(Circle circle, PointFeature start, PointFeature end,
             bool clockwise, IEntity lineEnt, Operation creator)
         {
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             ArcFeature result = new ArcFeature(creator, ss, lineEnt, circle, start, end, clockwise);
             //m_Window.Union(result.Extent);
             //m_Index.Add(result);
@@ -889,7 +888,7 @@ namespace Backsight.Editor
             }
 
             // If the session is now empty, and it's not the working session, remove it from the model
-            if (s.OperationCount==0 && !Object.ReferenceEquals(s, Session.WorkingSession))
+            if (s.OperationCount==0 && !Object.ReferenceEquals(s, m_WorkingSession))
                 m_Sessions.Remove(s);
 
             return true;
@@ -953,7 +952,7 @@ namespace Backsight.Editor
                 throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
 
             // Do standard stuff for adding a label.
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             return new TextFeature(creator, ss, newEnt, text);
         }
 
@@ -979,7 +978,7 @@ namespace Backsight.Editor
             IEntity ent = polygonId.Entity;
             PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             TextFeature label = new TextFeature(creator, ss, ent, text);
 
             // Define the label's ID
@@ -1007,7 +1006,7 @@ namespace Backsight.Editor
             KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
 
             // Do standard stuff for adding a label
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             TextFeature result = new TextFeature(creator, ss, ent, text);
             text.Label = result;
             return result;
@@ -1033,7 +1032,7 @@ namespace Backsight.Editor
         {
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             TextFeature label = new TextFeature(creator, ss, ent, null);
 
             // Define the label's ID and attach the row to it
@@ -1069,7 +1068,7 @@ namespace Backsight.Editor
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
-            uint ss = Session.ReserveNextItem();
+            uint ss = m_WorkingSession.AllocateNextItem();
             TextFeature label = new TextFeature(creator, ss, ent, null);
 
             // Define the label's ID and attach the row to it
@@ -1154,7 +1153,7 @@ namespace Backsight.Editor
         /// Remembers a session as part of this model
         /// </summary>
         /// <param name="s"></param>
-        internal void AddSession(Session s)
+        internal void AddSession(ISession s)
         {
             m_Sessions.Add(s);
         }
@@ -1165,7 +1164,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal Session AppendWorkingSession(IJobInfo job, IUser user)
+        internal ISession AppendWorkingSession(IJobInfo job, IUser user)
         {
             SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
 
@@ -1187,9 +1186,7 @@ namespace Backsight.Editor
         /// The session that we are currently appending to. Defined on a call to
         /// <see cref="AppendWorkingSession"/>.
         /// </summary>
-        /// <remarks>As a convenience, you can also access this via the
-        /// static <see cref="Session.WorkingSession"/> property</remarks>
-        internal Session WorkingSession
+        internal ISession WorkingSession
         {
             get { return m_WorkingSession; }
         }

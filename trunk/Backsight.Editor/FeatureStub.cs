@@ -74,7 +74,7 @@ namespace Backsight.Editor
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
         internal FeatureStub(Operation creator, IEntity ent, FeatureId fid)
-            : this(creator, Session.ReserveNextItem(), ent, fid)
+            : this(creator, creator.Session.AllocateNextItem(), ent, fid)
         {
         }
 

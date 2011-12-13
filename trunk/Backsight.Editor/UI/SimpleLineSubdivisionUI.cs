@@ -219,13 +219,12 @@ namespace Backsight.Editor.UI
 
                 try
                 {
-                    op = new SimpleLineSubdivisionOperation(Session.WorkingSession, 0, m_Line, m_Length, m_Dialog.IsFromEnd);
+                    op = new SimpleLineSubdivisionOperation(m_Line, m_Length, m_Dialog.IsFromEnd);
                     op.Execute();
                 }
 
                 catch (Exception ex)
                 {
-                    //Session.WorkingSession.Remove(op);
                     MessageBox.Show(ex.StackTrace, ex.Message);
                     return false;
                 }

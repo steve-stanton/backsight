@@ -156,15 +156,13 @@ namespace Backsight.Editor.Forms
                 IdHandle pointId = intersectInfo.PointId;
                 bool isdefault = intersectInfo.IsDefault;
 
-                op = new IntersectDirectionAndDistanceOperation(Session.WorkingSession, 0, dir, dist,
-                                                                from, isdefault);
+                op = new IntersectDirectionAndDistanceOperation(dir, dist, from, isdefault);
                 op.Execute(pointId, e1, e2);
                 return op.IntersectionPoint;
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
 

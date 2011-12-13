@@ -244,13 +244,12 @@ namespace Backsight.Editor.UI
 
             try
             {
-                op = new NewSegmentOperation(Session.WorkingSession, 0);
+                op = new NewSegmentOperation();
                 op.Execute(m_Start, end);
             }
 
             catch (Exception ex)
             {
-                //Session.WorkingSession.Remove(op);
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
         }
