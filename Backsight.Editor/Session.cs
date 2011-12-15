@@ -21,6 +21,10 @@ using System.Collections.ObjectModel;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.Database;
+using System.IO;
+using Backsight.Data;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace Backsight.Editor
 {
@@ -184,19 +188,17 @@ namespace Backsight.Editor
             m_Data.UpdateEndTime();
         }
 
+        /*
         /// <summary>
-        /// Adds an editing operation to this session. This is called by the constructor
-        /// for the <see cref="Operation"/> class, so the operation will not necessarily
-        /// know about the features involved at this stage (things like indexing the
-        /// content of the operation will usually be done when the operation actually
-        /// instantiates features).
+        /// Adds an editing operation to this session.
         /// </summary>
         /// <param name="o">The operation to append to this session.</param>
-        internal void Add(Operation o)
+        void Add(Operation o) // move to SaveOperation?
         {
             Debug.Assert(object.ReferenceEquals(s_CurrentSession,this));
             m_Operations.Add(o);
         }
+        */
 
         ///// <summary>
         ///// Removes an editing operation from this session. This should be called
@@ -250,7 +252,7 @@ namespace Backsight.Editor
         /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
         /// Otherwise the sequence number of the edit that was rolled back.</returns>
         /// <exception cref="InvalidOperationException">If the session has been published</exception>
-        internal int Rollback()
+        int ISession.Rollback()
         {
             // Return if there is nothing to rollback.
             if (m_Operations.Count==0)
@@ -269,28 +271,6 @@ namespace Backsight.Editor
 
             m_Operations.RemoveAt(index);
             return (int)editSequence;
-        }
-
-        /// <summary>
-        /// Returns the editing operations recorded as part of this session.
-        /// </summary>
-        /// <param name="reverse">Should the list be reversed (latest edit first)</param>
-        /// <returns>The edits associated with this session (never null, but may be
-        /// an empty array)</returns>
-        internal Operation[] GetOperations(bool reverse)
-        {
-            if (!reverse)
-                return m_Operations.ToArray();
-
-            Operation[] result = m_Operations.ToArray();
-            for (int i=0, j=result.Length-1; i<j; i++, j--)
-            {
-                Operation temp = result[i];
-                result[i] = result[j];
-                result[j] = temp;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -320,7 +300,7 @@ namespace Backsight.Editor
         /// This isn't exactly thorough (e.g. if the Editor really does crash, your
         /// changes will have been saved - so be glad).
         /// </summary>
-        internal bool IsSaved
+        bool ISession.IsSaved
         {
             get { return m_LastSavedItem == m_Data.NumItem; }
         }
@@ -344,7 +324,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets rid of edits that the user has not explicitly saved.
         /// </summary>
-        internal void DiscardChanges()
+        void ISession.DiscardChanges()
         {
             m_Data.DiscardEdits(m_LastSavedItem);
         }
@@ -419,7 +399,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="editSequence">The sequence number of the edit to look for</param>
         /// <returns>The corresponding editing operation (null if not found)</returns>
-        internal Operation FindOperation(uint editSequence)
+        Operation ISession.FindOperation(uint editSequence)
         {
             return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
         }
@@ -430,7 +410,7 @@ namespace Backsight.Editor
         /// <param name="deps">The dependent edits.</param>
         /// <param name="startOp">The first operation that should be touched (specify null
         /// for all edits in this session).</param>
-        internal void Touch(List<Operation> deps, Operation startOp)
+        void ISession.Touch(List<Operation> deps, Operation startOp)
         {
             // If a starting op has been specified, process only from there
             if (startOp != null)
@@ -472,6 +452,46 @@ namespace Backsight.Editor
         Operation[] ISession.Edits
         {
             get { return m_Operations.ToArray(); }
+        }
+
+        /// <summary>
+        /// Saves an editing operation as part of this session.
+        /// </summary>
+        /// <param name="edit">The edit to save</param>
+        void ISession.SaveOperation(Operation edit)
+        {
+            Trace.Write("Saving edit");
+
+            // Save the last edit in a file
+            string editString = edit.GetEditString();
+
+            // Dump the file out (to help with debugging)
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
+            {
+                sw.Write(editString);
+            }
+
+            Transaction.Execute(delegate
+            {
+                // Insert the edit
+                SqlCommand c = new SqlCommand();
+                c.Connection = Transaction.Connection.Value;
+                c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
+                                    " VALUES (@sessionId, @editSequence, @data)";
+                c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
+                c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
+                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
+                c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
+                c.Parameters[1].Value = edit.EditSequence;
+                c.Parameters[2].Value = editString;
+                c.ExecuteNonQuery();
+
+                // Update the end-time associated with the session
+                m_Data.UpdateEndTime();
+            });
+
+            // Remember the edit as part of the session
+            m_Operations.Add(edit);
         }
     }
 }

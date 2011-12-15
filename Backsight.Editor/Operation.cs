@@ -15,12 +15,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
-using System.IO;
 
-using Backsight.Data;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
 
@@ -415,8 +411,8 @@ namespace Backsight.Editor
                 // Ensure the map structure has been updated to account for the new data.
                 MapModel.CleanEdit();
 
-                // Save the edit to the database
-                SaveOperation();
+                // Save the edit
+                m_Session.SaveOperation(this);
             }
         }
 
@@ -431,46 +427,48 @@ namespace Backsight.Editor
             return es.ToSerializedString();
         }
 
-        /// <summary>
-        /// Saves an editing operation in the database. This writes to the <c>Edits</c>
-        /// table and updates the timestamp in the <c>Sessions</c> table.
-        /// </summary>
-        /// <param name="op">The edit to save</param>
-        internal void SaveOperation()
+        /*
+    /// <summary>
+    /// Saves an editing operation in the database. This writes to the <c>Edits</c>
+    /// table and updates the timestamp in the <c>Sessions</c> table.
+    /// </summary>
+    /// <param name="op">The edit to save</param>
+    internal void SaveOperation()
+    {
+        Trace.Write("Saving to database");
+
+        // Save the last edit in the database
+        string editString = GetEditString();
+
+        // Dump the file out (to help with debugging)
+        using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
         {
-            Trace.Write("Saving to database");
-
-            // Save the last edit in the database
-            string editString = GetEditString();
-
-            // Dump the file out (to help with debugging)
-            using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
-            {
-                sw.Write(editString);
-            }
-
-            Transaction.Execute(delegate
-            {
-                // Insert the edit
-                SqlCommand c = new SqlCommand();
-                c.Connection = Transaction.Connection.Value;
-                c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
-                                    " VALUES (@sessionId, @editSequence, @data)";
-                c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
-                c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
-                c.Parameters[1].Value = m_Sequence;
-                c.Parameters[2].Value = editString;
-                c.ExecuteNonQuery();
-
-                // Update the end-time associated with the session
-                CadastralMapModel.Current.WorkingSession.UpdateEndTime();
-            });
-
-            // Remember the edit as part of the session
-            CadastralMapModel.Current.WorkingSession.Add(this);
+            sw.Write(editString);
         }
+
+        Transaction.Execute(delegate
+        {
+            // Insert the edit
+            SqlCommand c = new SqlCommand();
+            c.Connection = Transaction.Connection.Value;
+            c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
+                                " VALUES (@sessionId, @editSequence, @data)";
+            c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
+            c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
+            c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
+            c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
+            c.Parameters[1].Value = m_Sequence;
+            c.Parameters[2].Value = editString;
+            c.ExecuteNonQuery();
+
+            // Update the end-time associated with the session
+            CadastralMapModel.Current.WorkingSession.UpdateEndTime();
+        });
+
+        // Remember the edit as part of the session
+        CadastralMapModel.Current.WorkingSession.Add(this);
+    }
+         */
 
         /// <summary>
         /// Adds references to existing features referenced by this operation (including features
@@ -744,7 +742,7 @@ namespace Backsight.Editor
             mapModel.CleanEdit();
 
             // Save the edit to the database
-            SaveOperation();
+            m_Session.SaveOperation(this);
         }
 
         public virtual void ExchangeData(UpdateItemCollection data)

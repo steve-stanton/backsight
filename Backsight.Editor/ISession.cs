@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -86,5 +87,45 @@ namespace Backsight.Editor
         /// Updates the end-time (and item count) associated with this session
         /// </summary>
         void UpdateEndTime();
+
+        /// <summary>
+        /// Saves an editing operation as part of this session.
+        /// </summary>
+        /// <param name="edit">The edit to save</param>
+        void SaveOperation(Operation edit);
+
+        /// <summary>
+        /// Have edits performed as part of this session been "saved" (as far as
+        /// the user is concerned).
+        /// </summary>
+        bool IsSaved { get; }
+
+        /// <summary>
+        /// Rolls back the last operation in this session. The operation will be removed from
+        /// the session's operation list.
+        /// </summary>
+        /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
+        /// Otherwise the sequence number of the edit that was rolled back.</returns>
+        int Rollback();
+
+        /// <summary>
+        /// Gets rid of edits that the user has not explicitly saved.
+        /// </summary>
+        void DiscardChanges();
+
+        /// <summary>
+        /// Attempts to locate an edit within this session
+        /// </summary>
+        /// <param name="editSequence">The sequence number of the edit to look for</param>
+        /// <returns>The corresponding editing operation (null if not found)</returns>
+        Operation FindOperation(uint editSequence);
+
+        /// <summary>
+        /// Obtains dependent edits within this session.
+        /// </summary>
+        /// <param name="deps">The dependent edits.</param>
+        /// <param name="startOp">The first operation that should be touched (specify null
+        /// for all edits in this session).</param>
+        void Touch(List<Operation> deps, Operation startOp);
     }
 }
