@@ -184,10 +184,11 @@ namespace Backsight.Editor
         internal void Load(CadastralMapModel map, IJobInfo job, IUser user)
         {
             // Grab all defined allocations for the job and user
-            IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
+            //IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
+            IdAllocationInfo[] allocs = job.GetIdAllocations();
 
             // Attach each allocation to its group
-            foreach (IdAllocation a in allocs)
+            foreach (IdAllocationInfo a in allocs)
             {
                 IdGroup g = Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup t)
                                 { return t.Id==a.GroupId; });

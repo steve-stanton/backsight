@@ -116,42 +116,6 @@ namespace Backsight.Editor.FileStore
             return result;
         }
 
-        /*
-        public ISession[] LoadSessions(string jobName, CadastralMapModel model)
-        {
-            EditDeserializer editDeserializer = new EditDeserializer(model);
-
-            List<ISession> result = new List<ISession>();
-            string jobFolder = Path.Combine(m_FolderName, jobName);
-
-            foreach (string sFolder in Directory.GetDirectories(jobFolder, "s.*"))
-            {
-                Operation[] edits = LoadEdits(sFolder, editDeserializer);
-                ISession s = new SessionFolder(sFolder, edits);
-            }
-
-            return result.ToArray();
-        }
-        */
-
-        /*
-        Operation[] LoadEdits(string sFolder, EditDeserializer editDeserializer)
-        {
-            List<Operation> edits = new List<Operation>();
-
-            foreach (string editFile in Directory.GetFiles(sFolder))
-            {
-                using (TextReader tr = File.OpenText(editFile))
-                {
-                    editDeserializer.SetReader(new TextEditReader(tr));
-                    Operation edit = Operation.Deserialize(editDeserializer);
-                    edits.Add(edit);
-                }
-            }
-
-            return edits.ToArray();
-        }
-        */
         #endregion
     }
 }
