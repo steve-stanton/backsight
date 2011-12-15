@@ -134,5 +134,11 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="mapModel">The model to load</param>
         void LoadModel(CadastralMapModel mapModel);
+
+        /// <summary>
+        /// Loads ID allocations that have been made for this job.
+        /// </summary>
+        /// <returns>The ID allocations (never null, but may be an empty array).</returns>
+        IdAllocationInfo[] GetIdAllocations();
     }
 }

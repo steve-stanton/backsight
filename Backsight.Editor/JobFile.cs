@@ -14,12 +14,12 @@
 // </remarks>
 
 using System;
-using System.IO;
-using Backsight.Forms;
-using Backsight.Editor.FileStore;
-using System.Diagnostics;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+
+using Backsight.Editor.FileStore;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -56,6 +56,11 @@ namespace Backsight.Editor
         /// The information read from the file.
         /// </summary>
         JobFileInfo m_Info;
+
+        /// <summary>
+        /// The IDs for the job.
+        /// </summary>
+        IdFolder m_IdFolder;
 
         #endregion
 
@@ -322,5 +327,22 @@ namespace Backsight.Editor
             mapModel.AddSession(s);
         }
 
+        /// <summary>
+        /// Obtains information about ID allocations.
+        /// </summary>
+        /// <returns></returns>
+        IdAllocationInfo[] IJobInfo.GetIdAllocations()
+        {
+            // Look for a Ids folder in the same place as this job file
+            // (not sure if m_FileName really has the full path when loaded from MRU)
+            if (m_IdFolder == null)
+            {
+                string jobFolder = Path.GetDirectoryName(m_FileName);
+                string idFolder = Path.Combine(jobFolder, "Ids");
+                m_IdFolder = new IdFolder(idFolder);
+            }
+
+            return m_IdFolder.GetIdAllocations();
+        }
     }
 }
