@@ -122,7 +122,7 @@ namespace Backsight.Editor
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
 
-            // For now, just hard-code the coordinate system uaually used in Manitoba
+            // For now, just hard-code the coordinate system usually used in Manitoba
             m_CS = new CSLib.CoordinateSystem("UTM83-14");
             m_CS.MeanElevation = new Length(Settings.Default.MeanElevation);
             m_CS.GeoidSeparation = new Length(Settings.Default.GeoidSeparation);
@@ -1092,6 +1092,18 @@ namespace Backsight.Editor
             m_Sessions.Clear();
             job.LoadModel(this);
 
+            Trace.Write("Attaching attributes...");
+            AttributeData.Load(GetFeatureIds());
+
+            Trace.Write("Calculating geometry...");
+            Operation[] edits = GetCalculationSequence();
+            foreach (Operation op in edits)
+                op.CalculateGeometry(null);
+
+            // Create spatial index
+            Trace.Write("Indexing...");
+            CreateIndex(edits);
+
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
 
@@ -1288,7 +1300,7 @@ namespace Backsight.Editor
         /// <returns>The corresponding operation (null if not found)</returns>
         internal Operation FindOperation(InternalIdValue id)
         {
-            Session s = FindSession(id.SessionId);
+            ISession s = FindSession(id.SessionId);
 
             if (s == null)
                 return null;
@@ -1301,9 +1313,9 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="sessionId">The sequence number of the session to look for</param>
         /// <returns>The corresponding session (null if not found)</returns>
-        internal Session FindSession(uint sessionId)
+        internal ISession FindSession(uint sessionId)
         {
-            return m_Sessions.Find(delegate(Session s) { return s.Id==sessionId; });
+            return m_Sessions.Find(delegate(ISession s) { return s.Id==sessionId; });
         }
 
         /// <summary>
@@ -1450,7 +1462,7 @@ namespace Backsight.Editor
                 return new Operation[] { op };
 
             // Locate the session containing the edit
-            int sessionIndex = m_Sessions.FindIndex(delegate(Session s)
+            int sessionIndex = m_Sessions.FindIndex(delegate(ISession s)
             {
                 return object.ReferenceEquals(s, op.Session);
             });
@@ -1479,8 +1491,8 @@ namespace Backsight.Editor
         {
             List<Operation> result = new List<Operation>();
 
-            foreach (Session s in m_Sessions)
-                result.AddRange(s.GetOperations(false));
+            foreach (ISession s in m_Sessions)
+                result.AddRange(s.Edits);
 
             return result.ToArray();
         }

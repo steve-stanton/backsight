@@ -66,6 +66,7 @@ namespace Backsight.Editor.FileStore
             m_SessionId = sessionId;
             m_FolderName = folderName;
             m_Operations = new List<Operation>(edits);
+            m_LastSavedItem = 0;
 
             // Attempt to load info file (if not present, create one)
             string fileName = GetInfoSpec();
@@ -168,25 +169,6 @@ namespace Backsight.Editor.FileStore
         }
 
         /// <summary>
-        /// Records the fact that this session has been "saved". This doesn't actually
-        /// save anything, since that happens each time you perform an edit.
-        /// </summary>
-        void ISession.SaveChanges()
-        {
-            throw new NotImplementedException();
-            /*
-            // Update the number of the last saved item (as far as the user's session
-            // is concerned). Note that m_Data.NumItem corresponds to what's already
-            // been saved in the database (well, it should).
-            m_LastSavedItem = m_Data.NumItem;
-
-            // Save the job file for good measure. If the user looks at the file
-            // timestamp, this will reassure them that something really has been done!
-            EditingController.Current.JobInfo.Save();
-             */
-        }
-
-        /// <summary>
         /// Deletes information about this session from the database.
         /// </summary>
         void ISession.Delete()
@@ -227,6 +209,185 @@ namespace Backsight.Editor.FileStore
         {
             m_Info.EndTime = DateTime.Now;
             WriteInfo();
+        }
+
+        /*
+        /// <summary>
+        /// Adds an editing operation to this session.
+        /// </summary>
+        /// <param name="o">The operation to append to this session.</param>
+        void ISession.Add(Operation o)
+        {
+            m_Operations.Add(o);
+        }
+        */
+
+        /// <summary>
+        /// Saves an editing operation as part of this session.
+        /// </summary>
+        /// <param name="edit">The edit to save</param>
+        void ISession.SaveOperation(Operation edit)
+        {
+            Trace.Write("Saving edit");
+
+            // Save the last edit in a file
+            string editString = edit.GetEditString();
+            string fileName = GetEditFileName(edit.EditSequence);
+            File.WriteAllText(fileName, editString);
+
+            // Remember current time as part of the info file
+            m_Info.EndTime = DateTime.Now;
+            WriteInfo();
+
+            m_Operations.Add(edit);
+        }
+
+        string GetEditFileName(uint editSequence)
+        {
+            string editName = String.Format("{0:000000}", editSequence);
+            return Path.Combine(m_FolderName, editName + ".txt");
+        }
+
+        /// <summary>
+        /// Have edits performed as part of this session been "saved" (as far as
+        /// the user is concerned). Each time a user performs an edit, the database
+        /// will always get updated -- this is done mainly to ensure that work will
+        /// not get lost due to things like power failures, or unexpected crashes.
+        /// <para/>
+        /// In an attempt to simulate a file-based system (which users will probably
+        /// be more familiar with), the Editor checks whether the user has actually
+        /// used the File-Save command to save changes. If they have not, the application
+        /// is expected to ask the user whether they want to keep their changes or not.
+        /// If no, the data already saved needs to be discarded.
+        /// <para/>
+        /// This isn't exactly thorough (e.g. if the Editor really does crash, your
+        /// changes will have been saved - so be glad).
+        /// </summary>
+        bool ISession.IsSaved
+        {
+            get { return m_LastSavedItem == m_Info.NumItem; }
+        }
+
+        /// <summary>
+        /// Records the fact that this session has been "saved". This doesn't actually
+        /// save anything, since that happens each time you perform an edit.
+        /// </summary>
+        void ISession.SaveChanges()
+        {
+            // Update the number of the last saved item (as far as the user's session
+            // is concerned). Note that m_Info.NumItem corresponds to what's already
+            // been saved in the session folder (well, it should).
+            m_LastSavedItem = m_Info.NumItem;
+
+            // Save the job file for good measure.
+            EditingController.Current.JobInfo.Save();
+        }
+
+        /// <summary>
+        /// Rolls back the last operation in this session. The operation will be removed from
+        /// the session's operation list.
+        /// </summary>
+        /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
+        /// Otherwise the sequence number of the edit that was rolled back.</returns>
+        /// <exception cref="InvalidOperationException">If the session has been published</exception>
+        int ISession.Rollback()
+        {
+            // Return if there is nothing to rollback.
+            if (m_Operations.Count == 0)
+                return 0;
+
+            // Get the tail operation
+            int index = m_Operations.Count - 1;
+            Operation op = m_Operations[index];
+
+            // Remember the sequence number of the edit we're rolling back
+            uint editSequence = op.EditSequence;
+
+            // Rollback the operation & remove from list
+            if (!op.Undo())
+                return -1;
+
+            m_Operations.RemoveAt(index);
+
+            // Get rid of the file that contains a description of the edit (if a redo capability
+            // is introduced, it's probably best to recreate the file as part of that logic).
+            DeleteEditFile(editSequence);
+
+            return (int)editSequence;
+        }
+
+        void DeleteEditFile(uint editSequence)
+        {
+            string fileName = GetEditFileName(editSequence);
+
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+        }
+
+        /// <summary>
+        /// Gets rid of edits that the user has not explicitly saved.
+        /// </summary>
+        void ISession.DiscardChanges()
+        {
+            // Get rid of edits subsequent to the last user-perceived save
+            for (uint i = m_LastSavedItem + 1; i <= m_Info.NumItem; i++)
+                DeleteEditFile(i);
+
+            // Go back to the old item count (and update session time)
+            m_Info.NumItem = m_LastSavedItem;
+            (this as ISession).UpdateEndTime();
+        }
+
+        /// <summary>
+        /// Attempts to locate an edit within this session
+        /// </summary>
+        /// <param name="editSequence">The sequence number of the edit to look for</param>
+        /// <returns>The corresponding editing operation (null if not found)</returns>
+        Operation ISession.FindOperation(uint editSequence)
+        {
+            return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
+        }
+
+        /// <summary>
+        /// Obtains dependent edits within this session.
+        /// </summary>
+        /// <param name="deps">The dependent edits.</param>
+        /// <param name="startOp">The first operation that should be touched (specify null
+        /// for all edits in this session).</param>
+        void ISession.Touch(List<Operation> deps, Operation startOp)
+        {
+            // If a starting op has been specified, process only from there
+            if (startOp != null)
+            {
+                int opIndex = m_Operations.FindIndex(delegate(Operation o)
+                {
+                    return object.ReferenceEquals(o, startOp);
+                });
+
+                if (opIndex < 0)
+                    throw new Exception("Cannot locate starting edit within session");
+
+                try
+                {
+                    // Touch the starting edit
+                    startOp.SetTouch();
+
+                    // Process the edits within this session, starting with the specified edit
+                    for (int i = opIndex; i < m_Operations.Count; i++)
+                        m_Operations[i].Touch(deps);
+                }
+
+                finally
+                {
+                    startOp.UnTouch();
+                }
+            }
+            else
+            {
+                // Process all edits performed within this session
+                foreach (Operation op in m_Operations)
+                    op.Touch(deps);
+            }
         }
     }
 }

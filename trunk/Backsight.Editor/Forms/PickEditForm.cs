@@ -34,7 +34,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The session of interest
         /// </summary>
-        readonly Session m_Session;
+        readonly ISession m_Session;
 
         /// <summary>
         /// The currently select edit
@@ -45,7 +45,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
-        internal PickEditForm(Session s)
+        internal PickEditForm(ISession s)
         {
             InitializeComponent();
 
@@ -58,11 +58,25 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
+        Operation[] GetOperations()
+        {
+            Operation[] result = m_Session.Edits;
+
+            // Return in reverse order
+            for (int i = 0, j = result.Length - 1; i < j; i++, j--)
+            {
+                Operation temp = result[i];
+                result[i] = result[j];
+                result[j] = temp;
+            }
+
+            return result;
+        }
+
         private void PickEditForm_Shown(object sender, EventArgs e)
         {
-            // Load the list of operations that were performed in the
-            // session (in reverse order).
-            Operation[] ops = m_Session.GetOperations(true);
+            // Load the list of operations that were performed in the session (in reverse order).
+            Operation[] ops = GetOperations();
 
             grid.RowCount = ops.Length;
             for (int i = 0; i < ops.Length; i++)

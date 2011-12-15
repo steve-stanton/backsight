@@ -633,7 +633,7 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 // to the edit)
                 UpdateItemCollection revisedItems = uop.Changes;
                 uop.Changes = originalItems;
-                uop.SaveOperation();
+                uop.Session.SaveOperation(uop);
                 uop.Changes = revisedItems;
             }
 
