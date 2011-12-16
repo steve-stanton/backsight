@@ -159,11 +159,15 @@ namespace Backsight.Editor
                     // packet, append to that packet. Otherwise add a new packet.
 
                     bool isExtension = false;
+                    /*
+                     * By rights, this requires db access
+                     * 
                     for (int i=0; i<m_Packets.Count && !isExtension; i++)
                     {
                         IdPacket oldPacket = m_Packets[i];
                         isExtension = oldPacket.Extend(minid, maxid);
                     }
+                    */
 
                     if (!isExtension)
                     {
@@ -174,7 +178,7 @@ namespace Backsight.Editor
 
                         // Insert a row into the IdAllocation table.
                         const int jobId = 0;
-                        IdAllocation ida = IdAllocation.Insert(this, minid, maxid, jobId, curuser, curtime, 0);
+                        IdAllocationInfo ida = IdAllocation.Insert(this, minid, maxid, jobId, curuser, curtime, 0);
 
                         // Remember it as part of this group
                         AddIdPacket(ida);
@@ -592,7 +596,7 @@ namespace Backsight.Editor
         /// Associates an ID allocation with this group
         /// </summary>
         /// <param name="a">The allocation associated with this group</param>
-        internal void AddIdPacket(IdAllocation a)
+        internal void AddIdPacket(IdAllocationInfo a)
         {
             m_Packets.Add(new IdPacket(this, a));
         }

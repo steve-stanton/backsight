@@ -140,5 +140,12 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>The ID allocations (never null, but may be an empty array).</returns>
         IdAllocationInfo[] GetIdAllocations();
+
+        /// <summary>
+        /// Creates a brand new session for this job.
+        /// </summary>
+        /// <param name="sessionId">The ID to assign to the new session</param>
+        /// <returns>The newly created session</returns>
+        ISession AppendWorkingSession(uint sessionId);
     }
 }

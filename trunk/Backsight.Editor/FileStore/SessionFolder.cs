@@ -60,12 +60,11 @@ namespace Backsight.Editor.FileStore
         /// </summary>
         /// <param name="sessionId">A numeric ID for the session</param>
         /// <param name="folderName">The path to the folder where the edits were loaded from.</param>
-        /// <param name="edits">Operations (if any) that were performed during the session.</param>
-        internal SessionFolder(uint sessionId, string folderName, Operation[] edits)
+        internal SessionFolder(uint sessionId, string folderName)
         {
             m_SessionId = sessionId;
             m_FolderName = folderName;
-            m_Operations = new List<Operation>(edits);
+            m_Operations = new List<Operation>();
             m_LastSavedItem = 0;
 
             // Attempt to load info file (if not present, create one)
@@ -88,6 +87,30 @@ namespace Backsight.Editor.FileStore
         }
 
         #endregion
+
+        /// <summary>
+        /// Loads the edits in this session folder.
+        /// </summary>
+        /// <param name="editDeserializer"></param>
+        internal void LoadEdits(EditDeserializer editDeserializer)
+        {
+            foreach (string editFile in Directory.EnumerateFiles(m_FolderName))
+            {
+                // Only consider those files that have names that are numbers (the edit sequence)
+                string name = Path.GetFileNameWithoutExtension(editFile);
+                uint seqNum;
+                if (UInt32.TryParse(name, out seqNum))
+                {
+                    using (TextReader tr = File.OpenText(editFile))
+                    {
+                        editDeserializer.SetReader(new TextEditReader(tr));
+                        Operation edit = Operation.Deserialize(editDeserializer);
+                        Debug.Assert(seqNum == edit.EditSequence);
+                        m_Operations.Add(edit);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The edits performed in this session.
@@ -156,7 +179,13 @@ namespace Backsight.Editor.FileStore
 
         void WriteInfo()
         {
-            using (XmlWriter writer = XmlWriter.Create(GetInfoSpec()))
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "\t";
+            settings.OmitXmlDeclaration = true;
+
+            // Create the XmlWriter object and write some content.
+            using (XmlWriter writer = XmlWriter.Create(GetInfoSpec(), settings))
             {
                 XmlSerializer xs = new XmlSerializer(typeof(SessionInfo));
                 xs.Serialize(writer, m_Info);
@@ -173,8 +202,8 @@ namespace Backsight.Editor.FileStore
         /// </summary>
         void ISession.Delete()
         {
-            throw new NotImplementedException();
-            //m_Data.Delete();
+            if (Directory.Exists(m_FolderName))
+                Directory.Delete(m_FolderName, true);
         }
 
         /// <summary>

@@ -59,6 +59,14 @@ namespace Backsight.Editor
         /// </summary>
         //public int NumUsed { get; set; }
 
+        /// <summary>
+        /// The number of IDs in this allocation
+        /// </summary>
+        internal int Size
+        {
+            get { return (HighestId - LowestId + 1); }
+        }
+
         #endregion
     }
 }

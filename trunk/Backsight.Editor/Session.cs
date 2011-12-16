@@ -15,16 +15,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-
-using Backsight.Editor.Operations;
-using Backsight.Environment;
-using Backsight.Editor.Database;
-using System.IO;
-using Backsight.Data;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
+
+using Backsight.Data;
+using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -38,7 +35,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current editing session
         /// </summary>
-        static Session s_CurrentSession = null;
+        //static Session s_CurrentSession = null;
 
         /*
         /// <summary>
@@ -59,6 +56,7 @@ namespace Backsight.Editor
         }
         */
 
+        /*
         /// <summary>
         /// Creates a new session and remembers it as the "current" session.
         /// </summary>
@@ -75,7 +73,9 @@ namespace Backsight.Editor
             model.AddSession(s_CurrentSession);
             return s_CurrentSession;
         }
+        */
 
+        /*
         /// <summary>
         /// Nulls out the <see cref="CurrentSession"/> property. This should be called only when
         /// the editing application is shuting down.
@@ -84,6 +84,7 @@ namespace Backsight.Editor
         {
             s_CurrentSession = null;
         }
+        */
 
         #endregion
 
@@ -329,6 +330,7 @@ namespace Backsight.Editor
             m_Data.DiscardEdits(m_LastSavedItem);
         }
 
+        /*
         /// <summary>
         /// Reserves an item number for use with the current session. It is a lightweight
         /// request, because it just increments a counter. The database gets updated
@@ -339,6 +341,7 @@ namespace Backsight.Editor
         {
             return s_CurrentSession.m_Data.ReserveNextItem();
         }
+        */
 
         /// <summary>
         /// Reserves an item number for use with the current session. It is a lightweight

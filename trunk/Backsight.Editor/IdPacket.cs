@@ -36,7 +36,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The database information about the allocation
         /// </summary>
-        readonly IdAllocation m_Allocation;
+        readonly IdAllocationInfo m_Allocation;
 
         /// <summary>
         /// References to allocated IDs. The  first element corresponds to m_LowestId,
@@ -57,7 +57,7 @@ namespace Backsight.Editor
         /// <param name="alloc">The allocation associated with the group (not null)</param>
         /// <exception cref="ArgumentNullException">If either parameter is null</exception>
         /// <exception cref="ArgumentException">If the allocation does not refer to the supplied group</exception>
-        internal IdPacket(IdGroup group, IdAllocation alloc)
+        internal IdPacket(IdGroup group, IdAllocationInfo alloc)
         {
             if (group==null || alloc==null)
                 throw new ArgumentNullException();
@@ -360,6 +360,8 @@ namespace Backsight.Editor
         /// <returns>True if the packet has been extended.</returns>
         internal bool Extend(int minid, int maxid)
         {
+            throw new NotImplementedException();
+            /*
             // The beginning of the extension MUST follow the existing range.
             if (Max + 1 != minid)
                 return false;
@@ -374,16 +376,11 @@ namespace Backsight.Editor
                 return false;
 
             // Extend the allocation of pointers that we have.
-            uint nextra = (uint)(maxid - minid + 1);
-            uint nalloc = (uint)(m_Ids.Length + nextra);
-            NativeId[] newIds = new NativeId[nalloc];
-
-            // Copy over what we had (the rest contains nulls)
-            Array.Copy(m_Ids, newIds, m_Ids.Length);
-
-            // Replace the old array with the new one
-            m_Ids = newIds;
+            int nextra = maxid - minid + 1;
+            int nalloc = m_Ids.Length + nextra;
+            Array.Resize<NativeId>(ref m_Ids, nalloc);
             return true;
+             */
         }
 
         /// <summary>
