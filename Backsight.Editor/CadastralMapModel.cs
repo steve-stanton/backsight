@@ -309,7 +309,7 @@ namespace Backsight.Editor
                     m_WorkingSession.UpdateEndTime();
 
                 m_Sessions.Clear();
-                Session.ClearCurrentSession();
+                //Session.ClearCurrentSession();
             }
         }
 
@@ -1178,12 +1178,29 @@ namespace Backsight.Editor
         /// <returns>The created session</returns>
         internal ISession AppendWorkingSession(IJobInfo job, IUser user)
         {
-            SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
+            //SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
 
             // Create the session (and remember as part of this model)
-            Session s = Session.CreateCurrentSession(this, data, user, job);
-            m_WorkingSession = s;
-            return s;
+            //Session s = Session.CreateCurrentSession(this, data, user, job);
+
+            uint sessionId = GetMaxSessionId() + 1;
+            m_WorkingSession = job.AppendWorkingSession(sessionId);
+            AddSession(m_WorkingSession);
+            return m_WorkingSession;
+        }
+
+        /// <summary>
+        /// Scans the sessions in this model to obtain the highest session ID.
+        /// </summary>
+        /// <returns>The max session ID</returns>
+        internal uint GetMaxSessionId()
+        {
+            uint maxId = 0;
+
+            foreach (ISession s in m_Sessions)
+                maxId = Math.Max(maxId, s.Id);
+
+            return maxId;
         }
 
         /// <summary>
